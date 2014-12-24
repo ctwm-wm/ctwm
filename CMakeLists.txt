@@ -263,6 +263,50 @@ else()
 	endif(YACC)
 endif(BISON_FOUND)
 
+# Find asciidoc stuff to build manual, if we can.  Else, use the ones
+# we'll pre-build for the tarball.  Else, uh, we're in trouble...
+set(MANPAGE_ADSRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.txt)
+set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
+set(CAN_DO_MAN 0)
+find_program(ASCIIDOC asciidoc)
+find_program(A2X a2x)
+if(ASCIIDOC AND A2X)
+	set(CAN_DO_MAN 1)
+
+	# Generate .in file, processed into man format
+	# We have to jump through a few hoops, because a2x gives us no
+	# control whatsoever over where the output file goes or what it's
+	# named.  Thanks, guys.
+	message(STATUS "Found asciidoc (${A2X}) for building manpage")
+	set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
+	file(MAKE_DIRECTORY ${MANPAGE_TMPDIR})
+	set(MANPAGE_TMPIN ${MANPAGE_TMPDIR}/ctwm.1)
+	set(MANPAGE_IN ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.in)
+	add_custom_command(OUTPUT ${MANPAGE}.in
+		DEPENDS ${MANPAGE_ADSRC}
+		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}
+		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}
+		COMMAND cp ${MANPAGE_TMPIN} ${MANPAGE_IN}
+		COMMENT "Processing ${MANPAGE_ADSRC} -> ${MANPAGE}.in"
+	)
+else()
+	# See if we have prebuilt
+	find_file(MAN_PRESRC ctwm.1
+		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
+		NO_DEFAULT_PATH)
+	if(MAN_PRESRC)
+		set(CAN_DO_MAN 1)
+		# Just copy it in
+		add_custom_command(OUTPUT ${MANPAGE}.in
+			DEPENDS ${MAN_PRESRC}
+			COMMAND cp ${MAN_PRESRC} ${MANPAGE}.in
+			COMMENT "Copying in pre-built manpage."
+		)
+		message(STATUS "No asciidoc/a2x found, using prebuilt manpage.")
+	else()
+		message(WARNING "Can't find asciidoc/a2x, and no prebuilt manpage available.")
+	endif(MAN_PRESRC)
+endif(ASCIIDOC AND A2X)
 
 
 #
@@ -354,14 +398,22 @@ add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
 # Rewrite man page
-set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
-configure_file(ctwm.man ${MANPAGE} @ONLY)
+if(CAN_DO_MAN)
+	add_custom_command(OUTPUT ${MANPAGE}
+		DEPENDS ${MANPAGE}.in
+		COMMAND sed -e "s,\@TWMDIR@,${TWMDIR}," < ${MANPAGE}.in > ${MANPAGE}
+		COMMENT "Processing ${MANPAGE}.in -> ${MANPAGE}"
+	)
+else()
+	# Fake to get us through the build process
+	file(WRITE ${MANPAGE} "Can't build manpage.")
+endif(CAN_DO_MAN)
 
 # Compress (conditionally).  We could add more magic to allow different
 # automatic compression, but that's probably way more involved than we
 # need to bother with.  Most systems use gzip, and for the few that
 # don't, the packagers can use NOMANCOMPRESS and handle it out of band.
-if(NOT NOMANCOMPRESS)
+if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 	find_program(GZIP_CMD gzip)
 	add_custom_command(OUTPUT "${MANPAGE}.gz"
 		DEPENDS ${MANPAGE}
@@ -372,7 +424,7 @@ if(NOT NOMANCOMPRESS)
 	set(INSTMAN "${MANPAGE}.gz")
 else()
 	set(INSTMAN ${MANPAGE})
-ENDif(NOT NOMANCOMPRESS)
+endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 
 
 # Cram a warning in about the MANBASE if we couldn't find it.  This is a
@@ -382,6 +434,9 @@ ENDif(NOT NOMANCOMPRESS)
 # that install() is defined to run in order, but that only happens when
 # everything is in a single directory.  This will break if/when we start
 # splitting things up...
+if(NOT CAN_DO_MAN)
+	install(CODE "message(FATAL_ERROR \"Failed to build manpage; see earlier errors.\")")
+endif(NOT CAN_DO_MAN)
 if(NOT MANBASE)
 	install(CODE "message(FATAL_ERROR \"${manbase_err}\")")
 endif(NOT MANBASE)
