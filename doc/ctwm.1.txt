@@ -1743,7 +1743,7 @@ WMgrVertButtonIndent ++nb_pixels++::
 
 WorkSpaceFont ++string++::
   This allows you to specify the font to use for the small windows in the
-  workspace manager map. (Try ``-adobe-times-*-r-*--10-*-*-*-*-*-*-*'').
+  workspace manager map. (Try `-adobe-times-*-r-*--10-*-*-*-*-*-*-*`).
 
 WorkSpaceManagerGeometry ++string++ [ ++columns++ ]::
   This variable specifies the geometry of the workspace manager window. The
