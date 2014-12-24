@@ -1878,9 +1878,7 @@ according to the
 order in which they are specified.  Key and pointer button
 bindings may be given in any order.
 
-++Title buttons++::
-
-.RS 4
+=== Title buttons
 
 Titlebuttons specifications must include the name of the pixmap to use in
 the button box and the function to be invoked when a pointer button is
@@ -1934,11 +1932,8 @@ words, the following two lines are equivalent:
     Buttoni = : function
 ------
 
-.RE
 
-++Key and pointer buttons++::
-
-.RS 4
+=== Key and pointer buttons
 
 Key and pointer button specifications must give the modifiers that must
 be pressed, over which parts of the screen the pointer must be, and what
@@ -2008,11 +2003,9 @@ bound to key and button strokes.  To do this, ++ctwm++ associates names
 with each of the primitives and provides ++user-defined functions++ for
 building higher level primitives and ++menus++ for interactively selecting
 among groups of functions.
-.RE
 
-Functions::
 
-.RS 4
+=== Functions
 
 User-defined functions contain the name by which they are referenced in
 calls to ++f.function++ and a list of other functions to execute.  For
