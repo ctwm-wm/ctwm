@@ -1,5 +1,5 @@
 # This just shortcuts stuff through to cmake
-all build ctwm install clean: build/Makefile
+all build ctwm man install clean: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 build/Makefile cmake: CMakeLists.txt
