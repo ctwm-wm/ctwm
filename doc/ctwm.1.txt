@@ -1764,12 +1764,11 @@ WorkSpaces { ++workspace-list++ }::
 name [{bg-button [fg-button] [bg-root] [fg-root] [pixmap-root]}]
 ------
 +
-+
 [normal]
-  With :
-
-.RS 8
-
+  With:
++
+--
+[horizontal]
 bg-button:::
   background color of the corresponding button in the workspace manager.
 
@@ -1786,11 +1785,11 @@ pixmap-root:::
   pixmap to display on the corresponding root screen, either the name of
   a bitmap, xpm:xpmfile, xwd:xwdfile, jpeg:jpgfile, or |command_that
   generate_xwd.
-
-.RE
-.IP
-Example :
-
+--
++
+[normal]
+  Example:
++
 ------
 WorkSpaces
 {
@@ -1805,18 +1804,17 @@ WorkSpaces
   "Eight" {"#686B9F" "white" "MidnightBlue"}
 }
 ------
-
-.IP
-The WorkSpaces declaration should come before the Occupy or OccupyAll
-declarations. The maximum number of workspaces is 32.
-.IP
-Each workspace also has a label, which is displayed in the
-WorkSpaceManager window when it is in button state.
-By moving the mouse cursor over a button and typing letters and/or
-backspace, you may edit the label.
-The name is unaffected.
-Functions that look up workspaces by name also look at the label.
-
++
+[normal]
+  The WorkSpaces declaration should come before the Occupy or OccupyAll
+  declarations. The maximum number of workspaces is 32.
++
+[normal]
+  Each workspace also has a label, which is displayed in the
+  WorkSpaceManager window when it is in button state.  By moving the
+  mouse cursor over a button and typing letters and/or backspace, you may
+  edit the label.  The name is unaffected.  Functions that look up
+  workspaces by name also look at the label.
 
 XMoveGrid ++number++::
   This variable specifies the value to use to constrain window movement.
