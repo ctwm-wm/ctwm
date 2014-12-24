@@ -5,3 +5,5 @@ lex.c
 *.tar*
 build/*
 *.html
+doc/ctwm.1
+doc/ctwm.1.xml
