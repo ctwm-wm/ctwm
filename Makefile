@@ -1,5 +1,5 @@
 # This just shortcuts stuff through to cmake
-all build ctwm install clean: build/Makefile
+all build ctwm man install clean: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 build/Makefile cmake: CMakeLists.txt
@@ -29,13 +29,20 @@ STYLE.html: STYLE
 	multimarkdown -ao STYLE.html STYLE
 
 
+# asciidoc files
+adocs:
+	(cd doc && make all)
+adoc_clean:
+	(cd doc && make clean)
+
+
 # Prebuild these files for releases
 YACC?=/usr/bin/yacc
 YFLAGS=-d -b gram
 RELEASE_FILES=gram.tab.c gram.tab.h lex.c deftwmrc.c
 
-release_files: ${RELEASE_FILES} ${DOC_FILES}
-release_clean: doc_clean
+release_files: ${RELEASE_FILES} ${DOC_FILES} adocs
+release_clean: doc_clean adoc_clean
 	rm -f ${RELEASE_FILES}
 
 gram.tab.c: gram.tab.h
