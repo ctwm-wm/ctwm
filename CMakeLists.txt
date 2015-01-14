@@ -284,8 +284,8 @@ if(ASCIIDOC AND A2X)
 	set(MANPAGE_IN ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.in)
 	add_custom_command(OUTPUT ${MANPAGE}.in
 		DEPENDS ${MANPAGE_ADSRC}
-		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}
-		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}
+		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}.txt
+		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}.txt
 		COMMAND cp ${MANPAGE_TMPIN} ${MANPAGE_IN}
 		COMMENT "Processing ${MANPAGE_ADSRC} -> ${MANPAGE}.in"
 	)
