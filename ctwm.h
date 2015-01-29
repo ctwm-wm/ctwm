@@ -87,7 +87,9 @@
 #include "ctwm_config.h"
 
 #include "types.h"
+#ifdef EWMH
 #include "ewmh.h"
+#endif
 
 #ifndef WithdrawnState
 #define WithdrawnState 0
