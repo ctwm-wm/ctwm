@@ -56,7 +56,6 @@
 #include <X11/Xatom.h>
 
 #include "ctwm.h"
-#include "ewmh.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"

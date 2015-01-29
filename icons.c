@@ -68,7 +68,6 @@
 #include "otp.h"
 #include "list.h"
 #include "parse.h"
-#include "ewmh.h"
 #include "util.h"
 
 #define iconWidth(w)    (w->icon->border_width * 2 + \

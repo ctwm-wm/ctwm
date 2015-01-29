@@ -120,9 +120,6 @@
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
-#ifdef EWMH
-#  include "ewmh.h"
-#endif /* EWMH */
 
 
 /* I'm not sure this is meaningful anymore */

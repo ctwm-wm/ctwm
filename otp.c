@@ -41,7 +41,6 @@
 #include "icons.h"
 #include "list.h"
 #include "events.h"
-#include "ewmh.h"
 
 #define DEBUG_OTP       0
 #if DEBUG_OTP

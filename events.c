@@ -104,7 +104,6 @@
 #include "icons.h"
 #include "iconmgr.h"
 #include "version.h"
-#include "ewmh.h"
 #ifdef SOUNDS
 #include "sounds.h"
 #endif
