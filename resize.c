@@ -1325,7 +1325,9 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				 * TODO: It should have the extra priority only while it
 				 * has focus.
 				 */
+#ifdef EWMH
 				OtpSetPriority(tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
+#endif
 				/* the OtpRaise below is effectively already done here... */
 			}
 		}

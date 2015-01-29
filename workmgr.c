@@ -57,8 +57,9 @@ static void fakeRaiseLower();
 #include "cursor.h"
 #include "list.h"
 #include "workmgr.h"
-#include "ewmh.h"
-#include "ewmh_atoms.h"
+#ifdef EWMH
+#  include "ewmh_atoms.h"
+#endif
 #ifdef GNOME
 #  include "gnomewindefs.h" /* include GNOME hints definitions */
 #endif /* GNOME */
