@@ -488,14 +488,14 @@ struct TWMWinConfigEntry {
 #    include <X11/Xosdefs.h>
 #endif
 #ifndef X_NOT_STDC_ENV
-#include <stdlib.h>
+#    include <stdlib.h>
 #else
-#ifdef VMS
-#include <stdlib.h>
-#else
+# ifdef VMS
+#    include <stdlib.h>
+# else
 extern char *malloc(), *calloc(), *realloc(), *getenv();
 extern void free();
-#endif
+# endif
 #endif
 extern void Reborder(Time tim);
 extern SIGNAL_T Done(int signum) __attribute__((noreturn));
