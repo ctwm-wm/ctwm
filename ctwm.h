@@ -567,6 +567,5 @@ extern int GoThroughM4;
 #endif
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
-#define VISIBLE(w) OCCUPY(w, Scr->workSpaceMgr.activeWSPC)
 
 #endif /* _CTWM_H */
