@@ -228,7 +228,6 @@ void AutoLowerWindow(TwmWindow *tmp)
 	WMapLower(tmp);
 }
 
-
 
 /***********************************************************************
  *
@@ -284,7 +283,6 @@ void InitEvents(void)
 }
 
 
-
 
 Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
 
@@ -322,7 +320,6 @@ Bool StashEventTime(register XEvent *ev)
 	return False;
 }
 
-
 
 /*
  * WindowOfEvent - return the window about which this event is concerned; this
@@ -438,7 +435,6 @@ void FixRootEvent(XEvent *e)
 	}
 }
 
-
 
 /* Move this next to GetTwmWindow()? */
 static ScreenInfo *GetTwmScreen(XEvent *event)
@@ -538,7 +534,6 @@ Bool DispatchEvent(void)
 	return True;
 }
 
-
 
 /***********************************************************************
  *
@@ -707,7 +702,6 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 #endif /* VMS */
 }
 
-
 
 /***********************************************************************
  *
@@ -871,7 +865,6 @@ void HandleColormapNotify(void)
 	}
 }
 
-
 
 /*
  * LastFocusEvent -- skip over focus in/out events for this
@@ -1098,7 +1091,6 @@ void HandleVisibilityNotify(void)
 	}
 }
 
-
 
 /***********************************************************************
  *
@@ -1497,7 +1489,6 @@ void HandleKeyPress(void)
 
 }
 
-
 
 static void free_window_names(TwmWindow *tmp,
                               Bool nukefull, Bool nukename, Bool nukeicon)
@@ -1549,7 +1540,6 @@ static void free_window_names(TwmWindow *tmp,
 	return;
 }
 
-
 
 void free_cwins(TwmWindow *tmp)
 {
@@ -1577,7 +1567,6 @@ void free_cwins(TwmWindow *tmp)
 	}
 }
 
-
 
 /***********************************************************************
  *
@@ -2013,7 +2002,6 @@ void HandlePropertyNotify(void)
 	}
 }
 
-
 
 static void RedoIcon(void)
 {
@@ -2206,7 +2194,6 @@ wmapupd:
 	WMapUpdateIconName(Tmp_win);
 }
 
-
 
 /***********************************************************************
  *
@@ -2289,7 +2276,6 @@ void HandleClientMessage(void)
 	}
 }
 
-
 
 /***********************************************************************
  *
@@ -2429,7 +2415,6 @@ void HandleExpose(void)
 	}
 }
 
-
 
 static void remove_window_from_ring(TwmWindow *tmp)
 {
@@ -2470,7 +2455,6 @@ static void remove_window_from_ring(TwmWindow *tmp)
 	}
 }
 
-
 
 /***********************************************************************
  *
@@ -2656,7 +2640,6 @@ void HandleDestroyNotify(void)
 	}
 }
 
-
 
 void HandleCreateNotify(void)
 {
@@ -2669,7 +2652,6 @@ void HandleCreateNotify(void)
 #endif
 }
 
-
 
 /***********************************************************************
  *
@@ -2823,7 +2805,6 @@ void HandleMapRequest(void)
 	MaybeAnimate = True;
 }
 
-
 
 void SimulateMapRequest(Window w)
 {
@@ -2831,7 +2812,6 @@ void SimulateMapRequest(Window w)
 	HandleMapRequest();
 }
 
-
 
 /***********************************************************************
  *
@@ -2883,7 +2863,6 @@ void HandleMapNotify(void)
 	Tmp_win->icon_on = FALSE;
 }
 
-
 
 /***********************************************************************
  *
@@ -2962,7 +2941,6 @@ void HandleUnmapNotify(void)
 	XFlush(dpy);
 }
 
-
 
 /***********************************************************************
  *
@@ -3002,7 +2980,6 @@ void HandleMotionNotify(void)
 	}
 }
 
-
 
 /***********************************************************************
  *
@@ -3284,7 +3261,6 @@ void HandleButtonRelease(void)
 	}
 }
 
-
 
 static void do_menu(MenuRoot *menu,     /* menu to pop up */
                     Window w)          /* invoking window or None */
@@ -3343,7 +3319,6 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
 
 }
 
-
 
 /***********************************************************************
  *
@@ -3753,7 +3728,6 @@ void HandleButtonPress(void)
 #endif /* GNOME */
 }
 
-
 
 /***********************************************************************
  *
@@ -3800,7 +3774,6 @@ static Bool HENQueueScanner(Display *display, XEvent *ev, char *_args)
 	return (False);
 }
 
-
 
 /***********************************************************************
  *
@@ -4196,7 +4169,6 @@ void HandleEnterNotify(void)
 	return;
 }
 
-
 
 /***********************************************************************
  *
@@ -4231,7 +4203,6 @@ static Bool HLNQueueScanner(Display *display, XEvent *ev, char *_args)
 	return (False);
 }
 
-
 
 /***********************************************************************
  *
@@ -4363,7 +4334,6 @@ void HandleLeaveNotify(void)
 	}
 }
 
-
 
 /***********************************************************************
  *
@@ -4539,7 +4509,6 @@ void HandleConfigureRequest(void)
 	SetupFrame(Tmp_win, x, y, width, height, bw, sendEvent);
 }
 
-
 
 /***********************************************************************
  *
@@ -4566,7 +4535,6 @@ void HandleShapeNotify(void)
 	SetFrameShape(Tmp_win);
 }
 
-
 /***********************************************************************
  *
  *  Procedure:
@@ -4585,7 +4553,6 @@ void HandleSelectionClear(void)
 }
 #endif
 
-
 
 /***********************************************************************
  *
@@ -4602,7 +4569,6 @@ void HandleUnknown(void)
 #endif
 }
 
-
 
 /***********************************************************************
  *
@@ -4624,7 +4590,6 @@ int Transient(Window w, Window *propw)
 	return (XGetTransientForHint(dpy, w, propw));
 }
 
-
 
 /***********************************************************************
  *
@@ -4659,7 +4624,6 @@ ScreenInfo *FindScreenInfo(Window w)
 	return NULL;
 }
 
-
 
 static void flush_expose(Window w)
 {
@@ -4669,7 +4633,6 @@ static void flush_expose(Window w)
 	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy)) ;
 }
 
-
 
 /***********************************************************************
  *
@@ -4787,7 +4750,6 @@ int InstallColormaps(int type, Colormaps *cmaps)
 	return (1);
 }
 
-
 
 /***********************************************************************
  *
@@ -4824,7 +4786,6 @@ void InstallRootColormap(void)
 	Scr->cmapInfo.root_pushes++;
 }
 
-
 
 /* ARGSUSED*/
 static Bool UninstallRootColormapQScanner(Display *display, XEvent *ev,
@@ -4846,7 +4807,6 @@ static Bool UninstallRootColormapQScanner(Display *display, XEvent *ev,
 	return (False);
 }
 
-
 
 void UninstallRootColormap(void)
 {
