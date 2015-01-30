@@ -547,9 +547,6 @@ extern char Info[][INFO_SIZE];
 extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;
-#ifndef VMS
-extern char **Environ;
-#endif
 extern char *captivename;
 #ifdef EWMH
 extern int ewmh_replace;

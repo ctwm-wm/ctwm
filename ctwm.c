@@ -212,9 +212,6 @@ unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 char *ProgramName;
 int Argc;
 char **Argv;
-#ifndef VMS
-char **Environ;
-#endif
 
 Bool RestartPreviousState = False;      /* try to restart in previous state */
 
@@ -290,7 +287,6 @@ int main(int argc, char **argv, char **environ)
 	ProgramName = argv[0];
 	Argc = argc;
 	Argv = argv;
-	Environ = environ;
 #endif
 
 	for(i = 1; i < argc; i++) {
