@@ -18,3 +18,6 @@ ${HTML}: ${BASE}.txt
 
 ${BASE}: ${BASE}.txt
 	a2x --doctype manpage --format manpage ${BASE}.txt
+#${BASE}: ${BASE}.txt
+#	asciidoc -b docbook -d manpage -o ${BASE}.xml ${BASE}.txt
+#	xmlto man ${BASE}.xml
