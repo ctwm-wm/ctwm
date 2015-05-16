@@ -1238,8 +1238,10 @@ void Occupy(TwmWindow *twm_win)
 	/* And show it */
 	SetMapStateProp(occupy_twm, NormalState);
 	XMapWindow(dpy, occupyWindow->w);
-	OtpForcePlacement(occupy_twm, Above, twm_win);
 	XMapWindow(dpy, occupy_twm->frame);
+
+	/* XXX Must be a better way to express "all the way on top" */
+	OtpSetPriority(occupy_twm, WinWin, 0, Above);
 
 	/* Mark it shown, and stash what window we're showing it for */
 	occupyWindow->twm_win->mapped = TRUE;
