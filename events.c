@@ -2359,8 +2359,22 @@ void HandleExpose(void)
 			}
 		}
 		if(Tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win) {
-			PaintOccupyWindow();
-			flush_expose(Event.xany.window);
+			/*
+			 * The occupyWindow has a bunch of sub-windows for each
+			 * button in it, and each of them wind up getting Expose
+			 * events kicked for them.  The upshot is that we re-paint
+			 * the occupy window once for itself, and then once for each
+			 * button inside it.  We'll always get one for the window
+			 * itself, so just paint it for that one, and ignore the rest
+			 * of the events.
+			 *
+			 * XXX Maybe a better solution is just to mask off Expose
+			 * events for the other windows...
+			 */
+			if(Event.xany.window == Scr->workSpaceMgr.occupyWindow->w) {
+				PaintOccupyWindow();
+				flush_expose(Event.xany.window);
+			}
 			return;
 		}
 		else  if(Tmp_win->iconmanagerlist) {
