@@ -2377,7 +2377,7 @@ void HandleExpose(void)
 			}
 			return;
 		}
-		else  if(Tmp_win->iconmanagerlist) {
+		else if(Tmp_win->iconmanagerlist) {
 			WList *iconmanagerlist = Tmp_win->iconmanagerlist;
 
 			if(Event.xany.window == iconmanagerlist->w) {
