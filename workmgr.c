@@ -1194,9 +1194,12 @@ void Occupy(TwmWindow *twm_win)
 		return;
 	}
 
+	/* Grab our one screen-wide f.occupy window */
 	occupyWindow = Scr->workSpaceMgr.occupyWindow;
 	occupyWindow->tmpOccupation = twm_win->occupation;
 	w = occupyWindow->w;
+
+	/* Figure where to put it so it's centered on the cursor */
 	XGetGeometry(dpy, w, &junkW, &junkX, &junkY, &width, &height, &junkB, &junkD);
 	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &x, &y, &junkK);
 	x -= (width  / 2);
@@ -1209,6 +1212,8 @@ void Occupy(TwmWindow *twm_win)
 	}
 	xoffset = width  + 2 * Scr->BorderWidth;
 	yoffset = height + 2 * Scr->BorderWidth + Scr->TitleHeight;
+
+	/* ... (but not off the screen!) */
 	if((x + xoffset) > Scr->rootw) {
 		x = Scr->rootw - xoffset;
 	}
@@ -1219,6 +1224,7 @@ void Occupy(TwmWindow *twm_win)
 	occupy_twm = occupyWindow->twm_win;
 	occupy_twm->occupation = twm_win->occupation;
 
+	/* Move the occupy window to where it should be */
 	if(occupy_twm->parent_vs != twm_win->parent_vs) {
 		occupy_twm->vs = twm_win->parent_vs;
 		occupy_twm->frame_x = x;
@@ -1229,10 +1235,13 @@ void Occupy(TwmWindow *twm_win)
 		XMoveWindow(dpy, occupyWindow->twm_win->frame, x, y);
 	}
 
+	/* And show it */
 	SetMapStateProp(occupy_twm, NormalState);
 	XMapWindow(dpy, occupyWindow->w);
 	OtpForcePlacement(occupy_twm, Above, twm_win);
 	XMapWindow(dpy, occupy_twm->frame);
+
+	/* Mark it shown, and stash what window we're showing it for */
 	occupyWindow->twm_win->mapped = TRUE;
 	occupyWin = twm_win;
 }
