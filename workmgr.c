@@ -2224,8 +2224,8 @@ static char *ok_string         = "OK",
 
 /*
  * Create the Occupy window. Do not do the layout of the parts, only
- * calculate the inial total size. For the layout, call ResizeOccupyWindow()
- * at the end.
+ * calculate the initial total size. For the layout, call
+ * ResizeOccupyWindow() at the end.
  * There is only one Occupy window (per Screen), it is reparented to each
  * virtual screen as needed.
  */
