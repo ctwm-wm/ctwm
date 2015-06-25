@@ -39,7 +39,7 @@ rules, because it makes life simpler.
     * However some special cases exist where we have to pull system files
         after the locals; e.g., when something that comes out of our
         config (pulled in via ctwm.h) is needed to figure what or where
-        to include.  That's fine
+        to include.  That's fine.
 
 * Generally, local includes should avoid `#include`ing system includes
     where possible.  `ctwm.h` is a broad exception, as it pulls in large
