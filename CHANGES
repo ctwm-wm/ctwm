@@ -341,7 +341,6 @@ build ctwm.  See the `README` file for how to run it.
     Adds TwmKeys (rootmenu listing all keybindings) and TWM Visible (rootmenu
     showing only deiconified windows) (by Dan Lilliehorn).
 
-
 1. Preliminary GNOME compliance (see README.gnome and TODO.gnome)
     (by Nathan Dushman).
 
@@ -376,7 +375,6 @@ build ctwm.  See the `README` file for how to run it.
     This is preliminary, because this has not been extensively tested. I did
     this because I have now 2 screens, but I was unable to get them working
     properly, so I use only one.
-
 
 1. **[ At this point, Claude has stopped working on CTWM, and the project
     is now in the hands of Richard Levitte <<richard@levitte.org>>. ]**
