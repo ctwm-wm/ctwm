@@ -74,10 +74,14 @@ USE_JPEG
         isn't present.
         (**ON** by default)
 
+USE_EWMH
+:       Enables EWMH support.
+        (**ON** by default)
+
 USE_GNOME
 :       If defined, enables interaction with GNOME1 properties.  This
         doesn't require any GNOME libraries or includes.
-        (**ON** by default)
+        (**OFF** by default, unless EWMH is disabled)
 
 USE_SREGEX
 :       Build with regex support from libc.  Otherwise, use an internal
