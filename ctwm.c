@@ -1236,6 +1236,7 @@ static void InitVariables(void)
 #ifdef EWMH
 	Scr->PreferredIconWidth = 48;
 	Scr->PreferredIconHeight = 48;
+	FreeList(&Scr->EWMHIgnore);
 #endif
 
 	Scr->BorderTop    = 0;
