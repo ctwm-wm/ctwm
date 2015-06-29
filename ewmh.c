@@ -98,6 +98,8 @@ static void EwmhGetStrut(TwmWindow *twm_win, int update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
 static void EwmhSet_NET_WORKAREA(ScreenInfo *scr);
 static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win);
+static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
+                int newVal);
 
 #define ALL_WORKSPACES  0xFFFFFFFFU
 
@@ -1036,8 +1038,6 @@ static int atomToFlag(Atom a)
 	return 0;
 }
 
-static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
-                int newVal);
 
 /*
  * Handle the NET_WM_STATE client message.
