@@ -468,6 +468,8 @@ stmt		: error
 		  wingeom_list
 		| VIRTUAL_SCREENS	{ }
 		  geom_list
+		| EWMH_IGNORE		{ }
+		  ewmh_ignore_list
 		;
 
 noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
@@ -772,6 +774,18 @@ geom_entries	: /* Empty */
 
 geom_entry	: string { AddToList (&Scr->VirtualScreens, $1, ""); }
 		;
+
+
+ewmh_ignore_list	: LB ewmh_ignore_entries RB { proc_ewmh_ignore(); }
+		;
+
+ewmh_ignore_entries	: /* Empty */
+		| ewmh_ignore_entries ewmh_ignore_entry
+		;
+
+ewmh_ignore_entry	: string { add_ewmh_ignore($1); }
+		;
+
 
 squeeze		: SQUEEZE_TITLE {
 				    if (HasShape) Scr->SqueezeTitle = TRUE;

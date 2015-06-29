@@ -2405,6 +2405,43 @@ int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
 	return (0);
 }
 
+
+/*
+ * Parsing for EWMHIgnore { } lists
+ */
+void proc_ewmh_ignore(void)
+{
+#ifndef EWMH
+	twmrc_error_prefix();
+	fprintf(stderr, "EWMH not enabled, EWMHIgnore { } ignored.\n");
+	ParseError = 1;
+	return;
+#endif
+	/* else nada */
+	return;
+}
+void add_ewmh_ignore(char *s)
+{
+#ifndef EWMH
+	return;
+#else
+
+#define HANDLE(x) if(strcasecmp(s, (x)) == 0) { \
+		AddToList(&Scr->EWMHIgnore, (x), ""); \
+		return; }
+	HANDLE("STATE_MAXIMIZED_VERT");
+	HANDLE("STATE_MAXIMIZED_HORZ");
+	HANDLE("STATE_FULLSCREEN");
+#undef HANDLE
+
+	twmrc_error_prefix();
+	fprintf(stderr, "Unexpected EWMHIgnore value '%s'\n", s);
+	ParseError = 1;
+	return;
+#endif /* EWMH */
+}
+
+
 #ifdef USEM4
 
 static FILE *start_m4(FILE *fraw)
