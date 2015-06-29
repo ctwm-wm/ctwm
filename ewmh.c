@@ -297,8 +297,11 @@ int EwmhInitScreenEarly(ScreenInfo *scr)
 
 	scr->ewmh_CLIENT_LIST_used = 0;
 	scr->ewmh_CLIENT_LIST_size = 16;
-	scr->ewmh_CLIENT_LIST = malloc(scr->ewmh_CLIENT_LIST_size * sizeof(
-	                                       scr->ewmh_CLIENT_LIST[0]));
+	scr->ewmh_CLIENT_LIST = calloc(scr->ewmh_CLIENT_LIST_size,
+	                               sizeof(scr->ewmh_CLIENT_LIST[0]));
+	if(scr->ewmh_CLIENT_LIST == NULL) {
+		return False;
+	}
 
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "EwmhInitScreenEarly: XCreateWindow\n");
