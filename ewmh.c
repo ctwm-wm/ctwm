@@ -1065,8 +1065,16 @@ static void EwmhClientMessage_NET_WM_STATE(XClientMessageEvent *msg)
 		return;
 	}
 
+	/*
+	 * Due to EWMHIgnore, it's possible to wind up with change1=0 and
+	 * change2=something, so swap 'em if that happens.
+	 */
 	change1 = atomToFlag(msg->data.l[1]);
 	change2 = atomToFlag(msg->data.l[2]);
+	if(change1 == 0 && change2 != 0) {
+		change1 = change2;
+		change2 = 0;
+	}
 	change = change1 | change2;
 
 	switch(msg->data.l[0]) {
