@@ -1017,12 +1017,22 @@ static void EwmhHandle_NET_WM_STRUTNotify(XPropertyEvent *event,
  */
 static int atomToFlag(Atom a)
 {
+#ifdef DEBUG_EWMH
+# define CRWARN(x) fprintf(stderr, "atomToFlag: ignoring " #x "\n")
+#else
+# define CRWARN(x) (void)0
+#endif
 #define CHKNRET(st) \
 	if(a == XA__NET_WM_##st) { \
+fprintf(stderr, "Checking " #st "\n"); \
+		if(LookInNameList(Scr->EWMHIgnore, #st)) { \
+			CRWARN(st); \
+			return 0; \
+		} \
 		return EWMH_##st; \
 	}
 
-	/* Check various flags we know */
+	/* Check (potentially ignoring) various flags we know */
 	CHKNRET(STATE_MAXIMIZED_VERT);
 	CHKNRET(STATE_MAXIMIZED_HORZ);
 	CHKNRET(STATE_FULLSCREEN);
