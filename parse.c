@@ -806,9 +806,7 @@ static TwmKeyword keytable[] = {
 	{ "donttoggleworkspacemanagerstate", KEYWORD, kw0_DontToggleWorkspacemanagerState},
 	{ "dontwarpcursorinwmap",   KEYWORD, kw0_DontWarpCursorInWMap },
 	{ "east",                   DKEYWORD, D_EAST },
-#ifdef EWMH
 	{ "ewmhignore",             EWMH_IGNORE, 0 },
-#endif
 	{ "f",                      FRAME, 0 },
 	{ "f.addtoworkspace",       FSKEYWORD, F_ADDTOWORKSPACE },
 	{ "f.adoptwindow",          FKEYWORD, F_ADOPTWINDOW },
