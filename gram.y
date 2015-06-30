@@ -142,6 +142,7 @@ extern int yyparse(void);
 %token <num> AUTOSQUEEZE STARTSQUEEZED DONT_SAVE AUTO_LOWER ICONMENU_DONTSHOW WINDOW_BOX
 %token <num> IGNOREMODIFIER WINDOW_GEOMETRIES ALWAYSSQUEEZETOGRAVITY VIRTUAL_SCREENS
 %token <num> IGNORE_TRANSIENT
+%token <num> EWMH_IGNORE
 %token <ptr> STRING
 
 %type <ptr> string
@@ -467,6 +468,8 @@ stmt		: error
 		  wingeom_list
 		| VIRTUAL_SCREENS	{ }
 		  geom_list
+		| EWMH_IGNORE		{ }
+		  ewmh_ignore_list
 		;
 
 noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
@@ -771,6 +774,18 @@ geom_entries	: /* Empty */
 
 geom_entry	: string { AddToList (&Scr->VirtualScreens, $1, ""); }
 		;
+
+
+ewmh_ignore_list	: LB ewmh_ignore_entries RB { proc_ewmh_ignore(); }
+		;
+
+ewmh_ignore_entries	: /* Empty */
+		| ewmh_ignore_entries ewmh_ignore_entry
+		;
+
+ewmh_ignore_entry	: string { add_ewmh_ignore($1); }
+		;
+
 
 squeeze		: SQUEEZE_TITLE {
 				    if (HasShape) Scr->SqueezeTitle = TRUE;

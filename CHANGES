@@ -28,6 +28,11 @@ build ctwm.  See the `README` file for how to run it.
     various inconsistencies that this check discovered when virtual
     screens are used.
 
+1. Basic support for EWMH (Extended Window Manager Hints) added and
+    enabled by default.  EWMHIgnore {} config option allows selectively
+    disabling bits.
+    [Olaf "Rhialto" Seibert, Matthew Fuller]
+
 1. Icon manager windows are no longer included in the window ring
     (that had confusing effects on the focus sequence).
 

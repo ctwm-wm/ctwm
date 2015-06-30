@@ -98,6 +98,8 @@ static void EwmhGetStrut(TwmWindow *twm_win, int update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
 static void EwmhSet_NET_WORKAREA(ScreenInfo *scr);
 static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win);
+static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
+                int newVal);
 
 #define ALL_WORKSPACES  0xFFFFFFFFU
 
@@ -297,8 +299,11 @@ int EwmhInitScreenEarly(ScreenInfo *scr)
 
 	scr->ewmh_CLIENT_LIST_used = 0;
 	scr->ewmh_CLIENT_LIST_size = 16;
-	scr->ewmh_CLIENT_LIST = malloc(scr->ewmh_CLIENT_LIST_size * sizeof(
-	                                       scr->ewmh_CLIENT_LIST[0]));
+	scr->ewmh_CLIENT_LIST = calloc(scr->ewmh_CLIENT_LIST_size,
+	                               sizeof(scr->ewmh_CLIENT_LIST[0]));
+	if(scr->ewmh_CLIENT_LIST == NULL) {
+		return False;
+	}
 
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "EwmhInitScreenEarly: XCreateWindow\n");
@@ -1012,29 +1017,35 @@ static void EwmhHandle_NET_WM_STRUTNotify(XPropertyEvent *event,
  */
 static int atomToFlag(Atom a)
 {
-	if(a == XA__NET_WM_STATE_MAXIMIZED_VERT) {
-		return EWMH_STATE_MAXIMIZED_VERT;
+#ifdef DEBUG_EWMH
+# define CRWARN(x) fprintf(stderr, "atomToFlag: ignoring " #x "\n")
+#else
+# define CRWARN(x) (void)0
+#endif
+#define CHKNRET(st) \
+	if(a == XA__NET_WM_##st) { \
+		if(LookInNameList(Scr->EWMHIgnore, #st)) { \
+			CRWARN(st); \
+			return 0; \
+		} \
+		return EWMH_##st; \
 	}
-	if(a == XA__NET_WM_STATE_MAXIMIZED_HORZ) {
-		return EWMH_STATE_MAXIMIZED_HORZ;
-	}
-	if(a == XA__NET_WM_STATE_FULLSCREEN) {
-		return EWMH_STATE_FULLSCREEN;
-	}
-	if(a == XA__NET_WM_STATE_SHADED) {
-		return EWMH_STATE_SHADED;
-	}
-	if(a == XA__NET_WM_STATE_ABOVE) {
-		return EWMH_STATE_ABOVE;
-	}
-	if(a == XA__NET_WM_STATE_BELOW) {
-		return EWMH_STATE_BELOW;
-	}
+
+	/* Check (potentially ignoring) various flags we know */
+	CHKNRET(STATE_MAXIMIZED_VERT);
+	CHKNRET(STATE_MAXIMIZED_HORZ);
+	CHKNRET(STATE_FULLSCREEN);
+	CHKNRET(STATE_SHADED);
+	CHKNRET(STATE_ABOVE);
+	CHKNRET(STATE_BELOW);
+
+#undef CHKNRET
+#undef CRWARN
+
+	/* Else we don't recognize it */
 	return 0;
 }
 
-static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
-                int newVal);
 
 /*
  * Handle the NET_WM_STATE client message.
@@ -1055,8 +1066,16 @@ static void EwmhClientMessage_NET_WM_STATE(XClientMessageEvent *msg)
 		return;
 	}
 
+	/*
+	 * Due to EWMHIgnore, it's possible to wind up with change1=0 and
+	 * change2=something, so swap 'em if that happens.
+	 */
 	change1 = atomToFlag(msg->data.l[1]);
 	change2 = atomToFlag(msg->data.l[2]);
+	if(change1 == 0 && change2 != 0) {
+		change1 = change2;
+		change2 = 0;
+	}
 	change = change1 | change2;
 
 	switch(msg->data.l[0]) {

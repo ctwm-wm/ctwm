@@ -240,5 +240,7 @@ int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
                      int num,           /* signed num */
                      int denom          /* 0 or indicates fraction denom */
                     );
+void proc_ewmh_ignore(void);
+void add_ewmh_ignore(char *s);
 
 #endif /* _PARSE_ */
