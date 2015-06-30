@@ -1024,7 +1024,6 @@ static int atomToFlag(Atom a)
 #endif
 #define CHKNRET(st) \
 	if(a == XA__NET_WM_##st) { \
-fprintf(stderr, "Checking " #st "\n"); \
 		if(LookInNameList(Scr->EWMHIgnore, #st)) { \
 			CRWARN(st); \
 			return 0; \
