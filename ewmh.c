@@ -1017,24 +1017,22 @@ static void EwmhHandle_NET_WM_STRUTNotify(XPropertyEvent *event,
  */
 static int atomToFlag(Atom a)
 {
-	if(a == XA__NET_WM_STATE_MAXIMIZED_VERT) {
-		return EWMH_STATE_MAXIMIZED_VERT;
+#define CHKNRET(st) \
+	if(a == XA__NET_WM_##st) { \
+		return EWMH_##st; \
 	}
-	if(a == XA__NET_WM_STATE_MAXIMIZED_HORZ) {
-		return EWMH_STATE_MAXIMIZED_HORZ;
-	}
-	if(a == XA__NET_WM_STATE_FULLSCREEN) {
-		return EWMH_STATE_FULLSCREEN;
-	}
-	if(a == XA__NET_WM_STATE_SHADED) {
-		return EWMH_STATE_SHADED;
-	}
-	if(a == XA__NET_WM_STATE_ABOVE) {
-		return EWMH_STATE_ABOVE;
-	}
-	if(a == XA__NET_WM_STATE_BELOW) {
-		return EWMH_STATE_BELOW;
-	}
+
+	/* Check various flags we know */
+	CHKNRET(STATE_MAXIMIZED_VERT);
+	CHKNRET(STATE_MAXIMIZED_HORZ);
+	CHKNRET(STATE_FULLSCREEN);
+	CHKNRET(STATE_SHADED);
+	CHKNRET(STATE_ABOVE);
+	CHKNRET(STATE_BELOW);
+
+#undef CHKNRET
+
+	/* Else we don't recognize it */
 	return 0;
 }
 
