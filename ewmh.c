@@ -1040,6 +1040,7 @@ static int atomToFlag(Atom a)
 	CHKNRET(STATE_BELOW);
 
 #undef CHKNRET
+#undef CRWARN
 
 	/* Else we don't recognize it */
 	return 0;
