@@ -265,7 +265,7 @@ endif(BISON_FOUND)
 
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
-set(MANPAGE_ADSRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.txt)
+set(MANPAGE_ADSRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
 set(CAN_DO_MAN 0)
 find_program(ASCIIDOC asciidoc)
@@ -284,8 +284,8 @@ if(ASCIIDOC AND A2X)
 	set(MANPAGE_IN ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.in)
 	add_custom_command(OUTPUT ${MANPAGE}.in
 		DEPENDS ${MANPAGE_ADSRC}
-		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}.txt
-		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}.txt
+		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}.adoc
+		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}.adoc
 		COMMAND cp ${MANPAGE_TMPIN} ${MANPAGE_IN}
 		COMMENT "Processing ${MANPAGE_ADSRC} -> ${MANPAGE}.in"
 	)
