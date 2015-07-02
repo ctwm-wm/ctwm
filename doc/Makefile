@@ -31,3 +31,16 @@ man-asciidoc-a2x: ${BASE}.txt
 man-asciidoc-adoc: ${BASE}.txt
 	asciidoc -b docbook -d manpage -o ${BASE}.xml ${BASE}.txt
 	xmlto man ${BASE}.xml
+
+
+# asciidoctor variants
+# Note that asciidoctor has a slightly changed dialect, so there will be
+# some glitches in the output.  Also, the manpage generation requires
+# 1.5.3+ (not yet released as of this writing).  Since the currently
+# worldview seems to be that asciidoctor is the primary movement in the
+# adoc world, we'll probablt transition at some point.
+html-asciidoctor: ${BASE}.txt
+	asciidoctor -atoc -anumbered -o ${BASE}.html ${BASE}.txt
+
+man-asciidoctor: ${BASE}.txt
+	asciidoctor -b manpage -o ${BASE} ${BASE}.txt
