@@ -10,26 +10,26 @@ all: html man
 clean:
 	rm -f ${BASE} ${HTML}
 
-#${BASE}.txt: ../ctwm.man convert.pl
-#	./convert.pl < ../ctwm.man > ${BASE}.txt
+#${BASE}.adoc: ../ctwm.man convert.pl
+#	./convert.pl < ../ctwm.man > ${BASE}.adoc
 
 # HTML output
-${HTML}: ${BASE}.txt
+${HTML}: ${BASE}.adoc
 	@${MAKE} html-asciidoc
 
-html-asciidoc: ${BASE}.txt
-	asciidoc -atoc -anumbered -o ${BASE}.html ${BASE}.txt
+html-asciidoc: ${BASE}.adoc
+	asciidoc -atoc -anumbered -o ${BASE}.html ${BASE}.adoc
 
 
 # Manpage outputs
-${BASE}: ${BASE}.txt
+${BASE}: ${BASE}.adoc
 	@${MAKE} man-asciidoc-a2x
 
-man-asciidoc-a2x: ${BASE}.txt
-	a2x --doctype manpage --format manpage ${BASE}.txt
+man-asciidoc-a2x: ${BASE}.adoc
+	a2x --doctype manpage --format manpage ${BASE}.adoc
 
-man-asciidoc-adoc: ${BASE}.txt
-	asciidoc -b docbook -d manpage -o ${BASE}.xml ${BASE}.txt
+man-asciidoc-adoc: ${BASE}.adoc
+	asciidoc -b docbook -d manpage -o ${BASE}.xml ${BASE}.adoc
 	xmlto man ${BASE}.xml
 
 
@@ -39,8 +39,8 @@ man-asciidoc-adoc: ${BASE}.txt
 # 1.5.3+ (not yet released as of this writing).  Since the currently
 # worldview seems to be that asciidoctor is the primary movement in the
 # adoc world, we'll probably transition at some point.
-html-asciidoctor: ${BASE}.txt
-	asciidoctor -atoc -anumbered -o ${BASE}.html ${BASE}.txt
+html-asciidoctor: ${BASE}.adoc
+	asciidoctor -atoc -anumbered -o ${BASE}.html ${BASE}.adoc
 
-man-asciidoctor: ${BASE}.txt
-	asciidoctor -b manpage -o ${BASE} ${BASE}.txt
+man-asciidoctor: ${BASE}.adoc
+	asciidoctor -b manpage -o ${BASE} ${BASE}.adoc
