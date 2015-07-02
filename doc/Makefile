@@ -14,14 +14,16 @@ clean:
 #	./convert.pl < ../ctwm.man > ${BASE}.txt
 
 # HTML output
-${HTML}: html-asciidoc
+${HTML}: ${BASE}.txt
+	@${MAKE} html-asciidoc
 
 html-asciidoc: ${BASE}.txt
 	asciidoc -atoc -anumbered -o ${BASE}.html ${BASE}.txt
 
 
 # Manpage outputs
-${BASE}: man-asciidoc-a2x
+${BASE}: ${BASE}.txt
+	@${MAKE} man-asciidoc-a2x
 
 man-asciidoc-a2x: ${BASE}.txt
 	a2x --doctype manpage --format manpage ${BASE}.txt
