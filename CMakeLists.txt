@@ -364,10 +364,10 @@ endif(MANBASE)
 
 # Hand-build deftwmrc.c
 set(defc deftwmrc.c)
+set(mkdefc ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
 add_custom_command(OUTPUT ${defc}
-	DEPENDS system.ctwmrc
-	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh
-		${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defc}
+	DEPENDS system.ctwmrc ${mkdefc}
+	COMMAND ${mkdefc} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defc}
 )
 
 # Hand-build ctwm_atoms.[ch]

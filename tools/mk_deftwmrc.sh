@@ -15,7 +15,7 @@ echo
 echo 'const char *defTwmrc[] = {'
 
 sed -e '/^#/d'           \
-    -e '/^$/d'           \
+	-e '/^$/d'           \
 	-e 's/"/\\"/g'       \
 	-e 's/^/    \"/'     \
 	-e 's/$/",/'         \
