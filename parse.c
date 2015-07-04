@@ -2407,7 +2407,8 @@ int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
 /*
  * Parsing for EWMHIgnore { } lists
  */
-void proc_ewmh_ignore(void)
+void
+proc_ewmh_ignore(void)
 {
 #ifndef EWMH
 	twmrc_error_prefix();
@@ -2418,7 +2419,8 @@ void proc_ewmh_ignore(void)
 	/* else nada */
 	return;
 }
-void add_ewmh_ignore(char *s)
+void
+add_ewmh_ignore(char *s)
 {
 #ifndef EWMH
 	return;
