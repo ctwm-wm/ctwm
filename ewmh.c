@@ -1023,13 +1023,13 @@ static int atomToFlag(Atom a)
 # define CRWARN(x) (void)0
 #endif
 #define CHKNRET(st) \
-	if(a == XA__NET_WM_##st) { \
-		if(LookInNameList(Scr->EWMHIgnore, #st)) { \
-			CRWARN(st); \
-			return 0; \
-		} \
-		return EWMH_##st; \
-	}
+        if(a == XA__NET_WM_##st) { \
+                if(LookInNameList(Scr->EWMHIgnore, #st)) { \
+                        CRWARN(st); \
+                        return 0; \
+                } \
+                return EWMH_##st; \
+        }
 
 	/* Check (potentially ignoring) various flags we know */
 	CHKNRET(STATE_MAXIMIZED_VERT);

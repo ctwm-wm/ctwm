@@ -2424,9 +2424,11 @@ void add_ewmh_ignore(char *s)
 	return;
 #else
 
-#define HANDLE(x) if(strcasecmp(s, (x)) == 0) { \
-		AddToList(&Scr->EWMHIgnore, (x), ""); \
-		return; }
+#define HANDLE(x) \
+        if(strcasecmp(s, (x)) == 0) { \
+                AddToList(&Scr->EWMHIgnore, (x), ""); \
+                return; \
+        }
 	HANDLE("STATE_MAXIMIZED_VERT");
 	HANDLE("STATE_MAXIMIZED_HORZ");
 	HANDLE("STATE_FULLSCREEN");
