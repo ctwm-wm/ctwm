@@ -1,15 +1,7 @@
 #include <stdio.h>
-#ifdef VMS
-#include <ctype.h>
-#include <string.h>
-#include <decw$include/Xos.h>
-#include <decw$include/Xatom.h>
-#include <decw$include/Xresource.h>
-#else
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/Xresource.h>
-#endif
 
 #include "ctwm.h"
 #include "screen.h"

@@ -88,55 +88,19 @@
  */
 #include <inttypes.h>
 
-#ifdef VMS
-#include <decw$include/Xos.h>
-#include <decw$include/Xatom.h>
-#include <decw$include/Xutil.h>
-#include <decw$include/Intrinsic.h>
-#include <X11Xmu/Drawing.h>
-#include <X11Xmu/WinUtil.h>
-#ifdef HAVE_XWDFILE_H
-#include "XWDFile.h"            /* We do some tricks, since the original
-                                   has bugs...          /Richard Levitte */
-#endif /* HAVE_XWDFILE_H */
-#include <unixlib.h>
-#include <starlet.h>
-#include <ssdef.h>
-#include <psldef.h>
-#include <lib$routines.h>
-#ifdef __DECC
-#include <unistd.h>
-#endif /* __DECC */
-#define USE_SIGNALS
-#ifndef F_OK
-#  define F_OK 0
-#endif
-#ifndef X_OK
-#  define X_OK 1
-#endif
-#ifndef W_OK
-#  define W_OK 2
-#endif
-#ifndef R_OK
-#  define R_OK 4
-#endif
-#else /* !VMS */
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/Xmu/Drawing.h>
 #include <X11/Xmu/WinUtil.h>
 #include <X11/XWDFile.h>
-#endif /* VMS */
 
 #if defined(USE_SIGNALS) && defined(__sgi)
 #  define _BSD_SIGNALS
 #endif
 
 #include <signal.h>
-#ifndef VMS
 #include <sys/time.h>
-#endif
 
 
 #include "ctwm.h"
@@ -152,11 +116,7 @@
 
 
 #if defined (XPM)
-# ifdef VMS
-#  include "xpm.h"
-# else
 #  include <X11/xpm.h>
-# endif
 #endif
 
 #ifdef JPEG
@@ -179,10 +139,8 @@ typedef struct jpeg_error *jerr_ptr;
 
 static Image *LoadBitmapImage(char  *name, ColorPair cp);
 static Image *GetBitmapImage(char  *name, ColorPair cp);
-#if !defined(VMS) || defined(HAVE_XWDFILE_H)
 static Image *LoadXwdImage(char  *filename, ColorPair cp);
 static Image *GetXwdImage(char  *name, ColorPair cp);
-#endif
 #ifdef XPM
 static Image *LoadXpmImage(char  *name, ColorPair cp);
 static Image *GetXpmImage(char  *name, ColorPair cp);
@@ -481,17 +439,6 @@ char *ExpandFilename(char *name)
 		return name;
 	}
 
-#ifdef VMS
-	newname = (char *) malloc(HomeLen + strlen(name) + 1);
-	if(!newname) {
-		fprintf(stderr,
-		        "%s:  unable to allocate %ld bytes to expand filename %s%s\n",
-		        ProgramName, (long)(HomeLen + strlen(name) + 1), Home, &name[1]);
-	}
-	else {
-		(void) sprintf(newname, "%s%s", Home, &name[1]);
-	}
-#else
 	newname = (char *) malloc(HomeLen + strlen(name) + 2);
 	if(!newname) {
 		fprintf(stderr,
@@ -502,7 +449,6 @@ char *ExpandFilename(char *name)
 	else {
 		(void) sprintf(newname, "%s/%s", Home, &name[1]);
 	}
-#endif
 
 	return newname;
 }
@@ -512,31 +458,6 @@ char *ExpandPixmapPath(char *name)
 	char    *ret, *colon;
 
 	ret = NULL;
-#ifdef VMS
-	if(name[0] == '~') {
-		ret = (char *) malloc(HomeLen + strlen(name) + 1);
-		sprintf(ret, "%s%s", Home, &name[1]);
-	}
-	if(name[0] == '/') {
-		ret = (char *) malloc(strlen(name));
-		sprintf(ret, "%s", &name[1]);
-	}
-	else if(Scr->PixmapDirectory) {
-		char *p = Scr->PixmapDirectory;
-		while(colon = strchr(p, ':')) {
-			*colon = '\0';
-			ret = (char *) malloc(strlen(p) + strlen(name) + 1);
-			sprintf(ret, "%s%s", p, name);
-			*colon = ':';
-			if(!access(ret, R_OK)) {
-				return (ret);
-			}
-			p = colon + 1;
-		}
-		ret = (char *) malloc(strlen(Scr->PixmapDirectory) + strlen(name) + 1);
-		sprintf(ret, "%s%s", Scr->PixmapDirectory, name);
-	}
-#else
 	if(name[0] == '~') {
 		ret = (char *) malloc(HomeLen + strlen(name) + 2);
 		sprintf(ret, "%s/%s", Home, &name[1]);
@@ -561,7 +482,6 @@ char *ExpandPixmapPath(char *name)
 		ret = (char *) malloc(strlen(p) + strlen(name) + 2);
 		sprintf(ret, "%s/%s", p, name);
 	}
-#endif
 	return (ret);
 }
 
@@ -658,16 +578,6 @@ Pixmap FindBitmap(char *name, unsigned int *widthp, unsigned int *heightp)
 		/*
 		 * Attempt to find icon in old IconDirectory (now obsolete)
 		 */
-#ifdef VMS
-		bigname = (char *) malloc(strlen(name) + strlen(Scr->IconDirectory) + 1);
-		if(!bigname) {
-			fprintf(stderr,
-			        "%s:  unable to allocate memory for \"%s%s\"\n",
-			        ProgramName, Scr->IconDirectory, name);
-			return None;
-		}
-		(void) sprintf(bigname, "%s%s", Scr->IconDirectory, name);
-#else
 		bigname = (char *) malloc(strlen(name) + strlen(Scr->IconDirectory) + 2);
 		if(!bigname) {
 			fprintf(stderr,
@@ -676,7 +586,6 @@ Pixmap FindBitmap(char *name, unsigned int *widthp, unsigned int *heightp)
 			return None;
 		}
 		(void) sprintf(bigname, "%s/%s", Scr->IconDirectory, name);
-#endif
 		if(XReadBitmapFile(dpy, Scr->Root, bigname, widthp, heightp, &pm,
 		                   &HotX, &HotY) != BitmapSuccess) {
 			pm = None;
@@ -999,23 +908,15 @@ void MaskScreen(char *file)
 
 void UnmaskScreen(void)
 {
-#ifdef VMS
-	float  timeout;
-#else
 	struct timeval      timeout;
-#endif
 	Colormap            stdcmap = Scr->RootColormaps.cwins[0]->colormap->c;
 	Colormap            cmap;
 	XColor              colors [256], stdcolors [256];
 	int                 i, j, usec;
 
-#ifdef VMS
-	timeout = 0.017;
-#else
 	usec = 6000;
 	timeout.tv_usec = usec % (unsigned long) 1000000;
 	timeout.tv_sec  = usec / (unsigned long) 1000000;
-#endif
 
 	if(Scr->WelcomeImage) {
 		Pixel pixels [256];
@@ -1043,11 +944,7 @@ void UnmaskScreen(void)
 				colors [j].blue  = stdcolors [j].blue  * ((127.0 - i) / 128.0);
 			}
 			XStoreColors(dpy, cmap, colors, 256);
-#ifdef VMS
-			lib$wait(&timeout);
-#else
 			select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
-#endif
 		}
 		XFreeColors(dpy, cmap, pixels, 256, 0L);
 		XFreeGC(dpy, Scr->WelcomeGC);
@@ -1095,11 +992,7 @@ void UnmaskScreen(void)
 			colors [j].flags = DoRed | DoGreen | DoBlue;
 		}
 		XStoreColors(dpy, cmap, colors, 256);
-#ifdef VMS
-		lib$wait(&timeout);
-#else
 		select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
-#endif
 	}
 
 	if(captive) {
@@ -1119,114 +1012,6 @@ fin:
 	Scr->WindowMask = (Window) 0;
 }
 
-#ifdef VMS
-
-/* use the VMS system services to request the timer to issue an AST */
-void AnimateHandler(void);
-
-unsigned int tv[2];
-int status;
-static unsigned long timefi;
-/* unsigned long timefe = 17; */
-unsigned long timefe;
-
-#define TIMID 12L
-
-void StartAnimation(void)
-{
-	if(AnimationSpeed > MAXANIMATIONSPEED) {
-		AnimationSpeed = MAXANIMATIONSPEED;
-	}
-	if(AnimationSpeed <= 0) {
-		return;
-	}
-	if(AnimationActive) {
-		return;
-	}
-
-	if(!timefi) {
-		lib$get_ef(&timefi);
-	}
-	if(!timefe) {
-		lib$get_ef(&timefe);
-	}
-
-	tv[1] = 0xFFFFFFFF;                   /* quadword negative for relative */
-	tv[0] = -(10000000 / AnimationSpeed); /* time. In units of 100ns. */
-	sys$clref(timefe);
-	status = sys$setimr(timefi, &tv, AnimateHandler, TIMID);
-	if(status != SS$_NORMAL) {
-		lib$signal(status);
-	}
-	AnimationActive = True;
-}
-
-void StopAnimation()
-{
-	if(AnimationSpeed <= 0) {
-		return;
-	}
-	if(! AnimationActive) {
-		return;
-	}
-	AnimationActive = False;
-
-	status = sys$cantim(TIMID, PSL$C_USER);
-	if(status != SS$_NORMAL) {
-		lib$signal(status);
-	}
-}
-
-void SetAnimationSpeed(int speed)
-{
-	AnimationSpeed = speed;
-	if(AnimationSpeed > MAXANIMATIONSPEED) {
-		AnimationSpeed = MAXANIMATIONSPEED;
-	}
-}
-
-void ModifyAnimationSpeed(int incr)
-{
-	if((AnimationSpeed + incr) < 0) {
-		return;
-	}
-	if((AnimationSpeed + incr) == 0) {
-		if(AnimationActive) {
-			StopAnimation();
-		}
-		AnimationSpeed = 0;
-		return;
-	}
-	AnimationSpeed += incr;
-
-	status = sys$cantim(TIMID, PSL$C_USER);
-	if(status != SS$_NORMAL) {
-		lib$signal(status);
-	}
-
-	tv[1] = 0xFFFFFFFF;
-	tv[0] = -(10000000 / AnimationSpeed);
-
-	sys$clref(timefe);
-	status = sys$setimr(timefi, &tv, AnimateHandler, TIMID);
-	if(status != SS$_NORMAL) {
-		lib$signal(status);
-	}
-
-	AnimationActive = True;
-}
-
-void AnimateHandler(void)
-{
-	AnimationPending = True;
-
-	sys$setef(timefe);
-	status = sys$setimr(timefi, &tv, AnimateHandler, TIMID);
-	if(status != SS$_NORMAL) {
-		lib$signal(status);
-	}
-}
-#else /* VMS */
 
 #ifdef USE_SIGNALS
 SIGNAL_T AnimateHandler();
@@ -1399,7 +1184,6 @@ SIGNAL_T AnimateHandler(int dummy)
 	AnimationPending = True;
 }
 #endif
-#endif /* VMS */
 
 void Animate(void)
 {
@@ -3647,7 +3431,6 @@ Image *GetImage(char *name, ColorPair cp)
 		}
 	}
 #endif
-#if !defined(VMS) || defined(HAVE_XWDFILE_H)
 	else if((strncmp(name, "xwd:", 4) == 0) || (name [0] == '|')) {
 		int startn = (name [0] == '|') ? 0 : 4;
 		if((image = (Image *) LookInNameList(*list, name)) == None) {
@@ -3656,7 +3439,6 @@ Image *GetImage(char *name, ColorPair cp)
 			}
 		}
 	}
-#endif
 	else if(strncmp(name, ":xpm:", 5) == 0) {
 		int    i;
 		static struct {
@@ -3816,7 +3598,6 @@ void FreeImage(Image *image)
 	}
 }
 
-#if !defined(VMS) || defined(HAVE_XWDFILE_H)
 static void compress(XImage *image, XColor *colors, int *ncolors);
 
 static Image *LoadXwdImage(char *filename, ColorPair cp)
@@ -3847,7 +3628,6 @@ static Image *LoadXwdImage(char *filename, ColorPair cp)
 
 	ispipe = 0;
 	anim   = False;
-#ifndef VMS
 	if(filename [0] == '|') {
 		file = (FILE *) popen(filename + 1, "r");
 		if(file == NULL) {
@@ -3860,7 +3640,6 @@ static Image *LoadXwdImage(char *filename, ColorPair cp)
 		}
 		goto file_opened;
 	}
-#endif
 	fullname = ExpandPixmapPath(filename);
 	if(! fullname) {
 		return (None);
@@ -3963,12 +3742,10 @@ file_opened:
 #endif
 		return (None);
 	}
-#ifndef VMS
 	if(ispipe) {
 		pclose(file);
 	}
 	else
-#endif
 		fclose(file);
 
 	image = XCreateImage(dpy, visual,  depth, header.pixmap_format,
@@ -4140,7 +3917,6 @@ static void compress(XImage *image, XColor *colors, int *ncolors)
 	}
 	*ncolors = nused;
 }
-#endif
 
 
 static void swapshort(char *bp, unsigned n)

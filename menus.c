@@ -76,21 +76,9 @@
 #include <string.h>
 #include <strings.h>
 
-#ifdef VMS
-# include <stdlib.h>
-# include <unixio.h>
-# include <file.h>
-# include <decw$include/Xos.h>
-# include <decw$include/Xatom.h>
-# include <decw$bitmaps/menu12.xbm>
-# include <X11SM/SMlib.h>
-# include "vms_cmd_services.h"
-# include <lib$routines.h>
-#else
 # include <X11/Xos.h>
 # include <X11/Xatom.h>
 # include <X11/SM/SMlib.h>
-#endif
 
 #include "ctwm.h"
 #include "ctwm_atoms.h"
@@ -119,7 +107,7 @@
 #if defined(MACH) || defined(__MACH__) || defined(sony_news) || defined(NeXT)
 #define lrand48 random
 #endif
-#if defined(VMS) || defined(__DARWIN__)
+#if defined(__DARWIN__)
 #define lrand48 rand
 #endif
 
@@ -3754,11 +3742,7 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					XFree(ptr);
 					ptr = ExpandFilename(tmp);
 					if(ptr) {
-#ifdef VMS
-						fd = open(ptr, O_RDONLY, 0);
-#else
 						fd = open(ptr, 0);
-#endif
 						if(fd >= 0) {
 							count = read(fd, buff, MAX_FILE_SIZE - 1);
 							if(count > 0) {
@@ -3967,11 +3951,7 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_FILE:
 			action = ExpandFilename(action);
-#ifdef VMS
-			fd = open(action, O_RDONLY, 0);
-#else
 			fd = open(action, 0);
-#endif
 			if(fd >= 0) {
 				count = read(fd, buff, MAX_FILE_SIZE - 1);
 				if(count > 0) {
@@ -4240,9 +4220,6 @@ static int NeedToDefer(MenuRoot *root)
 
 static void Execute(char *s)
 {
-#ifdef VMS
-	createProcess(s);
-#else
 	static char buf[256];
 	char *ds = DisplayString(dpy);
 	char *colon, *dot1;
@@ -4338,7 +4315,6 @@ static void Execute(char *s)
 	if(replace) {
 		free(s);
 	}
-#endif /* VMS */
 }
 
 
@@ -5678,15 +5654,11 @@ static void SweepWindow(TwmWindow *tmp_win, Window blanket)
 
 static void waitamoment(float timeout)
 {
-#ifdef VMS
-	lib$wait(&timeout);
-#else
 	struct timeval timeoutstruct;
 	int usec = timeout * 1000000;
 	timeoutstruct.tv_usec = usec % (unsigned long) 1000000;
 	timeoutstruct.tv_sec  = usec / (unsigned long) 1000000;
 	select(0, (void *) 0, (void *) 0, (void *) 0, &timeoutstruct);
-#endif
 }
 
 static void packwindow(TwmWindow *tmp_win, char *direction)

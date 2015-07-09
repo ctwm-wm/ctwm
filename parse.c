@@ -75,16 +75,9 @@
 #if defined(sony_news) || defined __QNX__
 #  include <ctype.h>
 #endif
-#ifdef VMS
-# include <ctype.h>
-# include <decw$include/Xos.h>
-# include <X11Xmu/SysUtil.h>
-# include <decw$include/Xatom.h>
-#else
 # include <X11/Xos.h>
 # include <X11/Xmu/SysUtil.h>
 # include <X11/Xatom.h>
-#endif
 
 #include "ctwm.h"
 #include "ctwm_atoms.h"
@@ -110,11 +103,7 @@
 #endif
 
 #ifndef SYSTEM_INIT_FILE
-#ifdef VMS
-#define SYSTEM_INIT_FILE "DECW$SYSTEM_DEFAULTS:SYSTEM.CTWMRC"
-#else
 #define SYSTEM_INIT_FILE "/usr/lib/X11/twm/system.twmrc"
-#endif
 #endif
 #define BUF_LEN 300
 
@@ -211,59 +200,6 @@ int ParseTwmrc(char *filename)
 	 */
 	for(twmrc = NULL, i = 0; !twmrc && i < 7; i++) {
 		switch(i) {
-#ifdef VMS
-			case 0:
-				if(filename != NULL)  {
-					cp = tmpfilename;
-					(void) sprintf(tmpfilename, "%s_%d", filename, Scr->screen);
-				}
-				else {
-					cp = filename;
-				}
-				break;
-
-			case 1:
-				cp = filename;
-				break;
-
-			case 2:
-				if(!filename) {
-					home = getenv("DECW$USER_DEFAULTS");
-					if(home) {
-						homelen = strlen(home);
-						cp = tmpfilename;
-						(void) sprintf(tmpfilename, "%sctwm.rc_%d",
-						               home, Scr->screen);
-						break;
-					}
-				}
-				continue;
-
-			case 3:
-				if(home) {
-					tmpfilename[homelen + 7] = '\0';
-				}
-				break;
-
-			case 4:
-				if(!filename) {
-					home = getenv("DECW$USER_DEFAULTS");
-					if(home) {
-						homelen = strlen(home);
-						cp = tmpfilename;
-						(void) sprintf(tmpfilename, "%stwm.rc_%d",
-						               home, Scr->screen);
-						break;
-					}
-				}
-				continue;
-
-			case 5:
-				if(home) {
-					tmpfilename[homelen + 6] = '\0';
-				}
-				break;
-#else
 			case 0:                       /* -f filename.# */
 				if(filename) {
 					cp = tmpfilename;
@@ -315,7 +251,6 @@ int ParseTwmrc(char *filename)
 					tmpfilename[homelen + 7] = '\0'; /* C.L. */
 				}
 				break;
-#endif
 
 			case 6:                       /* system.twmrc */
 				cp = SYSTEM_INIT_FILE;

@@ -26,11 +26,7 @@
 
 
 #include <stdio.h>
-#ifdef VMS
-#include <decw$include/Xatom.h>
-#else
 #include <X11/Xatom.h>
-#endif
 
 #include "ctwm.h"
 #include "screen.h"

@@ -79,26 +79,12 @@
 #  include <sys/wait.h>
 #endif
 
-#ifdef VMS
-#include <string.h>
-#else
 #include <fcntl.h>
-#endif
-#ifdef VMS
-#  include <stdlib.h>
-#  include <decw$include/Xproto.h>
-#  include <decw$include/Xatom.h>
-#  include <X11Xmu/Error.h>
-#  include "vms_cmd_services.h"
-#  include <X11SM/SMlib.h>
-#  include <X11/Xlocale.h>
-#else /* VMS */
 #  include <X11/Xproto.h>
 #  include <X11/Xatom.h>
 #  include <X11/Xmu/Error.h>
 #  include <X11/SM/SMlib.h>
 #  include <X11/Xlocale.h>
-#endif /* VMS */
 
 
 #include "ctwm.h"
@@ -123,15 +109,9 @@
 
 
 /* I'm not sure this is meaningful anymore */
-#ifdef VMS
-# ifndef PIXMAP_DIRECTORY
-#  define PIXMAP_DIRECTORY "DECW$BITMAPS:"
-# endif
-#else  /* VMS */
 # ifndef PIXMAP_DIRECTORY
 #  define PIXMAP_DIRECTORY "/usr/lib/X11/twm"
 # endif
-#endif /* VMS */
 
 
 XtAppContext appContext;        /* Xt application context */
@@ -233,11 +213,7 @@ int ewmh_replace;
  ***********************************************************************
  */
 
-#ifdef VMS
-int main(int argc, char **argv)
-#else
 int main(int argc, char **argv, char **environ)
-#endif
 {
 	Window croot, parent, *children;
 	unsigned int nchildren;
@@ -267,27 +243,9 @@ int main(int argc, char **argv, char **environ)
 
 	(void)setlocale(LC_ALL, "");
 
-#ifdef VMS
-#if 0
-	vms_do_init();
-#endif
-	{
-		char *ep;
-		ProgramName = strrchr(argv[0], ']');
-		ProgramName++;
-		ep = strchr(ProgramName, '.');
-		if(ep != NULL) {
-			*ep = '\0';
-		}
-	}
-	Argc = argc;
-	Argv = argv;
-	initRun(ProgramName);
-#else
 	ProgramName = argv[0];
 	Argc = argc;
 	Argv = argv;
-#endif
 
 	for(i = 1; i < argc; i++) {
 		if(argv[i][0] == '-') {
@@ -439,11 +397,7 @@ usage:
 
 	Home = getenv("HOME");
 	if(Home == NULL)
-#ifdef VMS
-		Home = "[]";
-#else
 		Home = "./";
-#endif
 
 	HomeLen = strlen(Home);
 
@@ -460,14 +414,12 @@ usage:
 		exit(1);
 	}
 
-#ifndef VMS
 	if(fcntl(ConnectionNumber(dpy), F_SETFD, 1) == -1) {
 		fprintf(stderr,
 		        "%s:  unable to mark display connection as close-on-exec\n",
 		        ProgramName);
 		exit(1);
 	}
-#endif
 	if(restore_filename) {
 		ReadWinConfigFile(restore_filename);
 	}
@@ -1406,22 +1358,12 @@ SIGNAL_T Done(int signum)
 #ifdef EWMH
 	EwmhTerminate();
 #endif /* EWMH */
-#if defined(VMS) && EXIT_ENDSESSION /* was: #ifdef VMS */
-	createProcess("run sys$system:decw$endsession.exe");
-	sleep(10);  /* sleep until stopped */
-#else
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
 	if(captive) {
 		RemoveFromCaptiveList();
 	}
 	XCloseDisplay(dpy);
-#ifdef VMS
-	exit(20);                   /* Will generate a fatal error, even
-                                   when compiled with DEC C 5.3 and above. */
-#else
 	exit(0);
-#endif
-#endif
 }
 
 SIGNAL_T Crash(int signum)
@@ -1466,11 +1408,7 @@ void DoRestart(Time t)
 
 	fprintf(stderr, "%s:  restarting:  %s\n",
 	        ProgramName, *Argv);
-#ifdef VMS
-	exit(1);                    /* Trust CTWM.COM  /Richard Levitte */
-#else
 	execvp(*Argv, Argv);
-#endif
 	fprintf(stderr, "%s:  unable to restart:  %s\n", ProgramName, *Argv);
 }
 
