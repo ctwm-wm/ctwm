@@ -13,7 +13,7 @@ ctwm [-display dpy] [--replace] [-s] [-cfgchk]
 
 
 == DESCRIPTION
-`ctwm` is a window manager for the X Window System.  It provides
+ctwm is a window manager for the X Window System.  It provides
 titlebars, shaped windows, virtual screens (workspaces),
 several forms of icon management, user-defined macro functions,
 click-to-type and pointer-driven keyboard focus, and user-specified
@@ -21,16 +21,16 @@ key and pointer button bindings.  It is actually
 `twm(1)` (Tab Window Manager) from the MIT X11 distribution
 slightly modified to accommodate the use of several virtual screens
 (workspaces). It is heavily inspired from the Hewlett-Packard vuewm
-window manager. In addition, `ctwm` can use coloured, shaped icons
+window manager. In addition, ctwm can use coloured, shaped icons
 and background root pixmaps in XPM format [from Arnaud Le Hors],
 in JPEG using libjpeg,
-and xwd files. `ctwm` can be compiled to
+and xwd files. ctwm can be compiled to
 use any combination of the above icon/pixmap formats.
 
 This program is usually started by the user's session manager or
 startup script.  When used from `xdm(1)` or `xinit(1)` without
-a session manager, `ctwm` is frequently executed in the foreground
-as the last client.  When run this way, exiting `ctwm` causes the
+a session manager, ctwm is frequently executed in the foreground
+as the last client.  When run this way, exiting ctwm causes the
 session to be terminated (i.e. logged out).
 
 By default, application windows are surrounded by a ``frame'' with a
@@ -56,7 +56,7 @@ region, dragging a window outline to the new location, and then releasing
 when the outline is in the desired position.  Just
 clicking in the title or highlight region raises the window without moving it.
 
-When new windows are created, `ctwm` will honor any size and location
+When new windows are created, ctwm will honor any size and location
 information requested by the user (usually through `-geometry`
 command line argument or resources for the individual applications).
 Otherwise, an outline of the window's default size, its titlebar, and lines
@@ -87,64 +87,64 @@ to touch the bottom the screen.
 -s::
   This option indicates that only the default screen (as specified by
   `-display` or by the `DISPLAY` environment variable) should be
-  managed.  By default, `ctwm` will attempt to manage
+  managed.  By default, ctwm will attempt to manage
   all screens on the display.
 
 -cfgchk::
-  This option causes `ctwm` to only try to parse the config file, and
+  This option causes ctwm to only try to parse the config file, and
   indicate whether errors are found.
 
 -f `filename`::
   This option specifies the name of the startup file to use.
-  `ctwm` will first try to load filename.num, where `num` is the screen number.
+  ctwm will first try to load filename.num, where `num` is the screen number.
   If it fails, it will try to load filename.
-  By default, `ctwm` will look in the user's home directory for files
+  By default, ctwm will look in the user's home directory for files
   named `.ctwmrc.num`, `.ctwmrc`, `.twmrc.num`, or `.twmrc` (where `num` is a screen number).
 
 -v::
-  This option indicates that `ctwm` should print error messages whenever
+  This option indicates that ctwm should print error messages whenever
   an unexpected X Error event is received.  This can be useful when debugging
   applications but can be distracting in regular use.
 
 -n::
-  This option indicates that `ctwm` should not filter the startup file
-  through m4. Available only if `ctwm` is compiled with the USEM4 flag.
+  This option indicates that ctwm should not filter the startup file
+  through m4. Available only if ctwm is compiled with the USEM4 flag.
 
 -k::
-  This option indicates that `ctwm` should keep the definitions it
+  This option indicates that ctwm should keep the definitions it
   prepends to your startup file when filtering through m4 in /tmp.
-  Available only if `ctwm` is compiled with the USEM4 flag.
+  Available only if ctwm is compiled with the USEM4 flag.
 
 -K `m4file`::
-  This option indicates that `ctwm` should keep the result of filtering
+  This option indicates that ctwm should keep the result of filtering
   your startup file through m4 in the named file.
-  Available only if `ctwm` is compiled with the USEM4 flag.
+  Available only if ctwm is compiled with the USEM4 flag.
 
 -version::
-  `ctwm` just prints its version number.
+  ctwm just prints its version number.
 
 -info::
-  `ctwm` prints its detailed version and compile time options.
+  ctwm prints its detailed version and compile time options.
 
 -w [`win-id`]::
-  If -w is specified without a win-id value, `ctwm` does not take over the whole
+  If -w is specified without a win-id value, ctwm does not take over the whole
   screen(s), instead it creates a new window that becomes its root window. if the
   win-id value is given, it is considered to be the id of an existing window, in
-  which case, `ctwm` will try to use this window as root window. You can run any
-  number of instantiation of `ctwm` at the same time. You can even have
-  embedded `ctwm` instantiations. This is totally useless, but I like it. The
+  which case, ctwm will try to use this window as root window. You can run any
+  number of instantiation of ctwm at the same time. You can even have
+  embedded ctwm instantiations. This is totally useless, but I like it. The
   f.adoptwindow function can be used to capture an existing window belonging to
-  another `ctwm`. A possible use of such mode can be to test new configuration file
-  without restarting `ctwm`.
+  another ctwm. A possible use of such mode can be to test new configuration file
+  without restarting ctwm.
 
 -W::
-  This option tells `ctwm` not to display any welcome when starting.
+  This option tells ctwm not to display any welcome when starting.
 
 
 == CUSTOMIZATION
-Much of `ctwm`'s appearance and behavior can be controlled by providing
+Much of ctwm's appearance and behavior can be controlled by providing
 a startup file in one of the following locations (searched in order for
-each screen being managed when `ctwm` begins):
+each screen being managed when ctwm begins):
 
 $HOME/.ctwmrc.`screennumber`::
   The `screennumber` is a small positive number (e.g. 0, 1, etc.)
@@ -162,19 +162,19 @@ $HOME/.twmrc::
   The users twm startup file.
 
 @TWMDIR@/system.ctwmrc::
-  If none of the preceding files are found, `ctwm` will look in this
+  If none of the preceding files are found, ctwm will look in this
   file for a
   default configuration.  This is often tailored by the site administrator to
   provide convenient menus or familiar bindings for novice users.
 
 
-If no startup files are found, `ctwm` will use the built-in defaults
-described above.  The only resource used by `ctwm` is
+If no startup files are found, ctwm will use the built-in defaults
+described above.  The only resource used by ctwm is
 `bitmapFilePath` for a colon-separated list of directories to search
 when looking for bitmap files (for more information, see the `Athena
 Widgets` manual and `xrdb(1)`).
 
-`ctwm` startup files are logically broken up into three types of
+ctwm startup files are logically broken up into three types of
 specifications:  `Variables`, `Bindings`, `Menus`.  The
 `Variables` section must come first and is used to describe the
 fonts, colors, cursors, border widths, icon and window placement, highlighting,
@@ -193,8 +193,8 @@ remainder of the line in which the character appears to be treated as
 a comment.
 
 == M4 PREPROCESSING
-`ctwm` uses `m4(1)` to pre-process its setup files.
-When `ctwm` starts up, it opens a file for input as described above.
+ctwm uses `m4(1)` to pre-process its setup files.
+When ctwm starts up, it opens a file for input as described above.
 But, it processes that file through `m4` before parsing it. So, you can
 use `m4` macros to perform operations at runtime.  This makes it very
 easy to work when you use many different displays, with different characteristics.
@@ -209,17 +209,17 @@ IconRegion  "IRegion" SOUTH EAST 75 25
 ------
 
 will define the lower half, and right-hand third of the screen.  The above
-makes use of symbols that are predefined in `m4` by `ctwm`.  The symbols
-WIDTH and HEIGHT are calculated by `ctwm` and written into a temporary
+makes use of symbols that are predefined in `m4` by ctwm.  The symbols
+WIDTH and HEIGHT are calculated by ctwm and written into a temporary
 file for `m4` to use.  The following symbols are predefined by
-`ctwm`:
+ctwm:
 
 SERVERHOST::
   This variable is set to the name of the machine that is running the X
   server.
 
 CLIENTHOST::
-  The machine that is running the clients.  (ie, `ctwm`)
+  The machine that is running the clients.  (ie, ctwm)
 
 HOSTNAME::
   The canonical hostname running the clients.  (ie. a fully-qualified
@@ -232,7 +232,7 @@ HOME::
   The user's home directory.  Gotten from the environment.
 
 PIXMAP_DIRECTORY::
-  The directory where the `ctwm` pictures are installed.
+  The directory where the ctwm pictures are installed.
 
 VERSION::
   The X major protocol version.  As seen by ProtocolVersion(3).
@@ -269,12 +269,12 @@ BITS_PER_RGB::
 TWM_TYPE::
   Tells which `twm` offshoot is running.  It will always be set to
   the string ``ctwm'' in this program.  This is useful for protecting
-  parts of your `.twmrc` file that `ctwm` proper won't understand
+  parts of your `.twmrc` file that ctwm proper won't understand
   (like `WorkSpaces`) so that it is still usable with other
   `twm` programs.
 
 TWM_VERSION::
-  Tells which `ctwm` version is running in the form of a floating
+  Tells which ctwm version is running in the form of a floating
   point number.
 
 CLASS::
@@ -288,24 +288,24 @@ COLOR::
   and `GrayScale`.
 
 XPM::
-  Is defined only if `ctwm` was compiled with XPM.
+  Is defined only if ctwm was compiled with XPM.
 
 JPEG::
-  Is defined only if `ctwm` was compiled with JPEG.
+  Is defined only if ctwm was compiled with JPEG.
 
 GNOME::
-  Is defined only if `ctwm` was compiled with GNOME.
+  Is defined only if ctwm was compiled with GNOME.
 
 SOUNDS::
-  Is defined only if `ctwm` was compiled with USE_SOUND.
+  Is defined only if ctwm was compiled with USE_SOUND.
 
 TWM_CAPTIVE::
-  This will be either ``Yes'' or ``No''. ``Yes'' if the current `ctwm` is captive
+  This will be either ``Yes'' or ``No''. ``Yes'' if the current ctwm is captive
   (flag -w), ``No'' in the other case.
 
 TWM_CAPTIVE_NAME::
   Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
-  `ctwm` (-name flag);
+  ctwm (-name flag);
 
 
 You may well find that if you research the `m4(1)` manual well,
@@ -319,7 +319,7 @@ The availability of the `m4` preprocessing is subject to the compilation
 define USEM4.
 
 == VARIABLES
-Many of the aspects of `ctwm`'s user interface are controlled by variables
+Many of the aspects of ctwm's user interface are controlled by variables
 that may be set in the user's startup file.  Some of the options are
 enabled or disabled simply by the presence of a particular keyword.  Other
 options require keywords, numbers, strings, or lists of all of these.
@@ -363,27 +363,27 @@ X used for the iconify button), `:resize` (the nested squares used by the
 resize button), and `:question` (the question mark used for non-existent
 bitmap files).
 
-The following variables may be specified at the top of a `ctwm` startup
+The following variables may be specified at the top of a ctwm startup
 file.  Lists of window name prefix strings are indicated by `win-list`.
 Optional arguments are shown in square brackets:
 
 AlwaysOnTop { `win-list` }::
   This variable specifies a list of windows (all windows if the list is defaulted)
-  that `ctwm` will try its best to maintain on top of others. This doesn't
+  that ctwm will try its best to maintain on top of others. This doesn't
   work in all case.
 
 AlwaysShowWindowWhenMovingFromWorkspaceManager::
   When `ReallyMoveInWorkspaceManager` is present and the user is moving
-  a window from the WorkSpaceMap, `ctwm` display the actual window only
+  a window from the WorkSpaceMap, ctwm display the actual window only
   if it crosses the current active workspace. If
   `AlwaysShowWindowWhenMovingFromWorkspaceManager` is present, the actual
   window is always visible during the move, regardless of whether it crosses
   the current workspace or not. The Shift key toggles this behaviour.
 
 AlwaysSqueezeToGravity [{ `win-list` }]::
-  This variable indicates that `ctwm` should obey window gravity
+  This variable indicates that ctwm should obey window gravity
   when squeezing a window even when the window has a titlebar.
-  Normally, `ctwm` will always squeeze a window that has a titlebar
+  Normally, ctwm will always squeeze a window that has a titlebar
   toward the north.
   The optional `win-list` may be used to control which windows
   this applies on.
@@ -415,7 +415,7 @@ AutoPopup [{ "`win-list` }]::
   readers who change their icons depending on the presence of unread mail.
 
 AutoPriority::
-  This variable specifies that `ctwm` should automatically recompute the
+  This variable specifies that ctwm should automatically recompute the
   priority of a window (and its associated icon) when its name changes.
   See also `OnTopPriority`.
 
@@ -439,7 +439,7 @@ AutoRelativeResize::
   the edge of the screen.
   If the pointer is
   in the center of the window, or if the resize is begun by pressing a
-  titlebutton, `ctwm` will still wait for the pointer to cross a window
+  titlebutton, ctwm will still wait for the pointer to cross a window
   edge (to prevent accidents).  This option is
   particularly useful for people who like the press-drag-release method of
   sweeping out window sizes.
@@ -487,7 +487,7 @@ BorderLeft `pixels`::
   Default is 0.
 
 BorderResizeCursors::
-  This variable specifies that `ctwm` should use resizing cursors when
+  This variable specifies that ctwm should use resizing cursors when
   the pointer is on the window border. To be used preferably when you have
   bound a button to f.resize in the frame context.
 
@@ -498,7 +498,7 @@ BorderRight `pixels`::
   Default is 0.
 
 BorderShadowDepth `pixels`::
-  This variable specifies the depth of the shadow `ctwm` uses for
+  This variable specifies the depth of the shadow ctwm uses for
   3D window borders, when UseThreeDBorders is selected.
 
 BorderTileBackground `string` [{ `wincolorlist` }]::
@@ -524,7 +524,7 @@ BorderTop `pixels`::
 BorderWidth `pixels`::
   This variable specifies the width in pixels of the border surrounding
   all client window frames if `ClientBorderWidth` has not been specified.
-  This value is also used to set the border size of windows created by `ctwm`
+  This value is also used to set the border size of windows created by ctwm
   (such as the icon manager).  The default is 2.
 
 ButtonIndent `pixels`::
@@ -540,7 +540,7 @@ CenterFeedbackWindow::
   screen instead of the top left corner.
 
 ClearShadowContrast `contrast`::
-  Indicates to `ctwm` how to calculate the clear shadow color for 3D items.
+  Indicates to ctwm how to calculate the clear shadow color for 3D items.
   The value is a comprised between 0 and 100. The formula used is :
 +
 ------
@@ -608,7 +608,7 @@ ConstrainedMoveTime `milliseconds`::
   constrained moves.  The default is 400 milliseconds.
 
 Cursors { `cursor-list` }::
-  This variable specifies the glyphs that `ctwm` should use for various
+  This variable specifies the glyphs that ctwm should use for various
   pointer cursors.  Each cursor
   may be defined either from the `cursor` font or from two bitmap files.
   Shapes from the `cursor` font may be specified directly as:
@@ -653,7 +653,7 @@ Cursors
 +
 
 DarkShadowContrast `contrast`::
-  Indicates to `ctwm` how to calculate the dark shadow color for 3D items.
+  Indicates to ctwm how to calculate the dark shadow color for 3D items.
   The value is a comprised between 0 and 100. The formula used is :
 +
 ------
@@ -687,7 +687,7 @@ DontMoveOff::
   screen.  It can be overridden by the `f.forcemove` function.
 
 DontPaintRootWindow::
-  This variable tells `ctwm` not to paint the root window, whatever you told in
+  This variable tells ctwm not to paint the root window, whatever you told in
   the Workspaces specification. This is useful to have pixmaps in the Workspace
   Map but not on the root window.
 
@@ -717,7 +717,7 @@ DontWarpCursorInWMap::
   when you click in a small window in the workspace map.
 
 EWMHIgnore::
-  Sets EWMH message types that `ctwm` will ignore.  This is only valid
+  Sets EWMH message types that ctwm will ignore.  This is only valid
   if built with `USE_EWMH` (currently on by default).  The following
   example shows all the valid options:
 +
@@ -793,12 +793,12 @@ IconifyByUnmapping [{ `win-list` }]::
 
 IconifyStyle `string`::
   Where string is either `"normal"`, `"mosaic"`, `"zoomin"`, `"zoomout"`
-  or `"sweep"`. Tells `ctwm` to use some fancy graphical effects when iconifying
+  or `"sweep"`. Tells ctwm to use some fancy graphical effects when iconifying
   windows.
 
 IconJustification `string`::
   Where string is either `"left"`, `"center"` or `"right"`.
-  Tells `ctwm` how to justify the icon image against the icon title (if any).
+  Tells ctwm how to justify the icon image against the icon title (if any).
 
 IconManagerBackground `string` [{ `win-list` }]::
   This variable specifies the background color to use for icon manager entries,
@@ -876,7 +876,7 @@ IconManagers
   be put into the ``myhost'' icon manager.
 
 IconManagerShadowDepth `pixels`::
-  This variable specifies the depth of the shadow `ctwm` uses for
+  This variable specifies the depth of the shadow ctwm uses for
   3D IconManager entries, when UseThreeDIconManagers is selected.
 
 IconManagerShow { `win-list` }::
@@ -899,7 +899,7 @@ IconRegion `geomstring` `vgrav hgrav gridwidth gridheight` [`iconjust`] [`iconre
   to control whether icons should be filled in from left or from the right. Icons
   are laid out within the region in a grid with cells `gridwidth` pixels
   wide and `gridheight` pixels  high. The optional win-list argument tells
-  `ctwm` that if such a window is iconified, and there is enough room in this
+  ctwm that if such a window is iconified, and there is enough room in this
   icon region for its icon, then place it here. The optional `iconjust`,
   `iconregjust` and `iconregalign` can be used to give specific values
   of IconJustification, IconRegionJustification and IconRegionAlignement for
@@ -1015,7 +1015,7 @@ MapWindowCurrentWorkSpace { border_color [background] [foreground] [bitmap] }::
 MapWindowDefaultWorkSpace { border_color [background] [foreground] [bitmap] }::
   Specify the appearence of the map window corresponding to the workspaces other
   than the current workspace when no root background information has been provided
-  to `ctwm` in the WorkSpace command. Not used in others cases.
+  to ctwm in the WorkSpace command. Not used in others cases.
 
 MapWindowForeground color [{ win-list }]::
   This variable specifies the foreground colors to use for small windows in the
@@ -1025,7 +1025,7 @@ MapWindowForeground color [{ win-list }]::
   nor MapWindowForeground the window title colors are used.
 
 MaxIconTitleWidth `width`::
-  The integer argument tells `ctwm` the maximun width to use for an
+  The integer argument tells ctwm the maximun width to use for an
   icon title. If an icon title is larger than `width`, it is truncated.
 
 MaxWindowSize `string`::
@@ -1053,7 +1053,7 @@ MenuShadowColor `string`::
   `Color` or `Monochrome` list.  The default is ``black''.
 
 MenuShadowDepth `pixels`::
-  This variable specifies the depth of the shadow `ctwm` uses for
+  This variable specifies the depth of the shadow ctwm uses for
   3D menus, when UseThreeDMenus is selected.
 
 MenuTitleBackground `string`::
@@ -1090,7 +1090,7 @@ MoveOffResistance `pixels`::
   A negative value puts you back into ``never moveoff'' mode (it's the default).
 
 NoBackingStore::
-  This variable indicates that `ctwm`'s menus should not request backing
+  This variable indicates that ctwm's menus should not request backing
   store to minimize repainting of menus.  This is typically
   used with servers that can repaint faster than they can handle backing store.
 
@@ -1104,12 +1104,12 @@ NoCaseSensitive::
   capitalize the first letter of their icon name.
 
 NoDefaults::
-  This variable indicates that `ctwm` should not supply the default
+  This variable indicates that ctwm should not supply the default
   titlebuttons and bindings.  This option should only be used if the startup
   file contains a completely new set of bindings and definitions.
 
 NoGrabServer::
-  This variable indicates that `ctwm` should not grab the server
+  This variable indicates that ctwm should not grab the server
   when popping up menus and moving opaque windows.
 
 NoHighlight [{ `win-list` }]::
@@ -1191,11 +1191,11 @@ NoTitle [{ `win-list` }]::
   on specific windows.
 
 NoTitleFocus::
-  This variable indicates that `ctwm` should not set keyboard input focus to
-  each window as it is entered.  Normally, `ctwm` sets the focus
+  This variable indicates that ctwm should not set keyboard input focus to
+  each window as it is entered.  Normally, ctwm sets the focus
   so that focus and key events from the titlebar and
   icon managers are delivered to the application.  If the pointer is moved
-  quickly and `ctwm` is slow to respond, input can be directed to the old
+  quickly and ctwm is slow to respond, input can be directed to the old
   window instead of the new.  This option is typically
   used to prevent this ``input lag'' and to
   work around bugs in older applications that have problems with focus events.
@@ -1264,7 +1264,7 @@ OccupyAll
   Note : The OccupyAll declaration should come after the WorkSpaces declaration.
 
 OnTopPriority [Icons] `priority` [ { `win-list` } ]::
-  `ctwm` allows you to put windows in several overlapping priority planes
+  ctwm allows you to put windows in several overlapping priority planes
   going from -8 to +8, which makes it possible to have windows that stay on
   top or that are kept in the background. If `win-list` is present, it
   specifies which windows should be put in the `priority` plane.
@@ -1338,7 +1338,7 @@ Pixmaps
   The default for `TitleHighlight` is to use an even stipple pattern.
 
 PixmapDirectory `path`::
-  This variable specifies the path where `ctwm` looks to find non-X11 bitmap
+  This variable specifies the path where ctwm looks to find non-X11 bitmap
   files.  Whenever you want to use a image file that is not an X11 bitmap,
   specify : +xpm:filename+ for xpm files, +xwd:filename+ for xwd files,
   +jpeg:file+ for jpeg file,
@@ -1356,7 +1356,7 @@ Icons
 ------
 +
 [normal]
-  N.B This is only valid if your version of `ctwm` has been compiled with the
+  N.B This is only valid if your version of ctwm has been compiled with the
   right extension (XPM or JPEG).
 
 PrioritySwitching [Icons] { `win-list` }::
@@ -1404,7 +1404,7 @@ RandomPlacement [ `string1` [ `string2` ]]::
   left and down) is used.
 
 ReallyMoveInWorkspaceManager::
-  This keyword tells `ctwm` to move the actual window when the user is
+  This keyword tells ctwm to move the actual window when the user is
   moving the small windows in the WorkSpaceMap window. If not present the
   WorkSpaceMap can be used only to modify the occupation of a window.
   Pressing the `shift` key while dragging a window in the workspace manager
@@ -1416,13 +1416,13 @@ ResizeFont `string`::
 
 RestartPreviousState::
   This variable indicates that
-  `ctwm` should attempt to use the WM_STATE property on client windows
+  ctwm should attempt to use the WM_STATE property on client windows
   to tell which windows should be iconified and which should be left visible.
   This is typically used to try to regenerate the state that the screen
   was in before the previous window manager was shutdown.
 
 ReverseCurrentWorkspace `string`::
-  This variable tells `ctwm` to reverse the background and
+  This variable tells ctwm to reverse the background and
   foreground colors in the small windows in the workspace map for the current
   workspace.
 
@@ -1461,7 +1461,7 @@ ShortAllWindowsMenus::
 
 ShowIconManager::
   This variable indicates that the icon manager window should be displayed when
-  `ctwm` is started.  It can always be brought up using the
+  ctwm is started.  It can always be brought up using the
   `f.showiconmgr` function.
 
 ShowWorkSpaceManager::
@@ -1486,7 +1486,7 @@ SoundHost::
   The host on which sounds should be played.  See the SOUNDS section.
 
 SqueezeTitle [{ `squeeze-list` }]::
-  This variable indicates that `ctwm` should attempt to use the SHAPE
+  This variable indicates that ctwm should attempt to use the SHAPE
   extension to make titlebars occupy only as much screen space as they need,
   rather than extending all the way across the top of the window.
   The optional `squeeze-list`
@@ -1569,7 +1569,7 @@ TitleButtonBorderWidth `pixels`::
   The default is 1 if `UseThreeDTitles` is not set, 0 if it is set.
 
 TitleButtonShadowDepth `pixels`::
-  This variable specifies the depth of the shadow `ctwm` uses for
+  This variable specifies the depth of the shadow ctwm uses for
   3D title buttons, when UseThreeDTitles is selected.
 
 TitleFont `string`::
@@ -1595,7 +1595,7 @@ TitlePadding `pixels`::
   is not set, 0 if it is set.
 
 TitleShadowDepth `pixels`::
-  This variable specifies the depth of the shadow `ctwm` uses for
+  This variable specifies the depth of the shadow ctwm uses for
   3D titles, when UseThreeDTitles is selected.
 
 TransientHasOccupation::
@@ -1605,7 +1605,7 @@ TransientHasOccupation::
   this keyword if the default action doesn't please you.
 
 TransientOnTop `percentage`::
-  The parameter (required) is a percentage and tells `ctwm` to put transient
+  The parameter (required) is a percentage and tells ctwm to put transient
   (and non-group leader) windows always on top of their leader if and only
   if their surface is smaller than this fraction of the surface of their
   leader. The surface of a window is its width times its weight.
@@ -1622,11 +1622,11 @@ UnmapByMovingFarAway [{ `win-list` }]::
   added because some ill-behaved clients (Frame5) don't like to be unmapped.
 
 UsePPosition `string`::
-  This variable specifies whether or not `ctwm` should honor
+  This variable specifies whether or not ctwm should honor
   program-requested locations (given by the `PPosition` flag in the
   WM_NORMAL_HINTS property) in the absence of a user-specified position.
   The argument `string` may have one of three values:  `"off"`
-  (the default) indicating that `ctwm` should ignore the program-supplied
+  (the default) indicating that ctwm should ignore the program-supplied
   position, `"on"` indicating that the position should be used, and
   `"non-zero"` indicating that the position should used if it is other
   than (0,0).  The latter option is for working around a bug in older toolkits.
@@ -1637,20 +1637,20 @@ UseSunkTitlePixmap::
   3d XPM (if any) sink instead of just the whole bar.
 
 UseThreeDBorders::
-  Tells `ctwm` to use 3D-looking window borders. The width ot the 3D borders
+  Tells ctwm to use 3D-looking window borders. The width ot the 3D borders
   is `ThreeDBorderWidth`. The color of the 3D border is `BorderTileBackground`,
   and if NoHighlight is not selected, the border of the Focus window is
   `BorderColor`.
   Setting this automatically unsets `ClientBorderWidth`.
 
 UseThreeDIconManagers::
-  Tells `ctwm` to use 3D-looking IconManagers if any.
+  Tells ctwm to use 3D-looking IconManagers if any.
 
 UseThreeDMenus::
-  Tells `ctwm` to use 3D-looking menus.
+  Tells ctwm to use 3D-looking menus.
 
 UseThreeDTitles::
-  Tells `ctwm` to use 3D-looking windows titles. In which case the default
+  Tells ctwm to use 3D-looking windows titles. In which case the default
   values of `TitleButtonBorderWidth`, `FramePadding`, `TitlePadding`
   and `ButtonIndent` are set to 0.
   There are plenty of built-in scalable pixmaps for buttons:
@@ -1680,7 +1680,7 @@ UseThreeDTitles::
   Try them to see what they look like.
 
 UseThreeDWMap::
-  Tells `ctwm` to use 3D for the small windows in the workspace map.
+  Tells ctwm to use 3D for the small windows in the workspace map.
 
 VirtualScreens { `geometries-list` }::
 +
@@ -1742,7 +1742,7 @@ WindowRing [{ `win-list` }]::
   function cycles. If no argument is given, all the windows are in the ring.
 
 WarpOnDeIconify { `win-list` }::
-  When `ctwm` receives a request to map a window, it normally just deiconifies
+  When ctwm receives a request to map a window, it normally just deiconifies
   it, but if the window is in `win-list`, it will additionally bring it
   into the current workspace, if necessary. For example
 +
@@ -1756,7 +1756,7 @@ WarpOnDeIconify { "Emacs" }
   workspace).
 
 WarpRingOnScreen::
-  Tells `ctwm` that f.warpring warps pointer only to windows visible in
+  Tells ctwm that f.warpring warps pointer only to windows visible in
   the current workspace.
 
 WarpToDefaultMenuEntry::
@@ -1870,7 +1870,7 @@ XorValue `number`::
   variety of distinguishable colors when exclusive-or'ed with the contents of the
   user's typical screen.  Setting this variable to 1 often gives nice results
   if adjacent colors in the default colormap are distinct.  By default,
-  `ctwm` will attempt to cause temporary lines to appear at the opposite
+  ctwm will attempt to cause temporary lines to appear at the opposite
   end of the colormap from the graphics.
 
 YMoveGrid `number`::
@@ -2038,11 +2038,11 @@ use the following bindings:
 "Down"  = m | s : all : f.downiconmgr
 ------
 
-`ctwm` provides many more window manipulation primitives than can be
+ctwm provides many more window manipulation primitives than can be
 conveniently stored in a titlebar, menu, or set of key bindings.  Although
 a small set of defaults are supplied (unless the `NoDefaults` is
 specified), most users will want to have their most common operations
-bound to key and button strokes.  To do this, `ctwm` associates names
+bound to key and button strokes.  To do this, ctwm associates names
 with each of the primitives and provides `user-defined functions` for
 building higher level primitives and `menus` for interactively selecting
 among groups of functions.
@@ -2086,7 +2086,7 @@ f.adoptwindow::
   with the -w flag.
 
 f.altcontext::
-  Set the alternate context. The next key or button event `ctwm` reveives will
+  Set the alternate context. The next key or button event ctwm reveives will
   be interpreted using the alternate context. To define bindings in the alternate
   context, use the keyword `alter` in the context field of the binding command.
   For example:
@@ -2100,7 +2100,7 @@ f.altcontext::
 
 f.altkeymap `number`::
   Set the alternate keymap `number`, where `number` is an integer
-  between 1 and 5 included. The next key or button event `ctwm` reveives will
+  between 1 and 5 included. The next key or button event ctwm reveives will
   be interpreted using this alternate keymap. To define bindings in an alternate
   keymap, use the keyword `a` followed by `number` in the modifier
   field of the binding command. For example:
@@ -2176,7 +2176,7 @@ f.circleup::
 
 f.colormap `string`::
   This function rotates the colormaps (obtained from the WM_COLORMAP_WINDOWS
-  property on the window) that `ctwm` will display when the pointer
+  property on the window) that ctwm will display when the pointer
   is in this window.  The argument `string` may have one of the following
   values: `"next"`, `"prev"`, and `"default"`.  It should be noted
   here that in general, the installed colormap is determined by keyboard focus.
@@ -2472,8 +2472,8 @@ f.priorityswitching::
   Toggle the window's switching ability.
 
 f.quit::
-  This function causes `ctwm` to restore the window's borders and exit.  If
-  `ctwm` is the first client invoked from `xdm`, this will result in a
+  This function causes ctwm to restore the window's borders and exit.  If
+  ctwm is the first client invoked from `xdm`, this will result in a
   server reset.
 
 f.raiseicons::
@@ -2513,7 +2513,7 @@ f.resize::
   press another button before releasing the first button.
 
 f.restart::
-  This function kills and restarts `ctwm`.
+  This function kills and restarts ctwm.
 
 f.restoregeometry::
   Restore the current window geometry to what was saved in the last
@@ -2576,10 +2576,10 @@ f.sorticonmgr::
 
 // .IP "`f.source` `string`" 8
 // This function assumes `string` is a file name.  The file is read
-// and parsed as a `ctwm` startup file.
+// and parsed as a ctwm startup file.
 // This
 // function is intended to be used only to re-build pull-down menus.  None
-// of the `ctwm` variables are changed.
+// of the ctwm variables are changed.
 
 
 f.showbackground::
@@ -2666,7 +2666,7 @@ f.vanish::
   one other WorkSpace. Do nothing in the others cases.
 
 f.version::
-  This function causes the `ctwm` version window to be displayed.  This
+  This function causes the ctwm version window to be displayed.  This
   window will be displayed until a pointer button is pressed or the
   pointer is moved from one window to another.
 
@@ -2752,14 +2752,14 @@ The `function` portion of the menu entry is one of the functions,
 including any user-defined functions, or additional menus.
 
 There are 3 special menus. `TwmWindows` contains the names of
-all of the client and `ctwm`-supplied windows in the current workspace.
+all of the client and ctwm-supplied windows in the current workspace.
 Selecting an entry will cause the `WindowFunction` to be executed on that
 window.  If `WindowFunction` hasn't been set, the window will be deiconified
 and raised. `TwmWorkspaces` contains the names of your workspaces, selecting
 an entry goto this workspace. In addition, these entries have submenus containing
 the names of all windows occupying this workspace, selecting such an entry
 executes f.warpto on this window. And finally, `TwmAllWindows` contains the names
-of all the windows `ctwm` manages. Selecting an entry executes f.warpto on
+of all the windows ctwm manages. Selecting an entry executes f.warpto on
 this window.
 
 If an entry name begins with a ``*'' (star), this star won't be displayed and
@@ -2770,7 +2770,7 @@ displayed. It's hard to explain, but easy to understand.
 .RE
 
 == ICONS
-`ctwm` supports several different ways of manipulating iconified windows.
+ctwm supports several different ways of manipulating iconified windows.
 The common pixmap-and-text style may be laid out by hand or automatically
 arranged as described by the `IconRegion` variable.  In addition, a
 terse grid of icon names, called an icon manager, provides a more efficient
@@ -2795,8 +2795,8 @@ the input focus can be changed between windows directly from the
 keyboard.
 
 == SOUNDS
-If compiled with the USE_SOUND flag, `ctwm` is able to play sounds
-for any X event.  `ctwm` will look for the file `.ctwm-sounds`
+If compiled with the USE_SOUND flag, ctwm is able to play sounds
+for any X event.  ctwm will look for the file `.ctwm-sounds`
 in the user's home directory to map every X event to a sound file to
 be played.
 
@@ -2845,7 +2845,7 @@ MappingNotify
 ------
 
 Additionally, the following two are recognised, and represent the time
-when `ctwm` is started or shut down:
+when ctwm is started or shut down:
 
 ------
 Startup
@@ -2876,7 +2876,7 @@ DISPLAY::
 
 HOME::
   This variable is used as the prefix for files that begin with a tilde and
-  for locating the `ctwm` startup file.
+  for locating the ctwm startup file.
 
 
 == SEE ALSO
