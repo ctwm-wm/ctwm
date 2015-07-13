@@ -1337,9 +1337,9 @@ Pixmaps
 PixmapDirectory ++path++::
   This variable specifies the path where ++ctwm++ looks to find non-X11 bitmap
   files.  Whenever you want to use a image file that is not an X11 bitmap,
-  specify : xpm:filename, for xpm files, xwd:filename for xwd files,
-  jpeg:file for jpeg file,
-  or ``|command'' for an on the fly generated xwd file. Use the % character
+  specify : +xpm:filename+ for xpm files, +xwd:filename+ for xwd files,
+  +jpeg:file+ for jpeg file,
+  or +|command+ for an on the fly generated xwd file. Use the % character
   to specify an animation. ++path++ can be a colon separated list of directories.
   Example :
 +
@@ -1650,13 +1650,31 @@ UseThreeDTitles::
   Tells ++ctwm++ to use 3D-looking windows titles. In which case the default
   values of ++TitleButtonBorderWidth++, ++FramePadding++, ++TitlePadding++
   and ++ButtonIndent++ are set to 0.
-  There are plenty of built-in scalable pixmaps for buttons, :xpm:menu, :xpm:dot,
-  :xpm:cross, :xpm:bar, :xpm:vbar, :xpm:iconify, :xpm:resize,
-  :xmp:sunkresize and :xpm:box. There are several built-in scalable
-  animations for buttons : %xpm:resize, %xpm:menu-up, %xpm:menu-down,
-  %xpm:resize-out-top, %xpm:resize-in-top, %xpm:resize-out-bot,
-  %xpm:resize-in-bot, %xpm:maze-out, %xpm:maze-in, %xpm:zoom-out,
-  %xpm:zoom-in and %xpm:zoom-inout. Try them to see what they look like.
+  There are plenty of built-in scalable pixmaps for buttons:
+  +:xpm:menu+,
+  +:xpm:dot+,
+  +:xpm:cross+,
+  +:xpm:bar+,
+  +:xpm:vbar+,
+  +:xpm:iconify+,
+  +:xpm:resize+,
+  +:xmp:sunkresize+, and
+  +:xpm:box+.
+  There are several built-in scalable
+  animations for buttons:
+  +%xpm:resize+,
+  +%xpm:menu-up+,
+  +%xpm:menu-down+,
+  +%xpm:resize-out-top+,
+  +%xpm:resize-in-top+,
+  +%xpm:resize-out-bot+,
+  +%xpm:resize-in-bot+,
+  +%xpm:maze-out+,
+  +%xpm:maze-in+,
+  +%xpm:zoom-out+,
+  +%xpm:zoom-in+, and 
+  +%xpm:zoom-inout+.
+  Try them to see what they look like.
 
 UseThreeDWMap::
   Tells ++ctwm++ to use 3D for the small windows in the workspace map.
@@ -1804,8 +1822,8 @@ fg-root:::
 
 pixmap-root:::
   pixmap to display on the corresponding root screen, either the name of
-  a bitmap, xpm:xpmfile, xwd:xwdfile, jpeg:jpgfile, or |command_that
-  generate_xwd.
+  a bitmap, +xpm:xpmfile+, +xwd:xwdfile+, +jpeg:jpgfile+, or
+  +|command_that generates_xwd+.
 --
 +
 [normal]
