@@ -8,8 +8,11 @@ ctwm - Claude's Tab Window Manager for the X Window System
 == SYNTAX
 ["literal"]
 ctwm [-display dpy] [--replace] [-s] [-cfgchk]
-     [-f initfile] [-v] [-n] [-k] [-K m4file]
-     [-version] [-info] [-w [win-id]] [-W]
+     [-f initfile] [-n] [-k] [-K m4file]
+     [-v] [-q] [-mono] [-xrm resource]
+     [-version] [-info] [-W]
+     [-w [win-id]] [-name name]
+     [-clientId] [-restore]
 
 
 == DESCRIPTION
@@ -106,6 +109,9 @@ to touch the bottom the screen.
   an unexpected X Error event is received.  This can be useful when debugging
   applications but can be distracting in regular use.
 
+-q::
+  Disables `-v` (useful for overriding aliases, etc).
+
 -n::
   This option indicates that ctwm should not filter the startup file
   through `m4`. Available only if ctwm is built with the `USE_M4` flag.
@@ -119,6 +125,9 @@ to touch the bottom the screen.
   This option indicates that ctwm should keep the result of filtering
   your startup file through `m4` in the named file.
   Available only if ctwm is built with the `USE_M4` flag.
+
+-mono::
+  Run in monochrome mode.
 
 -version::
   ctwm just prints its version number.
@@ -137,8 +146,18 @@ to touch the bottom the screen.
   another ctwm. A possible use of such mode can be to test new configuration file
   without restarting ctwm.
 
+-name `name`::
+  Set the captivename when using `-w`.
+
 -W::
   This option tells ctwm not to display any welcome when starting.
+
+-clientId `id`::
+-restore::
+  Something to do with session management
+
+-xrm `resource`::
+  Ignored.
 
 
 == CUSTOMIZATION
