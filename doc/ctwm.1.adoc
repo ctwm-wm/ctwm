@@ -108,17 +108,17 @@ to touch the bottom the screen.
 
 -n::
   This option indicates that ctwm should not filter the startup file
-  through `m4`. Available only if ctwm is built with the USE_M4 flag.
+  through `m4`. Available only if ctwm is built with the `USE_M4` flag.
 
 -k::
   This option indicates that ctwm should keep the definitions it
   prepends to your startup file when filtering through `m4` in /tmp.
-  Available only if ctwm is built with the USE_M4 flag.
+  Available only if ctwm is built with the `USE_M4` flag.
 
 -K `m4file`::
   This option indicates that ctwm should keep the result of filtering
   your startup file through `m4` in the named file.
-  Available only if ctwm is built with the USE_M4 flag.
+  Available only if ctwm is built with the `USE_M4` flag.
 
 -version::
   ctwm just prints its version number.
@@ -316,7 +316,7 @@ the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
 you are out of luck.
 
 The availability of the m4 preprocessing is dependent on the build
-option USE_M4 (on by default).
+option `USE_M4` (on by default).
 
 == VARIABLES
 Many of the aspects of ctwm's user interface are controlled by variables
@@ -2795,7 +2795,7 @@ the input focus can be changed between windows directly from the
 keyboard.
 
 == SOUNDS
-If built with the USE_SOUND option, ctwm is able to play sounds
+If built with the `USE_SOUND` option, ctwm is able to play sounds
 for any X event.  ctwm will look for the file `.ctwm-sounds`
 in the user's home directory to map every X event to a sound file to
 be played.
