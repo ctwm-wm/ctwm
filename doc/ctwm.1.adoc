@@ -17,7 +17,7 @@ titlebars, shaped windows, virtual screens (workspaces),
 several forms of icon management, user-defined macro functions,
 click-to-type and pointer-driven keyboard focus, and user-specified
 key and pointer button bindings.  It is actually
-++twm++(1) (Tab Window Manager) from the MIT X11 distribution
+++twm(1)++ (Tab Window Manager) from the MIT X11 distribution
 slightly modified to accommodate the use of several virtual screens
 (workspaces). It is heavily inspired from the Hewlett-Packard vuewm
 window manager. In addition, ++ctwm++ can use coloured, shaped icons
@@ -27,7 +27,7 @@ and xwd files. ++ctwm++ can be compiled to
 use any combination of the above icon/pixmap formats.
 
 This program is usually started by the user's session manager or
-startup script.  When used from ++xdm++(1) or ++xinit++(1) without
+startup script.  When used from ++xdm(1)++ or ++xinit(1)++ without
 a session manager, ++ctwm++ is frequently executed in the foreground
 as the last client.  When run this way, exiting ++ctwm++ causes the
 session to be terminated (i.e. logged out).
@@ -171,7 +171,7 @@ If no startup files are found, ++ctwm++ will use the built-in defaults
 described above.  The only resource used by ++ctwm++ is
 ++bitmapFilePath++ for a colon-separated list of directories to search
 when looking for bitmap files (for more information, see the ++Athena
-Widgets++ manual and ++xrdb++(1)).
+Widgets++ manual and ++xrdb(1)++).
 
 ++ctwm++ startup files are logically broken up into three types of
 specifications:  ++Variables++, ++Bindings++, ++Menus++.  The
@@ -192,7 +192,7 @@ remainder of the line in which the character appears to be treated as
 a comment.
 
 == M4 PREPROCESSING
-++ctwm++ uses ++m4++(1) to pre-process its setup files.
+++ctwm++ uses ++m4(1)++ to pre-process its setup files.
 When ++ctwm++ starts up, it opens a file for input as described above.
 But, it processes that file through ++m4++ before parsing it. So, you can
 use ++m4++ macros to perform operations at runtime.  This makes it very
@@ -307,7 +307,7 @@ TWM_CAPTIVE_NAME::
   ++ctwm++ (-name flag);
 
 
-You may well find that if you research the ++m4++(1) manual well,
+You may well find that if you research the ++m4(1)++ manual well,
 and understand the power of ++m4++, this will be a ++very++
 useful and powerful tool.  But, if you use any of the symbols
 which are predefined by ++m4++, you are in severe danger!  For example,
@@ -629,7 +629,7 @@ Cursors { ++cursor-list++ }::
 +
 [normal]
   The ++image++ and ++mask++ strings specify the names of files containing
-  the glyph image and mask in ++bitmap++(1) form.
+  the glyph image and mask in ++bitmap(1)++ form.
   The bitmap files are located in the same manner as icon bitmap files.
   The following example shows the default cursor definitions:
 +
