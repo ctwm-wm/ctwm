@@ -2510,8 +2510,6 @@ f.resize::
   press another button before releasing the first button.
 
 f.restart::
-
-f.twmrc::
   This function kills and restarts ++ctwm++.
 
 f.restoregeometry::
@@ -2641,11 +2639,8 @@ f.topzoom::
   This variable is similar to the ++f.bottomzoom++ function except that
   the selected window is only resized to the top half of the display.
 
-// .IP "++f.ctwmrc++" 8
-// This function causes the startup customization file to be re-read.  This
-// function is exactly like the ++f.source++ function without having to
-// specify the filename.
-
+f.twmrc::
+  Alias for +f.restart+.
 
 f.unfocus::
   This function resets the focus back to pointer-driven.  This should be used
