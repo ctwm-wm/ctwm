@@ -2724,25 +2724,25 @@ they should invoke, and optional foreground and background colors for
 individual items:
 
 ------
-Menu "menuname" [ ("deffore":"defback") ]
+Menu "menuname" [ ("deffg":"defbg") ]
 {
-    string1  [ ("fore1":"backn")]  function1
-    string2  [ ("fore2":"backn")]  function2
+    string1  [ ("fg1":"bg1")]  function1
+    string2  [ ("fg2":"bg2")]  function2
         .
         .
         .
-    stringN  [ ("foreN":"backN")]  functionN
+    stringN  [ ("fgN":"bgN")]  functionN
 }
 ------
 
 
 The ++menuname++ is case-sensitive.
-The optional ++deffore++ and ++defback++ arguments specify the foreground
+The optional ++deffg++ and ++defbg++ arguments specify the foreground
 and background colors used on a color display
 to highlight menu entries.
 The ++string++ portion
 of each menu entry will be the text which will appear in the menu.
-The optional ++fore++ and ++back++ arguments specify the foreground
+The optional ++fgN++ and ++bgN++ arguments specify the foreground
 and background colors of the menu entry when the pointer is not in
 the entry.  These colors will only be used on a color display.  The
 default is to use the colors specified by the
