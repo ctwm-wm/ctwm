@@ -2534,7 +2534,7 @@ f.rightzoom::
 
 f.ring::
   Selects a window and adds it to the WarpRing, or removes it if it
-  was already in the ring. This command makes ++f.warpring++ ++ much ++ more
+  was already in the ring. This command makes ++f.warpring++ much more
   useful, by making its configuration dynamic.
 
 f.savegeometry::
