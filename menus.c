@@ -1976,10 +1976,6 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, int pulldown)
 {
 	static Time last_time = 0;
-	char tmp[200];
-	char *ptr;
-	char buff[MAX_FILE_SIZE];
-	int count, fd;
 	Window rootw;
 	int origX, origY;
 	int do_next_action = TRUE;
@@ -3741,50 +3737,6 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			FocusOnRoot();
 			break;
 
-		case F_CUT:
-			strcpy(tmp, action);
-			strcat(tmp, "\n");
-			XStoreBytes(dpy, tmp, strlen(tmp));
-			break;
-
-		case F_CUTFILE:
-			ptr = XFetchBytes(dpy, &count);
-			if(ptr) {
-				if(sscanf(ptr, "%s", tmp) == 1) {
-					XFree(ptr);
-					ptr = ExpandFilename(tmp);
-					if(ptr) {
-#ifdef VMS
-						fd = open(ptr, O_RDONLY, 0);
-#else
-						fd = open(ptr, 0);
-#endif
-						if(fd >= 0) {
-							count = read(fd, buff, MAX_FILE_SIZE - 1);
-							if(count > 0) {
-								XStoreBytes(dpy, buff, count);
-							}
-							close(fd);
-						}
-						else {
-							fprintf(stderr,
-							        "%s:  unable to open cut file \"%s\"\n",
-							        ProgramName, tmp);
-						}
-						if(ptr != tmp) {
-							free(ptr);
-						}
-					}
-				}
-				else {
-					XFree(ptr);
-				}
-			}
-			else {
-				fprintf(stderr, "%s:  cut buffer is empty\n", ProgramName);
-			}
-			break;
-
 		case F_WARPTOSCREEN: {
 			if(strcmp(action, WARPSCREEN_NEXT) == 0) {
 				WarpToScreen(Scr->screen + 1, 1);
@@ -3962,27 +3914,6 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				default:
 					XBell(dpy, 0);
 					break;
-			}
-			break;
-
-		case F_FILE:
-			action = ExpandFilename(action);
-#ifdef VMS
-			fd = open(action, O_RDONLY, 0);
-#else
-			fd = open(action, 0);
-#endif
-			if(fd >= 0) {
-				count = read(fd, buff, MAX_FILE_SIZE - 1);
-				if(count > 0) {
-					XStoreBytes(dpy, buff, count);
-				}
-
-				close(fd);
-			}
-			else {
-				fprintf(stderr, "%s:  unable to open file \"%s\"\n",
-				        ProgramName, (char *)action);
 			}
 			break;
 

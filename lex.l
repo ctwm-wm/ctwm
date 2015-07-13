@@ -106,7 +106,6 @@ number				[0-9]+
 				}
 
 "!"				{ yylval.num = F_EXEC; return FSKEYWORD; }
-"^"				{ yylval.num = F_CUT; return FSKEYWORD; }
 
 {string}			{ yylval.ptr = yytext; return STRING; }
 {number}			{ (void)sscanf(yytext, "%d", &yylval.num);

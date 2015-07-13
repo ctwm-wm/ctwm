@@ -2091,10 +2091,6 @@ be chosen:
 ! `string`::
   This is an abbreviation for `f.exec` `string`.
 
-// OBSOLETE - use a clipboard client
-// .IP "`^` `string`" 8
-// This is an abbreviation for `f.cut` `string`.
-
 f.addtoworkspace `string`::
   This function adds the selected window to the workspace whose name is
   `string`.
@@ -2204,14 +2200,6 @@ f.colormap `string`::
   colormaps will not be installed until the user presses a mouse button on
   the target window.
 
-// OBSOLETE - should go away and use a clipboard.
-// .IP "`f.cut` `string`" 8
-// This function places the specified `string` (followed by a newline
-// character) into the root window property CUT_BUFFER0.
-// .IP "`f.cutfile`" 8
-// This function reads the file indicated by the contents of the CUT_BUFFER0
-// window property and replaces the cut buffer.
-
 f.deiconify::
   This function deiconifies the selected window.  If the window is not an icon,
   this function does nothing.
@@ -2256,11 +2244,6 @@ f.exec `string`::
   which this function was invoked. If the string ``$currentworkspace''
   is present inside the string argument, it will be substituted with
   the current workspace name.
-
-// .IP "`f.file` `string`" 8
-// This function assumes `string` is a file name.  This file is read into
-// the window server's cut buffer.
-
 
 f.fill `string`::
   Where string is either : ``right'', ``left'', ``top'', ``bottom'' or ``vertical''.

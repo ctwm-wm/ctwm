@@ -15,6 +15,11 @@ build ctwm.  See the `README` file for how to run it.
     it, has been removed.  The last release is almost 20 years old, and
     doesn't support any remotely recent platforms.
 
+1. The `f.cut` (and `^` alias for it), `f.cutfile`, and `f.file`
+   functions have been removed.  These functions for messing with the
+   clipboard were never visibly documented, came into the manpage in 3.0
+   pre-commented-out and saying they were obsolete.
+
 ### User Visible Changes
 
 1. Selected a number of cleanups from Stefan Monnier
