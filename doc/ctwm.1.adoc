@@ -108,16 +108,16 @@ to touch the bottom the screen.
 
 -n::
   This option indicates that ctwm should not filter the startup file
-  through m4. Available only if ctwm is built with the USE_M4 flag.
+  through `m4`. Available only if ctwm is built with the USE_M4 flag.
 
 -k::
   This option indicates that ctwm should keep the definitions it
-  prepends to your startup file when filtering through m4 in /tmp.
+  prepends to your startup file when filtering through `m4` in /tmp.
   Available only if ctwm is built with the USE_M4 flag.
 
 -K `m4file`::
   This option indicates that ctwm should keep the result of filtering
-  your startup file through m4 in the named file.
+  your startup file through `m4` in the named file.
   Available only if ctwm is built with the USE_M4 flag.
 
 -version::
@@ -196,11 +196,11 @@ a comment.
 ctwm uses `m4(1)` to pre-process its setup files.
 When ctwm starts up, it opens a file for input as described above.
 But, it processes that file through `m4` before parsing it. So, you can
-use `m4` macros to perform operations at runtime.  This makes it very
+use m4 macros to perform operations at runtime.  This makes it very
 easy to work when you use many different displays, with different characteristics.
 For example, If you want to set the lower right section of the screen to be your
 `IconRegion`, (see below for details on the `IconRegion` variable)
-you can use `m4` directives and pre-defined symbols to calculate the region
+you can use m4 directives and pre-defined symbols to calculate the region
 you want.  For example:
 
 ------
@@ -209,7 +209,7 @@ IconRegion  "IRegion" SOUTH EAST 75 25
 ------
 
 will define the lower half, and right-hand third of the screen.  The above
-makes use of symbols that are predefined in `m4` by ctwm.  The symbols
+makes use of symbols that are predefined for m4 by ctwm.  The symbols
 WIDTH and HEIGHT are calculated by ctwm and written into a temporary
 file for `m4` to use.  The following symbols are predefined by
 ctwm:
@@ -309,13 +309,13 @@ TWM_CAPTIVE_NAME::
 
 
 You may well find that if you research the `m4(1)` manual well,
-and understand the power of `m4`, this will be a _very_
+and understand the power of m4, this will be a _very_
 useful and powerful tool.  But, if you use any of the symbols
-which are predefined by `m4`, you are in severe danger!  For example,
+which are predefined by m4, you are in severe danger!  For example,
 the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
 you are out of luck.
 
-The availability of the `m4` preprocessing is dependent on the build
+The availability of the m4 preprocessing is dependent on the build
 option USE_M4 (on by default).
 
 == VARIABLES
