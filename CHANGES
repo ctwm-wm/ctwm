@@ -17,8 +17,8 @@ build ctwm.  See the `README` file for how to run it.
 
 1. The `f.cut` (and `^` alias for it), `f.cutfile`, and `f.file`
    functions have been removed.  These functions for messing with the
-   clipboard were never visibly documented, came into the manpage in 3.0
-   pre-commented-out and saying they were obsolete.
+   clipboard were never visibly documented, and came into the manpage in
+   3.0 already commented-out and saying they were obsolete.
 
 ### User Visible Changes
 
