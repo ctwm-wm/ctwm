@@ -2576,14 +2576,6 @@ f.sorticonmgr::
   This function sorts the entries in the current icon manager alphabetically.
   See the variable `SortIconManager`.
 
-// .IP "`f.source` `string`" 8
-// This function assumes `string` is a file name.  The file is read
-// and parsed as a ctwm startup file.
-// This
-// function is intended to be used only to re-build pull-down menus.  None
-// of the ctwm variables are changed.
-
-
 f.showbackground::
   This function unmaps all windows in the current workspace. This is a toggle
   function, if all windows are unmapped, they are all remapped. Better bind this

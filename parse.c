@@ -909,7 +909,6 @@ static TwmKeyword keytable[] = {
 	{ "f.showworkspacemgr",     FKEYWORD, F_SHOWWORKMGR },
 	{ "f.slowdownanimation",    FKEYWORD, F_SLOWDOWNANIMATION },
 	{ "f.sorticonmgr",          FKEYWORD, F_SORTICONMGR },
-	{ "f.source",               FSKEYWORD, F_BEEP },  /* XXX - don't work */
 	{ "f.speedupanimation",     FKEYWORD, F_SPEEDUPANIMATION },
 	{ "f.squeeze",              FKEYWORD, F_SQUEEZE },
 	{ "f.startanimation",       FKEYWORD, F_STARTANIMATION },
