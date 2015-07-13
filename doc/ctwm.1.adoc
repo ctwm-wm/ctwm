@@ -333,9 +333,9 @@ or
 ------
 AutoRaise
 {
-	"emacs"
-	"XTerm"
-	"Xmh"
+    "emacs"
+    "XTerm"
+    "Xmh"
 }
 ------
 
@@ -469,8 +469,8 @@ BorderColor ++string++ [{ ++wincolorlist++ }]::
 ------
 BorderColor "gray50"
 {
-	"XTerm"	"red"
-	"xmh"	"green"
+    "XTerm" "red"
+    "xmh"   "green"
 }
 ------
 +
@@ -583,11 +583,11 @@ Color { ++colors-list++ }::
 ------
 Color
 {
-	MenuBackground		"gray50"
-	MenuForeground		"blue"
-	BorderColor			"red" { "XTerm" "yellow" }
-	TitleForeground		"yellow"
-	TitleBackground		"blue"
+    MenuBackground      "gray50"
+    MenuForeground      "blue"
+    BorderColor         "red"    { "XTerm" "yellow" }
+    TitleForeground     "yellow"
+    TitleBackground     "blue"
 }
 ------
 +
@@ -611,7 +611,7 @@ Cursors { ++cursor-list++ }::
   Shapes from the ++cursor++ font may be specified directly as:
 +
 ------
-	cursorname	"string"
+    cursorname "string"
 ------
 +
 [normal]
@@ -622,7 +622,7 @@ Cursors { ++cursor-list++ }::
   from bitmap files, the following syntax is used instead:
 +
 ------
-	cursorname	"image"	"mask"
+    cursorname "image" "mask"
 ------
 +
 [normal]
@@ -634,17 +634,17 @@ Cursors { ++cursor-list++ }::
 ------
 Cursors
 {
-	Frame		"top_left_arrow"
-	Title		"top_left_arrow"
-	Icon		"top_left_arrow"
-	IconMgr	"top_left_arrow"
-	Move		"fleur"
-	Resize		"fleur"
-	Menu		"sb_left_arrow"
-	Button		"hand2"
-	Wait		"watch"
-	Select		"dot"
-	Destroy	"pirate"
+    Frame       "top_left_arrow"
+    Title       "top_left_arrow"
+    Icon        "top_left_arrow"
+    IconMgr     "top_left_arrow"
+    Move        "fleur"
+    Resize      "fleur"
+    Menu        "sb_left_arrow"
+    Button      "hand2"
+    Wait        "watch"
+    Select      "dot"
+    Destroy     "pirate"
 }
 ------
 +
@@ -849,7 +849,7 @@ IconManagers { ++iconmgr-list++ }::
   ++iconmgr-list++ has the following format:
 +
 ------
-	"winname" ["iconname"]	"geometry" columns
+    "winname" ["iconname"] "geometry" columns
 ------
 +
 [normal]
@@ -862,8 +862,8 @@ IconManagers { ++iconmgr-list++ }::
 ------
 IconManagers
 {
-	"XTerm"	"=300x5+800+5"	5
-	"myhost"	"=400x5+100+5"	2
+    "XTerm"  "=300x5+800+5"  5
+    "myhost" "=400x5+100+5"  2
 }
 ------
 +
@@ -921,8 +921,8 @@ Icons { ++win-list++ }::
 ------
 Icons
 {
-	"XTerm"	"xterm.icon"
-	"xfd"		"xfd_icon"
+    "XTerm"  "xterm.icon"
+    "xfd"    "xfd_icon"
 }
 ------
 +
@@ -979,12 +979,12 @@ InterpolateMenuColors::
 ------
 Menu "mymenu"
 {
-	"Title"		("black":"red")		f.title
-	"entry1"				f.nop
-	"entry2"				f.nop
-	"entry3"	("white":"green")	f.nop
-	"entry4"				f.nop
-	"entry5"	("red":"white")		f.nop
+    "Title"     ("black":"red")     f.title
+    "entry1"                        f.nop
+    "entry2"                        f.nop
+    "entry3"    ("white":"green")   f.nop
+    "entry4"                        f.nop
+    "entry5"    ("red":"white")     f.nop
 }
 ------
 +
@@ -1217,15 +1217,16 @@ Occupy { ++occupy-list++ }::
   ++occupy-list++ consists of entries of the form :
 +
 ------
-        [Window]   win-name { wpsc1 wspc2 ... }
-or      Workspace  wspc-name {win1 win2 ... }
+        [Window]   win-name  { wpsc1 wspc2 ... }
+or      Workspace  wspc-name { win1  win2 ...  }
 ------
 +
 [normal]
   Example :
 +
 ------
-Occupy {
+Occupy
+{
                "xload"   {"all"}
     Window     "xterm"   {"here" "there" "elsewhere"}
                "xv"      {"images"}
@@ -1273,9 +1274,10 @@ OnTopPriority [Icons] ++priority++ [ { ++win-list++ } ]::
 +
 ------
 OnTopPriority Icons -1  # place icons a little in the background
-OnTopPriority Icons 1
+OnTopPriority Icons 1   # place mail icons on top of normal windows
 {
-    "Exmh" "xbiff"      # place mail icons on top of normal windows
+    "Exmh"
+    "xbiff"
 }
 
 OnTopPriority 8         # keep these always on top of other windows
@@ -1324,8 +1326,8 @@ Pixmaps { ++pixmaps++ }::
 ------
 Pixmaps
 {
-	TitleHighlight	"gray1"
-XCOMM	TitleHighlight	"supman%.xbm"
+        TitleHighlight  "gray1"
+#       TitleHighlight  "supman%.xbm"
 }
 ------
 +
@@ -1434,12 +1436,12 @@ SaveColor { ++colors-list++ }::
 ------
 SaveColor
 {
-        BorderColor
-        TitleBackground
-        TitleForeground
-        "red"
-        "green"
-        "blue"
+    BorderColor
+    TitleBackground
+    TitleForeground
+    "red"
+    "green"
+    "blue"
 }
 ------
 +
@@ -1489,7 +1491,7 @@ SqueezeTitle [{ ++squeeze-list++ }]::
   top of the window.  It contains entries of the form:
 +
 ------
-	"name"		justification	num	denom
+    "name"  justification num denom
 ------
 +
 [normal]
@@ -1510,11 +1512,11 @@ SqueezeTitle [{ ++squeeze-list++ }]::
 ------
 SqueezeTitle
 {
-	"XTerm"	left			0	0
-	"xterm1"	left			1	3
-	"xterm2"	left			2	3
-	"oclock"	center		1	2
-	"emacs"	right		2	2
+    "XTerm"   left    0  0
+    "xterm1"  left    1  3
+    "xterm2"  left    2  3
+    "oclock"  center  1  2
+    "emacs"   right   2  2
 }
 ------
 +
@@ -1815,7 +1817,8 @@ WorkSpaces
   "One"   {"#686B9F" "white" "DeepSkyBlue3" "white" "jpeg:shark.jpg"}
   "Two"   {"#619AAE" "white" "firebrick"}
   "Three" {"#727786" "white" "MidnightBlue" "white" "xpm:ball%.xpm"}
-  "Four"  {"#727786" "white" "white" "white" "|(giftoppm | pnmtoxwd) < 2010.gif"}
+  "Four"  {"#727786" "white" "white"        "white"
+                                      "|(giftoppm | pnmtoxwd) < 2010.gif"}
 
   "Five"  {"#727786" "white" "DeepSkyBlue3" "white" "plaid"}
   "Six"   {"#619AAE" "white" "DeepSkyBlue3" "white" "xpm:background1"}
@@ -1904,7 +1907,7 @@ the button box and the function to be invoked when a pointer button is
 pressed within them:
 
 ------
-LeftTitleButton "bitmapname"	= function
+LeftTitleButton "bitmapname" = function
 ------
 
 or
@@ -1920,7 +1923,7 @@ LeftTitleButton "bitmapname" {
 or
 
 ------
-RightTitleButton "bitmapname"	= function
+RightTitleButton "bitmapname" = function
 ------
 
 or
@@ -1961,8 +1964,8 @@ appropriate
 keysym name; buttons are given as the keywords ++Button1++-++Button5++:
 
 ------
-"FP1"		= modlist : context : function
-Button1	= modlist : context : function
+"FP1"   = modlist : context : function
+Button1 = modlist : context : function
 ------
 
 The ++modlist++ is any combination of the modifier names ++shift++,
@@ -1984,34 +1987,34 @@ keywords described below.  For example, the default startup
 file contains the following bindings:
 
 ------
-Button1	=	: root		: f.menu "TwmWindows"
-Button1	= m	: window | icon	: f.function "move-or-lower"
-Button2	= m	: window | icon	: f.iconify
-Button3	= m	: window | icon	: f.function "move-or-raise"
-Button1	=	: title		: f.function "move-or-raise"
-Button2	=	: title		: f.raiselower
-Button1	=	: icon		: f.function "move-or-iconify"
-Button2	=	: icon		: f.iconify
-Button1	=	: iconmgr	: f.iconify
-Button2	=	: iconmgr	: f.iconify
+Button1 =   : root          : f.menu "TwmWindows"
+Button1 = m : window | icon : f.function "move-or-lower"
+Button2 = m : window | icon : f.iconify
+Button3 = m : window | icon : f.function "move-or-raise"
+Button1 =   : title         : f.function "move-or-raise"
+Button2 =   : title         : f.raiselower
+Button1 =   : icon          : f.function "move-or-iconify"
+Button2 =   : icon          : f.iconify
+Button1 =   : iconmgr       : f.iconify
+Button2 =   : iconmgr       : f.iconify
 ------
 
 A user who wanted to be able to manipulate windows from the keyboard could
 use the following bindings:
 
 ------
-"F1"		=	: all		: f.iconify
-"F2"		=	: all		: f.raiselower
-"F3"		=	: all		: f.warpring "next"
-"F4"		=	: all		: f.warpto "xmh"
-"F5"		=	: all		: f.warpto "emacs"
-"F6"		=	: all		: f.colormap "next"
-"F7"		=	: all		: f.colormap "default"
-"F20"		=	: all		: f.warptoscreen "next"
-"Left"		= m	: all		: f.backiconmgr
-"Right"	= m | s	: all		: f.forwiconmgr
-"Up"		= m	: all		: f.upiconmgr
-"Down"	= m | s	: all		: f.downiconmgr
+"F1"    =       : all : f.iconify
+"F2"    =       : all : f.raiselower
+"F3"    =       : all : f.warpring "next"
+"F4"    =       : all : f.warpto "xmh"
+"F5"    =       : all : f.warpto "emacs"
+"F6"    =       : all : f.colormap "next"
+"F7"    =       : all : f.colormap "default"
+"F20"   =       : all : f.warptoscreen "next"
+"Left"  = m     : all : f.backiconmgr
+"Right" = m | s : all : f.forwiconmgr
+"Up"    = m     : all : f.upiconmgr
+"Down"  = m | s : all : f.downiconmgr
 ------
 
 ++ctwm++ provides many more window manipulation primitives than can be
@@ -2031,10 +2034,10 @@ calls to ++f.function++ and a list of other functions to execute.  For
 example:
 
 ------
-Function "move-or-lower"	{ f.move f.deltastop f.lower }
-Function "move-or-raise"	{ f.move f.deltastop f.raise }
-Function "move-or-iconify"	{ f.move f.deltastop f.iconify }
-Function "restore-colormap"	{ f.colormap "default" f.lower }
+Function "move-or-lower"    { f.move f.deltastop f.lower }
+Function "move-or-raise"    { f.move f.deltastop f.raise }
+Function "move-or-iconify"  { f.move f.deltastop f.iconify }
+Function "restore-colormap" { f.colormap "default" f.lower }
 ------
 
 The function name must be used in ++f.function++ exactly as it appears in
@@ -2068,9 +2071,9 @@ f.altcontext::
   For example:
 +
 ------
-"Return"= m	: all		: f.altcontext
-"n"	= 	: alter		: f.nextworkspace
-"p"	= 	: alter		: f.prevworkspace
+"Return" = m : all   : f.altcontext
+"n" =        : alter : f.nextworkspace
+"p" =        : alter : f.prevworkspace
 ------
 +
 
@@ -2082,12 +2085,12 @@ f.altkeymap ++number++::
   field of the binding command. For example:
 +
 ------
-"Return"= c	: all		: f.altkeymap "1"
-"i"	= a1	: window|icon|iconmgr	: f.iconify
-"z"	= a1	: window	: f.zoom
-"d"	= a1	: window|icon	: f.delete
-"o"	= a1	: window|icon	: f.occupy
-"r"	= a1	: window|icon	: f.refresh
+"Return" = c : all                  : f.altkeymap "1"
+"i" =     a1 : window|icon|iconmgr  : f.iconify
+"z" =     a1 : window               : f.zoom
+"d" =     a1 : window|icon          : f.delete
+"o" =     a1 : window|icon          : f.occupy
+"r" =     a1 : window|icon          : f.refresh
 ------
 +
 [normal]
@@ -2133,14 +2136,14 @@ f.changesize ++string++::
   can never be set/changed to less than 1.
 +
 ------
-"Right"  = c|s: all      : f.changesize "right +10"
-"Left"   = c|s: all      : f.changesize "right -10"
-"Down"   = c|s: all      : f.changesize "bottom +10"
-"Up"     = c|s: all      : f.changesize "bottom -10"
+"Right"  = c|s : all : f.changesize "right +10"
+"Left"   = c|s : all : f.changesize "right -10"
+"Down"   = c|s : all : f.changesize "bottom +10"
+"Up"     = c|s : all : f.changesize "bottom -10"
 
-"F1"     = c|s: all      : f.changesize "640x480"
-"F2"     = c|s: all      : f.changesize "800x600"
-"F3"     = c|s: all      : f.changesize "1024x768"
+"F1"     = c|s : all : f.changesize "640x480"
+"F2"     = c|s : all : f.changesize "800x600"
+"F3"     = c|s : all : f.changesize "1024x768"
 ------
 +
 
@@ -2708,12 +2711,12 @@ individual items:
 ------
 Menu "menuname" [ ("deffore":"defback") ]
 {
-	string1	[ ("fore1":"backn")]	function1
-	string2	[ ("fore2":"backn")]	function2
-		.
-		.
-		.
-	stringN	[ ("foreN":"backN")]	functionN
+    string1  [ ("fore1":"backn")]  function1
+    string2  [ ("fore2":"backn")]  function2
+        .
+        .
+        .
+    stringN  [ ("foreN":"backN")]  functionN
 }
 ------
 
