@@ -345,8 +345,8 @@ AutoRaise
 When a variable containing a list of strings representing windows is searched
 (e.g. to determine whether or not to enable autoraise as shown above), a string
 must be an exact, case-sensitive match to
-the window's name (given by the WM_NAME window property), resource name
-or class name (both given by the WM_CLASS window property).  The preceding
+the window's name (given by the `WM_NAME` window property), resource name
+or class name (both given by the `WM_CLASS` window property).  The preceding
 example would enable autoraise on windows named ``emacs'' as well as any
 `xterm` (since they are of class ``XTerm'') or xmh windows
 (which are of class ``Xmh'').
@@ -665,7 +665,7 @@ DarkShadowContrast `contrast`::
 
 DecorateTransients::
   This variable indicates that transient windows (those containing a
-  WM_TRANSIENT_FOR property) should have titlebars.  By default, transients
+  `WM_TRANSIENT_FOR` property) should have titlebars.  By default, transients
   are not reparented.
 
 DefaultBackground `string`::
@@ -943,7 +943,7 @@ IconSize `string`::
   "`size`"
   for a square size.
   This indicates the preferred size of icons selected from the EWMH window
-  property _NET_WM_ICON.
+  property `_NET_WM_ICON`.
   If an icon with the exact size is not available, one with the nearest (area)
   size will be chosen.
 
@@ -1416,7 +1416,7 @@ ResizeFont `string`::
 
 RestartPreviousState::
   This variable indicates that
-  ctwm should attempt to use the WM_STATE property on client windows
+  ctwm should attempt to use the `WM_STATE` property on client windows
   to tell which windows should be iconified and which should be left visible.
   This is typically used to try to regenerate the state that the screen
   was in before the previous window manager was shutdown.
@@ -1624,7 +1624,7 @@ UnmapByMovingFarAway [{ `win-list` }]::
 UsePPosition `string`::
   This variable specifies whether or not ctwm should honor
   program-requested locations (given by the `PPosition` flag in the
-  WM_NORMAL_HINTS property) in the absence of a user-specified position.
+  `WM_NORMAL_HINTS` property) in the absence of a user-specified position.
   The argument `string` may have one of three values:  `"off"`
   (the default) indicating that ctwm should ignore the program-supplied
   position, `"on"` indicating that the position should be used, and
@@ -2175,7 +2175,7 @@ f.circleup::
   This function raises the bottom-most window that is occluded by another window.
 
 f.colormap `string`::
-  This function rotates the colormaps (obtained from the WM_COLORMAP_WINDOWS
+  This function rotates the colormaps (obtained from the `WM_COLORMAP_WINDOWS`
   property on the window) that ctwm will display when the pointer
   is in this window.  The argument `string` may have one of the following
   values: `"next"`, `"prev"`, and `"default"`.  It should be noted
@@ -2198,17 +2198,17 @@ f.deiconify::
   this function does nothing.
 
 f.delete::
-  This function sends the WM_DELETE_WINDOW message to the selected window if
-  the client application has requested it through the WM_PROTOCOLS window
+  This function sends the `WM_DELETE_WINDOW` message to the selected window if
+  the client application has requested it through the `WM_PROTOCOLS` window
   property.  The application is supposed to respond to the message by removing
   the indicated window.  If the window has not requested
-  WM_DELETE_WINDOW messages, the keyboard bell will be rung indicating that
+  `WM_DELETE_WINDOW` messages, the keyboard bell will be rung indicating that
   the user should choose an alternative method.  Note this is very different
   from f.destroy.  The intent here is to delete a single window,  not
   necessarily the entire application.
 
 f.deleteordestroy::
-  First tries to delete the window (send it WM_DELETE_WINDOW message),
+  First tries to delete the window (send it `WM_DELETE_WINDOW` message),
   or kills it, if the client doesn't accept such message.
 
 f.deltastop::
@@ -2326,7 +2326,7 @@ f.identify::
 
 f.initsize::
   This function resets a window to its initial size given by the
-  WM_NORMAL_HINTS hints.
+  `WM_NORMAL_HINTS` hints.
 
 f.jumpdown `step`::
   This function is designed to be bound to a key, it moves the current window
@@ -2543,10 +2543,10 @@ f.savegeometry::
   f.restoregeometry will restore this window to this geometry.
 
 f.saveyourself::
-  This function sends a WM_SAVEYOURSELF message to the selected window if it
-  has requested the message in its WM_PROTOCOLS window property.  Clients that
+  This function sends a `WM_SAVEYOURSELF` message to the selected window if it
+  has requested the message in its `WM_PROTOCOLS` window property.  Clients that
   accept this message are supposed to checkpoint all state associated with the
-  window and update the WM_COMMAND property as specified in the ICCCM.  If
+  window and update the `WM_COMMAND` property as specified in the ICCCM.  If
   the selected window has not selected for this message, the keyboard bell
   will be rung.
 
