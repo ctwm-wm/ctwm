@@ -9,6 +9,12 @@ The old `imake` build system has been replaced by a new structure using
 `cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
 build ctwm.  See the `README` file for how to run it.
 
+### Removed Features
+
+1. Support for the SDSC imconv library, and the IMCONV options related to
+    it, has been removed.  The last release is almost 20 years old, and
+    doesn't support any remotely recent platforms.
+
 ### User Visible Changes
 
 1. Selected a number of cleanups from Stefan Monnier
@@ -35,10 +41,6 @@ build ctwm.  See the `README` file for how to run it.
 
 1. Icon manager windows are no longer included in the window ring
     (that had confusing effects on the focus sequence).
-
-1. Support for the SDSC imconv library, and the IMCONV options related to
-    it, has been removed.  The last release is almost 20 years old, and
-    doesn't support any remotely recent platforms.
 
 ### Internals
 
