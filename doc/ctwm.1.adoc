@@ -7,11 +7,11 @@ ctwm - Claude's Tab Window Manager for the X Window System
 
 == SYNTAX
 ["literal"]
-ctwm [-display dpy] [--replace] [-s] [-cfgchk]
+ctwm [-display dpy] [--replace] [-s[ingle]] [-cfgchk]
      [-f initfile] [-n] [-k] [-K m4file]
-     [-v] [-q] [-mono] [-xrm resource]
+     [-v[erbose]] [-q] [-mono] [-xrm resource]
      [-version] [-info] [-W]
-     [-w [win-id]] [-name name]
+     [-w[indow] [win-id]] [-name name]
      [-clientId] [-restore]
 
 
@@ -87,7 +87,7 @@ to touch the bottom the screen.
   In that case, the existing window manager is asked to quit,
   and ctwm takes its place.
 
--s::
+-s[ingle]::
   This option indicates that only the default screen (as specified by
   `-display` or by the `DISPLAY` environment variable) should be
   managed.  By default, ctwm will attempt to manage
@@ -104,7 +104,7 @@ to touch the bottom the screen.
   By default, ctwm will look in the user's home directory for files
   named `.ctwmrc.num`, `.ctwmrc`, `.twmrc.num`, or `.twmrc` (where `num` is a screen number).
 
--v::
+-v[erbose]::
   This option indicates that ctwm should print error messages whenever
   an unexpected X Error event is received.  This can be useful when debugging
   applications but can be distracting in regular use.
@@ -135,7 +135,7 @@ to touch the bottom the screen.
 -info::
   ctwm prints its detailed version and compile time options.
 
--w [`win-id`]::
+-w[indow] [`win-id`]::
   If -w is specified without a win-id value, ctwm does not take over the whole
   screen(s), instead it creates a new window that becomes its root window. if the
   win-id value is given, it is considered to be the id of an existing window, in
