@@ -2662,10 +2662,10 @@ f.vanish::
   The specified window vanishes from the current workspace if it occupies at least
   one other WorkSpace. Do nothing in the others cases.
 
-// .IP "++f.version++" 8
-// This function causes the ++ctwm++ version window to be displayed.  This
-// window will be displayed until a pointer button is pressed or the
-// pointer is moved from one window to another.
+f.version::
+  This function causes the ++ctwm++ version window to be displayed.  This
+  window will be displayed until a pointer button is pressed or the
+  pointer is moved from one window to another.
 
 f.vlzoom::
   This function is a synonym for ++f.leftzoom++.
