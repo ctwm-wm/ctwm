@@ -315,8 +315,8 @@ which are predefined by `m4`, you are in severe danger!  For example,
 the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
 you are out of luck.
 
-The availability of the `m4` preprocessing is subject to the compilation
-define USEM4.
+The availability of the `m4` preprocessing is dependent on the build
+option USE_M4 (on by default).
 
 == VARIABLES
 Many of the aspects of ctwm's user interface are controlled by variables
