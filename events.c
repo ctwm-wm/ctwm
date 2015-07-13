@@ -3013,12 +3013,13 @@ void HandleButtonRelease(void)
 		XSendEvent(dpy, Scr->currentvs->wsw->w, False, SubstructureNotifyMask, &Event);
 	}
 #endif /* GNOME */
-	if(InfoLines)               /* delete info box on 2nd button release  */
+	if(InfoLines) {             /* delete info box on 2nd button release  */
 		if(Context == C_IDENTIFY) {
 			XUnmapWindow(dpy, Scr->InfoWindow);
 			InfoLines = 0;
 			Context = C_NO_CONTEXT;
 		}
+	}
 
 	if(DragWindow != None) {
 		MoveOutline(Scr->XineramaRoot, 0, 0, 0, 0, 0, 0);
