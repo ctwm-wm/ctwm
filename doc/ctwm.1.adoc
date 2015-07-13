@@ -309,7 +309,7 @@ TWM_CAPTIVE_NAME::
 
 
 You may well find that if you research the `m4(1)` manual well,
-and understand the power of `m4`, this will be a `very`
+and understand the power of `m4`, this will be a _very_
 useful and powerful tool.  But, if you use any of the symbols
 which are predefined by `m4`, you are in severe danger!  For example,
 the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
