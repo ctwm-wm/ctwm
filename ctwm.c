@@ -80,11 +80,11 @@
 #endif
 
 #include <fcntl.h>
-#  include <X11/Xproto.h>
-#  include <X11/Xatom.h>
-#  include <X11/Xmu/Error.h>
-#  include <X11/SM/SMlib.h>
-#  include <X11/Xlocale.h>
+#include <X11/Xproto.h>
+#include <X11/Xatom.h>
+#include <X11/Xmu/Error.h>
+#include <X11/SM/SMlib.h>
+#include <X11/Xlocale.h>
 
 
 #include "ctwm.h"
@@ -109,9 +109,9 @@
 
 
 /* I'm not sure this is meaningful anymore */
-# ifndef PIXMAP_DIRECTORY
-#  define PIXMAP_DIRECTORY "/usr/lib/X11/twm"
-# endif
+#ifndef PIXMAP_DIRECTORY
+#define PIXMAP_DIRECTORY "/usr/lib/X11/twm"
+#endif
 
 
 XtAppContext appContext;        /* Xt application context */

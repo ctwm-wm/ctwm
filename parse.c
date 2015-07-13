@@ -75,9 +75,9 @@
 #if defined(sony_news) || defined __QNX__
 #  include <ctype.h>
 #endif
-# include <X11/Xos.h>
-# include <X11/Xmu/SysUtil.h>
-# include <X11/Xatom.h>
+#include <X11/Xos.h>
+#include <X11/Xmu/SysUtil.h>
+#include <X11/Xatom.h>
 
 #include "ctwm.h"
 #include "ctwm_atoms.h"

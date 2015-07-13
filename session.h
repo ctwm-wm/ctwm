@@ -25,7 +25,7 @@
  */
 
 #include <stdio.h>
-#  include <X11/SM/SMlib.h>
+#include <X11/SM/SMlib.h>
 #include "types.h"
 
 #ifndef _SESSION_

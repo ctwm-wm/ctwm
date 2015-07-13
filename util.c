@@ -116,7 +116,7 @@
 
 
 #if defined (XPM)
-#  include <X11/xpm.h>
+#include <X11/xpm.h>
 #endif
 
 #ifdef JPEG

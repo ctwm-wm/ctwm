@@ -76,9 +76,9 @@
 #include <string.h>
 #include <strings.h>
 
-# include <X11/Xos.h>
-# include <X11/Xatom.h>
-# include <X11/SM/SMlib.h>
+#include <X11/Xos.h>
+#include <X11/Xatom.h>
+#include <X11/SM/SMlib.h>
 
 #include "ctwm.h"
 #include "ctwm_atoms.h"
