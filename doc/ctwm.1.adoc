@@ -6,9 +6,10 @@ CTWM(1)
 ctwm - Claude's Tab Window Manager for the X Window System
 
 == SYNTAX
-`ctwm` [-display `dpy`] [--replace] [-s] [-cfgchk]
-       [-f `initfile`] [-v] [-n] [-k] [-K `m4file`]
-       [-w [`win-id`]]
+["literal"]
+ctwm [-display dpy] [--replace] [-s] [-cfgchk]
+     [-f initfile] [-v] [-n] [-k] [-K m4file]
+     [-w [win-id]]
 
 
 == DESCRIPTION
