@@ -937,7 +937,7 @@ Icons
 IconSize ++string++::
   (Only with EWMH support)
   string is of the form
-  "++width++x++height++"
+  "++<width>x<height>++"
   or
   "++size++"
   for a square size.
