@@ -9,7 +9,7 @@ ctwm - Claude's Tab Window Manager for the X Window System
 ["literal"]
 ctwm [-display dpy] [--replace] [-s] [-cfgchk]
      [-f initfile] [-v] [-n] [-k] [-K m4file]
-     [-w [win-id]]
+     [-version] [-info] [-w [win-id]] [-W]
 
 
 == DESCRIPTION
