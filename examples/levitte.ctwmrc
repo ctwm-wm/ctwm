@@ -149,19 +149,19 @@ Function "resize-or-raise" { f.resize f.deltastop f.raise }
 # Set some useful bindings.  Sort of uwm-ish, sort of simple-button-ish
 #
 LeftTitleButton ":xpm:bar" {
-    Button1 : f.menu "barmenu"
+    Button1 = f.menu "barmenu"
 }
 LeftTitleButton ":xpm:menu" {
-    Button1 : f.menu "titlemenu"
+    Button1 = f.menu "titlemenu"
 }
 RightTitleButton ":xpm:dot" {
-    Button1 : f.iconify
+    Button1 = f.iconify
 }
 RightTitleButton ":xpm:zoom" {
-    Button1 : f.fullzoom
+    Button1 = f.fullzoom
 }
 RightTitleButton ":xpm:resize" {
-    Button1 : f.resize
+    Button1 = f.resize
 }
 
 Button1 =	: root		: f.menu "defops"
