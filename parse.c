@@ -567,6 +567,7 @@ static int twmStringListInput(void)
  ***********************************************************************
  */
 
+/* Only used with AT&T lex */
 void twmUnput(int c)
 {
 	if(overflowlen < sizeof overflowbuff) {
@@ -591,6 +592,7 @@ void twmUnput(int c)
  ***********************************************************************
  */
 
+/* Only used with AT&T lex */
 void TwmOutput(int c)
 {
 	putchar(c);
