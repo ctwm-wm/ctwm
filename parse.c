@@ -144,13 +144,23 @@ static FILE *twmrc;
 static int ptr = 0;
 static int len = 0;
 static char buff[BUF_LEN + 1];
-static char overflowbuff[20];           /* really only need one */
-static int overflowlen;
 static const char **stringListSource, *currentString;
 static int ParseUsePPosition(register char *s);
 #ifdef USEM4
 static FILE *start_m4(FILE *fraw);
 static char *m4_defs(Display *display, char *host);
+#endif
+
+/*
+ * While there are (were) referenced in a number of places through the
+ * file, overflowlen is initialized to 0, only possibly changed in
+ * twmUnput(), and unless it's non-zero, neither is otherwise touched.
+ * So this is purely a twmUnput()-related var, and with flex, never used
+ * for anything.
+ */
+#ifdef NON_FLEX_LEX
+static char overflowbuff[20];           /* really only need one */
+static int overflowlen;
 #endif
 
 int ConstrainedMoveTime = 400;          /* milliseconds, event times */
@@ -189,7 +199,9 @@ static int doparse(int (*ifunc)(void), const char *srctypename,
 	twmrc_lineno = 0;
 	ParseError = FALSE;
 	twmInputFunc = ifunc;
+#ifdef NON_FLEX_LEX
 	overflowlen = 0;
+#endif
 
 	yyparse();
 
@@ -426,9 +438,11 @@ static int include_file = 0;
 
 static int twmFileInput(void)
 {
+#ifdef NON_FLEX_LEX
 	if(overflowlen) {
 		return (int) overflowbuff[--overflowlen];
 	}
+#endif
 
 	while(ptr == len) {
 		while(include_file) {
@@ -502,9 +516,11 @@ static int m4twmFileInput(void)
 		}
 	}
 
+#ifdef NON_FLEX_LEX
 	if(overflowlen) {
 		return((int) overflowbuff[--overflowlen]);
 	}
+#endif
 
 	while(ptr == len) {
 nextline:
@@ -536,9 +552,11 @@ nextline:
 
 static int twmStringListInput(void)
 {
+#ifdef NON_FLEX_LEX
 	if(overflowlen) {
 		return (int) overflowbuff[--overflowlen];
 	}
+#endif
 
 	/*
 	 * return the character currently pointed to
@@ -555,6 +573,8 @@ static int twmStringListInput(void)
 	return 0;                           /* eof */
 }
 
+
+#ifdef NON_FLEX_LEX
 
 /***********************************************************************
  *
@@ -597,6 +617,8 @@ void TwmOutput(int c)
 {
 	putchar(c);
 }
+
+#endif /* NON_FLEX_LEX */
 
 
 /**********************************************************************

@@ -156,6 +156,7 @@ int yywrap(void) { return(1);}
  * this out, and it might work; let us know!
  */
 #error Not supported on non-flex; remove this line at your own risk
+#ifdef NON_FLEX_LEX
 #undef unput
 #undef input
 #undef output
@@ -164,5 +165,6 @@ int yywrap(void) { return(1);}
 #define input()		(*twmInputFunc)()
 #define output(c)	TwmOutput(c)
 #define feof()		(1)
-#endif
+#endif /* NON_FLEX_LEX */
+#endif /* !FLEX_SCANNER */
 
