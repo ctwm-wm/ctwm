@@ -93,14 +93,9 @@
 #include "util.h"
 #include "parse.h"
 #include "parse_int.h"
-#include "version.h"
 #include "deftwmrc.h"
 #ifdef SOUNDS
 #  include "sound.h"
-#endif
-
-#if defined(ultrix)
-#define NOSTEMP
 #endif
 
 #ifndef SYSTEM_INIT_FILE
