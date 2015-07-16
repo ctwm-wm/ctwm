@@ -61,7 +61,6 @@
  *
  ***********************************************************************/
 
-/* #include <stdio.h> */		/* lex already includes stdio.h */
 #ifdef VMS
 #  include <ctype.h>
 #  ifdef __DECC
@@ -72,12 +71,27 @@
 #endif
 #include "parse.h"
 
+/*
+ * flex uses a YY_INPUT macro internally rather than input.  It doesn't
+ * need unput since it maintains state internally.
+ */
 #ifdef FLEX_SCANNER
 #  undef YY_INPUT
 #  define YY_INPUT(buf,result,max_size) {buf[0]=twmInputFunc();result=(buf[0] != 0);}
 #endif
 
-extern int yylex(void);
+/*
+ * YY_FLEX_{MAJOR,MINOR}_VERSION was added in 2.5.1 (28Mar95); just in
+ * case we need to do version checks of stuff.
+ */
+
+/*
+ * flex listens to these to avoid declaring these functions, which we
+ * don't use, so suppress the warning.
+ */
+#define YY_NO_UNPUT
+#define YY_NO_INPUT
+
 %}
 
 string				\"([^"]|\\.)*\"
@@ -120,11 +134,28 @@ number				[0-9]+
 				  ParseError = 1;
 				}
 %%
+
+/*
+ * In flex versions before 2.4.1 (30Nov93), yywrap was a macro, not a
+ * function.  There's no way we really support versions that old, but
+ * what the heck...
+ */
 #ifndef yywrap
 int yywrap(void) { return(1);}
 #endif
 
+/* AT&T lex uses the input/unput macros */
 #ifndef FLEX_SCANNER
+/*
+ * I believe Solaris at least recently recently (and maybe currently)
+ * ships with an AT&T lex, but also with flex beside it.  Plan
+ * 9 might ship only A&T lex?
+ *
+ * However, our current build toolchain doesn't look for any lex other
+ * than flex.  So #error out if we get here; adventurous users might take
+ * this out, and it might work; let us know!
+ */
+#error Not supported on non-flex; remove this line at your own risk
 #undef unput
 #undef input
 #undef output

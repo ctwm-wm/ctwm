@@ -61,11 +61,11 @@
  *
  **********************************************************************/
 
+#ifndef _PARSE_H
+#define _PARSE_H
+
 #include "types.h"
 #include "gram.tab.h"
-
-#ifndef _PARSE_
-#define _PARSE_
 
 extern unsigned int mods_used;
 extern int ConstrainedMoveTime;
@@ -243,4 +243,4 @@ int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
 void proc_ewmh_ignore(void);
 void add_ewmh_ignore(char *s);
 
-#endif /* _PARSE_ */
+#endif /* _PARSE_H */
