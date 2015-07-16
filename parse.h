@@ -75,11 +75,11 @@ extern int ParseError;                  /* error parsing the .twmrc file */
 extern int twmrc_lineno;
 extern char *defTwmrc[];                /* From deftwmrc.c.  */
 
-extern int ParseTwmrc(char *filename);
-extern int ParseStringList(char **sl);
-extern int (*twmInputFunc)(void);
-extern void twmUnput(int c);
-extern void TwmOutput(int c);
+int ParseTwmrc(char *filename);
+int ParseStringList(char **sl);
+int (*twmInputFunc)(void);
+void twmUnput(int c);
+void TwmOutput(int c);
 
 #define F_NOP                   0
 #define F_BEEP                  1
