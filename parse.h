@@ -74,8 +74,10 @@ extern void twmrc_error_prefix(void);
 extern int ParseError;                  /* error parsing the .twmrc file */
 extern int twmrc_lineno;
 
+/* Needed in the lexer */
+extern int (*twmInputFunc)(void);
+
 int ParseTwmrc(char *filename);
-int (*twmInputFunc)(void);
 void twmUnput(int c);
 void TwmOutput(int c);
 
