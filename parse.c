@@ -556,6 +556,8 @@ static int twmStringListInput(void)
 }
 
 
+#ifdef NON_FLEX_LEX
+
 /***********************************************************************
  *
  *  Procedure:
@@ -597,6 +599,8 @@ void TwmOutput(int c)
 {
 	putchar(c);
 }
+
+#endif /* NON_FLEX_LEX */
 
 
 /**********************************************************************

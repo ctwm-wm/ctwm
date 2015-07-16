@@ -78,8 +78,16 @@ extern int twmrc_lineno;
 extern int (*twmInputFunc)(void);
 
 int ParseTwmrc(char *filename);
+
+/*
+ * Historical support for non-flex lex's is presumed no longer necessary.
+ * Remnants kept for the moment just in case.
+ */
+#undef NON_FLEX_LEX
+#ifdef NON_FLEX_LEX
 void twmUnput(int c);
 void TwmOutput(int c);
+#endif /* NON_FLEX_LEX */
 
 #define F_NOP                   0
 #define F_BEEP                  1
