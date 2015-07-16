@@ -596,7 +596,7 @@ typedef struct _TwmKeyword {
 #define kw0_ForceIcons                  3
 #define kw0_NoIconManagers              4
 #define kw0_InterpolateMenuColors       6
-//#define kw0_NoVersion                   7
+//#define kw0_NoVersion                 7
 #define kw0_SortIconManager             8
 #define kw0_NoGrabServer                9
 #define kw0_NoMenuShadows               10
