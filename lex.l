@@ -72,6 +72,10 @@
 #endif
 #include "parse.h"
 
+/*
+ * flex uses a YY_INPUT macro internally rather than input.  It doesn't
+ * need unput since it maintains state internally.
+ */
 #ifdef FLEX_SCANNER
 #  undef YY_INPUT
 #  define YY_INPUT(buf,result,max_size) {buf[0]=twmInputFunc();result=(buf[0] != 0);}
@@ -124,6 +128,7 @@ number				[0-9]+
 int yywrap(void) { return(1);}
 #endif
 
+/* AT&T lex uses the input/unput macros */
 #ifndef FLEX_SCANNER
 #undef unput
 #undef input
