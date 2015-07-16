@@ -127,6 +127,7 @@ if(USE_M4)
 	if(NOT M4_CMD)
 		message(FATAL_ERROR "Can't find m4 program: try setting M4_CMD.")
 	endif(NOT M4_CMD)
+	list(APPEND CTWMSRC parse_m4.c)
 	message(STATUS "Enabling m4 support (${M4_CMD}).")
 endif(USE_M4)
 
