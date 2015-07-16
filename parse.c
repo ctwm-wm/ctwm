@@ -149,6 +149,8 @@ static int m4twmFileInput(void);
 #endif
 int (*twmInputFunc)(void);
 
+int ParseStringList(const char **sl);
+
 /***********************************************************************
  *
  *  Procedure:

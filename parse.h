@@ -75,7 +75,6 @@ extern int ParseError;                  /* error parsing the .twmrc file */
 extern int twmrc_lineno;
 
 int ParseTwmrc(char *filename);
-int ParseStringList(const char **sl);
 int (*twmInputFunc)(void);
 void twmUnput(int c);
 void TwmOutput(int c);
