@@ -73,7 +73,6 @@ extern int RaiseDelay;
 extern void twmrc_error_prefix(void);
 extern int ParseError;                  /* error parsing the .twmrc file */
 extern int twmrc_lineno;
-extern const char *defTwmrc[];                /* From deftwmrc.c.  */
 
 int ParseTwmrc(char *filename);
 int ParseStringList(const char **sl);

@@ -121,6 +121,7 @@
 static int ParseRandomPlacement(register char *s);
 static int ParseButtonStyle(register char *s);
 extern int yyparse(void);
+extern const char *defTwmrc[];                /* From deftwmrc.c.  */
 
 static FILE *twmrc;
 static int ptr = 0;
