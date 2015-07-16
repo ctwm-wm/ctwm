@@ -596,7 +596,7 @@ typedef struct _TwmKeyword {
 #define kw0_ForceIcons                  3
 #define kw0_NoIconManagers              4
 #define kw0_InterpolateMenuColors       6
-#define kw0_NoVersion                   7
+//#define kw0_NoVersion                   7
 #define kw0_SortIconManager             8
 #define kw0_NoGrabServer                9
 #define kw0_NoMenuShadows               10
@@ -1029,7 +1029,6 @@ static TwmKeyword keytable[] = {
 	{ "notitle",                NO_TITLE, 0 },
 	{ "notitlefocus",           KEYWORD, kw0_NoTitleFocus },
 	{ "notitlehighlight",       NO_TITLE_HILITE, 0 },
-	{ "noversion",              KEYWORD, kw0_NoVersion },
 	{ "nowarptomenutitle",      KEYWORD, kw0_NoWarpToMenuTitle },
 	{ "occupy",                 OCCUPYLIST, 0 },
 	{ "occupyall",              OCCUPYALL, 0 },
@@ -1192,10 +1191,6 @@ int do_single_keyword(int keyword)
 			if(Scr->FirstTime) {
 				Scr->InterpolateMenuColors = TRUE;
 			}
-			return 1;
-
-		case kw0_NoVersion:
-			/* obsolete */
 			return 1;
 
 		case kw0_SortIconManager:

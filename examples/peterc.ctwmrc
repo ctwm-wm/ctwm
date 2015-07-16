@@ -4,7 +4,6 @@
 
 PixmapDirectory        "MPHA7$USER1:[THEORY.PETERC.XPM.ctwmicons]"
 NoDefaults
-#NoVersion
 NoGrabServer
 #NoRaiseOnMove
 #NoRaiseOnResize
