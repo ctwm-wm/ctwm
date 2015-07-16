@@ -12,7 +12,7 @@ echo ' */'
 echo
 
 # We define one big char* arrray of the lines
-echo 'const char *defTwmrc[] = {'
+echo 'static const char *defTwmrc[] = {'
 
 sed -e '/^#/d'           \
 	-e '/^$/d'           \

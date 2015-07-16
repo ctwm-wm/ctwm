@@ -73,13 +73,11 @@ extern int RaiseDelay;
 extern void twmrc_error_prefix(void);
 extern int ParseError;                  /* error parsing the .twmrc file */
 extern int twmrc_lineno;
-extern char *defTwmrc[];                /* From deftwmrc.c.  */
 
-extern int ParseTwmrc(char *filename);
-extern int ParseStringList(char **sl);
-extern int (*twmInputFunc)(void);
-extern void twmUnput(int c);
-extern void TwmOutput(int c);
+int ParseTwmrc(char *filename);
+int (*twmInputFunc)(void);
+void twmUnput(int c);
+void TwmOutput(int c);
 
 #define F_NOP                   0
 #define F_BEEP                  1
@@ -124,7 +122,7 @@ extern void TwmOutput(int c);
 #define F_SORTICONMGR           40
 #define F_CIRCLEUP              41
 #define F_CIRCLEDOWN            42
-//#define F_CUTFILE               43
+//#define F_CUTFILE             43
 #define F_SHOWLIST              44
 #define F_HIDELIST              45
 #define F_OCCUPY                46
@@ -179,9 +177,9 @@ extern void TwmOutput(int c);
 #define F_WARPTO                102     /* string */
 #define F_WARPTOICONMGR         103     /* string */
 #define F_WARPRING              104     /* string */
-//#define F_FILE                  105     /* string */
+//#define F_FILE                105     /* string */
 #define F_EXEC                  106     /* string */
-//#define F_CUT                   107     /* string */
+//#define F_CUT                 107     /* string */
 #define F_FUNCTION              108     /* string */
 #define F_WARPTOSCREEN          109     /* string */
 #define F_COLORMAP              110     /* string */

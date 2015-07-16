@@ -93,6 +93,7 @@
 #include "util.h"
 #include "parse.h"
 #include "version.h"
+#include "deftwmrc.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -120,6 +121,8 @@
 
 static int ParseRandomPlacement(register char *s);
 static int ParseButtonStyle(register char *s);
+static int ParseStringList(const char **sl);
+
 extern int yyparse(void);
 
 static FILE *twmrc;
@@ -128,7 +131,7 @@ static int len = 0;
 static char buff[BUF_LEN + 1];
 static char overflowbuff[20];           /* really only need one */
 static int overflowlen;
-static char **stringListSource, *currentString;
+static const char **stringListSource, *currentString;
 static int ParseUsePPosition(register char *s);
 #ifdef USEM4
 static FILE *start_m4(FILE *fraw);
@@ -370,7 +373,7 @@ int ParseTwmrc(char *filename)
 	}
 }
 
-int ParseStringList(char **sl)
+static int ParseStringList(const char **sl)
 {
 	stringListSource = sl;
 	currentString = *sl;
