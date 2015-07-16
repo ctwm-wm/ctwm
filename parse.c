@@ -81,8 +81,6 @@
 # include <X11Xmu/SysUtil.h>
 # include <decw$include/Xatom.h>
 #else
-# include <X11/Xos.h>
-# include <X11/Xmu/SysUtil.h>
 # include <X11/Xatom.h>
 #endif
 
