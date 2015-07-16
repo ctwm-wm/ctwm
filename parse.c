@@ -128,7 +128,7 @@ static int len = 0;
 static char buff[BUF_LEN + 1];
 static char overflowbuff[20];           /* really only need one */
 static int overflowlen;
-static char **stringListSource, *currentString;
+static const char **stringListSource, *currentString;
 static int ParseUsePPosition(register char *s);
 #ifdef USEM4
 static FILE *start_m4(FILE *fraw);
@@ -370,7 +370,7 @@ int ParseTwmrc(char *filename)
 	}
 }
 
-int ParseStringList(char **sl)
+int ParseStringList(const char **sl)
 {
 	stringListSource = sl;
 	currentString = *sl;
