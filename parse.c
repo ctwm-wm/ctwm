@@ -121,6 +121,8 @@
 
 static int ParseRandomPlacement(register char *s);
 static int ParseButtonStyle(register char *s);
+static int ParseStringList(const char **sl);
+
 extern int yyparse(void);
 
 static FILE *twmrc;
@@ -148,8 +150,6 @@ static int twmFileInput(void);
 static int m4twmFileInput(void);
 #endif
 int (*twmInputFunc)(void);
-
-int ParseStringList(const char **sl);
 
 /***********************************************************************
  *
@@ -373,7 +373,7 @@ int ParseTwmrc(char *filename)
 	}
 }
 
-int ParseStringList(const char **sl)
+static int ParseStringList(const char **sl)
 {
 	stringListSource = sl;
 	currentString = *sl;
