@@ -124,6 +124,12 @@ number				[0-9]+
 				  ParseError = 1;
 				}
 %%
+
+/*
+ * In flex versions before 2.4.1 (30Nov93), yywrap was a macro, not a
+ * function.  There's no way we really support versions that old, but
+ * what the heck...
+ */
 #ifndef yywrap
 int yywrap(void) { return(1);}
 #endif
