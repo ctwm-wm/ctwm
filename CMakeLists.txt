@@ -8,7 +8,6 @@ set(CTWMSRC
 	ctwm.c
 	ctwm_atoms.c
 	cursor.c
-	deftwmrc.c
 	events.c
 	gc.c
 	gram.tab.c
@@ -381,13 +380,15 @@ endif(MANBASE)
 # And the build targets
 #
 
-# Hand-build deftwmrc.c
-set(defc deftwmrc.c)
-set(mkdefc ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
-add_custom_command(OUTPUT ${defc}
-	DEPENDS system.ctwmrc ${mkdefc}
-	COMMAND ${mkdefc} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defc}
+# Hand-build deftwmrc.h
+set(defh ${CMAKE_CURRENT_BINARY_DIR}/deftwmrc.h)
+set(mkdefh ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
+add_custom_command(OUTPUT ${defh}
+	DEPENDS system.ctwmrc ${mkdefh}
+	COMMAND ${mkdefh} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defh}
 )
+# Need to do this explicitly for cmake to figure it out
+set_source_files_properties(parse.c OBJECT_DEPENDS ${defh})
 
 # Hand-build ctwm_atoms.[ch]
 set(ctwm_atoms ctwm_atoms.h ctwm_atoms.c)

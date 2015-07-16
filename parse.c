@@ -93,6 +93,7 @@
 #include "util.h"
 #include "parse.h"
 #include "version.h"
+#include "deftwmrc.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -121,7 +122,6 @@
 static int ParseRandomPlacement(register char *s);
 static int ParseButtonStyle(register char *s);
 extern int yyparse(void);
-extern const char *defTwmrc[];                /* From deftwmrc.c.  */
 
 static FILE *twmrc;
 static int ptr = 0;
