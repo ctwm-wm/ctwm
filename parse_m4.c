@@ -3,9 +3,6 @@
  * should probably migrate here over time.
  */
 
-#include <sys/param.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <netdb.h>
@@ -16,6 +13,7 @@
 #include "screen.h"
 #include "parse.h"
 #include "parse_int.h"
+#include "util.h"
 #include "version.h"
 
 
