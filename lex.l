@@ -84,6 +84,14 @@
  * YY_FLEX_{MAJOR,MINOR}_VERSION was added in 2.5.1 (28Mar95); just in
  * case we need to do version checks of stuff.
  */
+
+/*
+ * flex listens to these to avoid declaring these functions, which we
+ * don't use, so suppress the warning.
+ */
+#define YY_NO_UNPUT
+#define YY_NO_INPUT
+
 %}
 
 string				\"([^"]|\\.)*\"
