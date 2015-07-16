@@ -80,8 +80,6 @@
 #  undef YY_INPUT
 #  define YY_INPUT(buf,result,max_size) {buf[0]=twmInputFunc();result=(buf[0] != 0);}
 #endif
-
-extern int yylex(void);
 %}
 
 string				\"([^"]|\\.)*\"
