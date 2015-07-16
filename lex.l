@@ -130,6 +130,16 @@ int yywrap(void) { return(1);}
 
 /* AT&T lex uses the input/unput macros */
 #ifndef FLEX_SCANNER
+/*
+ * I believe Solaris at least recently recently (and maybe currently)
+ * ships with an AT&T lex, but also with flex beside it.  Plan
+ * 9 might ship only A&T lex?
+ *
+ * However, our current build toolchain doesn't look for any lex other
+ * than flex.  So #error out if we get here; adventurous users might take
+ * this out, and it might work; let us know!
+ */
+#error Not supported on non-flex; remove this line at your own risk
 #undef unput
 #undef input
 #undef output
