@@ -123,7 +123,22 @@ static int ParseRandomPlacement(register char *s);
 static int ParseButtonStyle(register char *s);
 static int ParseStringList(const char **sl);
 
-extern int yyparse(void);
+/*
+ * With current bison, this is defined in the gram.tab.h, so this causes
+ * a warning for redundant declaration.  With older bisons and byacc,
+ * it's not, so taking it out causes a warning for implicit declaration.
+ * A little looking around doesn't show any handy #define's we could use
+ * to be sure of the difference.  This should quiet it down on gcc/clang
+ * anyway...
+ */
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wredundant-decls"
+ extern int yyparse(void);
+# pragma GCC diagnostic pop
+#else
+ extern int yyparse(void);
+#endif
 
 static FILE *twmrc;
 static int ptr = 0;
