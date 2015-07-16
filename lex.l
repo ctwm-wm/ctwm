@@ -61,7 +61,6 @@
  *
  ***********************************************************************/
 
-/* #include <stdio.h> */		/* lex already includes stdio.h */
 #ifdef VMS
 #  include <ctype.h>
 #  ifdef __DECC
