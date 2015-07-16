@@ -79,6 +79,11 @@
 #  undef YY_INPUT
 #  define YY_INPUT(buf,result,max_size) {buf[0]=twmInputFunc();result=(buf[0] != 0);}
 #endif
+
+/*
+ * YY_FLEX_{MAJOR,MINOR}_VERSION was added in 2.5.1 (28Mar95); just in
+ * case we need to do version checks of stuff.
+ */
 %}
 
 string				\"([^"]|\\.)*\"
