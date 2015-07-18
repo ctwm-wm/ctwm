@@ -1015,22 +1015,21 @@ static void usage(void)
 		llen = 10;
 	}
 
-	fprintf(stderr, "usage: %s [(--display | -d) dpy] [--version] [--info]",
+	fprintf(stderr, "usage: %s [(--display | -d) dpy]  [--version]  [--info]",
 	        ProgramName);
 #ifdef EWMH
-	fprintf(stderr, " [--replace]");
+	fprintf(stderr, "  [--replace]");
 #endif
 
-	fprintf(stderr, "\n%*s[--cfgchk] [(--file | -f) file] [--single] "
+	fprintf(stderr, "\n%*s[--cfgchk]  [(--file | -f) file]  [--single]  "
 	        "[--nowelcome | -W]\n", llen, "");
-	fprintf(stderr, "%*s[(--window | -w) [wid]] [--help | -h]\n", llen, "");
+	fprintf(stderr, "%*s[(--window | -w) [wid]]  [--help | -h]\n", llen, "");
 
-	fprintf(stderr,
-	        "%*s[--quiet | -q] [--verbose | -v] [--name name] [--xrm resource]\n",
-	        llen, "");
+	fprintf(stderr, "%*s[--quiet | -q]  [--verbose | -v]  [--name name] "
+	        "[--xrm resource]\n", llen, "");
 
 #ifdef USEM4
-	fprintf(stderr, "%*s[--nom4 | -n] [--keep-defs | -k] "
+	fprintf(stderr, "%*s[--nom4 | -n]  [--keep-defs | -k]  "
 	        "[(--keep | -K) file]\n", llen, "");
 #endif
 
