@@ -24,6 +24,8 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
 #include <X11/Xos.h>
@@ -3927,7 +3929,7 @@ static char **GetCaptivesList(int scrnum)
 		p += strlen((char *)p) + 1;
 		count++;
 	}
-	ret = (char **) malloc((count + 1) * sizeof(char *));
+	ret = calloc(count + 1, sizeof(char *));
 
 	p = prop;
 	l = 0;
@@ -3937,7 +3939,7 @@ static char **GetCaptivesList(int scrnum)
 		l += strlen((char *)p) + 1;
 		p += strlen((char *)p) + 1;
 	}
-	ret [i] = (char *) 0;
+	ret [i] = NULL;
 	XFree((char *)prop);
 
 	return (ret);
@@ -4036,12 +4038,12 @@ void AddToCaptiveList(void)
 		captivename = (char *) malloc(8);
 		sprintf(captivename, "ctwm-%d", i);
 	}
-	newclist = (char **) malloc((count + 2) * sizeof(char *));
+	newclist = calloc(count + 2, sizeof(char *));
 	for(i = 0; i < count; i++) {
 		newclist [i] = (char *) strdup(clist [i]);
 	}
 	newclist [count] = (char *) strdup(captivename);
-	newclist [count + 1] = (char *) 0;
+	newclist [count + 1] = NULL;
 	SetCaptivesList(scrnum, newclist);
 	freeCaptiveList(clist);
 	freeCaptiveList(newclist);
@@ -4078,7 +4080,7 @@ RemoveFromCaptiveList(char *cptname)
 			count++;
 			cl++;
 		}
-		newclist = (char **) malloc(count * sizeof(char *));
+		newclist = calloc(count, sizeof(char *));
 		cl = clist;
 		count = 0;
 		while(*cl) {
@@ -4089,7 +4091,7 @@ RemoveFromCaptiveList(char *cptname)
 			newclist [count++] = *cl;
 			cl++;
 		}
-		newclist [count] = (char *) 0;
+		newclist [count] = NULL;
 		SetCaptivesList(scrnum, newclist);
 		free(newclist);
 	}
