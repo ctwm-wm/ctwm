@@ -1397,7 +1397,7 @@ int do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_DontShowWelcomeWindow:
-			ShowWelcomeWindow = False;
+			Scr->ShowWelcomeWindow = False;
 			return 1;
 
 		case kw0_DontToggleWorkspacemanagerState:

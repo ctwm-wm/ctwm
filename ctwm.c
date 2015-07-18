@@ -676,6 +676,8 @@ int main(int argc, char **argv, char **environ)
 		Scr->CaptiveRoot = CLarg.is_captive ? croot : None;
 		Scr->Root = croot;
 		Scr->XineramaRoot = croot;
+		Scr->ShowWelcomeWindow = True; // XXX
+
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		if(CLarg.is_captive) {
@@ -773,7 +775,7 @@ int main(int argc, char **argv, char **environ)
 		Scr->WindowMask = (Window) 0;
 		screenmasked = 0;
 		/* XXX Happens before config parse, so ignores DontShowWW param */
-		if(ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
+		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = 1;
 			MaskScreen(welcomefile);
 		}
@@ -803,7 +805,7 @@ int main(int argc, char **argv, char **environ)
 #endif /* EWMH */
 		ConfigureWorkSpaceManager();
 
-		if(ShowWelcomeWindow && ! screenmasked) {
+		if(Scr->ShowWelcomeWindow && ! screenmasked) {
 			MaskScreen(NULL);
 		}
 		if(Scr->ClickToFocus) {
@@ -1024,7 +1026,7 @@ int main(int argc, char **argv, char **environ)
 		                                       Scr->rootw, Scr->rooth, 0, 0, 0);
 
 		XUngrabServer(dpy);
-		if(ShowWelcomeWindow) {
+		if(Scr->ShowWelcomeWindow) {
 			UnmaskScreen();
 		}
 
@@ -1160,6 +1162,7 @@ static void InitVariables(void)
 	Scr->workSpaceManagerActive = FALSE;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
+	Scr->ShowWelcomeWindow = True; // XXX
 
 #define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
 	SETFB(DefaultC)
