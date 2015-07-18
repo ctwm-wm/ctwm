@@ -228,9 +228,9 @@ static char *m4_defs(Display *display, char *host)
 	fputs(MkDef("SOUNDS", "Yes"), tmpf);
 #endif
 	fputs(MkDef("I18N", "Yes"), tmpf);
-	if(CLarg.is_captive && captivename) {
+	if(CLarg.is_captive && Scr->captivename) {
 		fputs(MkDef("TWM_CAPTIVE", "Yes"), tmpf);
-		fputs(MkDef("TWM_CAPTIVE_NAME", captivename), tmpf);
+		fputs(MkDef("TWM_CAPTIVE_NAME", Scr->captivename), tmpf);
 	}
 	else {
 		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
