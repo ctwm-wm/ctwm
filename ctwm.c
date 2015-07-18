@@ -250,30 +250,30 @@ int main(int argc, char **argv, char **environ)
 
 	/* Setup long options for arg parsing */
 	static struct option long_options[] = {
-		{ "display", required_argument, NULL, 'd' },
-		{ "single", no_argument, &MultiScreen, FALSE },
-		{ "file", required_argument, NULL, 'f' },
-		{ "mono", no_argument, &Monochrome, TRUE },
-		{ "verbose", no_argument, NULL, 'v' },
-		{ "cfgchk", no_argument, &cfgchk, 1 },
-		{ "quiet", no_argument, &PrintErrorMessages, False },
-		{ "nowelcome", no_argument, NULL, 'W' },
-		{ "window", optional_argument, NULL, 'w' },
-		{ "name", required_argument, NULL, 0 },
-		{ "xrm", required_argument, NULL, 0 },
-		{ "version", no_argument, NULL, 0 },
-		{ "info", no_argument, NULL, 0 },
+		{ "display",   required_argument, NULL, 'd' },
+		{ "single",    no_argument,       &MultiScreen, FALSE },
+		{ "file",      required_argument, NULL, 'f' },
+		{ "mono",      no_argument,       &Monochrome, TRUE },
+		{ "verbose",   no_argument,       NULL, 'v' },
+		{ "cfgchk",    no_argument,       &cfgchk, 1 },
+		{ "quiet",     no_argument,       &PrintErrorMessages, False },
+		{ "nowelcome", no_argument,       NULL, 'W' },
+		{ "window",    optional_argument, NULL, 'w' },
+		{ "name",      required_argument, NULL, 0 },
+		{ "xrm",       required_argument, NULL, 0 },
+		{ "version",   no_argument,       NULL, 0 },
+		{ "info",      no_argument,       NULL, 0 },
 #ifdef EWMH
-		{ "replace", no_argument, &ewmh_replace, 1 },
+		{ "replace",   no_argument,       &ewmh_replace, 1 },
 #endif
 #ifdef USEM4
-		{ "keep-defs", no_argument, NULL, 'k' },
-		{ "keep", required_argument, NULL, 'K' },
-		{ "nom4", no_argument, NULL, 'n' },
+		{ "keep-defs", no_argument,       NULL, 'k' },
+		{ "keep",      required_argument, NULL, 'K' },
+		{ "nom4",      no_argument,       NULL, 'n' },
 #endif
 
-		{ "clientId", required_argument, NULL, 0 },
-		{ "restore", required_argument, NULL, 0 },
+		{ "clientId",  required_argument, NULL, 0 },
+		{ "restore",   required_argument, NULL, 0 },
 	};
 
 	for(i = 1; i < argc; i++) {
