@@ -680,11 +680,10 @@ int main(int argc, char **argv, char **environ)
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		if(CLarg.is_captive) {
-			AddToCaptiveList();
-			if(captivename) {
-				XSetStandardProperties(dpy, croot, captivename, captivename, None, NULL, 0,
+			Scr->captivename = AddToCaptiveList(captivename);
+			if(Scr->captivename) {
+				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None, NULL, 0,
 				                       NULL);
-				Scr->captivename = captivename;
 			}
 		}
 		Scr->RootColormaps.number_cwins = 1;

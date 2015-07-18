@@ -3982,7 +3982,8 @@ static void freeCaptiveList(char **clist)
 	}
 }
 
-void AddToCaptiveList(void)
+char *
+AddToCaptiveList(char *cptname)
 {
 	int         i, count;
 	char        **clist, **cl, **newclist;
@@ -3991,16 +3992,26 @@ void AddToCaptiveList(void)
 	int         scrnum = Scr->screen;
 	Window      croot  = Scr->Root;
 	Window      root;
+	char        *rcname;
 
 	for(i = 0; i < 32; i++) {
 		busy [i] = 0;
 	}
+
+	/*
+	 * Go through our current captives to see what's taken
+	 */
 	clist = GetCaptivesList(scrnum);
 	cl = clist;
 	count = 0;
 	while(cl && *cl) {
 		count++;
-		if(!captivename) {
+
+		/*
+		 * If we're not given a cptname, we use this loop to mark up
+		 * which auto-gen'd names have been used.
+		 */
+		if(!cptname) {
 			if(!strncmp(*cl, "ctwm-", 5)) {
 				int r, n;
 				r = sscanf(*cl, "ctwm-%d", &n);
@@ -4018,14 +4029,25 @@ void AddToCaptiveList(void)
 			}
 			continue;
 		}
-		if(!strcmp(*cl, captivename)) {
+
+		/*
+		 * If we do have a cptname, and a captive already has the
+		 * requested name, bomb
+		 */
+		if(!strcmp(*cl, cptname)) {
 			fprintf(stderr, "A captive ctwm with name %s is already running\n",
-			        captivename);
+			        cptname);
 			exit(1);
 		}
 		cl++;
 	}
-	if(!captivename) {
+
+
+	/*
+	 * If we weren't given a name, find an available autogen one.  If we
+	 * were, just dup it for our return value.
+	 */
+	if(!cptname) {
 		for(i = 0; i < 32; i++) {
 			if(!busy [i]) {
 				break;
@@ -4035,14 +4057,28 @@ void AddToCaptiveList(void)
 			fprintf(stderr, "Cannot find a suitable name for captive ctwm\n");
 			exit(1);
 		}
-		captivename = (char *) malloc(8);
-		sprintf(captivename, "ctwm-%d", i);
+		rcname = malloc(strlen("ctwm-XX") + 1);
+		if(rcname == NULL) {
+			fprintf(stderr, "malloc() for rcname failed!\n");
+			abort();
+		}
+		sprintf(rcname, "ctwm-%d", i);
 	}
+	else {
+		rcname = strdup(cptname);
+		if(rcname == NULL) {
+			fprintf(stderr, "strdup() for rcname failed!\n");
+			abort();
+		}
+	}
+
+
+	/* Put together new list of captives */
 	newclist = calloc(count + 2, sizeof(char *));
 	for(i = 0; i < count; i++) {
 		newclist [i] = (char *) strdup(clist [i]);
 	}
-	newclist [count] = (char *) strdup(captivename);
+	newclist [count] = strdup(rcname);
 	newclist [count + 1] = NULL;
 	SetCaptivesList(scrnum, newclist);
 	freeCaptiveList(clist);
@@ -4050,13 +4086,20 @@ void AddToCaptiveList(void)
 	free(clist);
 	free(newclist);
 
+	/* Stash property/atom of our captivename */
 	root = RootWindow(dpy, scrnum);
-	atomname = (char *) malloc(strlen("WM_CTWM_ROOT_") + strlen(captivename) + 1);
-	sprintf(atomname, "WM_CTWM_ROOT_%s", captivename);
+	atomname = (char *) malloc(strlen("WM_CTWM_ROOT_") + strlen(rcname) + 1);
+	sprintf(atomname, "WM_CTWM_ROOT_%s", rcname);
 	XA_WM_CTWM_ROOT_our_name = XInternAtom(dpy, atomname, False);
 	free(atomname);
 	XChangeProperty(dpy, root, XA_WM_CTWM_ROOT_our_name, XA_WINDOW, 32,
 	                PropModeReplace, (unsigned char *) &croot, 4);
+
+	/*
+	 * Tell our caller the name we wound up with, in case they didn't
+	 * give us one we could use.
+	 */
+	return rcname;
 }
 
 void
