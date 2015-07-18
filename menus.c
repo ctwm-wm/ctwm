@@ -3006,7 +3006,7 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				DragWindow = w;
 
 				if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
-					if(XFindContext(dpy, DragWindow, TwmContext, (caddr_t *) &t) == XCNOENT) {
+					if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
 						fprintf(stderr, "ERROR: menus.c:2822\n");
 					}
 
