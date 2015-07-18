@@ -232,6 +232,7 @@ int main(int argc, char **argv, char **environ)
 	static int crooty = 100;
 	static unsigned int crootw = 1280;
 	static unsigned int crooth =  768;
+	int ch, optidx;
 	static int cfgchk = 0;
 	static int Monochrome  = FALSE; /* Force monochrome, for testing purpose */
 	char *InitFile = NULL;
@@ -294,136 +295,111 @@ int main(int argc, char **argv, char **environ)
 	 * I assume '::' for optional args is portable; getopt_long(3)
 	 * doesn't describe it, but it's a GNU extension for getopt(3).
 	 */
-	const char *short_options = "vwf:d:w::"
+	const char *short_options = "vWf:d:w::"
 #ifdef USEM4
 	                            "kK:n"
 #endif
 	                            ;
 
-	for(i = 1; i < argc; i++) {
-		if(argv[i][0] == '-') {
-			switch(argv[i][1]) {
-				case 'd':                         /* -display dpy */
-					if(++i >= argc) {
-						usage();
-					}
-					display_name = argv[i];
-					continue;
-				case 's':                         /* -single */
-					MultiScreen = FALSE;
-					continue;
-				case 'f':                         /* -file twmrcfilename */
-					if(++i >= argc) {
-						usage();
-					}
-					InitFile = argv[i];
-					continue;
-				case 'm':                         /* -mono */
-					if(strcmp(argv[i], "-mono")) {
-						usage();
-					}
-					Monochrome = TRUE;
-					continue;
-				case 'v':                         /* -verbose */
-					if(!strcmp(argv[i], "-version")) {
-						(void) printf("%s\n", VersionNumber);
-						exit(0);
-					}
-					PrintErrorMessages = True;
-					continue;
-				case 'c':                         /* -cfgchk */
-					if(!strcmp(argv[i], "-cfgchk")) {
-						cfgchk      = 1;
-						continue;
-					}
-					if(++i >= argc) {
-						usage();           /* -clientId */
-					}
-					client_id = argv[i];
-					continue;
-				case 'r':                         /* -restore */
-					if(++i >= argc) {
-						usage();
-					}
-					restore_filename = argv[i];
-					continue;
-				case 'q':                         /* -quiet */
-					PrintErrorMessages = False;
-					continue;
-				case 'W':                         /* -nowelcome */
-					ShowWelcomeWindow = False;
-					continue;
-				case 'w':                         /* -window */
-					captive     = True;
-					MultiScreen = False;
-					if((i + 1) >= argc) {
-						continue;
-					}
-					if(*(argv [i + 1]) == '-') {
-						continue;
-					}
-					if(sscanf(argv [i + 1], "%x", (unsigned int *)&capwin) != 1) {
-						continue;
-					}
-					i++;
-					continue;
+	/* Figure out the args */
+	optidx = 0;
+	while((ch = getopt_long(argc, argv, short_options, long_options,
+	                        &optidx)) != -1) {
+		switch(ch) {
+			/* First handle the simple cases that have short args */
+			case 'v':
+				PrintErrorMessages = True;
+				break;
+			case 'W':
+				ShowWelcomeWindow = False;
+				break;
+			case 'f':
+				InitFile = optarg;
+				break;
+			case 'd':
+				display_name = optarg;
+				break;
+			case 'w':
+				captive = True;
+				MultiScreen = False;
+				if(optarg != NULL) {
+					sscanf(optarg, "%x", (unsigned int *)&capwin);
+					/* Failure will just leave capwin as initialized */
+				}
+				break;
+
 #ifdef USEM4
-				case 'k':                         /* -keep m4 tmp file */
-					KeepTmpFile = True;
-					continue;
-				case 'K':                         /* -keep m4 output */
-					if(++i >= argc) {
-						usage();
-					}
-					keepM4_filename = argv[i];
-					continue;
+			/* Args that only mean anything if we're built with m4 */
+			case 'k':
+				KeepTmpFile = True;
+				break;
+			case 'K':
+				keepM4_filename = optarg;
+				break;
+			case 'n':
+				GoThroughM4 = False;
+				break;
 #endif
-				case 'n':                         /* -don't preprocess through m4 */
-					if(!strcmp(argv[i], "-name")) {
-						if(++i >= argc) {
-							usage();
-						}
-						captivename = argv[i];
-						continue;
-					}
-#ifdef USEM4
-					GoThroughM4 = False;
-					continue;
-#endif
-				case 'x':                         /* -xrm resource */
-					if(strcmp(argv[i], "-xrm")) {
-						usage();
-					}
-					if(++i >= argc) {
-						usage();
-					}
-					continue;
-				case 'i':
-					if(!strcmp(argv[i], "-info")) {
-						DisplayInfo();
-						exit(0);
-					}
-					usage();
-#ifdef EWMH
-				case '-':
-					if(!strcmp(argv[i], "--replace")) {
-						ewmh_replace = 1;
-					}
-					else {
-						usage();
-					}
-					continue;
-#endif
-			}
+
+
+			/*
+			 * Now the stuff that doesn't have short variants.  Many of
+			 * them just set flags, so we don't need to do anything with
+			 * them.  Only the ones with NULL flags matter.
+			 */
+			case 0:
+				if(long_options[optidx].flag != NULL) {
+					/* It only existed to set a flag; we're done */
+					break;
+				}
+
+#define IFIS(x) if(strcmp(long_options[optidx].name, (x)) == 0)
+				IFIS("version") {
+					printf("%s\n", VersionNumber);
+					exit(0);
+				}
+				IFIS("info") {
+					DisplayInfo();
+					exit(0);
+				}
+				IFIS("name") {
+					captivename = optarg;
+					break;
+				}
+				IFIS("xrm") {
+					/*
+					 * Quietly ignored by us; Xlib processes it
+					 * internally in XtToolkitInitialize();
+					 */
+					break;
+				}
+				IFIS("clientId") {
+					client_id = optarg;
+					break;
+				}
+				IFIS("restore") {
+					restore_filename = optarg;
+					break;
+				}
+#undef IFIS
+
+				/* Don't think it should be possible to get here... */
+				fprintf(stderr, "Internal error in getopt: '%s' unhandled.\n",
+				        long_options[optidx].name);
+				usage();
+
+			/* Something totally unexpected */
+			case '?':
+				/* getopt_long() already printed an error */
+				usage();
+
+			default:
+				/* Uhhh...  */
+				fprintf(stderr, "Internal error: getopt confused us.\n");
+				usage();
 		}
-
-		/* If we fall off the end, we dunno what we got */
-		usage();
-
-		/* NOTREACHED */
-		fprintf(stderr, "Error: Shouldn't get here.\n");
-		exit(1);
 	}
+
 
 #define newhandler(sig, action) \
     if (signal (sig, SIG_IGN) != SIG_IGN) (void) signal (sig, action)
