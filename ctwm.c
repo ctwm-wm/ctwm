@@ -193,6 +193,7 @@ char **Argv;
 ctwm_cl_args CLarg = {
 	.MultiScreen     = TRUE,
 	.Monochrome      = FALSE,
+	.cfgchk          = 0,
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
@@ -238,7 +239,6 @@ int main(int argc, char **argv, char **environ)
 	static unsigned int crootw = 1280;
 	static unsigned int crooth =  768;
 	int ch, optidx;
-	static int cfgchk = 0;
 	char *InitFile = NULL;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
@@ -274,7 +274,7 @@ int main(int argc, char **argv, char **environ)
 			exit(0);
 		}
 		CHK("-cfgchk") {
-			cfgchk = 1;
+			CLarg.cfgchk = 1;
 			*argv[1] = '\0';
 		}
 		CHK("-display") {
@@ -303,7 +303,7 @@ int main(int argc, char **argv, char **environ)
 
 		/* Config/file related */
 		{ "file",      required_argument, NULL, 'f' },
-		{ "cfgchk",    no_argument,       &cfgchk, 1 },
+		{ "cfgchk",    no_argument,       &CLarg.cfgchk, 1 },
 
 		/* Show something and exit right away */
 		{ "help",      no_argument,       NULL, 'h' },
@@ -594,7 +594,7 @@ int main(int argc, char **argv, char **environ)
 		XSync(dpy, 0);
 		XSetErrorHandler(TwmErrorHandler);
 
-		if(RedirectError && cfgchk == 0) {
+		if(RedirectError && CLarg.cfgchk == 0) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
 			if(CLarg.MultiScreen && NumScreens > 0) {
@@ -779,7 +779,7 @@ int main(int argc, char **argv, char **environ)
 		InitWorkSpaceManager();
 
 		/* Parse it once for each screen. */
-		if(cfgchk) {
+		if(CLarg.cfgchk) {
 			if(ParseTwmrc(InitFile) == 0) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
