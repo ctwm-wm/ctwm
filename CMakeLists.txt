@@ -40,6 +40,11 @@ if(insrc)
 endif(insrc)
 
 
+# cmake modules we use in a few places
+include(CheckIncludeFiles)
+include(CheckFunctionExists)
+
+
 #
 # Define options
 # These can be set at the command line; e.g., "cmake -DUSE_JPEG=OFF"
@@ -177,8 +182,6 @@ endif(USE_GNOME)
 
 # System provides regex stuff in libc?
 if(USE_SREGEX)
-	include(CheckIncludeFiles)
-	include(CheckFunctionExists)
 	check_include_files(regex.h HAS_REGEX_H)
 	check_function_exists(regexec HAS_REGEXEC)
 
