@@ -550,11 +550,13 @@ typedef struct _ctwm_cl_args {
 	int    MultiScreen;        // ! --single, grab multiple screens
 	int    Monochrome;         // --mono, force monochrome
 	int    cfgchk;             // --cfgchk, check config and exit
+
 #ifdef USEM4
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output
 	int    GoThroughM4;        // ! --nom4, do m4 processing
 #endif
+
 #ifdef EWMH
 	int    ewmh_replace;       // --replace, replacing running WM
 #endif
