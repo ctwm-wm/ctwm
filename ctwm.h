@@ -551,6 +551,8 @@ typedef struct _ctwm_cl_args {
 	int    Monochrome;         // --mono, force monochrome
 	int    cfgchk;             // --cfgchk, check config and exit
 
+	Bool   PrintErrorMessages; // --verbose, show more debug output
+
 #ifdef USEM4
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output

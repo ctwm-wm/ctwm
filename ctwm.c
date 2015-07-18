@@ -130,7 +130,6 @@ ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
 int FirstScreen;                /* TRUE ==> first screen of display */
-static Bool PrintErrorMessages = False;        /* controls error messages */
 #ifdef DEBUG
 Bool ShowWelcomeWindow = False;
 #else
@@ -194,6 +193,7 @@ ctwm_cl_args CLarg = {
 	.MultiScreen     = TRUE,
 	.Monochrome      = FALSE,
 	.cfgchk          = 0,
+	.PrintErrorMessages = False,
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
@@ -350,10 +350,10 @@ int main(int argc, char **argv, char **environ)
 		switch(ch) {
 			/* First handle the simple cases that have short args */
 			case 'v':
-				PrintErrorMessages = True;
+				CLarg.PrintErrorMessages = True;
 				break;
 			case 'q':
-				PrintErrorMessages = False;
+				CLarg.PrintErrorMessages = False;
 				break;
 			case 'W':
 				ShowWelcomeWindow = False;
@@ -1551,7 +1551,7 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event)
 	LastErrorEvent = *event;
 	ErrorOccurred = True;
 
-	if(PrintErrorMessages &&                    /* don't be too obnoxious */
+	if(CLarg.PrintErrorMessages &&                 /* don't be too obnoxious */
 	                event->error_code != BadWindow &&       /* watch for dead puppies */
 	                (event->request_code != X_GetGeometry &&         /* of all styles */
 	                 event->error_code != BadDrawable)) {
