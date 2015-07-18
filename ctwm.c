@@ -264,6 +264,7 @@ int main(int argc, char **argv, char **environ)
 		{ "cfgchk",    no_argument,       &cfgchk, 1 },
 
 		/* Show something and exit right away */
+		{ "help",      no_argument,       NULL, 'h' },
 		{ "version",   no_argument,       NULL, 0 },
 		{ "info",      no_argument,       NULL, 0 },
 
@@ -295,7 +296,7 @@ int main(int argc, char **argv, char **environ)
 	 * I assume '::' for optional args is portable; getopt_long(3)
 	 * doesn't describe it, but it's a GNU extension for getopt(3).
 	 */
-	const char *short_options = "vqWf:d:w::"
+	const char *short_options = "vqWf:hd:w::"
 #ifdef USEM4
 	                            "kK:n"
 #endif
@@ -319,6 +320,8 @@ int main(int argc, char **argv, char **environ)
 			case 'f':
 				InitFile = optarg;
 				break;
+			case 'h':
+				usage();
 			case 'd':
 				display_name = optarg;
 				break;
@@ -1020,7 +1023,7 @@ static void usage(void)
 
 	fprintf(stderr, "\n%*s[--cfgchk] [(--file | -f) file] [--single] "
 	        "[--nowelcome | -W]\n", llen, "");
-	fprintf(stderr, "%*s[(--window | -w) [wid]]\n", llen, "");
+	fprintf(stderr, "%*s[(--window | -w) [wid]] [--help | -h]\n", llen, "");
 
 	fprintf(stderr,
 	        "%*s[--quiet | -q] [--verbose | -v] [--name name] [--xrm resource]\n",
