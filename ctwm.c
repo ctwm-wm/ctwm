@@ -1002,17 +1002,29 @@ int main(int argc, char **argv, char **environ)
 
 static void usage(void)
 {
+	int llen;
+
+	llen = strlen("usage: ") + strlen(ProgramName) + 1;
+	if(llen > 10) {
+		llen = 10;
+	}
 
 	fprintf(stderr, "usage: %s [-display dpy] [-version] [-info]", ProgramName);
 #ifdef EWMH
 	fprintf(stderr, " [--replace]");
 #endif
-	fprintf(stderr,
-	        " [-cfgchk] [-f file] [-s[ingle]] [-q] [-v[erbose]] [-W] [-w[indow] [wid]] [-n]");
+
+	fprintf(stderr, "\n%*s[-cfgchk] [-f file] [-s[ingle]] [-W] [-w[indow] [wid]]\n",
+	        llen, "");
+
+	fprintf(stderr, "%*s[-q] [-v[erbose]] [-name name] [-xrm resource]\n", llen,
+	        "");
+
+	fprintf(stderr, "%*s[-name name] [-xrm resource]", llen, "");
 #ifdef USEM4
-	fprintf(stderr, " [-k] [-K file]");
+	fprintf(stderr, " [-n] [-k] [-K file]");
 #endif
-	fprintf(stderr, " [-name name] [-xrm resource]\n");
+	fprintf(stderr, "\n");
 
 	exit(1);
 }
