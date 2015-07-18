@@ -252,6 +252,38 @@ int main(int argc, char **argv, char **environ)
 
 
 	/*
+	 * Backward-compat cheat: accept a few old-style long args if they
+	 * came first.  Of course, this assumed argv[x] is editable, which on
+	 * most systems it is, and C99 requires it.
+	 */
+	if(argc > 1) {
+#define CHK(x) if(strcmp(argv[1], (x)) == 0)
+		CHK("-version") {
+			printf("%s\n", VersionNumber);
+			exit(0);
+		}
+		CHK("-info") {
+			DisplayInfo();
+			exit(0);
+		}
+		CHK("-cfgchk") {
+			cfgchk = 1;
+			*argv[1] = '\0';
+		}
+		CHK("-display") {
+			if(argc <= 2 || strlen(argv[2]) < 1) {
+				usage();
+			}
+			display_name = argv[2];
+
+			*argv[1] = '\0';
+			*argv[2] = '\0';
+		}
+#undef CHK
+	}
+
+
+	/*
 	 * Setup long options for arg parsing
 	 */
 	static struct option long_options[] = {
