@@ -568,6 +568,8 @@ typedef struct _ctwm_cl_args {
 #ifdef EWMH
 	int    ewmh_replace;       // --replace, replacing running WM
 #endif
+
+	char  *client_id;          // --clientId, session client id
 } ctwm_cl_args;
 extern ctwm_cl_args CLarg;
 

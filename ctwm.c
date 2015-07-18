@@ -206,6 +206,7 @@ ctwm_cl_args CLarg = {
 #ifdef EWMH
 	.ewmh_replace    = 0,
 #endif
+	.client_id       = NULL,
 };
 
 Bool RestartPreviousState = False;      /* try to restart in previous state */
@@ -235,7 +236,6 @@ int main(int argc, char **argv, char **environ)
 	int numManaged, firstscrn, lastscrn, scrnum;
 	int zero = 0;
 	char *restore_filename = NULL;
-	char *client_id = NULL;
 	char *welcomefile;
 	int  screenmasked;
 	static int crootx = 100;
@@ -426,7 +426,7 @@ int main(int argc, char **argv, char **environ)
 					break;
 				}
 				IFIS("clientId") {
-					client_id = optarg;
+					CLarg.client_id = optarg;
 					break;
 				}
 				IFIS("restore") {
@@ -1038,7 +1038,7 @@ int main(int argc, char **argv, char **environ)
 			        ProgramName);
 		exit(1);
 	}
-	(void) ConnectToSessionManager(client_id);
+	(void) ConnectToSessionManager(CLarg.client_id);
 #ifdef SOUNDS
 	play_startup_sound();
 #endif
