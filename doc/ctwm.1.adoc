@@ -91,6 +91,7 @@ to touch the bottom the screen.
   is already running.
   In that case, the existing window manager is asked to quit,
   and ctwm takes its place.
+  Available only if ctwm is built with the `USE_EWMH` flag.
 
 --single::
   This option indicates that only the default screen (as specified by
