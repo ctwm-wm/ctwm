@@ -191,7 +191,13 @@ int Argc;
 char **Argv;
 
 /* Command-line args */
-ctwm_cl_args CLarg;
+ctwm_cl_args CLarg = {
+#ifdef USEM4
+	.KeepTmpFile     = False,
+	.keepM4_filename = NULL,
+	.GoThroughM4     = True,
+#endif
+};
 
 Bool RestartPreviousState = False;      /* try to restart in previous state */
 
@@ -247,13 +253,6 @@ int main(int argc, char **argv, char **environ)
 	ProgramName = argv[0];
 	Argc = argc;
 	Argv = argv;
-
-	/* Init CLarg */
-#ifdef USEM4
-	CLarg.KeepTmpFile     = False;
-	CLarg.keepM4_filename = NULL;
-	CLarg.GoThroughM4     = True;
-#endif
 
 
 	/*
