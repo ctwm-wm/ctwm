@@ -61,7 +61,7 @@ void InitGnome(void)
 	XChangeProperty(dpy, Scr->Root, _XA_WIN_PROTOCOLS_LIST[1], XA_CARDINAL, 32,
 	                PropModeReplace, (unsigned char *) & (Scr->workSpaceMgr.count), 1);
 
-	if(!captive)
+	if(!CLarg.is_captive)
 		XChangeProperty(dpy, Scr->Root, _XA_WIN_PROTOCOLS_LIST[0], XA_CARDINAL, 32,
 		                PropModeReplace, (unsigned char *) &curws, 1);
 

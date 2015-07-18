@@ -474,7 +474,6 @@ struct ScreenInfo {
 #endif /* EWMH */
 };
 
-extern int captive;
 extern int NumScreens;
 extern ScreenInfo **ScreenList;
 extern ScreenInfo *Scr;

@@ -505,7 +505,7 @@ Bool DispatchEvent(void)
 	}
 	Scr = thisScr;
 
-	if(captive) {
+	if(CLarg.is_captive) {
 		if((Event.type == ConfigureNotify)
 		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
 			ConfigureRootWindow(&Event);
@@ -4827,7 +4827,7 @@ void ConfigureRootWindow(XEvent *ev)
 	Scr->rootw = Scr->crootw;
 	Scr->rooth = Scr->crooth;
 
-	if(captive && ((Scr->crootw != oldw) || (Scr->crooth != oldh))) {
+	if(CLarg.is_captive && ((Scr->crootw != oldw) || (Scr->crooth != oldh))) {
 		twmrc_error_prefix();
 		fprintf(stderr,
 		        "You cannot change root window geometry with virtual screens active,\n");

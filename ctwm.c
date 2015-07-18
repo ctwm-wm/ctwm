@@ -119,7 +119,6 @@ XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
 Window ResizeWindow;            /* the window we are resizing */
 
-int  captive      = FALSE;
 char *captivename = NULL;
 
 int NumScreens;                 /* number of screens in ScreenList */
@@ -196,6 +195,7 @@ ctwm_cl_args CLarg = {
 	.display_name    = NULL,
 	.PrintErrorMessages = False,
 	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
+	.is_captive      = FALSE,
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
@@ -371,7 +371,7 @@ int main(int argc, char **argv, char **environ)
 				CLarg.display_name = optarg;
 				break;
 			case 'w':
-				captive = True;
+				CLarg.is_captive = True;
 				CLarg.MultiScreen = False;
 				if(optarg != NULL) {
 					sscanf(optarg, "%x", (unsigned int *)&capwin);
@@ -538,7 +538,7 @@ int main(int argc, char **argv, char **environ)
 
 	for(scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		unsigned long attrmask;
-		if(captive) {
+		if(CLarg.is_captive) {
 			XWindowAttributes wa;
 			if(capwin && XGetWindowAttributes(dpy, capwin, &wa)) {
 				Window junk;
@@ -588,7 +588,7 @@ int main(int argc, char **argv, char **environ)
 #ifdef EWMH
 		attrmask |= StructureNotifyMask;
 #endif /* EWMH */
-		if(captive) {
+		if(CLarg.is_captive) {
 			attrmask |= StructureNotifyMask;
 		}
 		XSelectInput(dpy, croot, attrmask);
@@ -672,12 +672,12 @@ int main(int argc, char **argv, char **environ)
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
 		Scr->RealRoot = RootWindow(dpy, scrnum);
-		Scr->CaptiveRoot = captive ? croot : None;
+		Scr->CaptiveRoot = CLarg.is_captive ? croot : None;
 		Scr->Root = croot;
 		Scr->XineramaRoot = croot;
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
-		if(captive) {
+		if(CLarg.is_captive) {
 			AddToCaptiveList();
 			if(captivename) {
 				XSetStandardProperties(dpy, croot, captivename, captivename, None, NULL, 0,
@@ -1472,7 +1472,7 @@ SIGNAL_T Done(int signum)
 	EwmhTerminate();
 #endif /* EWMH */
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
-	if(captive) {
+	if(CLarg.is_captive) {
 		RemoveFromCaptiveList();
 	}
 	XCloseDisplay(dpy);
@@ -1483,7 +1483,7 @@ SIGNAL_T Crash(int signum)
 {
 	Reborder(CurrentTime);
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
-	if(captive) {
+	if(CLarg.is_captive) {
 		RemoveFromCaptiveList();
 	}
 	XCloseDisplay(dpy);

@@ -695,7 +695,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	 * property is used to indicate in which workspace it is contained.
 	 */
 
-	if(!captive) {
+	if(!CLarg.is_captive) {
 		long number = newws->number;
 		XChangeProperty(dpy, Scr->Root, _XA_WIN_WORKSPACE, XA_CARDINAL, 32,
 		                PropModeReplace, (unsigned char *) &number, 1);

@@ -555,6 +555,8 @@ typedef struct _ctwm_cl_args {
 	Bool   PrintErrorMessages; // --verbose, show more debug output
 	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
+	int    is_captive;         // --window, running captive
+
 #ifdef USEM4
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output
