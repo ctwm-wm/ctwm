@@ -71,6 +71,7 @@
 #  define _BSD_SIGNALS
 #endif
 
+#include <getopt.h>
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
@@ -230,8 +231,8 @@ int main(int argc, char **argv, char **environ)
 	static int crooty = 100;
 	static unsigned int crootw = 1280;
 	static unsigned int crooth =  768;
-	int cfgchk = 0;
-	int Monochrome  = FALSE; /* Force monochrome, for testing purpose */
+	static int cfgchk = 0;
+	static int Monochrome  = FALSE; /* Force monochrome, for testing purpose */
 	char *InitFile = NULL;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
@@ -246,6 +247,34 @@ int main(int argc, char **argv, char **environ)
 	ProgramName = argv[0];
 	Argc = argc;
 	Argv = argv;
+
+	/* Setup long options for arg parsing */
+	static struct option long_options[] = {
+		{ "display", required_argument, NULL, 'd' },
+		{ "single", no_argument, &MultiScreen, FALSE },
+		{ "file", required_argument, NULL, 'f' },
+		{ "mono", no_argument, &Monochrome, TRUE },
+		{ "verbose", no_argument, NULL, 'v' },
+		{ "cfgchk", no_argument, &cfgchk, 1 },
+		{ "quiet", no_argument, &PrintErrorMessages, False },
+		{ "nowelcome", no_argument, NULL, 'W' },
+		{ "window", optional_argument, NULL, 'w' },
+		{ "name", required_argument, NULL, 0 },
+		{ "xrm", required_argument, NULL, 0 },
+		{ "version", no_argument, NULL, 0 },
+		{ "info", no_argument, NULL, 0 },
+#ifdef EWMH
+		{ "replace", no_argument, &ewmh_replace, 1 },
+#endif
+#ifdef USEM4
+		{ "keep-defs", no_argument, NULL, 'k' },
+		{ "keep", required_argument, NULL, 'K' },
+		{ "nom4", no_argument, NULL, 'n' },
+#endif
+
+		{ "clientId", required_argument, NULL, 0 },
+		{ "restore", required_argument, NULL, 0 },
+	};
 
 	for(i = 1; i < argc; i++) {
 		if(argv[i][0] == '-') {
