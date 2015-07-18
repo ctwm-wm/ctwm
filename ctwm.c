@@ -257,7 +257,10 @@ int main(int argc, char **argv, char **environ)
 	 * most systems it is, and C99 requires it.
 	 */
 	if(argc > 1) {
-#define CHK(x) if(strcmp(argv[1], (x)) == 0)
+#define CHK(x) else if(strcmp(argv[1], (x)) == 0)
+		if(0) {
+			/* nada */
+		}
 		CHK("-version") {
 			printf("%s\n", VersionNumber);
 			exit(0);
