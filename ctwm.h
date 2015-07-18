@@ -552,6 +552,7 @@ typedef struct _ctwm_cl_args {
 	int    cfgchk;             // --cfgchk, check config and exit
 
 	Bool   PrintErrorMessages; // --verbose, show more debug output
+	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
 #ifdef USEM4
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs

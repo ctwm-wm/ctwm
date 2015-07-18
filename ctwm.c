@@ -194,6 +194,7 @@ ctwm_cl_args CLarg = {
 	.Monochrome      = FALSE,
 	.cfgchk          = 0,
 	.PrintErrorMessages = False,
+	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
