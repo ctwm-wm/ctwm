@@ -225,7 +225,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 	}
 
 	if(selectionOwner != None) {
-		if(!ewmh_replace) {
+		if(!CLarg.ewmh_replace) {
 			fprintf(stderr, "A window manager is already running on screen %d\n",
 			        scr->screen);
 			return False;

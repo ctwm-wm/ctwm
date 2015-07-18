@@ -531,9 +531,6 @@ extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;
 extern char *captivename;
-#ifdef EWMH
-extern int ewmh_replace;
-#endif /* EWMH */
 
 extern Bool RestartPreviousState;
 extern Bool GetWMState(Window w, int *statep, Window *iwp);
@@ -557,6 +554,9 @@ typedef struct _ctwm_cl_args {
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output
 	int    GoThroughM4;        // ! --nom4, do m4 processing
+#endif
+#ifdef EWMH
+	int    ewmh_replace;       // --replace, replacing running WM
 #endif
 } ctwm_cl_args;
 extern ctwm_cl_args CLarg;

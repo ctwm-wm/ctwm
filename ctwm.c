@@ -209,9 +209,6 @@ SIGNAL_T Crash(int signum);
 #ifdef __WAIT_FOR_CHILDS
 SIGNAL_T ChildExit(int signum);
 #endif
-#ifdef EWMH
-int ewmh_replace;
-#endif /* EWMH */
 
 /***********************************************************************
  *
@@ -317,7 +314,7 @@ int main(int argc, char **argv, char **environ)
 		{ "xrm",       required_argument, NULL, 0 },
 
 #ifdef EWMH
-		{ "replace",   no_argument,       &ewmh_replace, 1 },
+		{ "replace",   no_argument,       &CLarg.ewmh_replace, 1 },
 #endif
 
 		/* M4 control params */
