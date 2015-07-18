@@ -72,7 +72,6 @@
 
 #include "ctwm.h"
 #include "screen.h"
-#include "gram.tab.h"
 #include "list.h"
 #include "util.h"
 #include "parse.h"

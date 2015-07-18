@@ -8,7 +8,6 @@ set(CTWMSRC
 	ctwm.c
 	ctwm_atoms.c
 	cursor.c
-	deftwmrc.c
 	events.c
 	gc.c
 	gram.tab.c
@@ -128,6 +127,7 @@ if(USE_M4)
 	if(NOT M4_CMD)
 		message(FATAL_ERROR "Can't find m4 program: try setting M4_CMD.")
 	endif(NOT M4_CMD)
+	list(APPEND CTWMSRC parse_m4.c)
 	message(STATUS "Enabling m4 support (${M4_CMD}).")
 endif(USE_M4)
 
@@ -330,6 +330,25 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
+# Expect and try to enforce a C99 capable compiler.  There doesn't seem
+# an obvious way to be sure in a fully portable way, but we probably
+# don't work well in places that compile with something other than a
+# program called like 'cc', and a cc that supports C99 should accept -std
+# calls, so that's good enough.  Lacking it is not (yet) a fatal error,
+# but is a sign that it's a compiler or platform we're moving further
+# away from.
+include(CheckCCompilerFlag)
+set(C99_FLAG -std=c99)
+check_c_compiler_flag(${C99_FLAG} COMPILER_HAS_STD_C99)
+if(COMPILER_HAS_STD_C99)
+	message(STATUS "Enabling ${C99_FLAG}")
+	add_definitions(${C99_FLAG})
+else()
+	message(WARNING "Compiler doesn't support ${C99_FLAG}, "
+			"building without it.")
+endif(COMPILER_HAS_STD_C99)
+
+
 # Where should we stick manpages?
 if(MANBASE)
 	# Assume the user knows what they're doing
@@ -362,13 +381,15 @@ endif(MANBASE)
 # And the build targets
 #
 
-# Hand-build deftwmrc.c
-set(defc deftwmrc.c)
-set(mkdefc ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
-add_custom_command(OUTPUT ${defc}
-	DEPENDS system.ctwmrc ${mkdefc}
-	COMMAND ${mkdefc} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defc}
+# Hand-build deftwmrc.h
+set(defh ${CMAKE_CURRENT_BINARY_DIR}/deftwmrc.h)
+set(mkdefh ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
+add_custom_command(OUTPUT ${defh}
+	DEPENDS system.ctwmrc ${mkdefh}
+	COMMAND ${mkdefh} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defh}
 )
+# Need to do this explicitly for cmake to figure it out
+set_source_files_properties(parse.c OBJECT_DEPENDS ${defh})
 
 # Hand-build ctwm_atoms.[ch]
 set(ctwm_atoms ctwm_atoms.h ctwm_atoms.c)

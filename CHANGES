@@ -20,6 +20,18 @@ build ctwm.  See the `README` file for how to run it.
    clipboard were never visibly documented, and came into the manpage in
    3.0 already commented-out and saying they were obsolete.
 
+1. The `f.source` function has been removed.  It's never done anything
+   (except beep) as far back as 1.1 and has never been documented.
+
+1. The NoVersion config parameter has been removed.  It's been
+   undocumented, obsoleted, and done absolutely nothing since 1.1.
+
+1. Support for non-flex versions of lex(1) is deprecated, and will take
+   some manual work to build.  Note that release tarballs include
+   prebuild lexers, so this probably only matters to people building from
+   a development tree.  (And if you are, and really need AT&T or some
+   other lex to work, talk to us!)
+
 ### User Visible Changes
 
 1. Selected a number of cleanups from Stefan Monnier

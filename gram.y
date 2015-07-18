@@ -109,7 +109,6 @@ static int mods = 0;
 unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask);
 
 extern int yylex(void);
-extern int yyparse(void);
 %}
 
 %union

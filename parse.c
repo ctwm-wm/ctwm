@@ -75,8 +75,6 @@
 #if defined(sony_news) || defined __QNX__
 #  include <ctype.h>
 #endif
-#include <X11/Xos.h>
-#include <X11/Xmu/SysUtil.h>
 #include <X11/Xatom.h>
 
 #include "ctwm.h"
@@ -85,21 +83,10 @@
 #include "menus.h"
 #include "util.h"
 #include "parse.h"
-#include "version.h"
+#include "parse_int.h"
+#include "deftwmrc.h"
 #ifdef SOUNDS
 #  include "sound.h"
-#endif
-
-/* For m4... */
-#ifdef USEM4
-#include <sys/param.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#endif
-
-#if defined(ultrix)
-#define NOSTEMP
 #endif
 
 #ifndef SYSTEM_INIT_FILE
@@ -109,19 +96,42 @@
 
 static int ParseRandomPlacement(register char *s);
 static int ParseButtonStyle(register char *s);
-extern int yyparse(void);
+static int ParseStringList(const char **sl);
+
+/*
+ * With current bison, this is defined in the gram.tab.h, so this causes
+ * a warning for redundant declaration.  With older bisons and byacc,
+ * it's not, so taking it out causes a warning for implicit declaration.
+ * A little looking around doesn't show any handy #define's we could use
+ * to be sure of the difference.  This should quiet it down on gcc/clang
+ * anyway...
+ */
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wredundant-decls"
+ extern int yyparse(void);
+# pragma GCC diagnostic pop
+#else
+ extern int yyparse(void);
+#endif
 
 static FILE *twmrc;
 static int ptr = 0;
 static int len = 0;
 static char buff[BUF_LEN + 1];
+static const char **stringListSource, *currentString;
+static int ParseUsePPosition(register char *s);
+
+/*
+ * While there are (were) referenced in a number of places through the
+ * file, overflowlen is initialized to 0, only possibly changed in
+ * twmUnput(), and unless it's non-zero, neither is otherwise touched.
+ * So this is purely a twmUnput()-related var, and with flex, never used
+ * for anything.
+ */
+#ifdef NON_FLEX_LEX
 static char overflowbuff[20];           /* really only need one */
 static int overflowlen;
-static char **stringListSource, *currentString;
-static int ParseUsePPosition(register char *s);
-#ifdef USEM4
-static FILE *start_m4(FILE *fraw);
-static char *m4_defs(Display *display, char *host);
 #endif
 
 int ConstrainedMoveTime = 400;          /* milliseconds, event times */
@@ -148,7 +158,7 @@ int (*twmInputFunc)(void);
  ***********************************************************************
  */
 
-#if YYDEBUG
+#if defined(YYDEBUG) && YYDEBUG
 int yydebug = 1;
 #endif
 
@@ -160,7 +170,9 @@ static int doparse(int (*ifunc)(void), const char *srctypename,
 	twmrc_lineno = 0;
 	ParseError = FALSE;
 	twmInputFunc = ifunc;
+#ifdef NON_FLEX_LEX
 	overflowlen = 0;
+#endif
 
 	yyparse();
 
@@ -305,7 +317,7 @@ int ParseTwmrc(char *filename)
 	}
 }
 
-int ParseStringList(char **sl)
+static int ParseStringList(const char **sl)
 {
 	stringListSource = sl;
 	currentString = *sl;
@@ -343,9 +355,11 @@ static int include_file = 0;
 
 static int twmFileInput(void)
 {
+#ifdef NON_FLEX_LEX
 	if(overflowlen) {
 		return (int) overflowbuff[--overflowlen];
 	}
+#endif
 
 	while(ptr == len) {
 		while(include_file) {
@@ -419,9 +433,11 @@ static int m4twmFileInput(void)
 		}
 	}
 
+#ifdef NON_FLEX_LEX
 	if(overflowlen) {
 		return((int) overflowbuff[--overflowlen]);
 	}
+#endif
 
 	while(ptr == len) {
 nextline:
@@ -453,9 +469,11 @@ nextline:
 
 static int twmStringListInput(void)
 {
+#ifdef NON_FLEX_LEX
 	if(overflowlen) {
 		return (int) overflowbuff[--overflowlen];
 	}
+#endif
 
 	/*
 	 * return the character currently pointed to
@@ -473,6 +491,8 @@ static int twmStringListInput(void)
 }
 
 
+#ifdef NON_FLEX_LEX
+
 /***********************************************************************
  *
  *  Procedure:
@@ -484,6 +504,7 @@ static int twmStringListInput(void)
  ***********************************************************************
  */
 
+/* Only used with AT&T lex */
 void twmUnput(int c)
 {
 	if(overflowlen < sizeof overflowbuff) {
@@ -508,10 +529,13 @@ void twmUnput(int c)
  ***********************************************************************
  */
 
+/* Only used with AT&T lex */
 void TwmOutput(int c)
 {
 	putchar(c);
 }
+
+#endif /* NON_FLEX_LEX */
 
 
 /**********************************************************************
@@ -531,7 +555,7 @@ typedef struct _TwmKeyword {
 #define kw0_ForceIcons                  3
 #define kw0_NoIconManagers              4
 #define kw0_InterpolateMenuColors       6
-#define kw0_NoVersion                   7
+//#define kw0_NoVersion                 7
 #define kw0_SortIconManager             8
 #define kw0_NoGrabServer                9
 #define kw0_NoMenuShadows               10
@@ -844,7 +868,6 @@ static TwmKeyword keytable[] = {
 	{ "f.showworkspacemgr",     FKEYWORD, F_SHOWWORKMGR },
 	{ "f.slowdownanimation",    FKEYWORD, F_SLOWDOWNANIMATION },
 	{ "f.sorticonmgr",          FKEYWORD, F_SORTICONMGR },
-	{ "f.source",               FSKEYWORD, F_BEEP },  /* XXX - don't work */
 	{ "f.speedupanimation",     FKEYWORD, F_SPEEDUPANIMATION },
 	{ "f.squeeze",              FKEYWORD, F_SQUEEZE },
 	{ "f.startanimation",       FKEYWORD, F_STARTANIMATION },
@@ -965,7 +988,6 @@ static TwmKeyword keytable[] = {
 	{ "notitle",                NO_TITLE, 0 },
 	{ "notitlefocus",           KEYWORD, kw0_NoTitleFocus },
 	{ "notitlehighlight",       NO_TITLE_HILITE, 0 },
-	{ "noversion",              KEYWORD, kw0_NoVersion },
 	{ "nowarptomenutitle",      KEYWORD, kw0_NoWarpToMenuTitle },
 	{ "occupy",                 OCCUPYLIST, 0 },
 	{ "occupyall",              OCCUPYALL, 0 },
@@ -1128,10 +1150,6 @@ int do_single_keyword(int keyword)
 			if(Scr->FirstTime) {
 				Scr->InterpolateMenuColors = TRUE;
 			}
-			return 1;
-
-		case kw0_NoVersion:
-			/* obsolete */
 			return 1;
 
 		case kw0_SortIconManager:
@@ -2377,224 +2395,3 @@ add_ewmh_ignore(char *s)
 	return;
 #endif /* EWMH */
 }
-
-
-#ifdef USEM4
-
-static FILE *start_m4(FILE *fraw)
-{
-	int fno;
-	int fids[2];
-	int fres;               /* Fork result */
-
-	fno = fileno(fraw);
-	/* if (-1 == fcntl(fno, F_SETFD, 0)) perror("fcntl()"); */
-	pipe(fids);
-	fres = fork();
-	if(fres < 0) {
-		perror("Fork for " M4CMD " failed");
-		exit(23);
-	}
-	if(fres == 0) {
-		char *tmp_file;
-
-		/* Child */
-		close(0);               /* stdin */
-		close(1);               /* stdout */
-		dup2(fno, 0);           /* stdin = fraw */
-		dup2(fids[1], 1);       /* stdout = pipe to parent */
-		/* get_defs("m4", dpy, display_name) */
-		tmp_file = m4_defs(dpy, display_name);
-		execlp(M4CMD, M4CMD, "-s", tmp_file, "-", NULL);
-
-		/* If we get here we are screwed... */
-		perror("Can't execlp() " M4CMD);
-		exit(124);
-	}
-	/* Parent */
-	close(fids[1]);
-	return ((FILE *)fdopen(fids[0], "r"));
-}
-
-/* Code taken and munged from xrdb.c */
-#define MAXHOSTNAME 255
-#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
-#define EXTRA   16 /* Egad */
-
-static const char *MkDef(const char *name, const char *def)
-{
-	static char *cp = NULL;
-	static int maxsize = 0;
-	int n, nl;
-
-	if(def == NULL) {
-		return ("");        /* XXX JWS: prevent segfaults */
-	}
-	/* The char * storage only lasts for 1 call... */
-	if((n = EXTRA + ((nl = strlen(name)) +  strlen(def))) > maxsize) {
-		maxsize = MAX(n, 4096);
-		/* Safety net: this is wildly overspec */
-		if(maxsize > 1024 * 1024 * 1024) {
-			fprintf(stderr, "Cowardly refusing to malloc() a gig.\n");
-			exit(1);
-		}
-
-		free(cp);
-		cp = malloc(maxsize);
-	}
-	/* Otherwise cp is aready big 'nuf */
-	if(cp == NULL) {
-		fprintf(stderr, "Can't get %d bytes for arg parm\n", maxsize);
-		exit(468);
-	}
-
-	snprintf(cp, maxsize, "define(`%s', `%s')\n", name, def);
-	return(cp);
-}
-
-static const char *MkNum(const char *name, int def)
-{
-	char num[20];
-
-	sprintf(num, "%d", def);
-	return(MkDef(name, num));
-}
-
-#ifdef NOSTEMP
-int mkstemp(str)
-char *str;
-{
-	int fd;
-
-	mktemp(str);
-	fd = creat(str, 0744);
-	if(fd == -1) {
-		perror("mkstemp's creat");
-	}
-	return(fd);
-}
-#endif
-
-static char *m4_defs(Display *display, char *host)
-{
-	Screen *screen;
-	Visual *visual;
-	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
-	struct hostent *hostname;
-	char *vc;               /* Visual Class */
-	static char tmp_name[] = "/tmp/twmrcXXXXXX";
-	int fd;
-	FILE *tmpf;
-	char *user;
-
-	fd = mkstemp(tmp_name);         /* I *hope* mkstemp exists, because */
-	/* I tried to find the "portable" */
-	/* mktmp... */
-	if(fd < 0) {
-		perror("mkstemp failed in m4_defs");
-		exit(377);
-	}
-	tmpf = (FILE *) fdopen(fd, "w+");
-	XmuGetHostname(client, MAXHOSTNAME);
-	hostname = gethostbyname(client);
-	strcpy(server, XDisplayName(host));
-	colon = strchr(server, ':');
-	if(colon != NULL) {
-		*colon = '\0';
-	}
-	if((server[0] == '\0') || (!strcmp(server, "unix"))) {
-		strcpy(server, client);        /* must be connected to :0 or unix:0 */
-	}
-	/* The machine running the X server */
-	fputs(MkDef("SERVERHOST", server), tmpf);
-	/* The machine running the window manager process */
-	fputs(MkDef("CLIENTHOST", client), tmpf);
-	if(hostname) {
-		fputs(MkDef("HOSTNAME", hostname->h_name), tmpf);
-	}
-	else {
-		fputs(MkDef("HOSTNAME", client), tmpf);
-	}
-
-	if(!(user = getenv("USER")) && !(user = getenv("LOGNAME"))) {
-		user = "unknown";
-	}
-	fputs(MkDef("USER", user), tmpf);
-	fputs(MkDef("HOME", getenv("HOME")), tmpf);
-#ifdef PIXMAP_DIRECTORY
-	fputs(MkDef("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY), tmpf);
-#endif
-	fputs(MkNum("VERSION", ProtocolVersion(display)), tmpf);
-	fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
-	fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
-	fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
-	screen = ScreenOfDisplay(display, Scr->screen);
-	visual = DefaultVisualOfScreen(screen);
-	fputs(MkNum("WIDTH", screen->width), tmpf);
-	fputs(MkNum("HEIGHT", screen->height), tmpf);
-	fputs(MkNum("X_RESOLUTION", Resolution(screen->width, screen->mwidth)), tmpf);
-	fputs(MkNum("Y_RESOLUTION", Resolution(screen->height, screen->mheight)), tmpf);
-	fputs(MkNum("PLANES", DisplayPlanes(display, Scr->screen)), tmpf);
-	fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
-	fputs(MkDef("TWM_TYPE", "ctwm"), tmpf);
-	fputs(MkDef("TWM_VERSION", VersionNumber), tmpf);
-	switch(visual->class) {
-		case(StaticGray):
-			vc = "StaticGray";
-			break;
-		case(GrayScale):
-			vc = "GrayScale";
-			break;
-		case(StaticColor):
-			vc = "StaticColor";
-			break;
-		case(PseudoColor):
-			vc = "PseudoColor";
-			break;
-		case(TrueColor):
-			vc = "TrueColor";
-			break;
-		case(DirectColor):
-			vc = "DirectColor";
-			break;
-		default:
-			vc = "NonStandard";
-			break;
-	}
-	fputs(MkDef("CLASS", vc), tmpf);
-	if(visual->class != StaticGray && visual->class != GrayScale) {
-		fputs(MkDef("COLOR", "Yes"), tmpf);
-	}
-	else {
-		fputs(MkDef("COLOR", "No"), tmpf);
-	}
-#ifdef XPM
-	fputs(MkDef("XPM", "Yes"), tmpf);
-#endif
-#ifdef JPEG
-	fputs(MkDef("JPEG", "Yes"), tmpf);
-#endif
-#ifdef GNOME
-	fputs(MkDef("GNOME", "Yes"), tmpf);
-#endif
-#ifdef SOUNDS
-	fputs(MkDef("SOUNDS", "Yes"), tmpf);
-#endif
-	fputs(MkDef("I18N", "Yes"), tmpf);
-	if(captive && captivename) {
-		fputs(MkDef("TWM_CAPTIVE", "Yes"), tmpf);
-		fputs(MkDef("TWM_CAPTIVE_NAME", captivename), tmpf);
-	}
-	else {
-		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
-	}
-	if(KeepTmpFile) {
-		fprintf(stderr, "Left file: %s\n", tmp_name);
-	}
-	else {
-		fprintf(tmpf, "syscmd(/bin/rm %s)\n", tmp_name);
-	}
-	fclose(tmpf);
-	return(tmp_name);
-}
-#endif /* USEM4 */

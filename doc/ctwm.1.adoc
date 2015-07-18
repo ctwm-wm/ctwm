@@ -23,7 +23,7 @@ click-to-type and pointer-driven keyboard focus, and user-specified
 key and pointer button bindings.  It is actually
 `twm(1)` (Tab Window Manager) from the MIT X11 distribution
 slightly modified to accommodate the use of several virtual screens
-(workspaces). It is heavily inspired from the Hewlett-Packard vuewm
+(workspaces). It is heavily inspired by the Hewlett-Packard vuewm
 window manager. In addition, ctwm can use coloured, shaped icons
 and background root pixmaps in XPM format [from Arnaud Le Hors],
 in JPEG using libjpeg,
@@ -40,7 +40,7 @@ By default, application windows are surrounded by a ``frame'' with a
 titlebar at the top and a special border around the window.  The titlebar
 contains the window's name, a rectangle that is lit when the window is
 receiving keyboard input, and function boxes known as ``titlebuttons''
-at the left and right edges of the titlebar.
+at the left and right edges of the titlebar to which actions can be bound.
 
 Pressing pointer Button1 (usually the left-most button unless it has
 been changed with `xmodmap`) on a titlebutton will invoke the
@@ -200,7 +200,7 @@ fonts, colors, cursors, border widths, icon and window placement, highlighting,
 autoraising, layout of titles, warping, use of the icon manager.
 The `Bindings` section usually comes second and is used to specify
 the functions that should be
-to be invoked when keyboard and pointer buttons are pressed in
+invoked when keyboard and pointer buttons are pressed in
 windows, icons, titles, and frames.  The `Menus` section gives any
 user-defined menus (containing functions to be invoked or
 commands to be executed).
@@ -418,7 +418,7 @@ AutoFocusToTransients::
 
 AutoLower { `win-list` }::
   This variable specifies a list of windows (all windows if the list is
-  defaulted) to be automatically lowered whenever the point leaves a
+  defaulted) to be automatically lowered whenever the pointer leaves a
   window.  This action can be interactively enabled or disabled on
   individual windows using the function `f.autolower`.
 
@@ -2575,14 +2575,6 @@ f.showiconmgr::
 f.sorticonmgr::
   This function sorts the entries in the current icon manager alphabetically.
   See the variable `SortIconManager`.
-
-// .IP "`f.source` `string`" 8
-// This function assumes `string` is a file name.  The file is read
-// and parsed as a ctwm startup file.
-// This
-// function is intended to be used only to re-build pull-down menus.  None
-// of the ctwm variables are changed.
-
 
 f.showbackground::
   This function unmaps all windows in the current workspace. This is a toggle
