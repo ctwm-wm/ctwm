@@ -570,6 +570,7 @@ typedef struct _ctwm_cl_args {
 #endif
 
 	char  *client_id;          // --clientId, session client id
+	char  *restore_filename;   // --restore, session filename
 } ctwm_cl_args;
 extern ctwm_cl_args CLarg;
 

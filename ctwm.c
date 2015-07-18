@@ -207,6 +207,7 @@ ctwm_cl_args CLarg = {
 	.ewmh_replace    = 0,
 #endif
 	.client_id       = NULL,
+	.restore_filename = NULL,
 };
 
 Bool RestartPreviousState = False;      /* try to restart in previous state */
@@ -235,7 +236,6 @@ int main(int argc, char **argv, char **environ)
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	int numManaged, firstscrn, lastscrn, scrnum;
 	int zero = 0;
-	char *restore_filename = NULL;
 	char *welcomefile;
 	int  screenmasked;
 	static int crootx = 100;
@@ -430,7 +430,7 @@ int main(int argc, char **argv, char **environ)
 					break;
 				}
 				IFIS("restore") {
-					restore_filename = optarg;
+					CLarg.restore_filename = optarg;
 					break;
 				}
 #undef IFIS
@@ -497,8 +497,8 @@ int main(int argc, char **argv, char **environ)
 		        ProgramName);
 		exit(1);
 	}
-	if(restore_filename) {
-		ReadWinConfigFile(restore_filename);
+	if(CLarg.restore_filename) {
+		ReadWinConfigFile(CLarg.restore_filename);
 	}
 	HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 	TwmContext = XUniqueContext();
