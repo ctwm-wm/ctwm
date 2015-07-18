@@ -51,7 +51,6 @@ FILE *start_m4(FILE *fraw)
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
-		/* get_defs("m4", dpy, display_name) */
 		tmp_file = m4_defs(dpy, display_name);
 		execlp(M4CMD, M4CMD, "-s", tmp_file, "-", NULL);
 
