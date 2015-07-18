@@ -687,9 +687,6 @@ int main(int argc, char **argv, char **environ)
 				Scr->captivename = captivename;
 			}
 		}
-		else {
-			captivename = "Root";
-		}
 		Scr->RootColormaps.number_cwins = 1;
 		Scr->RootColormaps.cwins = (ColormapWindow **) malloc(sizeof(ColormapWindow *));
 		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, True, False);
