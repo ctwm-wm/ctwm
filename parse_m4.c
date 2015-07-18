@@ -236,7 +236,7 @@ static char *m4_defs(Display *display, char *host)
 	else {
 		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
 	}
-	if(KeepTmpFile) {
+	if(CLarg.KeepTmpFile) {
 		fprintf(stderr, "Left file: %s\n", tmp_name);
 	}
 	else {

@@ -291,13 +291,13 @@ int ParseTwmrc(char *filename)
 			        ProgramName, filename, cp);
 		}
 #ifdef USEM4
-		if(GoThroughM4) {
+		if(CLarg.GoThroughM4) {
 			twmrc = start_m4(raw);
 		}
 		status = doparse(m4twmFileInput, "file", cp);
 		wait(0);
 		fclose(twmrc);
-		if(GoThroughM4) {
+		if(CLarg.GoThroughM4) {
 			fclose(raw);
 		}
 #else
@@ -422,13 +422,13 @@ static int m4twmFileInput(void)
 	int line;
 	static FILE *cp = NULL;
 
-	if(cp == NULL && keepM4_filename) {
-		cp = fopen(keepM4_filename, "w");
+	if(cp == NULL && CLarg.keepM4_filename) {
+		cp = fopen(CLarg.keepM4_filename, "w");
 		if(cp == NULL) {
 			fprintf(stderr,
 			        "%s:  unable to create m4 output %s, ignoring\n",
-			        ProgramName, keepM4_filename);
-			keepM4_filename = NULL;
+			        ProgramName, CLarg.keepM4_filename);
+			CLarg.keepM4_filename = NULL;
 		}
 	}
 

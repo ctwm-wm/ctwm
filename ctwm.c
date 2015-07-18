@@ -118,11 +118,6 @@
 XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
 char *display_name = NULL;      /* JMO 2/13/90 for m4 */
-#ifdef USEM4
-int KeepTmpFile = False;        /* JMO 3/28/90 for m4 */
-char *keepM4_filename = NULL;   /* Keep M4 output here */
-int GoThroughM4 = True;
-#endif
 Window ResizeWindow;            /* the window we are resizing */
 
 int  captive      = FALSE;
@@ -253,6 +248,13 @@ int main(int argc, char **argv, char **environ)
 	Argc = argc;
 	Argv = argv;
 
+	/* Init CLarg */
+#ifdef USEM4
+	CLarg.KeepTmpFile     = False;
+	CLarg.keepM4_filename = NULL;
+	CLarg.GoThroughM4     = True;
+#endif
+
 
 	/*
 	 * Backward-compat cheat: accept a few old-style long args if they
@@ -380,13 +382,13 @@ int main(int argc, char **argv, char **environ)
 #ifdef USEM4
 			/* Args that only mean anything if we're built with m4 */
 			case 'k':
-				KeepTmpFile = True;
+				CLarg.KeepTmpFile = True;
 				break;
 			case 'K':
-				keepM4_filename = optarg;
+				CLarg.keepM4_filename = optarg;
 				break;
 			case 'n':
-				GoThroughM4 = False;
+				CLarg.GoThroughM4 = False;
 				break;
 #endif
 

@@ -543,12 +543,6 @@ extern void DoRestart(Time t);  /* Function to perform a restart */
 
 extern Atom XA_WM_WORKSPACESLIST;
 
-#ifdef USEM4
-extern int KeepTmpFile;                 /* JMO 3/28/90 for m4 */
-extern char *keepM4_filename;           /* Keep M4 output here */
-extern int GoThroughM4;
-#endif
-
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
 
 
