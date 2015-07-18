@@ -1015,23 +1015,31 @@ static void usage(void)
 		llen = 10;
 	}
 
-	fprintf(stderr, "usage: %s [(--display | -d) dpy]  [--version]  [--info]",
-	        ProgramName);
+	fprintf(stderr, "usage: %s [(--display | -d) dpy]  "
 #ifdef EWMH
-	fprintf(stderr, "  [--replace]");
+	        "[--replace]  "
 #endif
+	        "[--single]  [--cfgchk]\n", ProgramName);
 
-	fprintf(stderr, "\n%*s[--cfgchk]  [(--file | -f) file]  [--single]  "
-	        "[--nowelcome | -W]\n", llen, "");
-	fprintf(stderr, "%*s[(--window | -w) [wid]]  [--help | -h]\n", llen, "");
-
-	fprintf(stderr, "%*s[--quiet | -q]  [--verbose | -v]  [--name name] "
-	        "[--xrm resource]\n", llen, "");
+	fprintf(stderr, "%*s[(--file | -f) initfile]\n", llen, "");
 
 #ifdef USEM4
 	fprintf(stderr, "%*s[--nom4 | -n]  [--keep-defs | -k]  "
-	        "[(--keep | -K) file]\n", llen, "");
+	        "[(--keep | -K) m4file]\n", llen, "");
 #endif
+
+	fprintf(stderr, "%*s[--verbose | -v]  [--quiet | -q]  [--mono]  "
+	        "[--xrm resource]\n", llen, "");
+
+	fprintf(stderr, "%*s[--version]  [--info]  [--nowelcome | -W]\n",
+	        llen, "");
+
+	fprintf(stderr, "%*s[(--window | -w) [win-id]]  [--name name]\n", llen, "");
+
+	/* Semi-intentionally not documenting --clientId/--restore */
+
+	fprintf(stderr, "%*s[--help]\n", llen, "");
+
 
 	exit(1);
 }
