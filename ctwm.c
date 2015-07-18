@@ -196,6 +196,7 @@ ctwm_cl_args CLarg = {
 	.PrintErrorMessages = False,
 	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
 	.is_captive      = FALSE,
+	.capwin          = (Window) 0,
 	.captivename     = NULL, // XXX UNIMPLEMENTED
 #ifdef USEM4
 	.KeepTmpFile     = False,
@@ -244,7 +245,6 @@ int main(int argc, char **argv, char **environ)
 	int ch, optidx;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
-	Window capwin = (Window) 0;
 	IconRegion *ir;
 
 	XRectangle ink_rect;
@@ -375,7 +375,7 @@ int main(int argc, char **argv, char **environ)
 				CLarg.is_captive = True;
 				CLarg.MultiScreen = False;
 				if(optarg != NULL) {
-					sscanf(optarg, "%x", (unsigned int *)&capwin);
+					sscanf(optarg, "%x", (unsigned int *)&CLarg.capwin);
 					/* Failure will just leave capwin as initialized */
 				}
 				break;
@@ -541,12 +541,12 @@ int main(int argc, char **argv, char **environ)
 		unsigned long attrmask;
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
-			if(capwin && XGetWindowAttributes(dpy, capwin, &wa)) {
+			if(CLarg.capwin && XGetWindowAttributes(dpy, CLarg.capwin, &wa)) {
 				Window junk;
-				croot  = capwin;
+				croot  = CLarg.capwin;
 				crootw = wa.width;
 				crooth = wa.height;
-				XTranslateCoordinates(dpy, capwin, wa.root, 0, 0, &crootx, &crooty, &junk);
+				XTranslateCoordinates(dpy, CLarg.capwin, wa.root, 0, 0, &crootx, &crooty, &junk);
 			}
 			else {
 				croot = CreateRootWindow(crootx, crooty, crootw, crooth);

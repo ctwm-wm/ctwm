@@ -555,7 +555,8 @@ typedef struct _ctwm_cl_args {
 	Bool   PrintErrorMessages; // --verbose, show more debug output
 	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
-	int    is_captive;         // --window, running captive
+	int    is_captive;         // --window (flag), running captive
+	Window capwin;             // --window (arg), existing window to capture
 	char  *captivename;        // --name, captive name
 
 #ifdef USEM4
