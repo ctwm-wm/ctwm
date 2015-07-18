@@ -155,6 +155,7 @@ static Window CreateRootWindow(int x, int y,
 static void DisplayInfo(void);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
+static void usage(void) __attribute__((noreturn));
 
 Cursor  UpperLeftCursor;
 Cursor  TopRightCursor,
@@ -416,16 +417,10 @@ int main(int argc, char **argv, char **environ)
 			}
 		}
 usage:
-		fprintf(stderr, "usage: %s [-display dpy] [-version] [-info]", ProgramName);
-#ifdef EWMH
-		fprintf(stderr, " [--replace]");
-#endif
-		fprintf(stderr,
-		        " [-cfgchk] [-f file] [-s[ingle]] [-q] [-v[erbose]] [-W] [-w[indow] [wid]] [-n]");
-#ifdef USEM4
-		fprintf(stderr, " [-k] [-K file]");
-#endif
-		fprintf(stderr, " [-name name] [-xrm resource]\n");
+		usage();
+
+		/* NOTREACHED */
+		fprintf(stderr, "Error: Shouldn't get here.\n");
 		exit(1);
 	}
 
@@ -1026,6 +1021,25 @@ usage:
 	fprintf(stderr, "Shouldn't return from HandleEvents()!\n");
 	exit(1);
 }
+
+
+static void usage(void)
+{
+
+	fprintf(stderr, "usage: %s [-display dpy] [-version] [-info]", ProgramName);
+#ifdef EWMH
+	fprintf(stderr, " [--replace]");
+#endif
+	fprintf(stderr,
+	        " [-cfgchk] [-f file] [-s[ingle]] [-q] [-v[erbose]] [-W] [-w[indow] [wid]] [-n]");
+#ifdef USEM4
+	fprintf(stderr, " [-k] [-K file]");
+#endif
+	fprintf(stderr, " [-name name] [-xrm resource]\n");
+
+	exit(1);
+}
+
 
 /***********************************************************************
  *
