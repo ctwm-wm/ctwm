@@ -136,7 +136,7 @@ to touch the bottom the screen.
 --info::
   ctwm prints its detailed version and compile time options.
 
---window[=`win-id`], -w [`win-id`]::
+--window[=`win-id`], -w[`win-id`]::
   If `-w` is specified without a win-id value, ctwm does not take over
   the whole screen(s); instead it creates a new window that becomes its
   root window.  If the win-id value is given, it is considered to be the
@@ -160,6 +160,20 @@ to touch the bottom the screen.
 
 --xrm=`resource`::
   Ignored.
+
+ctwm uses `getopt_long()` for parsing the command-line options.  This
+means that args can be passed via `--long=arg` and `--long arg`, as well
+as `-l arg` and `-larg`, and short args can be bundled like `-vnk` as
+well as `-v -n -k`.
+
+[CAUTION]
+====
+Note, however, that the handline of optional args is slightly different;
+they *must* be specified with = or no space.  e.g., `--window=123` will
+set the win-id to 123, but `--window 123` will not; the 123 will be
+treated as a separate argument.  Similarly, it must be set as `-w123`,
+not `-w 123`.
+====
 
 
 == CUSTOMIZATION
