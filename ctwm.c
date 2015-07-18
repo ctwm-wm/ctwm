@@ -199,6 +199,9 @@ ctwm_cl_args CLarg = {
 	.keepM4_filename = NULL,
 	.GoThroughM4     = True,
 #endif
+#ifdef EWMH
+	.ewmh_replace    = 0,
+#endif
 };
 
 Bool RestartPreviousState = False;      /* try to restart in previous state */
