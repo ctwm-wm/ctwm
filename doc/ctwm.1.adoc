@@ -14,6 +14,7 @@ ctwm [(--display | -d) dpy]  [--replace]  [--single]  [--cfgchk]
      [--version]  [--info]  [--nowelcome | -W]
      [(--window | -w) [win-id]]  [--name name]
      [--clientId clid]  [--restore resfname]
+     [--help | -h]
 
 
 == DESCRIPTION
@@ -78,6 +79,9 @@ to touch the bottom the screen.
 == OPTIONS
 `ctwm` accepts the following command line options:
 
+
+--help, -h::
+  Print usage text.
 
 --display=`dpy`, -d `dpy`::
   This option specifies the X server to use.
