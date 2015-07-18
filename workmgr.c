@@ -4038,12 +4038,12 @@ void AddToCaptiveList(void)
 		captivename = (char *) malloc(8);
 		sprintf(captivename, "ctwm-%d", i);
 	}
-	newclist = (char **) malloc((count + 2) * sizeof(char *));
+	newclist = calloc(count + 2, sizeof(char *));
 	for(i = 0; i < count; i++) {
 		newclist [i] = (char *) strdup(clist [i]);
 	}
 	newclist [count] = (char *) strdup(captivename);
-	newclist [count + 1] = (char *) 0;
+	newclist [count + 1] = NULL;
 	SetCaptivesList(scrnum, newclist);
 	freeCaptiveList(clist);
 	freeCaptiveList(newclist);
@@ -4079,7 +4079,7 @@ void RemoveFromCaptiveList(void)
 			count++;
 			cl++;
 		}
-		newclist = (char **) malloc(count * sizeof(char *));
+		newclist = calloc(count, sizeof(char *));
 		cl = clist;
 		count = 0;
 		while(*cl) {
@@ -4090,7 +4090,7 @@ void RemoveFromCaptiveList(void)
 			newclist [count++] = *cl;
 			cl++;
 		}
-		newclist [count] = (char *) 0;
+		newclist [count] = NULL;
 		SetCaptivesList(scrnum, newclist);
 		free(newclist);
 	}
