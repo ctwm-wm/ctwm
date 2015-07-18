@@ -123,7 +123,6 @@ Window ResizeWindow;            /* the window we are resizing */
 int  captive      = FALSE;
 char *captivename = NULL;
 
-int MultiScreen = TRUE;         /* try for more than one screen? */
 int NumScreens;                 /* number of screens in ScreenList */
 int HasShape;                   /* server supports shape extension? */
 int ShapeEventBase, ShapeErrorBase;
@@ -192,6 +191,7 @@ char **Argv;
 
 /* Command-line args */
 ctwm_cl_args CLarg = {
+	.MultiScreen     = TRUE,
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
@@ -295,7 +295,7 @@ int main(int argc, char **argv, char **environ)
 	 */
 	static struct option long_options[] = {
 		/* Simple flags */
-		{ "single",    no_argument,       &MultiScreen, FALSE },
+		{ "single",    no_argument,       &CLarg.MultiScreen, FALSE },
 		{ "mono",      no_argument,       &Monochrome, TRUE },
 		{ "verbose",   no_argument,       NULL, 'v' },
 		{ "quiet",     no_argument,       NULL, 'q' },
@@ -371,7 +371,7 @@ int main(int argc, char **argv, char **environ)
 				break;
 			case 'w':
 				captive = True;
-				MultiScreen = False;
+				CLarg.MultiScreen = False;
 				if(optarg != NULL) {
 					sscanf(optarg, "%x", (unsigned int *)&capwin);
 					/* Failure will just leave capwin as initialized */
@@ -449,6 +449,7 @@ int main(int argc, char **argv, char **environ)
 				usage();
 		}
 	}
+	printf("ms=%d\n", CLarg.MultiScreen); exit(0);
 
 
 #define newhandler(sig, action) \
@@ -511,7 +512,7 @@ int main(int argc, char **argv, char **environ)
 
 	NumScreens = ScreenCount(dpy);
 
-	if(MultiScreen) {
+	if(CLarg.MultiScreen) {
 		firstscrn = 0;
 		lastscrn = NumScreens - 1;
 	}
@@ -597,7 +598,7 @@ int main(int argc, char **argv, char **environ)
 		if(RedirectError && cfgchk == 0) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
-			if(MultiScreen && NumScreens > 0) {
+			if(CLarg.MultiScreen && NumScreens > 0) {
 				fprintf(stderr, " on screen %d?\n", scrnum);
 			}
 			else {
@@ -1030,7 +1031,7 @@ int main(int argc, char **argv, char **environ)
 	} /* for */
 
 	if(numManaged == 0) {
-		if(MultiScreen && NumScreens > 0)
+		if(CLarg.MultiScreen && NumScreens > 0)
 			fprintf(stderr, "%s:  unable to find any unmanaged screens\n",
 			        ProgramName);
 		exit(1);
