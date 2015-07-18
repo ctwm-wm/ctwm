@@ -196,6 +196,7 @@ ctwm_cl_args CLarg = {
 	.PrintErrorMessages = False,
 	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
 	.is_captive      = FALSE,
+	.captivename     = NULL, // XXX UNIMPLEMENTED
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,

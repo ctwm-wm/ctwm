@@ -556,6 +556,7 @@ typedef struct _ctwm_cl_args {
 	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
 	int    is_captive;         // --window, running captive
+	char  *captivename;        // --name, captive name
 
 #ifdef USEM4
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
