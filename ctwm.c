@@ -250,7 +250,10 @@ int main(int argc, char **argv, char **environ)
 	Argc = argc;
 	Argv = argv;
 
-	/* Setup long options for arg parsing */
+
+	/*
+	 * Setup long options for arg parsing
+	 */
 	static struct option long_options[] = {
 		/* Simple flags */
 		{ "single",    no_argument,       &MultiScreen, FALSE },
@@ -302,7 +305,9 @@ int main(int argc, char **argv, char **environ)
 #endif
 	                            ;
 
-	/* Figure out the args */
+	/*
+	 * Parse out the args
+	 */
 	optidx = 0;
 	while((ch = getopt_long(argc, argv, short_options, long_options,
 	                        &optidx)) != -1) {
