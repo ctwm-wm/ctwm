@@ -24,6 +24,8 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
 #include <X11/Xos.h>
@@ -3927,7 +3929,7 @@ static char **GetCaptivesList(int scrnum)
 		p += strlen((char *)p) + 1;
 		count++;
 	}
-	ret = (char **) malloc((count + 1) * sizeof(char *));
+	ret = calloc(count + 1, sizeof(char *));
 
 	p = prop;
 	l = 0;
@@ -3937,7 +3939,7 @@ static char **GetCaptivesList(int scrnum)
 		l += strlen((char *)p) + 1;
 		p += strlen((char *)p) + 1;
 	}
-	ret [i] = (char *) 0;
+	ret [i] = NULL;
 	XFree((char *)prop);
 
 	return (ret);
