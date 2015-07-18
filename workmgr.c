@@ -3983,7 +3983,7 @@ static void freeCaptiveList(char **clist)
 }
 
 char *
-AddToCaptiveList(char *cptname)
+AddToCaptiveList(const char *cptname)
 {
 	int         i, count;
 	char        **clist, **cl, **newclist;
@@ -4103,7 +4103,7 @@ AddToCaptiveList(char *cptname)
 }
 
 void
-RemoveFromCaptiveList(char *cptname)
+RemoveFromCaptiveList(const char *cptname)
 {
 	int  count;
 	char **clist, **cl, **newclist;
