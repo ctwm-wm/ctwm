@@ -256,7 +256,7 @@ int main(int argc, char **argv, char **environ)
 		{ "single",    no_argument,       &MultiScreen, FALSE },
 		{ "mono",      no_argument,       &Monochrome, TRUE },
 		{ "verbose",   no_argument,       NULL, 'v' },
-		{ "quiet",     no_argument,       &PrintErrorMessages, False },
+		{ "quiet",     no_argument,       NULL, 'q' },
 		{ "nowelcome", no_argument,       NULL, 'W' },
 
 		/* Config/file related */
@@ -295,7 +295,7 @@ int main(int argc, char **argv, char **environ)
 	 * I assume '::' for optional args is portable; getopt_long(3)
 	 * doesn't describe it, but it's a GNU extension for getopt(3).
 	 */
-	const char *short_options = "vWf:d:w::"
+	const char *short_options = "vqWf:d:w::"
 #ifdef USEM4
 	                            "kK:n"
 #endif
@@ -309,6 +309,9 @@ int main(int argc, char **argv, char **environ)
 			/* First handle the simple cases that have short args */
 			case 'v':
 				PrintErrorMessages = True;
+				break;
+			case 'q':
+				PrintErrorMessages = False;
 				break;
 			case 'W':
 				ShowWelcomeWindow = False;
@@ -1020,7 +1023,7 @@ static void usage(void)
 	fprintf(stderr, "%*s[(--window | -w) [wid]]\n", llen, "");
 
 	fprintf(stderr,
-	        "%*s[--quiet] [--verbose | -v] [--name name] [--xrm resource]\n",
+	        "%*s[--quiet | -q] [--verbose | -v] [--name name] [--xrm resource]\n",
 	        llen, "");
 
 #ifdef USEM4
