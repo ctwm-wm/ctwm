@@ -550,6 +550,7 @@ typedef struct _ctwm_cl_args {
 	int    MultiScreen;        // ! --single, grab multiple screens
 	int    Monochrome;         // --mono, force monochrome
 	int    cfgchk;             // --cfgchk, check config and exit
+	char  *InitFile;           // --file, config filename
 
 	Bool   PrintErrorMessages; // --verbose, show more debug output
 	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen

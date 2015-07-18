@@ -193,6 +193,7 @@ ctwm_cl_args CLarg = {
 	.MultiScreen     = TRUE,
 	.Monochrome      = FALSE,
 	.cfgchk          = 0,
+	.InitFile        = NULL,
 	.PrintErrorMessages = False,
 	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
 #ifdef USEM4
@@ -240,7 +241,6 @@ int main(int argc, char **argv, char **environ)
 	static unsigned int crootw = 1280;
 	static unsigned int crooth =  768;
 	int ch, optidx;
-	char *InitFile = NULL;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
 	Window capwin = (Window) 0;
@@ -363,7 +363,7 @@ int main(int argc, char **argv, char **environ)
 				ShowWelcomeWindow = False;
 				break;
 			case 'f':
-				InitFile = optarg;
+				CLarg.InitFile = optarg;
 				break;
 			case 'h':
 				usage();
@@ -782,7 +782,7 @@ int main(int argc, char **argv, char **environ)
 
 		/* Parse it once for each screen. */
 		if(CLarg.cfgchk) {
-			if(ParseTwmrc(InitFile) == 0) {
+			if(ParseTwmrc(CLarg.InitFile) == 0) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
 				exit(1);
@@ -793,7 +793,7 @@ int main(int argc, char **argv, char **environ)
 			}
 		}
 		else {
-			ParseTwmrc(InitFile);
+			ParseTwmrc(CLarg.InitFile);
 		}
 
 		InitVirtualScreens(Scr);
