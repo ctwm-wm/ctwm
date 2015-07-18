@@ -117,7 +117,6 @@
 
 XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
-char *display_name = NULL;      /* JMO 2/13/90 for m4 */
 Window ResizeWindow;            /* the window we are resizing */
 
 int  captive      = FALSE;
@@ -194,6 +193,7 @@ ctwm_cl_args CLarg = {
 	.Monochrome      = FALSE,
 	.cfgchk          = 0,
 	.InitFile        = NULL,
+	.display_name    = NULL,
 	.PrintErrorMessages = False,
 	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
 #ifdef USEM4
@@ -282,7 +282,7 @@ int main(int argc, char **argv, char **environ)
 			if(argc <= 2 || strlen(argv[2]) < 1) {
 				usage();
 			}
-			display_name = strdup(argv[2]);
+			CLarg.display_name = strdup(argv[2]);
 
 			*argv[1] = '\0';
 			*argv[2] = '\0';
@@ -368,7 +368,7 @@ int main(int argc, char **argv, char **environ)
 			case 'h':
 				usage();
 			case 'd':
-				display_name = optarg;
+				CLarg.display_name = optarg;
 				break;
 			case 'w':
 				captive = True;
@@ -483,10 +483,10 @@ int main(int argc, char **argv, char **environ)
 	XtToolkitInitialize();
 	appContext = XtCreateApplicationContext();
 
-	if(!(dpy = XtOpenDisplay(appContext, display_name, "twm", "twm",
+	if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
 	                         NULL, 0, &zero, NULL))) {
 		fprintf(stderr, "%s:  unable to open display \"%s\"\n",
-		        ProgramName, XDisplayName(display_name));
+		        ProgramName, XDisplayName(CLarg.display_name));
 		exit(1);
 	}
 

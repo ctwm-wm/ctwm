@@ -491,7 +491,6 @@ void CreateFonts(void);
 void RestoreWithdrawnLocation(TwmWindow *tmp);
 extern char *ProgramName;
 extern Display *dpy;
-extern char *display_name;
 extern XtAppContext appContext;
 extern Window ResizeWindow;     /* the window we are resizing */
 extern int HasShape;            /* this server supports Shape extension */
@@ -551,6 +550,7 @@ typedef struct _ctwm_cl_args {
 	int    Monochrome;         // --mono, force monochrome
 	int    cfgchk;             // --cfgchk, check config and exit
 	char  *InitFile;           // --file, config filename
+	char  *display_name;       // --display, X server display
 
 	Bool   PrintErrorMessages; // --verbose, show more debug output
 	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
