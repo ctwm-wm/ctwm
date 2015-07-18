@@ -63,11 +63,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#ifdef VMS
-#include <decw$include/Xatom.h>
-#else
 #include <X11/Xatom.h>
-#endif
 
 #include "ctwm.h"
 #include "util.h"

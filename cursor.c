@@ -61,11 +61,7 @@
  ***********************************************************************/
 
 #include <stdio.h>
-#ifdef VMS
-#include <decw$include/Xos.h>
-#else
 #include <X11/Xos.h>
-#endif
 
 #include "ctwm.h"
 #include "screen.h"

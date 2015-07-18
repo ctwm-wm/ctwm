@@ -1,4 +1,11 @@
 #
+# NOTE
+#
+# This config has setup for VMS systems, which are no longer supported by
+# ctwm.  It's in spite of that, for example purposes.
+#
+
+#
 # $XConsortium: system.twmrc,v 1.8 91/04/23 21:10:58 gildea Exp $
 # 
 # Default twm configuration file; needs to be kept small to conserve string

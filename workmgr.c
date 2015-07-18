@@ -26,16 +26,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <assert.h>
-#ifdef VMS
-#include <string.h>
-#include <decw$include/Xos.h>
-#include <decw$include/Xatom.h>
-#include <decw$include/Xresource.h>
-#else
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/Xresource.h>
-#endif
 #ifdef macII
 int strcmp(); /* missing from string.h in AUX 2.0 */
 #endif

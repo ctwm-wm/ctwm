@@ -25,13 +25,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef VMS
-#include <decw$include/Xlib.h>
-#include <decw$include/Xatom.h>
-#else
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
-#endif
 
 #include "ctwm_client.h"
 

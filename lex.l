@@ -61,14 +61,6 @@
  *
  ***********************************************************************/
 
-#ifdef VMS
-#  include <ctype.h>
-#  ifdef __DECC
-#    include <unistd.h>
-#  else
-#    include <unixio.h>
-#  endif
-#endif
 #include "parse.h"
 
 /*

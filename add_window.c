@@ -69,19 +69,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#ifndef VMS
 #include <sys/time.h>
-#else
-#include <time.h>
-#endif
 #if defined(AIXV3) || defined(_SYSTYPE_SVR4) || defined(ibm) || defined __QNX__
 #include <sys/select.h>
 #endif
-#ifdef VMS
-#include <decw$include/Xatom.h>
-#else
 #include <X11/Xatom.h>
-#endif
 
 #include "ctwm.h"
 #include "ctwm_atoms.h"
@@ -223,11 +215,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
 	Bool        random_placed = False;
 	int         found = 0;
-#ifndef VMS
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout;
-#endif
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 	WindowBox *winbox;
@@ -1004,7 +994,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 				tmp_win->frame_height = AddingH;
 				/*SetFocus ((TwmWindow *) NULL, CurrentTime);*/
 				while(TRUE) {
-#ifndef VMS                     /* I'll try to implement this later.  RL */
 					if(Scr->OpenWindowTimeout) {
 						fd = ConnectionNumber(dpy);
 						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
@@ -1022,9 +1011,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 						}
 					}
 					else {
-#else
-					{
-#endif
 						found = 1;
 						XMaskEvent(dpy, ButtonPressMask | PointerMotionMask, &event);
 					}

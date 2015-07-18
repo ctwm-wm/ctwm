@@ -25,11 +25,7 @@
  */
 
 #include <stdio.h>
-#ifdef VMS
-#  include <X11SM/SMlib.h>
-#else
-#  include <X11/SM/SMlib.h>
-#endif
+#include <X11/SM/SMlib.h>
 #include "types.h"
 
 #ifndef _SESSION_
