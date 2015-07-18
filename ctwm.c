@@ -1015,9 +1015,9 @@ static void usage(void)
 #ifdef EWMH
 	        "[--replace]  "
 #endif
-	        "[--single]  [--cfgchk]\n", ProgramName);
+	        "[--single]\n", ProgramName);
 
-	fprintf(stderr, "%*s[(--file | -f) initfile]\n", llen, "");
+	fprintf(stderr, "%*s[(--file | -f) initfile]  [--cfgchk]\n", llen, "");
 
 #ifdef USEM4
 	fprintf(stderr, "%*s[--nom4 | -n]  [--keep-defs | -k]  "
