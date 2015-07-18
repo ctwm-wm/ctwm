@@ -128,11 +128,6 @@ ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
 int FirstScreen;                /* TRUE ==> first screen of display */
-#ifdef DEBUG
-Bool ShowWelcomeWindow = False;
-#else
-Bool ShowWelcomeWindow = True;
-#endif
 static int RedirectError;       /* TRUE ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
@@ -194,7 +189,11 @@ ctwm_cl_args CLarg = {
 	.InitFile        = NULL,
 	.display_name    = NULL,
 	.PrintErrorMessages = False,
-	.ShowWelcomeWindow  = False, // XXX UNIMPLEMENTED
+#ifdef DEBUG
+	.ShowWelcomeWindow  = False,
+#else
+	.ShowWelcomeWindow  = True,
+#endif
 	.is_captive      = FALSE,
 	.capwin          = (Window) 0,
 	.captivename     = NULL, // XXX UNIMPLEMENTED
@@ -361,7 +360,7 @@ int main(int argc, char **argv, char **environ)
 				CLarg.PrintErrorMessages = False;
 				break;
 			case 'W':
-				ShowWelcomeWindow = False;
+				CLarg.ShowWelcomeWindow = False;
 				break;
 			case 'f':
 				CLarg.InitFile = optarg;
@@ -676,7 +675,7 @@ int main(int argc, char **argv, char **environ)
 		Scr->CaptiveRoot = CLarg.is_captive ? croot : None;
 		Scr->Root = croot;
 		Scr->XineramaRoot = croot;
-		Scr->ShowWelcomeWindow = True; // XXX
+		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
@@ -1162,7 +1161,7 @@ static void InitVariables(void)
 	Scr->workSpaceManagerActive = FALSE;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
-	Scr->ShowWelcomeWindow = True; // XXX
+	Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
 #define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
 	SETFB(DefaultC)
