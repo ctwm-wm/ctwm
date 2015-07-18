@@ -396,8 +396,9 @@ usage:
 #undef newhandler
 
 	Home = getenv("HOME");
-	if(Home == NULL)
+	if(Home == NULL) {
 		Home = "./";
+	}
 
 	HomeLen = strlen(Home);
 

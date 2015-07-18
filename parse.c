@@ -109,10 +109,10 @@ static int ParseStringList(const char **sl);
 #ifdef __GNUC__
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wredundant-decls"
- extern int yyparse(void);
+extern int yyparse(void);
 # pragma GCC diagnostic pop
 #else
- extern int yyparse(void);
+extern int yyparse(void);
 #endif
 
 static FILE *twmrc;

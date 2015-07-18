@@ -3745,8 +3745,9 @@ file_opened:
 	if(ispipe) {
 		pclose(file);
 	}
-	else
+	else {
 		fclose(file);
+	}
 
 	image = XCreateImage(dpy, visual,  depth, header.pixmap_format,
 	                     0, (char *) imagedata, w, h,
