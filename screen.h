@@ -475,7 +475,6 @@ struct ScreenInfo {
 };
 
 extern int captive;
-extern int MultiScreen;
 extern int NumScreens;
 extern ScreenInfo **ScreenList;
 extern ScreenInfo *Scr;
