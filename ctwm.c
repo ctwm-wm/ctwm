@@ -770,6 +770,7 @@ int main(int argc, char **argv, char **environ)
 
 		Scr->WindowMask = (Window) 0;
 		screenmasked = 0;
+		/* XXX Happens before config parse, so ignores DontShowWW param */
 		if(ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = 1;
 			MaskScreen(welcomefile);
