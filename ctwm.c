@@ -1008,12 +1008,8 @@ int main(int argc, char **argv, char **environ)
 
 static void usage(void)
 {
-	int llen;
-
-	llen = strlen("usage: ") + strlen(ProgramName) + 1;
-	if(llen > 10) {
-		llen = 10;
-	}
+	/* How far to indent continuation lines */
+	int llen = 10;
 
 	fprintf(stderr, "usage: %s [(--display | -d) dpy]  "
 #ifdef EWMH
