@@ -101,6 +101,7 @@ struct ScreenInfo {
 	int rootw;                  /* my copy of DisplayWidth(dpy, screen) */
 	int rooth;                  /* my copy of DisplayHeight(dpy, screen) */
 
+	char *captivename;          /* The name of the captive root window if any */
 	int crootx;                 /* The x coordinate of the captive root window if any */
 	int crooty;                 /* The y coordinate of the captive root window if any */
 	int crootw;                 /* my copy of DisplayWidth(dpy, screen) */

@@ -684,6 +684,7 @@ int main(int argc, char **argv, char **environ)
 			if(captivename) {
 				XSetStandardProperties(dpy, croot, captivename, captivename, None, NULL, 0,
 				                       NULL);
+				Scr->captivename = captivename;
 			}
 		}
 		else {
