@@ -9,6 +9,11 @@ The old `imake` build system has been replaced by a new structure using
 `cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
 build ctwm.  See the `README` file for how to run it.
 
+### Platform Support
+
+Support for many non-current platforms has been dropped.  In particular,
+remnants of special-case VMS support have been removed.
+
 ### Removed Features
 
 1. Support for the SDSC imconv library, and the IMCONV options related to
