@@ -290,10 +290,8 @@ int main(int argc, char **argv, char **environ)
 	/*
 	 * Short aliases for some
 	 *
-	 * '::' for optional args may not be portable, though I'd expect any
-	 * system that handled getopt_long() should have it.  If it breaks
-	 * for you, though, take it out, and just use the long form if you
-	 * really want to "-w" with no args.
+	 * I assume '::' for optional args is portable; getopt_long(3)
+	 * doesn't describe it, but it's a GNU extension for getopt(3).
 	 */
 	const char *short_options = "vwf:d:w::"
 #ifdef USEM4
