@@ -7,12 +7,13 @@ ctwm - Claude's Tab Window Manager for the X Window System
 
 == SYNTAX
 ["literal"]
-ctwm [-display dpy] [--replace] [-s[ingle]] [-cfgchk]
-     [-f initfile] [-n] [-k] [-K m4file]
-     [-v[erbose]] [-q] [-mono] [-xrm resource]
-     [-version] [-info] [-W]
-     [-w[indow] [win-id]] [-name name]
-     [-clientId] [-restore]
+ctwm [(--display | -d) dpy]  [--replace]  [--single]  [--cfgchk]
+     [(--file | -f) initfile]
+     [--nom4 | -n]  [(--keep-defs | -k)]  [(--keep | -K) m4file]
+     [--verbose | -v]  [--quiet | -q]  [--mono]  [--xrm resource]
+     [--version]  [--info]  [--nowelcome | -W]
+     [(--window | -w) [win-id]]  [--name name]
+     [--clientId clid]  [--restore resfname]
 
 
 == DESCRIPTION
@@ -78,7 +79,7 @@ to touch the bottom the screen.
 `ctwm` accepts the following command line options:
 
 
--display `dpy`::
+--display=`dpy`, -d `dpy`::
   This option specifies the X server to use.
 
 --replace::
@@ -87,55 +88,55 @@ to touch the bottom the screen.
   In that case, the existing window manager is asked to quit,
   and ctwm takes its place.
 
--s[ingle]::
+--single::
   This option indicates that only the default screen (as specified by
-  `-display` or by the `DISPLAY` environment variable) should be
+  `--display` or by the `DISPLAY` environment variable) should be
   managed.  By default, ctwm will attempt to manage
   all screens on the display.
 
--cfgchk::
+--cfgchk::
   This option causes ctwm to only try to parse the config file, and
   indicate whether errors are found.
 
--f `filename`::
+--file=`filename`, -f `filename`::
   This option specifies the name of the startup file to use.
   ctwm will first try to load filename.num, where `num` is the screen number.
   If it fails, it will try to load filename.
   By default, ctwm will look in the user's home directory for files
   named `.ctwmrc.num`, `.ctwmrc`, `.twmrc.num`, or `.twmrc` (where `num` is a screen number).
 
--v[erbose]::
+--verbose, -v::
   This option indicates that ctwm should print error messages whenever
   an unexpected X Error event is received.  This can be useful when debugging
   applications but can be distracting in regular use.
 
--q::
-  Disables `-v` (useful for overriding aliases, etc).
+--quiet, -q::
+  Disables `--verbose` (useful for overriding aliases, etc).
 
--n::
+--nom4, -n::
   This option indicates that ctwm should not filter the startup file
   through `m4`. Available only if ctwm is built with the `USE_M4` flag.
 
--k::
+--keep-defs, -k::
   This option indicates that ctwm should keep the definitions it
   prepends to your startup file when filtering through `m4` in /tmp.
   Available only if ctwm is built with the `USE_M4` flag.
 
--K `m4file`::
+--keep=`m4file`, -K `m4file`::
   This option indicates that ctwm should keep the result of filtering
   your startup file through `m4` in the named file.
   Available only if ctwm is built with the `USE_M4` flag.
 
--mono::
+--mono::
   Run in monochrome mode.
 
--version::
+--version::
   ctwm just prints its version number.
 
--info::
+--info::
   ctwm prints its detailed version and compile time options.
 
--w[indow] [`win-id`]::
+--window[=`win-id`], -w [`win-id`]::
   If `-w` is specified without a win-id value, ctwm does not take over
   the whole screen(s); instead it creates a new window that becomes its
   root window.  If the win-id value is given, it is considered to be the
@@ -147,17 +148,17 @@ to touch the bottom the screen.
   possible use of such mode can be to test new configuration file without
   restarting ctwm.
 
--name `name`::
-  Set the captivename when using `-w`.
+--name=`name`, -n `name`::
+  Set the captivename when using `--window`.
 
--W::
+--nowelcome, -W::
   This option tells ctwm not to display any welcome when starting.
 
--clientId `id`::
--restore::
+--clientId=`clid`::
+--restore=`resfname`::
   Something to do with session management
 
--xrm `resource`::
+--xrm=`resource`::
   Ignored.
 
 
