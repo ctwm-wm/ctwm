@@ -277,7 +277,7 @@ int main(int argc, char **argv, char **environ)
 			if(argc <= 2 || strlen(argv[2]) < 1) {
 				usage();
 			}
-			display_name = argv[2];
+			display_name = strdup(argv[2]);
 
 			*argv[1] = '\0';
 			*argv[2] = '\0';
