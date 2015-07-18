@@ -119,8 +119,6 @@ XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
 Window ResizeWindow;            /* the window we are resizing */
 
-char *captivename = NULL;
-
 int NumScreens;                 /* number of screens in ScreenList */
 int HasShape;                   /* server supports shape extension? */
 int ShapeEventBase, ShapeErrorBase;
@@ -196,7 +194,7 @@ ctwm_cl_args CLarg = {
 #endif
 	.is_captive      = FALSE,
 	.capwin          = (Window) 0,
-	.captivename     = NULL, // XXX UNIMPLEMENTED
+	.captivename     = NULL,
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
@@ -414,7 +412,7 @@ int main(int argc, char **argv, char **environ)
 					exit(0);
 				}
 				IFIS("name") {
-					captivename = optarg;
+					CLarg.captivename = optarg;
 					break;
 				}
 				IFIS("xrm") {
@@ -680,7 +678,7 @@ int main(int argc, char **argv, char **environ)
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		if(CLarg.is_captive) {
-			Scr->captivename = AddToCaptiveList(captivename);
+			Scr->captivename = AddToCaptiveList(CLarg.captivename);
 			if(Scr->captivename) {
 				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None, NULL, 0,
 				                       NULL);

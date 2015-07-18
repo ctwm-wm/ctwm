@@ -529,7 +529,6 @@ extern char Info[][INFO_SIZE];
 extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;
-extern char *captivename;
 
 extern Bool RestartPreviousState;
 extern Bool GetWMState(Window w, int *statep, Window *iwp);
