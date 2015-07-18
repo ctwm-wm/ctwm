@@ -201,14 +201,13 @@ int ParseTwmrc(char *filename)
 
 	/*
 	 * Check for the twmrc file in the following order:
-	 *       Unix                  |   VMS
-	 *   0.  -f filename.#         | -f filename_#
-	 *   1.  -f filename           | -f filename
-	 *   2.  .ctwmrc.#             | ctwm.rc_#
-	 *   3.  .ctwmrc               | ctwm.rc
-	 *   4.  .twmrc.#              | twm.rc_#
-	 *   5.  .twmrc                | twm.rc
-	 *   6.  system.ctwmrc         | system.ctwmrc
+	 *   0.  -f filename.#
+	 *   1.  -f filename
+	 *   2.  .ctwmrc.#
+	 *   3.  .ctwmrc
+	 *   4.  .twmrc.#
+	 *   5.  .twmrc
+	 *   6.  system.ctwmrc
 	 */
 	for(twmrc = NULL, i = 0; !twmrc && i < 7; i++) {
 		switch(i) {
