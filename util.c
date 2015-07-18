@@ -1021,7 +1021,6 @@ SIGNAL_T AnimateHandler();
 void TryToAnimate(void)
 {
 	struct timeval  tp;
-	struct timezone tzp;
 	static unsigned long lastsec;
 	static long lastusec;
 	unsigned long gap;
@@ -1030,7 +1029,7 @@ void TryToAnimate(void)
 		return;        /* rate limiting */
 	}
 
-	gettimeofday(&tp, &tzp);
+	gettimeofday(&tp, NULL);
 	gap = ((tp.tv_sec - lastsec) * 1000000) + (tp.tv_usec - lastusec);
 	if(tracefile) {
 		fprintf(tracefile, "Time = %lu, %ld, %ld, %ld, %lu\n", lastsec,
