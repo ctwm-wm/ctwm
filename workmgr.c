@@ -4057,7 +4057,8 @@ void AddToCaptiveList(void)
 	                PropModeReplace, (unsigned char *) &croot, 4);
 }
 
-void RemoveFromCaptiveList(char *cptname)
+void
+RemoveFromCaptiveList(char *cptname)
 {
 	int  count;
 	char **clist, **cl, **newclist;
