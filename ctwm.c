@@ -1474,7 +1474,7 @@ SIGNAL_T Done(int signum)
 #endif /* EWMH */
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
 	if(CLarg.is_captive) {
-		RemoveFromCaptiveList();
+		RemoveFromCaptiveList(Scr->captivename);
 	}
 	XCloseDisplay(dpy);
 	exit(0);
@@ -1485,7 +1485,7 @@ SIGNAL_T Crash(int signum)
 	Reborder(CurrentTime);
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
 	if(CLarg.is_captive) {
-		RemoveFromCaptiveList();
+		RemoveFromCaptiveList(Scr->captivename);
 	}
 	XCloseDisplay(dpy);
 

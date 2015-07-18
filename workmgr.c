@@ -4057,14 +4057,14 @@ void AddToCaptiveList(void)
 	                PropModeReplace, (unsigned char *) &croot, 4);
 }
 
-void RemoveFromCaptiveList(void)
+void RemoveFromCaptiveList(char *cptname)
 {
 	int  count;
 	char **clist, **cl, **newclist;
 	int scrnum = Scr->screen;
 	Window root = RootWindow(dpy, scrnum);
 
-	if(!captivename || XA_WM_CTWM_ROOT_our_name == None) {
+	if(!cptname || XA_WM_CTWM_ROOT_our_name == None) {
 		return;
 	}
 	clist = GetCaptivesList(scrnum);
@@ -4081,7 +4081,7 @@ void RemoveFromCaptiveList(void)
 		cl = clist;
 		count = 0;
 		while(*cl) {
-			if(!strcmp(*cl, captivename)) {
+			if(!strcmp(*cl, cptname)) {
 				cl++;
 				continue;
 			}
