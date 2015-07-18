@@ -195,6 +195,9 @@ char *ProgramName;
 int Argc;
 char **Argv;
 
+/* Command-line args */
+ctwm_cl_args CLarg;
+
 Bool RestartPreviousState = False;      /* try to restart in previous state */
 
 Bool RestartFlag = 0;

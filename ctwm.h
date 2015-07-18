@@ -551,4 +551,18 @@ extern int GoThroughM4;
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
 
+
+/*
+ * Command-line arg handling bits
+ */
+typedef struct _ctwm_cl_args {
+#ifdef USEM4
+	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
+	char  *keepM4_filename;    // --keep, keep m4 post-processed output
+	int    GoThroughM4;        // ! --nom4, do m4 processing
+#endif
+} ctwm_cl_args;
+extern ctwm_cl_args CLarg;
+
+
 #endif /* _CTWM_H */
