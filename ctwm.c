@@ -305,7 +305,7 @@ int main(int argc, char **argv, char **environ)
 			switch(argv[i][1]) {
 				case 'd':                         /* -display dpy */
 					if(++i >= argc) {
-						goto usage;
+						usage();
 					}
 					display_name = argv[i];
 					continue;
@@ -314,13 +314,13 @@ int main(int argc, char **argv, char **environ)
 					continue;
 				case 'f':                         /* -file twmrcfilename */
 					if(++i >= argc) {
-						goto usage;
+						usage();
 					}
 					InitFile = argv[i];
 					continue;
 				case 'm':                         /* -mono */
 					if(strcmp(argv[i], "-mono")) {
-						goto usage;
+						usage();
 					}
 					Monochrome = TRUE;
 					continue;
@@ -337,13 +337,13 @@ int main(int argc, char **argv, char **environ)
 						continue;
 					}
 					if(++i >= argc) {
-						goto usage;        /* -clientId */
+						usage();           /* -clientId */
 					}
 					client_id = argv[i];
 					continue;
 				case 'r':                         /* -restore */
 					if(++i >= argc) {
-						goto usage;
+						usage();
 					}
 					restore_filename = argv[i];
 					continue;
@@ -373,7 +373,7 @@ int main(int argc, char **argv, char **environ)
 					continue;
 				case 'K':                         /* -keep m4 output */
 					if(++i >= argc) {
-						goto usage;
+						usage();
 					}
 					keepM4_filename = argv[i];
 					continue;
@@ -381,7 +381,7 @@ int main(int argc, char **argv, char **environ)
 				case 'n':                         /* -don't preprocess through m4 */
 					if(!strcmp(argv[i], "-name")) {
 						if(++i >= argc) {
-							goto usage;
+							usage();
 						}
 						captivename = argv[i];
 						continue;
@@ -392,10 +392,10 @@ int main(int argc, char **argv, char **environ)
 #endif
 				case 'x':                         /* -xrm resource */
 					if(strcmp(argv[i], "-xrm")) {
-						goto usage;
+						usage();
 					}
 					if(++i >= argc) {
-						goto usage;
+						usage();
 					}
 					continue;
 				case 'i':
@@ -403,20 +403,21 @@ int main(int argc, char **argv, char **environ)
 						DisplayInfo();
 						exit(0);
 					}
-					goto usage;
+					usage();
 #ifdef EWMH
 				case '-':
 					if(!strcmp(argv[i], "--replace")) {
 						ewmh_replace = 1;
 					}
 					else {
-						goto usage;
+						usage();
 					}
 					continue;
 #endif
 			}
 		}
-usage:
+
+		/* If we fall off the end, we dunno what we got */
 		usage();
 
 		/* NOTREACHED */
