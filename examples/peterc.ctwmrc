@@ -1,3 +1,10 @@
+#
+# NOTE
+#
+# This config has setup for VMS systems, which are no longer supported by
+# ctwm.  It's in spite of that, for example purposes.
+#
+
 #****************
 #    ctwm.rc
 #****************
