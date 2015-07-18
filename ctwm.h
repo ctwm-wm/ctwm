@@ -551,6 +551,7 @@ extern Atom XA_WM_WORKSPACESLIST;
  */
 typedef struct _ctwm_cl_args {
 	int    MultiScreen;        // ! --single, grab multiple screens
+	int    Monochrome;         // --mono, force monochrome
 #ifdef USEM4
 	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output

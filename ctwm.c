@@ -192,6 +192,7 @@ char **Argv;
 /* Command-line args */
 ctwm_cl_args CLarg = {
 	.MultiScreen     = TRUE,
+	.Monochrome      = FALSE,
 #ifdef USEM4
 	.KeepTmpFile     = False,
 	.keepM4_filename = NULL,
@@ -238,7 +239,6 @@ int main(int argc, char **argv, char **environ)
 	static unsigned int crooth =  768;
 	int ch, optidx;
 	static int cfgchk = 0;
-	static int Monochrome  = FALSE; /* Force monochrome, for testing purpose */
 	char *InitFile = NULL;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
@@ -296,7 +296,7 @@ int main(int argc, char **argv, char **environ)
 	static struct option long_options[] = {
 		/* Simple flags */
 		{ "single",    no_argument,       &CLarg.MultiScreen, FALSE },
-		{ "mono",      no_argument,       &Monochrome, TRUE },
+		{ "mono",      no_argument,       &CLarg.Monochrome, TRUE },
 		{ "verbose",   no_argument,       NULL, 'v' },
 		{ "quiet",     no_argument,       NULL, 'q' },
 		{ "nowelcome", no_argument,       NULL, 'W' },
@@ -449,7 +449,6 @@ int main(int argc, char **argv, char **environ)
 				usage();
 		}
 	}
-	printf("ms=%d\n", CLarg.MultiScreen); exit(0);
 
 
 #define newhandler(sig, action) \
@@ -724,7 +723,7 @@ int main(int argc, char **argv, char **environ)
 
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 
-		if(Monochrome || DisplayCells(dpy, scrnum) < 3) {
+		if(CLarg.Monochrome || DisplayCells(dpy, scrnum) < 3) {
 			Scr->Monochrome = MONOCHROME;
 		}
 		else {
