@@ -25,10 +25,11 @@
  */
 
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <X11/Xatom.h>
 
-#include "ctwm.h"
 #include "screen.h"
 #include "add_window.h"
 #include "resize.h"

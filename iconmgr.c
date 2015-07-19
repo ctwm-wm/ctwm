@@ -60,12 +60,13 @@
  *
  ***********************************************************************/
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
 #include <X11/Xatom.h>
 
-#include "ctwm.h"
 #include "util.h"
 #include "parse.h"
 #include "screen.h"

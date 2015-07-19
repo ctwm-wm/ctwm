@@ -67,6 +67,8 @@
  *
  ***********************************************************************/
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -77,7 +79,6 @@
 #endif
 #include <X11/Xatom.h>
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "screen.h"
 #include "menus.h"
