@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.6)
 project(ctwm C)
 
+# Modules we'll need
+include(CheckIncludeFiles)
+include(CheckFunctionExists)
+
 # Our base set of sources
 set(CTWMSRC
 	add_window.c
@@ -196,8 +200,6 @@ endif(USE_GNOME)
 
 # System provides regex stuff in libc?
 if(USE_SREGEX)
-	include(CheckIncludeFiles)
-	include(CheckFunctionExists)
 	check_include_files(regex.h HAS_REGEX_H)
 	check_function_exists(regexec HAS_REGEXEC)
 
