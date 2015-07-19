@@ -23,6 +23,9 @@
  *
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
+
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -38,7 +41,6 @@ int strcmp(); /* missing from string.h in AUX 2.0 */
 static void fakeRaiseLower();
 #endif
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "util.h"
 #include "parse.h"

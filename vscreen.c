@@ -24,10 +24,11 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
+#include "ctwm.h"
+
 #include <X11/Xatom.h>
 #include <stdio.h>
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "cursor.h"
 #include "screen.h"

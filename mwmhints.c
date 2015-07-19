@@ -35,9 +35,10 @@
  * the manual page VendorShell(3) from the Motif library.
  */
 
+#include "ctwm.h"
+
 #include <stdio.h>
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "mwmhints.h"
 
