@@ -67,6 +67,8 @@
  *
  ***********************************************************************/
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <errno.h>
 #include <sys/time.h>
@@ -78,7 +80,6 @@
 #include <X11/Xatom.h>
 
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "add_window.h"
 #include "clicktofocus.h"

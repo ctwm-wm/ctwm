@@ -67,6 +67,8 @@
  *
  **********************************************************************/
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
@@ -75,7 +77,6 @@
 #endif
 #include <X11/Xatom.h>
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "add_window.h"
 #include "windowbox.h"

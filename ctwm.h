@@ -64,6 +64,13 @@
 #ifndef _CTWM_H
 #define _CTWM_H
 
+/*
+ * Include config first, before anything else.  Including ctwm.h should
+ * be the first action of any of our files, so this happens before
+ * ANYthing else, anywhere.
+ */
+#include "ctwm_config.h"
+
 #ifdef DMALLOC
 #include <dmalloc.h>
 #endif
@@ -74,8 +81,6 @@
 #include <X11/cursorfont.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xfuncs.h>
-
-#include "ctwm_config.h"
 
 #include "types.h"
 #ifdef EWMH

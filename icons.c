@@ -60,9 +60,10 @@
  *
  **********************************************************************/
 
+#include "ctwm.h"
+
 #include <stdio.h>
 
-#include "ctwm.h"
 #include "screen.h"
 #include "icons.h"
 #include "otp.h"
