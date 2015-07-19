@@ -544,7 +544,8 @@ int main(int argc, char **argv, char **environ)
 				croot  = CLarg.capwin;
 				crootw = wa.width;
 				crooth = wa.height;
-				XTranslateCoordinates(dpy, CLarg.capwin, wa.root, 0, 0, &crootx, &crooty, &junk);
+				XTranslateCoordinates(dpy, CLarg.capwin, wa.root, 0, 0, &crootx, &crooty,
+				                      &junk);
 			}
 			else {
 				croot = CreateRootWindow(crootx, crooty, crootw, crooth);
@@ -681,7 +682,8 @@ int main(int argc, char **argv, char **environ)
 		if(CLarg.is_captive) {
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
 			if(Scr->captivename) {
-				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None, NULL, 0,
+				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None,
+				                       NULL, 0,
 				                       NULL);
 			}
 		}
