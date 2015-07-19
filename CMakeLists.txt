@@ -53,6 +53,25 @@ option(USE_EWMH   "Support some Extended Window Manager Hints"  ON )
 option(USE_GNOME  "Enable GNOME1 support"              !USE_EWMH )
 
 
+# Expect and try to enforce a C99 capable compiler.  There doesn't seem
+# an obvious way to be sure in a fully portable way, but we probably
+# don't work well in places that compile with something other than a
+# program called like 'cc', and a cc that supports C99 should accept -std
+# calls, so that's good enough.  Lacking it is not (yet) a fatal error,
+# but is a sign that it's a compiler or platform we're moving further
+# away from.
+include(CheckCCompilerFlag)
+set(C99_FLAG -std=c99)
+check_c_compiler_flag(${C99_FLAG} COMPILER_HAS_STD_C99)
+if(COMPILER_HAS_STD_C99)
+	message(STATUS "Enabling ${C99_FLAG}")
+	add_definitions(${C99_FLAG})
+else()
+	message(WARNING "Compiler doesn't support ${C99_FLAG}, "
+			"building without it.")
+endif(COMPILER_HAS_STD_C99)
+
+
 #
 # First find various stuff we need, if enabled.
 #
@@ -328,25 +347,6 @@ endif(NOT NO_WARNS)
 # Include source and generated files
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-
-# Expect and try to enforce a C99 capable compiler.  There doesn't seem
-# an obvious way to be sure in a fully portable way, but we probably
-# don't work well in places that compile with something other than a
-# program called like 'cc', and a cc that supports C99 should accept -std
-# calls, so that's good enough.  Lacking it is not (yet) a fatal error,
-# but is a sign that it's a compiler or platform we're moving further
-# away from.
-include(CheckCCompilerFlag)
-set(C99_FLAG -std=c99)
-check_c_compiler_flag(${C99_FLAG} COMPILER_HAS_STD_C99)
-if(COMPILER_HAS_STD_C99)
-	message(STATUS "Enabling ${C99_FLAG}")
-	add_definitions(${C99_FLAG})
-else()
-	message(WARNING "Compiler doesn't support ${C99_FLAG}, "
-			"building without it.")
-endif(COMPILER_HAS_STD_C99)
 
 
 # Where should we stick manpages?
