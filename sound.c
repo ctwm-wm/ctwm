@@ -29,12 +29,13 @@
  * and modified by J.E. Sacco (jsacco @ssl.com)
  */
 
+#include "ctwm.h"
+
 #include <rplay.h>
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 
-#include "ctwm.h"
 #include "sound.h"
 
 char *eventNames[] = {

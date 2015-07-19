@@ -67,6 +67,8 @@
  *
  ***********************************************************************/
 
+#include "ctwm.h"
+
 #if defined(USE_SIGNALS) && defined(__sgi)
 #  define _BSD_SIGNALS
 #endif
@@ -87,7 +89,6 @@
 #include <X11/Xlocale.h>
 
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "add_window.h"
 #include "gc.h"

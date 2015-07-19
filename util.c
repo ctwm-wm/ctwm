@@ -74,6 +74,8 @@
  *
  ***********************************************************************/
 
+#include "ctwm.h"
+
 #define LEVITTE_TEST
 
 #include <stdio.h>
@@ -103,7 +105,6 @@
 #include <sys/time.h>
 
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "util.h"
 #include "events.h"

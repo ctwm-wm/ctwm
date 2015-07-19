@@ -65,11 +65,13 @@
  ***********************************************************************/
 
 %{
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
-#include "ctwm.h"
+
 #include "otp.h"
 #include "menus.h"
 #include "icons.h"

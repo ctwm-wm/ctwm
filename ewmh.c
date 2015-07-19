@@ -46,6 +46,8 @@
  * has been consulted.
  */
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <inttypes.h>
@@ -55,7 +57,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
-#include "ctwm.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"

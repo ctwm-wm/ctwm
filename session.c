@@ -99,6 +99,8 @@
  *
  **********************************************************************/
 
+#include "ctwm.h"
+
 #include <X11/Xos.h>
 
 #ifndef X_NOT_POSIX
@@ -126,7 +128,6 @@
 #include <stdio.h>
 #include <sys/stat.h>           /* For umask */
 
-#include "ctwm.h"
 #include "ctwm_atoms.h"
 #include "icons.h"
 #include "screen.h"

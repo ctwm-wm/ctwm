@@ -3,13 +3,14 @@
  * should probably migrate here over time.
  */
 
+#include "ctwm.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <netdb.h>
 
 #include <X11/Xmu/SysUtil.h>
 
-#include "ctwm.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_int.h"

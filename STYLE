@@ -24,15 +24,17 @@ rules, because it makes life simpler.
 
 ## Include files and ordering
 
-* All source files should include `ctwm.h`.
+* All source files should include `ctwm.h`, and always include it first.
 
 * Includes should be generally ordered as:
+
+    * `ctwm.h`
+
+    * (some vertical whitespace separator)
 
     * System includes (stdio, X11/foo, etc)
 
     * (some vertical whitespace separator)
-
-    * `ctwm.h`
 
     * Other local includes
 
