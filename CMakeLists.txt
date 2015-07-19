@@ -4,6 +4,7 @@ project(ctwm C)
 # Modules we'll need
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
+include(CheckSymbolExists)
 
 # Our base set of sources
 set(CTWMSRC
@@ -74,6 +75,24 @@ else()
 	message(WARNING "Compiler doesn't support ${C99_FLAG}, "
 			"building without it.")
 endif(COMPILER_HAS_STD_C99)
+
+
+# With -std=c11, GNU libc's includes get strict about what they export.
+# Particularly, a lot of POSIX stuff doesn't get defined unless we
+# explicitly ask for it.  Do our best at checking for what's there...
+set(USE_GLIBC_FEATURES_H OFF)
+check_include_files(features.h HAS_FEATURES_H)
+if(HAS_FEATURES_H)
+	# Check if including it with our args sets __USE_ISOC99; that's a
+	# sign it's what we're looking for here.
+	check_symbol_exists(__USE_ISOC99 features.h SETS_USE_ISOC99)
+	if(SETS_USE_ISOC99)
+		# OK, it does.  Assume that's a good enough test that things are
+		# acting as we expect, and set the flag for our ctwm_config.h.
+		set(USE_GLIBC_FEATURES_H ON)
+		message(STATUS "Enabling glibc features.h settings.")
+	endif()
+endif(HAS_FEATURES_H)
 
 
 #
