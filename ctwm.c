@@ -451,6 +451,30 @@ int main(int argc, char **argv, char **environ)
 	}
 
 
+	/*
+	 * Do a little sanity checking on the args
+	 */
+#ifdef USEM4
+	/* If we're not doing m4, don't specify m4 options */
+	if(!CLarg.GoThroughM4) {
+		if(CLarg.KeepTmpFile) {
+			fprintf(stderr, "--keep-defs is incompatible with --nom4.\n");
+			usage();
+		}
+		if(CLarg.keepM4_filename) {
+			fprintf(stderr, "--keep is incompatible with --nom4.\n");
+			usage();
+		}
+	}
+#endif
+
+	/* If we're not captive, captivename is meaningless too */
+	if(CLarg.captivename && !CLarg.is_captive) {
+		fprintf(stderr, "--name is meaningless without --window.\n");
+		usage();
+	}
+
+
 #define newhandler(sig, action) \
     if (signal (sig, SIG_IGN) != SIG_IGN) (void) signal (sig, action)
 
