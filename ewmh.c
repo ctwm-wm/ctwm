@@ -49,7 +49,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
-#include <unistd.h>
+#include <time.h>
 #include <inttypes.h>
 #include <assert.h>
 
@@ -153,8 +153,13 @@ void EwmhInit(void)
 static void GenerateTimestamp(ScreenInfo *scr)
 {
 	XEvent event;
+	struct timespec tosleep;
 	int timeout = 200;          /* 0.2 seconds in ms */
 	int found;
+
+	/* Sleep in 10ms chunks */
+	tosleep.tv_sec  = 0;
+	tosleep.tv_nsec = (10 * 1000);
 
 	if(lastTimestamp > 0) {
 		return;
@@ -169,7 +174,7 @@ static void GenerateTimestamp(ScreenInfo *scr)
 		if(found) {
 			break;
 		}
-		usleep(10000);          /* sleep 10 ms */
+		nanosleep(&tosleep, NULL);
 		timeout -= 10;
 	}
 
@@ -249,6 +254,11 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 	if(selectionOwner != None) {
 		int timeout = 10 * 1000;        /* 10 seconds in ms */
 		XEvent event;
+		struct timespec tosleep;
+
+		/* Sleep in 100ms chunks */
+		tosleep.tv_sec  = 0;
+		tosleep.tv_nsec = (100 * 1000);
 
 		while(timeout > 0) {
 
@@ -256,7 +266,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 			if(found) {
 				break;
 			}
-			usleep(100000);             /* sleep 100 ms */
+			nanosleep(&tosleep, NULL);
 			timeout -= 100;
 		}
 
