@@ -77,7 +77,7 @@ else()
 endif(COMPILER_HAS_STD_C99)
 
 
-# With -std=c11, GNU libc's includes get strict about what they export.
+# With -std=c99, GNU libc's includes get strict about what they export.
 # Particularly, a lot of POSIX stuff doesn't get defined unless we
 # explicitly ask for it.  Do our best at checking for what's there...
 set(USE_GLIBC_FEATURES_H OFF)
