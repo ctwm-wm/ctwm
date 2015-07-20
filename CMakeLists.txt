@@ -95,8 +95,9 @@ if(HAS_FEATURES_H)
 endif(HAS_FEATURES_H)
 
 
+
 #
-# First find various stuff we need, if enabled.
+# First find various libs/includes/etc we need, if enabled.
 #
 
 # First things first.  If we don't have X, we're going nowhere.
@@ -233,9 +234,11 @@ if(USE_SREGEX)
 endif(USE_SREGEX)
 
 
+
 #
 # Next find some build tools
 #
+
 # flex should be everywhere
 find_package(FLEX)
 if(FLEX_FOUND)
@@ -257,6 +260,7 @@ else()
 		message(FATAL_ERROR "Can't find flex.")
 	endif(LEX_C)
 endif(FLEX_FOUND)
+
 
 # This only finds bison, not yacc.  There doesn't seem to be a standard
 # module for yacc, so hand-code it.
@@ -302,6 +306,7 @@ else()
 		endif(GRAM_C AND GRAM_H)
 	endif(YACC)
 endif(BISON_FOUND)
+
 
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
@@ -349,8 +354,9 @@ else()
 endif(ASCIIDOC AND A2X)
 
 
+
 #
-# Now setup flags etc.
+# Now other build flags and the like
 #
 
 # Standard defs
@@ -369,6 +375,11 @@ endif(NOT NO_WARNS)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+
+
+#
+# Figure out install paths for stuff
+#
 
 # Where should we stick manpages?
 if(MANBASE)
@@ -396,6 +407,7 @@ else()
 			"(e.g., /usr/share/man).")
 	message(WARNING ${manbase_err})
 endif(MANBASE)
+
 
 
 #
@@ -435,11 +447,10 @@ if(DO_CLIENT)
 endif(DO_CLIENT)
 
 # Build the event-forwarding program.
-
 add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
-# Rewrite man page
+# Rewrite some build options into manpage
 if(CAN_DO_MAN)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MANPAGE}.in
@@ -451,10 +462,11 @@ else()
 	file(WRITE ${MANPAGE} "Can't build manpage.")
 endif(CAN_DO_MAN)
 
-# Compress (conditionally).  We could add more magic to allow different
-# automatic compression, but that's probably way more involved than we
-# need to bother with.  Most systems use gzip, and for the few that
-# don't, the packagers can use NOMANCOMPRESS and handle it out of band.
+# Compress manpage (conditionally).  We could add more magic to allow
+# different automatic compression, but that's probably way more involved
+# than we need to bother with.  Most systems use gzip, and for the few
+# that don't, the packagers can use NOMANCOMPRESS and handle it out of
+# band.
 if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 	find_program(GZIP_CMD gzip)
 	add_custom_command(OUTPUT "${MANPAGE}.gz"
@@ -468,6 +480,10 @@ else()
 	set(INSTMAN ${MANPAGE})
 endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 
+
+#
+# And the install process
+#
 
 # Cram a warning in about the MANBASE if we couldn't find it.  This is a
 # particularly grody way of doing things, but we can't just add it as a
