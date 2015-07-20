@@ -304,10 +304,10 @@ endif(BISON_FOUND)
 
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
-set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
 set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
-set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
+set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
+set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
 set(CAN_DO_MAN 0)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
