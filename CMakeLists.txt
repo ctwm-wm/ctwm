@@ -131,11 +131,6 @@ set(LIBSEARCH
 )
 
 
-# Now we know where to stash this (may change this to be a little less
-# coupled to X11 later).
-set(TWMDIR ${X11_LIBRARY_DIR}/X11/twm)
-set(CONFDIR ${TWMDIR})
-
 
 # Hard to imagine xpm not being around or somebody not wanting it, but...
 if(USE_XPM)
@@ -144,7 +139,6 @@ if(USE_XPM)
 	endif(NOT X11_Xpm_FOUND)
 
 	list(APPEND CTWMLIBS ${X11_Xpm_LIB})
-	set(PIXMAPDIR ${TWMDIR}/images)
 	message(STATUS "Enabling XPM support: ${X11_Xpm_LIB}.")
 endif(USE_XPM)
 
@@ -358,6 +352,8 @@ endif(ASCIIDOC AND A2X)
 #
 # Figure out install paths for stuff
 #
+set(TWMDIR ${X11_LIBRARY_DIR}/X11/twm)
+set(CONFDIR ${TWMDIR})
 
 # Where should we stick manpages?
 if(MANBASE)
@@ -402,6 +398,12 @@ set(STD_WARNS
 if(NOT NO_WARNS)
 	add_definitions(${STD_WARNS})
 endif(NOT NO_WARNS)
+
+# Set images dir.  Can't do this in the XPM-finding block above, since we
+# haven't figured the path yet.
+if(USE_XPM)
+	set(PIXMAPDIR ${TWMDIR}/images)
+endif(USE_XPM)
 
 
 # Include source and generated files
