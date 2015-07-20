@@ -362,6 +362,12 @@ if(NOT ETCDIR)
 endif(NOT ETCDIR)
 message(STATUS "System-wide config in      ${ETCDIR}")
 
+# Where we stick the binary
+if(NOT BINDIR)
+	set(BINDIR ${CMAKE_INSTALL_PREFIX}/bin)
+endif(NOT BINDIR)
+message(STATUS "Installing ctwm in         ${BINDIR}")
+
 # Where runtime data stuff (e.g., images) is found
 if(NOT DATADIR)
 	set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
@@ -509,7 +515,7 @@ endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 
 # Installing everything
 install(TARGETS ctwm
-	DESTINATION bin
+	DESTINATION ${BINDIR}
 )
 if(USE_XPM)
 	install(DIRECTORY xpm/
