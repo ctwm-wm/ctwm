@@ -508,6 +508,7 @@ if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 	add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
 	set(INSTMAN "${MANPAGE}.gz")
 else()
+	add_custom_target(man ALL DEPENDS ${MANPAGE})
 	set(INSTMAN ${MANPAGE})
 endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 
