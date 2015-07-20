@@ -308,11 +308,13 @@ set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
 set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
 set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
-set(CAN_DO_MAN 0)
+set(HAS_MAN 0)
+set(CAN_BUILD_MAN 0)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
 if(ASCIIDOC AND A2X)
-	set(CAN_DO_MAN 1)
+	set(HAS_MAN 1)
+	set(CAN_BUILD_MAN 1)
 
 	# Generate .in file, processed into man format
 	# We have to jump through a few hoops, because a2x gives us no
@@ -344,14 +346,9 @@ else()
 		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
 		NO_DEFAULT_PATH)
 	if(MAN_PRESRC)
-		set(CAN_DO_MAN 1)
-		# Just copy it in
-		add_custom_command(OUTPUT ${MANPAGE}.in
-			DEPENDS ${MAN_PRESRC}
-			COMMAND cp ${MAN_PRESRC} ${MANPAGE}.in
-			COMMENT "Copying in pre-built manpage."
-		)
+		set(HAS_MAN 1)
 		message(STATUS "No asciidoc/a2x found, using prebuilt manpage.")
+		# Target below does rewrites
 	else()
 		message(WARNING "Can't find asciidoc/a2x, and no prebuilt manpage available.")
 	endif(MAN_PRESRC)
@@ -491,13 +488,13 @@ target_link_libraries(forward ${X11_LIBRARIES})
 # Rewrite some build options into docs (or prebuilt manpage, if we're not
 # generating them ourselves)
 set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
-if(CAN_DO_MAN)
+if(CAN_BUILD_MAN)
 	add_custom_command(OUTPUT ${ADOC_TMPSRC}
 		DEPENDS ${ADOC_SRC}
 		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
 		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
 	)
-endif(CAN_DO_MAN)
+endif(CAN_BUILD_MAN)
 if(MAN_PRESRC)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MAN_PRESRC}
@@ -511,7 +508,7 @@ endif(MAN_PRESRC)
 # than we need to bother with.  Most systems use gzip, and for the few
 # that don't, the packagers can use NOMANCOMPRESS and handle it out of
 # band.
-if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
+if(HAS_MAN AND NOT NOMANCOMPRESS)
 	find_program(GZIP_CMD gzip)
 	add_custom_command(OUTPUT "${MANPAGE}.gz"
 		DEPENDS ${MANPAGE}
@@ -520,10 +517,10 @@ if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 	)
 	add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
 	set(INSTMAN "${MANPAGE}.gz")
-else()
+elseif(HAS_MAN)
 	add_custom_target(man ALL DEPENDS ${MANPAGE})
 	set(INSTMAN ${MANPAGE})
-endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
+endif(HAS_MAN AND NOT NOMANCOMPRESS)
 
 
 #
@@ -543,11 +540,11 @@ endif(USE_XPM)
 install(FILES system.ctwmrc
 	DESTINATION ${EXAMPLEDIR}
 )
-if(NOT CAN_DO_MAN)
+if(NOT HAS_MAN)
 	message(WARNING "No manpage to install: recheck config if "
 			"this is unexpected.")
 else()
 	install(FILES ${INSTMAN}
 		DESTINATION ${MAN1PATH}
 	)
-endif(NOT CAN_DO_MAN)
+endif(NOT HAS_MAN)
