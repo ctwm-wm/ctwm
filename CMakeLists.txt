@@ -352,9 +352,10 @@ endif(ASCIIDOC AND A2X)
 #
 # Figure out install paths for stuff
 #
-set(TWMDIR ${X11_LIBRARY_DIR}/X11/twm)
-set(CONFDIR ${TWMDIR})
-set(ETCDIR ${TWMDIR})
+set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
+set(DOCDIR ${CMAKE_INSTALL_PREFIX}/share/doc/ctwm)
+set(EXAMPLEDIR ${CMAKE_INSTALL_PREFIX}/share/examples/ctwm)
+set(ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
 
 
 # Where should we stick manpages?
@@ -398,7 +399,7 @@ endif(NOT NO_WARNS)
 # Set images dir.  Can't do this in the XPM-finding block above, since we
 # haven't figured the path yet.
 if(USE_XPM)
-	set(PIXMAPDIR ${TWMDIR}/images)
+	set(PIXMAPDIR ${DATADIR}/images)
 endif(USE_XPM)
 
 
@@ -494,7 +495,7 @@ if(USE_XPM)
 	)
 endif(USE_XPM)
 install(FILES system.ctwmrc
-	DESTINATION ${CONFDIR}
+	DESTINATION ${EXAMPLEDIR}
 )
 if(NOT CAN_DO_MAN)
 	message(WARNING "No manpage to install: recheck config if "
