@@ -305,6 +305,7 @@ endif(BISON_FOUND)
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
 set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
+set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
 set(CAN_DO_MAN 0)
 find_program(ASCIIDOC asciidoc)
@@ -324,8 +325,7 @@ if(ASCIIDOC AND A2X)
 
 	# We hop through a temporary file to process in definitions for e.g.
 	# $ETCDIR.  Can't do that here though since the directories aren't
-	# defined yet, so we write that target lower down.
-	set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
+	# defined yet, so we write the target for ADOC_TMPSRC lower down.
 
 	set(MANPAGE_TMP ${MANPAGE_TMPDIR}/ctwm.1)
 	add_custom_command(OUTPUT ${MANPAGE}
@@ -484,14 +484,23 @@ endif(DO_CLIENT)
 add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
-# Rewrite some build options into manpage
+# Rewrite some build options into docs (or prebuilt manpage, if we're not
+# generating them ourselves)
+set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
 if(CAN_DO_MAN)
 	add_custom_command(OUTPUT ${ADOC_TMPSRC}
 		DEPENDS ${ADOC_SRC}
-		COMMAND sed -e "s,\@ETCDIR@,${ETCDIR}," < ${ADOC_SRC} > ${ADOC_TMPSRC}
+		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
 		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
 	)
 endif(CAN_DO_MAN)
+if(MAN_PRESRC)
+	add_custom_command(OUTPUT ${MANPAGE}
+		DEPENDS ${MAN_PRESRC}
+		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
+		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
+	)
+endif(MAN_PRESRC)
 
 # Compress manpage (conditionally).  We could add more magic to allow
 # different automatic compression, but that's probably way more involved
