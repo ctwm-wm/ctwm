@@ -552,22 +552,27 @@ endif(HAS_HTML)
 # And the install process
 #
 
-# Installing everything
+# Some bits we always install; the binary, the default config, and our
+# CHANGES file.
 install(TARGETS ctwm
 	DESTINATION ${BINDIR}
 )
-if(USE_XPM)
-	install(DIRECTORY xpm/
-		DESTINATION ${PIXMAPDIR}
-		FILES_MATCHING PATTERN "*.xpm"
-	)
-endif(USE_XPM)
 install(FILES system.ctwmrc
 	DESTINATION ${EXAMPLEDIR}
 )
 install(FILES CHANGES
 	DESTINATION ${DOCDIR}
 )
+
+# If we's using XPM (really, when are we not?), install the pixmaps.
+if(USE_XPM)
+	install(DIRECTORY xpm/
+		DESTINATION ${PIXMAPDIR}
+		FILES_MATCHING PATTERN "*.xpm"
+	)
+endif(USE_XPM)
+
+# Install manual bits, assuming we have them.
 if(NOT HAS_MAN)
 	message(WARNING "No manpage to install: recheck config if "
 			"this is unexpected.")
@@ -581,6 +586,8 @@ if(INSTHTML)
 		DESTINATION ${DOCDIR}
 	)
 endif(INSTHTML)
+
+# If we're building with sound, install its doc too.
 if(USE_SOUND)
 	install(FILES sound.txt
 		DESTINATION ${DOCDIR}
