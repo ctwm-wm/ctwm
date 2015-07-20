@@ -54,8 +54,7 @@ though, you may have to invoke cmake manually and set various params on
 the command line (cmake also has various GUI configurators, not covered
 here).
 
-The following parameters control where files are installed or searched
-for.
+The following parameters control where files are installed:
 
 CMAKE_INSTALL_PREFIX
 :       Where paths are based.  This is a standard cmake var.
