@@ -61,7 +61,7 @@ CMAKE_INSTALL_PREFIX
 :       Where paths are based.  This is a standard cmake var.
 
 ETCDIR
-:       Where ctwm will look for a system.ctwmrc to fall back to if it
+:       Where ctwm will look for a `system.ctwmrc` to fall back to if it
         doesn't find a per-user config.  Nothing is installed here by
         default.
         (default: `$PREFIX/etc`)
