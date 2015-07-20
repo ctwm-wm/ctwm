@@ -452,7 +452,7 @@ target_link_libraries(forward ${X11_LIBRARIES})
 if(CAN_DO_MAN)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MANPAGE}.in
-		COMMAND sed -e "s,\@TWMDIR@,${TWMDIR}," < ${MANPAGE}.in > ${MANPAGE}
+		COMMAND sed -e "s,\@ETCDIR@,${ETCDIR}," < ${MANPAGE}.in > ${MANPAGE}
 		COMMENT "Processing ${MANPAGE}.in -> ${MANPAGE}"
 	)
 else()
