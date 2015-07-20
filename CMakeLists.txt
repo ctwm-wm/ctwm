@@ -400,7 +400,7 @@ if(NOT MANBASE)
 endif(NOT MANBASE)
 
 set(MAN1PATH "${MANBASE}/man1")
-message(STATUS "Installing manpage to ${MAN1PATH}")
+message(STATUS "Installing manpage to      ${MAN1PATH}")
 
 
 
