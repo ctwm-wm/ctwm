@@ -18,7 +18,7 @@ indent:
 # Build documentation files
 DOC_FILES=README.html CHANGES.html STYLE.html
 docs: ${DOC_FILES}
-doc_clean:
+docs_clean doc_clean:
 	rm -f ${DOC_FILES}
 
 README.html: README

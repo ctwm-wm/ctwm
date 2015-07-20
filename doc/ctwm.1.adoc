@@ -1695,7 +1695,7 @@ UseThreeDTitles::
   +%xpm:maze-out+,
   +%xpm:maze-in+,
   +%xpm:zoom-out+,
-  +%xpm:zoom-in+, and 
+  +%xpm:zoom-in+, and
   +%xpm:zoom-inout+.
   Try them to see what they look like.
 

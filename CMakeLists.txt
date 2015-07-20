@@ -304,47 +304,66 @@ endif(BISON_FOUND)
 
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
-set(MANPAGE_ADSRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
+set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
-set(CAN_DO_MAN 0)
+set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
+set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
+set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
+set(HAS_MAN 0)
+set(HAS_HTML 0)
+set(CAN_BUILD_MAN 0)
+
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
 if(ASCIIDOC AND A2X)
-	set(CAN_DO_MAN 1)
+	set(HAS_MAN 1)
+	set(CAN_BUILD_MAN 1)
 
 	# Generate .in file, processed into man format
 	# We have to jump through a few hoops, because a2x gives us no
 	# control whatsoever over where the output file goes or what it's
 	# named.  Thanks, guys.
 	message(STATUS "Found asciidoc (${A2X}) for building manpage")
-	set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
+
+	# Setup a temp dir under the build for our processing
 	file(MAKE_DIRECTORY ${MANPAGE_TMPDIR})
-	set(MANPAGE_TMPIN ${MANPAGE_TMPDIR}/ctwm.1)
-	set(MANPAGE_IN ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.in)
-	add_custom_command(OUTPUT ${MANPAGE}.in
-		DEPENDS ${MANPAGE_ADSRC}
-		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}.adoc
-		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}.adoc
-		COMMAND cp ${MANPAGE_TMPIN} ${MANPAGE_IN}
-		COMMENT "Processing ${MANPAGE_ADSRC} -> ${MANPAGE}.in"
+
+	# We hop through a temporary file to process in definitions for e.g.
+	# $ETCDIR.  Can't do that here though since the directories aren't
+	# defined yet, so we write the target for ADOC_TMPSRC lower down.
+
+	set(MANPAGE_TMP ${MANPAGE_TMPDIR}/ctwm.1)
+	add_custom_command(OUTPUT ${MANPAGE}
+		DEPENDS ${ADOC_TMPSRC}
+		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
+		COMMAND cp ${MANPAGE_TMP} ${MANPAGE}
+		COMMENT "Processing ${ADOC_TMPSRC} -> ${MANPAGE}"
 	)
+
+	# Should do HTML at some point, but asciidoc is so slow (~5 secs) I'm
+	# not bothering.  When we switch to asciidoctor (~.2 secs), I'll
+	# revisit.
 else()
 	# See if we have prebuilt
 	find_file(MAN_PRESRC ctwm.1
 		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
 		NO_DEFAULT_PATH)
 	if(MAN_PRESRC)
-		set(CAN_DO_MAN 1)
-		# Just copy it in
-		add_custom_command(OUTPUT ${MANPAGE}.in
-			DEPENDS ${MAN_PRESRC}
-			COMMAND cp ${MAN_PRESRC} ${MANPAGE}.in
-			COMMENT "Copying in pre-built manpage."
-		)
+		set(HAS_MAN 1)
 		message(STATUS "No asciidoc/a2x found, using prebuilt manpage.")
+		# Target below does rewrites
 	else()
 		message(WARNING "Can't find asciidoc/a2x, and no prebuilt manpage available.")
 	endif(MAN_PRESRC)
+
+	# Install prebuilt HTML if we have it generated too.
+	find_file(HTML_PRESRC ctwm.1.html
+		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
+		NO_DEFAULT_PATH)
+	if(HTML_PRESRC)
+		set(HAS_HTML 1)
+		message(STATUS "Installing prebuilt HTML manual.")
+	endif(HTML_PRESRC)
 endif(ASCIIDOC AND A2X)
 
 
@@ -478,24 +497,38 @@ endif(DO_CLIENT)
 add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
-# Rewrite some build options into manpage
-if(CAN_DO_MAN)
-	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${MANPAGE}.in
-		COMMAND sed -e "s,\@ETCDIR@,${ETCDIR}," < ${MANPAGE}.in > ${MANPAGE}
-		COMMENT "Processing ${MANPAGE}.in -> ${MANPAGE}"
+# Rewrite some build options into docs, either into the adoc source
+# before processing, or into prebuilt versions if we can't generate them
+# ourselves.
+set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
+if(CAN_BUILD_MAN)
+	add_custom_command(OUTPUT ${ADOC_TMPSRC}
+		DEPENDS ${ADOC_SRC}
+		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
+		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
 	)
-else()
-	# Fake to get us through the build process
-	file(WRITE ${MANPAGE} "Can't build manpage.")
-endif(CAN_DO_MAN)
+endif(CAN_BUILD_MAN)
+if(MAN_PRESRC)
+	add_custom_command(OUTPUT ${MANPAGE}
+		DEPENDS ${MAN_PRESRC}
+		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
+		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
+	)
+endif(MAN_PRESRC)
+if(HTML_PRESRC)
+	add_custom_command(OUTPUT ${MANHTML}
+		DEPENDS ${HTML_PRESRC}
+		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
+		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
+	)
+endif(HTML_PRESRC)
 
 # Compress manpage (conditionally).  We could add more magic to allow
 # different automatic compression, but that's probably way more involved
 # than we need to bother with.  Most systems use gzip, and for the few
 # that don't, the packagers can use NOMANCOMPRESS and handle it out of
 # band.
-if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
+if(HAS_MAN AND NOT NOMANCOMPRESS)
 	find_program(GZIP_CMD gzip)
 	add_custom_command(OUTPUT "${MANPAGE}.gz"
 		DEPENDS ${MANPAGE}
@@ -504,33 +537,59 @@ if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 	)
 	add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
 	set(INSTMAN "${MANPAGE}.gz")
-else()
+elseif(HAS_MAN)
+	add_custom_target(man ALL DEPENDS ${MANPAGE})
 	set(INSTMAN ${MANPAGE})
-endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
+endif(HAS_MAN AND NOT NOMANCOMPRESS)
+
+if(HAS_HTML)
+	add_custom_target(man-html ALL DEPENDS ${MANHTML})
+	set(INSTHTML ${MANHTML})
+endif(HAS_HTML)
 
 
 #
 # And the install process
 #
 
-# Installing everything
+# Some bits we always install; the binary, the default config, and our
+# CHANGES file.
 install(TARGETS ctwm
 	DESTINATION ${BINDIR}
 )
+install(FILES system.ctwmrc
+	DESTINATION ${EXAMPLEDIR}
+)
+install(FILES CHANGES
+	DESTINATION ${DOCDIR}
+)
+
+# If we's using XPM (really, when are we not?), install the pixmaps.
 if(USE_XPM)
 	install(DIRECTORY xpm/
 		DESTINATION ${PIXMAPDIR}
 		FILES_MATCHING PATTERN "*.xpm"
 	)
 endif(USE_XPM)
-install(FILES system.ctwmrc
-	DESTINATION ${EXAMPLEDIR}
-)
-if(NOT CAN_DO_MAN)
+
+# Install manual bits, assuming we have them.
+if(NOT HAS_MAN)
 	message(WARNING "No manpage to install: recheck config if "
 			"this is unexpected.")
 else()
 	install(FILES ${INSTMAN}
 		DESTINATION ${MAN1PATH}
 	)
-endif(NOT CAN_DO_MAN)
+endif(NOT HAS_MAN)
+if(INSTHTML)
+	install(FILES ${INSTHTML}
+		DESTINATION ${DOCDIR}
+	)
+endif(INSTHTML)
+
+# If we're building with sound, install its doc too.
+if(USE_SOUND)
+	install(FILES sound.txt
+		DESTINATION ${DOCDIR}
+	)
+endif(USE_SOUND)
