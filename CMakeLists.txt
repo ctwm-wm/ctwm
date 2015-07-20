@@ -565,6 +565,9 @@ endif(USE_XPM)
 install(FILES system.ctwmrc
 	DESTINATION ${EXAMPLEDIR}
 )
+install(FILES CHANGES
+	DESTINATION ${DOCDIR}
+)
 if(NOT HAS_MAN)
 	message(WARNING "No manpage to install: recheck config if "
 			"this is unexpected.")
