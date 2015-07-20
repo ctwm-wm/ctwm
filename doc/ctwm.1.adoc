@@ -173,7 +173,7 @@ well as `-v -n -k`.
 
 [CAUTION]
 ====
-Note, however, that the handline of optional args is slightly different;
+Note, however, that the handling of optional args is slightly different;
 they *must* be specified with = or no space.  e.g., `--window=123` will
 set the win-id to 123, but `--window 123` will not; the 123 will be
 treated as a separate argument.  Similarly, it must be set as `-w123`,
