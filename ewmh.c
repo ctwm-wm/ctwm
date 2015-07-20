@@ -159,7 +159,7 @@ static void GenerateTimestamp(ScreenInfo *scr)
 
 	/* Sleep in 10ms chunks */
 	tosleep.tv_sec  = 0;
-	tosleep.tv_nsec = (10 * 1000);
+	tosleep.tv_nsec = (10 * 1000 * 1000);
 
 	if(lastTimestamp > 0) {
 		return;
@@ -258,7 +258,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 
 		/* Sleep in 100ms chunks */
 		tosleep.tv_sec  = 0;
-		tosleep.tv_nsec = (100 * 1000);
+		tosleep.tv_nsec = (100 * 1000 * 1000);
 
 		while(timeout > 0) {
 

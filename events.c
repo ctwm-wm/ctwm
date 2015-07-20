@@ -94,7 +94,7 @@
 #include "iconmgr.h"
 #include "version.h"
 #ifdef SOUNDS
-#include "sounds.h"
+#include "sound.h"
 #endif
 
 static void CtwmNextEvent(Display *display, XEvent  *event);

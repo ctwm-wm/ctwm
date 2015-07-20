@@ -54,6 +54,40 @@ though, you may have to invoke cmake manually and set various params on
 the command line (cmake also has various GUI configurators, not covered
 here).
 
+The following parameters control configuration/installation locations:
+
+CMAKE_INSTALL_PREFIX
+:       Where paths are based.  This is a standard cmake var.
+
+ETCDIR
+:       Where ctwm will look for a `system.ctwmrc` to fall back to if it
+        doesn't find a per-user config.  Nothing is installed here by
+        default.
+        (default: `$PREFIX/etc`)
+
+BINDIR
+:       Where the ctwm binary is installed.
+        (default: `$PREFIX/bin`)
+
+DATADIR
+:       Where run-time data like image pixmaps are installed.
+        (default: `$PREFIX/share/ctwm`)
+
+MANDIR
+:       Base directory under which manpage dirs like `man1` and `man2`
+        live.
+        (default: `$PREFIX/share/man` or `$PREFIX/man` if that doesn't exist)
+
+DOCDIR
+:       Where non-manpage docs are installed.
+        (default: `$PREFIX/share/doc/ctwm`)
+
+EXAMPLEDIR
+:       Where various example files get installed.  These include the
+        system.ctwmrc that is compiled into ctwm as a fallback.
+        (default: `$PREFIX/share/examples/ctwm`)
+
+
 The following parameters control the features/external libs that are
 available.  The defaults can be changed by passing parameters like
 `-DUSE_XYZ=OFF` to the cmake command line.
@@ -97,14 +131,8 @@ USE_SOUND
 Additional vars you might need to set:
 
 M4_CMD
-:       Name of m4 program, if it's not `m4` or `gm4`.
-
-MANBASE
-:       Base directory under which manpage dirs like `man1` and `man2`
-        live.  The logic in the process *should* be able to find them,
-        but if it fails (or guesses wrong) you may need to tell it
-        directly.  And then tell us about it, so we can improve the
-        automatic search.
+:       Name of m4 program, if it's not `m4` or `gm4`, or full path to it
+        if it's not in your `$PATH`.
 
 
 ## Building
