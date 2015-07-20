@@ -9,6 +9,7 @@ include(CheckSymbolExists)
 # Our base set of sources
 set(CTWMSRC
 	add_window.c
+	clargs.c
 	clicktofocus.c
 	ctwm.c
 	ctwm_atoms.c

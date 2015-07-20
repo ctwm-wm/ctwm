@@ -91,6 +91,7 @@
 
 
 #include "ctwm_atoms.h"
+#include "clargs.h"
 #include "add_window.h"
 #include "gc.h"
 #include "parse.h"
@@ -137,10 +138,8 @@ int InfoLines;
 unsigned int InfoWidth, InfoHeight;
 static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
-static void DisplayInfo(void);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
-static void usage(void) __attribute__((noreturn));
 
 Cursor  UpperLeftCursor;
 Cursor  TopRightCursor,
@@ -180,34 +179,6 @@ char *ProgramName;
 int Argc;
 char **Argv;
 
-/* Command-line args */
-ctwm_cl_args CLarg = {
-	.MultiScreen     = TRUE,
-	.Monochrome      = FALSE,
-	.cfgchk          = 0,
-	.InitFile        = NULL,
-	.display_name    = NULL,
-	.PrintErrorMessages = False,
-#ifdef DEBUG
-	.ShowWelcomeWindow  = False,
-#else
-	.ShowWelcomeWindow  = True,
-#endif
-	.is_captive      = FALSE,
-	.capwin          = (Window) 0,
-	.captivename     = NULL,
-#ifdef USEM4
-	.KeepTmpFile     = False,
-	.keepM4_filename = NULL,
-	.GoThroughM4     = True,
-#endif
-#ifdef EWMH
-	.ewmh_replace    = 0,
-#endif
-	.client_id       = NULL,
-	.restore_filename = NULL,
-};
-
 Bool RestartPreviousState = False;      /* try to restart in previous state */
 
 Bool RestartFlag = 0;
@@ -240,7 +211,6 @@ int main(int argc, char **argv, char **environ)
 	static int crooty = 100;
 	static unsigned int crootw = 1280;
 	static unsigned int crooth =  768;
-	int ch, optidx;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
 	IconRegion *ir;
@@ -256,223 +226,11 @@ int main(int argc, char **argv, char **environ)
 
 
 	/*
-	 * Backward-compat cheat: accept a few old-style long args if they
-	 * came first.  Of course, this assumed argv[x] is editable, which on
-	 * most systems it is, and C99 requires it.
+	 * Parse-out command line args, and check the results.
 	 */
-	if(argc > 1) {
-#define CHK(x) else if(strcmp(argv[1], (x)) == 0)
-		if(0) {
-			/* nada */
-		}
-		CHK("-version") {
-			printf("%s\n", VersionNumber);
-			exit(0);
-		}
-		CHK("-info") {
-			DisplayInfo();
-			exit(0);
-		}
-		CHK("-cfgchk") {
-			CLarg.cfgchk = 1;
-			*argv[1] = '\0';
-		}
-		CHK("-display") {
-			if(argc <= 2 || strlen(argv[2]) < 1) {
-				usage();
-			}
-			CLarg.display_name = strdup(argv[2]);
-
-			*argv[1] = '\0';
-			*argv[2] = '\0';
-		}
-#undef CHK
-	}
-
-
-	/*
-	 * Setup long options for arg parsing
-	 */
-	static struct option long_options[] = {
-		/* Simple flags */
-		{ "single",    no_argument,       &CLarg.MultiScreen, FALSE },
-		{ "mono",      no_argument,       &CLarg.Monochrome, TRUE },
-		{ "verbose",   no_argument,       NULL, 'v' },
-		{ "quiet",     no_argument,       NULL, 'q' },
-		{ "nowelcome", no_argument,       NULL, 'W' },
-
-		/* Config/file related */
-		{ "file",      required_argument, NULL, 'f' },
-		{ "cfgchk",    no_argument,       &CLarg.cfgchk, 1 },
-
-		/* Show something and exit right away */
-		{ "help",      no_argument,       NULL, 'h' },
-		{ "version",   no_argument,       NULL, 0 },
-		{ "info",      no_argument,       NULL, 0 },
-
-		/* Misc control bits */
-		{ "display",   required_argument, NULL, 'd' },
-		{ "window",    optional_argument, NULL, 'w' },
-		{ "name",      required_argument, NULL, 0 },
-		{ "xrm",       required_argument, NULL, 0 },
-
-#ifdef EWMH
-		{ "replace",   no_argument,       &CLarg.ewmh_replace, 1 },
-#endif
-
-		/* M4 control params */
-#ifdef USEM4
-		{ "keep-defs", no_argument,       NULL, 'k' },
-		{ "keep",      required_argument, NULL, 'K' },
-		{ "nom4",      no_argument,       NULL, 'n' },
-#endif
-
-		/* Random session-related bits */
-		{ "clientId",  required_argument, NULL, 0 },
-		{ "restore",   required_argument, NULL, 0 },
-	};
-
-	/*
-	 * Short aliases for some
-	 *
-	 * I assume '::' for optional args is portable; getopt_long(3)
-	 * doesn't describe it, but it's a GNU extension for getopt(3).
-	 */
-	const char *short_options = "vqWf:hd:w::"
-#ifdef USEM4
-	                            "kK:n"
-#endif
-	                            ;
-
-	/*
-	 * Parse out the args
-	 */
-	optidx = 0;
-	while((ch = getopt_long(argc, argv, short_options, long_options,
-	                        &optidx)) != -1) {
-		switch(ch) {
-			/* First handle the simple cases that have short args */
-			case 'v':
-				CLarg.PrintErrorMessages = True;
-				break;
-			case 'q':
-				CLarg.PrintErrorMessages = False;
-				break;
-			case 'W':
-				CLarg.ShowWelcomeWindow = False;
-				break;
-			case 'f':
-				CLarg.InitFile = optarg;
-				break;
-			case 'h':
-				usage();
-			case 'd':
-				CLarg.display_name = optarg;
-				break;
-			case 'w':
-				CLarg.is_captive = True;
-				CLarg.MultiScreen = False;
-				if(optarg != NULL) {
-					sscanf(optarg, "%x", (unsigned int *)&CLarg.capwin);
-					/* Failure will just leave capwin as initialized */
-				}
-				break;
-
-#ifdef USEM4
-			/* Args that only mean anything if we're built with m4 */
-			case 'k':
-				CLarg.KeepTmpFile = True;
-				break;
-			case 'K':
-				CLarg.keepM4_filename = optarg;
-				break;
-			case 'n':
-				CLarg.GoThroughM4 = False;
-				break;
-#endif
-
-
-			/*
-			 * Now the stuff that doesn't have short variants.  Many of
-			 * them just set flags, so we don't need to do anything with
-			 * them.  Only the ones with NULL flags matter.
-			 */
-			case 0:
-				if(long_options[optidx].flag != NULL) {
-					/* It only existed to set a flag; we're done */
-					break;
-				}
-
-#define IFIS(x) if(strcmp(long_options[optidx].name, (x)) == 0)
-				IFIS("version") {
-					printf("%s\n", VersionNumber);
-					exit(0);
-				}
-				IFIS("info") {
-					DisplayInfo();
-					exit(0);
-				}
-				IFIS("name") {
-					CLarg.captivename = optarg;
-					break;
-				}
-				IFIS("xrm") {
-					/*
-					 * Quietly ignored by us; Xlib processes it
-					 * internally in XtToolkitInitialize();
-					 */
-					break;
-				}
-				IFIS("clientId") {
-					CLarg.client_id = optarg;
-					break;
-				}
-				IFIS("restore") {
-					CLarg.restore_filename = optarg;
-					break;
-				}
-#undef IFIS
-
-				/* Don't think it should be possible to get here... */
-				fprintf(stderr, "Internal error in getopt: '%s' unhandled.\n",
-				        long_options[optidx].name);
-				usage();
-
-			/* Something totally unexpected */
-			case '?':
-				/* getopt_long() already printed an error */
-				usage();
-
-			default:
-				/* Uhhh...  */
-				fprintf(stderr, "Internal error: getopt confused us.\n");
-				usage();
-		}
-	}
-
-
-	/*
-	 * Do a little sanity checking on the args
-	 */
-#ifdef USEM4
-	/* If we're not doing m4, don't specify m4 options */
-	if(!CLarg.GoThroughM4) {
-		if(CLarg.KeepTmpFile) {
-			fprintf(stderr, "--keep-defs is incompatible with --nom4.\n");
-			usage();
-		}
-		if(CLarg.keepM4_filename) {
-			fprintf(stderr, "--keep is incompatible with --nom4.\n");
-			usage();
-		}
-	}
-#endif
-
-	/* If we're not captive, captivename is meaningless too */
-	if(CLarg.captivename && !CLarg.is_captive) {
-		fprintf(stderr, "--name is meaningless without --window.\n");
-		usage();
-	}
+	clargs_parse(argc, argv);
+	clargs_check();
+	/* If we get this far, it was all good */
 
 
 #define newhandler(sig, action) \
@@ -1076,41 +834,6 @@ int main(int argc, char **argv, char **environ)
 }
 
 
-static void usage(void)
-{
-	/* How far to indent continuation lines */
-	int llen = 10;
-
-	fprintf(stderr, "usage: %s [(--display | -d) dpy]  "
-#ifdef EWMH
-	        "[--replace]  "
-#endif
-	        "[--single]\n", ProgramName);
-
-	fprintf(stderr, "%*s[(--file | -f) initfile]  [--cfgchk]\n", llen, "");
-
-#ifdef USEM4
-	fprintf(stderr, "%*s[--nom4 | -n]  [--keep-defs | -k]  "
-	        "[(--keep | -K) m4file]\n", llen, "");
-#endif
-
-	fprintf(stderr, "%*s[--verbose | -v]  [--quiet | -q]  [--mono]  "
-	        "[--xrm resource]\n", llen, "");
-
-	fprintf(stderr, "%*s[--version]  [--info]  [--nowelcome | -W]\n",
-	        llen, "");
-
-	fprintf(stderr, "%*s[(--window | -w) [win-id]]  [--name name]\n", llen, "");
-
-	/* Semi-intentionally not documenting --clientId/--restore */
-
-	fprintf(stderr, "%*s[--help]\n", llen, "");
-
-
-	exit(1);
-}
-
-
 /***********************************************************************
  *
  *  Procedure:
@@ -1642,27 +1365,3 @@ static Window CreateRootWindow(int x, int y,
 	XMapWindow(dpy, ret);
 	return (ret);
 }
-
-static void DisplayInfo(void)
-{
-	(void) printf("Twm version:  %s\n", Version);
-	(void) printf("Compile time options :");
-#ifdef XPM
-	(void) printf(" XPM");
-#endif
-#ifdef USEM4
-	(void) printf(" USEM4");
-#endif
-#ifdef SOUNDS
-	(void) printf(" SOUNDS");
-#endif
-#ifdef GNOME
-	(void) printf(" GNOME");
-#endif
-#ifdef EWMH
-	(void) printf(" EWMH");
-#endif
-	(void) printf(" I18N");
-	(void) printf("\n");
-}
-
