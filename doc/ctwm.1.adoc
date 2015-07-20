@@ -181,7 +181,7 @@ $HOME/.twmrc.`screennumber`::
 $HOME/.twmrc::
   The users twm startup file.
 
-@TWMDIR@/system.ctwmrc::
+@ETCDIR@/system.ctwmrc::
   If none of the preceding files are found, ctwm will look in this
   file for a
   default configuration.  This is often tailored by the site administrator to

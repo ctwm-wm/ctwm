@@ -7,7 +7,7 @@
 /*
  * Defined paths etc
  */
-#define SYSTEM_INIT_FILE "@CONFDIR@/system.ctwmrc"
+#define SYSTEM_INIT_FILE "@ETCDIR@/system.ctwmrc"
 
 
 /*

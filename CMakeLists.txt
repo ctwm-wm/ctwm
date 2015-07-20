@@ -95,8 +95,9 @@ if(HAS_FEATURES_H)
 endif(HAS_FEATURES_H)
 
 
+
 #
-# First find various stuff we need, if enabled.
+# First find various libs/includes/etc we need, if enabled.
 #
 
 # First things first.  If we don't have X, we're going nowhere.
@@ -130,11 +131,6 @@ set(LIBSEARCH
 )
 
 
-# Now we know where to stash this (may change this to be a little less
-# coupled to X11 later).
-set(TWMDIR ${X11_LIBRARY_DIR}/X11/twm)
-set(CONFDIR ${TWMDIR})
-
 
 # Hard to imagine xpm not being around or somebody not wanting it, but...
 if(USE_XPM)
@@ -143,7 +139,6 @@ if(USE_XPM)
 	endif(NOT X11_Xpm_FOUND)
 
 	list(APPEND CTWMLIBS ${X11_Xpm_LIB})
-	set(PIXMAPDIR ${TWMDIR}/images)
 	message(STATUS "Enabling XPM support: ${X11_Xpm_LIB}.")
 endif(USE_XPM)
 
@@ -233,9 +228,11 @@ if(USE_SREGEX)
 endif(USE_SREGEX)
 
 
+
 #
 # Next find some build tools
 #
+
 # flex should be everywhere
 find_package(FLEX)
 if(FLEX_FOUND)
@@ -257,6 +254,7 @@ else()
 		message(FATAL_ERROR "Can't find flex.")
 	endif(LEX_C)
 endif(FLEX_FOUND)
+
 
 # This only finds bison, not yacc.  There doesn't seem to be a standard
 # module for yacc, so hand-code it.
@@ -302,6 +300,7 @@ else()
 		endif(GRAM_C AND GRAM_H)
 	endif(YACC)
 endif(BISON_FOUND)
+
 
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
@@ -349,8 +348,70 @@ else()
 endif(ASCIIDOC AND A2X)
 
 
+
 #
-# Now setup flags etc.
+# Figure out install paths for stuff
+#
+
+# CMAKE_INSTALL_PREFIX is the user's responsibility to set right.  We
+# just assume it is.
+
+# Where ctwm looks for fallback config files
+if(NOT ETCDIR)
+	set(ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
+endif(NOT ETCDIR)
+message(STATUS "System-wide config in      ${ETCDIR}")
+
+# Where we stick the binary
+if(NOT BINDIR)
+	set(BINDIR ${CMAKE_INSTALL_PREFIX}/bin)
+endif(NOT BINDIR)
+message(STATUS "Installing ctwm in         ${BINDIR}")
+
+# Where runtime data stuff (e.g., images) is found
+if(NOT DATADIR)
+	set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
+endif(NOT DATADIR)
+message(STATUS "Installing runtime data in ${DATADIR}")
+
+# Where we install non-manpage docs to
+if(NOT DOCDIR)
+	set(DOCDIR ${CMAKE_INSTALL_PREFIX}/share/doc/ctwm)
+endif(NOT DOCDIR)
+message(STATUS "Installing docs in         ${DOCDIR}")
+
+# Where we put example configs etc.
+if(NOT EXAMPLEDIR)
+	set(EXAMPLEDIR ${CMAKE_INSTALL_PREFIX}/share/examples/ctwm)
+endif(NOT EXAMPLEDIR)
+message(STATUS "Installing examples in     ${EXAMPLEDIR}")
+
+
+# Where should we stick manpages?
+# User can set MANDIR to override, if they don't, check a few likely
+# places...
+if(NOT MANDIR)
+	find_file(MANDIR man
+		PATHS
+			"${CMAKE_INSTALL_PREFIX}/share"
+			"${CMAKE_INSTALL_PREFIX}"
+		NO_DEFAULT_PATH)
+endif(NOT MANDIR)
+
+# If we can't find something, hardcode a guess and yell about it
+if(NOT MANDIR)
+	set(MANDIR "${CMAKE_INSTALL_PREFIX}/man")
+	message(WARNING "Can't find install base for manpages, "
+			"assuming ${MANDIR}")
+endif(NOT MANDIR)
+
+set(MAN1PATH "${MANDIR}/man1")
+message(STATUS "Installing manpage to      ${MAN1PATH}")
+
+
+
+#
+# Now other build flags and the like
 #
 
 # Standard defs
@@ -364,38 +425,17 @@ if(NOT NO_WARNS)
 	add_definitions(${STD_WARNS})
 endif(NOT NO_WARNS)
 
+# Set images dir.  Can't do this in the XPM-finding block above, since we
+# haven't figured the path yet.
+if(USE_XPM)
+	set(PIXMAPDIR ${DATADIR}/images)
+endif(USE_XPM)
+
 
 # Include source and generated files
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-
-# Where should we stick manpages?
-if(MANBASE)
-	# Assume the user knows what they're doing
-else()
-	find_file(MANBASE man
-		PATHS
-			"${CMAKE_INSTALL_PREFIX}/share"
-			"${CMAKE_INSTALL_PREFIX}"
-		NO_DEFAULT_PATH)
-endif(MANBASE)
-
-if(MANBASE)
-	set(MAN1PATH "${MANBASE}/man1")
-	message(STATUS "Installing manpage to ${MAN1PATH}")
-else()
-	# Wacky dance to make sure it's a string rather than a list, or else
-	# some later uses of it (see faked install() below) wind up with
-	# embedded semicolons.  Only way to define it as a plain string with
-	# set() would be as a single crazy long line, so we do a string
-	# replace instead.
-	string(REPLACE ";" " " manbase_err
-			"Can't figure out where to install manpage: "
-			"try setting MANBASE to something appropriate for your system "
-			"(e.g., /usr/share/man).")
-	message(WARNING ${manbase_err})
-endif(MANBASE)
 
 
 #
@@ -435,15 +475,14 @@ if(DO_CLIENT)
 endif(DO_CLIENT)
 
 # Build the event-forwarding program.
-
 add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
-# Rewrite man page
+# Rewrite some build options into manpage
 if(CAN_DO_MAN)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MANPAGE}.in
-		COMMAND sed -e "s,\@TWMDIR@,${TWMDIR}," < ${MANPAGE}.in > ${MANPAGE}
+		COMMAND sed -e "s,\@ETCDIR@,${ETCDIR}," < ${MANPAGE}.in > ${MANPAGE}
 		COMMENT "Processing ${MANPAGE}.in -> ${MANPAGE}"
 	)
 else()
@@ -451,10 +490,11 @@ else()
 	file(WRITE ${MANPAGE} "Can't build manpage.")
 endif(CAN_DO_MAN)
 
-# Compress (conditionally).  We could add more magic to allow different
-# automatic compression, but that's probably way more involved than we
-# need to bother with.  Most systems use gzip, and for the few that
-# don't, the packagers can use NOMANCOMPRESS and handle it out of band.
+# Compress manpage (conditionally).  We could add more magic to allow
+# different automatic compression, but that's probably way more involved
+# than we need to bother with.  Most systems use gzip, and for the few
+# that don't, the packagers can use NOMANCOMPRESS and handle it out of
+# band.
 if(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 	find_program(GZIP_CMD gzip)
 	add_custom_command(OUTPUT "${MANPAGE}.gz"
@@ -469,23 +509,13 @@ else()
 endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 
 
-# Cram a warning in about the MANBASE if we couldn't find it.  This is a
-# particularly grody way of doing things, but we can't just add it as a
-# standard target that install depends on (see
-# http://public.kitware.com/Bug/view.php?id=8438).  We rely on the fact
-# that install() is defined to run in order, but that only happens when
-# everything is in a single directory.  This will break if/when we start
-# splitting things up...
-if(NOT CAN_DO_MAN)
-	install(CODE "message(FATAL_ERROR \"Failed to build manpage; see earlier errors.\")")
-endif(NOT CAN_DO_MAN)
-if(NOT MANBASE)
-	install(CODE "message(FATAL_ERROR \"${manbase_err}\")")
-endif(NOT MANBASE)
+#
+# And the install process
+#
 
 # Installing everything
 install(TARGETS ctwm
-	DESTINATION bin
+	DESTINATION ${BINDIR}
 )
 if(USE_XPM)
 	install(DIRECTORY xpm/
@@ -494,10 +524,13 @@ if(USE_XPM)
 	)
 endif(USE_XPM)
 install(FILES system.ctwmrc
-	DESTINATION ${CONFDIR}
+	DESTINATION ${EXAMPLEDIR}
 )
-if(MANBASE)
+if(NOT CAN_DO_MAN)
+	message(WARNING "No manpage to install: recheck config if "
+			"this is unexpected.")
+else()
 	install(FILES ${INSTMAN}
 		DESTINATION ${MAN1PATH}
 	)
-endif(MANBASE)
+endif(NOT CAN_DO_MAN)
