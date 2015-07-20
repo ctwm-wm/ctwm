@@ -382,24 +382,24 @@ message(STATUS "Installing examples in     ${EXAMPLEDIR}")
 
 
 # Where should we stick manpages?
-# User can set MANBASE to override, if they don't, check a few likely
+# User can set MANDIR to override, if they don't, check a few likely
 # places...
-if(NOT MANBASE)
-	find_file(MANBASE man
+if(NOT MANDIR)
+	find_file(MANDIR man
 		PATHS
 			"${CMAKE_INSTALL_PREFIX}/share"
 			"${CMAKE_INSTALL_PREFIX}"
 		NO_DEFAULT_PATH)
-endif(NOT MANBASE)
+endif(NOT MANDIR)
 
 # If we can't find something, hardcode a guess and yell about it
-if(NOT MANBASE)
-	set(MANBASE "${CMAKE_INSTALL_PREFIX}/man")
+if(NOT MANDIR)
+	set(MANDIR "${CMAKE_INSTALL_PREFIX}/man")
 	message(WARNING "Can't find install base for manpages, "
-			"assuming ${MANBASE}")
-endif(NOT MANBASE)
+			"assuming ${MANDIR}")
+endif(NOT MANDIR)
 
-set(MAN1PATH "${MANBASE}/man1")
+set(MAN1PATH "${MANDIR}/man1")
 message(STATUS "Installing manpage to      ${MAN1PATH}")
 
 
