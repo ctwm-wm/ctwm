@@ -354,6 +354,7 @@ endif(ASCIIDOC AND A2X)
 #
 set(TWMDIR ${X11_LIBRARY_DIR}/X11/twm)
 set(CONFDIR ${TWMDIR})
+set(ETCDIR ${TWMDIR})
 
 
 # Where should we stick manpages?
