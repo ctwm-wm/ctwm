@@ -889,7 +889,7 @@ void MaskScreen(char *file)
 		return;
 	}
 
-	if(captive) {
+	if(CLarg.is_captive) {
 		XSetWindowColormap(dpy, Scr->WindowMask, Scr->WelcomeCmap);
 		XSetWMColormapWindows(dpy, Scr->Root, &(Scr->WindowMask), 1);
 	}
@@ -968,7 +968,7 @@ void UnmaskScreen(void)
 	}
 	XStoreColors(dpy, cmap, colors, 256);
 
-	if(captive) {
+	if(CLarg.is_captive) {
 		XSetWindowColormap(dpy, Scr->Root, cmap);
 	}
 	else {
@@ -996,7 +996,7 @@ void UnmaskScreen(void)
 		select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
 	}
 
-	if(captive) {
+	if(CLarg.is_captive) {
 		XSetWindowColormap(dpy, Scr->Root, stdcmap);
 	}
 	else {

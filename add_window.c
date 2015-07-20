@@ -230,7 +230,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	fprintf(stderr, "AddWindow: w = 0x%x\n", w);
 #endif
 
-	if(!captive && RedirectToCaptive(w)) {
+	if(!CLarg.is_captive && RedirectToCaptive(w)) {
 		return (NULL);
 	}
 

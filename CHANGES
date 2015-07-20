@@ -14,7 +14,13 @@ build ctwm.  See the `README` file for how to run it.
 Support for many non-current platforms has been dropped.  In particular,
 remnants of special-case VMS support have been removed.
 
-### Removed Features
+### Backward-Incompatible Changes And Removed Features
+
+1. Argument parsing has been rewritten to use `getopt_long()`.  All
+   `-long` options are now `--long` instead.  `-version`, `-info`,
+   `-cfgchk`, and `-display` are still accepted if they're the first
+   option given, to make it easier for scripts to simultaneously support
+   before/after versions; this shim will be removed in a later version.
 
 1. Support for the SDSC imconv library, and the IMCONV options related to
     it, has been removed.  The last release is almost 20 years old, and

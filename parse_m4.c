@@ -52,8 +52,7 @@ FILE *start_m4(FILE *fraw)
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
-		/* get_defs("m4", dpy, display_name) */
-		tmp_file = m4_defs(dpy, display_name);
+		tmp_file = m4_defs(dpy, CLarg.display_name);
 		execlp(M4CMD, M4CMD, "-s", tmp_file, "-", NULL);
 
 		/* If we get here we are screwed... */
@@ -230,14 +229,14 @@ static char *m4_defs(Display *display, char *host)
 	fputs(MkDef("SOUNDS", "Yes"), tmpf);
 #endif
 	fputs(MkDef("I18N", "Yes"), tmpf);
-	if(captive && captivename) {
+	if(CLarg.is_captive && Scr->captivename) {
 		fputs(MkDef("TWM_CAPTIVE", "Yes"), tmpf);
-		fputs(MkDef("TWM_CAPTIVE_NAME", captivename), tmpf);
+		fputs(MkDef("TWM_CAPTIVE_NAME", Scr->captivename), tmpf);
 	}
 	else {
 		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
 	}
-	if(KeepTmpFile) {
+	if(CLarg.KeepTmpFile) {
 		fprintf(stderr, "Left file: %s\n", tmp_name);
 	}
 	else {

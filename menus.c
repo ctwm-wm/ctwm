@@ -4212,9 +4212,9 @@ static void Execute(char *s)
 	}
 	subs = strstr(s, "$redirect");
 	if(subs) {
-		if(captive) {
-			name = (char *) malloc(21 + strlen(captivename) + 1);
-			sprintf(name, "-xrm 'ctwm.redirect:%s'", captivename);
+		if(CLarg.is_captive) {
+			name = (char *) malloc(21 + strlen(Scr->captivename) + 1);
+			sprintf(name, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
 		}
 		else {
 			name = (char *) malloc(1);

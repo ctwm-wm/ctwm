@@ -9,6 +9,7 @@ include(CheckSymbolExists)
 # Our base set of sources
 set(CTWMSRC
 	add_window.c
+	clargs.c
 	clicktofocus.c
 	ctwm.c
 	ctwm_atoms.c
@@ -365,6 +366,22 @@ else()
 		message(STATUS "Installing prebuilt HTML manual.")
 	endif(HTML_PRESRC)
 endif(ASCIIDOC AND A2X)
+
+
+# getopt_long(3) is in getopt.h everywhere I can find it.  Until we find
+# a system where it's somewhere else, or systems it's nowhere and we have
+# to provide it, we'll either find it there or error out and blow up.  If
+# we don't find problems that require additional workaround in the next
+# couple releases, we should retire the check to avoid wasting time/space
+# checking things we know will work.
+check_include_files(getopt.h HAS_GETOPT_H)
+check_function_exists(getopt_long HAS_GETOPT_LONG)
+if(NOT HAS_GETOPT_H)
+	message(FATAL_ERROR "Can't find getopt.h (needed for getopt_long()).")
+endif(NOT HAS_GETOPT_H)
+if(NOT HAS_GETOPT_LONG)
+	message(FATAL_ERROR "You don't seem to have getopt_long().")
+endif(NOT HAS_GETOPT_LONG)
 
 
 

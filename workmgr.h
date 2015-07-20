@@ -205,8 +205,8 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
 Bool AnimateRoot(void);
-void AddToCaptiveList(void);
-void RemoveFromCaptiveList(void);
+char *AddToCaptiveList(const char *cptname);
+void RemoveFromCaptiveList(const char *cptname);
 Bool RedirectToCaptive(Window window);
 void SetPropsIfCaptiveCtwm(TwmWindow *win);
 Window CaptiveCtwmRootWindow(Window window);

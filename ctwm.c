@@ -90,6 +90,7 @@
 
 
 #include "ctwm_atoms.h"
+#include "clargs.h"
 #include "add_window.h"
 #include "gc.h"
 #include "parse.h"
@@ -117,18 +118,8 @@
 
 XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
-char *display_name = NULL;      /* JMO 2/13/90 for m4 */
-#ifdef USEM4
-int KeepTmpFile = False;        /* JMO 3/28/90 for m4 */
-char *keepM4_filename = NULL;   /* Keep M4 output here */
-int GoThroughM4 = True;
-#endif
 Window ResizeWindow;            /* the window we are resizing */
 
-int  captive      = FALSE;
-char *captivename = NULL;
-
-int MultiScreen = TRUE;         /* try for more than one screen? */
 int NumScreens;                 /* number of screens in ScreenList */
 int HasShape;                   /* server supports shape extension? */
 int ShapeEventBase, ShapeErrorBase;
@@ -136,12 +127,6 @@ ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
 int FirstScreen;                /* TRUE ==> first screen of display */
-static Bool PrintErrorMessages = False;        /* controls error messages */
-#ifdef DEBUG
-Bool ShowWelcomeWindow = False;
-#else
-Bool ShowWelcomeWindow = True;
-#endif
 static int RedirectError;       /* TRUE ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
@@ -152,7 +137,6 @@ int InfoLines;
 unsigned int InfoWidth, InfoHeight;
 static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
-static void DisplayInfo(void);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
 
@@ -202,9 +186,6 @@ SIGNAL_T Crash(int signum);
 #ifdef __WAIT_FOR_CHILDS
 SIGNAL_T ChildExit(int signum);
 #endif
-#ifdef EWMH
-int ewmh_replace;
-#endif /* EWMH */
 
 /***********************************************************************
  *
@@ -223,20 +204,14 @@ int main(int argc, char **argv, char **environ)
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	int numManaged, firstscrn, lastscrn, scrnum;
 	int zero = 0;
-	char *restore_filename = NULL;
-	char *client_id = NULL;
 	char *welcomefile;
 	int  screenmasked;
 	static int crootx = 100;
 	static int crooty = 100;
 	static unsigned int crootw = 1280;
 	static unsigned int crooth =  768;
-	int cfgchk = 0;
-	int Monochrome  = FALSE; /* Force monochrome, for testing purpose */
-	char *InitFile = NULL;
 	/*    static unsigned int crootw = 2880; */
 	/*    static unsigned int crooth = 1200; */
-	Window capwin = (Window) 0;
 	IconRegion *ir;
 
 	XRectangle ink_rect;
@@ -248,135 +223,14 @@ int main(int argc, char **argv, char **environ)
 	Argc = argc;
 	Argv = argv;
 
-	for(i = 1; i < argc; i++) {
-		if(argv[i][0] == '-') {
-			switch(argv[i][1]) {
-				case 'd':                         /* -display dpy */
-					if(++i >= argc) {
-						goto usage;
-					}
-					display_name = argv[i];
-					continue;
-				case 's':                         /* -single */
-					MultiScreen = FALSE;
-					continue;
-				case 'f':                         /* -file twmrcfilename */
-					if(++i >= argc) {
-						goto usage;
-					}
-					InitFile = argv[i];
-					continue;
-				case 'm':                         /* -mono */
-					if(strcmp(argv[i], "-mono")) {
-						goto usage;
-					}
-					Monochrome = TRUE;
-					continue;
-				case 'v':                         /* -verbose */
-					if(!strcmp(argv[i], "-version")) {
-						(void) printf("%s\n", VersionNumber);
-						exit(0);
-					}
-					PrintErrorMessages = True;
-					continue;
-				case 'c':                         /* -cfgchk */
-					if(!strcmp(argv[i], "-cfgchk")) {
-						cfgchk      = 1;
-						continue;
-					}
-					if(++i >= argc) {
-						goto usage;        /* -clientId */
-					}
-					client_id = argv[i];
-					continue;
-				case 'r':                         /* -restore */
-					if(++i >= argc) {
-						goto usage;
-					}
-					restore_filename = argv[i];
-					continue;
-				case 'q':                         /* -quiet */
-					PrintErrorMessages = False;
-					continue;
-				case 'W':                         /* -nowelcome */
-					ShowWelcomeWindow = False;
-					continue;
-				case 'w':                         /* -window */
-					captive     = True;
-					MultiScreen = False;
-					if((i + 1) >= argc) {
-						continue;
-					}
-					if(*(argv [i + 1]) == '-') {
-						continue;
-					}
-					if(sscanf(argv [i + 1], "%x", (unsigned int *)&capwin) != 1) {
-						continue;
-					}
-					i++;
-					continue;
-#ifdef USEM4
-				case 'k':                         /* -keep m4 tmp file */
-					KeepTmpFile = True;
-					continue;
-				case 'K':                         /* -keep m4 output */
-					if(++i >= argc) {
-						goto usage;
-					}
-					keepM4_filename = argv[i];
-					continue;
-#endif
-				case 'n':                         /* -don't preprocess through m4 */
-					if(!strcmp(argv[i], "-name")) {
-						if(++i >= argc) {
-							goto usage;
-						}
-						captivename = argv[i];
-						continue;
-					}
-#ifdef USEM4
-					GoThroughM4 = False;
-					continue;
-#endif
-				case 'x':                         /* -xrm resource */
-					if(strcmp(argv[i], "-xrm")) {
-						goto usage;
-					}
-					if(++i >= argc) {
-						goto usage;
-					}
-					continue;
-				case 'i':
-					if(!strcmp(argv[i], "-info")) {
-						DisplayInfo();
-						exit(0);
-					}
-					goto usage;
-#ifdef EWMH
-				case '-':
-					if(!strcmp(argv[i], "--replace")) {
-						ewmh_replace = 1;
-					}
-					else {
-						goto usage;
-					}
-					continue;
-#endif
-			}
-		}
-usage:
-		fprintf(stderr, "usage: %s [-display dpy] [-version] [-info]", ProgramName);
-#ifdef EWMH
-		fprintf(stderr, " [--replace]");
-#endif
-		fprintf(stderr,
-		        " [-cfgchk] [-f file] [-s[ingle]] [-q] [-v[erbose]] [-W] [-w[indow] [wid]] [-n]");
-#ifdef USEM4
-		fprintf(stderr, " [-k] [-K file]");
-#endif
-		fprintf(stderr, " [-name name] [-xrm resource]\n");
-		exit(1);
-	}
+
+	/*
+	 * Parse-out command line args, and check the results.
+	 */
+	clargs_parse(argc, argv);
+	clargs_check();
+	/* If we get this far, it was all good */
+
 
 #define newhandler(sig, action) \
     if (signal (sig, SIG_IGN) != SIG_IGN) (void) signal (sig, action)
@@ -409,10 +263,10 @@ usage:
 	XtToolkitInitialize();
 	appContext = XtCreateApplicationContext();
 
-	if(!(dpy = XtOpenDisplay(appContext, display_name, "twm", "twm",
+	if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
 	                         NULL, 0, &zero, NULL))) {
 		fprintf(stderr, "%s:  unable to open display \"%s\"\n",
-		        ProgramName, XDisplayName(display_name));
+		        ProgramName, XDisplayName(CLarg.display_name));
 		exit(1);
 	}
 
@@ -422,8 +276,8 @@ usage:
 		        ProgramName);
 		exit(1);
 	}
-	if(restore_filename) {
-		ReadWinConfigFile(restore_filename);
+	if(CLarg.restore_filename) {
+		ReadWinConfigFile(CLarg.restore_filename);
 	}
 	HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 	TwmContext = XUniqueContext();
@@ -438,7 +292,7 @@ usage:
 
 	NumScreens = ScreenCount(dpy);
 
-	if(MultiScreen) {
+	if(CLarg.MultiScreen) {
 		firstscrn = 0;
 		lastscrn = NumScreens - 1;
 	}
@@ -464,14 +318,15 @@ usage:
 
 	for(scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		unsigned long attrmask;
-		if(captive) {
+		if(CLarg.is_captive) {
 			XWindowAttributes wa;
-			if(capwin && XGetWindowAttributes(dpy, capwin, &wa)) {
+			if(CLarg.capwin && XGetWindowAttributes(dpy, CLarg.capwin, &wa)) {
 				Window junk;
-				croot  = capwin;
+				croot  = CLarg.capwin;
 				crootw = wa.width;
 				crooth = wa.height;
-				XTranslateCoordinates(dpy, capwin, wa.root, 0, 0, &crootx, &crooty, &junk);
+				XTranslateCoordinates(dpy, CLarg.capwin, wa.root, 0, 0, &crootx, &crooty,
+				                      &junk);
 			}
 			else {
 				croot = CreateRootWindow(crootx, crooty, crootw, crooth);
@@ -514,17 +369,17 @@ usage:
 #ifdef EWMH
 		attrmask |= StructureNotifyMask;
 #endif /* EWMH */
-		if(captive) {
+		if(CLarg.is_captive) {
 			attrmask |= StructureNotifyMask;
 		}
 		XSelectInput(dpy, croot, attrmask);
 		XSync(dpy, 0);
 		XSetErrorHandler(TwmErrorHandler);
 
-		if(RedirectError && cfgchk == 0) {
+		if(RedirectError && CLarg.cfgchk == 0) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
-			if(MultiScreen && NumScreens > 0) {
+			if(CLarg.MultiScreen && NumScreens > 0) {
 				fprintf(stderr, " on screen %d?\n", scrnum);
 			}
 			else {
@@ -598,20 +453,20 @@ usage:
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
 		Scr->RealRoot = RootWindow(dpy, scrnum);
-		Scr->CaptiveRoot = captive ? croot : None;
+		Scr->CaptiveRoot = CLarg.is_captive ? croot : None;
 		Scr->Root = croot;
 		Scr->XineramaRoot = croot;
+		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
+
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
-		if(captive) {
-			AddToCaptiveList();
-			if(captivename) {
-				XSetStandardProperties(dpy, croot, captivename, captivename, None, NULL, 0,
+		if(CLarg.is_captive) {
+			Scr->captivename = AddToCaptiveList(CLarg.captivename);
+			if(Scr->captivename) {
+				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None,
+				                       NULL, 0,
 				                       NULL);
 			}
-		}
-		else {
-			captivename = "Root";
 		}
 		Scr->RootColormaps.number_cwins = 1;
 		Scr->RootColormaps.cwins = (ColormapWindow **) malloc(sizeof(ColormapWindow *));
@@ -650,7 +505,7 @@ usage:
 
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 
-		if(Monochrome || DisplayCells(dpy, scrnum) < 3) {
+		if(CLarg.Monochrome || DisplayCells(dpy, scrnum) < 3) {
 			Scr->Monochrome = MONOCHROME;
 		}
 		else {
@@ -697,7 +552,8 @@ usage:
 
 		Scr->WindowMask = (Window) 0;
 		screenmasked = 0;
-		if(ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
+		/* XXX Happens before config parse, so ignores DontShowWW param */
+		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = 1;
 			MaskScreen(welcomefile);
 		}
@@ -706,8 +562,8 @@ usage:
 		InitWorkSpaceManager();
 
 		/* Parse it once for each screen. */
-		if(cfgchk) {
-			if(ParseTwmrc(InitFile) == 0) {
+		if(CLarg.cfgchk) {
+			if(ParseTwmrc(CLarg.InitFile) == 0) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
 				exit(1);
@@ -718,7 +574,7 @@ usage:
 			}
 		}
 		else {
-			ParseTwmrc(InitFile);
+			ParseTwmrc(CLarg.InitFile);
 		}
 
 		InitVirtualScreens(Scr);
@@ -727,7 +583,7 @@ usage:
 #endif /* EWMH */
 		ConfigureWorkSpaceManager();
 
-		if(ShowWelcomeWindow && ! screenmasked) {
+		if(Scr->ShowWelcomeWindow && ! screenmasked) {
 			MaskScreen(NULL);
 		}
 		if(Scr->ClickToFocus) {
@@ -948,7 +804,7 @@ usage:
 		                                       Scr->rootw, Scr->rooth, 0, 0, 0);
 
 		XUngrabServer(dpy);
-		if(ShowWelcomeWindow) {
+		if(Scr->ShowWelcomeWindow) {
 			UnmaskScreen();
 		}
 
@@ -957,12 +813,12 @@ usage:
 	} /* for */
 
 	if(numManaged == 0) {
-		if(MultiScreen && NumScreens > 0)
+		if(CLarg.MultiScreen && NumScreens > 0)
 			fprintf(stderr, "%s:  unable to find any unmanaged screens\n",
 			        ProgramName);
 		exit(1);
 	}
-	(void) ConnectToSessionManager(client_id);
+	(void) ConnectToSessionManager(CLarg.client_id);
 #ifdef SOUNDS
 	play_startup_sound();
 #endif
@@ -975,6 +831,7 @@ usage:
 	fprintf(stderr, "Shouldn't return from HandleEvents()!\n");
 	exit(1);
 }
+
 
 /***********************************************************************
  *
@@ -1048,6 +905,7 @@ static void InitVariables(void)
 	Scr->workSpaceManagerActive = FALSE;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
+	Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
 #define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
 	SETFB(DefaultC)
@@ -1361,8 +1219,8 @@ SIGNAL_T Done(int signum)
 	EwmhTerminate();
 #endif /* EWMH */
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
-	if(captive) {
-		RemoveFromCaptiveList();
+	if(CLarg.is_captive) {
+		RemoveFromCaptiveList(Scr->captivename);
 	}
 	XCloseDisplay(dpy);
 	exit(0);
@@ -1372,8 +1230,8 @@ SIGNAL_T Crash(int signum)
 {
 	Reborder(CurrentTime);
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
-	if(captive) {
-		RemoveFromCaptiveList();
+	if(CLarg.is_captive) {
+		RemoveFromCaptiveList(Scr->captivename);
 	}
 	XCloseDisplay(dpy);
 
@@ -1445,7 +1303,7 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event)
 	LastErrorEvent = *event;
 	ErrorOccurred = True;
 
-	if(PrintErrorMessages &&                    /* don't be too obnoxious */
+	if(CLarg.PrintErrorMessages &&                 /* don't be too obnoxious */
 	                event->error_code != BadWindow &&       /* watch for dead puppies */
 	                (event->request_code != X_GetGeometry &&         /* of all styles */
 	                 event->error_code != BadDrawable)) {
@@ -1506,27 +1364,3 @@ static Window CreateRootWindow(int x, int y,
 	XMapWindow(dpy, ret);
 	return (ret);
 }
-
-static void DisplayInfo(void)
-{
-	(void) printf("Twm version:  %s\n", Version);
-	(void) printf("Compile time options :");
-#ifdef XPM
-	(void) printf(" XPM");
-#endif
-#ifdef USEM4
-	(void) printf(" USEM4");
-#endif
-#ifdef SOUNDS
-	(void) printf(" SOUNDS");
-#endif
-#ifdef GNOME
-	(void) printf(" GNOME");
-#endif
-#ifdef EWMH
-	(void) printf(" EWMH");
-#endif
-	(void) printf(" I18N");
-	(void) printf("\n");
-}
-

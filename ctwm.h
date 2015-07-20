@@ -496,7 +496,6 @@ void CreateFonts(void);
 void RestoreWithdrawnLocation(TwmWindow *tmp);
 extern char *ProgramName;
 extern Display *dpy;
-extern char *display_name;
 extern XtAppContext appContext;
 extern Window ResizeWindow;     /* the window we are resizing */
 extern int HasShape;            /* this server supports Shape extension */
@@ -535,10 +534,6 @@ extern char Info[][INFO_SIZE];
 extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;
-extern char *captivename;
-#ifdef EWMH
-extern int ewmh_replace;
-#endif /* EWMH */
 
 extern Bool RestartPreviousState;
 extern Bool GetWMState(Window w, int *statep, Window *iwp);
@@ -548,12 +543,40 @@ extern void DoRestart(Time t);  /* Function to perform a restart */
 
 extern Atom XA_WM_WORKSPACESLIST;
 
+#define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
+
+
+/*
+ * Command-line arg handling bits
+ */
+typedef struct _ctwm_cl_args {
+	int    MultiScreen;        // ! --single, grab multiple screens
+	int    Monochrome;         // --mono, force monochrome
+	int    cfgchk;             // --cfgchk, check config and exit
+	char  *InitFile;           // --file, config filename
+	char  *display_name;       // --display, X server display
+
+	Bool   PrintErrorMessages; // --verbose, show more debug output
+	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
+
+	int    is_captive;         // --window (flag), running captive
+	Window capwin;             // --window (arg), existing window to capture
+	char  *captivename;        // --name, captive name
+
 #ifdef USEM4
-extern int KeepTmpFile;                 /* JMO 3/28/90 for m4 */
-extern char *keepM4_filename;           /* Keep M4 output here */
-extern int GoThroughM4;
+	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
+	char  *keepM4_filename;    // --keep, keep m4 post-processed output
+	int    GoThroughM4;        // ! --nom4, do m4 processing
 #endif
 
-#define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
+#ifdef EWMH
+	int    ewmh_replace;       // --replace, replacing running WM
+#endif
+
+	char  *client_id;          // --clientId, session client id
+	char  *restore_filename;   // --restore, session filename
+} ctwm_cl_args;
+extern ctwm_cl_args CLarg;
+
 
 #endif /* _CTWM_H */
