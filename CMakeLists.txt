@@ -578,3 +578,8 @@ if(INSTHTML)
 		DESTINATION ${DOCDIR}
 	)
 endif(INSTHTML)
+if(USE_SOUND)
+	install(FILES sound.txt
+		DESTINATION ${DOCDIR}
+	)
+endif(USE_SOUND)
