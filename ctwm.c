@@ -73,7 +73,6 @@
 #  define _BSD_SIGNALS
 #endif
 
-#include <getopt.h>
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
