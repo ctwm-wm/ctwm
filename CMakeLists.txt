@@ -355,32 +355,27 @@ endif(ASCIIDOC AND A2X)
 set(TWMDIR ${X11_LIBRARY_DIR}/X11/twm)
 set(CONFDIR ${TWMDIR})
 
+
 # Where should we stick manpages?
-if(MANBASE)
-	# Assume the user knows what they're doing
-else()
+# User can set MANBASE to override, if they don't, check a few likely
+# places...
+if(NOT MANBASE)
 	find_file(MANBASE man
 		PATHS
 			"${CMAKE_INSTALL_PREFIX}/share"
 			"${CMAKE_INSTALL_PREFIX}"
 		NO_DEFAULT_PATH)
-endif(MANBASE)
+endif(NOT MANBASE)
 
-if(MANBASE)
-	set(MAN1PATH "${MANBASE}/man1")
-	message(STATUS "Installing manpage to ${MAN1PATH}")
-else()
-	# Wacky dance to make sure it's a string rather than a list, or else
-	# some later uses of it (see faked install() below) wind up with
-	# embedded semicolons.  Only way to define it as a plain string with
-	# set() would be as a single crazy long line, so we do a string
-	# replace instead.
-	string(REPLACE ";" " " manbase_err
-			"Can't figure out where to install manpage: "
-			"try setting MANBASE to something appropriate for your system "
-			"(e.g., /usr/share/man).")
-	message(WARNING ${manbase_err})
-endif(MANBASE)
+# If we can't find something, hardcode a guess and yell about it
+if(NOT MANBASE)
+	set(MANBASE "${CMAKE_INSTALL_PREFIX}/man")
+	message(WARNING "Can't find install base for manpages, "
+			"assuming ${MANBASE}")
+endif(NOT MANBASE)
+
+set(MAN1PATH "${MANBASE}/man1")
+message(STATUS "Installing manpage to ${MAN1PATH}")
 
 
 
@@ -487,20 +482,6 @@ endif(CAN_DO_MAN AND NOT NOMANCOMPRESS)
 # And the install process
 #
 
-# Cram a warning in about the MANBASE if we couldn't find it.  This is a
-# particularly grody way of doing things, but we can't just add it as a
-# standard target that install depends on (see
-# http://public.kitware.com/Bug/view.php?id=8438).  We rely on the fact
-# that install() is defined to run in order, but that only happens when
-# everything is in a single directory.  This will break if/when we start
-# splitting things up...
-if(NOT CAN_DO_MAN)
-	install(CODE "message(FATAL_ERROR \"Failed to build manpage; see earlier errors.\")")
-endif(NOT CAN_DO_MAN)
-if(NOT MANBASE)
-	install(CODE "message(FATAL_ERROR \"${manbase_err}\")")
-endif(NOT MANBASE)
-
 # Installing everything
 install(TARGETS ctwm
 	DESTINATION bin
@@ -514,8 +495,11 @@ endif(USE_XPM)
 install(FILES system.ctwmrc
 	DESTINATION ${CONFDIR}
 )
-if(MANBASE)
+if(NOT CAN_DO_MAN)
+	message(WARNING "No manpage to install: recheck config if "
+			"this is unexpected.")
+else()
 	install(FILES ${INSTMAN}
 		DESTINATION ${MAN1PATH}
 	)
-endif(MANBASE)
+endif(NOT CAN_DO_MAN)
