@@ -132,7 +132,8 @@ USE_SOUND
 Additional vars you might need to set:
 
 M4_CMD
-:       Name of m4 program, if it's not `m4` or `gm4`.
+:       Name of m4 program, if it's not `m4` or `gm4`, or full path to it
+        if it's not in your `$PATH`.
 
 
 ## Building
