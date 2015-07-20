@@ -334,6 +334,10 @@ if(ASCIIDOC AND A2X)
 		COMMAND cp ${MANPAGE_TMP} ${MANPAGE}
 		COMMENT "Processing ${ADOC_TMPSRC} -> ${MANPAGE}"
 	)
+
+	# Should do HTML at some point, but asciidoc is so slow (~5 secs) I'm
+	# not bothering.  When we switch to asciidoctor (~.2 secs), I'll
+	# revisit.
 else()
 	# See if we have prebuilt
 	find_file(MAN_PRESRC ctwm.1
