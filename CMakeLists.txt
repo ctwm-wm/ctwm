@@ -304,7 +304,7 @@ endif(BISON_FOUND)
 
 # Find asciidoc stuff to build manual, if we can.  Else, use the ones
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
-set(MANPAGE_ADSRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
+set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
 set(CAN_DO_MAN 0)
 find_program(ASCIIDOC asciidoc)
@@ -317,16 +317,22 @@ if(ASCIIDOC AND A2X)
 	# control whatsoever over where the output file goes or what it's
 	# named.  Thanks, guys.
 	message(STATUS "Found asciidoc (${A2X}) for building manpage")
+
+	# Setup a temp dir under the build for our processing
 	set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
 	file(MAKE_DIRECTORY ${MANPAGE_TMPDIR})
-	set(MANPAGE_TMPIN ${MANPAGE_TMPDIR}/ctwm.1)
-	set(MANPAGE_IN ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.in)
-	add_custom_command(OUTPUT ${MANPAGE}.in
-		DEPENDS ${MANPAGE_ADSRC}
-		COMMAND cp ${MANPAGE_ADSRC} ${MANPAGE_TMPIN}.adoc
-		COMMAND ${A2X} --doctype manpage --format manpage ${MANPAGE_TMPIN}.adoc
-		COMMAND cp ${MANPAGE_TMPIN} ${MANPAGE_IN}
-		COMMENT "Processing ${MANPAGE_ADSRC} -> ${MANPAGE}.in"
+
+	# We hop through a temporary file to process in definitions for e.g.
+	# $ETCDIR.  Can't do that here though since the directories aren't
+	# defined yet, so we write that target lower down.
+	set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
+
+	set(MANPAGE_TMP ${MANPAGE_TMPDIR}/ctwm.1)
+	add_custom_command(OUTPUT ${MANPAGE}
+		DEPENDS ${ADOC_TMPSRC}
+		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
+		COMMAND cp ${MANPAGE_TMP} ${MANPAGE}
+		COMMENT "Processing ${ADOC_TMPSRC} -> ${MANPAGE}"
 	)
 else()
 	# See if we have prebuilt
@@ -480,14 +486,11 @@ target_link_libraries(forward ${X11_LIBRARIES})
 
 # Rewrite some build options into manpage
 if(CAN_DO_MAN)
-	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${MANPAGE}.in
-		COMMAND sed -e "s,\@ETCDIR@,${ETCDIR}," < ${MANPAGE}.in > ${MANPAGE}
-		COMMENT "Processing ${MANPAGE}.in -> ${MANPAGE}"
+	add_custom_command(OUTPUT ${ADOC_TMPSRC}
+		DEPENDS ${ADOC_SRC}
+		COMMAND sed -e "s,\@ETCDIR@,${ETCDIR}," < ${ADOC_SRC} > ${ADOC_TMPSRC}
+		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
 	)
-else()
-	# Fake to get us through the build process
-	file(WRITE ${MANPAGE} "Can't build manpage.")
 endif(CAN_DO_MAN)
 
 # Compress manpage (conditionally).  We could add more magic to allow
