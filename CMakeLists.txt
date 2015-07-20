@@ -306,10 +306,13 @@ endif(BISON_FOUND)
 # we'll pre-build for the tarball.  Else, uh, we're in trouble...
 set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
+set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
 set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
 set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
 set(HAS_MAN 0)
+set(HAS_HTML 0)
 set(CAN_BUILD_MAN 0)
+
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
 if(ASCIIDOC AND A2X)
@@ -352,6 +355,15 @@ else()
 	else()
 		message(WARNING "Can't find asciidoc/a2x, and no prebuilt manpage available.")
 	endif(MAN_PRESRC)
+
+	# Install prebuilt HTML if we have it generated too.
+	find_file(HTML_PRESRC ctwm.1.html
+		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
+		NO_DEFAULT_PATH)
+	if(HTML_PRESRC)
+		set(HAS_HTML 1)
+		message(STATUS "Installing prebuilt HTML manual.")
+	endif(HTML_PRESRC)
 endif(ASCIIDOC AND A2X)
 
 
@@ -485,8 +497,9 @@ endif(DO_CLIENT)
 add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
-# Rewrite some build options into docs (or prebuilt manpage, if we're not
-# generating them ourselves)
+# Rewrite some build options into docs, either into the adoc source
+# before processing, or into prebuilt versions if we can't generate them
+# ourselves.
 set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
 if(CAN_BUILD_MAN)
 	add_custom_command(OUTPUT ${ADOC_TMPSRC}
@@ -502,6 +515,13 @@ if(MAN_PRESRC)
 		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
 	)
 endif(MAN_PRESRC)
+if(HTML_PRESRC)
+	add_custom_command(OUTPUT ${MANHTML}
+		DEPENDS ${HTML_PRESRC}
+		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
+		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
+	)
+endif(HTML_PRESRC)
 
 # Compress manpage (conditionally).  We could add more magic to allow
 # different automatic compression, but that's probably way more involved
@@ -521,6 +541,11 @@ elseif(HAS_MAN)
 	add_custom_target(man ALL DEPENDS ${MANPAGE})
 	set(INSTMAN ${MANPAGE})
 endif(HAS_MAN AND NOT NOMANCOMPRESS)
+
+if(HAS_HTML)
+	add_custom_target(man-html ALL DEPENDS ${MANHTML})
+	set(INSTHTML ${MANHTML})
+endif(HAS_HTML)
 
 
 #
@@ -548,3 +573,8 @@ else()
 		DESTINATION ${MAN1PATH}
 	)
 endif(NOT HAS_MAN)
+if(INSTHTML)
+	install(FILES ${INSTHTML}
+		DESTINATION ${DOCDIR}
+	)
+endif(INSTHTML)
