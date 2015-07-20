@@ -356,28 +356,6 @@ endif(ASCIIDOC AND A2X)
 
 
 #
-# Now other build flags and the like
-#
-
-# Standard defs
-set(STD_WARNS
-	-Wall
-	-Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wundef
-	-Wredundant-decls -Wcast-align -Wcast-qual -Wchar-subscripts
-	-Winline -Wnested-externs -Wmissing-declarations
-)
-if(NOT NO_WARNS)
-	add_definitions(${STD_WARNS})
-endif(NOT NO_WARNS)
-
-
-# Include source and generated files
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-
-
-#
 # Figure out install paths for stuff
 #
 
@@ -407,6 +385,28 @@ else()
 			"(e.g., /usr/share/man).")
 	message(WARNING ${manbase_err})
 endif(MANBASE)
+
+
+
+#
+# Now other build flags and the like
+#
+
+# Standard defs
+set(STD_WARNS
+	-Wall
+	-Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wundef
+	-Wredundant-decls -Wcast-align -Wcast-qual -Wchar-subscripts
+	-Winline -Wnested-externs -Wmissing-declarations
+)
+if(NOT NO_WARNS)
+	add_definitions(${STD_WARNS})
+endif(NOT NO_WARNS)
+
+
+# Include source and generated files
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 
