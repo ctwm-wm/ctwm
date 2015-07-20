@@ -357,16 +357,24 @@ endif(ASCIIDOC AND A2X)
 # just assume it is.
 
 # Where ctwm looks for fallback config files
-set(ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
+if(NOT ETCDIR)
+	set(ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
+endif(NOT ETCDIR)
 
 # Where runtime data stuff (e.g., images) is found
-set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
+if(NOT DATADIR)
+	set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
+endif(NOT DATADIR)
 
 # Where we install non-manpage docs to
-set(DOCDIR ${CMAKE_INSTALL_PREFIX}/share/doc/ctwm)
+if(NOT DOCDIR)
+	set(DOCDIR ${CMAKE_INSTALL_PREFIX}/share/doc/ctwm)
+endif(NOT DOCDIR)
 
 # Where we put example configs etc.
-set(EXAMPLEDIR ${CMAKE_INSTALL_PREFIX}/share/examples/ctwm)
+if(NOT EXAMPLEDIR)
+	set(EXAMPLEDIR ${CMAKE_INSTALL_PREFIX}/share/examples/ctwm)
+endif(NOT EXAMPLEDIR)
 
 
 # Where should we stick manpages?
