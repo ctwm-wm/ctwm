@@ -47,14 +47,15 @@ ${GEN}:
 _RELEASE_FILES=gram.tab.c gram.tab.h lex.c
 RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
-# The config grammar
-YACC?=/usr/bin/yacc
-YFLAGS=-d -b ${GEN}/gram
-
+# Build those, the .html versions of the above docs, and the HTML/man
+# versions of the manual
 release_files: ${RELEASE_FILES} ${DOC_FILES} adocs
 release_clean: doc_clean adoc_clean
 	rm -rf ${GEN}
 
+# The config grammar
+YACC?=/usr/bin/yacc
+YFLAGS=-d -b ${GEN}/gram
 ${GEN}/gram.tab.c: ${GEN}/gram.tab.h
 ${GEN}/gram.tab.h: ${GEN} gram.y
 	${YACC} ${YFLAGS} gram.y
