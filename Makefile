@@ -44,7 +44,7 @@ ${GEN}:
 	mkdir -p ${GEN}
 
 # All the generated source files
-_RELEASE_FILES=gram.tab.c gram.tab.h lex.c deftwmrc.c
+_RELEASE_FILES=gram.tab.c gram.tab.h lex.c
 RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
 # The config grammar
@@ -63,6 +63,3 @@ LEX?=/usr/bin/flex
 LFLAGS=-o ${GEN}/lex.c
 ${GEN}/lex.c: ${GEN} lex.l
 	${LEX} ${LFLAGS} lex.l
-
-${GEN}/deftwmrc.c: system.ctwmrc
-	tools/mk_deftwmrc.sh system.ctwmrc > ${GEN}/deftwmrc.c
