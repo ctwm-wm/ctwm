@@ -7,7 +7,7 @@
 
 The old `imake` build system has been replaced by a new structure using
 `cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
-build ctwm.  See the `README` file for how to run it.
+build ctwm.  See the `README.md` file for how to run it.
 
 ### Platform Support
 
