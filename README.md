@@ -36,8 +36,8 @@ If you find bugs in ctwm, or just want to tell us how much you like it,
 please send a report to the mailing list.
 
 There is a manual page, which always needs more work (any volunteers?).
-Many useful information bits are only in the CHANGES file, so please read
-it.
+Many useful information bits are only in the CHANGES.md file, so please
+read it.
 
 
 ## Configuration

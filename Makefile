@@ -16,17 +16,15 @@ indent:
 
 
 # Build documentation files
-DOC_FILES=README.html CHANGES.html STYLE.html
+# STYLE is also HTMLable, but there's no reason to do it by default
+DOC_FILES=README.html CHANGES.html
 docs: ${DOC_FILES}
 docs_clean doc_clean:
 	rm -f ${DOC_FILES}
 
-README.html: README
-	multimarkdown -ao README.html README
-CHANGES.html: CHANGES
-	multimarkdown -ao CHANGES.html CHANGES
-STYLE.html: STYLE
-	multimarkdown -ao STYLE.html STYLE
+.SUFFIXES: ${.SUFFIXES} .html .md
+.md.html:
+	multimarkdown -ao ${@} ${<}
 
 
 # asciidoc files
