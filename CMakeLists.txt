@@ -210,26 +210,7 @@ endif(USE_SREGEX)
 #
 
 # flex should be everywhere
-find_package(FLEX)
-if(FLEX_FOUND)
-	FLEX_TARGET(ctwm_lexer lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.c)
-else()
-	# See if we have a pre-built one
-	find_file(LEX_C lex.c
-		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen
-		NO_DEFAULT_PATH)
-	if(LEX_C)
-		# Make the build process just copy it in
-		message(STATUS "No flex found, using prebuilt lex.c")
-		add_custom_command(OUTPUT lex.c
-			DEPENDS ${LEX_C}
-			COMMAND cp ${LEX_C} .
-		)
-	else()
-		# No flex, no pre-built lex.c
-		message(FATAL_ERROR "Can't find flex.")
-	endif(LEX_C)
-endif(FLEX_FOUND)
+include(setup_lex)
 
 
 # This only finds bison, not yacc.  There doesn't seem to be a standard
