@@ -2782,7 +2782,7 @@ the corresponding entry will be the default entry for this menu. When a menu
 has a default entry and is used as a submenu of another menu, this default entry
 action will be executed automatically when this submenu is selected without being
 displayed. It's hard to explain, but easy to understand.
-.RE
+
 
 == ICONS
 ctwm supports several different ways of manipulating iconified windows.
