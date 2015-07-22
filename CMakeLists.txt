@@ -71,7 +71,7 @@ include(compiler_feature_checks)
 
 
 #
-# First find various libs/includes/etc we need, if enabled.
+# Next, find various libs/includes/etc we need, if enabled.
 #
 
 # First things first.  If we don't have X, we're going nowhere.
