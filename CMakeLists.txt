@@ -241,7 +241,7 @@ if(FLEX_FOUND)
 else()
 	# See if we have a pre-built one
 	find_file(LEX_C lex.c
-		PATHS ${CMAKE_CURRENT_SOURCE_DIR}
+		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen
 		NO_DEFAULT_PATH)
 	if(LEX_C)
 		# Make the build process just copy it in
@@ -281,9 +281,9 @@ else()
 	else()
 		# No bison, no yacc.  Maybe there are prebuilt files?
 		find_file(GRAM_C gram.tab.c
-			PATHS ${CMAKE_CURRENT_SOURCE_DIR} NO_DEFAULT_PATH)
+			PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen NO_DEFAULT_PATH)
 		find_file(GRAM_H gram.tab.h
-			PATHS ${CMAKE_CURRENT_SOURCE_DIR} NO_DEFAULT_PATH)
+			PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen NO_DEFAULT_PATH)
 		if(GRAM_C AND GRAM_H)
 			# Got prebuilt ones, use 'em
 			message(STATUS "No yacc found, using prebuilt gram.tab.*")
@@ -295,6 +295,8 @@ else()
 				DEPENDS ${GRAM_C}
 				COMMAND cp ${GRAM_C} .
 			)
+			# Also need to explicitly tell cmake
+			set_source_files_properties(gram.tab.c OBJECT_DEPENDS gram.tab.h)
 		else()
 			# No bison, no yacc, no prebuilt.  Boom.
 			message(FATAL_ERROR "Can't find yacc.")

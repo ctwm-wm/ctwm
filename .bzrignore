@@ -1,7 +1,4 @@
-ctwm
-deftwmrc.c
-gram.tab.[ch]
-lex.c
+gen/
 *.tar*
 build/*
 *.html
