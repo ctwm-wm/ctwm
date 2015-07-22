@@ -16,7 +16,8 @@ indent:
 
 
 # Build documentation files
-DOC_FILES=README.html CHANGES.html STYLE.html
+# STYLE is also HTMLable, but there's no reason to do it by default
+DOC_FILES=README.html CHANGES.html
 docs: ${DOC_FILES}
 docs_clean doc_clean:
 	rm -f ${DOC_FILES}
