@@ -33,9 +33,9 @@ else()
 	else()
 		# No bison, no yacc.  Maybe there are prebuilt files?
 		find_file(GRAM_C gram.tab.c
-			PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen NO_DEFAULT_PATH)
+			PATHS ${GENSRCDIR} NO_DEFAULT_PATH)
 		find_file(GRAM_H gram.tab.h
-			PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen NO_DEFAULT_PATH)
+			PATHS ${GENSRCDIR} NO_DEFAULT_PATH)
 		if(GRAM_C AND GRAM_H)
 			# Got prebuilt ones, use 'em
 			message(STATUS "No yacc found, using prebuilt gram.tab.*")

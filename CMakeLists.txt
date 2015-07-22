@@ -9,6 +9,9 @@ include(CheckSymbolExists)
 # Break out a bunch of bits into our own include dir
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 
+# Set a few predef'd vars for our use
+include(ctwm_cmake_vars)
+
 
 # Our base set of sources
 set(CTWMSRC

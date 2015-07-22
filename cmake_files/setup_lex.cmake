@@ -16,7 +16,7 @@ if(FLEX_FOUND)
 else()
 	# See if we have a pre-built lex.c
 	find_file(LEX_C lex.c
-		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/gen
+		PATHS ${GENSRCDIR}
 		NO_DEFAULT_PATH)
 	if(LEX_C)
 		# Make the build process just copy it in
