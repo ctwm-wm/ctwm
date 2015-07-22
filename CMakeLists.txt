@@ -581,7 +581,7 @@ install(TARGETS ctwm
 install(FILES system.ctwmrc
 	DESTINATION ${EXAMPLEDIR}
 )
-install(FILES README CHANGES
+install(FILES README.md CHANGES.md
 	DESTINATION ${DOCDIR}
 )
 
