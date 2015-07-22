@@ -209,11 +209,11 @@ endif(USE_SREGEX)
 # Next find some build tools
 #
 
-# flex should be everywhere
+# Do whatever we need to do to get lex.c ready
 include(setup_lex)
 
 
-# And yacc
+# And similar for gram.tab.[ch]
 include(setup_yacc)
 
 
