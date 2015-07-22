@@ -21,12 +21,12 @@ docs: ${DOC_FILES}
 docs_clean doc_clean:
 	rm -f ${DOC_FILES}
 
-README.html: README
-	multimarkdown -ao README.html README
-CHANGES.html: CHANGES
-	multimarkdown -ao CHANGES.html CHANGES
-STYLE.html: STYLE
-	multimarkdown -ao STYLE.html STYLE
+README.html: README.md
+	multimarkdown -ao README.html README.md
+CHANGES.html: CHANGES.md
+	multimarkdown -ao CHANGES.html CHANGES.md
+STYLE.html: STYLE.md
+	multimarkdown -ao STYLE.html STYLE.md
 
 
 # asciidoc files
