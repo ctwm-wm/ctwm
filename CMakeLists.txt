@@ -226,6 +226,8 @@ if(USE_SREGEX)
 	endif(NOT HAS_REGEXEC)
 
 	message(STATUS "Enabling libc regex usage.")
+else()
+	message(FATAL_ERROR "USE_SREGEX=OFF no longer supported.")
 endif(USE_SREGEX)
 
 

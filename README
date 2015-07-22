@@ -117,12 +117,6 @@ USE_GNOME
         doesn't require any GNOME libraries or includes.
         (**OFF** by default, unless EWMH is disabled)
 
-USE_SREGEX
-:       Build with regex support from libc.  Otherwise, use an internal
-        implementation.  You may need to disable this if your libc has no
-        `regexec()` etc functions.
-        (**ON** by default)
-
 USE_SOUND
 :       Build with sound support via librplay.
         (**OFF** by default)
