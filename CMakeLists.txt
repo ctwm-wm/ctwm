@@ -13,38 +13,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 include(ctwm_cmake_vars)
 
 
-# Our base set of sources
-set(CTWMSRC
-	add_window.c
-	clargs.c
-	clicktofocus.c
-	ctwm.c
-	ctwm_atoms.c
-	cursor.c
-	events.c
-	gc.c
-	gram.tab.c
-	iconmgr.c
-	icons.c
-	lex.c
-	list.c
-	menus.c
-	mwmhints.c
-	otp.c
-	parse.c
-	resize.c
-	session.c
-	util.c
-	version.c
-	vscreen.c
-	windowbox.c
-	workmgr.c
-)
-
-# Libs to link in (init empty list)
-set(CTWMLIBS)
-
-
 # Guard against in-tree builds
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" insrc)
 if(insrc)
