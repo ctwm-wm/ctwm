@@ -12,6 +12,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 # Set a few predef'd vars for our use
 include(ctwm_cmake_vars)
 
+# Setup paths for where we install stuff
+include(install_paths)
+
 
 # Guard against in-tree builds
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" insrc)
@@ -102,13 +105,6 @@ endif(NOT HAS_GETOPT_H)
 if(NOT HAS_GETOPT_LONG)
 	message(FATAL_ERROR "You don't seem to have getopt_long().")
 endif(NOT HAS_GETOPT_LONG)
-
-
-
-#
-# Figure out install paths for stuff
-#
-include(install_paths)
 
 
 
