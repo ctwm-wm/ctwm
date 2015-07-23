@@ -37,3 +37,12 @@ set(CTWMSRC
 
 # Libs to link in (init empty list)
 set(CTWMLIBS)
+
+
+# Our normal set of warning flags
+set(STD_WARNS
+	-Wall
+	-Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wundef
+	-Wredundant-decls -Wcast-align -Wcast-qual -Wchar-subscripts
+	-Winline -Wnested-externs -Wmissing-declarations
+)

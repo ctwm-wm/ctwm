@@ -104,19 +104,14 @@ include(check_funcs_etc)
 # Now other build flags and the like
 #
 
-# Standard defs
-set(STD_WARNS
-	-Wall
-	-Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wundef
-	-Wredundant-decls -Wcast-align -Wcast-qual -Wchar-subscripts
-	-Winline -Wnested-externs -Wmissing-declarations
-)
+# Enable warnings by default
 if(NOT NO_WARNS)
 	add_definitions(${STD_WARNS})
+	message(STATUS "Enabling standard warnings.")
 endif(NOT NO_WARNS)
 
 
-# Include source and generated files
+# Header files are in both source and build dirs
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
