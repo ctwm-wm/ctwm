@@ -68,7 +68,7 @@ if(ASCIIDOC AND A2X)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${ADOC_TMPSRC}
 		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
-		COMMAND cp ${MANPAGE_TMP} ${MANPAGE}
+		COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
 		COMMENT "Processing ${ADOC_TMPSRC} -> ${MANPAGE}"
 	)
 
