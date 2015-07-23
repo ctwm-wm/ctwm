@@ -29,7 +29,17 @@ configure_file(ctwm_config.h.in ctwm_config.h ESCAPE_QUOTES)
 # Fill in version info
 set(version_c_in ${CMAKE_CURRENT_SOURCE_DIR}/version.c.in)
 set(version_c    ${CMAKE_CURRENT_BINARY_DIR}/version.c)
-add_custom_command(OUTPUT ${version_c}
-	DEPENDS ${version_c_in}
-	COMMAND sed -e 's/%%REVISION%%/NULL/' < ${version_c_in} > ${version_c}
-)
+
+# If we've got a bzr checkout we can figure the revid from, fill it in.
+# Else just copy.
+if(HAS_BZR)
+	add_custom_command(OUTPUT ${version_c}
+		DEPENDS ${version_c_in} ${BZR_DIRSTATE_FILE}
+		COMMAND ${CMAKE_SOURCE_DIR}/tools/rewrite_version_bzr.sh < ${version_c_in} > ${version_c}
+	)
+else()
+	add_custom_command(OUTPUT ${version_c}
+		DEPENDS ${version_c_in}
+		COMMAND sed -e 's/%%REVISION%%/NULL/' < ${version_c_in} > ${version_c}
+	)
+endif(HAS_BZR)
