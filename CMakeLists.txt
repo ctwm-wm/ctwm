@@ -141,55 +141,6 @@ endif(DO_CLIENT)
 add_executable(forward forward.c)
 target_link_libraries(forward ${X11_LIBRARIES})
 
-# Rewrite some build options into docs, either into the adoc source
-# before processing, or into prebuilt versions if we can't generate them
-# ourselves.
-set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
-if(CAN_BUILD_MAN)
-	add_custom_command(OUTPUT ${ADOC_TMPSRC}
-		DEPENDS ${ADOC_SRC}
-		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
-		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
-	)
-endif(CAN_BUILD_MAN)
-if(MAN_PRESRC)
-	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${MAN_PRESRC}
-		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
-		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
-	)
-endif(MAN_PRESRC)
-if(HTML_PRESRC)
-	add_custom_command(OUTPUT ${MANHTML}
-		DEPENDS ${HTML_PRESRC}
-		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
-		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
-	)
-endif(HTML_PRESRC)
-
-# Compress manpage (conditionally).  We could add more magic to allow
-# different automatic compression, but that's probably way more involved
-# than we need to bother with.  Most systems use gzip, and for the few
-# that don't, the packagers can use NOMANCOMPRESS and handle it out of
-# band.
-if(HAS_MAN AND NOT NOMANCOMPRESS)
-	find_program(GZIP_CMD gzip)
-	add_custom_command(OUTPUT "${MANPAGE}.gz"
-		DEPENDS ${MANPAGE}
-		COMMAND ${GZIP_CMD} -nc ${MANPAGE} > ${MANPAGE}.gz
-		COMMENT "Building ${MANPAGE}.gz"
-	)
-	add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
-	set(INSTMAN "${MANPAGE}.gz")
-elseif(HAS_MAN)
-	add_custom_target(man ALL DEPENDS ${MANPAGE})
-	set(INSTMAN ${MANPAGE})
-endif(HAS_MAN AND NOT NOMANCOMPRESS)
-
-if(HAS_HTML)
-	add_custom_target(man-html ALL DEPENDS ${MANHTML})
-	set(INSTHTML ${MANHTML})
-endif(HAS_HTML)
 
 
 #
