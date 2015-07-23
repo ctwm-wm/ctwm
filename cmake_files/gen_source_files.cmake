@@ -24,3 +24,12 @@ add_custom_command(OUTPUT ${ctwm_atoms}
 
 # Setup config header file
 configure_file(ctwm_config.h.in ctwm_config.h ESCAPE_QUOTES)
+
+
+# Fill in version info
+set(version_c_in ${CMAKE_CURRENT_SOURCE_DIR}/version.c.in)
+set(version_c    ${CMAKE_CURRENT_BINARY_DIR}/version.c)
+add_custom_command(OUTPUT ${version_c}
+	DEPENDS ${version_c_in}
+	COMMAND sed -e 's/%%REVISION%%/NULL/' < ${version_c_in} > ${version_c}
+)
