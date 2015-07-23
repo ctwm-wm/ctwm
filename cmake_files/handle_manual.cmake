@@ -34,9 +34,10 @@ set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
 # pretty freeform in the manual.
 set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
 
-# Flags for what we have/what we'll build
+# Flags for what we wind up having
 set(HAS_MAN 0)
 set(HAS_HTML 0)
+
 
 
 #
@@ -106,6 +107,7 @@ endif(ASCIIDOC AND A2X)
 
 
 
+
 # If we're using pregen'd versions, we have to do the subs of build vars
 # on the output files, instead of doing it on the asciidoc source like we
 # do above when we're building them.
@@ -123,6 +125,8 @@ if(HTML_PRESRC)
 		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
 	)
 endif(HTML_PRESRC)
+
+
 
 
 # Compress manpage (conditionally).  We could add more magic to allow
@@ -143,6 +147,8 @@ elseif(HAS_MAN)
 	add_custom_target(man ALL DEPENDS ${MANPAGE})
 	set(INSTMAN ${MANPAGE})
 endif(HAS_MAN AND NOT NOMANCOMPRESS)
+
+
 
 
 # If we have (or are building) the HTML, add an easy target for it, and
