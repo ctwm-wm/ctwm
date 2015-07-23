@@ -318,55 +318,6 @@ endif(HAS_HTML)
 
 
 #
-# And the install process
+# And setup the installation
 #
-
-# Some bits we always install; the binary, the default config, and our
-# CHANGES file.
-install(TARGETS ctwm
-	DESTINATION ${BINDIR}
-)
-install(FILES system.ctwmrc
-	DESTINATION ${EXAMPLEDIR}
-)
-install(FILES README.md CHANGES.md
-	DESTINATION ${DOCDIR}
-)
-
-# If we's using XPM (really, when are we not?), install the pixmaps.
-if(USE_XPM)
-	install(DIRECTORY xpm/
-		DESTINATION ${PIXMAPDIR}
-		FILES_MATCHING PATTERN "*.xpm"
-	)
-endif(USE_XPM)
-
-# Install manual bits, assuming we have them.
-if(NOT HAS_MAN)
-	string(CONCAT NOMANWARN "No manpage to install: recheck config "
-		"if this is unexpected.")
-	install(CODE "message(WARNING \"${NOMANWARN}\")")
-else()
-	install(FILES ${INSTMAN}
-		DESTINATION ${MAN1PATH}
-	)
-endif(NOT HAS_MAN)
-if(INSTHTML)
-	install(FILES ${INSTHTML}
-		DESTINATION ${DOCDIR}
-	)
-endif(INSTHTML)
-
-# If we're building with sound, install its doc too.
-if(USE_SOUND)
-	install(FILES sound.txt
-		DESTINATION ${DOCDIR}
-	)
-endif(USE_SOUND)
-
-# If building with GNOME1 bits, install its doc too.
-if(USE_GNOME)
-	install(FILES README.gnome
-		DESTINATION ${DOCDIR}
-	)
-endif(USE_GNOME)
+include(ctwm_install)
