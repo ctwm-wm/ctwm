@@ -28,6 +28,12 @@ set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
 set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
 
+# How we rewrite vars in the manual.  I decided not to use
+# configure_file() for this, as it opens up too many chances for
+# something to accidentally get sub'd, since we assume people will write
+# pretty freeform in the manual.
+set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
+
 # Flags for what we have/what we'll build
 set(HAS_MAN 0)
 set(HAS_HTML 0)
@@ -49,8 +55,12 @@ if(ASCIIDOC AND A2X)
 	file(MAKE_DIRECTORY ${MANPAGE_TMPDIR})
 
 	# We hop through a temporary file to process in definitions for e.g.
-	# $ETCDIR.  Can't do that here though since the directories aren't
-	# defined yet, so we write the target for $ADOC_TMPSRC lower down.
+	# $ETCDIR.
+	add_custom_command(OUTPUT ${ADOC_TMPSRC}
+		DEPENDS ${ADOC_SRC}
+		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
+		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
+	)
 
 	# We have to jump through a few hoops here, because a2x gives us no
 	# control whatsoever over where the output file goes or what it's
@@ -98,17 +108,9 @@ endif(ASCIIDOC AND A2X)
 
 
 
-# Rewrite some build options into docs, either into the adoc source
-# before processing, or into prebuilt versions if we can't generate them
-# ourselves.
-set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
-if(CAN_BUILD_MAN)
-	add_custom_command(OUTPUT ${ADOC_TMPSRC}
-		DEPENDS ${ADOC_SRC}
-		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
-		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
-	)
-endif(CAN_BUILD_MAN)
+# If we're using pregen'd versions, we have to do the subs of build vars
+# on the output files, instead of doing it on the asciidoc source like we
+# do above when we're building them.
 if(MAN_PRESRC)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MAN_PRESRC}
@@ -123,6 +125,7 @@ if(HTML_PRESRC)
 		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
 	)
 endif(HTML_PRESRC)
+
 
 # Compress manpage (conditionally).  We could add more magic to allow
 # different automatic compression, but that's probably way more involved
