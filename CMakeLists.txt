@@ -508,8 +508,9 @@ endif(USE_XPM)
 
 # Install manual bits, assuming we have them.
 if(NOT HAS_MAN)
-	message(WARNING "No manpage to install: recheck config if "
-			"this is unexpected.")
+	string(CONCAT NOMANWARN "No manpage to install: recheck config "
+		"if this is unexpected.")
+	install(CODE "message(WARNING \"${NOMANWARN}\")")
 else()
 	install(FILES ${INSTMAN}
 		DESTINATION ${MAN1PATH}
