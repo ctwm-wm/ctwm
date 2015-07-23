@@ -37,7 +37,6 @@ set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
 # Flags for what we have/what we'll build
 set(HAS_MAN 0)
 set(HAS_HTML 0)
-set(CAN_BUILD_MAN 0)
 
 
 #
@@ -47,7 +46,6 @@ set(CAN_BUILD_MAN 0)
 # If we have asciidoc, use it
 if(ASCIIDOC AND A2X)
 	set(HAS_MAN 1)
-	set(CAN_BUILD_MAN 1)
 
 	message(STATUS "Found asciidoc (${A2X}) for building manpage")
 
