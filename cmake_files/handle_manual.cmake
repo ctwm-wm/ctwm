@@ -144,6 +144,9 @@ elseif(HAS_MAN)
 	set(INSTMAN ${MANPAGE})
 endif(HAS_MAN AND NOT NOMANCOMPRESS)
 
+
+# If we have (or are building) the HTML, add an easy target for it, and
+# define a var for the install process to notice.
 if(HAS_HTML)
 	add_custom_target(man-html ALL DEPENDS ${MANHTML})
 	set(INSTHTML ${MANHTML})
