@@ -30,6 +30,13 @@ if(USE_XPM)
 
 	list(APPEND CTWMLIBS ${X11_Xpm_LIB})
 	message(STATUS "Enabling XPM support: ${X11_Xpm_LIB}.")
+
+	# DATADIR should already be defined; guard against me being stupid
+	# when I change something
+	if(NOT DATADIR)
+		message(FATAL_ERROR "Internal error: DATADIR not defined!")
+	endif(NOT DATADIR)
+	set(PIXMAPDIR ${DATADIR}/images)
 endif(USE_XPM)
 
 

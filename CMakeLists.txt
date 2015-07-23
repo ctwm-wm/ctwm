@@ -123,12 +123,6 @@ if(NOT NO_WARNS)
 	add_definitions(${STD_WARNS})
 endif(NOT NO_WARNS)
 
-# Set images dir.  Can't do this in the XPM-finding block above, since we
-# haven't figured the path yet.
-if(USE_XPM)
-	set(PIXMAPDIR ${DATADIR}/images)
-endif(USE_XPM)
-
 
 # Include source and generated files
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
