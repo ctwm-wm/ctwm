@@ -10,35 +10,30 @@
 if(NOT ETCDIR)
 	set(ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
 endif(NOT ETCDIR)
-message(STATUS "System-wide config in      ${ETCDIR}")
 
 
 # Where we stick the binary
 if(NOT BINDIR)
 	set(BINDIR ${CMAKE_INSTALL_PREFIX}/bin)
 endif(NOT BINDIR)
-message(STATUS "Installing ctwm in         ${BINDIR}")
 
 
 # Where runtime data stuff (e.g., images) is found
 if(NOT DATADIR)
 	set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
 endif(NOT DATADIR)
-message(STATUS "Installing runtime data in ${DATADIR}")
 
 
 # Where we install non-manpage docs to
 if(NOT DOCDIR)
 	set(DOCDIR ${CMAKE_INSTALL_PREFIX}/share/doc/ctwm)
 endif(NOT DOCDIR)
-message(STATUS "Installing docs in         ${DOCDIR}")
 
 
 # Where we put example configs etc.
 if(NOT EXAMPLEDIR)
 	set(EXAMPLEDIR ${CMAKE_INSTALL_PREFIX}/share/examples/ctwm)
 endif(NOT EXAMPLEDIR)
-message(STATUS "Installing examples in     ${EXAMPLEDIR}")
 
 
 # Where should we stick manpages?
@@ -62,4 +57,3 @@ endif(NOT MANDIR)
 # Since we only have 1 manpage, and it's in section 1, just list the man1
 # dir.
 set(MAN1PATH "${MANDIR}/man1")
-message(STATUS "Installing manpage to      ${MAN1PATH}")

@@ -235,3 +235,10 @@ endif(HAS_HTML)
 # And setup the installation
 #
 include(ctwm_install)
+
+
+#
+# Output various information about what we've figured and what we're
+# doing for the builder's edification
+#
+include(show_build_info)
