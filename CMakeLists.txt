@@ -108,61 +108,7 @@ endif(NOT HAS_GETOPT_LONG)
 #
 # Figure out install paths for stuff
 #
-
-# CMAKE_INSTALL_PREFIX is the user's responsibility to set right.  We
-# just assume it is.
-
-# Where ctwm looks for fallback config files
-if(NOT ETCDIR)
-	set(ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
-endif(NOT ETCDIR)
-message(STATUS "System-wide config in      ${ETCDIR}")
-
-# Where we stick the binary
-if(NOT BINDIR)
-	set(BINDIR ${CMAKE_INSTALL_PREFIX}/bin)
-endif(NOT BINDIR)
-message(STATUS "Installing ctwm in         ${BINDIR}")
-
-# Where runtime data stuff (e.g., images) is found
-if(NOT DATADIR)
-	set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/ctwm)
-endif(NOT DATADIR)
-message(STATUS "Installing runtime data in ${DATADIR}")
-
-# Where we install non-manpage docs to
-if(NOT DOCDIR)
-	set(DOCDIR ${CMAKE_INSTALL_PREFIX}/share/doc/ctwm)
-endif(NOT DOCDIR)
-message(STATUS "Installing docs in         ${DOCDIR}")
-
-# Where we put example configs etc.
-if(NOT EXAMPLEDIR)
-	set(EXAMPLEDIR ${CMAKE_INSTALL_PREFIX}/share/examples/ctwm)
-endif(NOT EXAMPLEDIR)
-message(STATUS "Installing examples in     ${EXAMPLEDIR}")
-
-
-# Where should we stick manpages?
-# User can set MANDIR to override, if they don't, check a few likely
-# places...
-if(NOT MANDIR)
-	find_file(MANDIR man
-		PATHS
-			"${CMAKE_INSTALL_PREFIX}/share"
-			"${CMAKE_INSTALL_PREFIX}"
-		NO_DEFAULT_PATH)
-endif(NOT MANDIR)
-
-# If we can't find something, hardcode a guess and yell about it
-if(NOT MANDIR)
-	set(MANDIR "${CMAKE_INSTALL_PREFIX}/man")
-	message(WARNING "Can't find install base for manpages, "
-			"assuming ${MANDIR}")
-endif(NOT MANDIR)
-
-set(MAN1PATH "${MANDIR}/man1")
-message(STATUS "Installing manpage to      ${MAN1PATH}")
+include(install_paths)
 
 
 
