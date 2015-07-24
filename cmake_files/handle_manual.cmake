@@ -32,6 +32,8 @@ set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
 # configure_file() for this, as it opens up too many chances for
 # something to accidentally get sub'd, since we assume people will write
 # pretty freeform in the manual.
+# \-escaped @ needed for pre-3.1 CMake compat and warning avoidance;
+# x-ref cmake --help-policy CMP0053
 set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
 
 # Flags for what we wind up having
