@@ -64,5 +64,5 @@ ${GEN}/lex.c: ${GEN} lex.l
 	${LEX} ${LFLAGS} lex.l
 
 # Setup version file
-${GEN}/version.c: ${GEN} version.c.in
+${GEN}/version.c: ${GEN} version.c.in .bzr/checkout/dirstate
 	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c
