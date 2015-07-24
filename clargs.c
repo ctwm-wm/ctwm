@@ -335,11 +335,10 @@ usage(void)
 static void
 print_version(void)
 {
-	printf("ctwm %s", VersionNumber);
+	printf("ctwm %s\n", VersionNumber);
 	if(VCSRevision) {
-		printf(" (revid: %s)", VCSRevision);
+		printf(" (bzr:%s)\n", VCSRevision);
 	}
-	printf("\n");
 }
 
 
