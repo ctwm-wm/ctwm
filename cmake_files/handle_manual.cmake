@@ -18,11 +18,11 @@ find_program(A2X a2x)
 set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
 
 # Where we build stuff
-set(MANPAGE_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
+set(MAN_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
 
 # Where we copy the source to during rewrites, and then do the actual
 # build from.
-set(ADOC_TMPSRC ${MANPAGE_TMPDIR}/ctwm.1.adoc)
+set(ADOC_TMPSRC ${MAN_TMPDIR}/ctwm.1.adoc)
 
 # Where the end products wind up
 set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
@@ -51,7 +51,7 @@ if(ASCIIDOC AND A2X)
 	message(STATUS "Found asciidoc (${A2X}) for building manpage")
 
 	# Setup a temp dir under the build for our processing
-	file(MAKE_DIRECTORY ${MANPAGE_TMPDIR})
+	file(MAKE_DIRECTORY ${MAN_TMPDIR})
 
 	# We hop through a temporary file to process in definitions for e.g.
 	# $ETCDIR.
@@ -63,9 +63,9 @@ if(ASCIIDOC AND A2X)
 
 	# We have to jump through a few hoops here, because a2x gives us no
 	# control whatsoever over where the output file goes or what it's
-	# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MANPAGE_TMPDIR,
+	# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MAN_TMPDIR,
 	# the build output will also be there.  Copy it into place
-	set(MANPAGE_TMP ${MANPAGE_TMPDIR}/ctwm.1)
+	set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${ADOC_TMPSRC}
 		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
