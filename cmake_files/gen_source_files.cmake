@@ -38,8 +38,18 @@ if(IS_BZR_CO AND HAS_BZR)
 		COMMAND ${CMAKE_SOURCE_DIR}/tools/rewrite_version_bzr.sh < ${version_c_in} > ${version_c}
 	)
 else()
-	add_custom_command(OUTPUT ${version_c}
-		DEPENDS ${version_c_in}
-		COMMAND sed -e 's/%%REVISION%%/NULL/' < ${version_c_in} > ${version_c}
-	)
+	# Is there a prebuilt one to use?
+	if(EXISTS ${GENSRCDIR}/version.c)
+		# Yep, just use it
+		add_custom_command(OUTPUT ${version_c}
+			DEPENDS ${GENSRCDIR}/version.c
+			COMMAND cp ${GENSRCDIR}/version.c ${version_c}
+		)
+	else()
+		# Nope
+		add_custom_command(OUTPUT ${version_c}
+			DEPENDS ${version_c_in}
+			COMMAND sed -e 's/%%REVISION%%/NULL/' < ${version_c_in} > ${version_c}
+		)
+	endif(EXISTS ${GENSRCDIR}/version.c)
 endif(IS_BZR_CO AND HAS_BZR)
