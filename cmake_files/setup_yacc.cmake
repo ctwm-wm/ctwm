@@ -29,6 +29,7 @@ else()
 		add_custom_command(OUTPUT gram.tab.c gram.tab.h
 			DEPENDS gram.y
 			COMMAND ${YACC} ${YFLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/gram.y
+			COMMENT "Building parser with yacc."
 		)
 	else()
 		# No bison, no yacc.  Maybe there are prebuilt files?
@@ -42,10 +43,12 @@ else()
 			add_custom_command(OUTPUT gram.tab.h
 				DEPENDS ${GRAM_H}
 				COMMAND cp ${GRAM_H} .
+				COMMENT "Copying in prebuilt gram.tab.h."
 			)
 			add_custom_command(OUTPUT gram.tab.c
 				DEPENDS ${GRAM_C}
 				COMMAND cp ${GRAM_C} .
+				COMMENT "Copying in prebuilt gram.tab.c."
 			)
 			# Also need to explicitly tell cmake; otherwise it knows to
 			# pull in gram.tab.c ('cuz it's in CTWMSRC) but doesn't know

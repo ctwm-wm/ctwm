@@ -24,6 +24,7 @@ else()
 		add_custom_command(OUTPUT lex.c
 			DEPENDS ${LEX_C}
 			COMMAND cp ${LEX_C} .
+			COMMENT "Copying in prebuilt lex.c"
 		)
 	else()
 		# No flex, no pre-built lex.c
