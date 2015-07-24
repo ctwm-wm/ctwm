@@ -30,6 +30,9 @@ endif(insrc)
 #
 include(compiler_feature_checks)
 
+# And some build env checks
+include(build_env_checks)
+
 
 
 #

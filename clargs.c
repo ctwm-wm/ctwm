@@ -13,6 +13,7 @@
 #include "version.h"
 
 static void usage(void) __attribute__((noreturn));
+static void print_version(void);
 static void DisplayInfo(void);
 
 
@@ -123,7 +124,7 @@ clargs_parse(int argc, char *argv[])
 			/* nada */
 		}
 		CHK("-version") {
-			printf("%s\n", VersionNumber);
+			print_version();
 			exit(0);
 		}
 		CHK("-info") {
@@ -208,7 +209,7 @@ clargs_parse(int argc, char *argv[])
 
 #define IFIS(x) if(strcmp(long_options[optidx].name, (x)) == 0)
 				IFIS("version") {
-					printf("%s\n", VersionNumber);
+					print_version();
 					exit(0);
 				}
 				IFIS("info") {
@@ -328,6 +329,16 @@ usage(void)
 
 
 	exit(1);
+}
+
+
+static void
+print_version(void)
+{
+	printf("ctwm %s\n", VersionNumber);
+	if(VCSRevision) {
+		printf(" (bzr:%s)\n", VCSRevision);
+	}
 }
 
 
