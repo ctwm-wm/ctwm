@@ -215,12 +215,22 @@ if(MANUAL_BUILD_HTML)
 	message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
 	set(HAS_HTML 1)
 
-	add_custom_command(OUTPUT ${MANHTML}
-		DEPENDS ${ADOC_TMPSRC}
-		COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-		COMMENT "Generating ctwm.1.html"
-	)
-
+	if(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoctor")
+		add_custom_command(OUTPUT ${MANHTML}
+			DEPENDS ${ADOC_TMPSRC}
+			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
+			COMMENT "Generating ctwm.1.html"
+		)
+	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoc")
+		add_custom_command(OUTPUT ${MANHTML}
+			DEPENDS ${ADOC_TMPSRC}
+			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
+			COMMENT "Generating ctwm.1.html"
+		)
+	else()
+		message(FATAL_ERROR "I don't know what to do with that HTML manual "
+			"building type!")
+	endif()
 elseif(EXISTS ${HTML_PRESRC})
 	# Can't build it ourselves, but we've got a prebuilt version.
 	message(STATUS "Can't build HTML manual , using prebuilt version.")
