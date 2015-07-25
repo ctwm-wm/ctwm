@@ -15,7 +15,7 @@ find_program(A2X a2x)
 #
 
 # The original source
-set(ADOC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/doc/ctwm.1.adoc)
+set(ADOC_SRC ${SRCDOCDIR}/ctwm.1.adoc)
 
 # Where we build stuff
 set(MAN_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
@@ -104,7 +104,7 @@ if(CAN_BUILD_MANUAL)
 else()
 	# No ability to generate it ourselves.  See if we have prebuilt.
 	find_file(MAN_PRESRC ctwm.1
-		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
+		PATHS ${SRCDOCDIR}
 		NO_DEFAULT_PATH)
 
 	if(MAN_PRESRC)
@@ -119,7 +119,7 @@ else()
 
 	# Install prebuilt HTML if we have it generated too.
 	find_file(HTML_PRESRC ctwm.1.html
-		PATHS ${CMAKE_CURRENT_SOURCE_DIR}/doc
+		PATHS ${SRCDOCDIR}
 		NO_DEFAULT_PATH)
 
 	if(HTML_PRESRC)

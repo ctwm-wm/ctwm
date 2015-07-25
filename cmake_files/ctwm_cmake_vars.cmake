@@ -5,6 +5,9 @@
 # The dir in which we ship pregen'd source files
 set(GENSRCDIR ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 
+# Where our doc files are (and where pregen'd docs might be)
+set(SRCDOCDIR ${CMAKE_SOURCE_DIR}/doc)
+
 
 # Our base set of sources
 set(CTWMSRC
