@@ -45,24 +45,22 @@ set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
 
 
 
+# Figure what we can build
 #
-# The build process
-#
-
-# Can we build the manual?  And what tools do we use for it?
-set(CAN_BUILD_MANUAL 0)
+# These are both boolean "We can build this type of output" flags, and
+# enums for later code for "What method we use to build this type of
+# output".
 set(MANUAL_BUILD_MANPAGE)
 set(MANUAL_BUILD_HTML)
 
 if(ASCIIDOC AND A2X)
-	set(CAN_BUILD_MANUAL 1)
 	set(MANUAL_BUILD_MANPAGE a2x)
 	# HTML build disabled for time reasons
 	#set(MANUAL_BUILD_HTML asciidoc)
 endif(ASCIIDOC AND A2X)
 
 
-# If we can build stuff, prep for doing it.
+# If we can build stuff, prepare bits for it.
 if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 	# Setup a temp dir under the build for our processing
 	file(MAKE_DIRECTORY ${MAN_TMPDIR})
@@ -75,6 +73,8 @@ if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
 	)
 endif(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
+
+
 
 
 #
@@ -136,6 +136,7 @@ if(HAS_MAN)
 		set(INSTMAN ${MANPAGE})
 	endif(NOT NOMANCOMPRESS)
 endif(HAS_MAN)
+
 
 
 
