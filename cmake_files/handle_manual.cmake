@@ -237,7 +237,7 @@ if(MANUAL_BUILD_HTML)
 	endif()
 elseif(EXISTS ${HTML_PRESRC})
 	# Can't build it ourselves, but we've got a prebuilt version.
-	message(STATUS "Can't build HTML manual , using prebuilt version.")
+	message(STATUS "Can't build HTML manual, using prebuilt version.")
 	set(HAS_HTML 1)
 
 	# As with the manpage above, we need to do the processing on the
