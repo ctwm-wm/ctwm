@@ -171,7 +171,6 @@ means that args can be passed via `--long=arg` and `--long arg`, as well
 as `-l arg` and `-larg`, and short args can be bundled like `-vnk` as
 well as `-v -n -k`.
 
-[CAUTION]
 ====
 Note, however, that the handling of optional args is slightly different;
 they *must* be specified with = or no space.  e.g., `--window=123` will
