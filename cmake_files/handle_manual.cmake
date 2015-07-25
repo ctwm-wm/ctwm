@@ -3,11 +3,52 @@
 #
 
 
-# It's written in asciidoc, so first see if we can find that.  If we can,
-# we'll use it to [re]build the manual.  If not, we may have pregen'd
-# versions we can use.  If neither, well, the user's in trouble...
+# It's written in asciidoc, so first see if we can find tools to build
+# it.  If we can, we'll use it to [re]build the manual.  If not, we may
+# have pregen'd versions we can use.  If neither, well, the user's in
+# trouble...
+find_program(ASCIIDOCTOR asciidoctor)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
+
+
+# If we have asciidoctor, we need to figure out the version, as manpage
+# output is relatively new (unreleased, at the time of this writing).
+if(ASCIIDOCTOR)
+	execute_process(
+		COMMAND asciidoctor --version
+		RESULT_VARIABLE _adoctor_result
+		OUTPUT_VARIABLE _adoctor_verout
+		ERROR_QUIET
+	)
+	if(NOT ${_adoctor_result} EQUAL "0")
+		# Err...
+		message(WARNING "Unexpected result trying asciidoctor --version.")
+		set(_adoctor_verout "Asciidoctor 0.0.0 FAKE")
+	endif()
+	unset(_adoctor_result)
+
+	# Break out the version.
+	set(_adoctor_veregex "Asciidoctor ([0-9]+\\.[0-9]+\\.[0-9]+).*")
+	string(REGEX REPLACE ${_adoctor_veregex} "\\1"
+		ASCIIDOCTOR_VERSION ${_adoctor_verout})
+	unset(_adoctor_verout)
+	unset(_adoctor_veregex)
+	#message(STATUS "Found asciidoctor version ${ASCIIDOCTOR_VERSION}")
+
+	# 1.5.3 will be the first release that can write manpages natively.
+	# This means 1.5.3 dev versions after a certain point can as well;
+	# assume anybody running a 1.5.3 dev is keeping up well enough that
+	# it can DTRT too.  We assume any version can do HTML.
+	set(ASCIIDOCTOR_CAN_MAN  0)
+	set(ASCIIDOCTOR_CAN_HTML 1)
+	if(${ASCIIDOCTOR_VERSION} VERSION_GREATER "1.5.2")
+		set(ASCIIDOCTOR_CAN_MAN 1)
+	elseif(${ASCIIDOCTOR_VERSION} VERSION_LESS "0.0.1")
+		set(ASCIIDOCTOR_CAN_HTML 0)
+	endif()
+endif(ASCIIDOCTOR)
+
 
 
 #
