@@ -36,10 +36,10 @@ if(ASCIIDOCTOR)
 	unset(_adoctor_veregex)
 	#message(STATUS "Found asciidoctor version ${ASCIIDOCTOR_VERSION}")
 
-	# 1.5.3 will be the first release that can write manpages natively.
-	# This means 1.5.3 dev versions after a certain point can as well;
-	# assume anybody running a 1.5.3 dev is keeping up well enough that
-	# it can DTRT too.  We assume any version can do HTML.
+	# 1.5.3 is the first release that can write manpages natively.  This
+	# means 1.5.3 dev versions after a certain point can as well; assume
+	# anybody running a 1.5.3 dev is keeping up well enough that it can
+	# DTRT too.  We assume any version can do HTML.
 	set(ASCIIDOCTOR_CAN_MAN  0)
 	set(ASCIIDOCTOR_CAN_HTML 1)
 	if(${ASCIIDOCTOR_VERSION} VERSION_GREATER "1.5.2")
