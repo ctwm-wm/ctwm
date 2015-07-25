@@ -6,7 +6,7 @@
 version=`grep '^\#define VERSION_ID' version.c.in | cut -d'"' -f2`
 
 # If it's a non-release, append date
-if echo $version | grep -q '^[^0-9\.]$'; then
+if echo -n $version | grep -q '[^0-9\.]'; then
     version="$version.`date '+%Y%m%d'`"
 fi
 
