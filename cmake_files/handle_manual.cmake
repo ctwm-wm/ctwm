@@ -154,7 +154,8 @@ if(MANUAL_BUILD_MANPAGE)
 		# We have to jump through a few hoops here, because a2x gives us no
 		# control whatsoever over where the output file goes or what it's
 		# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MAN_TMPDIR,
-		# the build output will also be there.  Copy it into place
+		# the build output will also be there.  Just move it manually
+		# afterward.
 		set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
 		add_custom_command(OUTPUT ${MANPAGE}
 			DEPENDS ${ADOC_TMPSRC}
