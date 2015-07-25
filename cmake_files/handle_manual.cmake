@@ -139,17 +139,30 @@ if(MANUAL_BUILD_MANPAGE)
 	message(STATUS "Building manpage with ${MANUAL_BUILD_MANPAGE}.")
 	set(HAS_MAN 1)
 
-	# We have to jump through a few hoops here, because a2x gives us no
-	# control whatsoever over where the output file goes or what it's
-	# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MAN_TMPDIR,
-	# the build output will also be there.  Copy it into place
-	set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
-	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${ADOC_TMPSRC}
-		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
-		COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
-		COMMENT "Generating ctwm.1"
-	)
+	if(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoctor")
+		# We don't need the hoops for a2x here, since asciidoctor lets us
+		# specify the output directly.
+		add_custom_command(OUTPUT ${MANPAGE}
+			DEPENDS ${ADOC_TMPSRC}
+			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANPAGE} ${ADOC_TMPSRC}
+			COMMENT "Generating ctwm.1"
+		)
+	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
+		# We have to jump through a few hoops here, because a2x gives us no
+		# control whatsoever over where the output file goes or what it's
+		# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MAN_TMPDIR,
+		# the build output will also be there.  Copy it into place
+		set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
+		add_custom_command(OUTPUT ${MANPAGE}
+			DEPENDS ${ADOC_TMPSRC}
+			COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
+			COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
+			COMMENT "Generating ctwm.1"
+		)
+	else()
+		message(FATAL_ERROR "I don't know what to do with that manpage "
+			"building type!")
+	endif()
 elseif(EXISTS ${MAN_PRESRC})
 	# Can't build it ourselves, but we've got a prebuilt version.
 	message(STATUS "Can't build manpage, using prebuilt version.")
