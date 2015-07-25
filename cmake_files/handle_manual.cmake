@@ -58,6 +58,15 @@ if(ASCIIDOC AND A2X)
 endif(ASCIIDOC AND A2X)
 
 
+# Building the manpage variant
+if(MANUAL_BUILD_MANPAGE)
+	# Got the tool to build it
+	message(STATUS "Building manpage with ${MANUAL_BUILD_MANPAGE}.")
+else()
+	# Can't build it ourselves.
+endif(MANUAL_BUILD_MANPAGE)
+
+
 # How do we get a manual together?
 if(CAN_BUILD_MANUAL)
 	# We've got the tools to build it
