@@ -46,8 +46,16 @@ set(HAS_HTML 0)
 # The build process
 #
 
-# If we have asciidoc, use it
+# Can we build the manual?
+set(CAN_BUILD_MANUAL 0)
 if(ASCIIDOC AND A2X)
+	set(CAN_BUILD_MANUAL 1)
+endif(ASCIIDOC AND A2X)
+
+
+# How do we get a manual together?
+if(CAN_BUILD_MANUAL)
+	# We've got the tools to build it
 	set(HAS_MAN 1)
 
 	message(STATUS "Found asciidoc (${A2X}) for building manpage")
@@ -105,7 +113,7 @@ else()
 		message(STATUS "Installing prebuilt HTML manual.")
 		# Later target does rewrite/move
 	endif(HTML_PRESRC)
-endif(ASCIIDOC AND A2X)
+endif(CAN_BUILD_MANUAL)
 
 
 
