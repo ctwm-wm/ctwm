@@ -3,10 +3,10 @@
 # Setup and generate a release tarball
 
 # Version
-version=`grep '^\#define VERSION_ID' version.c | cut -d'"' -f2`
+version=`grep '^\#define VERSION_ID' version.c.in | cut -d'"' -f2`
 
 # If it's a non-release, append date
-if echo $version | grep -q '[^0-9]$'; then
+if echo -n $version | grep -q '[^0-9\.]'; then
     version="$version.`date '+%Y%m%d'`"
 fi
 
@@ -22,19 +22,14 @@ if [ -r $dir.tar ] ; then
 fi
 mkdir -m755 $dir
 
-# Copy the pertinent files in
-find * \
-	\! -name build \
-	\! -name STATUS \! -name TABLE \
-	\! -name Makefile \
-	\! -name Imakefile.local \! -name descrip.local \
-	\! -name '*.o.info' \! -name '*.flc' \! -name semantic.cache \
-	\! -name y.output \
-	| cpio -pmdu $dir
+# Create a totally fresh branch in it
+bzr branch --use-existing-dir . $dir
 
-# Edit the set version file in-place
-revid=`bzr revision-info --tree | cut -d' ' -f2`
-sed -i '' -e "s/%%REVISION%%/$revid/" $dir/version.c
+# Generate the appropriate files for it
+( cd $dir && make release_files )
+
+# Blow away the bzr metastuff, we don't need to package that
+( cd $dir && rm -rf .bzr )
 
 # Tar it up
 tar \
