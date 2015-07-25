@@ -105,7 +105,7 @@ elseif(ASCIIDOC)
 endif()
 
 # For the manpage output, asciidoctor has to be of a certain version.  If
-# it's not there and high enough version, we fall back to asciidoc/a2x
+# it's not there or not high enough version, we fall back to asciidoc/a2x
 # (which is very slow at this too, but we need to build a manpage, so eat
 # the expense).
 set(MANUAL_BUILD_MANPAGE)
