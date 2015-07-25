@@ -146,7 +146,7 @@ if(MANUAL_BUILD_MANPAGE)
 		add_custom_command(OUTPUT ${MANPAGE}
 			DEPENDS ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANPAGE} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1"
+			COMMENT "Generating ctwm.1 with asciidoctor."
 		)
 	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
 		# We have to jump through a few hoops here, because a2x gives us no
@@ -158,7 +158,7 @@ if(MANUAL_BUILD_MANPAGE)
 			DEPENDS ${ADOC_TMPSRC}
 			COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
 			COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
-			COMMENT "Generating ctwm.1"
+			COMMENT "Generating ctwm.1 with a2x."
 		)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that manpage "
@@ -220,13 +220,13 @@ if(MANUAL_BUILD_HTML)
 		add_custom_command(OUTPUT ${MANHTML}
 			DEPENDS ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1.html"
+			COMMENT "Generating ctwm.1.html with asciidoctor."
 		)
 	elseif(${MANUAL_BUILD_HTML} STREQUAL "asciidoc")
 		add_custom_command(OUTPUT ${MANHTML}
 			DEPENDS ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1.html"
+			COMMENT "Generating ctwm.1.html with asciidoc."
 		)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that HTML manual "
