@@ -55,19 +55,21 @@ endif(ASCIIDOCTOR)
 # Setup some vars for the various steps in the process
 #
 
-# The original source
+# The original source.
 set(ADOC_SRC ${SRCDOCDIR}/ctwm.1.adoc)
 
-# Where we build stuff
-set(MAN_TMPDIR ${CMAKE_CURRENT_BINARY_DIR}/mantmp)
+# Where we build stuff.  Because we need to process the ADOC_SRC to
+# replace build paths etc, we need to dump it somewhere.  We could just
+# leave it right in the build dir root, but is cleaner.
+set(MAN_TMPDIR ${CMAKE_BINARY_DIR}/mantmp)
 
 # Where we copy the source to during rewrites, and then do the actual
 # build from.
 set(ADOC_TMPSRC ${MAN_TMPDIR}/ctwm.1.adoc)
 
 # Where the end products wind up
-set(MANPAGE ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1)
-set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
+set(MANPAGE ${CMAKE_BINARY_DIR}/ctwm.1)
+set(MANHTML ${CMAKE_BINARY_DIR}/ctwm.1.html)
 
 # How we rewrite vars in the manual.  I decided not to use
 # configure_file() for this, as it opens up too many chances for
