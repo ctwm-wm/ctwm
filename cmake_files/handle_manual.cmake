@@ -99,6 +99,7 @@ if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_HTML)
 	set(MANUAL_BUILD_HTML asciidoctor)
 elseif(ASCIIDOC)
 	#set(MANUAL_BUILD_HTML asciidoc)
+	message(STATUS "Not enabling HTML manual build; asciidoc is slow.")
 endif()
 
 # For the manpage output, asciidoctor has to be of a certain version.  If
