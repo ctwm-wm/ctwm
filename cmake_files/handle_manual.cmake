@@ -91,14 +91,26 @@ set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
 # These are both boolean "We can build this type of output" flags, and
 # enums for later code for "What method we use to build this type of
 # output".
-set(MANUAL_BUILD_MANPAGE)
-set(MANUAL_BUILD_HTML)
 
-if(ASCIIDOC AND A2X)
-	set(MANUAL_BUILD_MANPAGE a2x)
-	# HTML build disabled for time reasons
+# If we have asciidoctor, use it to build the HTML.  Else, we could use
+# asciidoc, but leave it disabled because it's very slow.
+set(MANUAL_BUILD_HTML)
+if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_HTML)
+	set(MANUAL_BUILD_HTML asciidoctor)
+elseif(ASCIIDOC)
 	#set(MANUAL_BUILD_HTML asciidoc)
-endif(ASCIIDOC AND A2X)
+endif()
+
+# For the manpage output, asciidoctor has to be of a certain version.  If
+# it's not there and high enough version, we fall back to asciidoc/a2x
+# (which is very slow at this too, but we need to build a manpage, so eat
+# the expense).
+set(MANUAL_BUILD_MANPAGE)
+if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_MAN)
+	set(MANUAL_BUILD_MANPAGE asciidoctor)
+elseif(A2X)
+	set(MANUAL_BUILD_MANPAGE a2x)
+endif()
 
 
 # If we can build stuff, prepare bits for it.
