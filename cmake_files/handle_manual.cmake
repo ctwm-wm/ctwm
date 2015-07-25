@@ -43,7 +43,6 @@ set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
 
 
 # Flags for what we wind up having
-set(HAS_MAN 0)
 set(HAS_HTML 0)
 
 
@@ -64,22 +63,8 @@ if(ASCIIDOC AND A2X)
 endif(ASCIIDOC AND A2X)
 
 
-# Building the manpage variant
-if(MANUAL_BUILD_MANPAGE)
-	# Got the tool to build it
-	message(STATUS "Building manpage with ${MANUAL_BUILD_MANPAGE}.")
-else()
-	# Can't build it ourselves.
-endif(MANUAL_BUILD_MANPAGE)
-
-
-# How do we get a manual together?
-if(CAN_BUILD_MANUAL)
-	# We've got the tools to build it
-	set(HAS_MAN 1)
-
-	message(STATUS "Found asciidoc (${A2X}) for building manpage")
-
+# If we can build stuff, prep for doing it.
+if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 	# Setup a temp dir under the build for our processing
 	file(MAKE_DIRECTORY ${MAN_TMPDIR})
 
@@ -90,6 +75,17 @@ if(CAN_BUILD_MANUAL)
 		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
 		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
 	)
+endif(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
+
+
+#
+# Building the manpage variant
+#
+set(HAS_MAN 0)
+if(MANUAL_BUILD_MANPAGE)
+	# Got the tool to build it
+	message(STATUS "Building manpage with ${MANUAL_BUILD_MANPAGE}.")
+	set(HAS_MAN 1)
 
 	# We have to jump through a few hoops here, because a2x gives us no
 	# control whatsoever over where the output file goes or what it's
@@ -100,25 +96,55 @@ if(CAN_BUILD_MANUAL)
 		DEPENDS ${ADOC_TMPSRC}
 		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
 		COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
-		COMMENT "Processing ${ADOC_TMPSRC} -> ${MANPAGE}"
+		COMMENT "Generating ${ADOC_TMPSRC} -> ${MANPAGE}"
 	)
+elseif(EXISTS ${MAN_PRESRC})
+	# Can't build it ourselves, but we've got a prebuilt version.
+	message(STATUS "Can't build manpage, using prebuilt version.")
+	set(HAS_MAN 1)
 
-	# Should do HTML at some point, but asciidoc is so slow (~5 secs) I'm
-	# not bothering.  When we switch to asciidoctor (~.2 secs), I'll
-	# revisit.
-
+	# We still have to do the substitutions like above, but we're doing
+	# it on the built version now, rather than the source.
+	add_custom_command(OUTPUT ${MANPAGE}
+		DEPENDS ${MAN_PRESRC}
+		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
+		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
+	)
 else()
-	# No ability to generate it ourselves.  See if we have prebuilt.
-	if(EXISTS ${MAN_PRESRC})
-		# Got it, so use that
-		set(HAS_MAN 1)
-		message(STATUS "No asciidoc/a2x found, using prebuilt manpage.")
-		# Later target handles the rewrites to $MAN_PRESRC -> $MANPAGE
-	else()
-		# Ruh ro
-		message(WARNING "Can't find asciidoc/a2x, and no prebuilt manpage available.")
-	endif(EXISTS ${MAN_PRESRC})
+	# Can't build it, no prebuilt.  Not quite fatal, but very bad.
+	message(WARNING "Can't build manpage, and no prebuilt version "
+		"available.  You won't get one.")
+endif(MANUAL_BUILD_MANPAGE)
 
+
+# Assuming we have it, compress manpage (conditionally).  We could add
+# more magic to allow different automatic compression, but that's
+# probably way more involved than we need to bother with.  Most systems
+# use gzip, and for the few that don't, the packagers can use
+# NOMANCOMPRESS and handle it out of band.
+if(HAS_MAN)
+	if(NOT NOMANCOMPRESS)
+		find_program(GZIP_CMD gzip)
+		add_custom_command(OUTPUT "${MANPAGE}.gz"
+			DEPENDS ${MANPAGE}
+			COMMAND ${GZIP_CMD} -nc ${MANPAGE} > ${MANPAGE}.gz
+			COMMENT "Compressing ${MANPAGE}.gz"
+		)
+		add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
+		set(INSTMAN "${MANPAGE}.gz")
+	else()
+		add_custom_target(man ALL DEPENDS ${MANPAGE})
+		set(INSTMAN ${MANPAGE})
+	endif(NOT NOMANCOMPRESS)
+endif(HAS_MAN)
+
+
+
+
+# How do we get a manual together?
+if(CAN_BUILD_MANUAL)
+	# Dead block
+else()
 	# Install prebuilt HTML if we have it generated too.
 	if(EXISTS ${HTML_PRESRC})
 		set(HAS_HTML 1)
@@ -133,13 +159,6 @@ endif(CAN_BUILD_MANUAL)
 # If we're using pregen'd versions, we have to do the subs of build vars
 # on the output files, instead of doing it on the asciidoc source like we
 # do above when we're building them.
-if(EXISTS ${MAN_PRESRC})
-	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${MAN_PRESRC}
-		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
-		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
-	)
-endif(EXISTS ${MAN_PRESRC})
 if(EXISTS ${HTML_PRESRC})
 	add_custom_command(OUTPUT ${MANHTML}
 		DEPENDS ${HTML_PRESRC}
@@ -151,24 +170,6 @@ endif(EXISTS ${HTML_PRESRC})
 
 
 
-# Compress manpage (conditionally).  We could add more magic to allow
-# different automatic compression, but that's probably way more involved
-# than we need to bother with.  Most systems use gzip, and for the few
-# that don't, the packagers can use NOMANCOMPRESS and handle it out of
-# band.
-if(HAS_MAN AND NOT NOMANCOMPRESS)
-	find_program(GZIP_CMD gzip)
-	add_custom_command(OUTPUT "${MANPAGE}.gz"
-		DEPENDS ${MANPAGE}
-		COMMAND ${GZIP_CMD} -nc ${MANPAGE} > ${MANPAGE}.gz
-		COMMENT "Building ${MANPAGE}.gz"
-	)
-	add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
-	set(INSTMAN "${MANPAGE}.gz")
-elseif(HAS_MAN)
-	add_custom_target(man ALL DEPENDS ${MANPAGE})
-	set(INSTMAN ${MANPAGE})
-endif(HAS_MAN AND NOT NOMANCOMPRESS)
 
 
 
