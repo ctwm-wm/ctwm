@@ -36,6 +36,12 @@ set(MANHTML ${CMAKE_CURRENT_BINARY_DIR}/ctwm.1.html)
 # x-ref cmake --help-policy CMP0053
 set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
 
+# Pregen'd doc file paths we might have, in case we can't build them
+# ourselves.
+set(MAN_PRESRC ${SRCDOCDIR}/ctwm.1)
+set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
+
+
 # Flags for what we wind up having
 set(HAS_MAN 0)
 set(HAS_HTML 0)
@@ -103,11 +109,7 @@ if(CAN_BUILD_MANUAL)
 
 else()
 	# No ability to generate it ourselves.  See if we have prebuilt.
-	find_file(MAN_PRESRC ctwm.1
-		PATHS ${SRCDOCDIR}
-		NO_DEFAULT_PATH)
-
-	if(MAN_PRESRC)
+	if(EXISTS ${MAN_PRESRC})
 		# Got it, so use that
 		set(HAS_MAN 1)
 		message(STATUS "No asciidoc/a2x found, using prebuilt manpage.")
@@ -115,18 +117,14 @@ else()
 	else()
 		# Ruh ro
 		message(WARNING "Can't find asciidoc/a2x, and no prebuilt manpage available.")
-	endif(MAN_PRESRC)
+	endif(EXISTS ${MAN_PRESRC})
 
 	# Install prebuilt HTML if we have it generated too.
-	find_file(HTML_PRESRC ctwm.1.html
-		PATHS ${SRCDOCDIR}
-		NO_DEFAULT_PATH)
-
-	if(HTML_PRESRC)
+	if(EXISTS ${HTML_PRESRC})
 		set(HAS_HTML 1)
 		message(STATUS "Installing prebuilt HTML manual.")
 		# Later target does rewrite/move
-	endif(HTML_PRESRC)
+	endif(EXISTS ${HTML_PRESRC})
 endif(CAN_BUILD_MANUAL)
 
 
@@ -135,20 +133,20 @@ endif(CAN_BUILD_MANUAL)
 # If we're using pregen'd versions, we have to do the subs of build vars
 # on the output files, instead of doing it on the asciidoc source like we
 # do above when we're building them.
-if(MAN_PRESRC)
+if(EXISTS ${MAN_PRESRC})
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MAN_PRESRC}
 		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
 		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
 	)
-endif(MAN_PRESRC)
-if(HTML_PRESRC)
+endif(EXISTS ${MAN_PRESRC})
+if(EXISTS ${HTML_PRESRC})
 	add_custom_command(OUTPUT ${MANHTML}
 		DEPENDS ${HTML_PRESRC}
 		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
 		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
 	)
-endif(HTML_PRESRC)
+endif(EXISTS ${HTML_PRESRC})
 
 
 
