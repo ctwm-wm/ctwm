@@ -216,13 +216,13 @@ if(MANUAL_BUILD_HTML)
 	message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
 	set(HAS_HTML 1)
 
-	if(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoctor")
+	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
 		add_custom_command(OUTPUT ${MANHTML}
 			DEPENDS ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1.html"
 		)
-	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoc")
+	elseif(${MANUAL_BUILD_HTML} STREQUAL "asciidoc")
 		add_custom_command(OUTPUT ${MANHTML}
 			DEPENDS ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
