@@ -42,8 +42,6 @@ set(MAN_PRESRC ${SRCDOCDIR}/ctwm.1)
 set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
 
 
-# Flags for what we wind up having
-set(HAS_HTML 0)
 
 
 
@@ -59,6 +57,7 @@ set(MANUAL_BUILD_HTML)
 if(ASCIIDOC AND A2X)
 	set(CAN_BUILD_MANUAL 1)
 	set(MANUAL_BUILD_MANPAGE a2x)
+	# HTML build disabled for time reasons
 	#set(MANUAL_BUILD_HTML asciidoc)
 endif(ASCIIDOC AND A2X)
 
@@ -140,38 +139,40 @@ endif(HAS_MAN)
 
 
 
+#
+# Do the HTML manual
+#
+set(HAS_HTML 0)
+if(MANUAL_BUILD_HTML)
+	# Got the tool to build it
+	message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
+	set(HAS_HTML 1)
 
-# How do we get a manual together?
-if(CAN_BUILD_MANUAL)
-	# Dead block
-else()
-	# Install prebuilt HTML if we have it generated too.
-	if(EXISTS ${HTML_PRESRC})
-		set(HAS_HTML 1)
-		message(STATUS "Installing prebuilt HTML manual.")
-		# Later target does rewrite/move
-	endif(EXISTS ${HTML_PRESRC})
-endif(CAN_BUILD_MANUAL)
+	add_custom_command(OUTPUT ${MANHTML}
+		DEPENDS ${ADOC_TMPSRC}
+		COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
+		COMMENT "Generating ${ADOC_TMPSRC} -> ${MANHTML}"
+	)
 
+elseif(EXISTS ${HTML_PRESRC})
+	# Can't build it ourselves, but we've got a prebuilt version.
+	message(STATUS "Can't build HTML manual , using prebuilt version.")
+	set(HAS_HTML 1)
 
-
-
-# If we're using pregen'd versions, we have to do the subs of build vars
-# on the output files, instead of doing it on the asciidoc source like we
-# do above when we're building them.
-if(EXISTS ${HTML_PRESRC})
+	# As with the manpage above, we need to do the processing on the
+	# generated version for build options.
 	add_custom_command(OUTPUT ${MANHTML}
 		DEPENDS ${HTML_PRESRC}
 		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
 		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
 	)
-endif(EXISTS ${HTML_PRESRC})
 
-
-
-
-
-
+else()
+	# Can't build it, no prebuilt.
+	# Left as STATUS, since this is "normal" for now.
+	message(STATUS "Can't build HTML manual, and no prebuilt version "
+		"available.")
+endif(MANUAL_BUILD_HTML)
 
 
 # If we have (or are building) the HTML, add an easy target for it, and
