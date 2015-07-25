@@ -46,10 +46,15 @@ set(HAS_HTML 0)
 # The build process
 #
 
-# Can we build the manual?
+# Can we build the manual?  And what tools do we use for it?
 set(CAN_BUILD_MANUAL 0)
+set(MANUAL_BUILD_MANPAGE)
+set(MANUAL_BUILD_HTML)
+
 if(ASCIIDOC AND A2X)
 	set(CAN_BUILD_MANUAL 1)
+	set(MANUAL_BUILD_MANPAGE a2x)
+	#set(MANUAL_BUILD_HTML asciidoc)
 endif(ASCIIDOC AND A2X)
 
 
