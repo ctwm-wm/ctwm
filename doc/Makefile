@@ -18,9 +18,10 @@ clean:
 #
 # Note that asciidoctor has a slightly changed dialect, so there will be
 # some glitches in the output.  Also, the manpage generation requires
-# 1.5.3+ (not yet released as of this writing).  Since the currently
-# worldview seems to be that asciidoctor is the primary movement in the
-# adoc world, we'll probably transition at some point.
+# 1.5.3+ (not yet released as of this writing).  At the moment, we're
+# trying to work with both.  Current trends suggest that at some point
+# asciidoctor will be the de facto asciidoc-world implementation, so we
+# may drop the py-asciidoc at some point.
 
 
 # Generating HTML output by various means
@@ -44,7 +45,8 @@ man-asciidoctor: ${BASE}.adoc
 
 
 
-# Set which are used by default
+# Set which are used by default.  Set to asciidoctor since it's massively
+# faster.
 ${HTML}: ${BASE}.adoc
 	@${MAKE} html-asciidoctor
 
