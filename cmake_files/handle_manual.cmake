@@ -70,7 +70,7 @@ if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 	add_custom_command(OUTPUT ${ADOC_TMPSRC}
 		DEPENDS ${ADOC_SRC}
 		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
-		COMMENT "Processing ${ADOC_SRC} -> ${ADOC_TMPSRC}"
+		COMMENT "Processing ctwm.1.adoc -> mantmp/ctwm.1.adoc"
 	)
 endif(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 
@@ -95,7 +95,7 @@ if(MANUAL_BUILD_MANPAGE)
 		DEPENDS ${ADOC_TMPSRC}
 		COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
 		COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
-		COMMENT "Generating ${ADOC_TMPSRC} -> ${MANPAGE}"
+		COMMENT "Generating ctwm.1"
 	)
 elseif(EXISTS ${MAN_PRESRC})
 	# Can't build it ourselves, but we've got a prebuilt version.
@@ -107,7 +107,7 @@ elseif(EXISTS ${MAN_PRESRC})
 	add_custom_command(OUTPUT ${MANPAGE}
 		DEPENDS ${MAN_PRESRC}
 		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
-		COMMENT "Processing ${MAN_PRESRC} > ${MANPAGE}"
+		COMMENT "Processing prebuilt manpage -> ctwm.1"
 	)
 else()
 	# Can't build it, no prebuilt.  Not quite fatal, but very bad.
@@ -127,7 +127,7 @@ if(HAS_MAN)
 		add_custom_command(OUTPUT "${MANPAGE}.gz"
 			DEPENDS ${MANPAGE}
 			COMMAND ${GZIP_CMD} -nc ${MANPAGE} > ${MANPAGE}.gz
-			COMMENT "Compressing ${MANPAGE}.gz"
+			COMMENT "Compressing ctwm.1.gz"
 		)
 		add_custom_target(man ALL DEPENDS "${MANPAGE}.gz")
 		set(INSTMAN "${MANPAGE}.gz")
@@ -152,7 +152,7 @@ if(MANUAL_BUILD_HTML)
 	add_custom_command(OUTPUT ${MANHTML}
 		DEPENDS ${ADOC_TMPSRC}
 		COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-		COMMENT "Generating ${ADOC_TMPSRC} -> ${MANHTML}"
+		COMMENT "Generating ctwm.1.html"
 	)
 
 elseif(EXISTS ${HTML_PRESRC})
@@ -165,7 +165,7 @@ elseif(EXISTS ${HTML_PRESRC})
 	add_custom_command(OUTPUT ${MANHTML}
 		DEPENDS ${HTML_PRESRC}
 		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
-		COMMENT "Processing ${HTML_PRESRC} > ${MANHTML}"
+		COMMENT "Processing prebuilt manual -> ctwm.1.html"
 	)
 
 else()
