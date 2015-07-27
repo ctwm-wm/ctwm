@@ -564,7 +564,7 @@ typedef struct _ctwm_cl_args {
 	char  *captivename;        // --name, captive name
 
 #ifdef USEM4
-	int    KeepTmpFile;        // --keeep-defs, keep generated m4 defs
+	int    KeepTmpFile;        // --keep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output
 	int    GoThroughM4;        // ! --nom4, do m4 processing
 #endif
