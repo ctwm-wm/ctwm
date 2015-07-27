@@ -128,6 +128,14 @@ if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
 		COMMENT "Processing ctwm.1.adoc -> mantmp/ctwm.1.adoc"
 	)
+
+	# We can't actually make other targets depend on that generated
+	# source file, because cmake will try to multi-build it in parallel.
+	# To work around, we add a do-nothing custom target that depends on
+	# $ADOC_TMPSRC, that uses of it depend on instead of it.
+	#
+	# x-ref http://public.kitware.com/Bug/view.php?id=12311
+	add_custom_target(mk_adoc_tmpsrc DEPENDS ${ADOC_TMPSRC})
 endif(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 
 
@@ -146,7 +154,7 @@ if(MANUAL_BUILD_MANPAGE)
 		# We don't need the hoops for a2x here, since asciidoctor lets us
 		# specify the output directly.
 		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS ${ADOC_TMPSRC}
+			DEPENDS mk_adoc_tmpsrc
 			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANPAGE} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1 with asciidoctor."
 		)
@@ -158,7 +166,7 @@ if(MANUAL_BUILD_MANPAGE)
 		# afterward.
 		set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
 		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS ${ADOC_TMPSRC}
+			DEPENDS mk_adoc_tmpsrc
 			COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
 			COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
 			COMMENT "Generating ctwm.1 with a2x."
@@ -221,13 +229,13 @@ if(MANUAL_BUILD_HTML)
 
 	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
 		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS ${ADOC_TMPSRC}
+			DEPENDS mk_adoc_tmpsrc
 			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1.html with asciidoctor."
 		)
 	elseif(${MANUAL_BUILD_HTML} STREQUAL "asciidoc")
 		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS ${ADOC_TMPSRC}
+			DEPENDS mk_adoc_tmpsrc
 			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1.html with asciidoc."
 		)
