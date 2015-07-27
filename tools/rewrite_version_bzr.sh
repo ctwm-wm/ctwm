@@ -5,7 +5,7 @@
 
 
 # "revno revid" of the working tree
-REVID=`bzr revision-info --tree | cut -wf2-`
+REVID=`bzr revision-info --tree | cut -d ' ' -f2-`
 if [ $? -ne 0 ]; then
 	# Failed somehow
 	REVID="???"
