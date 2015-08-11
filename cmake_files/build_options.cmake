@@ -29,7 +29,7 @@ if(USE_XPM)
 	endif(NOT X11_Xpm_FOUND)
 
 	list(APPEND CTWMLIBS ${X11_Xpm_LIB})
-	message(STATUS "Enabling XPM support: ${X11_Xpm_LIB}.")
+	message(STATUS "Enabling XPM support: ${X11_Xpm_LIB}")
 
 	# DATADIR should already be defined; guard against me being stupid
 	# when I change something
