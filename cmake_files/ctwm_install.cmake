@@ -31,9 +31,9 @@ endif(USE_XPM)
 # If we don't have the manpage, that's pretty exceptional, so give a
 # warning about it.
 if(NOT HAS_MAN)
-	string(CONCAT NOMANWARN "No manpage to install: recheck config "
-		"if this is unexpected.")
-	install(CODE "message(WARNING \"${NOMANWARN}\")")
+	# STRING(CONCAT x y z) could build this message, but requires cmake
+	# 3.0 which we aren't yet willing to require.
+	install(CODE "message(WARNING \"No manpage to install: recheck config if this is unexpected.\")")
 else()
 	install(FILES ${INSTMAN}
 		DESTINATION ${MAN1PATH}
