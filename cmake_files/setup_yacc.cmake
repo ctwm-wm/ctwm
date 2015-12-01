@@ -7,6 +7,12 @@
 
 # Setup flags, and have an escape to debug the parser, if that's ever
 # useful.
+#
+# Making this a list messes with BISON_TARGET() which requires a string
+# accordign to the docs (though only cmake 3.4 start complaining about
+# getting a list).  A string might be nicer, but we'd really need
+# string(CONCAT) for that, and x-ref in ctwm_install.cmake for notes on
+# that.
 set(YFLAGS -d -b gram)
 if(DO_DEBUGPARSER)
 	list(APPEND YFLAGS -t -v)
@@ -17,8 +23,10 @@ endif(DO_DEBUGPARSER)
 # This only finds bison, not yacc.
 find_package(BISON)
 if(BISON_FOUND)
+	# What a stupid way to spell 'stringify'...
+	string(REPLACE ";" " " _YFSTR "${YFLAGS}")
 	BISON_TARGET(ctwm_parser gram.y ${CMAKE_CURRENT_BINARY_DIR}/gram.tab.c
-		COMPILE_FLAGS ${YFLAGS})
+		COMPILE_FLAGS ${_YFSTR})
 else()
 	# There doesn't seem to be a standard module for yacc, so hand-code
 	# it.
