@@ -2485,8 +2485,8 @@ static Image *Create3DResizeOutBotAnimation(ColorPair cp)
 
 static Image *Create3DMenuAnimation(Bool up, ColorPair cp)
 {
-	int               h, i, j;
-	Image     *image, *im, *im1;
+	int   h, i, j;
+	Image *image, *im, *im1;
 
 	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
 	if(!(h & 1)) {
