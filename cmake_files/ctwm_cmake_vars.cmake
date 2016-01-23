@@ -14,6 +14,7 @@ set(CTWMSRC
 	add_window.c
 	clargs.c
 	clicktofocus.c
+	ctopts.c
 	ctwm.c
 	ctwm_atoms.c
 	cursor.c
