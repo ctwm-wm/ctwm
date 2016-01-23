@@ -72,9 +72,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/time.h>
-#if defined(AIXV3) || defined(_SYSTYPE_SVR4) || defined(ibm) || defined __QNX__
-#include <sys/select.h>
-#endif
 #include <ctype.h>
 
 #include <X11/Xatom.h>

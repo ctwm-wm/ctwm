@@ -72,9 +72,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
-#if defined(AIXV3) || defined(_SYSTYPE_SVR4) || defined(ibm) || defined __QNX__
-#include <sys/select.h>
-#endif
 #include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"
