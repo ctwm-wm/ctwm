@@ -4691,10 +4691,10 @@ static void Identify(TwmWindow *t)
 	char *ctopts;
 
 	n = 0;
-	(void) sprintf(Info[n++], "Twm version:  %s", Version);
+	sprintf(Info[n++], "Twm version:  %s", Version);
 
 	ctopts = ctopts_string(", ");
-	(void) sprintf(Info[n++], "Compile time options : %s", ctopts);
+	sprintf(Info[n++], "Compile time options : %s", ctopts);
 	free(ctopts);
 
 	Info[n++][0] = '\0';
@@ -4702,20 +4702,20 @@ static void Identify(TwmWindow *t)
 	if(t) {
 		XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
 		             &wwidth, &wheight, &bw, &depth);
-		(void) XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
+		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                             &x, &y, &junk);
-		(void) sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
-		(void) sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
-		(void) sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
+		sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
+		sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
+		sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
 		Info[n++][0] = '\0';
-		(void) sprintf(Info[n++],
+		sprintf(Info[n++],
 		               "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
 		               wwidth + 2 * (bw + t->frame_bw3D),
 		               wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
 		               x - (bw + t->frame_bw3D),
 		               y - (bw + t->frame_bw3D + t->title_height),
 		               wwidth, wheight, x, y);
-		(void) sprintf(Info[n++],
+		sprintf(Info[n++],
 		               "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
 		               wwidth + 2 * (bw + t->frame_bw3D),
 		               wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
@@ -4723,42 +4723,42 @@ static void Identify(TwmWindow *t)
 		               Scr->rooth - (y + wheight + bw + t->frame_bw3D),
 		               wwidth, wheight,
 		               Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
-		(void) sprintf(Info[n++], "Border width       = %d", bw);
-		(void) sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
-		(void) sprintf(Info[n++], "Depth              = %d", depth);
+		sprintf(Info[n++], "Border width       = %d", bw);
+		sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
+		sprintf(Info[n++], "Depth              = %d", depth);
 		if(t->vs &&
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
-			(void) sprintf(Info[n++], "Virtual Workspace  = %s",
+			sprintf(Info[n++], "Virtual Workspace  = %s",
 			               t->vs->wsw->currentwspc->name);
 		}
-		(void) sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
+		sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
 
 		if(t->icon != NULL) {
 			XGetGeometry(dpy, t->icon->w, &JunkRoot, &JunkX, &JunkY,
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
-			(void) sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
+			sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
 			               wwidth, wheight, JunkX, JunkY);
-			(void) sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
+			sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
 			               t->icon->w_width, t->icon->w_height,
 			               t->icon->w_x, t->icon->w_y);
-			(void) sprintf(Info[n++], "IconBorder width  = %d", bw);
-			(void) sprintf(Info[n++], "IconDepth         = %d", depth);
+			sprintf(Info[n++], "IconBorder width  = %d", bw);
+			sprintf(Info[n++], "IconDepth         = %d", depth);
 		}
 
 		if(XGetWindowProperty(dpy, t->w, XA_WM_CLIENT_MACHINE, 0L, 64, False,
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
 			if(nitems && prop) {
-				(void) sprintf(Info[n++], "Client machine     = %s", (char *)prop);
+				sprintf(Info[n++], "Client machine     = %s", (char *)prop);
 				XFree((char *) prop);
 			}
 		}
 		Info[n++][0] = '\0';
 	}
 
-	(void) sprintf(Info[n++], "Click to dismiss....");
+	sprintf(Info[n++], "Click to dismiss....");
 
 	/* figure out the width and height of the info window */
 	height = n * (Scr->DefaultFont.height + 2);
