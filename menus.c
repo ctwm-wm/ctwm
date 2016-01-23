@@ -5377,12 +5377,6 @@ static void MosaicFade(TwmWindow *tmp_win, Window blanket)
 	}
 	for(i = 0; i < 10; i++) {
 		for(j = 0; j < nrects; j++) {
-#if defined(MACH) || defined(__MACH__) || defined(sony_news) || defined(NeXT)
-#define lrand48 random
-#endif
-#if defined(__DARWIN__)
-#define lrand48 rand
-#endif
 			rectangles [j].x = ((lrand48() %  width) / srect) * srect;
 			rectangles [j].y = ((lrand48() % height) / srect) * srect;
 		}
