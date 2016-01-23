@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "clargs.h"
+#include "ctopts.h"
 #include "screen.h"
 #include "version.h"
 
@@ -345,23 +346,11 @@ print_version(void)
 static void
 DisplayInfo(void)
 {
+	char *ctopts;
+
 	printf("Twm version:  %s\n", Version);
-	printf("Compile time options :");
-#ifdef XPM
-	printf(" XPM");
-#endif
-#ifdef USEM4
-	printf(" USEM4");
-#endif
-#ifdef SOUNDS
-	printf(" SOUNDS");
-#endif
-#ifdef GNOME
-	printf(" GNOME");
-#endif
-#ifdef EWMH
-	printf(" EWMH");
-#endif
-	printf(" I18N");
-	printf("\n");
+
+	ctopts = ctopts_string(" ");
+	printf("Compile time options : %s\n", ctopts);
+	free(ctopts);
 }
