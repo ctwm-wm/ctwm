@@ -1267,7 +1267,7 @@ void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
 	}
 
 	if(!sc) {                           /* no existing, allocate new */
-		sc = (StdCmap *) malloc(sizeof(StdCmap));
+		sc = calloc(1, sizeof(StdCmap));
 		if(!sc) {
 			fprintf(stderr, "%s:  unable to allocate %lu bytes for StdCmap\n",
 			        ProgramName, (unsigned long) sizeof(StdCmap));
@@ -2485,8 +2485,8 @@ static Image *Create3DResizeOutBotAnimation(ColorPair cp)
 
 static Image *Create3DMenuAnimation(Bool up, ColorPair cp)
 {
-	int               h, i, j;
-	Image     *image, *im, *im1;
+	int   h, i, j;
+	Image *image, *im, *im1;
 
 	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
 	if(!(h & 1)) {
