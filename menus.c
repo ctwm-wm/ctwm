@@ -4681,10 +4681,10 @@ static void Identify(TwmWindow *t)
 	Window junk;
 	int px, py, dummy;
 	unsigned udummy;
-	unsigned char       *prop;
-	unsigned long       nitems, bytesafter;
-	Atom                actual_type;
-	int                 actual_format;
+	unsigned char *prop;
+	unsigned long nitems, bytesafter;
+	Atom actual_type;
+	int actual_format;
 	XRectangle inc_rect;
 	XRectangle logical_rect;
 	Bool first = True;
