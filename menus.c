@@ -97,6 +97,7 @@
 #include "workmgr.h"
 #include "cursor.h"
 #include "otp.h"
+#include "ctopts.h"
 #ifdef GNOME
 # include "gnomewindefs.h"
 #endif
@@ -4681,124 +4682,83 @@ static void Identify(TwmWindow *t)
 	Window junk;
 	int px, py, dummy;
 	unsigned udummy;
-	unsigned char       *prop;
-	unsigned long       nitems, bytesafter;
-	Atom                actual_type;
-	int                 actual_format;
+	unsigned char *prop;
+	unsigned long nitems, bytesafter;
+	Atom actual_type;
+	int actual_format;
 	XRectangle inc_rect;
 	XRectangle logical_rect;
-	Bool first = True;
+	char *ctopts;
 
 	n = 0;
-	(void) sprintf(Info[n++], "Twm version:  %s", Version);
-	(void) sprintf(Info[n], "Compile time options :");
-#ifdef XPM
-	(void) strcat(Info[n], " XPM");
-	first = False;
-#endif
-#ifdef USEM4
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "USEM4");
-	first = False;
-#endif
-#ifdef GNOME
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "GNOME");
-	first = False;
-#endif
-#ifdef EWMH
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "EWMH");
-	first = False;
-#endif
-#ifdef SOUNDS
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "SOUNDS");
-	first = False;
-#endif
-#ifdef DEBUG
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "debug");
-	first = False;
-#endif
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "I18N");
-	first = False;
-	n++;
+	sprintf(Info[n++], "Twm version:  %s", Version);
+
+	ctopts = ctopts_string(", ");
+	sprintf(Info[n++], "Compile time options : %s", ctopts);
+	free(ctopts);
+
 	Info[n++][0] = '\0';
 
 	if(t) {
 		XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
 		             &wwidth, &wheight, &bw, &depth);
-		(void) XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
-		                             &x, &y, &junk);
-		(void) sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
-		(void) sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
-		(void) sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
+		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
+		                      &x, &y, &junk);
+		sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
+		sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
+		sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
 		Info[n++][0] = '\0';
-		(void) sprintf(Info[n++],
-		               "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
-		               wwidth + 2 * (bw + t->frame_bw3D),
-		               wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		               x - (bw + t->frame_bw3D),
-		               y - (bw + t->frame_bw3D + t->title_height),
-		               wwidth, wheight, x, y);
-		(void) sprintf(Info[n++],
-		               "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
-		               wwidth + 2 * (bw + t->frame_bw3D),
-		               wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		               Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
-		               Scr->rooth - (y + wheight + bw + t->frame_bw3D),
-		               wwidth, wheight,
-		               Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
-		(void) sprintf(Info[n++], "Border width       = %d", bw);
-		(void) sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
-		(void) sprintf(Info[n++], "Depth              = %d", depth);
+		sprintf(Info[n++],
+		        "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
+		        wwidth + 2 * (bw + t->frame_bw3D),
+		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		        x - (bw + t->frame_bw3D),
+		        y - (bw + t->frame_bw3D + t->title_height),
+		        wwidth, wheight, x, y);
+		sprintf(Info[n++],
+		        "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
+		        wwidth + 2 * (bw + t->frame_bw3D),
+		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		        Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
+		        Scr->rooth - (y + wheight + bw + t->frame_bw3D),
+		        wwidth, wheight,
+		        Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
+		sprintf(Info[n++], "Border width       = %d", bw);
+		sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
+		sprintf(Info[n++], "Depth              = %d", depth);
 		if(t->vs &&
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
-			(void) sprintf(Info[n++], "Virtual Workspace  = %s",
-			               t->vs->wsw->currentwspc->name);
+			sprintf(Info[n++], "Virtual Workspace  = %s",
+			        t->vs->wsw->currentwspc->name);
 		}
-		(void) sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
+		sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
 
 		if(t->icon != NULL) {
 			XGetGeometry(dpy, t->icon->w, &JunkRoot, &JunkX, &JunkY,
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
-			(void) sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
-			               wwidth, wheight, JunkX, JunkY);
-			(void) sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
-			               t->icon->w_width, t->icon->w_height,
-			               t->icon->w_x, t->icon->w_y);
-			(void) sprintf(Info[n++], "IconBorder width  = %d", bw);
-			(void) sprintf(Info[n++], "IconDepth         = %d", depth);
+			sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
+			        wwidth, wheight, JunkX, JunkY);
+			sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
+			        t->icon->w_width, t->icon->w_height,
+			        t->icon->w_x, t->icon->w_y);
+			sprintf(Info[n++], "IconBorder width  = %d", bw);
+			sprintf(Info[n++], "IconDepth         = %d", depth);
 		}
 
 		if(XGetWindowProperty(dpy, t->w, XA_WM_CLIENT_MACHINE, 0L, 64, False,
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
 			if(nitems && prop) {
-				(void) sprintf(Info[n++], "Client machine     = %s", (char *)prop);
+				sprintf(Info[n++], "Client machine     = %s", (char *)prop);
 				XFree((char *) prop);
 			}
 		}
 		Info[n++][0] = '\0';
 	}
 
-	(void) sprintf(Info[n++], "Click to dismiss....");
+	sprintf(Info[n++], "Click to dismiss....");
 
 	/* figure out the width and height of the info window */
 	height = n * (Scr->DefaultFont.height + 2);
