@@ -19,6 +19,9 @@ static char *ctopts[] = {
 #ifdef XPM
 	"XPM",
 #endif
+#ifdef JPEG
+	"JPEG",
+#endif
 #ifdef USEM4
 	"USEM4",
 #endif
