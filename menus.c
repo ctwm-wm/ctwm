@@ -4703,26 +4703,26 @@ static void Identify(TwmWindow *t)
 		XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
 		             &wwidth, &wheight, &bw, &depth);
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
-		                             &x, &y, &junk);
+		                      &x, &y, &junk);
 		sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
 		sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
 		sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
 		Info[n++][0] = '\0';
 		sprintf(Info[n++],
-		               "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
-		               wwidth + 2 * (bw + t->frame_bw3D),
-		               wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		               x - (bw + t->frame_bw3D),
-		               y - (bw + t->frame_bw3D + t->title_height),
-		               wwidth, wheight, x, y);
+		        "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
+		        wwidth + 2 * (bw + t->frame_bw3D),
+		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		        x - (bw + t->frame_bw3D),
+		        y - (bw + t->frame_bw3D + t->title_height),
+		        wwidth, wheight, x, y);
 		sprintf(Info[n++],
-		               "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
-		               wwidth + 2 * (bw + t->frame_bw3D),
-		               wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		               Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
-		               Scr->rooth - (y + wheight + bw + t->frame_bw3D),
-		               wwidth, wheight,
-		               Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
+		        "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
+		        wwidth + 2 * (bw + t->frame_bw3D),
+		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		        Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
+		        Scr->rooth - (y + wheight + bw + t->frame_bw3D),
+		        wwidth, wheight,
+		        Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
 		sprintf(Info[n++], "Border width       = %d", bw);
 		sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
 		sprintf(Info[n++], "Depth              = %d", depth);
@@ -4730,7 +4730,7 @@ static void Identify(TwmWindow *t)
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
 			sprintf(Info[n++], "Virtual Workspace  = %s",
-			               t->vs->wsw->currentwspc->name);
+			        t->vs->wsw->currentwspc->name);
 		}
 		sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
 
@@ -4739,10 +4739,10 @@ static void Identify(TwmWindow *t)
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
 			sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
-			               wwidth, wheight, JunkX, JunkY);
+			        wwidth, wheight, JunkX, JunkY);
 			sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
-			               t->icon->w_width, t->icon->w_height,
-			               t->icon->w_x, t->icon->w_y);
+			        t->icon->w_width, t->icon->w_height,
+			        t->icon->w_x, t->icon->w_y);
 			sprintf(Info[n++], "IconBorder width  = %d", bw);
 			sprintf(Info[n++], "IconDepth         = %d", depth);
 		}
