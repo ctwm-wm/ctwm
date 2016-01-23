@@ -97,6 +97,7 @@
 #include "workmgr.h"
 #include "cursor.h"
 #include "otp.h"
+#include "ctopts.h"
 #ifdef GNOME
 # include "gnomewindefs.h"
 #endif
@@ -4687,56 +4688,15 @@ static void Identify(TwmWindow *t)
 	int actual_format;
 	XRectangle inc_rect;
 	XRectangle logical_rect;
-	Bool first = True;
+	char *ctopts;
 
 	n = 0;
 	(void) sprintf(Info[n++], "Twm version:  %s", Version);
-	(void) sprintf(Info[n], "Compile time options :");
-#ifdef XPM
-	(void) strcat(Info[n], " XPM");
-	first = False;
-#endif
-#ifdef USEM4
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "USEM4");
-	first = False;
-#endif
-#ifdef GNOME
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "GNOME");
-	first = False;
-#endif
-#ifdef EWMH
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "EWMH");
-	first = False;
-#endif
-#ifdef SOUNDS
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "SOUNDS");
-	first = False;
-#endif
-#ifdef DEBUG
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "debug");
-	first = False;
-#endif
-	if(!first) {
-		(void) strcat(Info[n], ", ");
-	}
-	(void) strcat(Info[n], "I18N");
-	first = False;
-	n++;
+
+	ctopts = ctopts_string(", ");
+	(void) sprintf(Info[n++], "Compile time options : %s", ctopts);
+	free(ctopts);
+
 	Info[n++][0] = '\0';
 
 	if(t) {
