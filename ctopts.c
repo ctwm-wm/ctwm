@@ -55,21 +55,21 @@ ctopts_string(char *sep)
 	slen = strlen(sep);
 	tlen = 0;
 	i = -1;
-	while(ctopts[++i])
-	{
+	while(ctopts[++i]) {
 		tlen += strlen(ctopts[i]);
-		if(i > 0)
+		if(i > 0) {
 			tlen += slen;
+		}
 	}
 
 	/* Now make it */
 	cto = malloc(tlen + 1);
 	*cto = '\0';
 	i = -1;
-	while(ctopts[++i])
-	{
-		if(i > 0)
+	while(ctopts[++i]) {
+		if(i > 0) {
 			strcat(cto, sep);
+		}
 		strcat(cto, ctopts[i]);
 	}
 
