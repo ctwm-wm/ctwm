@@ -202,9 +202,6 @@ static char *m4_defs(Display *display, char *host)
 #ifdef JPEG
 	fputs(MkDef("JPEG", "Yes"), tmpf);
 #endif
-#ifdef GNOME
-	fputs(MkDef("GNOME", "Yes"), tmpf);
-#endif
 #ifdef SOUNDS
 	fputs(MkDef("SOUNDS", "Yes"), tmpf);
 #endif

@@ -57,9 +57,6 @@
 #ifndef _SCREEN_
 #define _SCREEN_
 
-#ifdef GNOME
-#  include "gnome.h"
-#endif /* GNOME */
 #include "list.h"
 #include "menus.h"
 #include "iconmgr.h"
@@ -463,9 +460,6 @@ struct ScreenInfo {
 	FuncKey FuncKeyRoot;
 	FuncButton FuncButtonRoot;
 
-#ifdef GNOME
-	GnomeData *gnomedata;
-#endif /* GNOME */
 #ifdef EWMH
 	Window icccm_Window;        /* ICCCM sections 4.3, 2.8 */
 	long *ewmh_CLIENT_LIST;

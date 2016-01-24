@@ -28,9 +28,6 @@ static char *ctopts[] = {
 #ifdef SOUNDS
 	"SOUNDS",
 #endif
-#ifdef GNOME
-	"GNOME",
-#endif
 #ifdef EWMH
 	"EWMH",
 #endif
