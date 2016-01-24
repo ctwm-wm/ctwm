@@ -46,12 +46,6 @@
 # define EWMH
 #endif
 
-/* Or the GNOME1 stuff */
-#cmakedefine USE_GNOME
-#ifdef USE_GNOME
-# define GNOME
-#endif
-
 /* Does libc provide regex funcs we use? */
 #cmakedefine USE_SREGEX
 #ifdef USE_SREGEX

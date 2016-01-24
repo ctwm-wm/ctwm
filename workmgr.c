@@ -276,7 +276,6 @@ void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 	GotoWorkSpace(vs, ws);
 }
 
-/* 6/19/1999 nhd for GNOME compliance */
 void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 {
 	WorkSpace *ws;
