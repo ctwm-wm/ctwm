@@ -69,9 +69,6 @@
 
 #include "ctwm.h"
 
-#if defined(USE_SIGNALS) && defined(__sgi)
-#  define _BSD_SIGNALS
-#endif
 
 #include <stdio.h>
 #include <signal.h>
@@ -4226,21 +4223,9 @@ static void Execute(char *s)
 		free(name);
 		replace = True;
 	}
-#ifdef USE_SIGNALS
-	{
-		SigProc     sig;
-
-		sig = signal(SIGALRM, SIG_IGN);
-		XUngrabPointer(dpy, CurrentTime);
-		XFlush(dpy);
-		(void) system(s);
-		signal(SIGALRM, sig);
-	}
-#else  /* USE_SIGNALS */
 	XUngrabPointer(dpy, CurrentTime);
 	XFlush(dpy);
 	(void) system(s);
-#endif  /* USE_SIGNALS */
 
 	if(restorevar) {            /* why bother? */
 		(void) sprintf(buf, "DISPLAY=%s", oldDisplay);

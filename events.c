@@ -585,34 +585,6 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 	}
 	fd = ConnectionNumber(display);
 
-#ifdef USE_SIGNALS
-	if(animate && AnimationPending) {
-		Animate();
-	}
-	while(1) {
-		FD_ZERO(&mask);
-		FD_SET(fd, &mask);
-		found = select(fd + 1, (FDSET)&mask, (FDSET) 0, (FDSET) 0, 0);
-		if(RestartFlag) {
-			DoRestart(CurrentTime);
-		}
-		if(found < 0) {
-			if(errno == EINTR) {
-				if(animate) {
-					Animate();
-				}
-			}
-			else {
-				perror("select");
-			}
-			continue;
-		}
-		if(FD_ISSET(fd, &mask)) {
-			nextEvent(event);
-			return;
-		}
-	}
-#else /* USE_SIGNALS */
 	if(animate) {
 		TryToAnimate();
 	}
@@ -660,7 +632,6 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 			continue;
 		}
 	}
-#endif /* USE_SIGNALS */
 }
 
 

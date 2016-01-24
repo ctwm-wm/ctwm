@@ -93,11 +93,7 @@ extern int Animating;
 extern Bool AnimationActive;
 extern Bool MaybeAnimate;
 extern int AnimationSpeed;
-#ifdef USE_SIGNALS
-extern Bool AnimationPending;
-#else
 extern struct timeval AnimateTimeout;
-#endif /* USE_SIGNALS */
 
 extern void     Zoom(Window wf, Window wt);
 extern void     MoveOutline(Window root,

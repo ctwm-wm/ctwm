@@ -111,9 +111,6 @@
 
 typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 
-#if defined(USE_SIGNALS) && defined(SVR4) && !defined(__sgi)
-#define signal sigset
-#endif /* SVR4 */
 
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
