@@ -2373,7 +2373,7 @@ void HandleDestroyNotify(void)
 	/* Remove the old window from the EWMH client list */
 	EwmhDeleteClientWindow(Tmp_win);
 	EwmhSet_NET_CLIENT_LIST_STACKING();
-#endif /* GNOME */
+#endif /* EWMH */
 	if(Tmp_win == Scr->Focus) {
 		Scr->Focus = (TwmWindow *) NULL;
 		FocusOnRoot();
