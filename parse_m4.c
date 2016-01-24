@@ -19,9 +19,6 @@
 
 
 /* Crazy historical */
-#if defined(ultrix)
-#define NOSTEMP
-#endif
 
 
 static char *m4_defs(Display *display, char *host);
@@ -108,20 +105,6 @@ static const char *MkNum(const char *name, int def)
 	return(MkDef(name, num));
 }
 
-#ifdef NOSTEMP
-int mkstemp(str)
-char *str;
-{
-	int fd;
-
-	mktemp(str);
-	fd = creat(str, 0744);
-	if(fd == -1) {
-		perror("mkstemp's creat");
-	}
-	return(fd);
-}
-#endif
 
 static char *m4_defs(Display *display, char *host)
 {
