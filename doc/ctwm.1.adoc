@@ -332,9 +332,6 @@ XPM::
 JPEG::
   Is defined only if ctwm was compiled with JPEG support.
 
-GNOME::
-  Is defined only if ctwm was compiled with GNOME support.
-
 SOUNDS::
   Is defined only if ctwm was compiled with SOUND support.
 
