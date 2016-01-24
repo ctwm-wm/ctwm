@@ -74,9 +74,6 @@
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#if defined(sony_news) || defined __QNX__
-#  include <ctype.h>
-#endif
 #include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"

@@ -26,6 +26,10 @@ remnants of special-case VMS support have been removed.
     it, has been removed.  The last release is almost 20 years old, and
     doesn't support any remotely recent platforms.
 
+1. The USE_SIGNALS code to use signal-driven animations has been removed.
+    It's been non-default since 3.2 (more than 20 years ago), and not
+    documented anywhere but in the code and a comment in this file.
+
 1. The `f.cut` (and `^` alias for it), `f.cutfile`, and `f.file`
    functions have been removed.  These functions for messing with the
    clipboard were never visibly documented, and came into the manpage in

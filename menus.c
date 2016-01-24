@@ -69,10 +69,6 @@
 
 #include "ctwm.h"
 
-#if defined(USE_SIGNALS) && defined(__sgi)
-#  define _BSD_SIGNALS
-#endif
-
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
@@ -105,13 +101,6 @@
 #  include "sound.h"
 #endif
 #include "version.h"
-
-#if defined(MACH) || defined(__MACH__) || defined(sony_news) || defined(NeXT)
-#define lrand48 random
-#endif
-#if defined(__DARWIN__)
-#define lrand48 rand
-#endif
 
 int RootFunction = 0;
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
@@ -4233,21 +4222,9 @@ static void Execute(char *s)
 		free(name);
 		replace = True;
 	}
-#ifdef USE_SIGNALS
-	{
-		SigProc     sig;
-
-		sig = signal(SIGALRM, SIG_IGN);
-		XUngrabPointer(dpy, CurrentTime);
-		XFlush(dpy);
-		(void) system(s);
-		signal(SIGALRM, sig);
-	}
-#else  /* USE_SIGNALS */
 	XUngrabPointer(dpy, CurrentTime);
 	XFlush(dpy);
 	(void) system(s);
-#endif  /* USE_SIGNALS */
 
 	if(restorevar) {            /* why bother? */
 		(void) sprintf(buf, "DISPLAY=%s", oldDisplay);
@@ -5558,7 +5535,7 @@ static void waitamoment(float timeout)
 	int usec = timeout * 1000000;
 	timeoutstruct.tv_usec = usec % (unsigned long) 1000000;
 	timeoutstruct.tv_sec  = usec / (unsigned long) 1000000;
-	select(0, (void *) 0, (void *) 0, (void *) 0, &timeoutstruct);
+	select(0, NULL, NULL, NULL, &timeoutstruct);
 }
 
 static void packwindow(TwmWindow *tmp_win, char *direction)

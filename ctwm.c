@@ -69,10 +69,6 @@
 
 #include "ctwm.h"
 
-#if defined(USE_SIGNALS) && defined(__sgi)
-#  define _BSD_SIGNALS
-#endif
-
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>

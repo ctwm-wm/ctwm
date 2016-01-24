@@ -72,9 +72,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/time.h>
-#if defined(AIXV3) || defined(_SYSTYPE_SVR4) || defined(ibm) || defined __QNX__
-#include <sys/select.h>
-#endif
 #include <ctype.h>
 
 #include <X11/Xatom.h>
@@ -145,12 +142,6 @@ static int GnomeProxyButtonPress = -1;
 /*#define TRACE*/
 
 static void dumpevent(XEvent *e);
-
-#if defined(__hpux) && !defined(_XPG4_EXTENDED)
-#   define FDSET int*
-#else
-#   define FDSET fd_set*
-#endif
 
 static unsigned int set_mask_ignore(unsigned int modifier)
 {
@@ -588,34 +579,6 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 	}
 	fd = ConnectionNumber(display);
 
-#ifdef USE_SIGNALS
-	if(animate && AnimationPending) {
-		Animate();
-	}
-	while(1) {
-		FD_ZERO(&mask);
-		FD_SET(fd, &mask);
-		found = select(fd + 1, (FDSET)&mask, (FDSET) 0, (FDSET) 0, 0);
-		if(RestartFlag) {
-			DoRestart(CurrentTime);
-		}
-		if(found < 0) {
-			if(errno == EINTR) {
-				if(animate) {
-					Animate();
-				}
-			}
-			else {
-				perror("select");
-			}
-			continue;
-		}
-		if(FD_ISSET(fd, &mask)) {
-			nextEvent(event);
-			return;
-		}
-	}
-#else /* USE_SIGNALS */
 	if(animate) {
 		TryToAnimate();
 	}
@@ -635,7 +598,7 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 		if(animate) {
 			timeout = AnimateTimeout;
 		}
-		found = select(fd + 1, (FDSET)&mask, (FDSET) 0, (FDSET) 0, tout);
+		found = select(fd + 1, &mask, NULL, NULL, tout);
 		if(RestartFlag) {
 			DoRestart(CurrentTime);
 		}
@@ -663,7 +626,6 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 			continue;
 		}
 	}
-#endif /* USE_SIGNALS */
 }
 
 
@@ -3856,7 +3818,7 @@ void HandleEnterNotify(void)
 					 */
 					for(i = 25; i < RaiseDelay; i += 25) {
 						tout = timeout;
-						select(0, 0, 0, 0, &tout);
+						select(0, NULL, NULL, NULL, &tout);
 						/* Did we leave this window already? */
 						scanArgs.w = ewp->window;
 						scanArgs.leaves = scanArgs.enters = False;

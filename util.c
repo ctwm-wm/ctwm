@@ -97,9 +97,6 @@
 #include <X11/Xmu/WinUtil.h>
 #include <X11/XWDFile.h>
 
-#if defined(USE_SIGNALS) && defined(__sgi)
-#  define _BSD_SIGNALS
-#endif
 
 #include <signal.h>
 #include <sys/time.h>
@@ -179,11 +176,7 @@ int  Animating        = 0;
 int  AnimationSpeed   = 0;
 Bool AnimationActive  = False;
 Bool MaybeAnimate     = True;
-#ifdef USE_SIGNALS
-Bool AnimationPending = False;
-#else
 struct timeval AnimateTimeout;
-#endif /* USE_SIGNALS */
 
 /***********************************************************************
  *
@@ -945,7 +938,7 @@ void UnmaskScreen(void)
 				colors [j].blue  = stdcolors [j].blue  * ((127.0 - i) / 128.0);
 			}
 			XStoreColors(dpy, cmap, colors, 256);
-			select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
+			select(0, NULL, NULL, NULL, &timeout);
 		}
 		XFreeColors(dpy, cmap, pixels, 256, 0L);
 		XFreeGC(dpy, Scr->WelcomeGC);
@@ -993,7 +986,7 @@ void UnmaskScreen(void)
 			colors [j].flags = DoRed | DoGreen | DoBlue;
 		}
 		XStoreColors(dpy, cmap, colors, 256);
-		select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
+		select(0, NULL, NULL, NULL, &timeout);
 	}
 
 	if(CLarg.is_captive) {
@@ -1014,11 +1007,7 @@ fin:
 }
 
 
-#ifdef USE_SIGNALS
-SIGNAL_T AnimateHandler();
-#endif
 
-#ifndef USE_SIGNALS
 void TryToAnimate(void)
 {
 	struct timeval  tp;
@@ -1049,13 +1038,9 @@ void TryToAnimate(void)
 	lastsec  = tp.tv_sec;
 	lastusec = tp.tv_usec;
 }
-#endif /* USE_SIGNALS */
 
 void StartAnimation(void)
 {
-#ifdef USE_SIGNALS
-	struct itimerval tv;
-#endif
 
 	if(AnimationSpeed > MAXANIMATIONSPEED) {
 		AnimationSpeed = MAXANIMATIONSPEED;
@@ -1066,25 +1051,6 @@ void StartAnimation(void)
 	if(AnimationActive) {
 		return;
 	}
-#ifdef USE_SIGNALS
-	if(AnimationSpeed == 0) {
-		return;
-	}
-	signal(SIGALRM, AnimateHandler);
-	if(AnimationSpeed == 1) {
-		tv.it_interval.tv_sec  = 1;
-		tv.it_interval.tv_usec = 0;
-		tv.it_value.tv_sec     = 1;
-		tv.it_value.tv_usec    = 0;
-	}
-	else {
-		tv.it_interval.tv_sec  = 0;
-		tv.it_interval.tv_usec = 1000000 / AnimationSpeed;
-		tv.it_value.tv_sec     = 0;
-		tv.it_value.tv_usec    = 1000000 / AnimationSpeed;
-	}
-	setitimer(ITIMER_REAL, &tv, (struct itimerval *) NULL);
-#else /* USE_SIGNALS */
 	switch(AnimationSpeed) {
 		case 0 :
 			return;
@@ -1096,27 +1062,11 @@ void StartAnimation(void)
 			AnimateTimeout.tv_sec  = 0;
 			AnimateTimeout.tv_usec = 1000000 / AnimationSpeed;
 	}
-#endif /* USE_SIGNALS */
 	AnimationActive = True;
 }
 
 void StopAnimation(void)
 {
-#ifdef USE_SIGNALS
-	struct itimerval tv;
-
-	if(AnimationSpeed <= 0) {
-		return;
-	}
-	if(! AnimationActive) {
-		return;
-	}
-	signal(SIGALRM, SIG_IGN);
-
-	tv.it_value.tv_sec     = 0;
-	tv.it_value.tv_usec    = 0;
-	setitimer(ITIMER_REAL, &tv, (struct itimerval *) NULL);
-#endif
 	AnimationActive = False;
 }
 
@@ -1130,9 +1080,6 @@ void SetAnimationSpeed(int speed)
 
 void ModifyAnimationSpeed(int incr)
 {
-#ifdef USE_SIGNALS
-	struct itimerval tv;
-#endif
 
 	if((AnimationSpeed + incr) < 0) {
 		return;
@@ -1149,22 +1096,6 @@ void ModifyAnimationSpeed(int incr)
 		AnimationSpeed = MAXANIMATIONSPEED;
 	}
 
-#ifdef USE_SIGNALS
-	signal(SIGALRM, AnimateHandler);
-	if(AnimationSpeed == 1) {
-		tv.it_interval.tv_sec  = 1;
-		tv.it_interval.tv_usec = 0;
-		tv.it_value.tv_sec     = 1;
-		tv.it_value.tv_usec    = 0;
-	}
-	else {
-		tv.it_interval.tv_sec  = 0;
-		tv.it_interval.tv_usec = 1000000 / AnimationSpeed;
-		tv.it_value.tv_sec     = 0;
-		tv.it_value.tv_usec    = 1000000 / AnimationSpeed;
-	}
-	setitimer(ITIMER_REAL, &tv, (struct itimerval *) NULL);
-#else /* USE_SIGNALS */
 	if(AnimationSpeed == 1) {
 		AnimateTimeout.tv_sec  = 1;
 		AnimateTimeout.tv_usec = 0;
@@ -1173,17 +1104,9 @@ void ModifyAnimationSpeed(int incr)
 		AnimateTimeout.tv_sec  = 0;
 		AnimateTimeout.tv_usec = 1000000 / AnimationSpeed;
 	}
-#endif /* USE_SIGNALS */
 	AnimationActive = True;
 }
 
-#ifdef USE_SIGNALS
-SIGNAL_T AnimateHandler(int dummy)
-{
-	signal(SIGALRM, AnimateHandler);
-	AnimationPending = True;
-}
-#endif
 
 void Animate(void)
 {
@@ -1200,9 +1123,6 @@ void Animate(void)
 	if(Animating > 1) {
 		return;        /* rate limiting */
 	}
-#ifdef USE_SIGNALS
-	AnimationPending = False;
-#endif
 
 	/* Impossible? */
 	if(NumScreens < 1) {
@@ -3656,11 +3576,6 @@ file_opened:
 	len = fread((char *) &header, sizeof(header), 1, file);
 	if(len != 1) {
 		fprintf(stderr, "ctwm: cannot read %s\n", filename);
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 	if(*(char *) &swaptest) {
@@ -3674,11 +3589,6 @@ file_opened:
 	len = fread(win_name, win_name_size, 1, file);
 	if(len != 1) {
 		fprintf(stderr, "file %s has not the correct format\n", filename);
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 
@@ -3693,11 +3603,6 @@ file_opened:
 	len = fread((char *) xwdcolors, sizeof(XWDColor), ncolors, file);
 	if(len != ncolors) {
 		fprintf(stderr, "file %s has not the correct format\n", filename);
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 	if(*(char *) &swaptest) {
@@ -3724,22 +3629,12 @@ file_opened:
 	imagedata = (unsigned char *) malloc(buffer_size);
 	if(! imagedata) {
 		fprintf(stderr, "cannot allocate memory for image %s\n", filename);
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 	len = fread(imagedata, (int) buffer_size, 1, file);
 	if(len != 1) {
 		free(imagedata);
 		fprintf(stderr, "file %s has not the correct format\n", filename);
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 	if(ispipe) {
@@ -3755,11 +3650,6 @@ file_opened:
 	if(image == None) {
 		free(imagedata);
 		fprintf(stderr, "cannot create image for %s\n", filename);
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 	if(header.pixmap_format == ZPixmap) {
@@ -3788,11 +3678,6 @@ file_opened:
 		for(i = 0; i < ncolors; i++) {
 			XFreeColors(dpy, cmap, &(colors [i].pixel), 1, 0L);
 		}
-#ifdef USE_SIGNALS
-		if(ispipe && anim) {
-			StartAnimation();
-		}
-#endif
 		return (None);
 	}
 	if(header.pixmap_format == XYBitmap) {
@@ -3823,11 +3708,6 @@ file_opened:
 	ret->pixmap = pixret;
 	ret->mask   = None;
 	ret->next   = None;
-#ifdef USE_SIGNALS
-	if(ispipe && anim) {
-		StartAnimation();
-	}
-#endif
 	return (ret);
 }
 
