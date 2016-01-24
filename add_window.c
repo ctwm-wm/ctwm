@@ -123,11 +123,6 @@ static void             mergeWindowEntries(WindowEntry *old, WindowEntry *we);
 char NoName[] = "Untitled"; /* name if no name is specified */
 int  resizeWhenAdd;
 
-#if defined(__hpux) && !defined(_XPG4_EXTENDED)
-#   define FDSET int*
-#else
-#   define FDSET fd_set*
-#endif
 /************************************************************************
  *
  *  Procedure:
@@ -999,7 +994,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 							FD_SET(fd, &mask);
 							timeout.tv_sec  = Scr->OpenWindowTimeout;
 							timeout.tv_usec = 0;
-							found = select(fd + 1, (FDSET)&mask, (FDSET)0, (FDSET)0, &timeout);
+							found = select(fd + 1, &mask, 0, 0, &timeout);
 							if(found == 0) {
 								break;
 							}

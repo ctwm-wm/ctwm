@@ -143,12 +143,6 @@ static int GnomeProxyButtonPress = -1;
 
 static void dumpevent(XEvent *e);
 
-#if defined(__hpux) && !defined(_XPG4_EXTENDED)
-#   define FDSET int*
-#else
-#   define FDSET fd_set*
-#endif
-
 static unsigned int set_mask_ignore(unsigned int modifier)
 {
 	modifier &= ~Scr->IgnoreModifier;
@@ -604,7 +598,7 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 		if(animate) {
 			timeout = AnimateTimeout;
 		}
-		found = select(fd + 1, (FDSET)&mask, (FDSET) 0, (FDSET) 0, tout);
+		found = select(fd + 1, &mask, 0, 0, tout);
 		if(RestartFlag) {
 			DoRestart(CurrentTime);
 		}
