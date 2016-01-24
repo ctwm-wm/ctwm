@@ -598,7 +598,7 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 		if(animate) {
 			timeout = AnimateTimeout;
 		}
-		found = select(fd + 1, &mask, 0, 0, tout);
+		found = select(fd + 1, &mask, NULL, NULL, tout);
 		if(RestartFlag) {
 			DoRestart(CurrentTime);
 		}
@@ -3818,7 +3818,7 @@ void HandleEnterNotify(void)
 					 */
 					for(i = 25; i < RaiseDelay; i += 25) {
 						tout = timeout;
-						select(0, 0, 0, 0, &tout);
+						select(0, NULL, NULL, NULL, &tout);
 						/* Did we leave this window already? */
 						scanArgs.w = ewp->window;
 						scanArgs.leaves = scanArgs.enters = False;

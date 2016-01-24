@@ -5535,7 +5535,7 @@ static void waitamoment(float timeout)
 	int usec = timeout * 1000000;
 	timeoutstruct.tv_usec = usec % (unsigned long) 1000000;
 	timeoutstruct.tv_sec  = usec / (unsigned long) 1000000;
-	select(0, (void *) 0, (void *) 0, (void *) 0, &timeoutstruct);
+	select(0, NULL, NULL, NULL, &timeoutstruct);
 }
 
 static void packwindow(TwmWindow *tmp_win, char *direction)

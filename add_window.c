@@ -994,7 +994,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 							FD_SET(fd, &mask);
 							timeout.tv_sec  = Scr->OpenWindowTimeout;
 							timeout.tv_usec = 0;
-							found = select(fd + 1, &mask, 0, 0, &timeout);
+							found = select(fd + 1, &mask, NULL, NULL, &timeout);
 							if(found == 0) {
 								break;
 							}

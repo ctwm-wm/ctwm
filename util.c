@@ -938,7 +938,7 @@ void UnmaskScreen(void)
 				colors [j].blue  = stdcolors [j].blue  * ((127.0 - i) / 128.0);
 			}
 			XStoreColors(dpy, cmap, colors, 256);
-			select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
+			select(0, NULL, NULL, NULL, &timeout);
 		}
 		XFreeColors(dpy, cmap, pixels, 256, 0L);
 		XFreeGC(dpy, Scr->WelcomeGC);
@@ -986,7 +986,7 @@ void UnmaskScreen(void)
 			colors [j].flags = DoRed | DoGreen | DoBlue;
 		}
 		XStoreColors(dpy, cmap, colors, 256);
-		select(0, (void *) 0, (void *) 0, (void *) 0, &timeout);
+		select(0, NULL, NULL, NULL, &timeout);
 	}
 
 	if(CLarg.is_captive) {
