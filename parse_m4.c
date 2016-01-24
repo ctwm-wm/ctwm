@@ -18,9 +18,6 @@
 #include "version.h"
 
 
-/* Crazy historical */
-
-
 static char *m4_defs(Display *display, char *host);
 
 

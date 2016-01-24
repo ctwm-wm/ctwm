@@ -111,7 +111,6 @@
 
 typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 
-
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
 
