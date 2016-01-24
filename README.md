@@ -112,11 +112,6 @@ USE_EWMH
 :       Enables EWMH support.
         (**ON** by default)
 
-USE_GNOME
-:       If defined, enables interaction with GNOME1 properties.  This
-        doesn't require any GNOME libraries or includes.
-        (**OFF** by default, unless EWMH is disabled)
-
 USE_SOUND
 :       Build with sound support via librplay.
         (**OFF** by default)

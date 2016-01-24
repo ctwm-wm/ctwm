@@ -13,7 +13,6 @@ option(USE_M4     "Enable m4 support"                  ON )
 option(USE_SOUND  "Enable librplay sound support"      OFF)
 option(USE_SREGEX "Use regex from libc"                ON )
 option(USE_EWMH   "Support some Extended Window Manager Hints"  ON )
-option(USE_GNOME  "Enable GNOME1 support"              !USE_EWMH )
 
 
 
@@ -98,15 +97,6 @@ if(USE_EWMH)
 else()
 	message(STATUS "Disabling Extended Window Manager Hints support.")
 endif(USE_EWMH)
-
-
-# GNOME is pretty legacy
-if(USE_GNOME)
-	list(APPEND CTWMSRC gnome.c)
-	message(STATUS "Enabling GNOME1 support.")
-else()
-	message(STATUS "Disabling GNOME1 support.")
-endif(USE_GNOME)
 
 
 # System provides regex stuff in libc?

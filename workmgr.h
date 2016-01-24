@@ -24,10 +24,6 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
-#ifdef GNOME
-/* 6/19/1999 nhd for GNOME compliance */
-#include "gnome.h"
-#endif /* GNOME */
 #include "vscreen.h"
 
 #ifndef _WORKMGR_

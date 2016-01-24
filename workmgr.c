@@ -57,9 +57,6 @@ static void fakeRaiseLower();
 #ifdef EWMH
 #  include "ewmh_atoms.h"
 #endif
-#ifdef GNOME
-#  include "gnomewindefs.h" /* include GNOME hints definitions */
-#endif /* GNOME */
 
 /***********************************************************************
  *
@@ -279,7 +276,6 @@ void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 	GotoWorkSpace(vs, ws);
 }
 
-/* 6/19/1999 nhd for GNOME compliance */
 void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 {
 	WorkSpace *ws;
@@ -691,20 +687,6 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 
 	XChangeProperty(dpy, Scr->Root, XA_WM_CURRENTWORKSPACE, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) newws->name, strlen(newws->name));
-#ifdef GNOME
-	/* nhd 6/19/1999 for GNOME compliance
-	 * Publish which workspace the root window shows/contains.
-	 * Olaf Rhialto Seibert: However, don't do it when the root window is
-	 * captive, since it will be moved itself: for non-root windows this
-	 * property is used to indicate in which workspace it is contained.
-	 */
-
-	if(!CLarg.is_captive) {
-		long number = newws->number;
-		XChangeProperty(dpy, Scr->Root, _XA_WIN_WORKSPACE, XA_CARDINAL, 32,
-		                PropModeReplace, (unsigned char *) &number, 1);
-	}
-#endif /* GNOME */
 #ifdef EWMH
 	{
 		long number = newws->number;
@@ -998,28 +980,6 @@ void SetupOccupation(TwmWindow *twm_win,
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(twm_win);
 #endif
-#ifdef GNOME
-	XChangeProperty(dpy, twm_win->w, _XA_WIN_WORKSPACE, XA_CARDINAL, 32,
-	                PropModeReplace, (unsigned char *)(&gwkspc), 1);
-	if(XGetWindowProperty(dpy, twm_win->w, _XA_WIN_STATE, 0L, 32, False,
-	                      XA_CARDINAL, &actual_type, &actual_format, &nitems,
-	                      &bytesafter, &prop)
-	                != Success || nitems == 0) {
-		gwkspc = 0;
-	}
-	else {
-		gwkspc = (int) * prop;
-		XFree((char *)prop);
-	}
-	if(twm_win->occupation == fullOccupation) {
-		gwkspc |= WIN_STATE_STICKY;
-	}
-	else {
-		gwkspc &= ~WIN_STATE_STICKY;
-	}
-	XChangeProperty(dpy, twm_win->w, _XA_WIN_STATE, XA_CARDINAL, 32,
-	                PropModeReplace, (unsigned char *)&gwkspc, 1);
-#endif /* GNOME */
 	XSelectInput(dpy, twm_win->w, eventMask);
 
 	/* kludge */
@@ -1675,12 +1635,6 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	unsigned long     eventMask;
 	long      gwkspc = 0; /* for gnome - the workspace of this window */
 	int changedoccupation;
-#ifdef GNOME
-	unsigned char *prop;
-	unsigned long bytesafter, numitems;
-	Atom actual_type;
-	int actual_format;
-#endif /* GNOME */
 
 	if((newoccupation == 0)
 	                ||  /* in case the property has been broken by another client */
@@ -1695,28 +1649,6 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 #ifdef EWMH
 		EwmhSet_NET_WM_DESKTOP(tmp_win);
 #endif
-#ifdef GNOME
-		XChangeProperty(dpy, tmp_win->w, _XA_WIN_WORKSPACE, XA_CARDINAL, 32,
-		                PropModeReplace, (unsigned char *)(&gwkspc), 1);
-		if(XGetWindowProperty(dpy, tmp_win->w, _XA_WIN_STATE, 0L, 32, False,
-		                      XA_CARDINAL, &actual_type, &actual_format, &numitems,
-		                      &bytesafter, &prop)
-		                != Success || numitems == 0) {
-			gwkspc = 0;
-		}
-		else {
-			gwkspc = (int) * prop;
-			XFree((char *)prop);
-		}
-		if(tmp_win->occupation == fullOccupation) {
-			gwkspc |= WIN_STATE_STICKY;
-		}
-		else {
-			gwkspc &= ~WIN_STATE_STICKY;
-		}
-		XChangeProperty(dpy, tmp_win->w, _XA_WIN_STATE, XA_CARDINAL, 32,
-		                PropModeReplace, (unsigned char *)&gwkspc, 1);
-#endif /* GNOME */
 		XSelectInput(dpy, tmp_win->w, eventMask);
 		return;
 	}
@@ -1767,29 +1699,6 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(tmp_win);
 #endif
-#ifdef GNOME
-	/* Tell GNOME where this window lives */
-	XChangeProperty(dpy, tmp_win->w, _XA_WIN_WORKSPACE, XA_CARDINAL, 32,
-	                PropModeReplace, (unsigned char *)(&gwkspc), 1);
-	if(XGetWindowProperty(dpy, tmp_win->w, _XA_WIN_STATE, 0L, 32, False,
-	                      XA_CARDINAL, &actual_type, &actual_format, &numitems,
-	                      &bytesafter, &prop)
-	                != Success || numitems == 0) {
-		gwkspc = 0;
-	}
-	else {
-		gwkspc = (int) * prop;
-		XFree((char *)prop);
-	}
-	if(tmp_win->occupation == fullOccupation) {
-		gwkspc |= WIN_STATE_STICKY;
-	}
-	else {
-		gwkspc &= ~WIN_STATE_STICKY;
-	}
-	XChangeProperty(dpy, tmp_win->w, _XA_WIN_STATE, XA_CARDINAL, 32,
-	                PropModeReplace, (unsigned char *)&gwkspc, 1);
-#endif /* GNOME */
 	XSelectInput(dpy, tmp_win->w, eventMask);
 
 	if(!WMapWindowMayBeAdded(tmp_win)) {

@@ -54,11 +54,3 @@ if(USE_SOUND)
 		DESTINATION ${DOCDIR}
 	)
 endif(USE_SOUND)
-
-
-# If building with GNOME1 bits, install its doc too.
-if(USE_GNOME)
-	install(FILES README.gnome
-		DESTINATION ${DOCDIR}
-	)
-endif(USE_GNOME)

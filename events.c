@@ -133,10 +133,6 @@ void HandleShapeNotify(void);
 void HandleFocusChange(void);
 void HandleSelectionClear(void);
 
-#ifdef GNOME
-#  include "gnomewindefs.h"
-static int GnomeProxyButtonPress = -1;
-#endif /* GNOME */
 
 /*#define TRACE_FOCUS*/
 /*#define TRACE*/
@@ -1517,9 +1513,6 @@ void HandlePropertyNotify(void)
 	XRectangle logical_rect;
 	Icon *icon;
 
-#ifdef GNOME
-	unsigned char *gwkspc;
-#endif
 
 	/* watch for standard colormap changes */
 	if(Event.xproperty.window == Scr->Root) {
@@ -1913,17 +1906,6 @@ void HandlePropertyNotify(void)
 				/* event handled */
 			}
 #endif /* EWMH */
-#ifdef GNOME
-			else if(Event.xproperty.atom == XA_WIN_WORKSPACE) {
-				if(XGetWindowProperty(dpy, Tmp_win->w, Event.xproperty.atom, 0L, 32, False,
-				                      XA_CARDINAL, &actual, &actual_format, &nitems, &bytesafter,
-				                      &gwkspc) != Success || actual == None) {
-					return;
-				}
-				ChangeOccupation(Tmp_win, 1 << (int)(*gwkspc));
-				XFree((char *)gwkspc);
-			}
-#endif /* GNOME */
 			break;
 	}
 }
@@ -2131,9 +2113,6 @@ wmapupd:
 
 void HandleClientMessage(void)
 {
-#ifdef GNOME
-	TwmWindow *twm_win;
-#endif
 
 	if(Event.xclient.message_type == XA_WM_CHANGE_STATE) {
 		if(Tmp_win != NULL) {
@@ -2158,39 +2137,6 @@ void HandleClientMessage(void)
 	}
 #endif
 
-#ifdef GNOME
-	/* 6/19/1999 nhd for GNOME compliance */
-	if(Event.xclient.message_type == XA_WIN_WORKSPACE) {
-		/* XXXXX
-		   supposedly works with a single screen, but is less certain with
-		   multiple screens */
-		GotoWorkSpaceByNumber(Scr->currentvs, Event.xclient.data.l[0]);
-		return;
-	}
-	if(Event.xclient.message_type == XA_WIN_STATE) {
-		unsigned long new_stuff = (unsigned long) Event.xclient.data.l [1];
-		unsigned long old_stuff = (unsigned long) Event.xclient.data.l [0];
-		Window        tmp_win = Event.xclient.window;
-
-		twm_win = GetTwmWindow(tmp_win);
-
-		if(twm_win == NULL) {
-			return;
-		}
-
-		if(old_stuff & WIN_STATE_STICKY) {  /* sticky */
-			if(new_stuff & WIN_STATE_STICKY) {
-				OccupyAll(twm_win);
-			}
-			else {
-				ChangeOccupation(twm_win, (1 << (Scr->currentvs->wsw->currentwspc->number)));
-			}
-		}
-		if(old_stuff & WIN_STATE_SHADED) {      /* shaded (squeezed) */
-			Squeeze(twm_win);
-		}
-	}
-#endif /* GNOME */
 	else if((Event.xclient.message_type == XA_WM_PROTOCOLS) &&
 	                (Event.xclient.data.l[0] == XA_WM_END_OF_ANIMATION)) {
 		if(Animating > 0) {
@@ -2427,10 +2373,7 @@ void HandleDestroyNotify(void)
 	/* Remove the old window from the EWMH client list */
 	EwmhDeleteClientWindow(Tmp_win);
 	EwmhSet_NET_CLIENT_LIST_STACKING();
-#endif /* GNOME */
-#ifdef GNOME
-	GnomeDeleteClientWindow(Tmp_win);  /* Fix the gnome client list */
-#endif /* GNOME */
+#endif /* EWMH */
 	if(Tmp_win == Scr->Focus) {
 		Scr->Focus = (TwmWindow *) NULL;
 		FocusOnRoot();
@@ -2627,10 +2570,6 @@ void HandleMapRequest(void)
 		OtpSetPriority(Tmp_win, WinWin, EwmhGetPriority(Tmp_win), Above);
 		EwmhSet_NET_WM_STATE(Tmp_win, EWMH_STATE_ALL);
 #endif /* EWMH */
-#ifdef GNOME
-		GnomeAddClientWindow(
-		        Tmp_win);  /* add the new window to the gnome client list */
-#endif /* GNOME */
 	}
 	else {
 		/*
@@ -2933,12 +2872,6 @@ void HandleButtonRelease(void)
 	int xl, yt, w, h;
 	unsigned mask;
 
-#ifdef GNOME
-	if(GnomeProxyButtonPress == Event.xbutton.button) {
-		GnomeProxyButtonPress = -1;
-		XSendEvent(dpy, Scr->currentvs->wsw->w, False, SubstructureNotifyMask, &Event);
-	}
-#endif /* GNOME */
 	if(InfoLines) {             /* delete info box on 2nd button release  */
 		if(Context == C_IDENTIFY) {
 			XUnmapWindow(dpy, Scr->InfoWindow);
@@ -3277,9 +3210,6 @@ void HandleButtonPress(void)
 	int func = 0;
 	Window w;
 
-#ifdef GNOME
-	GnomeProxyButtonPress = -1;
-#endif
 
 	/* pop down the menu, if any */
 
@@ -3657,16 +3587,6 @@ void HandleButtonPress(void)
 			                Event.xany.window, Tmp_win, &Event, Context, FALSE);
 		}
 	}
-#ifdef GNOME /* Makes DeferExecution (in menus.c) fail. TODO. */
-	else {
-		/* GNOME: Pass on the event to any applications listening for root window clicks */
-		GnomeProxyButtonPress = Event.xbutton.button;
-		ButtonPressed = -1;
-		XUngrabPointer(dpy, CurrentTime);
-		XSendEvent(dpy, Scr->currentvs->wsw->twm_win->w, False,
-		           SubstructureNotifyMask, &Event);
-	}
-#endif /* GNOME */
 }
 
 

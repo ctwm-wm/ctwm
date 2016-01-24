@@ -30,6 +30,8 @@ remnants of special-case VMS support have been removed.
     It's been non-default since 3.2 (more than 20 years ago), and not
     documented anywhere but in the code and a comment in this file.
 
+1. The USE_GNOME option and code for GNOME1 support has been removed.
+
 1. The `f.cut` (and `^` alias for it), `f.cutfile`, and `f.file`
    functions have been removed.  These functions for messing with the
    clipboard were never visibly documented, and came into the manpage in

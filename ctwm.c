@@ -694,9 +694,6 @@ int main(int argc, char **argv, char **environ)
 		CreateWorkSpaceManager();
 		MakeWorkspacesMenu();
 		createWindowBoxes();
-#ifdef GNOME
-		InitGnome();
-#endif /* GNOME */
 #ifdef EWMH
 		EwmhInitScreenLate(Scr);
 #endif /* EWMH */
@@ -1330,11 +1327,7 @@ void InternUsefulAtoms(void)
 {
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
 
-#ifdef GNOME
-	XA_WM_WORKSPACESLIST   = XInternAtom(dpy, "_WIN_WORKSPACE_NAMES", False);
-#else /* GNOME */
 	XA_WM_WORKSPACESLIST   = XInternAtom(dpy, "WM_WORKSPACESLIST", False);
-#endif /* GNOME */
 }
 
 static Window CreateRootWindow(int x, int y,

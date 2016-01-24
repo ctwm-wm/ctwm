@@ -56,7 +56,7 @@ rm -fr $RPM_BUILD_ROOT
 
 %files
 %defattr(0644,root,root,0755)
-%doc README CHANGES PROBLEMS README.gnome TODO.gnome
+%doc README CHANGES PROBLEMS
 %doc *.ctwmrc
 %doc sound.doc vms.txt vms2.txt
 
