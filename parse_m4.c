@@ -58,7 +58,6 @@ FILE *start_m4(FILE *fraw)
 }
 
 /* Code taken and munged from xrdb.c */
-#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
 #define EXTRA   16 /* Egad */
 
 static const char *MkDef(const char *name, const char *def)
@@ -200,8 +199,10 @@ static char *m4_defs(Display *display, char *host)
 	visual = DefaultVisualOfScreen(screen);
 	WR_NUM("WIDTH", screen->width);
 	WR_NUM("HEIGHT", screen->height);
+#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
 	WR_NUM("X_RESOLUTION", Resolution(screen->width, screen->mwidth));
 	WR_NUM("Y_RESOLUTION", Resolution(screen->height, screen->mheight));
+#undef Resolution
 	WR_NUM("PLANES", DisplayPlanes(display, Scr->screen));
 	WR_NUM("BITS_PER_RGB", visual->bits_per_rgb);
 	switch(visual->class) {
