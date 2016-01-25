@@ -253,6 +253,8 @@ WIDTH and HEIGHT are calculated by ctwm and written into a temporary
 file for `m4` to use.  The following symbols are predefined by
 ctwm:
 
+=== Hostnames
+
 SERVERHOST::
   This variable is set to the name of the machine that is running the X
   server.
@@ -264,14 +266,28 @@ HOSTNAME::
   The canonical hostname running the clients.  (ie. a fully-qualified
   version of `CLIENTHOST`)
 
+=== User Info
+
 USER::
   The name of the user running the program.  Gotten from the environment.
 
 HOME::
   The user's home directory.  Gotten from the environment.
 
-PIXMAP_DIRECTORY::
-  The directory where the ctwm pictures are installed.
+=== ctwm info
+
+TWM_TYPE::
+  Tells which `twm` offshoot is running.  It will always be set to
+  the string ``ctwm'' in this program.  This is useful for protecting
+  parts of your `.twmrc` file that ctwm proper won't understand
+  (like `WorkSpaces`) so that it is still usable with other
+  `twm` programs.
+
+TWM_VERSION::
+  Tells which ctwm version is running in the form of a floating
+  point number.
+
+=== X server info
 
 VERSION::
   The X major protocol version.  As seen by ProtocolVersion(3).
@@ -284,6 +300,8 @@ VENDOR::
 
 RELEASE::
   The release number of your X server.  For MIT X11R5, this is `5`.
+
+=== Display info
 
 WIDTH::
   The width of your display in pixels.
@@ -305,17 +323,6 @@ BITS_PER_RGB::
   of distinct colors that can be created.  This is often different from the
   number of colors that can be displayed at once.)
 
-TWM_TYPE::
-  Tells which `twm` offshoot is running.  It will always be set to
-  the string ``ctwm'' in this program.  This is useful for protecting
-  parts of your `.twmrc` file that ctwm proper won't understand
-  (like `WorkSpaces`) so that it is still usable with other
-  `twm` programs.
-
-TWM_VERSION::
-  Tells which ctwm version is running in the form of a floating
-  point number.
-
 CLASS::
   Your visual class.  Will return one of `StaticGray`, `GrayScale`,
   `StaticColor`, `PseudoColor`, `TrueColor`, `DirectColor`,
@@ -326,14 +333,21 @@ COLOR::
   definition.  Returns ``Yes'' on `*Color`, and ``No'' on `StaticGray`
   and `GrayScale`.
 
+=== ctwm compile-time options
+
 XPM::
   Is defined only if ctwm was compiled with XPM support.
+
+PIXMAP_DIRECTORY::
+  The directory where the ctwm pictures are installed.
 
 JPEG::
   Is defined only if ctwm was compiled with JPEG support.
 
 SOUNDS::
   Is defined only if ctwm was compiled with SOUND support.
+
+=== ctwm run-time options
 
 TWM_CAPTIVE::
   This will be either ``Yes'' or ``No''. ``Yes'' if the current ctwm is captive
