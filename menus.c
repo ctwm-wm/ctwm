@@ -99,6 +99,8 @@
 #endif
 #include "version.h"
 
+#include "ext/repl_str.h"
+
 int RootFunction = 0;
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */
@@ -4151,8 +4153,7 @@ static void Execute(const char *_s)
 	char *_ds;
 	char *orig_display;
 	int restorevar = 0;
-	char *subs, *name, *news;
-	int len;
+	char *subs;
 
 	if(!_s) {
 		return;
@@ -4205,21 +4206,31 @@ static void Execute(const char *_s)
 		}
 		free(ds);
 	}
+
+
+	/*
+	 * We replace a couple placeholders in the string.  $currentworkspace
+	 * is documented in the manual; $redirect is not.
+	 */
 	subs = strstr(s, "$currentworkspace");
-	name = GetCurrentWorkSpaceName(Scr->currentvs);
-	if(subs && name) {
-		len = strlen(s) - strlen("$currentworkspace") + strlen(name);
-		news = (char *) malloc(len + 1);
-		*subs = '\0';
-		strcpy(news, s);
-		*subs = '$';
-		strcat(news, name);
-		subs += strlen("$currentworkspace");
-		strcat(news, subs);
-		s = news;
+	if(subs) {
+		char *tmp;
+		char *wsname = GetCurrentWorkSpaceName(Scr->currentvs);
+		if(!wsname)
+			wsname = "";
+
+		fprintf(stderr, "PRE: %s\n", s);
+		tmp = replace_substr(s, "$currentworkspace", wsname);
+		free(s);
+		s = tmp;
+		fprintf(stderr, "POST: %s\n", s);
 	}
+
 	subs = strstr(s, "$redirect");
 	if(subs) {
+		char *tmp;
+		char *name;
+
 		if(CLarg.is_captive) {
 			name = (char *) malloc(21 + strlen(Scr->captivename) + 1);
 			sprintf(name, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
@@ -4228,17 +4239,14 @@ static void Execute(const char *_s)
 			name = (char *) malloc(1);
 			*name = '\0';
 		}
-		len = strlen(s) - strlen("$redirect") + strlen(name);
-		news = (char *) malloc(len + 1);
-		*subs = '\0';
-		strcpy(news, s);
-		*subs = '$';
-		strcat(news, name);
-		subs += strlen("$redirect");
-		strcat(news, subs);
-		s = news;
+
+		tmp = replace_substr(s, "$redirect", name);
+		free(s);
+		s = tmp;
+
 		free(name);
 	}
+
 	XUngrabPointer(dpy, CurrentTime);
 	XFlush(dpy);
 	(void) system(s);
