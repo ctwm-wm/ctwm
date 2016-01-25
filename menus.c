@@ -4148,7 +4148,7 @@ static int NeedToDefer(MenuRoot *root)
 static void Execute(char *s)
 {
 	static char buf[256];
-	char *ds = DisplayString(dpy);
+	char *ds;
 	char *colon, *dot1;
 	char *orig_display;
 	int restorevar = 0;
@@ -4165,6 +4165,7 @@ static void Execute(char *s)
 	 * that they were invoked from, unless specifically overridden on
 	 * their command line.
 	 */
+	ds = DisplayString(dpy);
 	colon = strrchr(ds, ':');
 	if(colon) {                         /* if host[:]:dpy */
 		strcpy(buf, "DISPLAY=");
