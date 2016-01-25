@@ -4229,22 +4229,21 @@ static void Execute(const char *_s)
 	subs = strstr(s, "$redirect");
 	if(subs) {
 		char *tmp;
-		char *name;
+		char *redir;
 
 		if(CLarg.is_captive) {
-			name = (char *) malloc(21 + strlen(Scr->captivename) + 1);
-			sprintf(name, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
+			asprintf(&redir, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
 		}
 		else {
-			name = (char *) malloc(1);
-			*name = '\0';
+			redir = malloc(1);
+			*redir = '\0';
 		}
 
-		tmp = replace_substr(s, "$redirect", name);
+		tmp = replace_substr(s, "$redirect", redir);
 		free(s);
 		s = tmp;
 
-		free(name);
+		free(redir);
 	}
 
 	XUngrabPointer(dpy, CurrentTime);
