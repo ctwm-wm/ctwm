@@ -261,6 +261,9 @@ static char *m4_defs(Display *display, char *host)
 #ifdef SOUNDS
 	WR_DEF("SOUNDS", "Yes");
 #endif
+#ifdef EWMH
+	WR_DEF("EWMH", "Yes");
+#endif
 	/* Since this is no longer an option, it should be removed in the future */
 	WR_DEF("I18N", "Yes");
 

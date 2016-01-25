@@ -360,6 +360,9 @@ JPEG::
 SOUNDS::
   Is defined only if ctwm was compiled with SOUND support.
 
+EWMH::
+  Is defined only if ctwm was compiled with EWMH support.
+
 I18N::
   Is defined if ctwm was compiled with I18N support.  This is no longer
   optional since 3.8 and is always compiled in.  The definition will be
