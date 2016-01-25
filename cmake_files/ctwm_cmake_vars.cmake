@@ -36,6 +36,8 @@ set(CTWMSRC
 	vscreen.c
 	windowbox.c
 	workmgr.c
+
+	ext/repl_str.c
 )
 
 
