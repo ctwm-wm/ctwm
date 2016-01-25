@@ -10,8 +10,6 @@
 #include <unistd.h>
 #include <netdb.h>
 
-#include <X11/Xmu/SysUtil.h>
-
 #include "screen.h"
 #include "parse.h"
 #include "parse_int.h"
@@ -122,7 +120,10 @@ static char *m4_defs(Display *display, char *host)
 		exit(377);
 	}
 	tmpf = (FILE *) fdopen(fd, "w+");
-	XmuGetHostname(client, MAXHOSTNAME);
+	if(gethostname(client, MAXHOSTNAME) < 0) {
+		perror("gethostname failed in m4_defs");
+		exit(1);
+	}
 	hostname = gethostbyname(client);
 	strcpy(server, XDisplayName(host));
 	colon = strchr(server, ':');
