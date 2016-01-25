@@ -360,6 +360,11 @@ JPEG::
 SOUNDS::
   Is defined only if ctwm was compiled with SOUND support.
 
+I18N::
+  Is defined if ctwm was compiled with I18N support.  This is no longer
+  optional since 3.8 and is always compiled in.  The definition will be
+  removed in a future version.
+
 === ctwm run-time options
 
 TWM_CAPTIVE::
