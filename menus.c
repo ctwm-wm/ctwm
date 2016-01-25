@@ -99,6 +99,8 @@
 #endif
 #include "version.h"
 
+#include "ext/repl_str.h"
+
 int RootFunction = 0;
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */
@@ -148,7 +150,7 @@ static void ShowIconManager(void);
 static void BumpWindowColormap(TwmWindow *tmp, int inc);
 static void Identify(TwmWindow *t);
 static int WarpToScreen(int n, int inc);
-static void Execute(char *s);
+static void Execute(const char *_s);
 static int NeedToDefer(MenuRoot *root);
 static int DeferExecution(int context, int func, Cursor cursor);
 static void ZoomInWindow(TwmWindow *tmp_win, Window blanket);
@@ -4145,91 +4147,155 @@ static int NeedToDefer(MenuRoot *root)
  ***********************************************************************
  */
 
-static void Execute(char *s)
+static void
+Execute(const char *_s)
 {
-	static char buf[256];
-	char *ds = DisplayString(dpy);
-	char *colon, *dot1;
-	char oldDisplay[256];
-	char *doisplay;
+	char *s;
+	char *_ds;
+	char *orig_display;
 	int restorevar = 0;
-	Bool replace;
-	char *subs, *name, *news;
-	int len;
+	char *subs;
 
-	oldDisplay[0] = '\0';
-	doisplay = getenv("DISPLAY");
-	if(doisplay) {
-		strcpy(oldDisplay, doisplay);
+	/* Seatbelt */
+	if(!_s) {
+		return;
 	}
+
+	/* Work on a local copy since we're mutating it */
+	s = strdup(_s);
+	if(!s) {
+		return;
+	}
+
+	/* Stash up current $DISPLAY value for resetting */
+	orig_display = getenv("DISPLAY");
+
 
 	/*
 	 * Build a display string using the current screen number, so that
 	 * X programs which get fired up from a menu come up on the screen
 	 * that they were invoked from, unless specifically overridden on
 	 * their command line.
+	 *
+	 * Which is to say, given that we're on display "foo.bar:1.2", we
+	 * want to translate that into "foo.bar:1.{Scr->screen}".
+	 *
+	 * We strdup() because DisplayString() is a macro returning into the
+	 * dpy structure, and we're going to mutate the value we get from it.
 	 */
-	colon = strrchr(ds, ':');
-	if(colon) {                         /* if host[:]:dpy */
-		strcpy(buf, "DISPLAY=");
-		strcat(buf, ds);
-		colon = buf + 8 + (colon - ds); /* use version in buf */
-		dot1 = strchr(colon, '.');      /* first period after colon */
-		if(!dot1) {
-			dot1 = colon + strlen(colon);        /* if not there, append */
+	_ds = DisplayString(dpy);
+	if(_ds) {
+		char *ds;
+		char *colon;
+
+		ds = strdup(_ds);
+		if(!ds) {
+			goto end_execute;
 		}
-		(void) sprintf(dot1, ".%d", Scr->screen);
-		putenv(buf);
-		restorevar = 1;
+
+		/* If it's not host:dpy, we don't have anything to do here */
+		colon = strrchr(ds, ':');
+		if(colon) {
+			char *dot, *new_display;
+
+			/* Find the . in display.screen and chop it off */
+			dot = strchr(colon, '.');
+			if(dot) {
+				*dot = '\0';
+			}
+
+			/* Build a new string with our correct screen info */
+			asprintf(&new_display, "%s.%d", ds, Scr->screen);
+			if(!new_display) {
+				free(ds);
+				goto end_execute;
+			}
+
+			/* And set */
+			setenv("DISPLAY", new_display, 1);
+			free(new_display);
+			restorevar = 1;
+		}
+		free(ds);
 	}
-	replace = False;
+
+
+	/*
+	 * We replace a couple placeholders in the string.  $currentworkspace
+	 * is documented in the manual; $redirect is not.
+	 */
 	subs = strstr(s, "$currentworkspace");
-	name = GetCurrentWorkSpaceName(Scr->currentvs);
-	if(subs && name) {
-		len = strlen(s) - strlen("$currentworkspace") + strlen(name);
-		news = (char *) malloc(len + 1);
-		*subs = '\0';
-		strcpy(news, s);
-		*subs = '$';
-		strcat(news, name);
-		subs += strlen("$currentworkspace");
-		strcat(news, subs);
-		s = news;
-		replace = True;
+	if(subs) {
+		char *tmp;
+		char *wsname;
+
+		wsname = GetCurrentWorkSpaceName(Scr->currentvs);
+		if(!wsname) {
+			wsname = "";
+		}
+
+		tmp = replace_substr(s, "$currentworkspace", wsname);
+		if(!tmp) {
+			goto end_execute;
+		}
+		free(s);
+		s = tmp;
 	}
+
 	subs = strstr(s, "$redirect");
 	if(subs) {
+		char *tmp;
+		char *redir;
+
 		if(CLarg.is_captive) {
-			name = (char *) malloc(21 + strlen(Scr->captivename) + 1);
-			sprintf(name, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
+			asprintf(&redir, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
+			if(!redir) {
+				goto end_execute;
+			}
 		}
 		else {
-			name = (char *) malloc(1);
-			*name = '\0';
+			redir = malloc(1);
+			*redir = '\0';
 		}
-		len = strlen(s) - strlen("$redirect") + strlen(name);
-		news = (char *) malloc(len + 1);
-		*subs = '\0';
-		strcpy(news, s);
-		*subs = '$';
-		strcat(news, name);
-		subs += strlen("$redirect");
-		strcat(news, subs);
-		s = news;
-		free(name);
-		replace = True;
-	}
-	XUngrabPointer(dpy, CurrentTime);
-	XFlush(dpy);
-	(void) system(s);
 
-	if(restorevar) {            /* why bother? */
-		(void) sprintf(buf, "DISPLAY=%s", oldDisplay);
-		putenv(buf);
-	}
-	if(replace) {
+		tmp = replace_substr(s, "$redirect", redir);
 		free(s);
+		s = tmp;
+
+		free(redir);
 	}
+
+
+	/*
+	 * Call it.  Return value doesn't really matter, since whatever
+	 * happened we're done.  Maybe someday if we develop a "show user
+	 * message" generalized func, we can tell the user if executing
+	 * failed somehow.
+	 */
+	system(s);
+
+
+	/*
+	 * Restore $DISPLAY if we changed it.  It's probably only necessary
+	 * in edge cases (it might be used by ctwm restarting itself, for
+	 * instance) and it's not quite clear whether the DisplayString()
+	 * result would even be wrong for that, but what the heck, setenv()
+	 * is cheap.
+	 */
+	if(restorevar) {
+		if(orig_display) {
+			setenv("DISPLAY", orig_display, 1);
+		}
+		else {
+			unsetenv("DISPLAY");
+		}
+	}
+
+
+	/* Clean up */
+end_execute:
+	free(s);
+	return;
 }
 
 
