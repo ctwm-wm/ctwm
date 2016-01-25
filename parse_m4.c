@@ -60,7 +60,6 @@ FILE *start_m4(FILE *fraw)
 }
 
 /* Code taken and munged from xrdb.c */
-#define EXTRA   16 /* Egad */
 
 static const char *MkDef(const char *name, const char *def)
 {
@@ -72,6 +71,7 @@ static const char *MkDef(const char *name, const char *def)
 		return ("");        /* XXX JWS: prevent segfaults */
 	}
 	/* The char * storage only lasts for 1 call... */
+#define EXTRA   16 /* Egad */
 	if((n = EXTRA + ((nl = strlen(name)) +  strlen(def))) > maxsize) {
 		maxsize = MAX(n, 4096);
 		/* Safety net: this is wildly overspec */
