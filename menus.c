@@ -4187,6 +4187,10 @@ static void Execute(const char *_s)
 		char *ds = strdup(_ds);
 		char *colon;
 
+		if(!ds) {
+			goto end_execute;
+		}
+
 		/* If it's not host:dpy, we don't have anything to do here */
 		colon = strrchr(ds, ':');
 		if(colon) {
@@ -4200,6 +4204,10 @@ static void Execute(const char *_s)
 
 			/* Build a new string with our correct screen info */
 			asprintf(&new_display, "%s.%d", ds, Scr->screen);
+			if(!new_display) {
+				free(ds);
+				goto end_execute;
+			}
 
 			/* And set */
 			setenv("DISPLAY", new_display, 1);
@@ -4218,11 +4226,15 @@ static void Execute(const char *_s)
 	if(subs) {
 		char *tmp;
 		char *wsname = GetCurrentWorkSpaceName(Scr->currentvs);
-		if(!wsname)
+		if(!wsname) {
 			wsname = "";
+		}
 
 		fprintf(stderr, "PRE: %s\n", s);
 		tmp = replace_substr(s, "$currentworkspace", wsname);
+		if(!tmp) {
+			goto end_execute;
+		}
 		free(s);
 		s = tmp;
 		fprintf(stderr, "POST: %s\n", s);
@@ -4235,6 +4247,9 @@ static void Execute(const char *_s)
 
 		if(CLarg.is_captive) {
 			asprintf(&redir, "-xrm 'ctwm.redirect:%s'", Scr->captivename);
+			if(!redir) {
+				goto end_execute;
+			}
 		}
 		else {
 			redir = malloc(1);
@@ -4273,6 +4288,7 @@ static void Execute(const char *_s)
 
 
 	/* Clean up */
+end_execute:
 	free(s);
 	return;
 }
