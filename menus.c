@@ -4155,18 +4155,20 @@ static void Execute(const char *_s)
 	int restorevar = 0;
 	char *subs;
 
+	/* Seatbelt */
 	if(!_s) {
 		return;
 	}
 
-	/* Work on a local copy */
+	/* Work on a local copy since we're mutating it */
 	s = strdup(_s);
 	if(!s) {
 		return;
 	}
 
-	/* Stash up current $DISPLAY value */
+	/* Stash up current $DISPLAY value for resetting */
 	orig_display = getenv("DISPLAY");
+
 
 	/*
 	 * Build a display string using the current screen number, so that
@@ -4246,9 +4248,21 @@ static void Execute(const char *_s)
 		free(redir);
 	}
 
+
+	/*
+	 * Call it
+	 */
 	(void) system(s);
 
-	if(restorevar) {            /* why bother? */
+
+	/*
+	 * Restore $DISPLAY if we changed it.  It's probably only necessary
+	 * in edge cases (it might be used by ctwm restarting itself, for
+	 * instance) and it's not quite clear whether the DisplayString()
+	 * result would even be wrong for that, but what the heck, setenv()
+	 * is cheap.
+	 */
+	if(restorevar) {
 		if(orig_display) {
 			setenv("DISPLAY", orig_display, 1);
 		}
@@ -4256,6 +4270,7 @@ static void Execute(const char *_s)
 			unsetenv("DISPLAY");
 		}
 	}
+
 
 	/* Clean up */
 	free(s);
