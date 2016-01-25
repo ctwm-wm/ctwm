@@ -4145,14 +4145,24 @@ static int NeedToDefer(MenuRoot *root)
  ***********************************************************************
  */
 
-static void Execute(char *s)
+static void Execute(char *_s)
 {
+	char *s;
 	char *_ds;
 	char *orig_display;
 	int restorevar = 0;
-	Bool replace;
 	char *subs, *name, *news;
 	int len;
+
+	if(!_s) {
+		return;
+	}
+
+	/* Work on a local copy */
+	s = strdup(_s);
+	if(!s) {
+		return;
+	}
 
 	/* Stash up current $DISPLAY value */
 	orig_display = getenv("DISPLAY");
@@ -4195,7 +4205,6 @@ static void Execute(char *s)
 		}
 		free(ds);
 	}
-	replace = False;
 	subs = strstr(s, "$currentworkspace");
 	name = GetCurrentWorkSpaceName(Scr->currentvs);
 	if(subs && name) {
@@ -4208,7 +4217,6 @@ static void Execute(char *s)
 		subs += strlen("$currentworkspace");
 		strcat(news, subs);
 		s = news;
-		replace = True;
 	}
 	subs = strstr(s, "$redirect");
 	if(subs) {
@@ -4230,7 +4238,6 @@ static void Execute(char *s)
 		strcat(news, subs);
 		s = news;
 		free(name);
-		replace = True;
 	}
 	XUngrabPointer(dpy, CurrentTime);
 	XFlush(dpy);
@@ -4244,9 +4251,10 @@ static void Execute(char *s)
 			unsetenv("DISPLAY");
 		}
 	}
-	if(replace) {
-		free(s);
-	}
+
+	/* Clean up */
+	free(s);
+	return;
 }
 
 
