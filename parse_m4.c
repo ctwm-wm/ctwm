@@ -170,18 +170,32 @@ static char *m4_defs(Display *display, char *host)
 		WR_DEF("HOSTNAME", client);
 	}
 
+	/*
+	 * Info about the user and their environment
+	 */
 	if(!(user = getenv("USER")) && !(user = getenv("LOGNAME"))) {
 		user = "unknown";
 	}
 	WR_DEF("USER", user);
 	WR_DEF("HOME", getenv("HOME"));
-#ifdef PIXMAP_DIRECTORY
-	WR_DEF("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY);
-#endif
+
+	/*
+	 * ctwm meta
+	 */
+	WR_DEF("TWM_TYPE", "ctwm");
+	WR_DEF("TWM_VERSION", VersionNumber);
+
+	/*
+	 * X server meta
+	 */
 	WR_NUM("VERSION", ProtocolVersion(display));
 	WR_NUM("REVISION", ProtocolRevision(display));
 	WR_DEF("VENDOR", ServerVendor(display));
 	WR_NUM("RELEASE", VendorRelease(display));
+
+	/*
+	 * Information about the display
+	 */
 	screen = ScreenOfDisplay(display, Scr->screen);
 	visual = DefaultVisualOfScreen(screen);
 	WR_NUM("WIDTH", screen->width);
@@ -190,8 +204,6 @@ static char *m4_defs(Display *display, char *host)
 	WR_NUM("Y_RESOLUTION", Resolution(screen->height, screen->mheight));
 	WR_NUM("PLANES", DisplayPlanes(display, Scr->screen));
 	WR_NUM("BITS_PER_RGB", visual->bits_per_rgb);
-	WR_DEF("TWM_TYPE", "ctwm");
-	WR_DEF("TWM_VERSION", VersionNumber);
 	switch(visual->class) {
 		case(StaticGray):
 			vc = "StaticGray";
@@ -222,6 +234,24 @@ static char *m4_defs(Display *display, char *host)
 	else {
 		WR_DEF("COLOR", "No");
 	}
+
+	/*
+	 * Bits of "how this ctwm invocation is being run" data
+	 */
+	if(CLarg.is_captive && Scr->captivename) {
+		WR_DEF("TWM_CAPTIVE", "Yes");
+		WR_DEF("TWM_CAPTIVE_NAME", Scr->captivename);
+	}
+	else {
+		WR_DEF("TWM_CAPTIVE", "No");
+	}
+
+	/*
+	 * Various compile-time options.
+	 */
+#ifdef PIXMAP_DIRECTORY
+	WR_DEF("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY);
+#endif
 #ifdef XPM
 	WR_DEF("XPM", "Yes");
 #endif
@@ -232,16 +262,10 @@ static char *m4_defs(Display *display, char *host)
 	WR_DEF("SOUNDS", "Yes");
 #endif
 	WR_DEF("I18N", "Yes");
-	if(CLarg.is_captive && Scr->captivename) {
-		WR_DEF("TWM_CAPTIVE", "Yes");
-		WR_DEF("TWM_CAPTIVE_NAME", Scr->captivename);
-	}
-	else {
-		WR_DEF("TWM_CAPTIVE", "No");
-	}
 
 #undef WR_NUM
 #undef WR_DEF
+
 
 	/*
 	 * We might be keeping it, in which case tell the user where it is;
