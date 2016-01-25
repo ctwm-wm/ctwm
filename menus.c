@@ -4147,9 +4147,7 @@ static int NeedToDefer(MenuRoot *root)
 
 static void Execute(char *s)
 {
-	static char buf[256];
-	char *ds;
-	char *colon, *dot1;
+	char *_ds;
 	char *orig_display;
 	int restorevar = 0;
 	Bool replace;
@@ -4168,19 +4166,31 @@ static void Execute(char *s)
 	 * Which is to say, given that we're on display "foo.bar:1.2", we
 	 * want to translate that into "foo.bar:1.{Scr->screen}".
 	 */
-	ds = DisplayString(dpy);
-	colon = strrchr(ds, ':');
-	if(colon) {                         /* if host[:]:dpy */
-		strcpy(buf, "DISPLAY=");
-		strcat(buf, ds);
-		colon = buf + 8 + (colon - ds); /* use version in buf */
-		dot1 = strchr(colon, '.');      /* first period after colon */
-		if(!dot1) {
-			dot1 = colon + strlen(colon);        /* if not there, append */
+	_ds = DisplayString(dpy);
+	if(_ds) {
+		char *ds = strdup(_ds);
+		char *colon;
+
+		/* If it's not host:dpy, we don't have anything to do here */
+		colon = strrchr(ds, ':');
+		if(colon) {
+			char *dot, *new_display;
+
+			/* Find the . in display.screen and chop it off */
+			dot = strchr(colon, '.');
+			if(dot) {
+				*dot = '\0';
+			}
+
+			/* Build a new string with our correct screen info */
+			asprintf(&new_display, "%s.%d", ds, Scr->screen);
+
+			/* And set */
+			setenv("DISPLAY", new_display, 1);
+			free(new_display);
+			restorevar = 1;
 		}
-		(void) sprintf(dot1, ".%d", Scr->screen);
-		putenv(buf);
-		restorevar = 1;
+		free(ds);
 	}
 	replace = False;
 	subs = strstr(s, "$currentworkspace");
