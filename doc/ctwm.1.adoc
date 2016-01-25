@@ -279,7 +279,7 @@ HOME::
 TWM_TYPE::
   Tells which `twm` offshoot is running.  It will always be set to
   the string ``ctwm'' in this program.  This is useful for protecting
-  parts of your `.twmrc` file that ctwm proper won't understand
+  parts of your `.twmrc` file that twm proper won't understand
   (like `WorkSpaces`) so that it is still usable with other
   `twm` programs.
 
