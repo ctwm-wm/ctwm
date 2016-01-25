@@ -148,7 +148,7 @@ static void ShowIconManager(void);
 static void BumpWindowColormap(TwmWindow *tmp, int inc);
 static void Identify(TwmWindow *t);
 static int WarpToScreen(int n, int inc);
-static void Execute(char *s);
+static void Execute(const char *_s);
 static int NeedToDefer(MenuRoot *root);
 static int DeferExecution(int context, int func, Cursor cursor);
 static void ZoomInWindow(TwmWindow *tmp_win, Window blanket);
@@ -4145,7 +4145,7 @@ static int NeedToDefer(MenuRoot *root)
  ***********************************************************************
  */
 
-static void Execute(char *_s)
+static void Execute(const char *_s)
 {
 	char *s;
 	char *_ds;
