@@ -5,10 +5,12 @@
 
 #include "ctwm.h"
 
+#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <pwd.h>
 
 #include "screen.h"
 #include "parse.h"
@@ -173,6 +175,12 @@ static char *m4_defs(Display *display, char *host)
 	 * Info about the user and their environment
 	 */
 	if(!(user = getenv("USER")) && !(user = getenv("LOGNAME"))) {
+		struct passwd *pwd = getpwuid(getuid());
+		if(pwd) {
+			user = pwd->pw_name;
+		}
+	}
+	if(!user) {
 		user = "unknown";
 	}
 	WR_DEF("USER", user);
