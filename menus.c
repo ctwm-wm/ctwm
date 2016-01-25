@@ -4150,18 +4150,14 @@ static void Execute(char *s)
 	static char buf[256];
 	char *ds = DisplayString(dpy);
 	char *colon, *dot1;
-	char oldDisplay[256];
-	char *doisplay;
+	char *orig_display;
 	int restorevar = 0;
 	Bool replace;
 	char *subs, *name, *news;
 	int len;
 
-	oldDisplay[0] = '\0';
-	doisplay = getenv("DISPLAY");
-	if(doisplay) {
-		strcpy(oldDisplay, doisplay);
-	}
+	/* Stash up current $DISPLAY value */
+	orig_display = getenv("DISPLAY");
 
 	/*
 	 * Build a display string using the current screen number, so that
@@ -4224,8 +4220,12 @@ static void Execute(char *s)
 	(void) system(s);
 
 	if(restorevar) {            /* why bother? */
-		(void) sprintf(buf, "DISPLAY=%s", oldDisplay);
-		putenv(buf);
+		if(orig_display) {
+			setenv("DISPLAY", orig_display, 1);
+		}
+		else {
+			unsetenv("DISPLAY");
+		}
 	}
 	if(replace) {
 		free(s);
