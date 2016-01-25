@@ -6,6 +6,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
 
@@ -115,9 +116,7 @@ static char *m4_defs(Display *display, char *host)
 	FILE *tmpf;
 	char *user;
 
-	fd = mkstemp(tmp_name);         /* I *hope* mkstemp exists, because */
-	/* I tried to find the "portable" */
-	/* mktmp... */
+	fd = mkstemp(tmp_name);
 	if(fd < 0) {
 		perror("mkstemp failed in m4_defs");
 		exit(377);
