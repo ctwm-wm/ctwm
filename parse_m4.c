@@ -58,7 +58,6 @@ FILE *start_m4(FILE *fraw)
 }
 
 /* Code taken and munged from xrdb.c */
-#define MAXHOSTNAME 255
 #define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
 #define EXTRA   16 /* Egad */
 
@@ -102,6 +101,7 @@ static const char *MkNum(const char *name, int def)
 }
 
 
+#define MAXHOSTNAME 255
 static char *m4_defs(Display *display, char *host)
 {
 	Screen *screen;
