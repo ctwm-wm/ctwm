@@ -191,7 +191,7 @@ SIGNAL_T ChildExit(int signum);
  ***********************************************************************
  */
 
-int main(int argc, char **argv, char **environ)
+int main(int argc, char **argv)
 {
 	Window croot, parent, *children;
 	unsigned int nchildren;
