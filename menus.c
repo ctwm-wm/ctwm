@@ -4165,6 +4165,9 @@ static void Execute(char *s)
 	 *
 	 * Which is to say, given that we're on display "foo.bar:1.2", we
 	 * want to translate that into "foo.bar:1.{Scr->screen}".
+	 *
+	 * We strdup() because DisplayString() is a macro returning into the
+	 * dpy structure, and we're going to mutate the value we get from it.
 	 */
 	_ds = DisplayString(dpy);
 	if(_ds) {
