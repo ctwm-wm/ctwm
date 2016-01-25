@@ -232,7 +232,11 @@ remainder of the line in which the character appears to be treated as
 a comment.
 
 == M4 PREPROCESSING
-ctwm uses `m4(1)` to pre-process its setup files.
+ctwm can use `m4(1)` to pre-process its setup files.  The availability of
+the m4 preprocessing is dependent on the build option `USE_M4` (on by
+default), and can be selectively disabled with the `--nom4` command-line
+argument.
+
 When ctwm starts up, it opens a file for input as described above.
 But, it processes that file through `m4` before parsing it. So, you can
 use m4 macros to perform operations at runtime.  This makes it very
@@ -247,11 +251,22 @@ define(IRegion, translit(eval(WIDTH/3)*eval(HEIGHT/2)+eval(WIDTH-WIDTH/3)-0, *, 
 IconRegion  "IRegion" SOUTH EAST 75 25
 ------
 
-will define the lower half, and right-hand third of the screen.  The above
-makes use of symbols that are predefined for m4 by ctwm.  The symbols
-WIDTH and HEIGHT are calculated by ctwm and written into a temporary
-file for `m4` to use.  The following symbols are predefined by
-ctwm:
+will define the lower half, and right-hand third of the screen.  The
+above makes use of symbols that are predefined for m4 by ctwm.  The
+symbols WIDTH and HEIGHT are among those calculated by ctwm and written
+into a temporary file for `m4` to use.
+
+You may well find that if you research the `m4(1)` manual well,
+and understand the power of m4, this will be a _very_
+useful and powerful tool.  But, if you use any of the symbols
+which are predefined by m4, you are in severe danger!  For example,
+the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
+you are out of luck.
+
+The following symbols are predefined by ctwm:
+
+
+=== Hostnames
 
 SERVERHOST::
   This variable is set to the name of the machine that is running the X
@@ -264,14 +279,28 @@ HOSTNAME::
   The canonical hostname running the clients.  (ie. a fully-qualified
   version of `CLIENTHOST`)
 
+=== User Info
+
 USER::
   The name of the user running the program.  Gotten from the environment.
 
 HOME::
   The user's home directory.  Gotten from the environment.
 
-PIXMAP_DIRECTORY::
-  The directory where the ctwm pictures are installed.
+=== ctwm info
+
+TWM_TYPE::
+  Tells which `twm` offshoot is running.  It will always be set to
+  the string ``ctwm'' in this program.  This is useful for protecting
+  parts of your `.twmrc` file that twm proper won't understand
+  (like `WorkSpaces`) so that it is still usable with other
+  `twm` programs.
+
+TWM_VERSION::
+  Tells which ctwm version is running in the form of a floating
+  point number.
+
+=== X server info
 
 VERSION::
   The X major protocol version.  As seen by ProtocolVersion(3).
@@ -284,6 +313,8 @@ VENDOR::
 
 RELEASE::
   The release number of your X server.  For MIT X11R5, this is `5`.
+
+=== Display info
 
 WIDTH::
   The width of your display in pixels.
@@ -305,17 +336,6 @@ BITS_PER_RGB::
   of distinct colors that can be created.  This is often different from the
   number of colors that can be displayed at once.)
 
-TWM_TYPE::
-  Tells which `twm` offshoot is running.  It will always be set to
-  the string ``ctwm'' in this program.  This is useful for protecting
-  parts of your `.twmrc` file that ctwm proper won't understand
-  (like `WorkSpaces`) so that it is still usable with other
-  `twm` programs.
-
-TWM_VERSION::
-  Tells which ctwm version is running in the form of a floating
-  point number.
-
 CLASS::
   Your visual class.  Will return one of `StaticGray`, `GrayScale`,
   `StaticColor`, `PseudoColor`, `TrueColor`, `DirectColor`,
@@ -326,14 +346,29 @@ COLOR::
   definition.  Returns ``Yes'' on `*Color`, and ``No'' on `StaticGray`
   and `GrayScale`.
 
+=== ctwm compile-time options
+
 XPM::
   Is defined only if ctwm was compiled with XPM support.
+
+PIXMAP_DIRECTORY::
+  The directory where the ctwm pictures are installed.
 
 JPEG::
   Is defined only if ctwm was compiled with JPEG support.
 
 SOUNDS::
   Is defined only if ctwm was compiled with SOUND support.
+
+EWMH::
+  Is defined only if ctwm was compiled with EWMH support.
+
+I18N::
+  Is defined if ctwm was compiled with I18N support.  This is no longer
+  optional since 3.8 and is always compiled in.  The definition will be
+  removed in a future version.
+
+=== ctwm run-time options
 
 TWM_CAPTIVE::
   This will be either ``Yes'' or ``No''. ``Yes'' if the current ctwm is captive
@@ -343,16 +378,6 @@ TWM_CAPTIVE_NAME::
   Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
   ctwm (-name flag);
 
-
-You may well find that if you research the `m4(1)` manual well,
-and understand the power of m4, this will be a _very_
-useful and powerful tool.  But, if you use any of the symbols
-which are predefined by m4, you are in severe danger!  For example,
-the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
-you are out of luck.
-
-The availability of the m4 preprocessing is dependent on the build
-option `USE_M4` (on by default).
 
 == VARIABLES
 Many of the aspects of ctwm's user interface are controlled by variables

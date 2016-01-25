@@ -5,11 +5,12 @@
 
 #include "ctwm.h"
 
+#include <sys/types.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
-
-#include <X11/Xmu/SysUtil.h>
+#include <pwd.h>
 
 #include "screen.h"
 #include "parse.h"
@@ -59,9 +60,6 @@ FILE *start_m4(FILE *fraw)
 }
 
 /* Code taken and munged from xrdb.c */
-#define MAXHOSTNAME 255
-#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
-#define EXTRA   16 /* Egad */
 
 static const char *MkDef(const char *name, const char *def)
 {
@@ -73,6 +71,7 @@ static const char *MkDef(const char *name, const char *def)
 		return ("");        /* XXX JWS: prevent segfaults */
 	}
 	/* The char * storage only lasts for 1 call... */
+#define EXTRA   16 /* Egad */
 	if((n = EXTRA + ((nl = strlen(name)) +  strlen(def))) > maxsize) {
 		maxsize = MAX(n, 4096);
 		/* Safety net: this is wildly overspec */
@@ -103,75 +102,126 @@ static const char *MkNum(const char *name, int def)
 }
 
 
+/* Technically should sysconf() this, but good enough for our purposes */
+#define MAXHOSTNAME 255
+
+/*
+ * Writes out a temp file of all the m4 defs appropriate for this run,
+ * and returns the file name
+ */
 static char *m4_defs(Display *display, char *host)
 {
 	Screen *screen;
 	Visual *visual;
 	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
 	struct hostent *hostname;
-	char *vc;               /* Visual Class */
+	char *vc, *color;
 	static char tmp_name[] = "/tmp/twmrcXXXXXX";
 	int fd;
 	FILE *tmpf;
 	char *user;
 
-	fd = mkstemp(tmp_name);         /* I *hope* mkstemp exists, because */
-	/* I tried to find the "portable" */
-	/* mktmp... */
+	/* Create temp file */
+	fd = mkstemp(tmp_name);
 	if(fd < 0) {
 		perror("mkstemp failed in m4_defs");
 		exit(377);
 	}
-	tmpf = (FILE *) fdopen(fd, "w+");
-	XmuGetHostname(client, MAXHOSTNAME);
-	hostname = gethostbyname(client);
-	strcpy(server, XDisplayName(host));
+	tmpf = fdopen(fd, "w+");
+
+
+	/*
+	 * Now start writing the defs into it.
+	 */
+#define WR_DEF(k, v) fputs(MkDef((k), (v)), tmpf)
+#define WR_NUM(k, v) fputs(MkNum((k), (v)), tmpf)
+
+	/*
+	 * The machine running the window manager process (and, presumably,
+	 * most of the other clients the user is running)
+	 */
+	if(gethostname(client, MAXHOSTNAME) < 0) {
+		perror("gethostname failed in m4_defs");
+		exit(1);
+	}
+	WR_DEF("CLIENTHOST", client);
+
+	/*
+	 * A guess at the machine running the X server.  We take the full
+	 * $DISPLAY and chop off the screen specification.
+	 */
+	/* stpncpy() a better choice */
+	snprintf(server, sizeof(server) - 1, "%s", XDisplayName(host));
 	colon = strchr(server, ':');
 	if(colon != NULL) {
 		*colon = '\0';
 	}
+	/* :0 or unix socket connection means it's the same as CLIENTHOST */
 	if((server[0] == '\0') || (!strcmp(server, "unix"))) {
-		strcpy(server, client);        /* must be connected to :0 or unix:0 */
+		strcpy(server, client);
 	}
-	/* The machine running the X server */
-	fputs(MkDef("SERVERHOST", server), tmpf);
-	/* The machine running the window manager process */
-	fputs(MkDef("CLIENTHOST", client), tmpf);
+	WR_DEF("SERVERHOST", server);
+
+	/* DNS (/NSS) lookup can't be the best way to do this, but... */
+	hostname = gethostbyname(client);
 	if(hostname) {
-		fputs(MkDef("HOSTNAME", hostname->h_name), tmpf);
+		WR_DEF("HOSTNAME", hostname->h_name);
 	}
 	else {
-		fputs(MkDef("HOSTNAME", client), tmpf);
+		WR_DEF("HOSTNAME", client);
 	}
 
+	/*
+	 * Info about the user and their environment
+	 */
 	if(!(user = getenv("USER")) && !(user = getenv("LOGNAME"))) {
+		struct passwd *pwd = getpwuid(getuid());
+		if(pwd) {
+			user = pwd->pw_name;
+		}
+	}
+	if(!user) {
 		user = "unknown";
 	}
-	fputs(MkDef("USER", user), tmpf);
-	fputs(MkDef("HOME", getenv("HOME")), tmpf);
-#ifdef PIXMAP_DIRECTORY
-	fputs(MkDef("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY), tmpf);
-#endif
-	fputs(MkNum("VERSION", ProtocolVersion(display)), tmpf);
-	fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
-	fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
-	fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
+	WR_DEF("USER", user);
+	WR_DEF("HOME", getenv("HOME"));
+
+	/*
+	 * ctwm meta
+	 */
+	WR_DEF("TWM_TYPE", "ctwm");
+	WR_DEF("TWM_VERSION", VersionNumber);
+
+	/*
+	 * X server meta
+	 */
+	WR_NUM("VERSION", ProtocolVersion(display));
+	WR_NUM("REVISION", ProtocolRevision(display));
+	WR_DEF("VENDOR", ServerVendor(display));
+	WR_NUM("RELEASE", VendorRelease(display));
+
+	/*
+	 * Information about the display
+	 */
 	screen = ScreenOfDisplay(display, Scr->screen);
 	visual = DefaultVisualOfScreen(screen);
-	fputs(MkNum("WIDTH", screen->width), tmpf);
-	fputs(MkNum("HEIGHT", screen->height), tmpf);
-	fputs(MkNum("X_RESOLUTION", Resolution(screen->width, screen->mwidth)), tmpf);
-	fputs(MkNum("Y_RESOLUTION", Resolution(screen->height, screen->mheight)), tmpf);
-	fputs(MkNum("PLANES", DisplayPlanes(display, Scr->screen)), tmpf);
-	fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
-	fputs(MkDef("TWM_TYPE", "ctwm"), tmpf);
-	fputs(MkDef("TWM_VERSION", VersionNumber), tmpf);
+	WR_NUM("WIDTH", screen->width);
+	WR_NUM("HEIGHT", screen->height);
+#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
+	WR_NUM("X_RESOLUTION", Resolution(screen->width, screen->mwidth));
+	WR_NUM("Y_RESOLUTION", Resolution(screen->height, screen->mheight));
+#undef Resolution
+	WR_NUM("PLANES", DisplayPlanes(display, Scr->screen));
+	WR_NUM("BITS_PER_RGB", visual->bits_per_rgb);
+	color = "Yes";
 	switch(visual->class) {
 		case(StaticGray):
 			vc = "StaticGray";
+			color = "No";
 			break;
 		case(GrayScale):
 			vc = "GrayScale";
+			color = "No";
 			break;
 		case(StaticColor):
 			vc = "StaticColor";
@@ -189,36 +239,61 @@ static char *m4_defs(Display *display, char *host)
 			vc = "NonStandard";
 			break;
 	}
-	fputs(MkDef("CLASS", vc), tmpf);
-	if(visual->class != StaticGray && visual->class != GrayScale) {
-		fputs(MkDef("COLOR", "Yes"), tmpf);
+	WR_DEF("CLASS", vc);
+	WR_DEF("COLOR", color);
+
+	/*
+	 * Bits of "how this ctwm invocation is being run" data
+	 */
+	if(CLarg.is_captive && Scr->captivename) {
+		WR_DEF("TWM_CAPTIVE", "Yes");
+		WR_DEF("TWM_CAPTIVE_NAME", Scr->captivename);
 	}
 	else {
-		fputs(MkDef("COLOR", "No"), tmpf);
+		WR_DEF("TWM_CAPTIVE", "No");
 	}
+
+	/*
+	 * Various compile-time options.
+	 */
+#ifdef PIXMAP_DIRECTORY
+	WR_DEF("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY);
+#endif
 #ifdef XPM
-	fputs(MkDef("XPM", "Yes"), tmpf);
+	WR_DEF("XPM", "Yes");
 #endif
 #ifdef JPEG
-	fputs(MkDef("JPEG", "Yes"), tmpf);
+	WR_DEF("JPEG", "Yes");
 #endif
 #ifdef SOUNDS
-	fputs(MkDef("SOUNDS", "Yes"), tmpf);
+	WR_DEF("SOUNDS", "Yes");
 #endif
-	fputs(MkDef("I18N", "Yes"), tmpf);
-	if(CLarg.is_captive && Scr->captivename) {
-		fputs(MkDef("TWM_CAPTIVE", "Yes"), tmpf);
-		fputs(MkDef("TWM_CAPTIVE_NAME", Scr->captivename), tmpf);
-	}
-	else {
-		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
-	}
+#ifdef EWMH
+	WR_DEF("EWMH", "Yes");
+#endif
+	/* Since this is no longer an option, it should be removed in the future */
+	WR_DEF("I18N", "Yes");
+
+#undef WR_NUM
+#undef WR_DEF
+
+
+	/*
+	 * We might be keeping it, in which case tell the user where it is;
+	 * this is mostly a debugging option.  Otherwise, delete it by
+	 * telling m4 to do so when it reads it; this is fairly fugly, and I
+	 * have more than half a mind to dike it out and properly clean up
+	 * ourselves.
+	 */
 	if(CLarg.KeepTmpFile) {
 		fprintf(stderr, "Left file: %s\n", tmp_name);
 	}
 	else {
 		fprintf(tmpf, "syscmd(/bin/rm %s)\n", tmp_name);
 	}
+
+
+	/* Close out and hand it back */
 	fclose(tmpf);
 	return(tmp_name);
 }
