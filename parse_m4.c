@@ -113,7 +113,7 @@ static char *m4_defs(Display *display, char *host)
 	Visual *visual;
 	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
 	struct hostent *hostname;
-	char *vc;               /* Visual Class */
+	char *vc, *color;
 	static char tmp_name[] = "/tmp/twmrcXXXXXX";
 	int fd;
 	FILE *tmpf;
@@ -205,12 +205,15 @@ static char *m4_defs(Display *display, char *host)
 #undef Resolution
 	WR_NUM("PLANES", DisplayPlanes(display, Scr->screen));
 	WR_NUM("BITS_PER_RGB", visual->bits_per_rgb);
+	color = "Yes";
 	switch(visual->class) {
 		case(StaticGray):
 			vc = "StaticGray";
+			color = "No";
 			break;
 		case(GrayScale):
 			vc = "GrayScale";
+			color = "No";
 			break;
 		case(StaticColor):
 			vc = "StaticColor";
@@ -229,12 +232,7 @@ static char *m4_defs(Display *display, char *host)
 			break;
 	}
 	WR_DEF("CLASS", vc);
-	if(visual->class != StaticGray && visual->class != GrayScale) {
-		WR_DEF("COLOR", "Yes");
-	}
-	else {
-		WR_DEF("COLOR", "No");
-	}
+	WR_DEF("COLOR", color);
 
 	/*
 	 * Bits of "how this ctwm invocation is being run" data
