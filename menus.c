@@ -4230,14 +4230,12 @@ static void Execute(const char *_s)
 			wsname = "";
 		}
 
-		fprintf(stderr, "PRE: %s\n", s);
 		tmp = replace_substr(s, "$currentworkspace", wsname);
 		if(!tmp) {
 			goto end_execute;
 		}
 		free(s);
 		s = tmp;
-		fprintf(stderr, "POST: %s\n", s);
 	}
 
 	subs = strstr(s, "$redirect");
