@@ -232,7 +232,11 @@ remainder of the line in which the character appears to be treated as
 a comment.
 
 == M4 PREPROCESSING
-ctwm uses `m4(1)` to pre-process its setup files.
+ctwm can use `m4(1)` to pre-process its setup files.  The availability of
+the m4 preprocessing is dependent on the build option `USE_M4` (on by
+default), and can be selectively disabled with the `--nom4` command-line
+argument.
+
 When ctwm starts up, it opens a file for input as described above.
 But, it processes that file through `m4` before parsing it. So, you can
 use m4 macros to perform operations at runtime.  This makes it very
@@ -258,9 +262,6 @@ useful and powerful tool.  But, if you use any of the symbols
 which are predefined by m4, you are in severe danger!  For example,
 the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
 you are out of luck.
-
-The availability of the m4 preprocessing is dependent on the build
-option `USE_M4` (on by default).
 
 The following symbols are predefined by ctwm:
 
