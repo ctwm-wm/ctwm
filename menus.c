@@ -4185,9 +4185,10 @@ Execute(const char *_s)
 	 */
 	_ds = DisplayString(dpy);
 	if(_ds) {
-		char *ds = strdup(_ds);
+		char *ds;
 		char *colon;
 
+		ds = strdup(_ds);
 		if(!ds) {
 			goto end_execute;
 		}
