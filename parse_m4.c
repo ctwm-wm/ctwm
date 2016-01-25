@@ -101,7 +101,9 @@ static const char *MkNum(const char *name, int def)
 }
 
 
+/* Technically should sysconf() this, but good enough for our purposes */
 #define MAXHOSTNAME 255
+
 static char *m4_defs(Display *display, char *host)
 {
 	Screen *screen;
