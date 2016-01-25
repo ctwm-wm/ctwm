@@ -247,10 +247,10 @@ define(IRegion, translit(eval(WIDTH/3)*eval(HEIGHT/2)+eval(WIDTH-WIDTH/3)-0, *, 
 IconRegion  "IRegion" SOUTH EAST 75 25
 ------
 
-will define the lower half, and right-hand third of the screen.  The above
-makes use of symbols that are predefined for m4 by ctwm.  The symbols
-WIDTH and HEIGHT are calculated by ctwm and written into a temporary
-file for `m4` to use.
+will define the lower half, and right-hand third of the screen.  The
+above makes use of symbols that are predefined for m4 by ctwm.  The
+symbols WIDTH and HEIGHT are among those calculated by ctwm and written
+into a temporary file for `m4` to use.
 
 You may well find that if you research the `m4(1)` manual well,
 and understand the power of m4, this will be a _very_
