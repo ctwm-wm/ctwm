@@ -52,6 +52,12 @@
 # define USE_SYS_REGEX
 #endif
 
+/* We need _GNU_SOURCE with glibc to get some bits */
+#cmakedefine USE_GNU_SOURCE
+#ifdef USE_GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+
 /*
  * Support for glibc features.h.  When building with -std=c99, glibc
  * defines __STRICT_ANSI__ which blocks out a lot of POSIX defines unless

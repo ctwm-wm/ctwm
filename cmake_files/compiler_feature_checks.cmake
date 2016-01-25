@@ -38,3 +38,15 @@ if(HAS_FEATURES_H)
 		message(STATUS "Enabling glibc features.h settings.")
 	endif()
 endif(HAS_FEATURES_H)
+
+
+# With GNU libc, some things we use (like asprintf) need _GNU_SOURCE
+# defined.
+set(USE_GNU_SOURCE OFF)
+if(USE_GLIBC_FEATURES_H)
+	check_symbol_exists(__GNU_LIBRARY__ features.h SETS_GNU_LIBRARY)
+	if(SETS_GNU_LIBRARY)
+		set(USE_GNU_SOURCE ON)
+		message(STATUS "Defining _GNU_SOURCE")
+	endif(SETS_GNU_LIBRARY)
+endif(USE_GLIBC_FEATURES_H)
