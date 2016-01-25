@@ -4227,7 +4227,9 @@ Execute(const char *_s)
 	subs = strstr(s, "$currentworkspace");
 	if(subs) {
 		char *tmp;
-		char *wsname = GetCurrentWorkSpaceName(Scr->currentvs);
+		char *wsname;
+
+		wsname = GetCurrentWorkSpaceName(Scr->currentvs);
 		if(!wsname) {
 			wsname = "";
 		}
