@@ -136,6 +136,9 @@ static char *m4_defs(Display *display, char *host)
 	/*
 	 * Now start writing the defs into it.
 	 */
+#define WR_DEF(k, v) fputs(MkDef((k), (v)), tmpf)
+#define WR_NUM(k, v) fputs(MkNum((k), (v)), tmpf)
+
 	hostname = gethostbyname(client);
 	strcpy(server, XDisplayName(host));
 	colon = strchr(server, ':');
@@ -146,38 +149,38 @@ static char *m4_defs(Display *display, char *host)
 		strcpy(server, client);        /* must be connected to :0 or unix:0 */
 	}
 	/* The machine running the X server */
-	fputs(MkDef("SERVERHOST", server), tmpf);
+	WR_DEF("SERVERHOST", server);
 	/* The machine running the window manager process */
-	fputs(MkDef("CLIENTHOST", client), tmpf);
+	WR_DEF("CLIENTHOST", client);
 	if(hostname) {
-		fputs(MkDef("HOSTNAME", hostname->h_name), tmpf);
+		WR_DEF("HOSTNAME", hostname->h_name);
 	}
 	else {
-		fputs(MkDef("HOSTNAME", client), tmpf);
+		WR_DEF("HOSTNAME", client);
 	}
 
 	if(!(user = getenv("USER")) && !(user = getenv("LOGNAME"))) {
 		user = "unknown";
 	}
-	fputs(MkDef("USER", user), tmpf);
-	fputs(MkDef("HOME", getenv("HOME")), tmpf);
+	WR_DEF("USER", user);
+	WR_DEF("HOME", getenv("HOME"));
 #ifdef PIXMAP_DIRECTORY
-	fputs(MkDef("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY), tmpf);
+	WR_DEF("PIXMAP_DIRECTORY", PIXMAP_DIRECTORY);
 #endif
-	fputs(MkNum("VERSION", ProtocolVersion(display)), tmpf);
-	fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
-	fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
-	fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
+	WR_NUM("VERSION", ProtocolVersion(display));
+	WR_NUM("REVISION", ProtocolRevision(display));
+	WR_DEF("VENDOR", ServerVendor(display));
+	WR_NUM("RELEASE", VendorRelease(display));
 	screen = ScreenOfDisplay(display, Scr->screen);
 	visual = DefaultVisualOfScreen(screen);
-	fputs(MkNum("WIDTH", screen->width), tmpf);
-	fputs(MkNum("HEIGHT", screen->height), tmpf);
-	fputs(MkNum("X_RESOLUTION", Resolution(screen->width, screen->mwidth)), tmpf);
-	fputs(MkNum("Y_RESOLUTION", Resolution(screen->height, screen->mheight)), tmpf);
-	fputs(MkNum("PLANES", DisplayPlanes(display, Scr->screen)), tmpf);
-	fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
-	fputs(MkDef("TWM_TYPE", "ctwm"), tmpf);
-	fputs(MkDef("TWM_VERSION", VersionNumber), tmpf);
+	WR_NUM("WIDTH", screen->width);
+	WR_NUM("HEIGHT", screen->height);
+	WR_NUM("X_RESOLUTION", Resolution(screen->width, screen->mwidth));
+	WR_NUM("Y_RESOLUTION", Resolution(screen->height, screen->mheight));
+	WR_NUM("PLANES", DisplayPlanes(display, Scr->screen));
+	WR_NUM("BITS_PER_RGB", visual->bits_per_rgb);
+	WR_DEF("TWM_TYPE", "ctwm");
+	WR_DEF("TWM_VERSION", VersionNumber);
 	switch(visual->class) {
 		case(StaticGray):
 			vc = "StaticGray";
@@ -201,31 +204,33 @@ static char *m4_defs(Display *display, char *host)
 			vc = "NonStandard";
 			break;
 	}
-	fputs(MkDef("CLASS", vc), tmpf);
+	WR_DEF("CLASS", vc);
 	if(visual->class != StaticGray && visual->class != GrayScale) {
-		fputs(MkDef("COLOR", "Yes"), tmpf);
+		WR_DEF("COLOR", "Yes");
 	}
 	else {
-		fputs(MkDef("COLOR", "No"), tmpf);
+		WR_DEF("COLOR", "No");
 	}
 #ifdef XPM
-	fputs(MkDef("XPM", "Yes"), tmpf);
+	WR_DEF("XPM", "Yes");
 #endif
 #ifdef JPEG
-	fputs(MkDef("JPEG", "Yes"), tmpf);
+	WR_DEF("JPEG", "Yes");
 #endif
 #ifdef SOUNDS
-	fputs(MkDef("SOUNDS", "Yes"), tmpf);
+	WR_DEF("SOUNDS", "Yes");
 #endif
-	fputs(MkDef("I18N", "Yes"), tmpf);
+	WR_DEF("I18N", "Yes");
 	if(CLarg.is_captive && Scr->captivename) {
-		fputs(MkDef("TWM_CAPTIVE", "Yes"), tmpf);
-		fputs(MkDef("TWM_CAPTIVE_NAME", Scr->captivename), tmpf);
+		WR_DEF("TWM_CAPTIVE", "Yes");
+		WR_DEF("TWM_CAPTIVE_NAME", Scr->captivename);
 	}
 	else {
-		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
+		WR_DEF("TWM_CAPTIVE", "No");
 	}
 
+#undef WR_NUM
+#undef WR_DEF
 
 	/*
 	 * We might be keeping it, in which case tell the user where it is;
