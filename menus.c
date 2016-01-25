@@ -4246,8 +4246,6 @@ static void Execute(const char *_s)
 		free(redir);
 	}
 
-	XUngrabPointer(dpy, CurrentTime);
-	XFlush(dpy);
 	(void) system(s);
 
 	if(restorevar) {            /* why bother? */
