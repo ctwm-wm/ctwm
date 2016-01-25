@@ -250,8 +250,20 @@ IconRegion  "IRegion" SOUTH EAST 75 25
 will define the lower half, and right-hand third of the screen.  The above
 makes use of symbols that are predefined for m4 by ctwm.  The symbols
 WIDTH and HEIGHT are calculated by ctwm and written into a temporary
-file for `m4` to use.  The following symbols are predefined by
-ctwm:
+file for `m4` to use.
+
+You may well find that if you research the `m4(1)` manual well,
+and understand the power of m4, this will be a _very_
+useful and powerful tool.  But, if you use any of the symbols
+which are predefined by m4, you are in severe danger!  For example,
+the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
+you are out of luck.
+
+The availability of the m4 preprocessing is dependent on the build
+option `USE_M4` (on by default).
+
+The following symbols are predefined by ctwm:
+
 
 === Hostnames
 
@@ -357,16 +369,6 @@ TWM_CAPTIVE_NAME::
   Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
   ctwm (-name flag);
 
-
-You may well find that if you research the `m4(1)` manual well,
-and understand the power of m4, this will be a _very_
-useful and powerful tool.  But, if you use any of the symbols
-which are predefined by m4, you are in severe danger!  For example,
-the Sun `m4` predefines shift, so if you use that name in your `.ctwmrc`,
-you are out of luck.
-
-The availability of the m4 preprocessing is dependent on the build
-option `USE_M4` (on by default).
 
 == VARIABLES
 Many of the aspects of ctwm's user interface are controlled by variables
