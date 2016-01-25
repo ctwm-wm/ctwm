@@ -104,6 +104,10 @@ static const char *MkNum(const char *name, int def)
 /* Technically should sysconf() this, but good enough for our purposes */
 #define MAXHOSTNAME 255
 
+/*
+ * Writes out a temp file of all the m4 defs appropriate for this run,
+ * and returns the file name
+ */
 static char *m4_defs(Display *display, char *host)
 {
 	Screen *screen;
@@ -116,6 +120,7 @@ static char *m4_defs(Display *display, char *host)
 	FILE *tmpf;
 	char *user;
 
+	/* Create temp file */
 	fd = mkstemp(tmp_name);
 	if(fd < 0) {
 		perror("mkstemp failed in m4_defs");
@@ -126,6 +131,11 @@ static char *m4_defs(Display *display, char *host)
 		perror("gethostname failed in m4_defs");
 		exit(1);
 	}
+
+
+	/*
+	 * Now start writing the defs into it.
+	 */
 	hostname = gethostbyname(client);
 	strcpy(server, XDisplayName(host));
 	colon = strchr(server, ':');
@@ -215,12 +225,24 @@ static char *m4_defs(Display *display, char *host)
 	else {
 		fputs(MkDef("TWM_CAPTIVE", "No"), tmpf);
 	}
+
+
+	/*
+	 * We might be keeping it, in which case tell the user where it is;
+	 * this is mostly a debugging option.  Otherwise, delete it by
+	 * telling m4 to do so when it reads it; this is fairly fugly, and I
+	 * have more than half a mind to dike it out and properly clean up
+	 * ourselves.
+	 */
 	if(CLarg.KeepTmpFile) {
 		fprintf(stderr, "Left file: %s\n", tmp_name);
 	}
 	else {
 		fprintf(tmpf, "syscmd(/bin/rm %s)\n", tmp_name);
 	}
+
+
+	/* Close out and hand it back */
 	fclose(tmpf);
 	return(tmp_name);
 }
