@@ -4147,7 +4147,8 @@ static int NeedToDefer(MenuRoot *root)
  ***********************************************************************
  */
 
-static void Execute(const char *_s)
+static void
+Execute(const char *_s)
 {
 	char *s;
 	char *_ds;
