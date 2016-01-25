@@ -24,9 +24,14 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
+#ifndef _SOUND_H
+#define _SOUND_H
+
 extern void play_sound(int snd);
 extern void play_startup_sound(void);
 extern void play_exit_sound(void);
 extern void toggle_sound(void);
 extern void reread_sounds(void);
 extern void set_sound_host(char *host);
+
+#endif /* _SOUND_H */

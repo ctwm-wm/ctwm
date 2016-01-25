@@ -24,10 +24,10 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
-#include "vscreen.h"
-
 #ifndef _WORKMGR_
 #define _WORKMGR_
+
+#include "vscreen.h"
 
 #define MAXWORKSPACE 32
 #define MAPSTATE      0

@@ -61,10 +61,10 @@
  *
  ***********************************************************************/
 
-#include "types.h"
-
 #ifndef _UTIL_
 #define _UTIL_
+
+#include "types.h"
 
 #ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))

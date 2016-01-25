@@ -35,10 +35,10 @@
  *
  **********************************************************************/
 
-#include "types.h"
-
 #ifndef _WINDOW_BOX_
 #define _WINDOW_BOX_
+
+#include "types.h"
 
 extern name_list **addWindowBox(char *boxname, char *geometry);
 extern void createWindowBoxes(void);
