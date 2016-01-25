@@ -127,10 +127,6 @@ static char *m4_defs(Display *display, char *host)
 		exit(377);
 	}
 	tmpf = fdopen(fd, "w+");
-	if(gethostname(client, MAXHOSTNAME) < 0) {
-		perror("gethostname failed in m4_defs");
-		exit(1);
-	}
 
 
 	/*
@@ -139,19 +135,34 @@ static char *m4_defs(Display *display, char *host)
 #define WR_DEF(k, v) fputs(MkDef((k), (v)), tmpf)
 #define WR_NUM(k, v) fputs(MkNum((k), (v)), tmpf)
 
-	hostname = gethostbyname(client);
-	strcpy(server, XDisplayName(host));
+	/*
+	 * The machine running the window manager process (and, presumably,
+	 * most of the other clients the user is running)
+	 */
+	if(gethostname(client, MAXHOSTNAME) < 0) {
+		perror("gethostname failed in m4_defs");
+		exit(1);
+	}
+	WR_DEF("CLIENTHOST", client);
+
+	/*
+	 * A guess at the machine running the X server.  We take the full
+	 * $DISPLAY and chop off the screen specification.
+	 */
+	/* stpncpy() a better choice */
+	snprintf(server, sizeof(server) - 1, "%s", XDisplayName(host));
 	colon = strchr(server, ':');
 	if(colon != NULL) {
 		*colon = '\0';
 	}
+	/* :0 or unix socket connection means it's the same as CLIENTHOST */
 	if((server[0] == '\0') || (!strcmp(server, "unix"))) {
-		strcpy(server, client);        /* must be connected to :0 or unix:0 */
+		strcpy(server, client);
 	}
-	/* The machine running the X server */
 	WR_DEF("SERVERHOST", server);
-	/* The machine running the window manager process */
-	WR_DEF("CLIENTHOST", client);
+
+	/* DNS (/NSS) lookup can't be the best way to do this, but... */
+	hostname = gethostbyname(client);
 	if(hostname) {
 		WR_DEF("HOSTNAME", hostname->h_name);
 	}
