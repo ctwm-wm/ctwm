@@ -4263,9 +4263,12 @@ static void Execute(const char *_s)
 
 
 	/*
-	 * Call it
+	 * Call it.  Return value doesn't really matter, since whatever
+	 * happened we're done.  Maybe someday if we develop a "show user
+	 * message" generalized func, we can tell the user if executing
+	 * failed somehow.
 	 */
-	(void) system(s);
+	system(s);
 
 
 	/*
