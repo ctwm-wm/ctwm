@@ -119,7 +119,7 @@ static char *m4_defs(Display *display, char *host)
 		perror("mkstemp failed in m4_defs");
 		exit(377);
 	}
-	tmpf = (FILE *) fdopen(fd, "w+");
+	tmpf = fdopen(fd, "w+");
 	if(gethostname(client, MAXHOSTNAME) < 0) {
 		perror("gethostname failed in m4_defs");
 		exit(1);
