@@ -4164,6 +4164,9 @@ static void Execute(char *s)
 	 * X programs which get fired up from a menu come up on the screen
 	 * that they were invoked from, unless specifically overridden on
 	 * their command line.
+	 *
+	 * Which is to say, given that we're on display "foo.bar:1.2", we
+	 * want to translate that into "foo.bar:1.{Scr->screen}".
 	 */
 	ds = DisplayString(dpy);
 	colon = strrchr(ds, ':');
