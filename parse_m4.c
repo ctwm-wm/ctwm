@@ -116,7 +116,7 @@ static char *m4_defs(Display *display, char *host)
 	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
 	struct hostent *hostname;
 	char *vc, *color;
-	static char tmp_name[] = "/tmp/twmrcXXXXXX";
+	static char tmp_name[] = "/tmp/ctwmrcXXXXXX";
 	int fd;
 	FILE *tmpf;
 	char *user;
