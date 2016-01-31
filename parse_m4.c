@@ -30,9 +30,13 @@ FILE *start_m4(FILE *fraw)
 	int fno;
 	int fids[2];
 	int fres;
+	char *defs_file;
 
 	/* We'll need to work in file descriptors, not stdio FILE's */
 	fno = fileno(fraw);
+
+	/* Write our our standard definitions into a temp file */
+	defs_file = m4_defs(dpy, CLarg.display_name);
 
 	/* We'll read back m4's output over a pipe */
 	pipe(fids);
@@ -41,6 +45,7 @@ FILE *start_m4(FILE *fraw)
 	fres = fork();
 	if(fres < 0) {
 		perror("Fork for " M4CMD " failed");
+		unlink(defs_file);
 		exit(23);
 	}
 
@@ -49,17 +54,16 @@ FILE *start_m4(FILE *fraw)
 	 * end of our pipe.
 	 */
 	if(fres == 0) {
-		char *tmp_file;
 
 		close(0);               /* stdin */
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
-		tmp_file = m4_defs(dpy, CLarg.display_name);
-		execlp(M4CMD, M4CMD, "-s", tmp_file, "-", NULL);
+		execlp(M4CMD, M4CMD, "-s", defs_file, "-", NULL);
 
 		/* If we get here we are screwed... */
 		perror("Can't execlp() " M4CMD);
+		unlink(defs_file);
 		exit(124);
 	}
 
