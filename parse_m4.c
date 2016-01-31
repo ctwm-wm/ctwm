@@ -59,6 +59,12 @@ FILE *start_m4(FILE *fraw)
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
+
+		/*
+		 * Kick off m4, telling it both our file of definitions, and
+		 * stdin (dup of the .[c]twmrc file descriptor above) as input.
+		 * It writes to stdout (one end of our pipe).
+		 */
 		execlp(M4CMD, M4CMD, "-s", defs_file, "-", NULL);
 
 		/* If we get here we are screwed... */
