@@ -376,7 +376,7 @@ TWM_CAPTIVE::
 
 TWM_CAPTIVE_NAME::
   Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
-  ctwm (-name flag);
+  ctwm (--name flag);
 
 
 == VARIABLES
