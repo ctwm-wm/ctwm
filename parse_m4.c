@@ -54,7 +54,7 @@ FILE *start_m4(FILE *fraw)
 	 * end of our pipe.
 	 */
 	if(fres == 0) {
-
+		/* Setup file descriptors */
 		close(0);               /* stdin */
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
