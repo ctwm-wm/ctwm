@@ -29,20 +29,28 @@ FILE *start_m4(FILE *fraw)
 {
 	int fno;
 	int fids[2];
-	int fres;               /* Fork result */
+	int fres;
 
+	/* We'll need to work in file descriptors, not stdio FILE's */
 	fno = fileno(fraw);
-	/* if (-1 == fcntl(fno, F_SETFD, 0)) perror("fcntl()"); */
+
+	/* We'll read back m4's output over a pipe */
 	pipe(fids);
+
+	/* Fork off m4 as a child */
 	fres = fork();
 	if(fres < 0) {
 		perror("Fork for " M4CMD " failed");
 		exit(23);
 	}
+
+	/*
+	 * Child: setup and spawn m4, and have it write its output into one
+	 * end of our pipe.
+	 */
 	if(fres == 0) {
 		char *tmp_file;
 
-		/* Child */
 		close(0);               /* stdin */
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
@@ -54,9 +62,12 @@ FILE *start_m4(FILE *fraw)
 		perror("Can't execlp() " M4CMD);
 		exit(124);
 	}
-	/* Parent */
+
+	/*
+	 * Else we're the parent; hand back our reading end of the pipe.
+	 */
 	close(fids[1]);
-	return ((FILE *)fdopen(fids[0], "r"));
+	return (fdopen(fids[0], "r"));
 }
 
 /* Code taken and munged from xrdb.c */
