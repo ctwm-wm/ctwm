@@ -151,7 +151,7 @@ static char *m4_defs(Display *display, char *host)
 	 * $DISPLAY and chop off the screen specification.
 	 */
 	/* stpncpy() a better choice */
-	snprintf(server, sizeof(server) - 1, "%s", XDisplayName(host));
+	snprintf(server, sizeof(server), "%s", XDisplayName(host));
 	colon = strchr(server, ':');
 	if(colon != NULL) {
 		*colon = '\0';
