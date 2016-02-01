@@ -89,7 +89,7 @@ static char *curWorkSpc = NULL;
 static char *client = NULL;
 static char *workspace = NULL;
 static MenuItem *lastmenuitem = NULL;
-static name_list **curplist;
+static name_list **curplist = NULL;
 
 extern int yylex(void);
 %}
