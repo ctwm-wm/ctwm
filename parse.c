@@ -136,6 +136,11 @@ int RaiseDelay = 0;                     /* msec, for AutoRaise */
 int twmrc_lineno;
 int (*twmInputFunc)(void);              /* used in lexer */
 
+
+/* lex plumbing funcs */
+static int doparse(int (*ifunc)(void), const char *srctypename,
+                   const char *srcname);
+
 static int twmStringListInput(void);
 #ifndef USEM4
 static int twmFileInput(void);
@@ -146,36 +151,6 @@ static int m4twmFileInput(void);
 #if defined(YYDEBUG) && YYDEBUG
 int yydebug = 1;
 #endif
-
-
-/*
- * Backend func that takes an input-providing func and hooks it up to the
- * lex/yacc parser to do the work
- */
-static int doparse(int (*ifunc)(void), const char *srctypename,
-                   const char *srcname)
-{
-	ptr = 0;
-	len = 0;
-	twmrc_lineno = 0;
-	ParseError = FALSE;
-	twmInputFunc = ifunc;
-#ifdef NON_FLEX_LEX
-	overflowlen = 0;
-#endif
-
-	yyparse();
-
-	if(ParseError) {
-		fprintf(stderr, "%s:  errors found in twm %s",
-		        ProgramName, srctypename);
-		if(srcname) {
-			fprintf(stderr, " \"%s\"", srcname);
-		}
-		fprintf(stderr, "\n");
-	}
-	return (ParseError ? 0 : 1);
-}
 
 
 /*
@@ -327,6 +302,42 @@ static int ParseStringList(const char **sl)
 	stringListSource = sl;
 	currentString = *sl;
 	return doparse(twmStringListInput, "string list", (char *)NULL);
+}
+
+
+
+/*
+ * Everything below here is related to plumbing and firing off lex/yacc
+ */
+
+
+/*
+ * Backend func that takes an input-providing func and hooks it up to the
+ * lex/yacc parser to do the work
+ */
+static int doparse(int (*ifunc)(void), const char *srctypename,
+                   const char *srcname)
+{
+	ptr = 0;
+	len = 0;
+	twmrc_lineno = 0;
+	ParseError = FALSE;
+	twmInputFunc = ifunc;
+#ifdef NON_FLEX_LEX
+	overflowlen = 0;
+#endif
+
+	yyparse();
+
+	if(ParseError) {
+		fprintf(stderr, "%s:  errors found in twm %s",
+		        ProgramName, srctypename);
+		if(srcname) {
+			fprintf(stderr, " \"%s\"", srcname);
+		}
+		fprintf(stderr, "\n");
+	}
+	return (ParseError ? 0 : 1);
 }
 
 
@@ -489,20 +500,13 @@ static int twmStringListInput(void)
 }
 
 
+
+/*
+ * unput/output funcs for AT&T lex.  No longer supported, and expected to
+ * be GC'd in a release or two.
+ */
 #ifdef NON_FLEX_LEX
 
-/***********************************************************************
- *
- *  Procedure:
- *      twmUnput - redefinition of the lex unput routine
- *
- *  Inputs:
- *      c       - the character to push back onto the input stream
- *
- ***********************************************************************
- */
-
-/* Only used with AT&T lex */
 void twmUnput(int c)
 {
 	if(overflowlen < sizeof overflowbuff) {
@@ -515,19 +519,6 @@ void twmUnput(int c)
 	}
 }
 
-
-/***********************************************************************
- *
- *  Procedure:
- *      TwmOutput - redefinition of the lex output routine
- *
- *  Inputs:
- *      c       - the character to print
- *
- ***********************************************************************
- */
-
-/* Only used with AT&T lex */
 void TwmOutput(int c)
 {
 	putchar(c);
