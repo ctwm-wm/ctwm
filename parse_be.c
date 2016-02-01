@@ -10,17 +10,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"
 #include "screen.h"
-#include "menus.h"
 #include "util.h"
 #include "parse.h"
-#include "parse_int.h"
-#include "deftwmrc.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
