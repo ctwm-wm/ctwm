@@ -1040,7 +1040,7 @@ button		: BUTTON number		{ $$ = $2;
 					}
 		;
 
-string		: STRING		{ ptr = strdup($1);
+string		: STRING		{ char *ptr = strdup($1);
 					  RemoveDQuote(ptr);
 					  $$ = ptr;
 					}

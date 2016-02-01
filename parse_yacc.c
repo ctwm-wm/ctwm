@@ -29,7 +29,6 @@ char *Action = "";
 char *Name = "";
 MenuRoot *root, *pull = NULL;
 
-char *ptr;
 name_list **curplist;
 int cont = 0;
 int color;
