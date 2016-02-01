@@ -286,7 +286,6 @@ int ParseTwmrc(char *filename)
 			raw = twmrc;
 			twmrc = start_m4(raw);
 		}
-		/* else twmrc still set to the actual file from above */
 		status = doparse(m4twmFileInput, "file", cp);
 		wait(0);
 		fclose(twmrc);
