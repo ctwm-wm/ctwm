@@ -1810,7 +1810,7 @@ ParseButtonStyle(char *s)
 }
 
 int
-do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
+do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
                  char *name,       /* window name */
                  int justify,      /* left, center, right */
                  int num,          /* signed num */
@@ -1863,7 +1863,7 @@ do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
 		sinfo->justify = justify;
 		sinfo->num = num;
 		sinfo->denom = denom;
-		AddToList(list, name, sinfo);
+		AddToList(slist, name, sinfo);
 	}
 	return (0);
 }
