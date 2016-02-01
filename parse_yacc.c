@@ -1,5 +1,8 @@
 /*
  * Parser routines called from yacc code (gram.y)
+ *
+ * This is very similar to the meaning of parse_be.c; the two may be
+ * merged at some point.
  */
 
 #include "ctwm.h"

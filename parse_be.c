@@ -3,6 +3,9 @@
  *
  * Roughly, these are the routines that the lex/yacc output calls to do
  * its work.
+ *
+ * This is very similar to the meaning of parse_yacc.c; the two may be
+ * merged at some point.
  */
 
 #include "ctwm.h"
