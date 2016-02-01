@@ -457,32 +457,6 @@ name_list **AddIconRegion(char *geom,
 	return(&(ir->clientlist));
 }
 
-#ifdef comment
-FreeIconEntries(ir)
-IconRegion  *ir;
-{
-	IconEntry   *ie, *tmp;
-
-	for(ie = ir->entries; ie; ie = tmp) {
-		tmp = ie->next;
-		free((char *) ie);
-	}
-}
-FreeIconRegions()
-{
-	IconRegion *ir, *tmp;
-
-	for(ir = Scr->FirstRegion; ir != NULL;) {
-		tmp = ir;
-		FreeIconEntries(ir);
-		ir = ir->next;
-		free((char *) tmp);
-	}
-	Scr->FirstRegion = NULL;
-	Scr->LastRegion = NULL;
-}
-#endif
-
 static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
                                     char **pattern)
 {
