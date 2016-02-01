@@ -31,7 +31,7 @@ char *defstring = "default";
 MenuRoot *root, *pull = NULL;
 char *curWorkSpc;
 char *client, *workspace;
-MenuItem *lastmenuitem = (MenuItem*) 0;
+MenuItem *lastmenuitem = (MenuItem *) 0;
 
 char *ptr;
 name_list **list;
@@ -43,213 +43,227 @@ unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask);
 
 void yyerror(char *s)
 {
-    twmrc_error_prefix();
-    fprintf (stderr, "error in input file:  %s\n", s ? s : "");
-    ParseError = 1;
+	twmrc_error_prefix();
+	fprintf(stderr, "error in input file:  %s\n", s ? s : "");
+	ParseError = 1;
 }
 
 void InitGramVariables(void)
 {
-    mods = 0;
+	mods = 0;
 }
 
 void RemoveDQuote(char *str)
 {
-    char *i, *o;
-    int n;
-    int count;
+	char *i, *o;
+	int n;
+	int count;
 
-    for (i=str+1, o=str; *i && *i != '\"'; o++)
-    {
-	if (*i == '\\')
-	{
-	    switch (*++i)
-	    {
-	    case 'n':
-		*o = '\n';
-		i++;
-		break;
-	    case 'b':
-		*o = '\b';
-		i++;
-		break;
-	    case 'r':
-		*o = '\r';
-		i++;
-		break;
-	    case 't':
-		*o = '\t';
-		i++;
-		break;
-	    case 'f':
-		*o = '\f';
-		i++;
-		break;
-	    case '0':
-		if (*++i == 'x')
-		    goto hex;
-		else
-		    --i;
-	    case '1': case '2': case '3':
-	    case '4': case '5': case '6': case '7':
-		n = 0;
-		count = 0;
-		while (*i >= '0' && *i <= '7' && count < 3)
-		{
-		    n = (n<<3) + (*i++ - '0');
-		    count++;
+	for(i = str + 1, o = str; *i && *i != '\"'; o++) {
+		if(*i == '\\') {
+			switch(*++i) {
+				case 'n':
+					*o = '\n';
+					i++;
+					break;
+				case 'b':
+					*o = '\b';
+					i++;
+					break;
+				case 'r':
+					*o = '\r';
+					i++;
+					break;
+				case 't':
+					*o = '\t';
+					i++;
+					break;
+				case 'f':
+					*o = '\f';
+					i++;
+					break;
+				case '0':
+					if(*++i == 'x') {
+						goto hex;
+					}
+					else {
+						--i;
+					}
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+					n = 0;
+					count = 0;
+					while(*i >= '0' && *i <= '7' && count < 3) {
+						n = (n << 3) + (*i++ - '0');
+						count++;
+					}
+					*o = n;
+					break;
+hex:
+				case 'x':
+					n = 0;
+					count = 0;
+					while(i++, count++ < 2) {
+						if(*i >= '0' && *i <= '9') {
+							n = (n << 4) + (*i - '0');
+						}
+						else if(*i >= 'a' && *i <= 'f') {
+							n = (n << 4) + (*i - 'a') + 10;
+						}
+						else if(*i >= 'A' && *i <= 'F') {
+							n = (n << 4) + (*i - 'A') + 10;
+						}
+						else {
+							break;
+						}
+					}
+					*o = n;
+					break;
+				case '\n':
+					i++;    /* punt */
+					o--;    /* to account for o++ at end of loop */
+					break;
+				case '\"':
+				case '\'':
+				case '\\':
+				default:
+					*o = *i++;
+					break;
+			}
 		}
-		*o = n;
-		break;
-	    hex:
-	    case 'x':
-		n = 0;
-		count = 0;
-		while (i++, count++ < 2)
-		{
-		    if (*i >= '0' && *i <= '9')
-			n = (n<<4) + (*i - '0');
-		    else if (*i >= 'a' && *i <= 'f')
-			n = (n<<4) + (*i - 'a') + 10;
-		    else if (*i >= 'A' && *i <= 'F')
-			n = (n<<4) + (*i - 'A') + 10;
-		    else
-			break;
+		else {
+			*o = *i++;
 		}
-		*o = n;
-		break;
-	    case '\n':
-		i++;	/* punt */
-		o--;	/* to account for o++ at end of loop */
-		break;
-	    case '\"':
-	    case '\'':
-	    case '\\':
-	    default:
-		*o = *i++;
-		break;
-	    }
 	}
-	else
-	    *o = *i++;
-    }
-    *o = '\0';
+	*o = '\0';
 }
 
 MenuRoot *GetRoot(char *name, char *fore, char *back)
 {
-    MenuRoot *tmp;
+	MenuRoot *tmp;
 
-    tmp = FindMenuRoot(name);
-    if (tmp == NULL)
-	tmp = NewMenuRoot(name);
+	tmp = FindMenuRoot(name);
+	if(tmp == NULL) {
+		tmp = NewMenuRoot(name);
+	}
 
-    if (fore)
-    {
-	int save;
+	if(fore) {
+		int save;
 
-	save = Scr->FirstTime;
-	Scr->FirstTime = TRUE;
-	GetColor(COLOR, &tmp->highlight.fore, fore);
-	GetColor(COLOR, &tmp->highlight.back, back);
-	Scr->FirstTime = save;
-    }
+		save = Scr->FirstTime;
+		Scr->FirstTime = TRUE;
+		GetColor(COLOR, &tmp->highlight.fore, fore);
+		GetColor(COLOR, &tmp->highlight.back, back);
+		Scr->FirstTime = save;
+	}
 
-    return tmp;
+	return tmp;
 }
 
-void GotButton (int butt, int func)
+void GotButton(int butt, int func)
 {
-    int i;
-    MenuItem *item;
+	int i;
+	MenuItem *item;
 
-    for (i = 0; i < NUM_CONTEXTS; i++) {
-	if ((cont & (1 << i)) == 0) continue;
+	for(i = 0; i < NUM_CONTEXTS; i++) {
+		if((cont & (1 << i)) == 0) {
+			continue;
+		}
 
-	if (func == F_MENU) {
-	    pull->prev = NULL;
-	    AddFuncButton (butt, i, mods, func, pull, (MenuItem*) 0);
+		if(func == F_MENU) {
+			pull->prev = NULL;
+			AddFuncButton(butt, i, mods, func, pull, (MenuItem *) 0);
+		}
+		else {
+			root = GetRoot(TWM_ROOT, NULLSTR, NULLSTR);
+			item = AddToMenu(root, "x", Action, NULL, func, NULLSTR, NULLSTR);
+			AddFuncButton(butt, i, mods, func, (MenuRoot *) 0, item);
+		}
 	}
-	else {
-	    root = GetRoot (TWM_ROOT, NULLSTR, NULLSTR);
-	    item = AddToMenu (root, "x", Action, NULL, func, NULLSTR, NULLSTR);
-	    AddFuncButton (butt, i, mods, func, (MenuRoot*) 0, item);
-	}
-    }
 
-    Action = "";
-    pull = NULL;
-    cont = 0;
-    mods_used |= mods;
-    mods = 0;
+	Action = "";
+	pull = NULL;
+	cont = 0;
+	mods_used |= mods;
+	mods = 0;
 }
 
 void GotKey(char *key, int func)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < NUM_CONTEXTS; i++)
-    {
-	if ((cont & (1 << i)) == 0)
-	  continue;
+	for(i = 0; i < NUM_CONTEXTS; i++) {
+		if((cont & (1 << i)) == 0) {
+			continue;
+		}
 
-	if (func == F_MENU) {
-	    pull->prev = NULL;
-	    if (!AddFuncKey (key, i, mods, func, pull, Name, Action)) break;
+		if(func == F_MENU) {
+			pull->prev = NULL;
+			if(!AddFuncKey(key, i, mods, func, pull, Name, Action)) {
+				break;
+			}
+		}
+		else if(!AddFuncKey(key, i, mods, func, (MenuRoot *) 0, Name, Action)) {
+			break;
+		}
 	}
-	else
-	if (!AddFuncKey(key, i, mods, func, (MenuRoot*) 0, Name, Action))
-	  break;
-    }
 
-    Action = "";
-    pull = NULL;
-    cont = 0;
-    mods_used |= mods;
-    mods = 0;
+	Action = "";
+	pull = NULL;
+	cont = 0;
+	mods_used |= mods;
+	mods = 0;
 }
 
 
-void GotTitleButton (char *bitmapname, int func, Bool rightside)
+void GotTitleButton(char *bitmapname, int func, Bool rightside)
 {
-    if (!CreateTitleButton (bitmapname, func, Action, pull, rightside, True)) {
-	twmrc_error_prefix();
-	fprintf (stderr,
-		 "unable to create %s titlebutton \"%s\"\n",
-		 rightside ? "right" : "left", bitmapname);
-    }
-    Action = "";
-    pull = NULL;
+	if(!CreateTitleButton(bitmapname, func, Action, pull, rightside, True)) {
+		twmrc_error_prefix();
+		fprintf(stderr,
+		        "unable to create %s titlebutton \"%s\"\n",
+		        rightside ? "right" : "left", bitmapname);
+	}
+	Action = "";
+	pull = NULL;
 }
 
-Bool CheckWarpScreenArg (char *s)
+Bool CheckWarpScreenArg(char *s)
 {
-    if (strcasecmp (s,  WARPSCREEN_NEXT) == 0 ||
-	strcasecmp (s,  WARPSCREEN_PREV) == 0 ||
-	strcasecmp (s,  WARPSCREEN_BACK) == 0)
-      return True;
+	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
+	                strcasecmp(s,  WARPSCREEN_PREV) == 0 ||
+	                strcasecmp(s,  WARPSCREEN_BACK) == 0) {
+		return True;
+	}
 
-    for (; *s && Isascii(*s) && Isdigit(*s); s++) ; /* SUPPRESS 530 */
-    return (*s ? False : True);
-}
-
-
-Bool CheckWarpRingArg (char *s)
-{
-    if (strcasecmp (s,  WARPSCREEN_NEXT) == 0 ||
-	strcasecmp (s,  WARPSCREEN_PREV) == 0)
-      return True;
-
-    return False;
+	for(; *s && Isascii(*s) && Isdigit(*s); s++) ;  /* SUPPRESS 530 */
+	return (*s ? False : True);
 }
 
 
-Bool CheckColormapArg (char *s)
+Bool CheckWarpRingArg(char *s)
 {
-    if (strcasecmp (s, COLORMAP_NEXT) == 0 ||
-	strcasecmp (s, COLORMAP_PREV) == 0 ||
-	strcasecmp (s, COLORMAP_DEFAULT) == 0)
-      return True;
+	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
+	                strcasecmp(s,  WARPSCREEN_PREV) == 0) {
+		return True;
+	}
 
-    return False;
+	return False;
+}
+
+
+Bool CheckColormapArg(char *s)
+{
+	if(strcasecmp(s, COLORMAP_NEXT) == 0 ||
+	                strcasecmp(s, COLORMAP_PREV) == 0 ||
+	                strcasecmp(s, COLORMAP_DEFAULT) == 0) {
+		return True;
+	}
+
+	return False;
 }
