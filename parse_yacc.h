@@ -24,9 +24,7 @@ extern char *Name;
 extern MenuRoot *root, *pull;
 
 extern int cont;
-extern int color;
 extern int mods;
-extern unsigned int mods_used;
 
 
 #define DEFSTRING "default"

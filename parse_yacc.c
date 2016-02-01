@@ -30,7 +30,6 @@ char *Name = "";
 MenuRoot *root, *pull = NULL;
 
 int cont = 0;
-int color;
 int mods = 0;
 unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask);
 
