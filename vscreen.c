@@ -33,8 +33,6 @@
 #include "cursor.h"
 #include "screen.h"
 
-extern void twmrc_error_prefix(void);
-
 void InitVirtualScreens(ScreenInfo *scr)
 {
 	Cursor cursor;
@@ -94,7 +92,6 @@ void InitVirtualScreens(ScreenInfo *scr)
 		XParseGeometry(geometry, &x, &y, &w, &h);
 
 		if((x < 0) || (y < 0) || (w > scr->rootw) || (h > scr->rooth)) {
-			twmrc_error_prefix();
 			fprintf(stderr, "InitVirtualScreens : invalid geometry : %s\n", geometry);
 			continue;
 		}
@@ -126,7 +123,6 @@ void InitVirtualScreens(ScreenInfo *scr)
 	}
 
 	if(scr->vScreenList == NULL) {
-		twmrc_error_prefix();
 		fprintf(stderr, "no valid VirtualScreens found, exiting...\n");
 		exit(1);
 	}

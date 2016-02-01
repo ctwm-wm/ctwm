@@ -8,6 +8,7 @@
  * Defined paths etc
  */
 #define SYSTEM_INIT_FILE "@ETCDIR@/system.ctwmrc"
+#define PIXMAP_DIRECTORY "@PIXMAPDIR@"
 
 
 /*
@@ -18,7 +19,6 @@
 #cmakedefine USE_XPM
 #ifdef USE_XPM
 # define XPM
-# define PIXMAP_DIRECTORY "@PIXMAPDIR@"
 #endif
 
 /* libjpeg */

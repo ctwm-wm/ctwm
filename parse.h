@@ -70,14 +70,23 @@
 extern unsigned int mods_used;
 extern int ConstrainedMoveTime;
 extern int RaiseDelay;
-extern void twmrc_error_prefix(void);
 extern int ParseError;                  /* error parsing the .twmrc file */
-extern int twmrc_lineno;
 
 /* Needed in the lexer */
 extern int (*twmInputFunc)(void);
 
 int ParseTwmrc(char *filename);
+void twmrc_error_prefix(void);
+
+/*
+ * Funcs in parse_be.c but used elsewhere in the codebase; these should
+ * be looked at, because I think it probably means either they're
+ * misused, misnamed, or the code calling them should be in parse_be
+ * itself anyway.
+ */
+int ParseJustification(register char *s);
+int ParseAlignement(register char *s);
+void assign_var_savecolor(void);
 
 /*
  * Historical support for non-flex lex's is presumed no longer necessary.
@@ -227,28 +236,5 @@ void TwmOutput(int c);
 #define D_SOUTH                 2
 #define D_EAST                  3
 #define D_WEST                  4
-
-int ParseJustification(register char *s);
-int ParseAlignement(register char *s);
-
-int parse_keyword(char *s, int *nump);
-
-int do_single_keyword(int keyword);
-int do_string_keyword(int keyword, char *s);
-int do_string_string_keyword(int keyword, char *s1, char *s2);
-int do_number_keyword(int keyword, int num);
-name_list **do_colorlist_keyword(int keyword, int colormode, char *s);
-int do_color_keyword(int keyword, int colormode, char *s);
-int do_string_savecolor(int colormode, char *s);
-int do_var_savecolor(int key);
-void assign_var_savecolor(void);
-int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
-                     char *name,        /* window name */
-                     int justify,       /* left, center, right */
-                     int num,           /* signed num */
-                     int denom          /* 0 or indicates fraction denom */
-                    );
-void proc_ewmh_ignore(void);
-void add_ewmh_ignore(char *s);
 
 #endif /* _PARSE_H */

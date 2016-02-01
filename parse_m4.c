@@ -29,75 +29,100 @@ FILE *start_m4(FILE *fraw)
 {
 	int fno;
 	int fids[2];
-	int fres;               /* Fork result */
+	int fres;
+	char *defs_file;
 
+	/* We'll need to work in file descriptors, not stdio FILE's */
 	fno = fileno(fraw);
-	/* if (-1 == fcntl(fno, F_SETFD, 0)) perror("fcntl()"); */
+
+	/* Write our our standard definitions into a temp file */
+	defs_file = m4_defs(dpy, CLarg.display_name);
+
+	/* We'll read back m4's output over a pipe */
 	pipe(fids);
+
+	/* Fork off m4 as a child */
 	fres = fork();
 	if(fres < 0) {
 		perror("Fork for " M4CMD " failed");
+		unlink(defs_file);
 		exit(23);
 	}
-	if(fres == 0) {
-		char *tmp_file;
 
-		/* Child */
+	/*
+	 * Child: setup and spawn m4, and have it write its output into one
+	 * end of our pipe.
+	 */
+	if(fres == 0) {
+		/* Setup file descriptors */
 		close(0);               /* stdin */
 		close(1);               /* stdout */
 		dup2(fno, 0);           /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
-		tmp_file = m4_defs(dpy, CLarg.display_name);
-		execlp(M4CMD, M4CMD, "-s", tmp_file, "-", NULL);
+
+		/*
+		 * Kick off m4, telling it both our file of definitions, and
+		 * stdin (dup of the .[c]twmrc file descriptor above) as input.
+		 * It writes to stdout (one end of our pipe).
+		 */
+		execlp(M4CMD, M4CMD, "-s", defs_file, "-", NULL);
 
 		/* If we get here we are screwed... */
 		perror("Can't execlp() " M4CMD);
+		unlink(defs_file);
 		exit(124);
 	}
-	/* Parent */
+
+	/*
+	 * Else we're the parent; hand back our reading end of the pipe.
+	 */
 	close(fids[1]);
-	return ((FILE *)fdopen(fids[0], "r"));
+	return (fdopen(fids[0], "r"));
 }
 
-/* Code taken and munged from xrdb.c */
 
+/*
+ * Utils: Generate m4 definition lines for string or numeric values.
+ * Just use a static buffer of a presumably crazy overspec size; it's
+ * unlikely any lines will push more than 60 or 80 chars.
+ */
+#define MAXDEFLINE 4095
 static const char *MkDef(const char *name, const char *def)
 {
-	static char *cp = NULL;
-	static int maxsize = 0;
-	int n, nl;
+	static char cp[MAXDEFLINE + 1]; /* +1 for \n on error */
+	int pret;
 
+	/* Best response to an empty value is probably just nothing */
 	if(def == NULL) {
-		return ("");        /* XXX JWS: prevent segfaults */
+		return ("");
 	}
-	/* The char * storage only lasts for 1 call... */
-#define EXTRA   16 /* Egad */
-	if((n = EXTRA + ((nl = strlen(name)) +  strlen(def))) > maxsize) {
-		maxsize = MAX(n, 4096);
-		/* Safety net: this is wildly overspec */
-		if(maxsize > 1024 * 1024 * 1024) {
-			fprintf(stderr, "Cowardly refusing to malloc() a gig.\n");
-			exit(1);
+
+	/* Put together */
+	pret = snprintf(cp, MAXDEFLINE, "define(`%s', `%s')\n", name, def);
+
+	/* Be gracefulish about ultra-long lines */
+	if(pret >= MAXDEFLINE) {
+		pret = snprintf(cp, MAXDEFLINE, "dnl Define for '%s' too long: %d "
+		                "chars, limit %d\n", name, pret, MAXDEFLINE);
+		if(pret >= MAXDEFLINE) {
+			/* In case it was name that blew out the length */
+			*(cp + MAXDEFLINE - 1) = '\n';
+			*(cp + MAXDEFLINE)     = '\0';
 		}
-
-		free(cp);
-		cp = malloc(maxsize);
-	}
-	/* Otherwise cp is aready big 'nuf */
-	if(cp == NULL) {
-		fprintf(stderr, "Can't get %d bytes for arg parm\n", maxsize);
-		exit(468);
 	}
 
-	snprintf(cp, maxsize, "define(`%s', `%s')\n", name, def);
 	return(cp);
 }
 
 static const char *MkNum(const char *name, int def)
 {
-	char num[20];
+	char num[32];
 
-	sprintf(num, "%d", def);
+	/*
+	 * 2**64 is only 20 digits, so we've got plenty of headroom.  Don't
+	 * even bother checking the size wasn't exceeded.
+	 */
+	snprintf(num, 32, "%d", def);
 	return(MkDef(name, num));
 }
 
@@ -116,7 +141,7 @@ static char *m4_defs(Display *display, char *host)
 	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
 	struct hostent *hostname;
 	char *vc, *color;
-	static char tmp_name[] = "/tmp/twmrcXXXXXX";
+	static char tmp_name[] = "/tmp/ctwmrcXXXXXX";
 	int fd;
 	FILE *tmpf;
 	char *user;
@@ -151,7 +176,7 @@ static char *m4_defs(Display *display, char *host)
 	 * $DISPLAY and chop off the screen specification.
 	 */
 	/* stpncpy() a better choice */
-	snprintf(server, sizeof(server) - 1, "%s", XDisplayName(host));
+	snprintf(server, sizeof(server), "%s", XDisplayName(host));
 	colon = strchr(server, ':');
 	if(colon != NULL) {
 		*colon = '\0';

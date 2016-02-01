@@ -2495,7 +2495,6 @@ static unsigned int GetMaskFromResource(TwmWindow *win, char *res)
 			mask |= (1 << num);
 		}
 		else {
-			twmrc_error_prefix();
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}

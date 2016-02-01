@@ -106,12 +106,6 @@
 #endif
 
 
-/* I'm not sure this is meaningful anymore */
-#ifndef PIXMAP_DIRECTORY
-#define PIXMAP_DIRECTORY "/usr/lib/X11/twm"
-#endif
-
-
 XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
 Window ResizeWindow;            /* the window we are resizing */

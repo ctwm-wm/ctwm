@@ -81,6 +81,7 @@
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
+#include "parse_be.h"
 #include "cursor.h"
 
 static char *Action = "";
@@ -1282,10 +1283,4 @@ static Bool CheckColormapArg (char *s)
       return True;
 
     return False;
-}
-
-
-void twmrc_error_prefix (void)
-{
-    fprintf (stderr, "%s:  line %d:  ", ProgramName, twmrc_lineno);
 }

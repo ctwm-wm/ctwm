@@ -35,7 +35,6 @@ if(USE_XPM)
 	if(NOT DATADIR)
 		message(FATAL_ERROR "Internal error: DATADIR not defined!")
 	endif(NOT DATADIR)
-	set(PIXMAPDIR ${DATADIR}/images)
 endif(USE_XPM)
 
 
