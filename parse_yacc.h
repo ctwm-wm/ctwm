@@ -21,7 +21,6 @@ void GotTitleButton(char *bitmapname, int func, Bool rightside);
 
 extern char *Action;
 extern char *Name;
-extern char *defstring;
 extern MenuRoot *root, *pull;
 extern char *curWorkSpc;
 extern char *client, *workspace;
@@ -33,6 +32,9 @@ extern int cont;
 extern int color;
 extern int mods;
 extern unsigned int mods_used;
+
+
+#define DEFSTRING "default"
 
 
 #endif /* _PARSE_YACC_H */

@@ -467,7 +467,7 @@ sarg		: SKEYWORD string	{ if (!do_string_keyword ($1, $2)) {
 					    ParseError = 1;
 					  }
 					}
-		| SKEYWORD		{ if (!do_string_keyword ($1, defstring)) {
+		| SKEYWORD		{ if (!do_string_keyword ($1, DEFSTRING)) {
 					    twmrc_error_prefix();
 					    fprintf (stderr,
 				"unknown string keyword %d (no value)\n",

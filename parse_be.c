@@ -20,6 +20,7 @@
 #include "util.h"
 #include "parse.h"
 #include "parse_be.h"
+#include "parse_yacc.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -1116,7 +1117,7 @@ do_string_keyword(int keyword, char *s)
 				twmrc_error_prefix();
 				fprintf(stderr, "ignoring invalid IconifyStyle argument \"%s\"\n", s);
 			}
-			if(strcasecmp(s, "default") == 0) {
+			if(strcasecmp(s, DEFSTRING) == 0) {
 				Scr->IconifyStyle = ICONIFY_NORMAL;
 			}
 			if(strcasecmp(s, "normal") == 0) {
@@ -1688,7 +1689,7 @@ ParseRandomPlacement(char *s)
 	if(strlen(s) == 0) {
 		return RP_ALL;
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return RP_ALL;
 	}
 	if(strcasecmp(s, "off") == 0) {
@@ -1712,7 +1713,7 @@ ParseJustification(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return J_CENTER;
 	}
 	if(strcasecmp(s, "undef") == 0) {
@@ -1739,7 +1740,7 @@ ParseAlignement(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return J_CENTER;
 	}
 	if(strcasecmp(s, "undef") == 0) {
@@ -1766,7 +1767,7 @@ ParseUsePPosition(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return PPOS_OFF;
 	}
 	if(strcasecmp(s, "off") == 0) {
@@ -1790,7 +1791,7 @@ ParseButtonStyle(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return STYLE_NORMAL;
 	}
 	if(strcasecmp(s, "normal") == 0) {

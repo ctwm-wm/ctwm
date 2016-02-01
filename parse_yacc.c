@@ -27,7 +27,6 @@
 
 char *Action = "";
 char *Name = "";
-char *defstring = "default";
 MenuRoot *root, *pull = NULL;
 char *curWorkSpc;
 char *client, *workspace;
