@@ -67,7 +67,7 @@
 typedef void (*event_proc)(void);
 
 extern void InitEvents(void);
-extern Bool StashEventTime(register XEvent *ev);
+extern Bool StashEventTime(XEvent *ev);
 extern Time lastTimestamp;
 extern void SimulateMapRequest(Window w);
 extern void AutoRaiseWindow(TwmWindow *tmp);

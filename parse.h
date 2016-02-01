@@ -84,8 +84,8 @@ void twmrc_error_prefix(void);
  * misused, misnamed, or the code calling them should be in parse_be
  * itself anyway.
  */
-int ParseJustification(register char *s);
-int ParseAlignement(register char *s);
+int ParseJustification(char *s);
+int ParseAlignement(char *s);
 void assign_var_savecolor(void);
 
 /*

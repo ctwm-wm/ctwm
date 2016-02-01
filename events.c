@@ -262,7 +262,7 @@ void InitEvents(void)
 
 Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
 
-Bool StashEventTime(register XEvent *ev)
+Bool StashEventTime(XEvent *ev)
 {
 	switch(ev->type) {
 		case KeyPress:
@@ -3290,9 +3290,9 @@ void HandleButtonPress(void)
 
 	/* check the title bar buttons */
 	if(Tmp_win && Tmp_win->title_height && Tmp_win->titlebuttons) {
-		register int i;
-		register TBWindow *tbw;
-		register TitleButtonFunc *tbf;
+		int i;
+		TBWindow *tbw;
+		TitleButtonFunc *tbf;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 
 		modifier = Event.xbutton.state & mods_used;

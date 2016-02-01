@@ -22,9 +22,9 @@
 #endif
 
 
-static int ParseRandomPlacement(register char *s);
-static int ParseButtonStyle(register char *s);
-static int ParseUsePPosition(register char *s);
+static int ParseRandomPlacement(char *s);
+static int ParseButtonStyle(char *s);
+static int ParseUsePPosition(char *s);
 
 
 
@@ -590,7 +590,7 @@ static int numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
 int
 parse_keyword(char *s, int *nump)
 {
-	register int lower = 0, upper = numkeywords - 1;
+	int lower = 0, upper = numkeywords - 1;
 
 	while(lower <= upper) {
 		int middle = (lower + upper) / 2;
@@ -1677,7 +1677,7 @@ assign_var_savecolor(void)
 }
 
 static int
-ParseRandomPlacement(register char *s)
+ParseRandomPlacement(char *s)
 {
 	if(strlen(s) == 0) {
 		return RP_ALL;
@@ -1701,7 +1701,7 @@ ParseRandomPlacement(register char *s)
 }
 
 int
-ParseJustification(register char *s)
+ParseJustification(char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1728,7 +1728,7 @@ ParseJustification(register char *s)
 }
 
 int
-ParseAlignement(register char *s)
+ParseAlignement(char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1755,7 +1755,7 @@ ParseAlignement(register char *s)
 }
 
 static int
-ParseUsePPosition(register char *s)
+ParseUsePPosition(char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1779,7 +1779,7 @@ ParseUsePPosition(register char *s)
 }
 
 static int
-ParseButtonStyle(register char *s)
+ParseButtonStyle(char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);

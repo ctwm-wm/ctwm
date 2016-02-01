@@ -3417,7 +3417,7 @@ static void WMapRedrawWindow(Window window, int width, int height,
 	XRectangle logical_rect;
 	XFontStruct **xfonts;
 	char **font_names;
-	register int i;
+	int i;
 	int descent;
 	int fnum;
 

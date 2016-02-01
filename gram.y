@@ -1086,9 +1086,9 @@ static void InitGramVariables(void)
 
 static void RemoveDQuote(char *str)
 {
-    register char *i, *o;
-    register int n;
-    register int count;
+    char *i, *o;
+    int n;
+    int count;
 
     for (i=str+1, o=str; *i && *i != '\"'; o++)
     {

@@ -106,7 +106,7 @@ extern IconMgr *AllocateIconManager(char *name, char *geom, char *icon_name,
                                     int columns);
 extern void MoveIconManager(int dir);
 extern void MoveMappedIconManager(int dir);
-extern void JumpIconManager(register int dir);
+extern void JumpIconManager(int dir);
 extern WList *AddIconManager(TwmWindow *tmp_win);
 extern void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win);
 extern void RemoveFromIconManager(IconMgr *ip, WList *tmp);

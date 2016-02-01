@@ -533,7 +533,7 @@ void MoveMappedIconManager(int dir)
  ***********************************************************************
  */
 
-void JumpIconManager(register int dir)
+void JumpIconManager(int dir)
 {
 	IconMgr *ip, *tmp_ip = NULL;
 	int got_it = FALSE;

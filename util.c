@@ -208,7 +208,7 @@ void MoveOutline(Window root,
 	int         xl, xr, yt, yb, xinnerl, xinnerr, yinnert, yinnerb;
 	int         xthird, ythird;
 	XSegment    outline[18];
-	register XSegment   *r;
+	XSegment   *r;
 
 	if(x == lastx && y == lasty && width == lastWidth && height == lastHeight
 	                && lastBW == bw && th == lastTH) {
@@ -1408,7 +1408,7 @@ void GetFont(MyFont *font)
 	XFontSetExtents *font_extents;
 	XFontStruct **xfonts;
 	char **font_names;
-	register int i;
+	int i;
 	int ascent;
 	int descent;
 	int fnum;
@@ -3728,8 +3728,8 @@ static void compress(XImage *image, XColor *colors, int *ncolors)
 
 static void swapshort(char *bp, unsigned n)
 {
-	register char c;
-	register char *ep = bp + n;
+	char c;
+	char *ep = bp + n;
 
 	while(bp < ep) {
 		c = *bp;
@@ -3741,9 +3741,9 @@ static void swapshort(char *bp, unsigned n)
 
 static void swaplong(char *bp, unsigned n)
 {
-	register char c;
-	register char *ep = bp + n;
-	register char *sp;
+	char c;
+	char *ep = bp + n;
+	char *sp;
 
 	while(bp < ep) {
 		sp = bp + 3;

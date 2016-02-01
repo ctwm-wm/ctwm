@@ -337,7 +337,7 @@ static int is_pattern(char *p)
 
 int regex_match(const char *p, const char *t)
 {
-	register char range_start, range_end;
+	char range_start, range_end;
 	int invert;
 	int member_match;
 	int loop;
@@ -430,8 +430,8 @@ int regex_match(const char *p, const char *t)
 
 int regex_match_after_star(const char *p, const char *t)
 {
-	register int mat;
-	register int nextp;
+	int mat;
+	int nextp;
 
 	while((*p == '?') || (*p == '*')) {
 		if(*p == '?') {

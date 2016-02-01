@@ -374,14 +374,14 @@ int CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 		Scr->TBInfo.head = cur_tb;
 	}
 	else if(append && rightside) {      /* 3 */
-		register TitleButton *t;
+		TitleButton *t;
 		for /* SUPPRESS 530 */
 		(t = Scr->TBInfo.head; t->next; t = t->next);
 		t->next = cur_tb;
 		cur_tb->next = NULL;
 	}
 	else {                              /* 2 */
-		register TitleButton *t, *prev = NULL;
+		TitleButton *t, *prev = NULL;
 		for(t = Scr->TBInfo.head; t && !t->rightside; t = t->next) {
 			prev = t;
 		}
@@ -1825,7 +1825,7 @@ MenuRoot *FindMenuRoot(char *name)
 }
 
 
-static Bool belongs_to_twm_window(register TwmWindow *t, register Window w)
+static Bool belongs_to_twm_window(TwmWindow *t, Window w)
 {
 	if(!t) {
 		return False;
@@ -1837,8 +1837,8 @@ static Bool belongs_to_twm_window(register TwmWindow *t, register Window w)
 	}
 
 	if(t && t->titlebuttons) {
-		register TBWindow *tbw;
-		register int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
+		TBWindow *tbw;
+		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 		for(tbw = t->titlebuttons; nb > 0; tbw++, nb--) {
 			if(tbw->window == w) {
 				return True;
@@ -3745,7 +3745,7 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		break;
 
 		case F_WARPTO: {
-			register TwmWindow *tw;
+			TwmWindow *tw;
 			int len;
 
 			len = strlen(action);

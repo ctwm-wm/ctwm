@@ -150,7 +150,7 @@ void GetGravityOffsets(TwmWindow *tmp,  /* window from which to get gravity */
 		{  1,  1 },                     /* SouthEastGravity */
 		{  0,  0 },                     /* StaticGravity */
 	};
-	register int g = ((tmp->hints.flags & PWinGravity)
+	int g = ((tmp->hints.flags & PWinGravity)
 	                  ? tmp->hints.win_gravity : NorthWestGravity);
 
 	if(g < ForgetGravity || g > StaticGravity) {
@@ -910,7 +910,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 					 */
 					if(firsttime) {
 						if(JunkRoot != Scr->Root) {
-							register int scrnum;
+							int scrnum;
 							for(scrnum = 0; scrnum < NumScreens; scrnum++) {
 								if(JunkRoot == RootWindow(dpy, scrnum)) {
 									break;
@@ -2063,13 +2063,13 @@ void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
  * to take the frame_bw into account since we want (0,0) of the title window
  * to line up with (0,0) of the frame window.
  */
-void ComputeTitleLocation(register TwmWindow *tmp)
+void ComputeTitleLocation(TwmWindow *tmp)
 {
 	tmp->title_x = tmp->frame_bw3D - tmp->frame_bw;
 	tmp->title_y = tmp->frame_bw3D - tmp->frame_bw;
 
 	if(tmp->squeeze_info && !tmp->squeezed) {
-		register SqueezeInfo *si = tmp->squeeze_info;
+		SqueezeInfo *si = tmp->squeeze_info;
 		int basex;
 		int maxwidth = tmp->frame_width;
 		int tw = tmp->title_width + 2 * tmp->frame_bw3D;
@@ -2220,8 +2220,8 @@ void FetchWmProtocols(TwmWindow *tmp)
 	int n;
 
 	if(XGetWMProtocols(dpy, tmp->w, &protocols, &n)) {
-		register int i;
-		register Atom *ap;
+		int i;
+		Atom *ap;
 
 		for(i = 0, ap = protocols; i < n; i++, ap++) {
 			if(*ap == XA_WM_TAKE_FOCUS) {
@@ -2318,7 +2318,7 @@ ColormapWindow *CreateColormapWindow(Window w,
 
 void FetchWmColormapWindows(TwmWindow *tmp)
 {
-	register int i, j;
+	int i, j;
 	Window *cmap_windows = NULL;
 	Bool can_free_cmap_windows = False;
 	int number_cmap_windows = 0;

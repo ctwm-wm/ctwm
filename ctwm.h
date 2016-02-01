@@ -486,7 +486,7 @@ extern SIGNAL_T Done(int signum) __attribute__((noreturn));
 void ComputeCommonTitleOffsets(void);
 void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
                                Bool squeeze);
-void ComputeTitleLocation(register TwmWindow *tmp);
+void ComputeTitleLocation(TwmWindow *tmp);
 void CreateFonts(void);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
