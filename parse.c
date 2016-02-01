@@ -136,6 +136,7 @@ int ConstrainedMoveTime = 400;          /* milliseconds, event times */
 int ParseError;                         /* error parsing the .twmrc file */
 int RaiseDelay = 0;                     /* msec, for AutoRaise */
 int twmrc_lineno;
+int (*twmInputFunc)(void);              /* used in lexer */
 
 static int twmStringListInput(void);
 #ifndef USEM4
@@ -143,7 +144,6 @@ static int twmFileInput(void);
 #else
 static int m4twmFileInput(void);
 #endif
-int (*twmInputFunc)(void);
 
 /***********************************************************************
  *
