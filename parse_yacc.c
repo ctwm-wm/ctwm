@@ -12,18 +12,11 @@
 #include <string.h>
 #include <strings.h>
 
-#include "otp.h"
-#include "menus.h"
-#include "icons.h"
-#include "windowbox.h"
-#include "add_window.h"
-#include "list.h"
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
-#include "cursor.h"
 
 char *Action = "";
 char *Name = "";
