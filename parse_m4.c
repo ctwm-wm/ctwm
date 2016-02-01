@@ -86,10 +86,10 @@ FILE *start_m4(FILE *fraw)
  * Just use a static buffer of a presumably crazy overspec size; it's
  * unlikely any lines will push more than 60 or 80 chars.
  */
-#define MAXDEFLINE 4096
+#define MAXDEFLINE 4095
 static const char *MkDef(const char *name, const char *def)
 {
-	static char cp[MAXDEFLINE];
+	static char cp[MAXDEFLINE + 1]; /* +1 for \n on error */
 	int pret;
 
 	/* Best response to an empty value is probably just nothing */
@@ -102,8 +102,13 @@ static const char *MkDef(const char *name, const char *def)
 
 	/* Be gracefulish about ultra-long lines */
 	if(pret >= MAXDEFLINE) {
-		snprintf(cp, MAXDEFLINE, "dnl Define for '%s' too long: %d chars, "
-				"limit %d\n", name, pret, MAXDEFLINE);
+		pret = snprintf(cp, MAXDEFLINE, "dnl Define for '%s' too long: %d "
+				"chars, limit %d\n", name, pret, MAXDEFLINE);
+		if(pret >= MAXDEFLINE) {
+			/* In case it was name that blew out the length */
+			*(cp + MAXDEFLINE - 1) = '\n';
+			*(cp + MAXDEFLINE)     = '\0';
+		}
 	}
 
 	return(cp);
