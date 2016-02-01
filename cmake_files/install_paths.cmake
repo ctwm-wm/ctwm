@@ -57,3 +57,6 @@ endif(NOT MANDIR)
 # Since we only have 1 manpage, and it's in section 1, just list the man1
 # dir.
 set(MAN1PATH "${MANDIR}/man1")
+
+# This is fixed too
+set(PIXMAPDIR ${DATADIR}/images)
