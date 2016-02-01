@@ -76,8 +76,6 @@
 #include "screen.h"
 #include "gc.h"
 
-extern void twmrc_error_prefix(void);
-
 /***********************************************************************
  *
  *  Procedure:
