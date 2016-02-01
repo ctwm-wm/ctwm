@@ -90,7 +90,6 @@
 #ifndef SYSTEM_INIT_FILE
 #error "No SYSTEM_INIT_FILE set"
 #endif
-#define BUF_LEN 300
 
 static int ParseStringList(const char **sl);
 
@@ -112,8 +111,10 @@ extern int yyparse(void);
 #endif
 
 static FILE *twmrc;
+
 static int ptr = 0;
 static int len = 0;
+#define BUF_LEN 300
 static char buff[BUF_LEN + 1];
 static const char **stringListSource, *currentString;
 
