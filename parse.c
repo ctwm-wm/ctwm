@@ -271,11 +271,20 @@ int ParseTwmrc(char *filename)
 		FILE *raw = NULL;
 #endif
 
-		if(filename && strncmp(cp, filename, strlen(filename))) {
+		/*
+		 * If we wound up opening a config file that wasn't the filename
+		 * we were passed, make sure the user knows about it.
+		 */
+		if(filename && strncmp(cp, filename, strlen(filename)) != 0) {
 			fprintf(stderr,
 			        "%s:  unable to open twmrc file %s, using %s instead\n",
 			        ProgramName, filename, cp);
 		}
+
+
+		/*
+		 * Kick off the parsing, however we do it.
+		 */
 #ifdef USEM4
 		if(CLarg.GoThroughM4) {
 			/*
@@ -295,9 +304,15 @@ int ParseTwmrc(char *filename)
 		status = doparse(twmFileInput, "file", cp);
 		fclose(twmrc);
 #endif
+
+		/* And we're done */
 		return status;
 	}
 	else {
+		/*
+		 * Couldn't find anything to open, fall back to our builtin
+		 * config.
+		 */
 		if(filename) {
 			fprintf(stderr,
 			        "%s:  unable to open twmrc file %s, using built-in defaults instead\n",
@@ -305,6 +320,8 @@ int ParseTwmrc(char *filename)
 		}
 		return ParseStringList(defTwmrc);
 	}
+
+	/* NOTREACHED */
 }
 
 static int ParseStringList(const char **sl)
