@@ -190,9 +190,6 @@ int ParseTwmrc(char *filename)
 	int homelen = 0;
 	char *cp = NULL;
 	char tmpfilename[257];
-#ifdef USEM4
-	static FILE *raw;
-#endif
 
 	/*
 	 * Check for the twmrc file in the following order:
@@ -264,26 +261,15 @@ int ParseTwmrc(char *filename)
 		}
 
 		if(cp) {
-			/*
-			 * Not just assigning straight to raw in USEM4 case so that
-			 * twmrc is already set in the !GoThroughM4 conditional
-			 * below.
-			 */
 			twmrc = fopen(cp, "r");
-#ifdef USEM4
-			raw = twmrc;
-#endif
-
 		}
 	}
 
-#ifdef USEM4
-	if(raw) {
-#else
 	if(twmrc) {
-#endif
-
 		int status;
+#ifdef USEM4
+		static FILE *raw;
+#endif
 
 		if(filename && strncmp(cp, filename, strlen(filename))) {
 			fprintf(stderr,
@@ -291,14 +277,20 @@ int ParseTwmrc(char *filename)
 			        ProgramName, filename, cp);
 		}
 #ifdef USEM4
+		raw = NULL;
 		if(CLarg.GoThroughM4) {
+			/*
+			 * Hold onto raw filehandle so we can fclose() it below, and
+			 * swap twmrc over to the output from m4
+			 */
+			raw = twmrc;
 			twmrc = start_m4(raw);
 		}
 		/* else twmrc still set to the actual file from above */
 		status = doparse(m4twmFileInput, "file", cp);
 		wait(0);
 		fclose(twmrc);
-		if(CLarg.GoThroughM4) {
+		if(raw) {
 			fclose(raw);
 		}
 #else
