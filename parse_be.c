@@ -3,6 +3,9 @@
  *
  * Roughly, these are the routines that the lex/yacc output calls to do
  * its work.
+ *
+ * This is very similar to the meaning of parse_yacc.c; the two may be
+ * merged at some point.
  */
 
 #include "ctwm.h"
@@ -17,6 +20,7 @@
 #include "util.h"
 #include "parse.h"
 #include "parse_be.h"
+#include "parse_yacc.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -919,7 +923,7 @@ do_string_string_keyword(int keyword, char *s1, char *s2)
 			}
 		}
 		{
-			if(strcmp(s2, "default") == 0) {
+			if(s2 == NULL) {
 				return 1;
 			}
 			JunkMask = XParseGeometry(s2, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
@@ -1113,7 +1117,7 @@ do_string_keyword(int keyword, char *s)
 				twmrc_error_prefix();
 				fprintf(stderr, "ignoring invalid IconifyStyle argument \"%s\"\n", s);
 			}
-			if(strcasecmp(s, "default") == 0) {
+			if(strcasecmp(s, DEFSTRING) == 0) {
 				Scr->IconifyStyle = ICONIFY_NORMAL;
 			}
 			if(strcasecmp(s, "normal") == 0) {
@@ -1679,10 +1683,13 @@ assign_var_savecolor(void)
 static int
 ParseRandomPlacement(char *s)
 {
+	if(s == NULL) {
+		return RP_ALL;
+	}
 	if(strlen(s) == 0) {
 		return RP_ALL;
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return RP_ALL;
 	}
 	if(strcasecmp(s, "off") == 0) {
@@ -1706,7 +1713,7 @@ ParseJustification(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return J_CENTER;
 	}
 	if(strcasecmp(s, "undef") == 0) {
@@ -1733,7 +1740,7 @@ ParseAlignement(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return J_CENTER;
 	}
 	if(strcasecmp(s, "undef") == 0) {
@@ -1760,7 +1767,7 @@ ParseUsePPosition(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return PPOS_OFF;
 	}
 	if(strcasecmp(s, "off") == 0) {
@@ -1784,7 +1791,7 @@ ParseButtonStyle(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, "default") == 0) {
+	if(strcasecmp(s, DEFSTRING) == 0) {
 		return STYLE_NORMAL;
 	}
 	if(strcasecmp(s, "normal") == 0) {
@@ -1803,7 +1810,7 @@ ParseButtonStyle(char *s)
 }
 
 int
-do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
+do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
                  char *name,       /* window name */
                  int justify,      /* left, center, right */
                  int num,          /* signed num */
@@ -1856,7 +1863,7 @@ do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
 		sinfo->justify = justify;
 		sinfo->num = num;
 		sinfo->denom = denom;
-		AddToList(list, name, sinfo);
+		AddToList(slist, name, sinfo);
 	}
 	return (0);
 }

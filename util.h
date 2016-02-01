@@ -64,6 +64,8 @@
 #ifndef _UTIL_
 #define _UTIL_
 
+#include <ctype.h>
+
 #include "types.h"
 
 #ifndef MAX

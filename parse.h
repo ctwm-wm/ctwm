@@ -98,6 +98,12 @@ void twmUnput(int c);
 void TwmOutput(int c);
 #endif /* NON_FLEX_LEX */
 
+
+/*
+ * Various defined numbers for functions and gravity directions.  These
+ * are strictly speaking more config-y than parse-y, but we don't
+ * currently make such a distinction in the codebase.
+ */
 #define F_NOP                   0
 #define F_BEEP                  1
 #define F_RESTART               2

@@ -72,7 +72,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <ctype.h>
 
 #include <X11/Xatom.h>
 
