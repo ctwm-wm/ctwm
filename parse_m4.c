@@ -82,45 +82,42 @@ FILE *start_m4(FILE *fraw)
 
 
 /*
- * Utils: Generate m4 definition lines for string or numeric values
+ * Utils: Generate m4 definition lines for string or numeric values.
+ * Just use a static buffer of a presumably crazy overspec size; it's
+ * unlikely any lines will push more than 60 or 80 chars.
  */
+#define MAXDEFLINE 4096
 static const char *MkDef(const char *name, const char *def)
 {
-	static char *cp = NULL;
-	static int maxsize = 0;
-	int n, nl;
+	static char cp[MAXDEFLINE];
+	int pret;
 
+	/* Best response to an empty value is probably just nothing */
 	if(def == NULL) {
-		return ("");        /* XXX JWS: prevent segfaults */
-	}
-	/* The char * storage only lasts for 1 call... */
-#define EXTRA   16 /* Egad */
-	if((n = EXTRA + ((nl = strlen(name)) +  strlen(def))) > maxsize) {
-		maxsize = MAX(n, 4096);
-		/* Safety net: this is wildly overspec */
-		if(maxsize > 1024 * 1024 * 1024) {
-			fprintf(stderr, "Cowardly refusing to malloc() a gig.\n");
-			exit(1);
-		}
-
-		free(cp);
-		cp = malloc(maxsize);
-	}
-	/* Otherwise cp is aready big 'nuf */
-	if(cp == NULL) {
-		fprintf(stderr, "Can't get %d bytes for arg parm\n", maxsize);
-		exit(468);
+		return ("");
 	}
 
-	snprintf(cp, maxsize, "define(`%s', `%s')\n", name, def);
+	/* Put together */
+	pret = snprintf(cp, MAXDEFLINE, "define(`%s', `%s')\n", name, def);
+
+	/* Be gracefulish about ultra-long lines */
+	if(pret >= MAXDEFLINE) {
+		snprintf(cp, MAXDEFLINE, "dnl Define for '%s' too long: %d chars, "
+				"limit %d\n", name, pret, MAXDEFLINE);
+	}
+
 	return(cp);
 }
 
 static const char *MkNum(const char *name, int def)
 {
-	char num[20];
+	char num[32];
 
-	sprintf(num, "%d", def);
+	/*
+	 * 2**64 is only 20 digits, so we've got plenty of headroom.  Don't
+	 * even bother checking the size wasn't exceeded.
+	 */
+	snprintf(num, 32, "%d", def);
 	return(MkDef(name, num));
 }
 
