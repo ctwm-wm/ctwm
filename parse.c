@@ -72,13 +72,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <X11/Xatom.h>
+#ifdef USEM4
+# include <sys/types.h>
+# include <sys/wait.h>
+#endif
 
 #include "ctwm_atoms.h"
 #include "screen.h"
-#include "menus.h"
 #include "util.h"
 #include "parse.h"
 #include "parse_int.h"
