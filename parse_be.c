@@ -591,7 +591,8 @@ static TwmKeyword keytable[] = {
 
 static int numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
 
-int parse_keyword(char *s, int *nump)
+int
+parse_keyword(char *s, int *nump)
 {
 	register int lower = 0, upper = numkeywords - 1;
 
@@ -620,7 +621,8 @@ int parse_keyword(char *s, int *nump)
  * action routines called by grammar
  */
 
-int do_single_keyword(int keyword)
+int
+do_single_keyword(int keyword)
 {
 	switch(keyword) {
 		case kw0_NoDefaults:
@@ -905,7 +907,8 @@ int do_single_keyword(int keyword)
 }
 
 
-int do_string_string_keyword(int keyword, char *s1, char *s2)
+int
+do_string_string_keyword(int keyword, char *s1, char *s2)
 {
 	switch(keyword) {
 		case kwss_RandomPlacement: {
@@ -946,7 +949,8 @@ int do_string_string_keyword(int keyword, char *s1, char *s2)
 }
 
 
-int do_string_keyword(int keyword, char *s)
+int
+do_string_keyword(int keyword, char *s)
 {
 	switch(keyword) {
 		case kws_UsePPosition: {
@@ -1156,7 +1160,8 @@ int do_string_keyword(int keyword, char *s)
 }
 
 
-int do_number_keyword(int keyword, int num)
+int
+do_number_keyword(int keyword, int num)
 {
 	switch(keyword) {
 		case kwn_ConstrainedMoveTime:
@@ -1444,7 +1449,8 @@ int do_number_keyword(int keyword, int num)
 	return 0;
 }
 
-name_list **do_colorlist_keyword(int keyword, int colormode, char *s)
+name_list **
+do_colorlist_keyword(int keyword, int colormode, char *s)
 {
 	switch(keyword) {
 		case kwcl_BorderColor:
@@ -1504,7 +1510,8 @@ name_list **do_colorlist_keyword(int keyword, int colormode, char *s)
 	return NULL;
 }
 
-int do_color_keyword(int keyword, int colormode, char *s)
+int
+do_color_keyword(int keyword, int colormode, char *s)
 {
 	switch(keyword) {
 		case kwc_DefaultForeground:
@@ -1543,7 +1550,8 @@ int do_color_keyword(int keyword, int colormode, char *s)
 /*
  * put_pixel_on_root() Save a pixel value in twm root window color property.
  */
-static void put_pixel_on_root(Pixel pixel)
+static void
+put_pixel_on_root(Pixel pixel)
 {
 	int           i, addPixel = 1;
 	Atom          retAtom;
@@ -1574,7 +1582,8 @@ static void put_pixel_on_root(Pixel pixel)
 /*
  * do_string_savecolor() save a color from a string in the twmrc file.
  */
-int do_string_savecolor(int colormode, char *s)
+int
+do_string_savecolor(int colormode, char *s)
 {
 	Pixel p;
 	GetColor(colormode, &p, s);
@@ -1591,7 +1600,8 @@ typedef struct _cnode {
 } Cnode, *Cptr;
 static Cptr chead = NULL;
 
-int do_var_savecolor(int key)
+int
+do_var_savecolor(int key)
 {
 	Cptr cptrav, cpnew;
 	if(!chead) {
@@ -1616,7 +1626,8 @@ int do_var_savecolor(int key)
  * assign_var_savecolor() traverse the var save color list placeing the pixels
  *                        in the root window property.
  */
-void assign_var_savecolor(void)
+void
+assign_var_savecolor(void)
 {
 	Cptr cp = chead;
 	while(cp != NULL) {
@@ -1669,7 +1680,8 @@ void assign_var_savecolor(void)
 	}
 }
 
-static int ParseRandomPlacement(register char *s)
+static int
+ParseRandomPlacement(register char *s)
 {
 	if(strlen(s) == 0) {
 		return RP_ALL;
@@ -1692,7 +1704,8 @@ static int ParseRandomPlacement(register char *s)
 	return (-1);
 }
 
-int ParseJustification(register char *s)
+int
+ParseJustification(register char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1718,7 +1731,8 @@ int ParseJustification(register char *s)
 	return (-1);
 }
 
-int ParseAlignement(register char *s)
+int
+ParseAlignement(register char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1744,7 +1758,8 @@ int ParseAlignement(register char *s)
 	return (-1);
 }
 
-static int ParseUsePPosition(register char *s)
+static int
+ParseUsePPosition(register char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1767,7 +1782,8 @@ static int ParseUsePPosition(register char *s)
 	return (-1);
 }
 
-static int ParseButtonStyle(register char *s)
+static int
+ParseButtonStyle(register char *s)
 {
 	if(strlen(s) == 0) {
 		return (-1);
@@ -1790,11 +1806,12 @@ static int ParseButtonStyle(register char *s)
 	return (-1);
 }
 
-int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
-                     char *name,       /* window name */
-                     int justify,      /* left, center, right */
-                     int num,          /* signed num */
-                     int denom)        /* 0 or indicates fraction denom */
+int
+do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
+                 char *name,       /* window name */
+                 int justify,      /* left, center, right */
+                 int num,          /* signed num */
+                 int denom)        /* 0 or indicates fraction denom */
 {
 	int absnum = (num < 0 ? -num : num);
 
