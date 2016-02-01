@@ -80,8 +80,10 @@ FILE *start_m4(FILE *fraw)
 	return (fdopen(fids[0], "r"));
 }
 
-/* Code taken and munged from xrdb.c */
 
+/*
+ * Utils: Generate m4 definition lines for string or numeric values
+ */
 static const char *MkDef(const char *name, const char *def)
 {
 	static char *cp = NULL;
