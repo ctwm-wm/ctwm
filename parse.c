@@ -267,6 +267,11 @@ int ParseTwmrc(char *filename)
 		}
 
 		if(cp) {
+			/*
+			 * Not just assigning straight to raw in USEM4 case so that
+			 * twmrc is already set in the !GoThroughM4 conditional
+			 * below.
+			 */
 			twmrc = fopen(cp, "r");
 #ifdef USEM4
 			raw = twmrc;
@@ -292,6 +297,7 @@ int ParseTwmrc(char *filename)
 		if(CLarg.GoThroughM4) {
 			twmrc = start_m4(raw);
 		}
+		/* else twmrc still set to the actual file from above */
 		status = doparse(m4twmFileInput, "file", cp);
 		wait(0);
 		fclose(twmrc);
