@@ -68,7 +68,6 @@
 #include "ctwm.h"
 
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
 #include <strings.h>
 
