@@ -309,9 +309,9 @@ static int ParseStringList(const char **sl)
 /*
  * Util used throughout the code (possibly often wrongly?)
  */
-void twmrc_error_prefix (void)
+void twmrc_error_prefix(void)
 {
-    fprintf (stderr, "%s:  line %d:  ", ProgramName, twmrc_lineno);
+	fprintf(stderr, "%s:  line %d:  ", ProgramName, twmrc_lineno);
 }
 
 
