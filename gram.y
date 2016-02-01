@@ -486,7 +486,7 @@ sarg		: SSKEYWORD string string
 					    ParseError = 1;
 					  }
 					}
-		| SSKEYWORD string	{ if (!do_string_string_keyword ($1, $2, defstring)) {
+		| SSKEYWORD string	{ if (!do_string_string_keyword ($1, $2, NULL)) {
 					    twmrc_error_prefix();
 					    fprintf (stderr,
 				"unknown string keyword %d (value \"%s\")\n",
@@ -494,7 +494,7 @@ sarg		: SSKEYWORD string string
 					    ParseError = 1;
 					  }
 					}
-		| SSKEYWORD		{ if (!do_string_string_keyword ($1, defstring, defstring)) {
+		| SSKEYWORD		{ if (!do_string_string_keyword ($1, NULL, NULL)) {
 					    twmrc_error_prefix();
 					    fprintf (stderr,
 				"unknown string keyword %d (no value)\n",

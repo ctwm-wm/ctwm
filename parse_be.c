@@ -922,7 +922,7 @@ do_string_string_keyword(int keyword, char *s1, char *s2)
 			}
 		}
 		{
-			if(strcmp(s2, "default") == 0) {
+			if(s2 == NULL) {
 				return 1;
 			}
 			JunkMask = XParseGeometry(s2, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
@@ -1682,6 +1682,9 @@ assign_var_savecolor(void)
 static int
 ParseRandomPlacement(char *s)
 {
+	if(s == NULL) {
+		return RP_ALL;
+	}
 	if(strlen(s) == 0) {
 		return RP_ALL;
 	}
