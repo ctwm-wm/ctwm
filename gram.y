@@ -81,6 +81,7 @@
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
+#include "parse_be.h"
 #include "cursor.h"
 
 static char *Action = "";

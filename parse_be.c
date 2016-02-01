@@ -16,6 +16,7 @@
 #include "screen.h"
 #include "util.h"
 #include "parse.h"
+#include "parse_be.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif

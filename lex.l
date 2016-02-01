@@ -63,6 +63,7 @@
 
 #include "ctwm.h"
 #include "parse.h"
+#include "parse_be.h"
 
 /*
  * flex uses a YY_INPUT macro internally rather than input.  It doesn't
