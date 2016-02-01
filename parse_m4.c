@@ -103,7 +103,7 @@ static const char *MkDef(const char *name, const char *def)
 	/* Be gracefulish about ultra-long lines */
 	if(pret >= MAXDEFLINE) {
 		pret = snprintf(cp, MAXDEFLINE, "dnl Define for '%s' too long: %d "
-				"chars, limit %d\n", name, pret, MAXDEFLINE);
+		                "chars, limit %d\n", name, pret, MAXDEFLINE);
 		if(pret >= MAXDEFLINE) {
 			/* In case it was name that blew out the length */
 			*(cp + MAXDEFLINE - 1) = '\n';
