@@ -24,7 +24,7 @@ extern char *Name;
 extern MenuRoot *root, *pull;
 
 extern char *ptr;
-extern name_list **curplist, **list;
+extern name_list **curplist;
 extern int cont;
 extern int color;
 extern int mods;
