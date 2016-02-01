@@ -151,7 +151,7 @@ void GetGravityOffsets(TwmWindow *tmp,  /* window from which to get gravity */
 		{  0,  0 },                     /* StaticGravity */
 	};
 	int g = ((tmp->hints.flags & PWinGravity)
-	                  ? tmp->hints.win_gravity : NorthWestGravity);
+	         ? tmp->hints.win_gravity : NorthWestGravity);
 
 	if(g < ForgetGravity || g > StaticGravity) {
 		*xp = *yp = 0;
