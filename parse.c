@@ -268,7 +268,7 @@ int ParseTwmrc(char *filename)
 	if(twmrc) {
 		int status;
 #ifdef USEM4
-		static FILE *raw;
+		FILE *raw = NULL;
 #endif
 
 		if(filename && strncmp(cp, filename, strlen(filename))) {
@@ -277,7 +277,6 @@ int ParseTwmrc(char *filename)
 			        ProgramName, filename, cp);
 		}
 #ifdef USEM4
-		raw = NULL;
 		if(CLarg.GoThroughM4) {
 			/*
 			 * Hold onto raw filehandle so we can fclose() it below, and
