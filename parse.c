@@ -305,6 +305,15 @@ static int ParseStringList(const char **sl)
 }
 
 
+/*
+ * Util used throughout the code (possibly often wrongly?)
+ */
+void twmrc_error_prefix (void)
+{
+    fprintf (stderr, "%s:  line %d:  ", ProgramName, twmrc_lineno);
+}
+
+
 
 /*
  * Everything below here is related to plumbing and firing off lex/yacc

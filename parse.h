@@ -70,7 +70,6 @@
 extern unsigned int mods_used;
 extern int ConstrainedMoveTime;
 extern int RaiseDelay;
-extern void twmrc_error_prefix(void);
 extern int ParseError;                  /* error parsing the .twmrc file */
 extern int twmrc_lineno;
 
@@ -78,6 +77,7 @@ extern int twmrc_lineno;
 extern int (*twmInputFunc)(void);
 
 int ParseTwmrc(char *filename);
+void twmrc_error_prefix(void);
 
 /*
  * Historical support for non-flex lex's is presumed no longer necessary.

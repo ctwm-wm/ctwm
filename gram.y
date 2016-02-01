@@ -1283,9 +1283,3 @@ static Bool CheckColormapArg (char *s)
 
     return False;
 }
-
-
-void twmrc_error_prefix (void)
-{
-    fprintf (stderr, "%s:  line %d:  ", ProgramName, twmrc_lineno);
-}
