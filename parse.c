@@ -133,8 +133,9 @@ static int overflowlen;
 int ConstrainedMoveTime = 400;          /* milliseconds, event times */
 int ParseError;                         /* error parsing the .twmrc file */
 int RaiseDelay = 0;                     /* msec, for AutoRaise */
-int twmrc_lineno;
 int (*twmInputFunc)(void);              /* used in lexer */
+
+static int twmrc_lineno;
 
 
 /* lex plumbing funcs */

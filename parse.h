@@ -71,7 +71,6 @@ extern unsigned int mods_used;
 extern int ConstrainedMoveTime;
 extern int RaiseDelay;
 extern int ParseError;                  /* error parsing the .twmrc file */
-extern int twmrc_lineno;
 
 /* Needed in the lexer */
 extern int (*twmInputFunc)(void);
