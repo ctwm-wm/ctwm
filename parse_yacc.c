@@ -165,8 +165,8 @@ void GotButton(int butt, int func)
 			AddFuncButton(butt, i, mods, func, pull, (MenuItem *) 0);
 		}
 		else {
-			root = GetRoot(TWM_ROOT, NULLSTR, NULLSTR);
-			item = AddToMenu(root, "x", Action, NULL, func, NULLSTR, NULLSTR);
+			root = GetRoot(TWM_ROOT, NULL, NULL);
+			item = AddToMenu(root, "x", Action, NULL, func, NULL, NULL);
 			AddFuncButton(butt, i, mods, func, (MenuRoot *) 0, item);
 		}
 	}

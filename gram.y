@@ -248,7 +248,7 @@ stmt		: error
 		| RIGHT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, TRUE, TRUE); }
 		  binding_list
 		| button string		{
-		    root = GetRoot($2, NULLSTR, NULLSTR);
+		    root = GetRoot($2, NULL, NULL);
 		    AddFuncButton ($1, C_ROOT, 0, F_MENU, root, (MenuItem*) 0);
 		}
 		| button action		{
@@ -259,9 +259,9 @@ stmt		: error
 			else {
 			    MenuItem *item;
 
-			    root = GetRoot(TWM_ROOT,NULLSTR,NULLSTR);
+			    root = GetRoot(TWM_ROOT,NULL,NULL);
 			    item = AddToMenu (root, "x", Action,
-					NULL, $2, NULLSTR, NULLSTR);
+					NULL, $2, NULL, NULL);
 			    AddFuncButton ($1, C_ROOT, 0, $2, (MenuRoot*) 0, item);
 			}
 			Action = "";
@@ -375,9 +375,9 @@ stmt		: error
 		| MENU string LP string COLON string RP	{
 					root = GetRoot($2, $4, $6); }
 		  menu			{ root->real_menu = TRUE;}
-		| MENU string		{ root = GetRoot($2, NULLSTR, NULLSTR); }
+		| MENU string		{ root = GetRoot($2, NULL, NULL); }
 		  menu			{ root->real_menu = TRUE; }
-		| FUNCTION string	{ root = GetRoot($2, NULLSTR, NULLSTR); }
+		| FUNCTION string	{ root = GetRoot($2, NULL, NULL); }
 		  function
 		| ICONS			{ curplist = &Scr->IconNames; }
 		  icon_list
@@ -395,43 +395,43 @@ stmt		: error
 					  }
 					  else
 					  {
-					    root = GetRoot(TWM_ROOT,NULLSTR,NULLSTR);
+					    root = GetRoot(TWM_ROOT,NULL,NULL);
 					    Scr->DefaultFunction.item =
 						AddToMenu(root,"x",Action,
-							  NULL,$2, NULLSTR, NULLSTR);
+							  NULL,$2, NULL, NULL);
 					  }
 					  Action = "";
 					  pull = NULL;
 					}
 		| WINDOW_FUNCTION action { Scr->WindowFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULLSTR,NULLSTR);
+					   root = GetRoot(TWM_ROOT,NULL,NULL);
 					   Scr->WindowFunction.item =
 						AddToMenu(root,"x",Action,
-							  NULL,$2, NULLSTR, NULLSTR);
+							  NULL,$2, NULL, NULL);
 					   Action = "";
 					   pull = NULL;
 					}
 		| CHANGE_WORKSPACE_FUNCTION action { Scr->ChangeWorkspaceFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULLSTR,NULLSTR);
+					   root = GetRoot(TWM_ROOT,NULL,NULL);
 					   Scr->ChangeWorkspaceFunction.item =
 						AddToMenu(root,"x",Action,
-							  NULL,$2, NULLSTR, NULLSTR);
+							  NULL,$2, NULL, NULL);
 					   Action = "";
 					   pull = NULL;
 					}
 		| DEICONIFY_FUNCTION action { Scr->DeIconifyFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULLSTR,NULLSTR);
+					   root = GetRoot(TWM_ROOT,NULL,NULL);
 					   Scr->DeIconifyFunction.item =
 						AddToMenu(root,"x",Action,
-							  NULL,$2, NULLSTR, NULLSTR);
+							  NULL,$2, NULL, NULL);
 					   Action = "";
 					   pull = NULL;
 					}
 		| ICONIFY_FUNCTION action { Scr->IconifyFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULLSTR,NULLSTR);
+					   root = GetRoot(TWM_ROOT,NULL,NULL);
 					   Scr->IconifyFunction.item =
 						AddToMenu(root,"x",Action,
-							  NULL,$2, NULLSTR, NULLSTR);
+							  NULL,$2, NULL, NULL);
 					   Action = "";
 					   pull = NULL;
 					}
@@ -800,7 +800,7 @@ iconm_entries	: /* Empty */
 
 iconm_entry	: string string number	{ if (Scr->FirstTime)
 					    AddToList(curplist, $1,
-						AllocateIconManager($1, NULLSTR,
+						AllocateIconManager($1, NULL,
 							$2,$3));
 					}
 		| string string string number
@@ -819,7 +819,7 @@ workspc_entries	: /* Empty */
 		;
 
 workspc_entry	: string	{
-			AddWorkSpace ($1, NULLSTR, NULLSTR, NULLSTR, NULLSTR, NULLSTR);
+			AddWorkSpace ($1, NULL, NULL, NULL, NULL, NULL);
 		}
 		| string	{
 			curWorkSpc = (char*)$1;
@@ -835,16 +835,16 @@ workapp_entries	: /* Empty */
 		;
 
 workapp_entry	: string		{
-			AddWorkSpace (curWorkSpc, $1, NULLSTR, NULLSTR, NULLSTR, NULLSTR);
+			AddWorkSpace (curWorkSpc, $1, NULL, NULL, NULL, NULL);
 		}
 		| string string		{
-			AddWorkSpace (curWorkSpc, $1, $2, NULLSTR, NULLSTR, NULLSTR);
+			AddWorkSpace (curWorkSpc, $1, $2, NULL, NULL, NULL);
 		}
 		| string string string	{
-			AddWorkSpace (curWorkSpc, $1, $2, $3, NULLSTR, NULLSTR);
+			AddWorkSpace (curWorkSpc, $1, $2, $3, NULL, NULL);
 		}
 		| string string string string	{
-			AddWorkSpace (curWorkSpc, $1, $2, $3, $4, NULLSTR);
+			AddWorkSpace (curWorkSpc, $1, $2, $3, $4, NULL);
 		}
 		| string string string string string	{
 			AddWorkSpace (curWorkSpc, $1, $2, $3, $4, $5);
@@ -948,7 +948,7 @@ function_entries: /* Empty */
 		;
 
 function_entry	: action		{ AddToMenu(root, "", Action, NULL, $1,
-						    NULLSTR, NULLSTR);
+						    NULL, NULL);
 					  Action = "";
 					}
 		;
@@ -965,7 +965,7 @@ menu_entry	: string action		{
 			    if (lastmenuitem) lastmenuitem->separated = 1;
 			}
 			else {
-			    lastmenuitem = AddToMenu(root, $1, Action, pull, $2, NULLSTR, NULLSTR);
+			    lastmenuitem = AddToMenu(root, $1, Action, pull, $2, NULL, NULL);
 			    Action = "";
 			    pull = NULL;
 			}
@@ -988,7 +988,7 @@ action		: FKEYWORD	{ $$ = $1; }
 				Action = (char*)$2;
 				switch ($1) {
 				  case F_MENU:
-				    pull = GetRoot ($2, NULLSTR,NULLSTR);
+				    pull = GetRoot ($2, NULL,NULL);
 				    pull->prev = root;
 				    break;
 				  case F_WARPRING:

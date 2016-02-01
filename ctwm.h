@@ -119,8 +119,6 @@ typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 #define FALSE   0
 #endif
 
-#define NULLSTR ((char *) NULL)
-
 #define MAX_BUTTONS     11      /* max mouse buttons supported */
 
 /* info stings defines */

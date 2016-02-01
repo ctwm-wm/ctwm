@@ -2122,7 +2122,7 @@ void HandleClientMessage(void)
 				              &(button.xmotion.y_root),
 				              &JunkX, &JunkY, &JunkMask);
 
-				ExecuteFunction(F_ICONIFY, NULLSTR, Event.xany.window,
+				ExecuteFunction(F_ICONIFY, NULL, Event.xany.window,
 				                Tmp_win, &button, FRAME, FALSE);
 				XUngrabPointer(dpy, CurrentTime);
 			}

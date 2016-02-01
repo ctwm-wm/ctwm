@@ -704,8 +704,8 @@ void MakeWorkspacesMenu(void)
 	if(! Scr->Workspaces) {
 		return;
 	}
-	AddToMenu(Scr->Workspaces, "TWM Workspaces", NULLSTR, NULL, F_TITLE, NULLSTR,
-	          NULLSTR);
+	AddToMenu(Scr->Workspaces, "TWM Workspaces", NULL, NULL, F_TITLE, NULL,
+	          NULL);
 	if(! actions) {
 		int count = 0;
 
@@ -1413,19 +1413,19 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 		menu->highlight.fore = UNUSED_PIXEL;
 		menu->highlight.back = UNUSED_PIXEL;
 		if(menu == Scr->Windows) {
-			AddToMenu(menu, "TWM Windows", NULLSTR, NULL, F_TITLE, NULLSTR, NULLSTR);
+			AddToMenu(menu, "TWM Windows", NULL, NULL, F_TITLE, NULL, NULL);
 		}
 		else if(menu == Scr->Icons) {
-			AddToMenu(menu, "TWM Icons", NULLSTR, NULL, F_TITLE, NULLSTR, NULLSTR);
+			AddToMenu(menu, "TWM Icons", NULL, NULL, F_TITLE, NULL, NULL);
 		}
 		else if(menu == Scr->Visible) { /* Added by dl 2000 */
-			AddToMenu(menu, "TWM Visible", NULLSTR, NULL, F_TITLE, NULLSTR, NULLSTR);
+			AddToMenu(menu, "TWM Visible", NULL, NULL, F_TITLE, NULL, NULL);
 		}
 		else if(menu == Scr->AllIcons) { /* Added by dl 2004 */
-			AddToMenu(menu, "TWM All Icons", NULLSTR, NULL, F_TITLE, NULLSTR, NULLSTR);
+			AddToMenu(menu, "TWM All Icons", NULL, NULL, F_TITLE, NULL, NULL);
 		}
 		else {
-			AddToMenu(menu, "TWM All Windows", NULLSTR, NULL, F_TITLE, NULLSTR, NULLSTR);
+			AddToMenu(menu, "TWM All Windows", NULL, NULL, F_TITLE, NULL, NULL);
 		}
 
 		ws = NULL;
@@ -1601,7 +1601,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 		menu->highlight.fore = UNUSED_PIXEL;
 		menu->highlight.back = UNUSED_PIXEL;
 
-		AddToMenu(menu, "Twm Keys", NULLSTR, NULL, F_TITLE, NULLSTR, NULLSTR);
+		AddToMenu(menu, "Twm Keys", NULL, NULL, F_TITLE, NULL, NULL);
 
 		for(tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;  tmpKey = tmpKey->next) {
 			if(tmpKey->func != F_EXEC) {
@@ -1640,7 +1640,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			sprintf(tmpStr2, "%s %s", tmpStr, tmpKey->action);
 			free(tmpStr);
 
-			AddToMenu(menu, tmpStr2, tmpKey->action, NULL, tmpKey->func, NULLSTR, NULLSTR);
+			AddToMenu(menu, tmpStr2, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
 			oldmod = tmpKey->mods;
 		}
