@@ -30,6 +30,7 @@ set(CTWMSRC
 	otp.c
 	parse.c
 	parse_be.c
+	parse_yacc.c
 	resize.c
 	session.c
 	util.c
