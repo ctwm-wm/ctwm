@@ -145,21 +145,15 @@ static int twmFileInput(void);
 static int m4twmFileInput(void);
 #endif
 
-/***********************************************************************
- *
- *  Procedure:
- *      ParseTwmrc - parse the .twmrc file
- *
- *  Inputs:
- *      filename  - the filename to parse.  A NULL indicates $HOME/.twmrc
- *
- ***********************************************************************
- */
-
 #if defined(YYDEBUG) && YYDEBUG
 int yydebug = 1;
 #endif
 
+
+/*
+ * Backend func that takes an input-providing func and hooks it up to the
+ * lex/yacc parser to do the work
+ */
 static int doparse(int (*ifunc)(void), const char *srctypename,
                    const char *srcname)
 {
@@ -186,6 +180,9 @@ static int doparse(int (*ifunc)(void), const char *srctypename,
 }
 
 
+/*
+ * Principle entry point from top-level code to parse the config file
+ */
 int ParseTwmrc(char *filename)
 {
 	int i;
@@ -328,17 +325,10 @@ static int ParseStringList(const char **sl)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      twmFileInput - redefinition of the lex input routine for file input
- *
- *  Returned Value:
- *      the next input character
- *
- ***********************************************************************
+/*
+ * Various input routines for the lexer for the various sources of
+ * config.
  */
-
 
 #ifndef USEM4
 #include <ctype.h>
