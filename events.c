@@ -4711,10 +4711,10 @@ void ConfigureRootWindow(XEvent *ev)
 	Scr->rooth = Scr->crooth;
 
 	if(CLarg.is_captive && ((Scr->crootw != oldw) || (Scr->crooth != oldh))) {
-		twmrc_error_prefix();
-		fprintf(stderr,
-		        "You cannot change root window geometry with virtual screens active,\n");
-		fprintf(stderr, "from now on, the ctwm behaviour is unpredictable.\n");
+		fprintf(stderr, "%s: You cannot change root window geometry "
+		        "with virtual screens active,\n"
+		        "from now on, the ctwm behaviour is unpredictable.\n",
+		        ProgramName);
 	}
 }
 
