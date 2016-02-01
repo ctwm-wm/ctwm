@@ -22,9 +22,6 @@ void GotTitleButton(char *bitmapname, int func, Bool rightside);
 extern char *Action;
 extern char *Name;
 extern MenuRoot *root, *pull;
-extern char *curWorkSpc;
-extern char *client, *workspace;
-extern MenuItem *lastmenuitem;
 
 extern char *ptr;
 extern name_list **curplist, **list;

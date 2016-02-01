@@ -85,6 +85,10 @@
 #include "parse_yacc.h"
 #include "cursor.h"
 
+static char *curWorkSpc = NULL;
+static char *client = NULL;
+static char *workspace = NULL;
+static MenuItem *lastmenuitem = NULL;
 
 extern int yylex(void);
 %}

@@ -28,9 +28,6 @@
 char *Action = "";
 char *Name = "";
 MenuRoot *root, *pull = NULL;
-char *curWorkSpc;
-char *client, *workspace;
-MenuItem *lastmenuitem = (MenuItem *) 0;
 
 char *ptr;
 name_list **curplist;
