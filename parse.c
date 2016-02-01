@@ -88,7 +88,7 @@
 #endif
 
 #ifndef SYSTEM_INIT_FILE
-#define SYSTEM_INIT_FILE "/usr/lib/X11/twm/system.twmrc"
+#error "No SYSTEM_INIT_FILE set"
 #endif
 #define BUF_LEN 300
 
