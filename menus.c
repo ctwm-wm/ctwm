@@ -4688,6 +4688,8 @@ static void Identify(TwmWindow *t)
 
 	n = 0;
 	sprintf(Info[n++], "Twm version:  %s", Version);
+	if(VCSRevision)
+		sprintf(Info[n++], "VCS Revision:  %s", VCSRevision);
 
 	ctopts = ctopts_string(", ");
 	sprintf(Info[n++], "Compile time options : %s", ctopts);
