@@ -27,7 +27,7 @@ extern char *client, *workspace;
 extern MenuItem *lastmenuitem;
 
 extern char *ptr;
-extern name_list **list;
+extern name_list **curplist, **list;
 extern int cont;
 extern int color;
 extern int mods;

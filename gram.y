@@ -154,29 +154,29 @@ stmt		: error
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
 		| ICON_REGION string DKEYWORD DKEYWORD number number {
-		      list = AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
+		      curplist = AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
 		  win_list
 		| ICON_REGION string DKEYWORD DKEYWORD number number string {
-		      list = AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
+		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
 		  win_list
 		| ICON_REGION string DKEYWORD DKEYWORD number number string string {
-		      list = AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
+		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
 		  win_list
 		| ICON_REGION string DKEYWORD DKEYWORD number number string string string {
-		      list = AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
+		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
 		  win_list
 
 		| WINDOW_REGION string DKEYWORD DKEYWORD {
-		      list = AddWindowRegion ($2, $3, $4);
+		      curplist = AddWindowRegion ($2, $3, $4);
 		  }
 		  win_list
 
 		| WINDOW_BOX string string {
-		      list = addWindowBox ($2, $3);
+		      curplist = addWindowBox ($2, $3);
 		  }
 		  win_list
 
@@ -214,21 +214,21 @@ stmt		: error
 						Scr->DoZoom = TRUE; }
 		| PIXMAPS pixmap_list	{}
 		| CURSORS cursor_list	{}
-		| ICONIFY_BY_UNMAPPING	{ list = &Scr->IconifyByUn; }
+		| ICONIFY_BY_UNMAPPING	{ curplist = &Scr->IconifyByUn; }
 		  win_list
 		| ICONIFY_BY_UNMAPPING	{ if (Scr->FirstTime)
 		    Scr->IconifyByUnmapping = TRUE; }
 
-		| OPAQUEMOVE	{ list = &Scr->OpaqueMoveList; }
+		| OPAQUEMOVE	{ curplist = &Scr->OpaqueMoveList; }
 		  win_list
 		| OPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = TRUE; }
-		| NOOPAQUEMOVE	{ list = &Scr->NoOpaqueMoveList; }
+		| NOOPAQUEMOVE	{ curplist = &Scr->NoOpaqueMoveList; }
 		  win_list
 		| NOOPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = FALSE; }
-		| OPAQUERESIZE	{ list = &Scr->OpaqueMoveList; }
+		| OPAQUERESIZE	{ curplist = &Scr->OpaqueMoveList; }
 		  win_list
 		| OPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = TRUE; }
-		| NOOPAQUERESIZE	{ list = &Scr->NoOpaqueResizeList; }
+		| NOOPAQUERESIZE	{ curplist = &Scr->NoOpaqueResizeList; }
 		  win_list
 		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = FALSE; }
 
@@ -265,7 +265,7 @@ stmt		: error
 		| string fullkey	{ GotKey($1, $2); }
 		| button full		{ GotButton($1, $2); }
 
-		| DONT_ICONIFY_BY_UNMAPPING { list = &Scr->DontIconify; }
+		| DONT_ICONIFY_BY_UNMAPPING { curplist = &Scr->DontIconify; }
 		  win_list
 		| WORKSPACES {}
 		  workspc_list
@@ -274,35 +274,35 @@ stmt		: error
 			LB keys
 			{ Scr->IgnoreModifier |= mods; mods = 0; }
 			RB
-		| OCCUPYALL		{ list = &Scr->OccupyAll; }
+		| OCCUPYALL		{ curplist = &Scr->OccupyAll; }
 		  win_list
-		| ICONMENU_DONTSHOW	{ list = &Scr->IconMenuDontShow; }
+		| ICONMENU_DONTSHOW	{ curplist = &Scr->IconMenuDontShow; }
 		  win_list
 		| OCCUPYLIST {}
 		  occupy_list
-		| UNMAPBYMOVINGFARAWAY	{ list = &Scr->UnmapByMovingFarAway; }
+		| UNMAPBYMOVINGFARAWAY	{ curplist = &Scr->UnmapByMovingFarAway; }
 		  win_list
-		| AUTOSQUEEZE		{ list = &Scr->AutoSqueeze; }
+		| AUTOSQUEEZE		{ curplist = &Scr->AutoSqueeze; }
 		  win_list
-		| STARTSQUEEZED		{ list = &Scr->StartSqueezed; }
+		| STARTSQUEEZED		{ curplist = &Scr->StartSqueezed; }
 		  win_list
 		| ALWAYSSQUEEZETOGRAVITY	{ Scr->AlwaysSqueezeToGravity = TRUE; }
-		| ALWAYSSQUEEZETOGRAVITY	{ list = &Scr->AlwaysSqueezeToGravityL; }
+		| ALWAYSSQUEEZETOGRAVITY	{ curplist = &Scr->AlwaysSqueezeToGravityL; }
 		  win_list
-		| DONTSETINACTIVE	{ list = &Scr->DontSetInactive; }
+		| DONTSETINACTIVE	{ curplist = &Scr->DontSetInactive; }
 		  win_list
-		| ICONMGR_NOSHOW	{ list = &Scr->IconMgrNoShow; }
+		| ICONMGR_NOSHOW	{ curplist = &Scr->IconMgrNoShow; }
 		  win_list
 		| ICONMGR_NOSHOW	{ Scr->IconManagerDontShow = TRUE; }
-		| ICONMGRS		{ list = &Scr->IconMgrs; }
+		| ICONMGRS		{ curplist = &Scr->IconMgrs; }
 		  iconm_list
-		| ICONMGR_SHOW		{ list = &Scr->IconMgrShow; }
+		| ICONMGR_SHOW		{ curplist = &Scr->IconMgrShow; }
 		  win_list
-		| NO_TITLE_HILITE	{ list = &Scr->NoTitleHighlight; }
+		| NO_TITLE_HILITE	{ curplist = &Scr->NoTitleHighlight; }
 		  win_list
 		| NO_TITLE_HILITE	{ if (Scr->FirstTime)
 						Scr->TitleHighlight = FALSE; }
-		| NO_HILITE		{ list = &Scr->NoHighlight; }
+		| NO_HILITE		{ curplist = &Scr->NoHighlight; }
 		  win_list
 		| NO_HILITE		{ if (Scr->FirstTime)
 						Scr->Highlight = FALSE; }
@@ -311,60 +311,60 @@ stmt		: error
 		| ON_TOP_PRIORITY ICONS signed_number
                                         { OtpScrSetZero(Scr, IconWin, $3); }
 		| ON_TOP_PRIORITY signed_number
-                                        { list = OtpScrPriorityL(Scr, WinWin, $2); }
+                                        { curplist = OtpScrPriorityL(Scr, WinWin, $2); }
 		  win_list
 		| ON_TOP_PRIORITY ICONS signed_number
-                                        { list = OtpScrPriorityL(Scr, IconWin, $3); }
+                                        { curplist = OtpScrPriorityL(Scr, IconWin, $3); }
 		  win_list
-		| ALWAYS_ON_TOP		{ list = OtpScrPriorityL(Scr, WinWin, 8); }
+		| ALWAYS_ON_TOP		{ curplist = OtpScrPriorityL(Scr, WinWin, 8); }
 		  win_list
 		| PRIORITY_SWITCHING	{ OtpScrSetSwitching(Scr, WinWin, False);
-		                          list = OtpScrSwitchingL(Scr, WinWin); }
+		                          curplist = OtpScrSwitchingL(Scr, WinWin); }
 		  win_list
 		| PRIORITY_NOT_SWITCHING { OtpScrSetSwitching(Scr, WinWin, True);
-		                          list = OtpScrSwitchingL(Scr, WinWin); }
+		                          curplist = OtpScrSwitchingL(Scr, WinWin); }
 		  win_list
 		| PRIORITY_SWITCHING ICONS
                                         { OtpScrSetSwitching(Scr, IconWin, False);
-                                        list = OtpScrSwitchingL(Scr, IconWin); }
+                                        curplist = OtpScrSwitchingL(Scr, IconWin); }
 		  win_list
 		| PRIORITY_NOT_SWITCHING ICONS
                                         { OtpScrSetSwitching(Scr, IconWin, True);
-		                          list = OtpScrSwitchingL(Scr, IconWin); }
+		                          curplist = OtpScrSwitchingL(Scr, IconWin); }
 		  win_list
 
 		  win_list
-		| NO_STACKMODE		{ list = &Scr->NoStackModeL; }
+		| NO_STACKMODE		{ curplist = &Scr->NoStackModeL; }
 		  win_list
 		| NO_STACKMODE		{ if (Scr->FirstTime)
 						Scr->StackMode = FALSE; }
-		| NO_BORDER		{ list = &Scr->NoBorder; }
+		| NO_BORDER		{ curplist = &Scr->NoBorder; }
 		  win_list
 		| AUTO_POPUP		{ Scr->AutoPopup = TRUE; }
-		| AUTO_POPUP		{ list = &Scr->AutoPopupL; }
+		| AUTO_POPUP		{ curplist = &Scr->AutoPopupL; }
 		  win_list
-		| DONT_SAVE		{ list = &Scr->DontSave; }
+		| DONT_SAVE		{ curplist = &Scr->DontSave; }
 		  win_list
-		| NO_ICON_TITLE		{ list = &Scr->NoIconTitle; }
+		| NO_ICON_TITLE		{ curplist = &Scr->NoIconTitle; }
 		  win_list
 		| NO_ICON_TITLE		{ if (Scr->FirstTime)
 						Scr->NoIconTitlebar = TRUE; }
-		| NO_TITLE		{ list = &Scr->NoTitle; }
+		| NO_TITLE		{ curplist = &Scr->NoTitle; }
 		  win_list
 		| NO_TITLE		{ if (Scr->FirstTime)
 						Scr->NoTitlebar = TRUE; }
-		| IGNORE_TRANSIENT	{ list = &Scr->IgnoreTransientL; }
+		| IGNORE_TRANSIENT	{ curplist = &Scr->IgnoreTransientL; }
 		  win_list
-		| MAKE_TITLE		{ list = &Scr->MakeTitle; }
+		| MAKE_TITLE		{ curplist = &Scr->MakeTitle; }
 		  win_list
-		| START_ICONIFIED	{ list = &Scr->StartIconified; }
+		| START_ICONIFIED	{ curplist = &Scr->StartIconified; }
 		  win_list
-		| AUTO_RAISE		{ list = &Scr->AutoRaise; }
+		| AUTO_RAISE		{ curplist = &Scr->AutoRaise; }
 		  win_list
 		| AUTO_RAISE		{ Scr->AutoRaiseDefault = TRUE; }
-		| WARP_ON_DEICONIFY	{ list = &Scr->WarpOnDeIconify; }
+		| WARP_ON_DEICONIFY	{ curplist = &Scr->WarpOnDeIconify; }
 		  win_list
-		| AUTO_LOWER		{ list = &Scr->AutoLower; }
+		| AUTO_LOWER		{ curplist = &Scr->AutoLower; }
 		  win_list
 		| AUTO_LOWER		{ Scr->AutoLowerDefault = TRUE; }
 		| MENU string LP string COLON string RP	{
@@ -374,7 +374,7 @@ stmt		: error
 		  menu			{ root->real_menu = TRUE; }
 		| FUNCTION string	{ root = GetRoot($2, NULLSTR, NULLSTR); }
 		  function
-		| ICONS			{ list = &Scr->IconNames; }
+		| ICONS			{ curplist = &Scr->IconNames; }
 		  icon_list
 		| COLOR			{ color = COLOR; }
 		  color_list
@@ -430,16 +430,16 @@ stmt		: error
 					   Action = "";
 					   pull = NULL;
 					}
-		| WARP_CURSOR		{ list = &Scr->WarpCursorL; }
+		| WARP_CURSOR		{ curplist = &Scr->WarpCursorL; }
 		  win_list
 		| WARP_CURSOR		{ if (Scr->FirstTime)
 					    Scr->WarpCursor = TRUE; }
-		| WINDOW_RING		{ list = &Scr->WindowRingL; }
+		| WINDOW_RING		{ curplist = &Scr->WindowRingL; }
 		  win_list
 		| WINDOW_RING		{ Scr->WindowRingAll = TRUE; }
 		| WINDOW_RING_EXCLUDE	{ if (!Scr->WindowRingL)
 					    Scr->WindowRingAll = TRUE;
-					  list = &Scr->WindowRingExcludeL; }
+					  curplist = &Scr->WindowRingExcludeL; }
 		  win_list
 		| WINDOW_GEOMETRIES	{  }
 		  wingeom_list
@@ -687,9 +687,9 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    ParseError = 1;
 					  }
 					}
-		| CLKEYWORD string	{ list = do_colorlist_keyword($1,color,
+		| CLKEYWORD string	{ curplist = do_colorlist_keyword($1,color,
 								      $2);
-					  if (!list) {
+					  if (!curplist) {
 					    twmrc_error_prefix();
 					    fprintf (stderr,
 			"unhandled color list keyword %d (string \"%s\")\n",
@@ -729,7 +729,7 @@ win_color_entries	: /* Empty */
 
 win_color_entry	: string string		{ if (Scr->FirstTime &&
 					      color == Scr->Monochrome)
-					    AddToList(list, $1, $2); }
+					    AddToList(curplist, $1, $2); }
 		;
 
 wingeom_list	: LB wingeom_entries RB {}
@@ -767,20 +767,20 @@ ewmh_ignore_entry	: string { add_ewmh_ignore($1); }
 squeeze		: SQUEEZE_TITLE {
 				    if (HasShape) Scr->SqueezeTitle = TRUE;
 				}
-		| SQUEEZE_TITLE { list = &Scr->SqueezeTitleL;
+		| SQUEEZE_TITLE { curplist = &Scr->SqueezeTitleL;
 				  if (HasShape && Scr->SqueezeTitle == -1)
 				    Scr->SqueezeTitle = TRUE;
 				}
 		  LB win_sqz_entries RB
 		| DONT_SQUEEZE_TITLE { Scr->SqueezeTitle = FALSE; }
-		| DONT_SQUEEZE_TITLE { list = &Scr->DontSqueezeTitleL; }
+		| DONT_SQUEEZE_TITLE { curplist = &Scr->DontSqueezeTitleL; }
 		  win_list
 		;
 
 win_sqz_entries	: /* Empty */
 		| win_sqz_entries string JKEYWORD signed_number number	{
 				if (Scr->FirstTime) {
-				   do_squeeze_entry (list, $2, $3, $4, $5);
+				   do_squeeze_entry (curplist, $2, $3, $4, $5);
 				}
 			}
 		;
@@ -794,13 +794,13 @@ iconm_entries	: /* Empty */
 		;
 
 iconm_entry	: string string number	{ if (Scr->FirstTime)
-					    AddToList(list, $1,
+					    AddToList(curplist, $1,
 						AllocateIconManager($1, NULLSTR,
 							$2,$3));
 					}
 		| string string string number
 					{ if (Scr->FirstTime)
-					    AddToList(list, $1,
+					    AddToList(curplist, $1,
 						AllocateIconManager($1,$2,
 						$3, $4));
 					}
@@ -882,7 +882,7 @@ win_entries	: /* Empty */
 		;
 
 win_entry	: string		{ if (Scr->FirstTime)
-					    AddToList(list, $1, 0);
+					    AddToList(curplist, $1, 0);
 					}
 		;
 
@@ -932,7 +932,7 @@ icon_entries	: /* Empty */
 		| icon_entries icon_entry
 		;
 
-icon_entry	: string string		{ if (Scr->FirstTime) AddToList(list, $1, $2); }
+icon_entry	: string string		{ if (Scr->FirstTime) AddToList(curplist, $1, $2); }
 		;
 
 function	: LB function_entries RB {}

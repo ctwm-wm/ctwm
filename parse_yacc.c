@@ -33,7 +33,7 @@ char *client, *workspace;
 MenuItem *lastmenuitem = (MenuItem *) 0;
 
 char *ptr;
-name_list **list;
+name_list **curplist;
 int cont = 0;
 int color;
 int mods = 0;
