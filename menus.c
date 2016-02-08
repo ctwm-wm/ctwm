@@ -4788,7 +4788,7 @@ static void Identify(TwmWindow *t)
 			if(nitems && prop) {
 				snprintf(Info[n++], INFO_SIZE, "Client machine     = %s",
 						(char *)prop);
-				XFree((char *) prop);
+				XFree(prop);
 				CHKN;
 			}
 		}
