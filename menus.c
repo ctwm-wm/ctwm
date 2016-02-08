@@ -4692,12 +4692,12 @@ static void Identify(TwmWindow *t)
 	 */
 	n = 0;
 #define CHKN do { \
-		if(n > (INFO_LINES - 3)) { \
-			fprintf(stderr, "Overflowing Info[] on line %d\n", n); \
-			sprintf(Info[n++], "(overflow)"); \
-			goto info_dismiss; \
-		} \
-	} while(0)
+                if(n > (INFO_LINES - 3)) { \
+                        fprintf(stderr, "Overflowing Info[] on line %d\n", n); \
+                        sprintf(Info[n++], "(overflow)"); \
+                        goto info_dismiss; \
+                } \
+        } while(0)
 
 	snprintf(Info[n++], INFO_SIZE, "Twm version:  %s", TwmVersion);
 	CHKN;
@@ -4720,32 +4720,32 @@ static void Identify(TwmWindow *t)
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                      &x, &y, &junk);
 		snprintf(Info[n++], INFO_SIZE, "Name               = \"%s\"",
-				t->full_name);
+		         t->full_name);
 		CHKN;
 		snprintf(Info[n++], INFO_SIZE, "Class.res_name     = \"%s\"",
-				t->class.res_name);
+		         t->class.res_name);
 		CHKN;
 		snprintf(Info[n++], INFO_SIZE, "Class.res_class    = \"%s\"",
-				t->class.res_class);
+		         t->class.res_class);
 		CHKN;
 		Info[n++][0] = '\0';
 		CHKN;
 		snprintf(Info[n++], INFO_SIZE,
-		        "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
-		        wwidth + 2 * (bw + t->frame_bw3D),
-		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		        x - (bw + t->frame_bw3D),
-		        y - (bw + t->frame_bw3D + t->title_height),
-		        wwidth, wheight, x, y);
+		         "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
+		         wwidth + 2 * (bw + t->frame_bw3D),
+		         wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		         x - (bw + t->frame_bw3D),
+		         y - (bw + t->frame_bw3D + t->title_height),
+		         wwidth, wheight, x, y);
 		CHKN;
 		snprintf(Info[n++], INFO_SIZE,
-		        "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
-		        wwidth + 2 * (bw + t->frame_bw3D),
-		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		        Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
-		        Scr->rooth - (y + wheight + bw + t->frame_bw3D),
-		        wwidth, wheight,
-		        Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
+		         "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
+		         wwidth + 2 * (bw + t->frame_bw3D),
+		         wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		         Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
+		         Scr->rooth - (y + wheight + bw + t->frame_bw3D),
+		         wwidth, wheight,
+		         Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
 		CHKN;
 		snprintf(Info[n++], INFO_SIZE, "Border width       = %d", bw);
 		CHKN;
@@ -4757,11 +4757,11 @@ static void Identify(TwmWindow *t)
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
 			snprintf(Info[n++], INFO_SIZE, "Virtual Workspace  = %s",
-			        t->vs->wsw->currentwspc->name);
+			         t->vs->wsw->currentwspc->name);
 			CHKN;
 		}
 		snprintf(Info[n++], INFO_SIZE, "OnTopPriority      = %d",
-				OtpGetPriority(t));
+		         OtpGetPriority(t));
 		CHKN;
 
 		if(t->icon != NULL) {
@@ -4770,11 +4770,11 @@ static void Identify(TwmWindow *t)
 			Info[n++][0] = '\0';
 			CHKN;
 			snprintf(Info[n++], INFO_SIZE, "IconGeom/root     = %dx%d+%d+%d",
-			        wwidth, wheight, JunkX, JunkY);
+			         wwidth, wheight, JunkX, JunkY);
 			CHKN;
 			snprintf(Info[n++], INFO_SIZE, "IconGeom/intern   = %dx%d+%d+%d",
-			        t->icon->w_width, t->icon->w_height,
-			        t->icon->w_x, t->icon->w_y);
+			         t->icon->w_width, t->icon->w_height,
+			         t->icon->w_x, t->icon->w_y);
 			CHKN;
 			snprintf(Info[n++], INFO_SIZE, "IconBorder width  = %d", bw);
 			CHKN;
@@ -4787,7 +4787,7 @@ static void Identify(TwmWindow *t)
 		                      &bytesafter, &prop) == Success) {
 			if(nitems && prop) {
 				snprintf(Info[n++], INFO_SIZE, "Client machine     = %s",
-						(char *)prop);
+				         (char *)prop);
 				XFree(prop);
 				CHKN;
 			}
