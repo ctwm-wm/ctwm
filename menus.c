@@ -4686,17 +4686,33 @@ static void Identify(TwmWindow *t)
 	XRectangle logical_rect;
 	char *ctopts;
 
+	/*
+	 * Include some checking we don't blow out _LINES.  This ain't
+	 * helping _SIZE, but one problem at a time...
+	 */
 	n = 0;
+#define CHKN do { \
+		if(n > (INFO_LINES - 3)) { \
+			fprintf(stderr, "Overflowing Info[] on line %d\n", n); \
+			sprintf(Info[n++], "(overflow)"); \
+			goto info_dismiss; \
+		} \
+	} while(0)
+
 	sprintf(Info[n++], "Twm version:  %s", TwmVersion);
+	CHKN;
 	if(VCSRevision) {
 		sprintf(Info[n++], "VCS Revision:  %s", VCSRevision);
+		CHKN;
 	}
 
 	ctopts = ctopts_string(", ");
 	sprintf(Info[n++], "Compile time options : %s", ctopts);
 	free(ctopts);
+	CHKN;
 
 	Info[n++][0] = '\0';
+	CHKN;
 
 	if(t) {
 		XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
@@ -4704,9 +4720,13 @@ static void Identify(TwmWindow *t)
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                      &x, &y, &junk);
 		sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
+		CHKN;
 		sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
+		CHKN;
 		sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
+		CHKN;
 		Info[n++][0] = '\0';
+		CHKN;
 		sprintf(Info[n++],
 		        "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
 		        wwidth + 2 * (bw + t->frame_bw3D),
@@ -4714,6 +4734,7 @@ static void Identify(TwmWindow *t)
 		        x - (bw + t->frame_bw3D),
 		        y - (bw + t->frame_bw3D + t->title_height),
 		        wwidth, wheight, x, y);
+		CHKN;
 		sprintf(Info[n++],
 		        "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
 		        wwidth + 2 * (bw + t->frame_bw3D),
@@ -4722,28 +4743,39 @@ static void Identify(TwmWindow *t)
 		        Scr->rooth - (y + wheight + bw + t->frame_bw3D),
 		        wwidth, wheight,
 		        Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
+		CHKN;
 		sprintf(Info[n++], "Border width       = %d", bw);
+		CHKN;
 		sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
+		CHKN;
 		sprintf(Info[n++], "Depth              = %d", depth);
+		CHKN;
 		if(t->vs &&
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
 			sprintf(Info[n++], "Virtual Workspace  = %s",
 			        t->vs->wsw->currentwspc->name);
+			CHKN;
 		}
 		sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
+		CHKN;
 
 		if(t->icon != NULL) {
 			XGetGeometry(dpy, t->icon->w, &JunkRoot, &JunkX, &JunkY,
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
+			CHKN;
 			sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
 			        wwidth, wheight, JunkX, JunkY);
+			CHKN;
 			sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
 			        t->icon->w_width, t->icon->w_height,
 			        t->icon->w_x, t->icon->w_y);
+			CHKN;
 			sprintf(Info[n++], "IconBorder width  = %d", bw);
+			CHKN;
 			sprintf(Info[n++], "IconDepth         = %d", depth);
+			CHKN;
 		}
 
 		if(XGetWindowProperty(dpy, t->w, XA_WM_CLIENT_MACHINE, 0L, 64, False,
@@ -4752,11 +4784,15 @@ static void Identify(TwmWindow *t)
 			if(nitems && prop) {
 				sprintf(Info[n++], "Client machine     = %s", (char *)prop);
 				XFree((char *) prop);
+				CHKN;
 			}
 		}
 		Info[n++][0] = '\0';
+		CHKN;
 	}
 
+#undef CHKN
+info_dismiss:
 	sprintf(Info[n++], "Click to dismiss....");
 
 	/* figure out the width and height of the info window */
