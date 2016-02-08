@@ -4686,78 +4686,122 @@ static void Identify(TwmWindow *t)
 	XRectangle logical_rect;
 	char *ctopts;
 
+	/*
+	 * Include some checking we don't blow out _LINES.  We use snprintf()
+	 * exclusively to avoid blowing out _SIZE.
+	 *
+	 * In an ideal world, we'd probably fix this to be more dynamically
+	 * allocated, but this will do for now.
+	 */
 	n = 0;
-	sprintf(Info[n++], "Twm version:  %s", TwmVersion);
+#define CHKN do { \
+                if(n > (INFO_LINES - 3)) { \
+                        fprintf(stderr, "Overflowing Info[] on line %d\n", n); \
+                        sprintf(Info[n++], "(overflow)"); \
+                        goto info_dismiss; \
+                } \
+        } while(0)
+
+	snprintf(Info[n++], INFO_SIZE, "Twm version:  %s", TwmVersion);
+	CHKN;
 	if(VCSRevision) {
-		sprintf(Info[n++], "VCS Revision:  %s", VCSRevision);
+		snprintf(Info[n++], INFO_SIZE, "VCS Revision:  %s", VCSRevision);
+		CHKN;
 	}
 
 	ctopts = ctopts_string(", ");
-	sprintf(Info[n++], "Compile time options : %s", ctopts);
+	snprintf(Info[n++], INFO_SIZE, "Compile time options : %s", ctopts);
 	free(ctopts);
+	CHKN;
 
 	Info[n++][0] = '\0';
+	CHKN;
 
 	if(t) {
 		XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
 		             &wwidth, &wheight, &bw, &depth);
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                      &x, &y, &junk);
-		sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
-		sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
-		sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
+		snprintf(Info[n++], INFO_SIZE, "Name               = \"%s\"",
+		         t->full_name);
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE, "Class.res_name     = \"%s\"",
+		         t->class.res_name);
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE, "Class.res_class    = \"%s\"",
+		         t->class.res_class);
+		CHKN;
 		Info[n++][0] = '\0';
-		sprintf(Info[n++],
-		        "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
-		        wwidth + 2 * (bw + t->frame_bw3D),
-		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		        x - (bw + t->frame_bw3D),
-		        y - (bw + t->frame_bw3D + t->title_height),
-		        wwidth, wheight, x, y);
-		sprintf(Info[n++],
-		        "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
-		        wwidth + 2 * (bw + t->frame_bw3D),
-		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
-		        Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
-		        Scr->rooth - (y + wheight + bw + t->frame_bw3D),
-		        wwidth, wheight,
-		        Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
-		sprintf(Info[n++], "Border width       = %d", bw);
-		sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
-		sprintf(Info[n++], "Depth              = %d", depth);
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE,
+		         "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
+		         wwidth + 2 * (bw + t->frame_bw3D),
+		         wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		         x - (bw + t->frame_bw3D),
+		         y - (bw + t->frame_bw3D + t->title_height),
+		         wwidth, wheight, x, y);
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE,
+		         "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
+		         wwidth + 2 * (bw + t->frame_bw3D),
+		         wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
+		         Scr->rootw - (x + wwidth + bw + t->frame_bw3D),
+		         Scr->rooth - (y + wheight + bw + t->frame_bw3D),
+		         wwidth, wheight,
+		         Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE, "Border width       = %d", bw);
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE, "3D border width    = %d", t->frame_bw3D);
+		CHKN;
+		snprintf(Info[n++], INFO_SIZE, "Depth              = %d", depth);
+		CHKN;
 		if(t->vs &&
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
-			sprintf(Info[n++], "Virtual Workspace  = %s",
-			        t->vs->wsw->currentwspc->name);
+			snprintf(Info[n++], INFO_SIZE, "Virtual Workspace  = %s",
+			         t->vs->wsw->currentwspc->name);
+			CHKN;
 		}
-		sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
+		snprintf(Info[n++], INFO_SIZE, "OnTopPriority      = %d",
+		         OtpGetPriority(t));
+		CHKN;
 
 		if(t->icon != NULL) {
 			XGetGeometry(dpy, t->icon->w, &JunkRoot, &JunkX, &JunkY,
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
-			sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
-			        wwidth, wheight, JunkX, JunkY);
-			sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
-			        t->icon->w_width, t->icon->w_height,
-			        t->icon->w_x, t->icon->w_y);
-			sprintf(Info[n++], "IconBorder width  = %d", bw);
-			sprintf(Info[n++], "IconDepth         = %d", depth);
+			CHKN;
+			snprintf(Info[n++], INFO_SIZE, "IconGeom/root     = %dx%d+%d+%d",
+			         wwidth, wheight, JunkX, JunkY);
+			CHKN;
+			snprintf(Info[n++], INFO_SIZE, "IconGeom/intern   = %dx%d+%d+%d",
+			         t->icon->w_width, t->icon->w_height,
+			         t->icon->w_x, t->icon->w_y);
+			CHKN;
+			snprintf(Info[n++], INFO_SIZE, "IconBorder width  = %d", bw);
+			CHKN;
+			snprintf(Info[n++], INFO_SIZE, "IconDepth         = %d", depth);
+			CHKN;
 		}
 
 		if(XGetWindowProperty(dpy, t->w, XA_WM_CLIENT_MACHINE, 0L, 64, False,
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
 			if(nitems && prop) {
-				sprintf(Info[n++], "Client machine     = %s", (char *)prop);
-				XFree((char *) prop);
+				snprintf(Info[n++], INFO_SIZE, "Client machine     = %s",
+				         (char *)prop);
+				XFree(prop);
+				CHKN;
 			}
 		}
 		Info[n++][0] = '\0';
+		CHKN;
 	}
 
-	sprintf(Info[n++], "Click to dismiss....");
+#undef CHKN
+info_dismiss:
+	snprintf(Info[n++], INFO_SIZE, "Click to dismiss....");
 
 	/* figure out the width and height of the info window */
 	height = n * (Scr->DefaultFont.height + 2);
