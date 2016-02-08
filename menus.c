@@ -4687,7 +4687,7 @@ static void Identify(TwmWindow *t)
 	char *ctopts;
 
 	n = 0;
-	sprintf(Info[n++], "Twm version:  %s", Version);
+	sprintf(Info[n++], "Twm version:  %s", TwmVersion);
 	if(VCSRevision)
 		sprintf(Info[n++], "VCS Revision:  %s", VCSRevision);
 

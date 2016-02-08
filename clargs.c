@@ -336,7 +336,7 @@ usage(void)
 static void
 print_version(void)
 {
-	printf("ctwm %s\n", VersionNumber);
+	printf("ctwm %s\n", VersionNumberFull);
 	if(VCSRevision) {
 		printf(" (bzr:%s)\n", VCSRevision);
 	}
@@ -348,7 +348,7 @@ DisplayInfo(void)
 {
 	char *ctopts;
 
-	printf("Twm version:  %s\n", Version);
+	printf("Twm version:  %s\n", TwmVersion);
 
 	ctopts = ctopts_string(" ");
 	printf("Compile time options : %s\n", ctopts);
