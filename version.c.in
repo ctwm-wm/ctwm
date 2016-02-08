@@ -56,4 +56,5 @@
 
 const char *TwmVersion = "MIT X Consortium, R6, ctwm " VERSION_ID;
 const char *VersionNumber = VERSION_ID;
+const char *VersionNumberFull = VERSION_ID;
 const char *VCSRevision = %%REVISION%%;

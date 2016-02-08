@@ -65,6 +65,7 @@
 
 extern const char *TwmVersion;
 extern const char *VersionNumber;
+extern const char *VersionNumberFull;
 extern const char *VCSRevision;
 
 #endif /* _VERSION_ */
