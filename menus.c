@@ -4687,8 +4687,8 @@ static void Identify(TwmWindow *t)
 	char *ctopts;
 
 	/*
-	 * Include some checking we don't blow out _LINES.  This ain't
-	 * helping _SIZE, but one problem at a time...
+	 * Include some checking we don't blow out _LINES.  We use snprintf()
+	 * exclusively to avoid blowing out _SIZE.
 	 */
 	n = 0;
 #define CHKN do { \
@@ -4699,15 +4699,15 @@ static void Identify(TwmWindow *t)
 		} \
 	} while(0)
 
-	sprintf(Info[n++], "Twm version:  %s", TwmVersion);
+	snprintf(Info[n++], INFO_SIZE, "Twm version:  %s", TwmVersion);
 	CHKN;
 	if(VCSRevision) {
-		sprintf(Info[n++], "VCS Revision:  %s", VCSRevision);
+		snprintf(Info[n++], INFO_SIZE, "VCS Revision:  %s", VCSRevision);
 		CHKN;
 	}
 
 	ctopts = ctopts_string(", ");
-	sprintf(Info[n++], "Compile time options : %s", ctopts);
+	snprintf(Info[n++], INFO_SIZE, "Compile time options : %s", ctopts);
 	free(ctopts);
 	CHKN;
 
@@ -4719,15 +4719,18 @@ static void Identify(TwmWindow *t)
 		             &wwidth, &wheight, &bw, &depth);
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                      &x, &y, &junk);
-		sprintf(Info[n++], "Name               = \"%s\"", t->full_name);
+		snprintf(Info[n++], INFO_SIZE, "Name               = \"%s\"",
+				t->full_name);
 		CHKN;
-		sprintf(Info[n++], "Class.res_name     = \"%s\"", t->class.res_name);
+		snprintf(Info[n++], INFO_SIZE, "Class.res_name     = \"%s\"",
+				t->class.res_name);
 		CHKN;
-		sprintf(Info[n++], "Class.res_class    = \"%s\"", t->class.res_class);
+		snprintf(Info[n++], INFO_SIZE, "Class.res_class    = \"%s\"",
+				t->class.res_class);
 		CHKN;
 		Info[n++][0] = '\0';
 		CHKN;
-		sprintf(Info[n++],
+		snprintf(Info[n++], INFO_SIZE,
 		        "Geometry/root (UL) = %dx%d+%d+%d (Inner: %dx%d+%d+%d)",
 		        wwidth + 2 * (bw + t->frame_bw3D),
 		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
@@ -4735,7 +4738,7 @@ static void Identify(TwmWindow *t)
 		        y - (bw + t->frame_bw3D + t->title_height),
 		        wwidth, wheight, x, y);
 		CHKN;
-		sprintf(Info[n++],
+		snprintf(Info[n++], INFO_SIZE,
 		        "Geometry/root (LR) = %dx%d-%d-%d (Inner: %dx%d-%d-%d)",
 		        wwidth + 2 * (bw + t->frame_bw3D),
 		        wheight + 2 * (bw + t->frame_bw3D) + t->title_height,
@@ -4744,20 +4747,21 @@ static void Identify(TwmWindow *t)
 		        wwidth, wheight,
 		        Scr->rootw - (x + wwidth), Scr->rooth - (y + wheight));
 		CHKN;
-		sprintf(Info[n++], "Border width       = %d", bw);
+		snprintf(Info[n++], INFO_SIZE, "Border width       = %d", bw);
 		CHKN;
-		sprintf(Info[n++], "3D border width    = %d", t->frame_bw3D);
+		snprintf(Info[n++], INFO_SIZE, "3D border width    = %d", t->frame_bw3D);
 		CHKN;
-		sprintf(Info[n++], "Depth              = %d", depth);
+		snprintf(Info[n++], INFO_SIZE, "Depth              = %d", depth);
 		CHKN;
 		if(t->vs &&
 		                t->vs->wsw &&
 		                t->vs->wsw->currentwspc) {
-			sprintf(Info[n++], "Virtual Workspace  = %s",
+			snprintf(Info[n++], INFO_SIZE, "Virtual Workspace  = %s",
 			        t->vs->wsw->currentwspc->name);
 			CHKN;
 		}
-		sprintf(Info[n++], "OnTopPriority      = %d", OtpGetPriority(t));
+		snprintf(Info[n++], INFO_SIZE, "OnTopPriority      = %d",
+				OtpGetPriority(t));
 		CHKN;
 
 		if(t->icon != NULL) {
@@ -4765,16 +4769,16 @@ static void Identify(TwmWindow *t)
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
 			CHKN;
-			sprintf(Info[n++], "IconGeom/root     = %dx%d+%d+%d",
+			snprintf(Info[n++], INFO_SIZE, "IconGeom/root     = %dx%d+%d+%d",
 			        wwidth, wheight, JunkX, JunkY);
 			CHKN;
-			sprintf(Info[n++], "IconGeom/intern   = %dx%d+%d+%d",
+			snprintf(Info[n++], INFO_SIZE, "IconGeom/intern   = %dx%d+%d+%d",
 			        t->icon->w_width, t->icon->w_height,
 			        t->icon->w_x, t->icon->w_y);
 			CHKN;
-			sprintf(Info[n++], "IconBorder width  = %d", bw);
+			snprintf(Info[n++], INFO_SIZE, "IconBorder width  = %d", bw);
 			CHKN;
-			sprintf(Info[n++], "IconDepth         = %d", depth);
+			snprintf(Info[n++], INFO_SIZE, "IconDepth         = %d", depth);
 			CHKN;
 		}
 
@@ -4782,7 +4786,8 @@ static void Identify(TwmWindow *t)
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
 			if(nitems && prop) {
-				sprintf(Info[n++], "Client machine     = %s", (char *)prop);
+				snprintf(Info[n++], INFO_SIZE, "Client machine     = %s",
+						(char *)prop);
 				XFree((char *) prop);
 				CHKN;
 			}
@@ -4793,7 +4798,7 @@ static void Identify(TwmWindow *t)
 
 #undef CHKN
 info_dismiss:
-	sprintf(Info[n++], "Click to dismiss....");
+	snprintf(Info[n++], INFO_SIZE, "Click to dismiss....");
 
 	/* figure out the width and height of the info window */
 	height = n * (Scr->DefaultFont.height + 2);
