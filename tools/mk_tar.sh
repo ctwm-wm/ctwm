@@ -2,8 +2,18 @@
 #
 # Setup and generate a release tarball
 
-# Version
-version=`grep '^\#define VERSION_ID' version.c.in | cut -d'"' -f2`
+# Make sure we're in the expected root of the tree
+cd `dirname $0`/..
+
+# Figure out version
+tempfile=`mktemp .version.tmp.XXXXXX` || exit 1
+(
+	cat version.c.in | grep -v '^#include' | grep -v VCSRevision
+	echo '#include <stdio.h>'
+	echo 'int main(void) { printf("%s\n", VersionNumberFull); }'
+) | cc -o ${tempfile} -xc -
+version=`./$tempfile`
+rm -f $tempfile
 
 # If it's a non-release, append date
 if echo -n $version | grep -q '[^0-9\.]'; then
