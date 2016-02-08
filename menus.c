@@ -4689,6 +4689,9 @@ static void Identify(TwmWindow *t)
 	/*
 	 * Include some checking we don't blow out _LINES.  We use snprintf()
 	 * exclusively to avoid blowing out _SIZE.
+	 *
+	 * In an ideal world, we'd probably fix this to be more dynamically
+	 * allocated, but this will do for now.
 	 */
 	n = 0;
 #define CHKN do { \
