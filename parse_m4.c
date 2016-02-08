@@ -216,6 +216,10 @@ static char *m4_defs(Display *display, char *host)
 	 */
 	WR_DEF("TWM_TYPE", "ctwm");
 	WR_DEF("TWM_VERSION", VersionNumber);
+	WR_DEF("CTWM_VERSION_MAJOR", VersionNumber_major);
+	WR_DEF("CTWM_VERSION_MINOR", VersionNumber_minor);
+	WR_DEF("CTWM_VERSION_PATCH", VersionNumber_patch);
+	WR_DEF("CTWM_VERSION_ADDL",  VersionNumber_addl);
 
 	/*
 	 * X server meta
