@@ -63,7 +63,7 @@
 #ifndef _VERSION_
 #define _VERSION_
 
-extern const char *Version;
+extern const char *TwmVersion;
 extern const char *VersionNumber;
 extern const char *VCSRevision;
 

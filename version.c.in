@@ -54,6 +54,6 @@
 #include "version.h"
 #define VERSION_ID "3.8.2-post"
 
-const char *Version = "MIT X Consortium, R6, ctwm " VERSION_ID;
+const char *TwmVersion = "MIT X Consortium, R6, ctwm " VERSION_ID;
 const char *VersionNumber = VERSION_ID;
 const char *VCSRevision = %%REVISION%%;

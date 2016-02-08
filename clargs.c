@@ -348,7 +348,7 @@ DisplayInfo(void)
 {
 	char *ctopts;
 
-	printf("Twm version:  %s\n", Version);
+	printf("Twm version:  %s\n", TwmVersion);
 
 	ctopts = ctopts_string(" ");
 	printf("Compile time options : %s\n", ctopts);
