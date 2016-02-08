@@ -32,6 +32,12 @@ remnants of special-case VMS support have been removed.
 
 1. The USE_GNOME option and code for GNOME1 support has been removed.
 
+1. The old-style title button action specifications (without an `=` in
+   them) deprecated since 3.8 are no longer supported.  Just replacing
+   the "`:`" with "`= :`" should suffice to make it work right in 3.8+.
+   If you need to share configs with older versions, you'll have to
+   conditionalize the syntax with m4 or some other preprocessing.
+
 1. The `f.cut` (and `^` alias for it), `f.cutfile`, and `f.file`
    functions have been removed.  These functions for messing with the
    clipboard were never visibly documented, and came into the manpage in
