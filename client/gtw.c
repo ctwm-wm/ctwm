@@ -23,19 +23,22 @@
  *
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
-#ifdef macII
-int strcmp(); /* missing from string.h in AUX 2.0 */
-#endif
 
 Atom     _XA_WM_CURRENTWORKSPACE, _XA_WM_OCCUPATION;
 Display *dpy;
 
-main(argc, argv)
-int argc;
-char **argv;
+void gotoWorkspace(char *name);
+void changeOccupation(Window w, char *occup);
+
+int
+main(int argc, char **argv)
 {
 	Window w;
 
@@ -51,7 +54,7 @@ char **argv;
 			break;
 
 		case 3:
-			sscanf(argv [1], "%x", &w);
+			sscanf(argv [1], "%x", (unsigned int *)&w);
 			changeOccupation(w, argv [2]);
 			break;
 
@@ -62,8 +65,8 @@ char **argv;
 	}
 }
 
-gotoWorkspace(name)
-char *name;
+void
+gotoWorkspace(char *name)
 {
 	_XA_WM_CURRENTWORKSPACE = XInternAtom(dpy, "WM_CURRENTWORKSPACE", True);
 	if(_XA_WM_CURRENTWORKSPACE == None) {
@@ -76,9 +79,8 @@ char *name;
 	XFlush(dpy);
 }
 
-changeOccupation(w, occup)
-Window w;
-char *occup;
+void
+changeOccupation(Window w, char *occup)
 {
 	_XA_WM_OCCUPATION = XInternAtom(dpy, "WM_OCCUPATION", True);
 	if(_XA_WM_OCCUPATION == None) {
