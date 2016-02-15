@@ -49,7 +49,7 @@ main(int argc, char *argv[])
 
 	/****************************************************************/
 
-	if(! CtwmIsRunning) {
+	if(! CtwmIsRunning(dpy, 0)) {
 		fprintf(stderr, "ctwm is not running\n");
 		exit(1);
 	}
