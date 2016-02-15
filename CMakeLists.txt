@@ -140,10 +140,6 @@ if(DO_CLIENT)
 	add_subdirectory(client)
 endif(DO_CLIENT)
 
-# Build the event-forwarding program.
-add_executable(forward forward.c)
-target_link_libraries(forward ${X11_LIBRARIES})
-
 
 
 #
