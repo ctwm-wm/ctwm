@@ -23,7 +23,11 @@
  *
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -50,7 +54,7 @@ main(int argc, char **argv)
 			break;
 
 		case 3:
-			sscanf(argv [1], "%x", &w);
+			sscanf(argv [1], "%x", (unsigned int *)&w);
 			changeOccupation(w, argv [2]);
 			break;
 
