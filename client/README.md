@@ -25,8 +25,8 @@ libctwmc
 
 demolib
 :       A small program that links against `libctwmc` and demonstrates a
-        few of its functions.  It probably won't all work right unless
-        you're Claude with Claude's config and windows.
+        few of its functions.  It probably won't work at all, and won't
+        work right unless you're Claude with Claude's config and windows.
 
 gtw
 :       A small program to switch to a workspace or change a window's
