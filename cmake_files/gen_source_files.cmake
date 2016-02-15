@@ -3,15 +3,13 @@
 #
 
 
-# Hand-build deftwmrc.h
-set(defh ${CMAKE_CURRENT_BINARY_DIR}/deftwmrc.h)
-set(mkdefh ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
-add_custom_command(OUTPUT ${defh}
-	DEPENDS system.ctwmrc ${mkdefh}
-	COMMAND ${mkdefh} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defh}
+# Hand-build deftwmrc.c
+set(defc ${CMAKE_CURRENT_BINARY_DIR}/deftwmrc.c)
+set(mkdefc ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
+add_custom_command(OUTPUT ${defc}
+	DEPENDS system.ctwmrc ${mkdefc}
+	COMMAND ${mkdefc} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defc}
 )
-# Need to do this explicitly for cmake to figure it out
-set_source_files_properties(parse.c OBJECT_DEPENDS ${defh})
 
 
 # Hand-build ctwm_atoms.[ch]

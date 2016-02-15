@@ -8,7 +8,7 @@ ctwm - Claude's Tab Window Manager for the X Window System
 == SYNTAX
 ["literal"]
 ctwm [(--display | -d) dpy]  [--replace]  [--single]
-     [(--file | -f) initfile]  [--cfgchk]
+     [(--file | -f) initfile]  [--cfgchk]  [--dumpcfg]
      [--nom4 | -n]  [(--keep-defs | -k)]  [(--keep | -K) m4file]
      [--verbose | -v]  [--quiet | -q]  [--mono]  [--xrm resource]
      [--version]  [--info]  [--nowelcome | -W]
@@ -102,6 +102,9 @@ to touch the bottom the screen.
 --cfgchk::
   This option causes ctwm to only try to parse the config file, and
   indicate whether errors are found.
+
+--dumpcfg::
+  This option causes ctwm to print out the compiled-in fallback config.
 
 --file=`filename`, -f `filename`::
   This option specifies the name of the startup file to use.

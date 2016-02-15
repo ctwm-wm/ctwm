@@ -10,16 +10,18 @@ echo ' * This file is generated automatically from the default'
 echo ' * ctwm bindings file system.ctwmrc by the build process'
 echo ' */'
 echo
+echo '#include <stddef.h> // for NULL'
+echo '#include "deftwmrc.h"'
+echo
 
 # We define one big char* arrray of the lines
-echo 'static const char *defTwmrc[] = {'
+echo 'const char *defTwmrc[] = {'
 
-sed -e '/^#/d'           \
-	-e '/^$/d'           \
+sed \
 	-e 's/"/\\"/g'       \
 	-e 's/^/    \"/'     \
 	-e 's/$/",/'         \
 	${src}
 
-echo '    (char *) 0'
+echo '    NULL'
 echo '};'

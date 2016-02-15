@@ -18,6 +18,7 @@ set(CTWMSRC
 	ctwm.c
 	ctwm_atoms.c
 	cursor.c
+	deftwmrc.c
 	events.c
 	gc.c
 	gram.tab.c

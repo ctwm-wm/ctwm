@@ -91,6 +91,9 @@ remnants of special-case VMS support have been removed.
 1. Icon manager windows are no longer included in the window ring
     (that had confusing effects on the focus sequence).
 
+1. Added `--dumpcfg` command-line option to print out the compiled-in
+    fallback config file.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
