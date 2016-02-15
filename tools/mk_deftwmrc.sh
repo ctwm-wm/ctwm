@@ -17,7 +17,7 @@ echo
 # We define one big char* arrray of the lines
 echo 'const char *defTwmrc[] = {'
 
-sed                      \
+sed \
 	-e 's/"/\\"/g'       \
 	-e 's/^/    \"/'     \
 	-e 's/$/",/'         \
