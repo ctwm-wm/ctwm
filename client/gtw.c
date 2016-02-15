@@ -33,9 +33,11 @@ int strcmp(); /* missing from string.h in AUX 2.0 */
 Atom     _XA_WM_CURRENTWORKSPACE, _XA_WM_OCCUPATION;
 Display *dpy;
 
-main(argc, argv)
-int argc;
-char **argv;
+void gotoWorkspace(char *name);
+void changeOccupation(Window w, char *occup);
+
+int
+main(int argc, char **argv)
 {
 	Window w;
 
@@ -62,8 +64,8 @@ char **argv;
 	}
 }
 
-gotoWorkspace(name)
-char *name;
+void
+gotoWorkspace(char *name)
 {
 	_XA_WM_CURRENTWORKSPACE = XInternAtom(dpy, "WM_CURRENTWORKSPACE", True);
 	if(_XA_WM_CURRENTWORKSPACE == None) {
@@ -76,9 +78,8 @@ char *name;
 	XFlush(dpy);
 }
 
-changeOccupation(w, occup)
-Window w;
-char *occup;
+void
+changeOccupation(Window w, char *occup)
 {
 	_XA_WM_OCCUPATION = XInternAtom(dpy, "WM_OCCUPATION", True);
 	if(_XA_WM_OCCUPATION == None) {
