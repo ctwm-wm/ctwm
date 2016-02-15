@@ -32,6 +32,14 @@ gtw
 :       A small program to switch to a workspace or change a window's
         occupation from the command line.  Doesn't use `libctwmc`.
 
+forward
+:       A standalone utility that attempts to forward events from
+        "desktop environment" style desktop windows to the real root
+        window, so that a ctwm running in those sorts of environments can
+        get access to the keystrokes/mouseclicks.  Appears to generally
+        not _quite_ work right in most cases.  May be a simple fix, but
+        nobody has spent enough time to find it.
+
 
 {>>
  vim:expandtab:ft=markdown:
