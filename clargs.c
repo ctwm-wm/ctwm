@@ -10,12 +10,14 @@
 
 #include "clargs.h"
 #include "ctopts.h"
+#include "deftwmrc.h"
 #include "screen.h"
 #include "version.h"
 
 static void usage(void) __attribute__((noreturn));
 static void print_version(void);
 static void DisplayInfo(void);
+static void dump_default_config(void);
 
 
 /*
@@ -77,6 +79,7 @@ clargs_parse(int argc, char *argv[])
 		{ "help",      no_argument,       NULL, 'h' },
 		{ "version",   no_argument,       NULL, 0 },
 		{ "info",      no_argument,       NULL, 0 },
+		{ "dumpcfg",   no_argument,       NULL, 0 },
 
 		/* Misc control bits */
 		{ "display",   required_argument, NULL, 'd' },
@@ -217,6 +220,10 @@ clargs_parse(int argc, char *argv[])
 					DisplayInfo();
 					exit(0);
 				}
+				IFIS("dumpcfg") {
+					dump_default_config();
+					exit(0);
+				}
 				IFIS("name") {
 					CLarg.captivename = optarg;
 					break;
@@ -353,4 +360,15 @@ DisplayInfo(void)
 	ctopts = ctopts_string(" ");
 	printf("Compile time options : %s\n", ctopts);
 	free(ctopts);
+}
+
+
+static void
+dump_default_config(void)
+{
+	int i;
+
+	for(i = 0 ; defTwmrc[i] != NULL ; i++) {
+		printf("%s\n", defTwmrc[i]);
+	}
 }
