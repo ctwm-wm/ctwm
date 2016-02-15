@@ -26,9 +26,6 @@
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
-#ifdef macII
-int strcmp(); /* missing from string.h in AUX 2.0 */
-#endif
 
 Atom     _XA_WM_CURRENTWORKSPACE, _XA_WM_OCCUPATION;
 Display *dpy;
