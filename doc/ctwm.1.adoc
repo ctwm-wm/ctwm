@@ -310,11 +310,11 @@ CTWM_VERSION_ADDL::
   Gives the ctwm version split out.  e.g., for a version like
   "3.8.2-beta1", the `_MAJOR` will be "3", `_MINOR` "8", `_PATCH` "2",
   and `_ADDL` "-beta1".  Final releases will generally have an empty
-  `CTWM_VERSION_ADDL`; it's mostly meaningful in dev and betas.
+  `CTWM_VERSION_ADDL`; it's mostly meaningful in dev and betas.  For
+  comparison, in this situation, TWM_VERSION will be "3.8.2".
 +
 These definitions were added post-3.8.2, so will not exist in earlier
-versions.  For comparison, in this situation, TWM_VERSION will be
-"3.8.2".
+versions.
 
 === X server info
 
