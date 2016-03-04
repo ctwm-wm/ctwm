@@ -2152,10 +2152,11 @@ Button1 = c | s  : root : f.menu "top3"
 ------
 
 The `lock` modifier refers to CapsLock.  `meta` is generally your Alt
-key.  `mod1` is the same as `meta`.  `mod2..5` can have various special meanings; try running `xmodmap
--pm` to see how your X server is mapping things (the `xkeycaps` program
-may also be useful).  The `alter1..5` modifiers refer to ctwm alternate
-keymaps; see the description of `f.altkeymap` below for details.
+key.  `mod1` is the same as `meta`.  `mod2..5` can have various special
+meanings; try running `xmodmap -pm` to see how your X server is mapping
+things (the `xkeycaps` program may also be useful).  The `alter1..5`
+modifiers refer to ctwm alternate keymaps; see the description of
+`f.altkeymap` below for details.
 
 Similarly, the `context` is any combination of
 `window` (`w`),
