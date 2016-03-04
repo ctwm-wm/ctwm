@@ -1614,7 +1614,6 @@ void AddDefaultBindings(void)
  ***********************************************************************
  */
 
-#define AltMask (Alt1Mask | Alt2Mask | Alt3Mask | Alt4Mask | Alt5Mask)
 #define grabbutton(button, modifier, window, pointer_mode) \
         XGrabButton (dpy, button, modifier, window,  \
                 True, ButtonPressMask | ButtonReleaseMask, \
@@ -1656,6 +1655,7 @@ void GrabButtons(TwmWindow *tmp_win)
 		}
 	}
 }
+#undef grabbutton
 
 /***********************************************************************
  *
@@ -1688,9 +1688,11 @@ void GrabKeys(TwmWindow *tmp_win)
 		switch(tmp->cont) {
 			case C_WINDOW:
 				/* case C_WORKSPACE: */
+#define AltMask (Alt1Mask | Alt2Mask | Alt3Mask | Alt4Mask | Alt5Mask)
 				if(tmp->mods & AltMask) {
 					break;
 				}
+#undef AltMask
 
 				grabkey(tmp, 0, tmp_win->w);
 
@@ -1802,6 +1804,8 @@ void GrabKeys(TwmWindow *tmp_win)
 		}
 	}
 }
+#undef grabkey
+#undef ungrabkey
 
 void ComputeCommonTitleOffsets(void)
 {
