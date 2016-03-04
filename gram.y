@@ -541,7 +541,7 @@ key		: META			{ mods |= Mod1Mask; }
 		| ALTER number		{ if ($2 < 1 || $2 > 5) {
 					     twmrc_error_prefix();
 					     fprintf (stderr,
-				"bad modifier number (%d), must be 1-5\n",
+				"bad altkeymap number (%d), must be 1-5\n",
 						      $2);
 					     ParseError = 1;
 					  } else {
