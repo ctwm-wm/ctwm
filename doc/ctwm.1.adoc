@@ -2089,6 +2089,36 @@ keysym name; buttons are given as the keywords `Button1`-`Button5`:
 Button1 = modlist : context : function
 ------
 
+A user who wanted to be able to manipulate windows from the keyboard could
+use the following bindings:
+
+------
+"F1"    =       : all : f.iconify
+"F2"    =       : all : f.raiselower
+"F3"    =       : all : f.warpring "next"
+"F4"    =       : all : f.warpto "xmh"
+"F5"    =       : all : f.warpto "emacs"
+"F6"    =       : all : f.colormap "next"
+"F7"    =       : all : f.colormap "default"
+"F20"   =       : all : f.warptoscreen "next"
+"Left"  = m     : all : f.backiconmgr
+"Right" = m | s : all : f.forwiconmgr
+"Up"    = m     : all : f.upiconmgr
+"Down"  = m | s : all : f.downiconmgr
+------
+
+ctwm provides many more window manipulation primitives than can be
+conveniently stored in a titlebar, menu, or set of key bindings.  Although
+a small set of defaults are supplied (unless the `NoDefaults` is
+specified), most users will want to have their most common operations
+bound to key and button strokes.  To do this, ctwm associates names
+with each of the primitives and provides `user-defined functions` for
+building higher level primitives and `menus` for interactively selecting
+among groups of functions.
+
+
+=== Modifiers and Contexts
+
 The `modlist` is any combination of the modifier names `shift`,
 `control`, `lock`, `meta`, `mod1`, `mod2`, `mod3`,
 `mod4`, or `mod5` (which may be abbreviated as
@@ -2119,33 +2149,6 @@ Button2 =   : icon          : f.iconify
 Button1 =   : iconmgr       : f.iconify
 Button2 =   : iconmgr       : f.iconify
 ------
-
-A user who wanted to be able to manipulate windows from the keyboard could
-use the following bindings:
-
-------
-"F1"    =       : all : f.iconify
-"F2"    =       : all : f.raiselower
-"F3"    =       : all : f.warpring "next"
-"F4"    =       : all : f.warpto "xmh"
-"F5"    =       : all : f.warpto "emacs"
-"F6"    =       : all : f.colormap "next"
-"F7"    =       : all : f.colormap "default"
-"F20"   =       : all : f.warptoscreen "next"
-"Left"  = m     : all : f.backiconmgr
-"Right" = m | s : all : f.forwiconmgr
-"Up"    = m     : all : f.upiconmgr
-"Down"  = m | s : all : f.downiconmgr
-------
-
-ctwm provides many more window manipulation primitives than can be
-conveniently stored in a titlebar, menu, or set of key bindings.  Although
-a small set of defaults are supplied (unless the `NoDefaults` is
-specified), most users will want to have their most common operations
-bound to key and button strokes.  To do this, ctwm associates names
-with each of the primitives and provides `user-defined functions` for
-building higher level primitives and `menus` for interactively selecting
-among groups of functions.
 
 
 === Functions
