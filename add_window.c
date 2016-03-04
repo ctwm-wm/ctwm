@@ -1655,6 +1655,7 @@ void GrabButtons(TwmWindow *tmp_win)
 		}
 	}
 }
+#undef grabbutton
 
 /***********************************************************************
  *
@@ -1803,6 +1804,8 @@ void GrabKeys(TwmWindow *tmp_win)
 		}
 	}
 }
+#undef grabkey
+#undef ungrabkey
 
 void ComputeCommonTitleOffsets(void)
 {
