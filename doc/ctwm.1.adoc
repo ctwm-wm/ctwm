@@ -2119,7 +2119,9 @@ among groups of functions.
 
 === Modifiers and Contexts
 
-The `modlist` is any combination of the modifier names (abbreviated)
+The `modlist` allows specifying different bindings for a button or key
+when modifiers are applied.  The list of recognized modifier names
+(abbreviated) are
 `shift` (`s`),
 `control` (`c`),
 `lock` (`l`),
@@ -2133,8 +2135,28 @@ The `modlist` is any combination of the modifier names (abbreviated)
 `mod2` (`m2`),
 `mod3` (`m3`),
 `mod4` (`m4`),
-or `mod5` (`m5`)
-separated by a vertical bar (`|`).
+and `mod5` (`m5`).
+Multiple modifiers may be applied to a single line by combining them with
+a vertical bar (`|`).  For example:
+
+------
+# Open the "top" menu with a Button1 (usually left mouse button) click in
+# the root window
+Button1 =        : root : f.menu "top"
+
+# Open the "top2" menu with shift-click
+Button1 =     s  : root : f.menu "top2"
+
+# And "top3" when control-shift-click
+Button1 = c | s  : root : f.menu "top3"
+------
+
+The `lock` modifier refers to CapsLock.  `meta` is generally your Alt
+key.  `mod1..5` can have various special meanings; try running `xmodmap
+-pm` to see how your X server is mapping things (the `xkeycaps` program
+may also be useful).  The `alter1..5` modifiers refer to ctwm alternate
+keymaps; see the description of `f.altkeymap` below for details.
+
 Similarly, the `context` is any combination of
 `window` (`w`),
 `title` (`t`),
