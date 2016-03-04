@@ -2123,6 +2123,11 @@ The `modlist` is any combination of the modifier names (abbreviated)
 `shift` (`s`),
 `control` (`c`),
 `lock` (`l`),
+`alter1` (`a1`),
+`alter2` (`a2`),
+`alter3` (`a3`),
+`alter4` (`a4`),
+`alter5` (`a5`),
 `meta` (`m`),
 `mod1` (`m1`),
 `mod2` (`m2`),
@@ -2138,6 +2143,7 @@ Similarly, the `context` is any combination of
 `frame` (`f`),
 `workspace` (no abbreviation),
 `iconmgr` (`m`),
+`alter` (`a`),
 or `all`,
 separated by a vertical bar.  The `function` is any of the `f.`
 keywords described below.  For example, the default startup
