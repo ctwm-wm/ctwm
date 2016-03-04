@@ -396,6 +396,12 @@ TWM_CAPTIVE_NAME::
   Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
   ctwm (--name flag);
 
+=== Obsolete options
+
+GNOME::
+  Defined when ctwm was compiled with GNOME1 support.  Removed after
+  3.8.2.
+
 
 == VARIABLES
 Many of the aspects of ctwm's user interface are controlled by variables
