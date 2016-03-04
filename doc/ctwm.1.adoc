@@ -2191,7 +2191,7 @@ f.adoptwindow::
   with the -w flag.
 
 f.altcontext::
-  Set the alternate context. The next key or button event ctwm reveives will
+  Set the alternate context. The next key or button event ctwm receives will
   be interpreted using the alternate context. To define bindings in the alternate
   context, use the keyword `alter` in the context field of the binding command.
   For example:
@@ -2205,7 +2205,7 @@ f.altcontext::
 
 f.altkeymap `number`::
   Set the alternate keymap `number`, where `number` is an integer
-  between 1 and 5 included. The next key or button event ctwm reveives will
+  between 1 and 5 included. The next key or button event ctwm receives will
   be interpreted using this alternate keymap. To define bindings in an alternate
   keymap, use the keyword `a` followed by `number` in the modifier
   field of the binding command. For example:
