@@ -2177,6 +2177,21 @@ choices (except `alter`, which is special).
 The `alter` context allows binding the function when in the alternate
 context; see the `f.altcontext` function below for details.
 
+There is an additional possible magical value for `context`; if you
+provide a quoted string (e.g., `"MyXterm"`) for the context of a key (but
+not button) binding, then that binding will trigger the given function in
+window context to all windows matching that name.  e.g.,
+
+----
+# Pressing "F1" anywhere on the screen will cause all windows with name
+# "xterm" to raise themselves.
+"F1" = : "xterm" : f.raise
+----
+
+Beware that this can have odd side effects if multiple windows are
+matched, especially if the function can conflict one with the other
+(e.g., in the example above, if two "xterm" windows overlap each other).
+
 
 === Functions
 
