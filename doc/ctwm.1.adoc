@@ -2879,12 +2879,12 @@ individual items:
 ------
 Menu "menuname" [ ("deffg":"defbg") ]
 {
-    string1  [ ("fg1":"bg1")]  function1
-    string2  [ ("fg2":"bg2")]  function2
+    string1  [ ("fg1":"bg1") ]  function1
+    string2  [ ("fg2":"bg2") ]  function2
         .
         .
         .
-    stringN  [ ("fgN":"bgN")]  functionN
+    stringN  [ ("fgN":"bgN") ]  functionN
 }
 ------
 
