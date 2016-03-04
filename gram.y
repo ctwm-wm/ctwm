@@ -575,7 +575,7 @@ context		: WINDOW		{ cont |= C_WINDOW_BIT; }
 		| META			{ cont |= C_ICONMGR_BIT; }
 		| ALTER			{ cont |= C_ALTER_BIT; }
 		| ALL			{ cont |= C_ALL_BITS; }
-		| OR			{  }
+		| OR			{ }
 		;
 
 contextkeys	: /* Empty */
@@ -590,8 +590,8 @@ contextkey	: WINDOW		{ cont |= C_WINDOW_BIT; }
 		| WORKSPACE		{ cont |= C_WORKSPACE_BIT; }
 		| ICONMGR		{ cont |= C_ICONMGR_BIT; }
 		| META			{ cont |= C_ICONMGR_BIT; }
-		| ALL			{ cont |= C_ALL_BITS; }
 		| ALTER			{ cont |= C_ALTER_BIT; }
+		| ALL			{ cont |= C_ALL_BITS; }
 		| OR			{ }
 		| string		{ Name = (char*)$1; cont |= C_NAME_BIT; }
 		;
