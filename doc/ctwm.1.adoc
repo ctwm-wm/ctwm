@@ -2177,8 +2177,11 @@ choices (except `alter`, which is special).
 The `alter` context allows binding the function when in the alternate
 context; see the `f.altcontext` function below for details.
 
-The `function` is any of the `f.` keywords described below.  For example,
-the default startup file contains the following bindings:
+
+=== Functions
+
+The `function` in a binding is any of the `f.` keywords described below.
+For example, the default startup file contains the following bindings:
 
 ------
 Button1 =   : root          : f.menu "TwmWindows"
@@ -2192,9 +2195,6 @@ Button2 =   : icon          : f.iconify
 Button1 =   : iconmgr       : f.iconify
 Button2 =   : iconmgr       : f.iconify
 ------
-
-
-=== Functions
 
 User-defined functions contain the name by which they are referenced in
 calls to `f.function` and a list of other functions to execute.  For
