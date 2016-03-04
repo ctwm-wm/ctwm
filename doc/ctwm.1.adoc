@@ -1482,7 +1482,7 @@ RaiseOnClick::
   (if it asked to). See `RaiseOnClickButton`.
 
 RaiseOnClickButton `button_number`::
-  Where `button_number` is a valid button number (generally 1 to 3). Specify
+  Where `button_number` is a valid button number (currently 1 to 11). Specify
   the button to use for RaiseOnClick.
 
 RaiseWhenAutoUnSqueeze::
@@ -2082,7 +2082,7 @@ Key and pointer button specifications must give the modifiers that must
 be pressed, over which parts of the screen the pointer must be, and what
 function is to be invoked.  Keys are given as strings containing the
 appropriate
-keysym name; buttons are given as the keywords `Button1`-`Button5`:
+keysym name; buttons are given as the keywords `Button1`-`Button11`:
 
 ------
 "FP1"   = modlist : context : function
