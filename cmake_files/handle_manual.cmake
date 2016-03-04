@@ -129,12 +129,18 @@ if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 		COMMENT "Processing ctwm.1.adoc -> mantmp/ctwm.1.adoc"
 	)
 
-	# We can't actually make other targets depend on that generated
+	# We can't actually make other targets depend just on that generated
 	# source file, because cmake will try to multi-build it in parallel.
 	# To work around, we add a do-nothing custom target that depends on
-	# $ADOC_TMPSRC, that uses of it depend on instead of it.
+	# $ADOC_TMPSRC, that uses of it depend on.
 	#
 	# x-ref http://public.kitware.com/Bug/view.php?id=12311
+	#
+	# Note, however, that this _doesn't_ transmit the dependancy on
+	# ${ADOC_TMPDIR} through; it serves only to serialize the build so it
+	# doesn't try to happen twice at once.  So we still need to include
+	# ${ADOC_TMPSRC} in the DEPENDS for the targets building off it, or
+	# they don't notice when they go out of date.
 	add_custom_target(mk_adoc_tmpsrc DEPENDS ${ADOC_TMPSRC})
 endif(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 
@@ -154,7 +160,7 @@ if(MANUAL_BUILD_MANPAGE)
 		# We don't need the hoops for a2x here, since asciidoctor lets us
 		# specify the output directly.
 		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS mk_adoc_tmpsrc
+			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANPAGE} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1 with asciidoctor."
 		)
@@ -166,7 +172,7 @@ if(MANUAL_BUILD_MANPAGE)
 		# afterward.
 		set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
 		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS mk_adoc_tmpsrc
+			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
 			COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
 			COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
 			COMMENT "Generating ctwm.1 with a2x."
@@ -229,13 +235,13 @@ if(MANUAL_BUILD_HTML)
 
 	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
 		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS mk_adoc_tmpsrc
+			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1.html with asciidoctor."
 		)
 	elseif(${MANUAL_BUILD_HTML} STREQUAL "asciidoc")
 		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS mk_adoc_tmpsrc
+			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
 			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
 			COMMENT "Generating ctwm.1.html with asciidoc."
 		)
