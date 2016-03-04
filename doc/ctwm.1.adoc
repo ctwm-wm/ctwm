@@ -2158,19 +2158,27 @@ things (the `xkeycaps` program may also be useful).  The `alter1..5`
 modifiers refer to ctwm alternate keymaps; see the description of
 `f.altkeymap` below for details.
 
-Similarly, the `context` is any combination of
+The `context` lets you specify which mappings apply based on where the
+pointer currently is on the screen.  The available options are
 `window` (`w`),
 `title` (`t`),
 `icon` (`i`),
 `root` (`r`),
 `frame` (`f`),
 `workspace` (no abbreviation),
-`iconmgr` (`m`),
-`alter` (`a`),
-or `all`,
-separated by a vertical bar.  The `function` is any of the `f.`
-keywords described below.  For example, the default startup
-file contains the following bindings:
+`iconmgr` (`m`), and
+`alter` (`a`).
+Like the modifiers above, they may be combined with a vertical bar, which
+allows you to bind an action in multiple contexts at once.
+Alternately, `all` can be given for the context to specify that the
+binding should happen everywhere.  It's equivalent to combining all the
+choices (except `alter`, which is special).
+
+The `alter` context allows binding the function when in the alternate
+context; see the `f.altcontext` function below for details.
+
+The `function` is any of the `f.` keywords described below.  For example,
+the default startup file contains the following bindings:
 
 ------
 Button1 =   : root          : f.menu "TwmWindows"
