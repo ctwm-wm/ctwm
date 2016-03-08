@@ -287,10 +287,13 @@ HOSTNAME::
 === User Info
 
 USER::
-  The name of the user running the program.  Gotten from the environment.
+  The name of the user running the program.  Value taken from
+  environmental variables `$USER` and `$LOGNAME`, or from the passwd
+  lookup for your uid if they don't exist.  Falls back to ``unknown'' if
+  all methods fail.
 
 HOME::
-  The user's home directory.  Gotten from the environment.
+  The user's home directory.  Gotten from the environment var `$HOME`.
 
 === ctwm info
 
