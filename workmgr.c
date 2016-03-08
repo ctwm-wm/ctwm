@@ -35,9 +35,6 @@
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/Xresource.h>
-#ifdef BUGGY_HP700_SERVER
-static void fakeRaiseLower();
-#endif
 
 #include "ctwm_atoms.h"
 #include "util.h"
@@ -4162,29 +4159,3 @@ Bool visible(TwmWindow *tmp_win)
 {
 	return (tmp_win->vs != NULL);
 }
-
-#ifdef BUGGY_HP700_SERVER
-static void fakeRaiseLower(display, window)
-Display *display;
-Window   window;
-{
-	Window          root;
-	Window          parent;
-	Window          grandparent;
-	Window         *children;
-	unsigned int    number;
-	XWindowChanges  changes;
-
-	number = 0;
-	XQueryTree(display, window, &root, &parent, &children, &number);
-	XFree((char *) children);
-	XQueryTree(display, parent, &root, &grandparent, &children, &number);
-
-	changes.stack_mode = (children [number - 1] == window) ? Below : Above;
-	XFree((char *) children);
-	XConfigureWindow(display, window, CWStackMode, &changes);
-}
-#endif
-
-
-
