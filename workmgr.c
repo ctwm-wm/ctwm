@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <assert.h>
 #include <X11/Xos.h>
@@ -1419,26 +1420,32 @@ void MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 #endif
 }
 
-static WorkSpace *GetWorkspace(char *wname)
+static WorkSpace *
+GetWorkspace(char *wname)
 {
 	WorkSpace *ws;
 
+	/* Guard */
 	if(!wname) {
 		return (NULL);
 	}
+
+	/* Check by label */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(strcmp(ws->label, wname) == 0) {
-			break;
+			return ws;
 		}
 	}
-	if(ws == NULL) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(strcmp(ws->name, wname) == 0) {
-				break;
-			}
+
+	/* Check by name */
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(strcmp(ws->name, wname) == 0) {
+			return ws;
 		}
 	}
-	return (ws);
+
+	/* Nope */
+	return NULL;
 }
 
 void AllocateOtherIconManagers(void)
@@ -2567,27 +2574,42 @@ static int GetPropertyFromMask(unsigned int mask, char *prop, long *gwkspc)
 	return (len);
 }
 
-void AddToClientsList(char *workspace, char *client)
+
+/*
+ * Add a client name to a list determining which workspaces it will
+ * occupy.  Used in handling the Occupy { } block in config file.
+ */
+bool
+AddToClientsList(char *workspace, char *client)
 {
 	WorkSpace *ws;
 
+	/* "all" is a magic workspace value which makes it occupy anywhere */
 	if(strcmp(workspace, "all") == 0) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			AddToList(&ws->clientlist, client, "");
 		}
-		return;
+		return true;
 	}
 
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(strcmp(ws->label, workspace) == 0) {
-			break;
+	/* If prefixed with "ws:", strip the prefix and lookup by WS name */
+	if(strncmp(workspace, "ws:", 3) == 0) {
+		if((ws = GetWorkspace(workspace + 3)) != NULL) {
+			AddToList(&ws->clientlist, client, "");
+			return true;
 		}
 	}
-	if(ws == NULL) {
-		return;
+
+	/* Else find that named workspace and all this to it */
+	if((ws = GetWorkspace(workspace)) != NULL) {
+		AddToList(&ws->clientlist, client, "");
+		return true;
 	}
-	AddToList(&ws->clientlist, client, "");
+
+	/* Couldn't figure where to put it */
+	return false;
 }
+
 
 void WMapToggleState(VirtualScreen *vs)
 {

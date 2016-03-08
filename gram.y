@@ -917,7 +917,10 @@ occupy_workspc_entries	:   /* Empty */
 			;
 
 occupy_workspc_entry	: string {
-				AddToClientsList ($1, client);
+				if(!AddToClientsList ($1, client)) {
+					twmrc_error_prefix();
+					fprintf(stderr, "unknown workspace '%s'\n", $1);
+				}
 			  }
 			;
 
@@ -929,7 +932,10 @@ occupy_window_entries	:   /* Empty */
 			;
 
 occupy_window_entry	: string {
-				AddToClientsList (workspace, $1);
+				if(!AddToClientsList (workspace, $1)) {
+					twmrc_error_prefix();
+					fprintf(stderr, "unknown workspace '%s'\n", workspace);
+				}
 			  }
 			;
 

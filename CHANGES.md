@@ -94,6 +94,11 @@ remnants of special-case VMS support have been removed.
 1. Added `--dumpcfg` command-line option to print out the compiled-in
     fallback config file.
 
+1. The Occupy { } specification for accepts "ws:" as a prefix for
+    workspaces.  This may break things if you have workspaces with names
+    that differ only by that prefix (e.g., you have workspaces "abc" and
+    "ws:abc", and your Occupy {} declarations affects both.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted

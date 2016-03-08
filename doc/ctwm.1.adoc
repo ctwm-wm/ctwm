@@ -1334,6 +1334,15 @@ Occupy
 ------
 +
 [normal]
+  If `all` is given for the workspace name (in either form), the named
+  window[s] will be put in all workspaces as if they were listed in
+  `OccupyAll`.  If the workspace name begins with `ws:`, the workspace
+  name will be looked up without the prefix first.  That is, if the given
+  name is `ws:abc`, it will first look for a workspace called `abc`, and
+  assign to that if found.  Else it will fall back to looking for the
+  name `ws:abc`.
++
+[normal]
   Note : The Occupy declaration should come after the WorkSpaces declaration.
 
 OccupyAll { `window-list` }::
