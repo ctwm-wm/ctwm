@@ -493,7 +493,7 @@ AutoOccupy::
   when their name or icon name changes. The new occupation will be recalculated
   from the Occupy and OccupyAll fields in the `.ctwmrc` file.
 
-AutoPopup [{ "`win-list` }]::
+AutoPopup [{ `win-list` }]::
   This variables specifies a list of windows which will be deiconified whenever
   their name changes. Can be used for xconsole, for instance,which adds a "*" to
   its name whenever something gets displayed on the console, or for various mail
@@ -789,7 +789,7 @@ DontSetInactive { `win-list` }::
   clients (Frame5) don't like this.
 
 DontShowWelcomeWindow::
-  indicates the same as the -W option: the welcome window is not shown.
+  Indicates the same as the `-W` option: the welcome window is not shown.
 
 DontSqueezeTitle [{ `win-list` }]::
   This variable indicates that titlebars should not be squeezed to their
@@ -2112,8 +2112,8 @@ conveniently stored in a titlebar, menu, or set of key bindings.  Although
 a small set of defaults are supplied (unless the `NoDefaults` is
 specified), most users will want to have their most common operations
 bound to key and button strokes.  To do this, ctwm associates names
-with each of the primitives and provides `user-defined functions` for
-building higher level primitives and `menus` for interactively selecting
+with each of the primitives and provides user-defined functions for
+building higher level primitives and menus for interactively selecting
 among groups of functions.
 
 
@@ -2284,13 +2284,13 @@ f.autoraise::
   This function toggles whether or not the selected window is raised whenever
   entered by the pointer.  See the description of the variable `AutoRaise`.
 
-f.backmapiconmgr::
-  This function warps the  pointer in the same manner as `f.backiconmgr`
-  but only stops at windows that are mapped.
-
 f.backiconmgr::
   This function warps the pointer to the previous column in the
   current icon manager, wrapping back to the previous row if necessary.
+
+f.backmapiconmgr::
+  This function warps the  pointer in the same manner as `f.backiconmgr`
+  but only stops at windows that are mapped.
 
 f.beep::
   This function sounds the keyboard bell.
@@ -2382,7 +2382,7 @@ f.downworkspace::
   same column. The result depends on the layout of the workspace manager.
 
 f.exec `string`::
-  This function passes the argument `string` to /bin/sh for execution.
+  This function passes the argument `string` to `/bin/sh` for execution.
   In multiscreen mode, if `string` starts a new X client without
   giving a display argument, the client will appear on the screen from
   which this function was invoked. If the string ``$currentworkspace''
