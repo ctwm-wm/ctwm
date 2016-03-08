@@ -1420,26 +1420,32 @@ void MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 #endif
 }
 
-static WorkSpace *GetWorkspace(char *wname)
+static WorkSpace *
+GetWorkspace(char *wname)
 {
 	WorkSpace *ws;
 
+	/* Guard */
 	if(!wname) {
 		return (NULL);
 	}
+
+	/* Check by label */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(strcmp(ws->label, wname) == 0) {
-			break;
+			return ws;
 		}
 	}
-	if(ws == NULL) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(strcmp(ws->name, wname) == 0) {
-				break;
-			}
+
+	/* Check by name */
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(strcmp(ws->name, wname) == 0) {
+			return ws;
 		}
 	}
-	return (ws);
+
+	/* Nope */
+	return NULL;
 }
 
 void AllocateOtherIconManagers(void)
