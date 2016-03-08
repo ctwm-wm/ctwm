@@ -2593,11 +2593,9 @@ AddToClientsList(char *workspace, char *client)
 	}
 
 	/* Else find that named workspace and all this to it */
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(strcmp(ws->label, workspace) == 0) {
-			AddToList(&ws->clientlist, client, "");
-			return true;
-		}
+	if((ws = GetWorkspace(workspace)) != NULL) {
+		AddToList(&ws->clientlist, client, "");
+		return true;
 	}
 
 	/* Couldn't figure where to put it */
