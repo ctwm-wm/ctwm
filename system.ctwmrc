@@ -149,33 +149,3 @@ menu "windowops" {
     "Kill Window"	f.destroy
     "Pin menu"		f.pin
 }
-
-menu "windowmenu" {
-    "Occupy ..."	f.occupy
-    "Occupy All"	f.occupyall
-    "Iconify"		f.iconify
-    "RaiseLower"	f.raiselower
-    "Refresh"		f.winrefresh
-    "Zoom"		f.menu "Zoom"
-    "Vanish"		f.vanish
-    "Focus"		f.focus
-    "Unfocus"		f.unfocus
-    ""			f.separator
-    "Send Delete"	f.delete
-    "Kill Window"	f.destroy
-    "Resize..." 	f.resize
-    "Move..."		f.move
-}
-
-menu "iconmenu" {
-    "Actions"		f.title
-    ""			f.separator
-    "Restore"		f.iconify
-    "Move"		f.move
-    "Occupy ..."	f.occupy
-    "Occupy All"	f.occupyall
-    ""			f.separator
-    "Send Delete"	f.delete
-    "Kill Window"	f.destroy
-}
-
