@@ -35,9 +35,6 @@
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/Xresource.h>
-#ifdef macII
-int strcmp(); /* missing from string.h in AUX 2.0 */
-#endif
 #ifdef BUGGY_HP700_SERVER
 static void fakeRaiseLower();
 #endif

@@ -74,10 +74,6 @@
 #include "otp.h"
 #include "add_window.h"
 
-#ifdef macII
-int strcmp(); /* missing from string.h in AUX 2.0 */
-#endif
-
 const int siconify_width = 11;
 const int siconify_height = 11;
 int iconmgr_textx = /*siconify_width*/11 + 11;
