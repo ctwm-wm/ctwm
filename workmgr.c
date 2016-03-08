@@ -2592,6 +2592,14 @@ AddToClientsList(char *workspace, char *client)
 		return true;
 	}
 
+	/* If prefixed with "ws:", strip the prefix and lookup by WS name */
+	if(strncmp(workspace, "ws:", 3) == 0) {
+		if((ws = GetWorkspace(workspace + 3)) != NULL) {
+			AddToList(&ws->clientlist, client, "");
+			return true;
+		}
+	}
+
 	/* Else find that named workspace and all this to it */
 	if((ws = GetWorkspace(workspace)) != NULL) {
 		AddToList(&ws->clientlist, client, "");
