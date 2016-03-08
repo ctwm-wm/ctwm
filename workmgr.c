@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <assert.h>
 #include <X11/Xos.h>
@@ -2572,7 +2573,7 @@ static int GetPropertyFromMask(unsigned int mask, char *prop, long *gwkspc)
  * Add a client name to a list determining which workspaces it will
  * occupy.  Used in handling the Occupy { } block in config file.
  */
-void
+bool
 AddToClientsList(char *workspace, char *client)
 {
 	WorkSpace *ws;
@@ -2582,23 +2583,19 @@ AddToClientsList(char *workspace, char *client)
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			AddToList(&ws->clientlist, client, "");
 		}
-		return;
+		return true;
 	}
 
 	/* Else find that named workspace and all this to it */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(strcmp(ws->label, workspace) == 0) {
-			break;
+			AddToList(&ws->clientlist, client, "");
+			return true;
 		}
 	}
 
 	/* Couldn't figure where to put it */
-	if(ws == NULL) {
-		return;
-	}
-
-	/* Add to list */
-	AddToList(&ws->clientlist, client, "");
+	return false;
 }
 
 

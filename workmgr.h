@@ -27,6 +27,8 @@
 #ifndef _WORKMGR_
 #define _WORKMGR_
 
+#include <stdbool.h>
+
 #include "vscreen.h"
 
 #define MAXWORKSPACE 32
@@ -173,7 +175,7 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
 void PaintWorkSpaceManager(VirtualScreen *vs);
 void PaintOccupyWindow(void);
 unsigned int GetMaskFromProperty(unsigned char *prop, unsigned long len);
-void AddToClientsList(char *workspace, char *client);
+bool AddToClientsList(char *workspace, char *client);
 void WMapToggleState(VirtualScreen *vs);
 void WMapSetMapState(VirtualScreen *vs);
 void WMapSetButtonsState(VirtualScreen *vs);
