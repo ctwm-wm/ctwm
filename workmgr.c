@@ -2567,10 +2567,17 @@ static int GetPropertyFromMask(unsigned int mask, char *prop, long *gwkspc)
 	return (len);
 }
 
-void AddToClientsList(char *workspace, char *client)
+
+/*
+ * Add a client name to a list determining which workspaces it will
+ * occupy.  Used in handling the Occupy { } block in config file.
+ */
+void
+AddToClientsList(char *workspace, char *client)
 {
 	WorkSpace *ws;
 
+	/* "all" is a magic workspace value which makes it occupy anywhere */
 	if(strcmp(workspace, "all") == 0) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			AddToList(&ws->clientlist, client, "");
@@ -2578,16 +2585,22 @@ void AddToClientsList(char *workspace, char *client)
 		return;
 	}
 
+	/* Else find that named workspace and all this to it */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(strcmp(ws->label, workspace) == 0) {
 			break;
 		}
 	}
+
+	/* Couldn't figure where to put it */
 	if(ws == NULL) {
 		return;
 	}
+
+	/* Add to list */
 	AddToList(&ws->clientlist, client, "");
 }
+
 
 void WMapToggleState(VirtualScreen *vs)
 {
