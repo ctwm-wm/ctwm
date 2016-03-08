@@ -1316,7 +1316,7 @@ Occupy { `occupy-list` }::
   `occupy-list` consists of entries of the form :
 +
 ------
-        [Window]   win-name  { wpsc1 wspc2 ... }
+        [Window]   win-name  { wspc1 wspc2 ... }
 or      Workspace  wspc-name { win1  win2 ...  }
 ------
 +
