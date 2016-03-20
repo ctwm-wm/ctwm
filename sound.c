@@ -171,15 +171,8 @@ sound_init(void)
 				if(token == NULL || *token == '#') {
 					continue;
 				}
-				rp[i] = rplay_create(RPLAY_PLAY);
-				if(rp[i] == NULL) {
-					rplay_perror("create");
-					continue;
-				}
-				if(rplay_set(rp[i], RPLAY_INSERT, 0, RPLAY_SOUND, token, NULL)
-				                < 0) {
-					rplay_perror("rplay");
-				}
+
+				set_sound_event(i, token);
 			}
 		}
 	}
@@ -257,3 +250,27 @@ set_sound_host(char *host)
 	sound_fd = 0;
 }
 
+/*
+ * Set the sound to play for a given event
+ */
+void
+set_sound_event(int snd, const char *soundfile)
+{
+	/* Cleanup old if necessary */
+	if(rp[snd] != NULL) {
+		rplay_destroy(rp[snd]);
+	}
+
+	/* Setup new */
+	rp[snd] = rplay_create(RPLAY_PLAY);
+	if(rp[snd] == NULL) {
+		rplay_perror("create");
+		return;
+	}
+	if(rplay_set(rp[snd], RPLAY_INSERT, 0, RPLAY_SOUND, soundfile, NULL)
+				    < 0) {
+		rplay_perror("rplay");
+	}
+
+	return;
+}
