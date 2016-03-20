@@ -87,7 +87,8 @@ static int sound_fd = 0;
 static int sound_state = 1;
 static int startup_sound = NEVENTS - 2;
 static int exit_sound = NEVENTS - 1;
-static char hostname[200];
+#define HOSTNAME_LEN 200
+static char hostname[HOSTNAME_LEN];
 
 /*
  * Function to trim away spaces at the start and end of a string
@@ -125,7 +126,8 @@ sound_init(void)
 	need_sound_init = 0;
 	if(sound_fd == 0) {
 		if(hostname[0] == '\0') {
-			strcpy(hostname, rplay_default_host());
+			strncpy(hostname, rplay_default_host(), HOSTNAME_LEN - 1);
+			hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
 		}
 
 		if((sound_fd = rplay_open(hostname)) < 0) {
@@ -247,7 +249,8 @@ reread_sounds(void)
 void
 set_sound_host(char *host)
 {
-	strcpy(hostname, host);
+	strncpy(hostname, host, HOSTNAME_LEN - 1);
+	hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
 	if(sound_fd != 0) {
 		rplay_close(sound_fd);
 	}
