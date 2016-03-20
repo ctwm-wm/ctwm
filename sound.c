@@ -206,7 +206,7 @@ play_sound(int snd)
 		return;
 	}
 	if(rplay(sound_fd, rp[snd]) < 0) {
-		rplay_perror("create");
+		rplay_perror("rplay");
 	}
 }
 
