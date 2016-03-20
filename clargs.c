@@ -316,7 +316,8 @@ usage(void)
 #endif
 	        "[--single]\n", ProgramName);
 
-	fprintf(stderr, "%*s[(--file | -f) initfile]  [--cfgchk]  [--dumpcfg]\n", llen, "");
+	fprintf(stderr, "%*s[(--file | -f) initfile]  [--cfgchk]  [--dumpcfg]\n",
+	        llen, "");
 
 #ifdef USEM4
 	fprintf(stderr, "%*s[--nom4 | -n]  [--keep-defs | -k]  "
