@@ -119,7 +119,6 @@ sound_init(void)
 	int i;
 	FILE *fl;
 	char buffer[100];
-	char *token;
 	char *home;
 	char *soundfile;
 
@@ -161,20 +160,19 @@ sound_init(void)
 		return;
 	}
 	while(fgets(buffer, 100, fl) != NULL) {
-		token = trim_spaces(strtok(buffer, ": \t"));
-		if(token == NULL || *token == '#') {
+		char *ename, *sndfile;
+
+		ename = trim_spaces(strtok(buffer, ": \t"));
+		if(ename == NULL || *ename == '#') {
 			continue;
 		}
-		for(i = 0; i < NEVENTS; i++) {
-			if(strcmp(token, eventNames[i]) == 0) {
-				token = trim_spaces(strtok(NULL, "\r\n"));
-				if(token == NULL || *token == '#') {
-					continue;
-				}
 
-				set_sound_event(i, token);
-			}
+		sndfile = trim_spaces(strtok(NULL, "\r\n"));
+		if(sndfile == NULL || *sndfile == '#') {
+			continue;
 		}
+
+		set_sound_event_name(ename, sndfile);
 	}
 	fclose(fl);
 }
@@ -253,6 +251,19 @@ set_sound_host(char *host)
 /*
  * Set the sound to play for a given event
  */
+void
+set_sound_event_name(const char *ename, const char *soundfile)
+{
+	int i;
+
+	for(i = 0 ; i < NEVENTS ; i++) {
+		if(strcasecmp(ename, eventNames[i]) == 0) {
+			/* Gotcha */
+			set_sound_event(i, soundfile);
+		}
+	}
+}
+
 void
 set_sound_event(int snd, const char *soundfile)
 {

@@ -33,6 +33,7 @@ extern void play_exit_sound(void);
 extern void toggle_sound(void);
 extern void reread_sounds(void);
 extern void set_sound_host(char *host);
+extern void set_sound_event_name(const char *, const char *);
 extern void set_sound_event(int, const char *);
 
 #endif /* _SOUND_H */
