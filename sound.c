@@ -120,7 +120,7 @@ sound_init(void)
 	char buffer[100];
 	char *token;
 	char *home;
-	char soundfile [256];
+	char *soundfile;
 
 	need_sound_init = 0;
 	if(sound_fd == 0) {
@@ -146,12 +146,15 @@ sound_init(void)
 	/*
 	 * Now read the file which contains the sounds
 	 */
-	soundfile [0] = '\0';
-	if((home = getenv("HOME")) != NULL) {
-		strcpy(soundfile, home);
+	if((home = getenv("HOME")) == NULL) {
+		home = "";
 	}
-	strcat(soundfile, "/.ctwm-sounds");
+	if(asprintf(&soundfile, "%s/.ctwm-sounds", home) < 0) {
+		perror("Failed building path to sound file");
+		return;
+	}
 	fl = fopen(soundfile, "r");
+	free(soundfile);
 	if(fl == NULL) {
 		return;
 	}
