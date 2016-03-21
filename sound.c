@@ -188,20 +188,27 @@ sound_init(void)
 void
 play_sound(int snd)
 {
+	/* Bounds */
 	if(snd < 0 || snd >= NEVENTS) {
 		return;
 	}
+
+	/* Playing enabled */
 	if(sound_state == 0) {
 		return;
 	}
 
+	/* Init if we aren't */
 	if(need_sound_init) {
 		sound_init();
 	}
 
+	/* Skip if this isn't a sound we have set */
 	if(rp[snd] == NULL) {
 		return;
 	}
+
+	/* And if all else fails, play it */
 fprintf(stderr, "play_sound(%d)\n", snd); return;
 	if(rplay(sound_fd, rp[snd]) < 0) {
 		rplay_perror("rplay");
