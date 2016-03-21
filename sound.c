@@ -209,7 +209,6 @@ play_sound(int snd)
 	}
 
 	/* And if all else fails, play it */
-fprintf(stderr, "play_sound(%d)\n", snd); return;
 	if(rplay(sound_fd, rp[snd]) < 0) {
 		rplay_perror("rplay");
 	}
