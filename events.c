@@ -81,6 +81,7 @@
 #include "clicktofocus.h"
 #include "menus.h"
 #include "events.h"
+#include "event_names.h"
 #include "resize.h"
 #include "parse.h"
 #include "util.h"
@@ -4724,107 +4725,14 @@ static void dumpevent(XEvent *e)
 	if(! tracefile) {
 		return;
 	}
-	switch(e->type) {
-		case KeyPress:
-			name = "KeyPress";
-			break;
-		case KeyRelease:
-			name = "KeyRelease";
-			break;
-		case ButtonPress:
-			name = "ButtonPress";
-			break;
-		case ButtonRelease:
-			name = "ButtonRelease";
-			break;
-		case MotionNotify:
-			name = "MotionNotify";
-			break;
-		case EnterNotify:
-			name = "EnterNotify";
-			break;
-		case LeaveNotify:
-			name = "LeaveNotify";
-			break;
-		case FocusIn:
-			name = "FocusIn";
-			break;
-		case FocusOut:
-			name = "FocusOut";
-			break;
-		case KeymapNotify:
-			name = "KeymapNotify";
-			break;
-		case Expose:
-			name = "Expose";
-			break;
-		case GraphicsExpose:
-			name = "GraphicsExpose";
-			break;
-		case NoExpose:
-			name = "NoExpose";
-			break;
-		case VisibilityNotify:
-			name = "VisibilityNotify";
-			break;
-		case CreateNotify:
-			name = "CreateNotify";
-			break;
-		case DestroyNotify:
-			name = "DestroyNotify";
-			break;
-		case UnmapNotify:
-			name = "UnmapNotify";
-			break;
-		case MapNotify:
-			name = "MapNotify";
-			break;
-		case MapRequest:
-			name = "MapRequest";
-			break;
-		case ReparentNotify:
-			name = "ReparentNotify";
-			break;
-		case ConfigureNotify:
-			name = "ConfigureNotify";
-			break;
-		case ConfigureRequest:
-			name = "ConfigureRequest";
-			break;
-		case GravityNotify:
-			name = "GravityNotify";
-			break;
-		case ResizeRequest:
-			name = "ResizeRequest";
-			break;
-		case CirculateNotify:
-			name = "CirculateNotify";
-			break;
-		case CirculateRequest:
-			name = "CirculateRequest";
-			break;
-		case PropertyNotify:
-			name = "PropertyNotify";
-			break;
-		case SelectionClear:
-			name = "SelectionClear";
-			break;
-		case SelectionRequest:
-			name = "SelectionRequest";
-			break;
-		case SelectionNotify:
-			name = "SelectionNotify";
-			break;
-		case ColormapNotify:
-			name = "ColormapNotify";
-			break;
-		case ClientMessage:
-			name = "ClientMessage";
-			break;
-		case MappingNotify:
-			name = "MappingNotify";
-			break;
+
+	/* Whatsit? */
+	name = event_name_by_num(e->type);
+	if(!name) {
+		name = "Unknown event";
 	}
+
+	/* Tell about it */
 	fprintf(tracefile, "event:  %s in window 0x%x\n", name,
 	        (unsigned int)e->xany.window);
 	switch(e->type) {
