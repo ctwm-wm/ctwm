@@ -300,12 +300,18 @@ set_sound_event_name(const char *ename, const char *soundfile)
 {
 	int i;
 
-	for(i = 0 ; i < NEVENTS ; i++) {
-		if(strcasecmp(ename, eventNames[i]) == 0) {
-			/* Gotcha */
-			set_sound_event(i, soundfile);
-		}
+	/* Find the index we'll use in rp[] for it */
+	i = sound_magic_event_name2num(ename);
+	if(i < 0) {
+		i = event_num_by_name(ename);
 	}
+	if(i < 0) {
+		return;
+	}
+
+	/* Gotcha */
+	set_sound_event(i, soundfile);
+	return;
 }
 
 void
