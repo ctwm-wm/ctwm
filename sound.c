@@ -86,8 +86,6 @@ RPLAY **rp = NULL;
 static int need_sound_init = 1;
 static int sound_fd = 0;
 static int sound_state = 1;
-static int startup_sound = NEVENTS - 2;
-static int exit_sound = NEVENTS - 1;
 #define HOSTNAME_LEN 200
 static char hostname[HOSTNAME_LEN];
 
@@ -248,13 +246,13 @@ play_sound(int snd)
 void
 play_startup_sound(void)
 {
-	play_sound(startup_sound);
+	play_sound(sound_magic_event_name2num("Startup"));
 }
 
 void
 play_exit_sound(void)
 {
-	play_sound(exit_sound);
+	play_sound(sound_magic_event_name2num("Shutdown"));
 }
 
 /*
