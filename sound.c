@@ -80,7 +80,7 @@ char *eventNames[] = {
 
 #define NEVENTS         (sizeof(eventNames) / sizeof(char *))
 
-RPLAY *rp[NEVENTS];
+RPLAY **rp = NULL;
 
 static int need_sound_init = 1;
 static int sound_fd = 0;
@@ -131,6 +131,21 @@ sound_init(void)
 
 		if((sound_fd = rplay_open(hostname)) < 0) {
 			rplay_perror("create");
+		}
+	}
+
+	/*
+	 * Init rp if necessary
+	 */
+	if(rp == NULL) {
+		if((rp = calloc(NEVENTS, sizeof(RPLAY *))) == NULL) {
+			perror("calloc() rplay control");
+			exit(1);
+			/*
+			 * XXX Should just bomb out of sound stuff maybe, but there's
+			 * currently no provision for that.  If malloc fails, we're
+			 * pretty screwed anyway, so it's not much loss to just die.
+			 */
 		}
 	}
 
