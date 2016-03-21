@@ -27,11 +27,13 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
-extern void play_sound(int snd);
-extern void play_startup_sound(void);
-extern void play_exit_sound(void);
-extern void toggle_sound(void);
-extern void reread_sounds(void);
-extern void set_sound_host(char *host);
+void play_sound(int);
+void play_startup_sound(void);
+void play_exit_sound(void);
+void toggle_sound(void);
+void reread_sounds(void);
+void set_sound_host(char *);
+void set_sound_event_name(const char *, const char *);
+void set_sound_event(int, const char *);
 
 #endif /* _SOUND_H */

@@ -20,6 +20,17 @@ add_custom_command(OUTPUT ${ctwm_atoms}
 )
 
 
+# Generate up the event names lookup source
+set(en_list ${CMAKE_CURRENT_SOURCE_DIR}/event_names.list)
+set(en_in   ${CMAKE_CURRENT_SOURCE_DIR}/event_names.c.in)
+set(en_out  ${CMAKE_CURRENT_BINARY_DIR}/event_names.c)
+set(en_mk   ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_event_names.sh)
+add_custom_command(OUTPUT ${en_out}
+	DEPENDS ${en_list} ${en_in} ${en_mk}
+	COMMAND ${en_mk} ${en_list} ${en_in} > ${en_out}
+)
+
+
 # Setup config header file
 configure_file(ctwm_config.h.in ctwm_config.h ESCAPE_QUOTES)
 

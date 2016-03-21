@@ -36,58 +36,16 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#include "event_names.h"
 #include "sound.h"
 
-char *eventNames[] = {
-	"<EventZero>",
-	"<EventOne>",
-	"KeyPress",
-	"KeyRelease",
-	"ButtonPress",
-	"ButtonRelease",
-	"MotionNotify",
-	"EnterNotify",
-	"LeaveNotify",
-	"FocusIn",
-	"FocusOut",
-	"KeymapNotify",
-	"Expose",
-	"GraphicsExpose",
-	"NoExpose",
-	"VisibilityNotify",
-	"CreateNotify",
-	"DestroyNotify",
-	"UnmapNotify",
-	"MapNotify",
-	"MapRequest",
-	"ReparentNotify",
-	"ConfigureNotify",
-	"ConfigureRequest",
-	"GravityNotify",
-	"ResizeRequest",
-	"CirculateNotify",
-	"CirculateRequest",
-	"PropertyNotify",
-	"SelectionClear",
-	"SelectionRequest",
-	"SelectionNotify",
-	"ColormapNotify",
-	"ClientMessage",
-	"MappingNotify",
-	"Startup",
-	"Shutdown"
-};
-
-#define NEVENTS         (sizeof(eventNames) / sizeof(char *))
-
-RPLAY *rp[NEVENTS];
+RPLAY **rp = NULL;
 
 static int need_sound_init = 1;
 static int sound_fd = 0;
 static int sound_state = 1;
-static int startup_sound = NEVENTS - 2;
-static int exit_sound = NEVENTS - 1;
-static char hostname[200];
+#define HOSTNAME_LEN 200
+static char hostname[HOSTNAME_LEN];
 
 /*
  * Function to trim away spaces at the start and end of a string
@@ -110,6 +68,38 @@ trim_spaces(char *str)
 }
 
 /*
+ * Define stuff related to "magic" names.
+ */
+static const char *magic_events[] = {
+	"Startup",
+	"Shutdown",
+};
+#define NMAGICEVENTS (sizeof(magic_events) / sizeof(*magic_events))
+
+static int
+sound_magic_event_name2num(const char *name)
+{
+	int i;
+
+	for(i = 0 ; i < NMAGICEVENTS ; i++) {
+		if(strcasecmp(name, magic_events[i]) == 0) {
+			/* We number these off the far end of the non-magic events */
+			return event_names_size() + i;
+		}
+	}
+
+	return -1;
+}
+
+
+/*
+ * Now we know how many events we need to store up info for
+ */
+#define NEVENTS (event_names_size() + NMAGICEVENTS)
+
+
+
+/*
  * initialize
  */
 static void
@@ -118,18 +108,33 @@ sound_init(void)
 	int i;
 	FILE *fl;
 	char buffer[100];
-	char *token;
 	char *home;
-	char soundfile [256];
+	char *soundfile;
 
 	need_sound_init = 0;
 	if(sound_fd == 0) {
 		if(hostname[0] == '\0') {
-			strcpy(hostname, rplay_default_host());
+			strncpy(hostname, rplay_default_host(), HOSTNAME_LEN - 1);
+			hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
 		}
 
 		if((sound_fd = rplay_open(hostname)) < 0) {
 			rplay_perror("create");
+		}
+	}
+
+	/*
+	 * Init rp if necessary
+	 */
+	if(rp == NULL) {
+		if((rp = calloc(NEVENTS, sizeof(RPLAY *))) == NULL) {
+			perror("calloc() rplay control");
+			exit(1);
+			/*
+			 * Should maybe just bomb out of sound stuff, but there's
+			 * currently no provision for that.  If malloc fails, we're
+			 * pretty screwed anyway, so it's not much loss to just die.
+			 */
 		}
 	}
 
@@ -146,37 +151,32 @@ sound_init(void)
 	/*
 	 * Now read the file which contains the sounds
 	 */
-	soundfile [0] = '\0';
-	if((home = getenv("HOME")) != NULL) {
-		strcpy(soundfile, home);
+	if((home = getenv("HOME")) == NULL) {
+		home = "";
 	}
-	strcat(soundfile, "/.ctwm-sounds");
+	if(asprintf(&soundfile, "%s/.ctwm-sounds", home) < 0) {
+		perror("Failed building path to sound file");
+		return;
+	}
 	fl = fopen(soundfile, "r");
+	free(soundfile);
 	if(fl == NULL) {
 		return;
 	}
 	while(fgets(buffer, 100, fl) != NULL) {
-		token = trim_spaces(strtok(buffer, ": \t"));
-		if(token == NULL || *token == '#') {
+		char *ename, *sndfile;
+
+		ename = trim_spaces(strtok(buffer, ": \t"));
+		if(ename == NULL || *ename == '#') {
 			continue;
 		}
-		for(i = 0; i < NEVENTS; i++) {
-			if(strcmp(token, eventNames[i]) == 0) {
-				token = trim_spaces(strtok(NULL, "\r\n"));
-				if(token == NULL || *token == '#') {
-					continue;
-				}
-				rp[i] = rplay_create(RPLAY_PLAY);
-				if(rp[i] == NULL) {
-					rplay_perror("create");
-					continue;
-				}
-				if(rplay_set(rp[i], RPLAY_INSERT, 0, RPLAY_SOUND, token, NULL)
-				                < 0) {
-					rplay_perror("rplay");
-				}
-			}
+
+		sndfile = trim_spaces(strtok(NULL, "\r\n"));
+		if(sndfile == NULL || *sndfile == '#') {
+			continue;
 		}
+
+		set_sound_event_name(ename, sndfile);
 	}
 	fclose(fl);
 }
@@ -188,35 +188,42 @@ sound_init(void)
 void
 play_sound(int snd)
 {
-	if(snd > NEVENTS) {
+	/* Bounds */
+	if(snd < 0 || snd >= NEVENTS) {
 		return;
 	}
+
+	/* Playing enabled */
 	if(sound_state == 0) {
 		return;
 	}
 
+	/* Init if we aren't */
 	if(need_sound_init) {
 		sound_init();
 	}
 
+	/* Skip if this isn't a sound we have set */
 	if(rp[snd] == NULL) {
 		return;
 	}
+
+	/* And if all else fails, play it */
 	if(rplay(sound_fd, rp[snd]) < 0) {
-		rplay_perror("create");
+		rplay_perror("rplay");
 	}
 }
 
 void
 play_startup_sound(void)
 {
-	play_sound(startup_sound);
+	play_sound(sound_magic_event_name2num("Startup"));
 }
 
 void
 play_exit_sound(void)
 {
-	play_sound(exit_sound);
+	play_sound(sound_magic_event_name2num("Shutdown"));
 }
 
 /*
@@ -244,10 +251,60 @@ reread_sounds(void)
 void
 set_sound_host(char *host)
 {
-	strcpy(hostname, host);
+	strncpy(hostname, host, HOSTNAME_LEN - 1);
+	hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
 	if(sound_fd != 0) {
 		rplay_close(sound_fd);
 	}
 	sound_fd = 0;
 }
 
+/*
+ * Set the sound to play for a given event
+ */
+void
+set_sound_event_name(const char *ename, const char *soundfile)
+{
+	int i;
+
+	/* Find the index we'll use in rp[] for it */
+	i = sound_magic_event_name2num(ename);
+	if(i < 0) {
+		i = event_num_by_name(ename);
+	}
+	if(i < 0) {
+		return;
+	}
+
+	/* Gotcha */
+	set_sound_event(i, soundfile);
+	return;
+}
+
+void
+set_sound_event(int snd, const char *soundfile)
+{
+	/* This shouldn't get called before things are initialized */
+	if(rp == NULL) {
+		fprintf(stderr, "%s(): internal error: called before initialized.\n", __func__);
+		exit(1);
+	}
+
+	/* Cleanup old if necessary */
+	if(rp[snd] != NULL) {
+		rplay_destroy(rp[snd]);
+	}
+
+	/* Setup new */
+	rp[snd] = rplay_create(RPLAY_PLAY);
+	if(rp[snd] == NULL) {
+		rplay_perror("create");
+		return;
+	}
+	if(rplay_set(rp[snd], RPLAY_INSERT, 0, RPLAY_SOUND, soundfile, NULL)
+	                < 0) {
+		rplay_perror("rplay");
+	}
+
+	return;
+}
