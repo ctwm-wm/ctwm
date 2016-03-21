@@ -278,6 +278,12 @@ set_sound_event_name(const char *ename, const char *soundfile)
 void
 set_sound_event(int snd, const char *soundfile)
 {
+	/* This shouldn't get called before things are initialized */
+	if(rp == NULL) {
+		fprintf(stderr, "%s(): internal error: called before initialized.\n", __func__);
+		exit(1);
+	}
+
 	/* Cleanup old if necessary */
 	if(rp[snd] != NULL) {
 		rplay_destroy(rp[snd]);
