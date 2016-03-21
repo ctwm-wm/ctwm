@@ -131,7 +131,7 @@ sound_init(void)
 			perror("calloc() rplay control");
 			exit(1);
 			/*
-			 * XXX Should just bomb out of sound stuff maybe, but there's
+			 * Should maybe just bomb out of sound stuff, but there's
 			 * currently no provision for that.  If malloc fails, we're
 			 * pretty screwed anyway, so it's not much loss to just die.
 			 */
