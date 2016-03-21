@@ -188,7 +188,7 @@ sound_init(void)
 void
 play_sound(int snd)
 {
-	if(snd > NEVENTS) {
+	if(snd < 0 || snd >= NEVENTS) {
 		return;
 	}
 	if(sound_state == 0) {
