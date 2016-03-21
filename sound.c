@@ -79,8 +79,6 @@ char *eventNames[] = {
 	"Shutdown"
 };
 
-#define NEVENTS         (sizeof(eventNames) / sizeof(char *))
-
 RPLAY **rp = NULL;
 
 static int need_sound_init = 1;
@@ -132,6 +130,12 @@ sound_magic_event_name2num(const char *name)
 
 	return -1;
 }
+
+
+/*
+ * Now we know how many events we need to store up info for
+ */
+#define NEVENTS (event_names_size() + NMAGICEVENTS)
 
 
 
