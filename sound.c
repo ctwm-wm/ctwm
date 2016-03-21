@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#include "event_names.h"
 #include "sound.h"
 
 char *eventNames[] = {
@@ -109,6 +110,32 @@ trim_spaces(char *str)
 	}
 	return str;
 }
+
+/*
+ * Define stuff related to "magic" names.
+ */
+static const char *magic_events[] = {
+	"Startup",
+	"Shutdown",
+};
+#define NMAGICEVENTS (sizeof(magic_events) / sizeof(*magic_events))
+
+static int
+sound_magic_event_name2num(const char *name)
+{
+	int i;
+
+	for(i = 0 ; i < NMAGICEVENTS ; i++) {
+		if(strcasecmp(name, magic_events[i]) == 0) {
+			/* We number these off the far end of the non-magic events */
+			return event_names_size() + i;
+		}
+	}
+
+	return -1;
+}
+
+
 
 /*
  * initialize
