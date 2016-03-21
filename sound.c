@@ -302,7 +302,7 @@ set_sound_event(int snd, const char *soundfile)
 		return;
 	}
 	if(rplay_set(rp[snd], RPLAY_INSERT, 0, RPLAY_SOUND, soundfile, NULL)
-				    < 0) {
+	                < 0) {
 		rplay_perror("rplay");
 	}
 
