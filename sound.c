@@ -39,46 +39,6 @@
 #include "event_names.h"
 #include "sound.h"
 
-char *eventNames[] = {
-	"<EventZero>",
-	"<EventOne>",
-	"KeyPress",
-	"KeyRelease",
-	"ButtonPress",
-	"ButtonRelease",
-	"MotionNotify",
-	"EnterNotify",
-	"LeaveNotify",
-	"FocusIn",
-	"FocusOut",
-	"KeymapNotify",
-	"Expose",
-	"GraphicsExpose",
-	"NoExpose",
-	"VisibilityNotify",
-	"CreateNotify",
-	"DestroyNotify",
-	"UnmapNotify",
-	"MapNotify",
-	"MapRequest",
-	"ReparentNotify",
-	"ConfigureNotify",
-	"ConfigureRequest",
-	"GravityNotify",
-	"ResizeRequest",
-	"CirculateNotify",
-	"CirculateRequest",
-	"PropertyNotify",
-	"SelectionClear",
-	"SelectionRequest",
-	"SelectionNotify",
-	"ColormapNotify",
-	"ClientMessage",
-	"MappingNotify",
-	"Startup",
-	"Shutdown"
-};
-
 RPLAY **rp = NULL;
 
 static int need_sound_init = 1;
