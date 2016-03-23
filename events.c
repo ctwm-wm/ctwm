@@ -854,6 +854,11 @@ void HandleFocusIn(XFocusInEvent *event)
 		AutoSqueeze(Tmp_win);
 	}
 	SetFocusVisualAttributes(Tmp_win, True);
+#ifdef EWMH
+	if (Tmp_win->zoomed == F_FULLSCREENZOOM) {
+		OtpSetPriority(Tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
+	}
+#endif
 	Scr->Focus = Tmp_win;
 }
 
@@ -877,6 +882,11 @@ void HandleFocusOut(XFocusOutEvent *event)
 		AutoSqueeze(Tmp_win);
 	}
 	SetFocusVisualAttributes(Tmp_win, False);
+#ifdef EWMH
+	if (Tmp_win->zoomed == F_FULLSCREENZOOM) {
+		OtpSetPriority(Tmp_win, WinWin, EwmhGetPriority(Tmp_win), Above);
+	}
+#endif
 	Scr->Focus = NULL;
 }
 

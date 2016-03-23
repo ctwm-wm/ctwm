@@ -1319,8 +1319,8 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				/* and should ignore aspect ratio and size increments... */
 				/*
 				 * Raise the window above the dock.
-				 * TODO: It should have the extra priority only while it
-				 * has focus.
+				 * It should have the extra priority only while it
+				 * has focus. This is handled in HandleFocusOut().
 				 */
 #ifdef EWMH
 				OtpSetPriority(tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
