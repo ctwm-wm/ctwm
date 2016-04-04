@@ -11,11 +11,9 @@
 
 #include "event_names.h"
 
+/* num->name lookup table (generated build-time) */
+#include "event_names_table.h"
 
-/* num->name lookup */
-static const char * event_names[] = {
-%%EVENT_NAMES%%
-};
 
 
 /* Need this for any iteration */
