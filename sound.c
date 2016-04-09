@@ -231,7 +231,7 @@ sound_load_list(void)
 
 		if(set_sound_event_name(ename, sndfile) != 0) {
 			fprintf(stderr, "Error adding sound for %s; maybe event "
-					"name is invalid?", ename);
+					"name is invalid?\n", ename);
 		}
 	}
 	fclose(fl);
