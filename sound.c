@@ -328,7 +328,7 @@ set_sound_host(char *host)
 /*
  * Set the sound to play for a given event
  */
-void
+int
 set_sound_event_name(const char *ename, const char *soundfile)
 {
 	int i;
@@ -339,15 +339,15 @@ set_sound_event_name(const char *ename, const char *soundfile)
 		i = event_num_by_name(ename);
 	}
 	if(i < 0) {
-		return;
+		return -1;
 	}
 
 	/* Gotcha */
 	set_sound_event(i, soundfile);
-	return;
+	return 0;
 }
 
-void
+int
 set_sound_event(int snd, const char *soundfile)
 {
 	/* This shouldn't get called before things are initialized */
@@ -365,12 +365,12 @@ set_sound_event(int snd, const char *soundfile)
 	rp[snd] = rplay_create(RPLAY_PLAY);
 	if(rp[snd] == NULL) {
 		rplay_perror("create");
-		return;
+		return -1;
 	}
 	if(rplay_set(rp[snd], RPLAY_INSERT, 0, RPLAY_SOUND, soundfile, NULL)
 	                < 0) {
 		rplay_perror("rplay");
 	}
 
-	return;
+	return 0;
 }
