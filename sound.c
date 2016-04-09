@@ -25,8 +25,10 @@
  */
 /*
  * These routines were extracted from the sound hack for olvwm3.3 by
- * Andrew "Ender" Scherpbier (turtle@sciences.sdsu.edu)
- * and modified by J.E. Sacco (jsacco @ssl.com)
+ * Andrew "Ender" Scherpbier (turtle@sciences.sdsu.edu, Andrew@SDSU.Edu)
+ * and modified by J.E. Sacco (jsacco @ssl.com) for tvtwm and twm.  They
+ * were then slightly adapted for ctwm by Mark Boyns (boyns@sdsu.edu),
+ * and have since been reworked more.
  */
 
 #include "ctwm.h"
@@ -42,6 +44,7 @@
 RPLAY **rp = NULL;
 
 static int need_sound_init = 1;
+static int sound_from_config = 0;
 static int sound_fd = 0;
 static int sound_state = 1;
 #define HOSTNAME_LEN 200
@@ -100,27 +103,29 @@ sound_magic_event_name2num(const char *name)
 
 
 /*
- * initialize
+ * Initialize the subsystem and its necessary bits
  */
-static void
+void
 sound_init(void)
 {
-	int i;
-	FILE *fl;
-	char buffer[100];
-	char *home;
-	char *soundfile;
+	if(!need_sound_init) {
+		return;
+	}
+
+	/* Can't happen */
+	if(sound_fd != 0) {
+		fprintf(stderr, "BUG: sound_fd not set but sound inited.\n");
+		exit(1);
+	}
 
 	need_sound_init = 0;
-	if(sound_fd == 0) {
-		if(hostname[0] == '\0') {
-			strncpy(hostname, rplay_default_host(), HOSTNAME_LEN - 1);
-			hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
-		}
+	if(hostname[0] == '\0') {
+		strncpy(hostname, rplay_default_host(), HOSTNAME_LEN - 1);
+		hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
+	}
 
-		if((sound_fd = rplay_open(hostname)) < 0) {
-			rplay_perror("create");
-		}
+	if((sound_fd = rplay_open(hostname)) < 0) {
+		rplay_perror("create");
 	}
 
 	/*
@@ -137,6 +142,21 @@ sound_init(void)
 			 */
 		}
 	}
+}
+
+
+/*
+ * Clear out any set sounds
+ */
+void
+sound_clear_list(void)
+{
+	int i;
+
+	/* JIC */
+	if(rp == NULL) {
+		return;
+	}
 
 	/*
 	 * Destroy any old sounds
@@ -147,10 +167,27 @@ sound_init(void)
 		}
 		rp[i] = NULL;
 	}
+}
 
-	/*
-	 * Now read the file which contains the sounds
-	 */
+
+/*
+ * [Re]load the sounds
+ */
+void
+sound_load_list(void)
+{
+	FILE *fl;
+	char *home;
+	char *soundfile;
+	char buffer[100];
+
+	/* Guard; shouldn't be possible */
+	if(rp == NULL) {
+		fprintf(stderr, "Tried to load sounds before subsystem inited.\n");
+		exit(1);
+	}
+
+	/* Find the .ctwm-sounds file */
 	if((home = getenv("HOME")) == NULL) {
 		home = "";
 	}
@@ -160,9 +197,27 @@ sound_init(void)
 	}
 	fl = fopen(soundfile, "r");
 	free(soundfile);
+
+	/*
+	 * If it was found, but we already have sound set from the config
+	 * file, complain on stderr and then return.
+	 */
+	if(fl != NULL && sound_from_config) {
+		fprintf(stderr, "RplaySounds set in ctwmrc, not reading "
+		        "~/.ctwm-sounds.\n");
+		fclose(fl);
+		return;
+	}
+
+	/* Clear out the old list, whether we have new or not */
+	sound_clear_list();
+
+	/* If there wasn't a .ctwm-sounds file, we're done now */
 	if(fl == NULL) {
 		return;
 	}
+
+	/* Now go ahead and parse it in */
 	while(fgets(buffer, 100, fl) != NULL) {
 		char *ename, *sndfile;
 
@@ -176,7 +231,10 @@ sound_init(void)
 			continue;
 		}
 
-		set_sound_event_name(ename, sndfile);
+		if(set_sound_event_name(ename, sndfile) != 0) {
+			fprintf(stderr, "Error adding sound for %s; maybe event "
+			        "name is invalid?\n", ename);
+		}
 	}
 	fclose(fl);
 }
@@ -198,9 +256,10 @@ play_sound(int snd)
 		return;
 	}
 
-	/* Init if we aren't */
+	/* Better already be initted */
 	if(need_sound_init) {
-		sound_init();
+		fprintf(stderr, "BUG: play_sound() Sound should be initted already.\n");
+		return;
 	}
 
 	/* Skip if this isn't a sound we have set */
@@ -226,6 +285,17 @@ play_exit_sound(void)
 	play_sound(sound_magic_event_name2num("Shutdown"));
 }
 
+
+/*
+ * Flag that we loaded sounds from the ctwmrc
+ */
+void
+sound_set_from_config(void)
+{
+	sound_from_config = 1;
+}
+
+
 /*
  * Toggle the sound on/off
  */
@@ -242,7 +312,7 @@ toggle_sound(void)
 void
 reread_sounds(void)
 {
-	sound_init();
+	sound_load_list();
 }
 
 /*
@@ -262,7 +332,7 @@ set_sound_host(char *host)
 /*
  * Set the sound to play for a given event
  */
-void
+int
 set_sound_event_name(const char *ename, const char *soundfile)
 {
 	int i;
@@ -273,15 +343,14 @@ set_sound_event_name(const char *ename, const char *soundfile)
 		i = event_num_by_name(ename);
 	}
 	if(i < 0) {
-		return;
+		return -1;
 	}
 
 	/* Gotcha */
-	set_sound_event(i, soundfile);
-	return;
+	return set_sound_event(i, soundfile);
 }
 
-void
+int
 set_sound_event(int snd, const char *soundfile)
 {
 	/* This shouldn't get called before things are initialized */
@@ -299,12 +368,12 @@ set_sound_event(int snd, const char *soundfile)
 	rp[snd] = rplay_create(RPLAY_PLAY);
 	if(rp[snd] == NULL) {
 		rplay_perror("create");
-		return;
+		return -1;
 	}
 	if(rplay_set(rp[snd], RPLAY_INSERT, 0, RPLAY_SOUND, soundfile, NULL)
 	                < 0) {
 		rplay_perror("rplay");
 	}
 
-	return;
+	return 0;
 }

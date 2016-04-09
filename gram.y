@@ -83,6 +83,9 @@
 #include "parse_be.h"
 #include "parse_yacc.h"
 #include "cursor.h"
+#ifdef SOUNDS
+#	include "sound.h"
+#endif
 
 static char *curWorkSpc = NULL;
 static char *client = NULL;
@@ -125,6 +128,7 @@ extern int yylex(void);
 %token <num> IGNOREMODIFIER WINDOW_GEOMETRIES ALWAYSSQUEEZETOGRAVITY VIRTUAL_SCREENS
 %token <num> IGNORE_TRANSIENT
 %token <num> EWMH_IGNORE
+%token <num> RPLAY_SOUNDS
 %token <ptr> STRING
 
 %type <ptr> string
@@ -452,6 +456,8 @@ stmt		: error
 		  geom_list
 		| EWMH_IGNORE		{ }
 		  ewmh_ignore_list
+		| RPLAY_SOUNDS { }
+		  rplay_sounds_list
 		;
 
 noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
@@ -947,6 +953,32 @@ icon_entries	: /* Empty */
 		;
 
 icon_entry	: string string		{ if (Scr->FirstTime) AddToList(curplist, $1, $2); }
+		;
+
+rplay_sounds_list	: LB rplay_sounds_entries RB {
+#ifndef SOUNDS
+			twmrc_error_prefix();
+			fprintf(stderr, "RplaySounds ignored; rplay support "
+					"not configured.\n");
+#else
+			sound_set_from_config();
+#endif
+		}
+		;
+
+rplay_sounds_entries	: /* Empty */
+		| rplay_sounds_entries rplay_sounds_entry
+		;
+
+rplay_sounds_entry	: string string {
+#ifdef SOUNDS
+			if(set_sound_event_name($1, $2) != 0) {
+				twmrc_error_prefix();
+				fprintf(stderr, "Failed adding sound for %s; "
+						"maybe event name is invalid?\n", $1);
+			}
+#endif
+		}
 		;
 
 function	: LB function_entries RB {}

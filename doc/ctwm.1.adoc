@@ -1536,6 +1536,25 @@ ReverseCurrentWorkspace::
   foreground colors in the small windows in the workspace map for the current
   workspace.
 
+RplaySoundHost `string`::
+  The host on which sounds should be played.  Only meaningful when ctwm
+  is built with `USE_SOUND`; will give a warning otherwise.  See the
+  SOUNDS section.  Added in %%NEXT%%; prior versions used the `SoundHost`
+  parameter instead.
+
+RplaySounds { `sounds-list` }::
+  Define what sounds to play on various events through rplayd.  It
+  contains entries of the form
++
+----
+    "EventName"   "/file/to/play.wav"
+----
++
+Only meaningful when ctwm is built with `USE_SOUND`; it will give a
+warning otherwise.  See the SOUNDS section.  Note that if this section is
+given in the ctwmrc, the `~/.ctwm-sounds` file will not be parsed.  First
+appeared in %%NEXT%%.
+
 SaveColor { `colors-list` }::
   This variable indicates a list of color assignments to be stored as pixel
   values in the root window property _MIT_PRIORITY_COLORS.  Clients may elect
@@ -1592,8 +1611,10 @@ SortIconManager::
   sorted alphabetically rather than by simply appending new windows to
   the end.
 
-SoundHost::
-  The host on which sounds should be played.  See the SOUNDS section.
+SoundHost `string`::
+  Alias for `RplaySoundHost`, used in versions prior to %%NEXT%%.  Unless
+  you need backward compatibility with them, use `RplaySoundHost`
+  instead.  This alias will be removed in a future version.
 
 SqueezeTitle [{ `squeeze-list` }]::
   This variable indicates that ctwm should attempt to use the SHAPE
@@ -2659,8 +2680,10 @@ f.refresh::
   This function causes all windows to be refreshed.
 
 f.rereadsounds::
-  This function causes the `.ctwm-sounds` file to be re-read.  See
-  the SOUNDS section.
+  This function causes the `.ctwm-sounds` file to be re-read.  Note that
+  this will *not* re-read sounds set in `RplaySounds` in the config file.
+  As a result, this function will probably go away in the future when
+  `.ctwm-sounds` support is removed.  See the SOUNDS section.
 
 f.rescuewindows::
   If you somehow managed to move a window out of sight, calling this
@@ -2960,17 +2983,26 @@ keyboard.
 
 == SOUNDS
 If built with the `USE_SOUND` option, ctwm is able to play sounds
-for any X event.  ctwm will look for the file `.ctwm-sounds`
-in the user's home directory to map every X event to a sound file to
-be played.
+for any X event.  This may be configured in two ways.
 
-Each line in `.ctwm-sounds` has the following syntax:
+As of %%NEXT%%, the sounds may be configured in the ctwmrc with the
+`RplaySounds` config parameter.  See above for details.
+
+If that is not found, or in older versions, ctwm will look for the file
+`.ctwm-sounds` in the user's home directory to map every X event to a
+sound file to be played.  Each line in `.ctwm-sounds` has the following
+syntax:
 
 ------
 {X event}: {sound file}
 ------
 
-The currently known X events that can be given are:
+If `RplaySounds` is given in the config file, and `.ctwm-sounds` exists,
+a warning will be given, and the contents of `.ctwm-sounds` will be
+ignored.  All support for `.ctwm-sounds` will be removed in a future
+version, leaving only the ctwmrc configuration method available
+
+However configured, the currently known X events that can be given are:
 
 ------
 KeyPress

@@ -10,7 +10,7 @@
 option(USE_XPM    "Enable XPM support"                 ON )
 option(USE_JPEG   "Enable libjpeg support"             ON )
 option(USE_M4     "Enable m4 support"                  ON )
-option(USE_SOUND  "Enable librplay sound support"      OFF)
+option(USE_RPLAY  "Enable librplay sound support"      OFF)
 option(USE_SREGEX "Use regex from libc"                ON )
 option(USE_EWMH   "Support some Extended Window Manager Hints"  ON )
 
@@ -66,6 +66,10 @@ endif(USE_M4)
 
 # rplay off by default
 if(USE_SOUND)
+	message(WARNING "USE_SOUND is deprecated; use USE_RPLAY instead.")
+	set(USE_RPLAY YES)
+endif(USE_SOUND)
+if(USE_RPLAY)
 	find_library(LIBRPLAY NAMES rplay PATHS ${LIBSEARCH})
 	if(NOT LIBRPLAY)
 		message(FATAL_ERROR "Can't find librplay lib.")
@@ -79,7 +83,7 @@ if(USE_SOUND)
 	list(APPEND CTWMLIBS ${LIBRPLAY})
 	include_directories(${LIBRPLAY_INCLUDE_DIR})
 	message(STATUS "Enabling librplay sound support.")
-endif(USE_SOUND)
+endif(USE_RPLAY)
 
 
 # Check if the user wants EWMH support built in.

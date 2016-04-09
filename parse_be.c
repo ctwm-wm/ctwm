@@ -126,13 +126,12 @@ typedef struct _TwmKeyword {
 #define kws_TitleJustification          13
 #define kws_IconRegionJustification     14
 #define kws_IconRegionAlignement        15
-#ifdef SOUNDS
 #define kws_SoundHost                   16
-#endif
 #define kws_WMgrButtonStyle             17
 #define kws_WorkSpaceFont               18
 #define kws_IconifyStyle                19
 #define kws_IconSize                    20
+#define kws_RplaySoundHost              21
 
 #define kwss_RandomPlacement            1
 
@@ -512,6 +511,8 @@ static TwmKeyword keytable[] = {
 	{ "right",                  JKEYWORD, J_RIGHT },
 	{ "righttitlebutton",       RIGHT_TITLEBUTTON, 0 },
 	{ "root",                   ROOT, 0 },
+	{ "rplaysoundhost",         SKEYWORD, kws_RplaySoundHost },
+	{ "rplaysounds",            RPLAY_SOUNDS, 0 },
 	{ "s",                      SHIFT, 0 },
 	{ "savecolor",              SAVECOLOR, 0},
 	{ "saveworkspacefocus",     KEYWORD, kw0_SaveWorkspaceFocus },
@@ -524,9 +525,7 @@ static TwmKeyword keytable[] = {
 	{ "shrinkicontitles",       KEYWORD, kw0_ShrinkIconTitles },
 	{ "sloppyfocus",            KEYWORD, kw0_SloppyFocus },
 	{ "sorticonmanager",        KEYWORD, kw0_SortIconManager },
-#ifdef SOUNDS
 	{ "soundhost",              SKEYWORD, kws_SoundHost },
-#endif
 	{ "south",                  DKEYWORD, D_SOUTH },
 	{ "squeezetitle",           SQUEEZE_TITLE, 0 },
 	{ "starticonified",         START_ICONIFIED, 0 },
@@ -1090,13 +1089,24 @@ do_string_keyword(int keyword, char *s)
 			}
 			return 1;
 		}
-#ifdef SOUNDS
+		case kws_RplaySoundHost:
 		case kws_SoundHost:
 			if(Scr->FirstTime) {
+				/* Warning to be enabled in the future before removal */
+				if(0 && keyword == kws_SoundHost) {
+					twmrc_error_prefix();
+					fprintf(stderr, "SoundHost is deprecated, please "
+					        "use RplaySoundHost instead.\n");
+				}
+#ifdef SOUNDS
 				set_sound_host(s);
+#else
+				twmrc_error_prefix();
+				fprintf(stderr, "Ignoring %sSoundHost; rplay not ronfigured.\n",
+				        (keyword == kws_RplaySoundHost ? "Rplay" : ""));
+#endif
 			}
 			return 1;
-#endif
 
 		case kws_WMgrButtonStyle: {
 			int style = ParseButtonStyle(s);

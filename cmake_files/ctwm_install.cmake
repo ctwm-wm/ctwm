@@ -46,11 +46,3 @@ if(INSTHTML)
 		DESTINATION ${DOCDIR}
 	)
 endif(INSTHTML)
-
-
-# If we're building with sound, install its doc too.
-if(USE_SOUND)
-	install(FILES sound.txt
-		DESTINATION ${DOCDIR}
-	)
-endif(USE_SOUND)

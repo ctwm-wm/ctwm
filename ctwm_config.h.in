@@ -35,8 +35,18 @@
 #endif
 
 /* rplay? */
-#cmakedefine USE_SOUND
-#ifdef USE_SOUND
+#cmakedefine USE_RPLAY
+#ifdef USE_RPLAY
+/*
+ * This mismatched naming is a historical remnant.  User-facing stuff
+ * (build-time config, config file params, etc) has been moved as much as
+ * possible to RPLAY-based to start building up compatibility for any
+ * future where we support other sound methods.  I've left internal stuff
+ * based around SOUNDS / sound.c / something_sound_something() / etc
+ * since that would be a lot of churn, and there aren't the compat
+ * concerns so we can just do those at the time they become necessary
+ * without worrying further.
+ */
 # define SOUNDS
 #endif
 
