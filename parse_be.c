@@ -512,6 +512,7 @@ static TwmKeyword keytable[] = {
 	{ "right",                  JKEYWORD, J_RIGHT },
 	{ "righttitlebutton",       RIGHT_TITLEBUTTON, 0 },
 	{ "root",                   ROOT, 0 },
+	{ "rplaysounds",            RPLAY_SOUNDS, 0 },
 	{ "s",                      SHIFT, 0 },
 	{ "savecolor",              SAVECOLOR, 0},
 	{ "saveworkspacefocus",     KEYWORD, kw0_SaveWorkspaceFocus },
