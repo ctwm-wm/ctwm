@@ -25,8 +25,10 @@
  */
 /*
  * These routines were extracted from the sound hack for olvwm3.3 by
- * Andrew "Ender" Scherpbier (turtle@sciences.sdsu.edu)
- * and modified by J.E. Sacco (jsacco @ssl.com)
+ * Andrew "Ender" Scherpbier (turtle@sciences.sdsu.edu, Andrew@SDSU.Edu)
+ * and modified by J.E. Sacco (jsacco @ssl.com) for tvtwm and twm.  They
+ * were then slightly adapted for ctwm by Mark Boyns (boyns@sdsu.edu),
+ * and have since been reworked more.
  */
 
 #include "ctwm.h"
