@@ -28,6 +28,7 @@
 #define _SOUND_H
 
 void sound_init(void);
+void sound_clear_list(void);
 void sound_load_list(void);
 void play_sound(int);
 void play_startup_sound(void);

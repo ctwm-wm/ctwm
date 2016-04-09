@@ -144,12 +144,36 @@ sound_init(void)
 
 
 /*
+ * Clear out any set sounds
+ */
+void
+sound_clear_list(void)
+{
+	int i;
+
+	/* JIC */
+	if(rp == NULL) {
+		return;
+	}
+
+	/*
+	 * Destroy any old sounds
+	 */
+	for(i = 0; i < NEVENTS; i++) {
+		if(rp[i] != NULL) {
+			rplay_destroy(rp[i]);
+		}
+		rp[i] = NULL;
+	}
+}
+
+
+/*
  * [Re]load the sounds
  */
 void
 sound_load_list(void)
 {
-	int i;
 	FILE *fl;
 	char *home;
 	char *soundfile;
@@ -164,14 +188,9 @@ sound_load_list(void)
 	}
 
 	/*
-	 * Destroy any old sounds
+	 * Out with the old
 	 */
-	for(i = 0; i < NEVENTS; i++) {
-		if(rp[i] != NULL) {
-			rplay_destroy(rp[i]);
-		}
-		rp[i] = NULL;
-	}
+	sound_clear_list();
 
 	/*
 	 * Now read the file which contains the sounds
