@@ -145,7 +145,7 @@ sound_init(void)
 /*
  * [Re]load the sounds
  */
-static void
+void
 sound_load_list(void)
 {
 	int i;
@@ -222,10 +222,10 @@ play_sound(int snd)
 		return;
 	}
 
-	/* Init if we aren't */
+	/* Better already be initted */
 	if(need_sound_init) {
-		sound_init();
-		sound_load_list();
+		fprintf(stderr, "BUG: play_sound() Sound should be initted already.\n");
+		return;
 	}
 
 	/* Skip if this isn't a sound we have set */
