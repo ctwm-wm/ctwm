@@ -955,7 +955,15 @@ icon_entries	: /* Empty */
 icon_entry	: string string		{ if (Scr->FirstTime) AddToList(curplist, $1, $2); }
 		;
 
-rplay_sounds_list	: LB rplay_sounds_entries RB { sound_set_from_config(); }
+rplay_sounds_list	: LB rplay_sounds_entries RB {
+#ifndef SOUNDS
+			twmrc_error_prefix();
+			fprintf(stderr, "RplaySounds ignored; rplay support "
+					"not configured.\n");
+#else
+			sound_set_from_config();
+#endif
+		}
 		;
 
 rplay_sounds_entries	: /* Empty */
@@ -963,11 +971,13 @@ rplay_sounds_entries	: /* Empty */
 		;
 
 rplay_sounds_entry	: string string {
+#ifdef SOUNDS
 			if(set_sound_event_name($1, $2) != 0) {
 				twmrc_error_prefix();
 				fprintf(stderr, "Failed adding sound for %s; "
 						"maybe event name is invalid?\n", $1);
 			}
+#endif
 		}
 		;
 
