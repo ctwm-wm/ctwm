@@ -347,8 +347,7 @@ set_sound_event_name(const char *ename, const char *soundfile)
 	}
 
 	/* Gotcha */
-	set_sound_event(i, soundfile);
-	return 0;
+	return set_sound_event(i, soundfile);
 }
 
 int
