@@ -147,6 +147,14 @@ sound_load_list(void)
 	char buffer[100];
 
 	/*
+	 * Guard; shouldn't be possible.
+	 */
+	if(rp == NULL) {
+		fprintf(stderr, "Tried to load sounds before subsystem inited.\n");
+		exit(1);
+	}
+
+	/*
 	 * Destroy any old sounds
 	 */
 	for(i = 0; i < NEVENTS; i++) {
