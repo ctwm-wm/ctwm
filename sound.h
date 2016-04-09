@@ -32,6 +32,7 @@ void sound_load_list(void);
 void play_sound(int);
 void play_startup_sound(void);
 void play_exit_sound(void);
+void sound_set_from_config(void);
 void toggle_sound(void);
 void reread_sounds(void);
 void set_sound_host(char *);

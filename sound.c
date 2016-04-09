@@ -42,6 +42,7 @@
 RPLAY **rp = NULL;
 
 static int need_sound_init = 1;
+static int sound_from_config = 0;
 static int sound_fd = 0;
 static int sound_state = 1;
 #define HOSTNAME_LEN 200
@@ -187,6 +188,18 @@ sound_load_list(void)
 	if(fl == NULL) {
 		return;
 	}
+
+	/*
+	 * Only do our thing if we didn't set sounds in the ctwmrc
+	 */
+	if(sound_from_config) {
+		fprintf(stderr, "RplaySounds set in ctwmrc, not reading "
+				"~/.ctwm-sounds.\n");
+		fclose(fl);
+		return;
+	}
+
+	/* Go ahead */
 	while(fgets(buffer, 100, fl) != NULL) {
 		char *ename, *sndfile;
 
@@ -251,6 +264,17 @@ play_exit_sound(void)
 {
 	play_sound(sound_magic_event_name2num("Shutdown"));
 }
+
+
+/*
+ * Flag that we loaded sounds from the ctwmrc
+ */
+void
+sound_set_from_config(void)
+{
+	sound_from_config = 1;
+}
+
 
 /*
  * Toggle the sound on/off

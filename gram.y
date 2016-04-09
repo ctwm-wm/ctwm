@@ -955,7 +955,7 @@ icon_entries	: /* Empty */
 icon_entry	: string string		{ if (Scr->FirstTime) AddToList(curplist, $1, $2); }
 		;
 
-rplay_sounds_list	: LB rplay_sounds_entries RB {}
+rplay_sounds_list	: LB rplay_sounds_entries RB { sound_set_from_config(); }
 		;
 
 rplay_sounds_entries	: /* Empty */
