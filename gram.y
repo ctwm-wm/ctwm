@@ -963,7 +963,11 @@ rplay_sounds_entries	: /* Empty */
 		;
 
 rplay_sounds_entry	: string string {
-			set_sound_event_name($1, $2);
+			if(set_sound_event_name($1, $2) != 0) {
+				twmrc_error_prefix();
+				fprintf(stderr, "Failed adding sound for %s; "
+						"maybe event name is invalid?\n", $1);
+			}
 		}
 		;
 
