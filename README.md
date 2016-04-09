@@ -112,8 +112,9 @@ USE_EWMH
 :       Enables EWMH support.
         (**ON** by default)
 
-USE_SOUND
-:       Build with sound support via librplay.
+USE_RPLAY
+:       Build with sound support via librplay.  `USE_SOUND` is a still
+        valid but deprecated alias for this, and will give a warning.
         (**OFF** by default)
 
 
