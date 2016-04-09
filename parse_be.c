@@ -126,9 +126,7 @@ typedef struct _TwmKeyword {
 #define kws_TitleJustification          13
 #define kws_IconRegionJustification     14
 #define kws_IconRegionAlignement        15
-#ifdef SOUNDS
 #define kws_SoundHost                   16
-#endif
 #define kws_WMgrButtonStyle             17
 #define kws_WorkSpaceFont               18
 #define kws_IconifyStyle                19
@@ -525,9 +523,7 @@ static TwmKeyword keytable[] = {
 	{ "shrinkicontitles",       KEYWORD, kw0_ShrinkIconTitles },
 	{ "sloppyfocus",            KEYWORD, kw0_SloppyFocus },
 	{ "sorticonmanager",        KEYWORD, kw0_SortIconManager },
-#ifdef SOUNDS
 	{ "soundhost",              SKEYWORD, kws_SoundHost },
-#endif
 	{ "south",                  DKEYWORD, D_SOUTH },
 	{ "squeezetitle",           SQUEEZE_TITLE, 0 },
 	{ "starticonified",         START_ICONIFIED, 0 },
@@ -1091,13 +1087,16 @@ do_string_keyword(int keyword, char *s)
 			}
 			return 1;
 		}
-#ifdef SOUNDS
 		case kws_SoundHost:
 			if(Scr->FirstTime) {
+#ifdef SOUNDS
 				set_sound_host(s);
+#else
+				twmrc_error_prefix();
+				fprintf(stderr, "Ignoring SoundHost; rplay not configured.\n");
+#endif
 			}
 			return 1;
-#endif
 
 		case kws_WMgrButtonStyle: {
 			int style = ParseButtonStyle(s);
