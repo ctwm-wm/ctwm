@@ -305,6 +305,9 @@ int main(int argc, char **argv)
 #ifdef EWMH
 	EwmhInit();
 #endif /* EWMH */
+#ifdef SOUNDS
+	sound_init();
+#endif
 
 	for(scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		unsigned long attrmask;
@@ -807,7 +810,6 @@ int main(int argc, char **argv)
 	}
 	(void) ConnectToSessionManager(CLarg.client_id);
 #ifdef SOUNDS
-	sound_init();
 	sound_load_list();
 	play_startup_sound();
 #endif
