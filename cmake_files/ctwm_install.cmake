@@ -49,8 +49,8 @@ endif(INSTHTML)
 
 
 # If we're building with sound, install its doc too.
-if(USE_SOUND)
+if(USE_RPLAY)
 	install(FILES sound.txt
 		DESTINATION ${DOCDIR}
 	)
-endif(USE_SOUND)
+endif(USE_RPLAY)
