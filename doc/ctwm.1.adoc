@@ -1614,7 +1614,7 @@ SortIconManager::
 SoundHost `string`::
   Alias for `RplaySoundHost`, used in versions prior to %%NEXT%%.  Unless
   you need backward compatibility with them, use `RplaySoundHost`
-  instead.
+  instead.  This alias will be removed in a future version.
 
 SqueezeTitle [{ `squeeze-list` }]::
   This variable indicates that ctwm should attempt to use the SHAPE
