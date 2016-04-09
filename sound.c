@@ -179,22 +179,13 @@ sound_load_list(void)
 	char *soundfile;
 	char buffer[100];
 
-	/*
-	 * Guard; shouldn't be possible.
-	 */
+	/* Guard; shouldn't be possible */
 	if(rp == NULL) {
 		fprintf(stderr, "Tried to load sounds before subsystem inited.\n");
 		exit(1);
 	}
 
-	/*
-	 * Out with the old
-	 */
-	sound_clear_list();
-
-	/*
-	 * Now read the file which contains the sounds
-	 */
+	/* Find the .ctwm-sounds file */
 	if((home = getenv("HOME")) == NULL) {
 		home = "";
 	}
@@ -204,21 +195,27 @@ sound_load_list(void)
 	}
 	fl = fopen(soundfile, "r");
 	free(soundfile);
-	if(fl == NULL) {
-		return;
-	}
 
 	/*
-	 * Only do our thing if we didn't set sounds in the ctwmrc
+	 * If it was found, but we already have sound set from the config
+	 * file, complain on stderr and then return.
 	 */
-	if(sound_from_config) {
+	if(fl != NULL && sound_from_config) {
 		fprintf(stderr, "RplaySounds set in ctwmrc, not reading "
 				"~/.ctwm-sounds.\n");
 		fclose(fl);
 		return;
 	}
 
-	/* Go ahead */
+	/* Clear out the old list, whether we have new or not */
+	sound_clear_list();
+
+	/* If there wasn't a .ctwm-sounds file, we're done now */
+	if(fl == NULL) {
+		return;
+	}
+
+	/* Now go ahead and parse it in */
 	while(fgets(buffer, 100, fl) != NULL) {
 		char *ename, *sndfile;
 
