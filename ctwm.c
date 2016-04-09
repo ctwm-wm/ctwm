@@ -807,6 +807,7 @@ int main(int argc, char **argv)
 	}
 	(void) ConnectToSessionManager(CLarg.client_id);
 #ifdef SOUNDS
+	sound_init();
 	play_startup_sound();
 #endif
 

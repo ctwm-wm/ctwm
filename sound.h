@@ -27,6 +27,7 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
+void sound_init(void);
 void play_sound(int);
 void play_startup_sound(void);
 void play_exit_sound(void);

@@ -102,7 +102,7 @@ sound_magic_event_name2num(const char *name)
 /*
  * Initialize the subsystem and its necessary bits
  */
-static void
+void
 sound_init(void)
 {
 	if(!need_sound_init) {
