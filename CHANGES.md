@@ -103,7 +103,9 @@ remnants of special-case VMS support have been removed.
     the RplaySounds {} parameter in the config file in place of the
     `~/.ctwm-sounds` file.  If so, ctwm will give a warning if
     `.ctwm-sounds` exists; support for the external file will be removed
-    in a future version.
+    in a future version.  Also the SoundHost config parameter is replaced
+    by RplaySoundHost; the old name is still accepted, but will be
+    removed in a future version.
 
 ### Internals
 
