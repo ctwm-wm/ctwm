@@ -1544,9 +1544,10 @@ RplaySounds { `sounds-list` }::
     "EventName"   "/file/to/play.wav"
 ----
 +
-Only available when ctwm is build with `USE_SOUND`.  See the SOUNDS
-section.  Note that if this section is given in the ctwmrc, the
-`~/.ctwm-sounds` file will not be parsed.  First appeared in %%NEXT%%.
+Only meaningful when ctwm is built with `USE_SOUND`; it will give a
+warning otherwise.  See the SOUNDS section.  Note that if this section is
+given in the ctwmrc, the `~/.ctwm-sounds` file will not be parsed.  First
+appeared in %%NEXT%%.
 
 SaveColor { `colors-list` }::
   This variable indicates a list of color assignments to be stored as pixel
@@ -1605,7 +1606,8 @@ SortIconManager::
   the end.
 
 SoundHost::
-  The host on which sounds should be played.  See the SOUNDS section.
+  The host on which sounds should be played.  Only available when ctwm is
+  built with `USE_SOUND`.  See the SOUNDS section.
 
 SqueezeTitle [{ `squeeze-list` }]::
   This variable indicates that ctwm should attempt to use the SHAPE
