@@ -2680,8 +2680,10 @@ f.refresh::
   This function causes all windows to be refreshed.
 
 f.rereadsounds::
-  This function causes the `.ctwm-sounds` file to be re-read.  See
-  the SOUNDS section.
+  This function causes the `.ctwm-sounds` file to be re-read.  Note that
+  this will *not* re-read sounds set in `RplaySounds` in the config file.
+  As a result, this function will probably go away in the future when
+  `.ctwm-sounds` support is removed.  See the SOUNDS section.
 
 f.rescuewindows::
   If you somehow managed to move a window out of sight, calling this
