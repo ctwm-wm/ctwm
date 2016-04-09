@@ -1531,7 +1531,7 @@ RestartPreviousState::
   This is typically used to try to regenerate the state that the screen
   was in before the previous window manager was shutdown.
 
-ReverseCurrentWorkspace `string`::
+ReverseCurrentWorkspace::
   This variable tells ctwm to reverse the background and
   foreground colors in the small windows in the workspace map for the current
   workspace.
