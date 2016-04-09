@@ -105,16 +105,24 @@ sound_magic_event_name2num(const char *name)
 static void
 sound_init(void)
 {
-	need_sound_init = 0;
-	if(sound_fd == 0) {
-		if(hostname[0] == '\0') {
-			strncpy(hostname, rplay_default_host(), HOSTNAME_LEN - 1);
-			hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
-		}
+	if(!need_sound_init) {
+		return;
+	}
 
-		if((sound_fd = rplay_open(hostname)) < 0) {
-			rplay_perror("create");
-		}
+	/* Can't happen */
+	if(sound_fd != 0) {
+		fprintf(stderr, "BUG: sound_fd not set but sound inited.\n");
+		exit(1);
+	}
+
+	need_sound_init = 0;
+	if(hostname[0] == '\0') {
+		strncpy(hostname, rplay_default_host(), HOSTNAME_LEN - 1);
+		hostname[HOSTNAME_LEN - 1] = '\0'; /* JIC */
+	}
+
+	if((sound_fd = rplay_open(hostname)) < 0) {
+		rplay_perror("create");
 	}
 
 	/*
