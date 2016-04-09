@@ -100,17 +100,11 @@ sound_magic_event_name2num(const char *name)
 
 
 /*
- * initialize
+ * Initialize the subsystem and its necessary bits
  */
 static void
 sound_init(void)
 {
-	int i;
-	FILE *fl;
-	char buffer[100];
-	char *home;
-	char *soundfile;
-
 	need_sound_init = 0;
 	if(sound_fd == 0) {
 		if(hostname[0] == '\0') {
@@ -137,6 +131,20 @@ sound_init(void)
 			 */
 		}
 	}
+}
+
+
+/*
+ * [Re]load the sounds
+ */
+static void
+sound_load_list(void)
+{
+	int i;
+	FILE *fl;
+	char *home;
+	char *soundfile;
+	char buffer[100];
 
 	/*
 	 * Destroy any old sounds
@@ -201,6 +209,7 @@ play_sound(int snd)
 	/* Init if we aren't */
 	if(need_sound_init) {
 		sound_init();
+		sound_load_list();
 	}
 
 	/* Skip if this isn't a sound we have set */
@@ -243,7 +252,7 @@ toggle_sound(void)
 void
 reread_sounds(void)
 {
-	sound_init();
+	sound_load_list();
 }
 
 /*
