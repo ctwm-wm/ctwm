@@ -131,6 +131,7 @@ typedef struct _TwmKeyword {
 #define kws_WorkSpaceFont               18
 #define kws_IconifyStyle                19
 #define kws_IconSize                    20
+#define kws_RplaySoundHost              21
 
 #define kwss_RandomPlacement            1
 
@@ -510,6 +511,7 @@ static TwmKeyword keytable[] = {
 	{ "right",                  JKEYWORD, J_RIGHT },
 	{ "righttitlebutton",       RIGHT_TITLEBUTTON, 0 },
 	{ "root",                   ROOT, 0 },
+	{ "rplaysoundhost",         SKEYWORD, kws_RplaySoundHost },
 	{ "rplaysounds",            RPLAY_SOUNDS, 0 },
 	{ "s",                      SHIFT, 0 },
 	{ "savecolor",              SAVECOLOR, 0},
@@ -1087,13 +1089,21 @@ do_string_keyword(int keyword, char *s)
 			}
 			return 1;
 		}
+		case kws_RplaySoundHost:
 		case kws_SoundHost:
 			if(Scr->FirstTime) {
+				/* Warning to be enabled in the future before removal */
+				if(0 && keyword == kws_SoundHost) {
+					twmrc_error_prefix();
+					fprintf(stderr, "SoundHost is deprecated, please "
+							"use RplaySoundHost instead.\n");
+				}
 #ifdef SOUNDS
 				set_sound_host(s);
 #else
 				twmrc_error_prefix();
-				fprintf(stderr, "Ignoring SoundHost; rplay not configured.\n");
+				fprintf(stderr, "Ignoring %sSoundHost; rplay not ronfigured.\n",
+						(keyword == kws_RplaySoundHost ? "Rplay": ""));
 #endif
 			}
 			return 1;
