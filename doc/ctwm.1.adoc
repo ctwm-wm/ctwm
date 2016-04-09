@@ -1606,8 +1606,9 @@ SortIconManager::
   the end.
 
 SoundHost::
-  The host on which sounds should be played.  Only available when ctwm is
-  built with `USE_SOUND`.  See the SOUNDS section.
+  The host on which sounds should be played.  Only meaningful when ctwm
+  is built with `USE_SOUND`; will give a warning otherwise.  See the
+  SOUNDS section.
 
 SqueezeTitle [{ `squeeze-list` }]::
   This variable indicates that ctwm should attempt to use the SHAPE
