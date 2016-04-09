@@ -99,6 +99,12 @@ remnants of special-case VMS support have been removed.
     that differ only by that prefix (e.g., you have workspaces "abc" and
     "ws:abc", and your Occupy {} declarations affects both.
 
+1. If ctwm is built with rplay support, sounds may now be configured with
+    the RplaySounds {} parameter in the config file in place of the
+    `~/.ctwm-sounds` file.  If so, ctwm will give a warning if
+    `.ctwm-sounds` exists; support for the external file will be removed
+    in a future version.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
