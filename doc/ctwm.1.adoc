@@ -1536,6 +1536,12 @@ ReverseCurrentWorkspace `string`::
   foreground colors in the small windows in the workspace map for the current
   workspace.
 
+RplaySoundHost `string`::
+  The host on which sounds should be played.  Only meaningful when ctwm
+  is built with `USE_SOUND`; will give a warning otherwise.  See the
+  SOUNDS section.  Added in %%NEXT%%; prior versions used the `SoundHost`
+  parameter instead.
+
 RplaySounds { `sounds-list` }::
   Define what sounds to play on various events through rplayd.  It
   contains entries of the form
@@ -1605,10 +1611,10 @@ SortIconManager::
   sorted alphabetically rather than by simply appending new windows to
   the end.
 
-SoundHost::
-  The host on which sounds should be played.  Only meaningful when ctwm
-  is built with `USE_SOUND`; will give a warning otherwise.  See the
-  SOUNDS section.
+SoundHost `string`::
+  Alias for `RplaySoundHost`, used in versions prior to %%NEXT%%.  Unless
+  you need backward compatibility with them, use `RplaySoundHost`
+  instead.
 
 SqueezeTitle [{ `squeeze-list` }]::
   This variable indicates that ctwm should attempt to use the SHAPE
