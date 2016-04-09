@@ -204,7 +204,7 @@ sound_load_list(void)
 	 */
 	if(fl != NULL && sound_from_config) {
 		fprintf(stderr, "RplaySounds set in ctwmrc, not reading "
-				"~/.ctwm-sounds.\n");
+		        "~/.ctwm-sounds.\n");
 		fclose(fl);
 		return;
 	}
@@ -233,7 +233,7 @@ sound_load_list(void)
 
 		if(set_sound_event_name(ename, sndfile) != 0) {
 			fprintf(stderr, "Error adding sound for %s; maybe event "
-					"name is invalid?\n", ename);
+			        "name is invalid?\n", ename);
 		}
 	}
 	fclose(fl);

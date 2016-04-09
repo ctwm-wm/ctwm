@@ -1096,14 +1096,14 @@ do_string_keyword(int keyword, char *s)
 				if(0 && keyword == kws_SoundHost) {
 					twmrc_error_prefix();
 					fprintf(stderr, "SoundHost is deprecated, please "
-							"use RplaySoundHost instead.\n");
+					        "use RplaySoundHost instead.\n");
 				}
 #ifdef SOUNDS
 				set_sound_host(s);
 #else
 				twmrc_error_prefix();
 				fprintf(stderr, "Ignoring %sSoundHost; rplay not ronfigured.\n",
-						(keyword == kws_RplaySoundHost ? "Rplay": ""));
+				        (keyword == kws_RplaySoundHost ? "Rplay" : ""));
 #endif
 			}
 			return 1;
