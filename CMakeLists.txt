@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 project(ctwm C)
 
-# Our version tuples
-set(ctwm_version_major "3")
-set(ctwm_version_minor "8")
-set(ctwm_version_patch "2")
-set(ctwm_version_addl  "-post")
+# Figure our version
+file(READ "VERSION" vf_str)
+string(STRIP ${vf_str} vf_str)
+set(version_file_re "([0-9]+)\\.([0-9]+)\\.([0-9]+)(.*)")
+string(REGEX REPLACE ${version_file_re} "\\1" ctwm_version_major ${vf_str})
+string(REGEX REPLACE ${version_file_re} "\\2" ctwm_version_minor ${vf_str})
+string(REGEX REPLACE ${version_file_re} "\\3" ctwm_version_patch ${vf_str})
+string(REGEX REPLACE ${version_file_re} "\\4" ctwm_version_addl  ${vf_str})
 set(ctwm_version_str   "${ctwm_version_major}.${ctwm_version_minor}.${ctwm_version_patch}${ctwm_version_addl}")
 
 # Modules we'll need
