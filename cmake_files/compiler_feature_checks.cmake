@@ -33,20 +33,20 @@ if(HAS_FEATURES_H)
 	check_symbol_exists(__USE_ISOC99 features.h SETS_USE_ISOC99)
 	if(SETS_USE_ISOC99)
 		# OK, it does.  Assume that's a good enough test that things are
-		# acting as we expect, and set the flag for our ctwm_config.h.
+		# acting as we expect.
 		set(USE_GLIBC_FEATURES_H ON)
-		message(STATUS "Enabling glibc features.h settings.")
+		set(GLIBC_FEATURE_FLAGS
+			"-D_POSIX_C_SOURCE=200809L"
+			"-D_XOPEN_SOURCE=700"
+			)
+		# asprintf() seems to need _GNU_SOURCE; no other way to expose it
+		# I can find.
+		check_symbol_exists(__GNU_LIBRARY__ features.h SETS_GNU_LIBRARY)
+		if(SETS_GNU_LIBRARY)
+			list(APPEND GLIBC_FEATURE_FLAGS "-D_GNU_SOURCE")
+		endif(SETS_GNU_LIBRARY)
+
+		message(STATUS "Enabling glibc feature macros: ${GLIBC_FEATURE_FLAGS}")
+		add_definitions(${GLIBC_FEATURE_FLAGS})
 	endif()
 endif(HAS_FEATURES_H)
-
-
-# With GNU libc, some things we use (like asprintf) need _GNU_SOURCE
-# defined.
-set(USE_GNU_SOURCE OFF)
-if(USE_GLIBC_FEATURES_H)
-	check_symbol_exists(__GNU_LIBRARY__ features.h SETS_GNU_LIBRARY)
-	if(SETS_GNU_LIBRARY)
-		set(USE_GNU_SOURCE ON)
-		message(STATUS "Defining _GNU_SOURCE")
-	endif(SETS_GNU_LIBRARY)
-endif(USE_GLIBC_FEATURES_H)

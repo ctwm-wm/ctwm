@@ -61,23 +61,3 @@
 #ifdef USE_SREGEX
 # define USE_SYS_REGEX
 #endif
-
-/* We need _GNU_SOURCE with glibc to get some bits */
-#cmakedefine USE_GNU_SOURCE
-#ifdef USE_GNU_SOURCE
-# define _GNU_SOURCE
-#endif
-
-/*
- * Support for glibc features.h.  When building with -std=c99, glibc
- * defines __STRICT_ANSI__ which blocks out a lot of POSIX defines unless
- * we ask for them more explicitly.
- */
-#cmakedefine USE_GLIBC_FEATURES_H
-#ifdef USE_GLIBC_FEATURES_H
-# undef  _POSIX_C_SOURCE
-# define _POSIX_C_SOURCE 200809L
-# undef  _XOPEN_SOURCE
-# define _XOPEN_SOURCE 700
-# include <features.h>
-#endif
