@@ -53,10 +53,10 @@
 #include "ctwm.h"
 #include "version.h"
 
-#define VERSION_MAJOR "3"
-#define VERSION_MINOR "8"
-#define VERSION_PATCH "2"
-#define VERSION_ADDL  "-post"
+#define VERSION_MAJOR "@ctwm_version_major@"
+#define VERSION_MINOR "@ctwm_version_minor@"
+#define VERSION_PATCH "@ctwm_version_patch@"
+#define VERSION_ADDL  "@ctwm_version_addl@"
 
 #define VERSION_ID VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
 #define VERSION_ID_FULL VERSION_ID VERSION_ADDL

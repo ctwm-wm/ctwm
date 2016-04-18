@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 2.6)
 project(ctwm C)
 
+# Our version tuples
+set(ctwm_version_major "3")
+set(ctwm_version_minor "8")
+set(ctwm_version_patch "2")
+set(ctwm_version_addl  "-post")
+set(ctwm_version_str   "${ctwm_version_major}.${ctwm_version_minor}.${ctwm_version_patch}${ctwm_version_addl}")
+
 # Modules we'll need
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
