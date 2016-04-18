@@ -38,8 +38,9 @@ configure_file(ctwm_config.h.in ctwm_config.h ESCAPE_QUOTES)
 
 
 # Fill in version info
-set(version_c_in ${CMAKE_CURRENT_SOURCE_DIR}/version.c.in)
-set(version_c    ${CMAKE_CURRENT_BINARY_DIR}/version.c)
+set(version_c_src ${CMAKE_CURRENT_SOURCE_DIR}/version.c.in)
+set(version_c_in  ${CMAKE_CURRENT_BINARY_DIR}/version.c.in)
+set(version_c     ${CMAKE_CURRENT_BINARY_DIR}/version.c)
 
 # If we've got a bzr checkout we can figure the revid from, fill it in.
 # Else just copy.
@@ -53,10 +54,12 @@ if(IS_BZR_CO AND HAS_BZR)
 else()
 	# Is there a prebuilt one to use?
 	if(EXISTS ${GENSRCDIR}/version.c)
-		# Yep, just use it
+		# Yep, just use it as the source for configure_file()
+		set(version_c_src ${GENSRCDIR}/version.c)
+
 		add_custom_command(OUTPUT ${version_c}
-			DEPENDS ${GENSRCDIR}/version.c
-			COMMAND cp ${GENSRCDIR}/version.c ${version_c}
+			DEPENDS ${version_c_in}
+			COMMAND cp ${version_c_in} ${version_c}
 			COMMENT "Using pregenerated version.c."
 		)
 	else()
@@ -68,6 +71,8 @@ else()
 		)
 	endif(EXISTS ${GENSRCDIR}/version.c)
 endif(IS_BZR_CO AND HAS_BZR)
+
+configure_file(${version_c_src} ${version_c_in} ESCAPE_QUOTES)
 
 # Setup a 'version' binary build tool too, for easily printing bits or
 # wholes of our version
