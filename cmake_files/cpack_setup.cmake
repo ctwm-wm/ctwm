@@ -7,6 +7,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A window manager for the X Window System.
 set(CPACK_PACKAGE_VENDOR "ctwm")
 set(CPACK_PACKAGE_CONTACT "ctwm@ctwm.org")
 set(CPACK_PACKAGE_RELOCATABLE OFF)
+set(CPACK_PACKAGE_VERSION ${ctwm_version_str})
 
 # Per-packaging-system stuff
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")

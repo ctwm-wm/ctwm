@@ -22,6 +22,4 @@ REVID=`echo "$REVID" | sed -e 's/\\\\/\\\\\\\\/g' -e 's/"/\\\\"/g' \
 	-e 's/\\\\/\\\\\\\\/g'`
 
 # That's all we need; just pass stdin through and sub
-while read line; do
-	echo "${line}" | sed -e "s/%%REVISION%%/\"${REVID}\"/"
-done
+sed -e "s/%%REVISION%%/\"${REVID}\"/"
