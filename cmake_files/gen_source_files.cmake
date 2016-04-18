@@ -67,3 +67,8 @@ else()
 		)
 	endif(EXISTS ${GENSRCDIR}/version.c)
 endif(IS_BZR_CO AND HAS_BZR)
+
+# Setup a 'version' binary build tool too, for easily printing bits or
+# wholes of our version
+add_executable(version ${version_c})
+set_target_properties(version PROPERTIES COMPILE_FLAGS "-DBUILD_VERSION_BIN")
