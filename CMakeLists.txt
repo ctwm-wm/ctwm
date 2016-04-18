@@ -149,6 +149,13 @@ include(ctwm_install)
 
 
 #
+# Pull in some CPack config for auto-building packages (like .deb and
+# .rpm)
+#
+include(cpack_setup)
+
+
+#
 # Output various information about what we've figured and what we're
 # doing for the builder's edification
 #
