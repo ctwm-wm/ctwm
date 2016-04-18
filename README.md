@@ -149,6 +149,15 @@ directly:
 
     funny prompt> make install
 
+### Packaging
+
+The CMake build system includes sufficient info for CPack to be used to
+build RPM (and presumably, though not tested, DEB) packages.  As a quick
+example of usage:
+
+    funny prompt> make
+    funny prompt> (cd build && cpack -G RPM)
+
 
 ## Dev and Support
 
