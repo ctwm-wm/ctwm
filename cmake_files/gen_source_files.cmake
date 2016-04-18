@@ -75,6 +75,10 @@ endif(IS_BZR_CO AND HAS_BZR)
 configure_file(${version_c_src} ${version_c_in} ESCAPE_QUOTES)
 
 # Setup a 'version' binary build tool too, for easily printing bits or
-# wholes of our version
-add_executable(version ${version_c})
-set_target_properties(version PROPERTIES COMPILE_FLAGS "-DBUILD_VERSION_BIN")
+# wholes of our version.
+#
+# Not currently being used, but left as an example of possibilities.  If
+# we need the version in the build process, we'll get it from the
+# ${ctwm_version_*} vars now.
+#add_executable(version ${version_c})
+#set_target_properties(version PROPERTIES COMPILE_FLAGS "-DBUILD_VERSION_BIN")
