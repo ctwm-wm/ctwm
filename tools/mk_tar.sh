@@ -6,14 +6,7 @@
 cd `dirname $0`/..
 
 # Figure out version
-tempfile=`mktemp .version.tmp.XXXXXX` || exit 1
-(
-	cat version.c.in | grep -v '^#include' | grep -v VCSRevision
-	echo '#include <stdio.h>'
-	echo 'int main(void) { printf("%s\n", VersionNumberFull); }'
-) | cc -o ${tempfile} -xc -
-version=`./$tempfile`
-rm -f $tempfile
+version=`head -n1 VERSION`
 
 # If it's a non-release, append date
 if echo -n $version | grep -q '[^0-9\.]'; then
