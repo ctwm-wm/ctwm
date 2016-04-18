@@ -3090,6 +3090,9 @@ Dave Sternlicht, MIT X Consortium; Dave Payne, Apple Computer;
 Claude Lecommandeur, Swiss Polytechnical Institute of Lausanne (lecom@sic.epfl.ch);
 Richard Levitte (richard@levitte.org).
 
+== VERSION
+This manual is build for ctwm @ctwm_version_str@.
+
 
 
 // vim:ft=asciidoc:expandtab:

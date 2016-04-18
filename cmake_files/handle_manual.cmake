@@ -77,7 +77,8 @@ set(MANHTML ${CMAKE_BINARY_DIR}/ctwm.1.html)
 # pretty freeform in the manual.
 # \-escaped @ needed for pre-3.1 CMake compat and warning avoidance;
 # x-ref `cmake --help-policy CMP0053`
-set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},")
+set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},"
+	-e "s,\@ctwm_version_str@,${ctwm_version_str},")
 
 # Pregen'd doc file paths we might have, in case we can't build them
 # ourselves.
