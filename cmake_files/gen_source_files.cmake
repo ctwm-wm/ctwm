@@ -44,9 +44,10 @@ set(version_c    ${CMAKE_CURRENT_BINARY_DIR}/version.c)
 # If we've got a bzr checkout we can figure the revid from, fill it in.
 # Else just copy.
 if(IS_BZR_CO AND HAS_BZR)
+	set(rw_ver_bzr "${CMAKE_SOURCE_DIR}/tools/rewrite_version_bzr.sh")
 	add_custom_command(OUTPUT ${version_c}
-		DEPENDS ${version_c_in} ${BZR_DIRSTATE_FILE}
-		COMMAND ${CMAKE_SOURCE_DIR}/tools/rewrite_version_bzr.sh < ${version_c_in} > ${version_c}
+		DEPENDS ${version_c_in} ${BZR_DIRSTATE_FILE} ${rw_ver_bzr}
+		COMMAND ${rw_ver_bzr} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current WT state."
 	)
 else()
