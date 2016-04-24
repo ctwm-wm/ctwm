@@ -4,7 +4,7 @@
 
 
 # First see if we can find the programs
-find_program(ASCIIDOCTOR asciidoctorx)
+find_program(ASCIIDOCTOR asciidoctor)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
 
