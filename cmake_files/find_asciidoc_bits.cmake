@@ -10,7 +10,7 @@ find_program(A2X a2x)
 
 
 # If we have asciidoctor, we need to figure out the version, as manpage
-# output is relatively new (unreleased, at the time of this writing).
+# output is relatively new.
 if(ASCIIDOCTOR)
 	execute_process(
 		COMMAND ${ASCIIDOCTOR} --version
