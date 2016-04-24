@@ -181,17 +181,9 @@ if(MANUAL_BUILD_HTML)
 	set(HAS_HTML 1)
 
 	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
-		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1.html with asciidoctor."
-		)
+		asciidoctor_mk_html(${MANHTML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	elseif(${MANUAL_BUILD_HTML} STREQUAL "asciidoc")
-		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1.html with asciidoc."
-		)
+		asciidoc_mk_html(${MANHTML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that HTML manual "
 			"building type!")
