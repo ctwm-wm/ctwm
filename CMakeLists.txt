@@ -146,7 +146,6 @@ target_link_libraries(ctwm ${CTWMLIBS})
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
 if(DO_CLIENT)
-	include_directories(client)
 	add_subdirectory(client)
 endif(DO_CLIENT)
 

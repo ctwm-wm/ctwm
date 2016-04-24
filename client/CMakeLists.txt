@@ -1,3 +1,5 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # Build the libctwm_client library
 add_library(ctwmc SHARED libctwm.c)
 
