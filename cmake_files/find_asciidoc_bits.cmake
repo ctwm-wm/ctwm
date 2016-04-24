@@ -131,3 +131,75 @@ function(asciidoctor_mk_manpage MANFILE ADFILE)
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(asciidoctor_mk_manpage)
+
+
+# Build a manpage via asciidoc
+function(asciidoc_mk_manpage MANFILE ADFILE)
+	# Guard
+	if(NOT A2X OR NOT ASCIIDOC_CAN_MAN)
+		message(FATAL_ERROR "asciidoc can't do man")
+	endif()
+
+	# Minimal seatbelt
+	set(my_usage "asciidoc_mk_manpage(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
+	cmake_parse_arguments(
+		_ARGS
+		""
+		"COMMENT"
+		"DEPENDS"
+		${ARGN}
+	)
+	if(_ARGS_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR ${my_usage})
+	endif()
+
+	# Always depend on the input file, maybe on more
+	set(dependancies ${ADFILE})
+	if(_ARGS_DEPENDS)
+		list(APPEND dependancies ${_ARGS_DEPENDS})
+	endif()
+
+	# Come up with some comment or other
+	if(NOT _ARGS_COMMENT)
+		get_filename_component(basename ${MANFILE} NAME)
+		set(_ARGS_COMMENT "Generating ${basename} with a2x")
+	endif()
+
+	# a2x gives us very little control over input/output files, so we
+	# have to do some vaguely stupid dances.  In theory, -D works for the
+	# manpage output, but it's doc'd not to and will warn, so don't even
+	# try.  The result is that it always puts the outfile file next to
+	# the input.  So we make a temporary dir (with a hopefully unique
+	# name) and do all our stuff in there.
+	get_filename_component(basedir ${ADFILE} DIRECTORY)
+	while(1)
+		string(RANDOM rndstr)
+		set(a2x_tmpdir "${basedir}/a2x.${rndstr}")
+		if(NOT IS_DIRECTORY ${a2x_tmpdir})
+			break()
+		endif()
+	endwhile()
+	file(MAKE_DIRECTORY ${a2x_tmpdir})
+
+	# This had better already be named "someprog.somesection.adoc",
+	# because a2x is going to magically figure the program and section
+	# name from the contents and make that output file.
+	get_filename_component(inbasename ${ADFILE} NAME)
+	string(REGEX REPLACE "(.*)\\.adoc$" "\\1" outbasename ${inbasename})
+	if(NOT outbasename)
+		message(FATAL_ERROR "Can't figure output for ${inbasename}")
+	endif()
+
+	# In/out tmpfile names
+	set(a2x_intmp  "${a2x_tmpdir}/${inbasename}")
+	set(a2x_outtmp "${a2x_tmpdir}/${outbasename}")
+
+	add_custom_command(OUTPUT ${MANFILE}
+		DEPENDS ${dependancies}
+		COMMAND cp ${ADFILE} ${a2x_intmp}
+		COMMAND ${A2X} --doctype manpage --format manpage ${a2x_intmp}
+		COMMAND mv ${a2x_outtmp} ${MANFILE}
+		COMMAND rm ${a2x_intmp}
+		COMMENT ${_ARGS_COMMENT}
+	)
+endfunction(asciidoc_mk_manpage)

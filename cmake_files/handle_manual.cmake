@@ -124,17 +124,9 @@ if(MANUAL_BUILD_MANPAGE)
 			DEPENDS mk_adoc_tmpsrc
 		)
 	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
-		# We have to jump through a few hoops here, because a2x gives us no
-		# control whatsoever over where the output file goes or what it's
-		# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MAN_TMPDIR,
-		# the build output will also be there.  Just move it manually
-		# afterward.
-		set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
-		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
-			COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
-			COMMENT "Generating ctwm.1 with a2x."
+		# a2x has to jump through some stupid hoops
+		asciidoc_mk_manpage(${MANPAGE} ${ADOC_TMPSRC}
+			DEPENDS mk_adoc_tmpsrc
 		)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that manpage "
