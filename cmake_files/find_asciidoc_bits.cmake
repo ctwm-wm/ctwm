@@ -76,4 +76,9 @@ if(ASCIIDOC)
 		set(ASCIIDOC_CAN_MAN  1)
 		set(ASCIIDOC_CAN_HTML 1)
 	endif()
+
+	# This is an example of 'horked'...
+	if(NOT A2X)
+		set(ASCIIDOC_CAN_MAN 0)
+	endif()
 endif(ASCIIDOC)
