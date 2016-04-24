@@ -4,7 +4,7 @@
 
 
 # First see if we can find the programs
-find_program(ASCIIDOCTOR asciidoctor)
+find_program(ASCIIDOCTOR asciidoctorx)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
 
@@ -133,15 +133,15 @@ function(asciidoctor_mk_manpage OUTFILE ADFILE)
 endfunction(asciidoctor_mk_manpage)
 
 
-# Build a manpage via asciidoc
-function(asciidoc_mk_manpage OUTFILE ADFILE)
+# Build a manpage via asciidoc (technically, a2x)
+function(a2x_mk_manpage OUTFILE ADFILE)
 	# Guard
 	if(NOT A2X OR NOT ASCIIDOC_CAN_MAN)
-		message(FATAL_ERROR "asciidoc can't do man")
+		message(FATAL_ERROR "asciidoc/a2x can't do man")
 	endif()
 
 	# Minimal seatbelt
-	set(my_usage "asciidoc_mk_manpage(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
+	set(my_usage "a2x_mk_manpage(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
 	cmake_parse_arguments(
 		_ARGS
 		""
@@ -202,7 +202,7 @@ function(asciidoc_mk_manpage OUTFILE ADFILE)
 		COMMAND rm ${a2x_intmp}
 		COMMENT ${_ARGS_COMMENT}
 	)
-endfunction(asciidoc_mk_manpage)
+endfunction(a2x_mk_manpage)
 
 
 
