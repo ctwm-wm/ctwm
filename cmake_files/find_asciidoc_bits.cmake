@@ -91,16 +91,10 @@ endif(ASCIIDOC)
 # transformations.
 #
 
-
-# Build a manpage via asciidoctor
-function(asciidoctor_mk_manpage OUTFILE ADFILE)
-	# Guard
-	if(NOT ASCIIDOCTOR_CAN_MAN)
-		message(FATAL_ERROR "asciidoctor can't do man")
-	endif()
-
+# Lot of boilerplate in all of them
+macro(_ad_mk_boilerplate PROG OUT)
 	# Minimal seatbelt
-	set(my_usage "asciidoctor_mk_manpage(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
+	set(my_usage "${PROG}_mk_${OUT}(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
 	cmake_parse_arguments(
 		_ARGS
 		""
@@ -121,8 +115,19 @@ function(asciidoctor_mk_manpage OUTFILE ADFILE)
 	# Come up with some comment or other
 	if(NOT _ARGS_COMMENT)
 		get_filename_component(basename ${OUTFILE} NAME)
-		set(_ARGS_COMMENT "Generating ${basename} with asciidoctor")
+		set(_ARGS_COMMENT "Generating ${basename} with ${PROG}")
 	endif()
+endmacro(_ad_mk_boilerplate)
+
+
+# Build a manpage via asciidoctor
+function(asciidoctor_mk_manpage OUTFILE ADFILE)
+	# Guard
+	if(NOT ASCIIDOCTOR_CAN_MAN)
+		message(FATAL_ERROR "asciidoctor can't do man")
+	endif()
+
+	_ad_mk_boilerplate(asciidoctor manpage ${ARGN})
 
 	# Setup the rule
 	add_custom_command(OUTPUT ${OUTFILE}
@@ -140,30 +145,7 @@ function(a2x_mk_manpage OUTFILE ADFILE)
 		message(FATAL_ERROR "asciidoc/a2x can't do man")
 	endif()
 
-	# Minimal seatbelt
-	set(my_usage "a2x_mk_manpage(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
-	cmake_parse_arguments(
-		_ARGS
-		""
-		"COMMENT"
-		"DEPENDS"
-		${ARGN}
-	)
-	if(_ARGS_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR ${my_usage})
-	endif()
-
-	# Always depend on the input file, maybe on more
-	set(dependancies ${ADFILE})
-	if(_ARGS_DEPENDS)
-		list(APPEND dependancies ${_ARGS_DEPENDS})
-	endif()
-
-	# Come up with some comment or other
-	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${OUTFILE} NAME)
-		set(_ARGS_COMMENT "Generating ${basename} with a2x")
-	endif()
+	_ad_mk_boilerplate(a2x manpage ${ARGN})
 
 	# a2x gives us very little control over input/output files, so we
 	# have to do some vaguely stupid dances.  In theory, -D works for the
@@ -213,30 +195,7 @@ function(asciidoctor_mk_html OUTFILE ADFILE)
 		message(FATAL_ERROR "asciidoctor can't do html")
 	endif()
 
-	# Minimal seatbelt
-	set(my_usage "asciidoctor_mk_html(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
-	cmake_parse_arguments(
-		_ARGS
-		""
-		"COMMENT"
-		"DEPENDS"
-		${ARGN}
-	)
-	if(_ARGS_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR ${my_usage})
-	endif()
-
-	# Always depend on the input file, maybe on more
-	set(dependancies ${ADFILE})
-	if(_ARGS_DEPENDS)
-		list(APPEND dependancies ${_ARGS_DEPENDS})
-	endif()
-
-	# Come up with some comment or other
-	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${OUTFILE} NAME)
-		set(_ARGS_COMMENT "Generating ${basename} with asciidoctor")
-	endif()
+	_ad_mk_boilerplate(asciidoctor html ${ARGN})
 
 	# Setup the rule
 	add_custom_command(OUTPUT ${OUTFILE}
@@ -254,30 +213,7 @@ function(asciidoc_mk_html OUTFILE ADFILE)
 		message(FATAL_ERROR "asciidoc can't do html")
 	endif()
 
-	# Minimal seatbelt
-	set(my_usage "asciidoc_mk_html(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
-	cmake_parse_arguments(
-		_ARGS
-		""
-		"COMMENT"
-		"DEPENDS"
-		${ARGN}
-	)
-	if(_ARGS_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR ${my_usage})
-	endif()
-
-	# Always depend on the input file, maybe on more
-	set(dependancies ${ADFILE})
-	if(_ARGS_DEPENDS)
-		list(APPEND dependancies ${_ARGS_DEPENDS})
-	endif()
-
-	# Come up with some comment or other
-	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${OUTFILE} NAME)
-		set(_ARGS_COMMENT "Generating ${basename} with asciidoc")
-	endif()
+	_ad_mk_boilerplate(asciidoc html ${ARGN})
 
 	# Setup the rule
 	add_custom_command(OUTPUT ${OUTFILE}
