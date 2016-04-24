@@ -80,8 +80,6 @@
 #define TWM_KEYS        "TwmKeys"       /* for f.menu "TwmKeys"    */
 #define TWM_VISIBLE     "TwmVisible"    /* for f.menu "TwmVisible" */
 
-#define MAX_FILE_SIZE 4096      /* max chars to read from file for cut */
-
 struct MenuItem {
 	struct MenuItem *next;      /* next menu item */
 	struct MenuItem *prev;      /* prev menu item */
