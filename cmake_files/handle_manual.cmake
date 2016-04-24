@@ -120,14 +120,10 @@ if(MANUAL_BUILD_MANPAGE)
 	if(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoctor")
 		# We don't need the hoops for a2x here, since asciidoctor lets us
 		# specify the output directly.
-		asciidoctor_mk_manpage(${MANPAGE} ${ADOC_TMPSRC}
-			DEPENDS mk_adoc_tmpsrc
-		)
+		asciidoctor_mk_manpage(${MANPAGE} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
 		# a2x has to jump through some stupid hoops
-		asciidoc_mk_manpage(${MANPAGE} ${ADOC_TMPSRC}
-			DEPENDS mk_adoc_tmpsrc
-		)
+		asciidoc_mk_manpage(${MANPAGE} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that manpage "
 			"building type!")
