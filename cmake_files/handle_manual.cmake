@@ -3,51 +3,8 @@
 #
 
 
-# It's written in asciidoc, so first see if we can find tools to build
-# it.  If we can, we'll use it to [re]build the manual.  If not, we may
-# have pregen'd versions we can use.  If neither, well, the user's in
-# trouble...
-find_program(ASCIIDOCTOR asciidoctor)
-find_program(ASCIIDOC asciidoc)
-find_program(A2X a2x)
-
-
-# If we have asciidoctor, we need to figure out the version, as manpage
-# output is relatively new (unreleased, at the time of this writing).
-if(ASCIIDOCTOR)
-	execute_process(
-		COMMAND asciidoctor --version
-		RESULT_VARIABLE _adoctor_result
-		OUTPUT_VARIABLE _adoctor_verout
-		ERROR_QUIET
-	)
-	if(NOT ${_adoctor_result} EQUAL "0")
-		# Err...
-		message(WARNING "Unexpected result trying asciidoctor --version.")
-		set(_adoctor_verout "Asciidoctor 0.0.0 FAKE")
-	endif()
-	unset(_adoctor_result)
-
-	# Break out the version.
-	set(_adoctor_veregex "Asciidoctor ([0-9]+\\.[0-9]+\\.[0-9]+).*")
-	string(REGEX REPLACE ${_adoctor_veregex} "\\1"
-		ASCIIDOCTOR_VERSION ${_adoctor_verout})
-	unset(_adoctor_verout)
-	unset(_adoctor_veregex)
-	#message(STATUS "Found asciidoctor version ${ASCIIDOCTOR_VERSION}")
-
-	# 1.5.3 is the first release that can write manpages natively.  This
-	# means 1.5.3 dev versions after a certain point can as well; assume
-	# anybody running a 1.5.3 dev is keeping up well enough that it can
-	# DTRT too.  We assume any version can do HTML.
-	set(ASCIIDOCTOR_CAN_MAN  0)
-	set(ASCIIDOCTOR_CAN_HTML 1)
-	if(${ASCIIDOCTOR_VERSION} VERSION_GREATER "1.5.2")
-		set(ASCIIDOCTOR_CAN_MAN 1)
-	elseif(${ASCIIDOCTOR_VERSION} VERSION_LESS "0.0.1")
-		set(ASCIIDOCTOR_CAN_HTML 0)
-	endif()
-endif(ASCIIDOCTOR)
+# Lookup the asciidoc[tor] bits
+include(find_asciidoc_bits)
 
 
 
@@ -101,8 +58,11 @@ set(MANUAL_BUILD_HTML)
 if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_HTML)
 	set(MANUAL_BUILD_HTML asciidoctor)
 elseif(ASCIIDOC)
-	#set(MANUAL_BUILD_HTML asciidoc)
-	message(STATUS "Not enabling HTML manual build; asciidoc is slow.")
+	if(ENABLE_ASCIIDOC_HTML)
+		set(MANUAL_BUILD_HTML asciidoc)
+	else()
+		message(STATUS "Not enabling HTML manual build; asciidoc is slow.")
+	endif()
 endif()
 
 # For the manpage output, asciidoctor has to be of a certain version.  If
@@ -112,7 +72,7 @@ endif()
 set(MANUAL_BUILD_MANPAGE)
 if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE asciidoctor)
-elseif(A2X)
+elseif(A2X AND ASCIIDOC_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE a2x)
 endif()
 
@@ -160,24 +120,10 @@ if(MANUAL_BUILD_MANPAGE)
 	if(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoctor")
 		# We don't need the hoops for a2x here, since asciidoctor lets us
 		# specify the output directly.
-		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANPAGE} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1 with asciidoctor."
-		)
+		asciidoctor_mk_manpage(${MANPAGE} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
-		# We have to jump through a few hoops here, because a2x gives us no
-		# control whatsoever over where the output file goes or what it's
-		# named.  Thanks, guys.  So since $ADOC_TMPSRC is in $MAN_TMPDIR,
-		# the build output will also be there.  Just move it manually
-		# afterward.
-		set(MANPAGE_TMP ${MAN_TMPDIR}/ctwm.1)
-		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${A2X} --doctype manpage --format manpage ${ADOC_TMPSRC}
-			COMMAND mv ${MANPAGE_TMP} ${MANPAGE}
-			COMMENT "Generating ctwm.1 with a2x."
-		)
+		# a2x has to jump through some stupid hoops
+		a2x_mk_manpage(${MANPAGE} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that manpage "
 			"building type!")
@@ -235,17 +181,9 @@ if(MANUAL_BUILD_HTML)
 	set(HAS_HTML 1)
 
 	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
-		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1.html with asciidoctor."
-		)
+		asciidoctor_mk_html(${MANHTML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	elseif(${MANUAL_BUILD_HTML} STREQUAL "asciidoc")
-		add_custom_command(OUTPUT ${MANHTML}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${ASCIIDOC} -atoc -anumbered -o ${MANHTML} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1.html with asciidoc."
-		)
+		asciidoc_mk_html(${MANHTML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that HTML manual "
 			"building type!")
