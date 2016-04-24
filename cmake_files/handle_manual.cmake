@@ -120,10 +120,8 @@ if(MANUAL_BUILD_MANPAGE)
 	if(${MANUAL_BUILD_MANPAGE} STREQUAL "asciidoctor")
 		# We don't need the hoops for a2x here, since asciidoctor lets us
 		# specify the output directly.
-		add_custom_command(OUTPUT ${MANPAGE}
-			DEPENDS mk_adoc_tmpsrc ${ADOC_TMPSRC}
-			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANPAGE} ${ADOC_TMPSRC}
-			COMMENT "Generating ctwm.1 with asciidoctor."
+		asciidoctor_mk_manpage(${MANPAGE} ${ADOC_TMPSRC}
+			DEPENDS mk_adoc_tmpsrc
 		)
 	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
 		# We have to jump through a few hoops here, because a2x gives us no

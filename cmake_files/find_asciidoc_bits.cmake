@@ -44,6 +44,47 @@ if(ASCIIDOCTOR)
 	elseif(${ASCIIDOCTOR_VERSION} VERSION_LESS "0.0.1")
 		set(ASCIIDOCTOR_CAN_HTML 0)
 	endif()
+
+
+	# How we build a manpage
+	function(asciidoctor_mk_manpage MANFILE ADFILE)
+		# Guard
+		if(NOT ASCIIDOCTOR_CAN_MAN)
+			message(FATAL_ERROR "asciidoctor can't do man")
+		endif()
+
+		# Minimal seatbelt
+		set(my_usage "asciidoctor_mk_manpage(<output> <input> [DEPENDS <deps>] [COMMENT <comment>])")
+		cmake_parse_arguments(
+			_ARGS
+			""
+			"COMMENT"
+			"DEPENDS"
+			${ARGN}
+		)
+		if(_ARGS_UNPARSED_ARGUMENTS)
+			message(FATAL_ERROR ${my_usage})
+		endif()
+
+		# Always depend on the input file, maybe on more
+		set(dependancies ${ADFILE})
+		if(_ARGS_DEPENDS)
+			list(APPEND dependancies ${_ARGS_DEPENDS})
+		endif()
+
+		# Come up with some comment or other
+		if(NOT _ARGS_COMMENT)
+			get_filename_component(basename ${MANFILE} NAME)
+			set(_ARGS_COMMENT "Generating ${basename} with asciidoctor")
+		endif()
+
+		# Setup the rule
+		add_custom_command(OUTPUT ${MANFILE}
+			DEPENDS ${dependancies}
+			COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANFILE} ${ADFILE}
+			COMMENT ${_ARGS_COMMENT}
+		)
+	endfunction(asciidoctor_mk_manpage)
 endif(ASCIIDOCTOR)
 
 
