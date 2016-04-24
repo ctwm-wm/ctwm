@@ -13,7 +13,7 @@ find_program(A2X a2x)
 # output is relatively new (unreleased, at the time of this writing).
 if(ASCIIDOCTOR)
 	execute_process(
-		COMMAND asciidoctor --version
+		COMMAND ${ASCIIDOCTOR} --version
 		RESULT_VARIABLE _adoctor_result
 		OUTPUT_VARIABLE _adoctor_verout
 		ERROR_QUIET
@@ -31,7 +31,7 @@ if(ASCIIDOCTOR)
 		ASCIIDOCTOR_VERSION ${_adoctor_verout})
 	unset(_adoctor_verout)
 	unset(_adoctor_veregex)
-	#message(STATUS "Found asciidoctor version ${ASCIIDOCTOR_VERSION}")
+	message(STATUS "Found asciidoctor (${ASCIIDOCTOR}) version ${ASCIIDOCTOR_VERSION}")
 
 	# 1.5.3 is the first release that can write manpages natively.  This
 	# means 1.5.3 dev versions after a certain point can as well; assume
@@ -51,7 +51,7 @@ endif(ASCIIDOCTOR)
 # cosmetics anyway
 if(ASCIIDOC)
 	execute_process(
-		COMMAND asciidoc --version
+		COMMAND ${ASCIIDOC} --version
 		RESULT_VARIABLE _adoc_result
 		OUTPUT_VARIABLE _adoc_verout
 		ERROR_QUIET
@@ -69,7 +69,7 @@ if(ASCIIDOC)
 		ASCIIDOC_VERSION ${_adoc_verout})
 	unset(_adoc_verout)
 	unset(_adoc_veregex)
-	#message(STATUS "Found asciidoc version ${ASCIIDOC_VERSION}")
+	message(STATUS "Found asciidoc (${ASCIIDOC}) version ${ASCIIDOC_VERSION}")
 
 	# Can always do both, unless horked
 	if(${ASCIIDOC_VERSION} VERSION_GREATER "0.0.0")
