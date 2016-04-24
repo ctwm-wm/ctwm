@@ -93,7 +93,7 @@ endif(ASCIIDOC)
 
 
 # Build a manpage via asciidoctor
-function(asciidoctor_mk_manpage MANFILE ADFILE)
+function(asciidoctor_mk_manpage OUTFILE ADFILE)
 	# Guard
 	if(NOT ASCIIDOCTOR_CAN_MAN)
 		message(FATAL_ERROR "asciidoctor can't do man")
@@ -120,21 +120,21 @@ function(asciidoctor_mk_manpage MANFILE ADFILE)
 
 	# Come up with some comment or other
 	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${MANFILE} NAME)
+		get_filename_component(basename ${OUTFILE} NAME)
 		set(_ARGS_COMMENT "Generating ${basename} with asciidoctor")
 	endif()
 
 	# Setup the rule
-	add_custom_command(OUTPUT ${MANFILE}
+	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOCTOR} -b manpage -o ${MANFILE} ${ADFILE}
+		COMMAND ${ASCIIDOCTOR} -b manpage -o ${OUTFILE} ${ADFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(asciidoctor_mk_manpage)
 
 
 # Build a manpage via asciidoc
-function(asciidoc_mk_manpage MANFILE ADFILE)
+function(asciidoc_mk_manpage OUTFILE ADFILE)
 	# Guard
 	if(NOT A2X OR NOT ASCIIDOC_CAN_MAN)
 		message(FATAL_ERROR "asciidoc can't do man")
@@ -161,7 +161,7 @@ function(asciidoc_mk_manpage MANFILE ADFILE)
 
 	# Come up with some comment or other
 	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${MANFILE} NAME)
+		get_filename_component(basename ${OUTFILE} NAME)
 		set(_ARGS_COMMENT "Generating ${basename} with a2x")
 	endif()
 
@@ -194,11 +194,11 @@ function(asciidoc_mk_manpage MANFILE ADFILE)
 	set(a2x_intmp  "${a2x_tmpdir}/${inbasename}")
 	set(a2x_outtmp "${a2x_tmpdir}/${outbasename}")
 
-	add_custom_command(OUTPUT ${MANFILE}
+	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
 		COMMAND cp ${ADFILE} ${a2x_intmp}
 		COMMAND ${A2X} --doctype manpage --format manpage ${a2x_intmp}
-		COMMAND mv ${a2x_outtmp} ${MANFILE}
+		COMMAND mv ${a2x_outtmp} ${OUTFILE}
 		COMMAND rm ${a2x_intmp}
 		COMMENT ${_ARGS_COMMENT}
 	)
@@ -207,7 +207,7 @@ endfunction(asciidoc_mk_manpage)
 
 
 # Build HTML output with asciidoctor
-function(asciidoctor_mk_html HTMLFILE ADFILE)
+function(asciidoctor_mk_html OUTFILE ADFILE)
 	# Guard
 	if(NOT ASCIIDOCTOR_CAN_HTML)
 		message(FATAL_ERROR "asciidoctor can't do html")
@@ -234,21 +234,21 @@ function(asciidoctor_mk_html HTMLFILE ADFILE)
 
 	# Come up with some comment or other
 	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${HTMLFILE} NAME)
+		get_filename_component(basename ${OUTFILE} NAME)
 		set(_ARGS_COMMENT "Generating ${basename} with asciidoctor")
 	endif()
 
 	# Setup the rule
-	add_custom_command(OUTPUT ${HTMLFILE}
+	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${HTMLFILE} ${ADFILE}
+		COMMAND ${ASCIIDOCTOR} -atoc -anumbered -o ${OUTFILE} ${ADFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(asciidoctor_mk_html)
 
 
 # And the asciidoc HTML
-function(asciidoc_mk_html HTMLFILE ADFILE)
+function(asciidoc_mk_html OUTFILE ADFILE)
 	# Guard
 	if(NOT ASCIIDOC_CAN_HTML)
 		message(FATAL_ERROR "asciidoc can't do html")
@@ -275,14 +275,14 @@ function(asciidoc_mk_html HTMLFILE ADFILE)
 
 	# Come up with some comment or other
 	if(NOT _ARGS_COMMENT)
-		get_filename_component(basename ${HTMLFILE} NAME)
+		get_filename_component(basename ${OUTFILE} NAME)
 		set(_ARGS_COMMENT "Generating ${basename} with asciidoc")
 	endif()
 
 	# Setup the rule
-	add_custom_command(OUTPUT ${HTMLFILE}
+	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOC} -atoc -anumbered -o ${HTMLFILE} ${ADFILE}
+		COMMAND ${ASCIIDOC} -atoc -anumbered -o ${OUTFILE} ${ADFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(asciidoc_mk_html)
