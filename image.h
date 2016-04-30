@@ -4,7 +4,11 @@
 #ifndef _IMAGE_H
 #define _IMAGE_H
 
-extern int reportfilenotfound;
+#include <stdbool.h>
+
+#include "types.h"
+
+extern bool reportfilenotfound;
 extern Colormap AlternateCmap;
 
 #endif /* _IMAGE_H */

@@ -81,6 +81,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
+#include <stdbool.h>
 
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
@@ -144,7 +145,7 @@ static void swapshort(char *bp, unsigned n);
 static void swaplong(char *bp, unsigned n);
 
 /* XXX move to an 'image.c' when we grow it */
-int reportfilenotfound = 0;
+bool reportfilenotfound = false;
 Colormap AlternateCmap = None;
 
 int  HotX, HotY;
