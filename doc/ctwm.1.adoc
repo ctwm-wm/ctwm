@@ -1185,6 +1185,23 @@ MoveOffResistance `pixels`::
   `f.forcemove` still allows you to totally ignore `DontMoveOff`.
   A negative value puts you back into ``never moveoff'' mode (it's the default).
 
+MWMIgnore::
+  Sets Motif window manager hints ctwm will ignore.  The following
+  example shows all the valid options:
++
+------
+MWMIgnore
+{
+    # en/disable window borders
+    "DECOR_BORDER"
+
+    # en/disable titlebars
+    "DECOR_TITLE"
+}
+------
++
+First appeared in %%NEXT%%.
+
 NoBackingStore::
   This variable indicates that ctwm's menus should not request backing
   store to minimize repainting of menus.  This is typically

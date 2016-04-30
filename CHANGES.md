@@ -107,6 +107,9 @@ remnants of special-case VMS support have been removed.
     by RplaySoundHost; the old name is still accepted, but will be
     removed in a future version.
 
+1. Added MWMIgnore {} config option to allow selectively disabling
+    honoring of some Motif WM hints.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
