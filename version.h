@@ -70,6 +70,7 @@ extern const char *VersionNumber_major;
 extern const char *VersionNumber_minor;
 extern const char *VersionNumber_patch;
 extern const char *VersionNumber_addl;
+extern const char *VCSType;
 extern const char *VCSRevision;
 
 #endif /* _VERSION_ */
