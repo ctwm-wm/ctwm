@@ -6,9 +6,9 @@ html: ${HTML}
 man: ${BASE}
 
 all: html man
-.if defined(SET_VERSION)
+
+all_set_version: all
 	sed -i '' -e "s/@ctwm_version_str@/`head -1 ../VERSION`/" ${HTML} ${BASE}
-.endif
 
 clean:
 	rm -f ${BASE} ${HTML}
