@@ -347,8 +347,8 @@ static void
 print_version(void)
 {
 	printf("ctwm %s\n", VersionNumberFull);
-	if(VCSRevision) {
-		printf(" (bzr:%s)\n", VCSRevision);
+	if(VCSType && VCSRevision) {
+		printf(" (%s:%s)\n", VCSType, VCSRevision);
 	}
 }
 

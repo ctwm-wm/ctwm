@@ -68,6 +68,7 @@ const char *VersionNumber_major = VERSION_MAJOR;
 const char *VersionNumber_minor = VERSION_MINOR;
 const char *VersionNumber_patch = VERSION_PATCH;
 const char *VersionNumber_addl  = VERSION_ADDL;
+const char *VCSType     = %%VCSTYPE%%;
 const char *VCSRevision = %%REVISION%%;
 
 #ifdef BUILD_VERSION_BIN

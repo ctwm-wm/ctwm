@@ -51,6 +51,13 @@ if(IS_BZR_CO AND HAS_BZR)
 		COMMAND ${rw_ver_bzr} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current WT state."
 	)
+elseif(IS_GIT_CO AND HAS_GIT)
+	set(rw_ver_git "${CMAKE_SOURCE_DIR}/tools/rewrite_version_git.sh")
+	add_custom_command(OUTPUT ${version_c}
+		DEPENDS ${version_c_in} ${BZR_DIRSTATE_FILE} ${rw_ver_bzr}
+		COMMAND ${rw_ver_git} < ${version_c_in} > ${version_c}
+		COMMENT "Generating version.c from current git state."
+	)
 else()
 	# Is there a prebuilt one to use?
 	if(EXISTS ${GENSRCDIR}/version.c)
@@ -66,7 +73,8 @@ else()
 		# Nope
 		add_custom_command(OUTPUT ${version_c}
 			DEPENDS ${version_c_in}
-			COMMAND sed -e 's/%%REVISION%%/NULL/' < ${version_c_in} > ${version_c}
+			COMMAND sed -e 's/%%VCSTYPE%%/NULL/' -e 's/%%REVISION%%/NULL/'
+				< ${version_c_in} > ${version_c}
 			COMMENT "Using null version.c."
 		)
 	endif(EXISTS ${GENSRCDIR}/version.c)
