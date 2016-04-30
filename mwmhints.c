@@ -120,8 +120,9 @@ mwm_sets_decorations(MotifWmHints *hints)
 int
 mwm_has_border(MotifWmHints *hints)
 {
-	if(!mwm_sets_decorations(hints))
+	if(!mwm_sets_decorations(hints)) {
 		return -1;
+	}
 	if((hints->decorations & MWM_DECOR_BORDER) == 0) {
 		return 0;
 	}
