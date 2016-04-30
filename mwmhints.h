@@ -1,6 +1,8 @@
 #ifndef _MWMHINTS_
 #define _MWMHINTS_
 
+#include <stdbool.h>
+
 #include "types.h"
 
 /*
@@ -63,6 +65,6 @@ typedef struct {
  * any later version.
  */
 
-extern int GetMWMHints(Window w, MotifWmHints *mwmHints);
+bool GetMWMHints(Window w, MotifWmHints *mwmHints);
 
 #endif /* include guard */

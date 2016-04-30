@@ -42,7 +42,8 @@
 #include "ctwm_atoms.h"
 #include "mwmhints.h"
 
-int GetMWMHints(Window w, MotifWmHints *mwmHints)
+bool
+GetMWMHints(Window w, MotifWmHints *mwmHints)
 {
 	int success;
 	Atom actual_type;
@@ -94,10 +95,10 @@ int GetMWMHints(Window w, MotifWmHints *mwmHints)
 			}
 		}
 
-		success = True;
+		success = true;
 	}
 	else {
-		success = False;
+		success = false;
 	}
 
 	if(prop != NULL) {
