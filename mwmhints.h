@@ -67,8 +67,8 @@ typedef struct {
 
 bool GetMWMHints(Window w, MotifWmHints *mwmHints);
 
-bool mwm_sets_decorations(MotifWmHints *hints);
-bool mwm_has_border(MotifWmHints *hints);
+int mwm_has_border(MotifWmHints *hints);
+bool mwm_sets_title(MotifWmHints *hints);
 bool mwm_has_title(MotifWmHints *hints);
 
 #endif /* include guard */

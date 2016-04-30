@@ -110,20 +110,28 @@ GetMWMHints(Window w, MotifWmHints *mwmHints)
 
 
 /* Simple test wrappers */
-bool
+static bool
 mwm_sets_decorations(MotifWmHints *hints)
 {
 	return (hints->flags & MWM_HINTS_DECORATIONS) ? true : false;
 }
 
-bool
+/* 1 = yes   0 = no   -1 = no opinion */
+int
 mwm_has_border(MotifWmHints *hints)
 {
-	if(mwm_sets_decorations(hints)
-	                && ((hints->decorations & MWM_DECOR_BORDER) == 0)) {
-		return false;
+	if(!mwm_sets_decorations(hints))
+		return -1;
+	if((hints->decorations & MWM_DECOR_BORDER) == 0) {
+		return 0;
 	}
-	return true;
+	return 1;
+}
+
+bool
+mwm_sets_title(MotifWmHints *hints)
+{
+	return mwm_sets_decorations(hints);
 }
 
 bool
