@@ -101,6 +101,8 @@ clargs_parse(int argc, char *argv[])
 		/* Random session-related bits */
 		{ "clientId",  required_argument, NULL, 0 },
 		{ "restore",   required_argument, NULL, 0 },
+
+		{ NULL,        0,                 NULL, 0 },
 	};
 
 
