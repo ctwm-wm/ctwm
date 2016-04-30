@@ -165,6 +165,13 @@ include(cpack_setup)
 
 
 #
+# Some targets to support release management stuff; building generated
+# files for the tarballs
+#
+include(mktar_support)
+
+
+#
 # Output various information about what we've figured and what we're
 # doing for the builder's edification
 #
