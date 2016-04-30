@@ -1858,6 +1858,36 @@ WarpCursor [{ `win-list` }]::
   they are deiconified.  If the optional `win-list` is given, the pointer
   will only be warped when those windows are deiconified.
 
+WarpOnDeIconify { `win-list` }::
+  When ctwm receives a request to map a window, it normally just deiconifies
+  it, but if the window is in `win-list`, it will additionally bring it
+  into the current workspace, if necessary. For example
++
+------
+WarpOnDeIconify { "Emacs" }
+------
++
+[normal]
+  will make sure emacs windows will always popup in the current workspace when
+  necessary (typically when the minibuffer or the *Help* frame is in another
+  workspace).
++
+First appeared in %%NEXT%%.
+
+WarpRingOnScreen::
+  Tells ctwm that f.warpring warps pointer only to windows visible in
+  the current workspace.
+
+WarpToDefaultMenuEntry::
+  (Useful only with StayUpMenus) When using StayUpMenus, and a menu does
+  stays up, the pointer is warped to the default entry of the menu.
+
+WarpUnmapped::
+  This variable indicates that that the `f.warpto` function should deiconify
+  any iconified windows it encounters.  This is typically used to make a key
+  binding that will pop a particular window (such as `xmh`), no matter
+  where it is.  The default is for `f.warpto` to ignore iconified windows.
+
 WindowBox [{ `win-list` }]::
   creates a new window called a box, where
   all the client windows that match the windows list are opened in,
@@ -1888,36 +1918,6 @@ WindowRegion `geomstring` `vgrav` `hgrav` [{ `win-list` }]::
 WindowRing [{ `win-list` }]::
   This variable specifies a list of windows along which the `f.warpring`
   function cycles. If no argument is given, all the windows are in the ring.
-
-WarpOnDeIconify { `win-list` }::
-  When ctwm receives a request to map a window, it normally just deiconifies
-  it, but if the window is in `win-list`, it will additionally bring it
-  into the current workspace, if necessary. For example
-+
-------
-WarpOnDeIconify { "Emacs" }
-------
-+
-[normal]
-  will make sure emacs windows will always popup in the current workspace when
-  necessary (typically when the minibuffer or the *Help* frame is in another
-  workspace).
-+
-First appeared in %%NEXT%%.
-
-WarpRingOnScreen::
-  Tells ctwm that f.warpring warps pointer only to windows visible in
-  the current workspace.
-
-WarpToDefaultMenuEntry::
-  (Useful only with StayUpMenus) When using StayUpMenus, and a menu does
-  stays up, the pointer is warped to the default entry of the menu.
-
-WarpUnmapped::
-  This variable indicates that that the `f.warpto` function should deiconify
-  any iconified windows it encounters.  This is typically used to make a key
-  binding that will pop a particular window (such as `xmh`), no matter
-  where it is.  The default is for `f.warpto` to ignore iconified windows.
 
 WindowRingExclude [{ `win-list` }]::
   All listed windows will be excluded from the WarpRing.
