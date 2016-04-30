@@ -3,7 +3,7 @@ all build ctwm man man-html install clean: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 build/Makefile cmake: CMakeLists.txt
-	( cd build && \
+	( mkdir -p build && cd build && \
 		cmake -DCMAKE_C_FLAGS:STRING="${CFLAGS}" ${CMAKE_EXTRAS} .. )
 
 allclean distclean:
