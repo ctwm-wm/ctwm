@@ -101,9 +101,6 @@ extern void     Zoom(Window wf, Window wt);
 extern void     MoveOutline(Window root,
                             int x, int y, int width, int height,
                             int bw, int th);
-extern Pixmap   GetBitmap(char *name);
-extern Pixmap   FindBitmap(char *name,
-                           unsigned int *widthp, unsigned int *heightp);
 extern void     GetUnknownIcon(char *name);
 extern char     *ExpandFilename(char *name);
 extern char     *ExpandFilePath(char *path);
