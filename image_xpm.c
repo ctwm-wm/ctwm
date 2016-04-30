@@ -12,8 +12,7 @@
 static Image *LoadXpmImage(char  *name, ColorPair cp);
 static void   xpmErrorMessage(int status, char *name, char *fullname);
 
-static int reportfilenotfound = 1;
-
+static int reportfilenotfound = 0;
 static int reportxpmerror = 1;
 
 static Image *LoadXpmImage(char *name, ColorPair cp)
@@ -91,7 +90,6 @@ GetXpmImage(char *name, ColorPair cp)
 	strcpy(pref, name);
 	perc  = strchr(pref, '%');
 	*perc = '\0';
-	reportfilenotfound = 0;
 	for(i = 1;; i++) {
 		sprintf(path, "%s%d%s", pref, i, perc + 1);
 		r = LoadXpmImage(path, cp);
@@ -107,7 +105,6 @@ GetXpmImage(char *name, ColorPair cp)
 			s = r;
 		}
 	}
-	reportfilenotfound = 1;
 	if(s != None) {
 		s->next = image;
 	}

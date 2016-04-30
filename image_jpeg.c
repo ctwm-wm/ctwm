@@ -28,7 +28,7 @@
 
 #include <X11/Xlib.h>
 
-static int reportfilenotfound = 1;
+static int reportfilenotfound = 0;
 
 static Image *LoadJpegImage(char *name);
 
@@ -76,7 +76,6 @@ GetJpegImage(char *name)
 	strcpy(pref, name);
 	perc  = strchr(pref, '%');
 	*perc = '\0';
-	reportfilenotfound = 0;
 	for(i = 1;; i++) {
 		sprintf(path, "%s%d%s", pref, i, perc + 1);
 		r = LoadJpegImage(path);
@@ -92,7 +91,6 @@ GetJpegImage(char *name)
 			s = r;
 		}
 	}
-	reportfilenotfound = 1;
 	if(s != None) {
 		s->next = image;
 	}
@@ -131,7 +129,7 @@ static Image *LoadJpegImage(char *name)
 	}
 
 	if((infile = fopen(fullname, "rb")) == NULL) {
-		if(!reportfilenotfound) {
+		if(reportfilenotfound) {
 			fprintf(stderr, "unable to locate %s\n", fullname);
 		}
 		fflush(stdout);
