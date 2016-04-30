@@ -12,7 +12,6 @@
 static Image *LoadXpmImage(char  *name, ColorPair cp);
 static void   xpmErrorMessage(int status, char *name, char *fullname);
 
-static int reportfilenotfound = 0;
 static int reportxpmerror = 1;
 
 static Image *LoadXpmImage(char *name, ColorPair cp)

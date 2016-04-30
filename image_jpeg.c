@@ -19,6 +19,7 @@
 #include "screen.h"
 #include "types.h"
 #include "util.h"
+#include "image.h"
 #include "image_jpeg.h"
 
 /* Bits needed for libjpeg and interaction */
@@ -27,8 +28,6 @@
 #include <jerror.h>
 
 #include <X11/Xlib.h>
-
-static int reportfilenotfound = 0;
 
 static Image *LoadJpegImage(char *name);
 

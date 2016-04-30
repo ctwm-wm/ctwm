@@ -143,9 +143,8 @@ static void PaintTitleButtons(TwmWindow *tmp_win);
 static void swapshort(char *bp, unsigned n);
 static void swaplong(char *bp, unsigned n);
 
-static int reportfilenotfound = 0;
-
 /* XXX move to an 'image.c' when we grow it */
+int reportfilenotfound = 0;
 Colormap AlternateCmap = None;
 
 int  HotX, HotY;
