@@ -143,7 +143,7 @@ static void PaintTitleButtons(TwmWindow *tmp_win);
 static void swapshort(char *bp, unsigned n);
 static void swaplong(char *bp, unsigned n);
 
-static int    reportfilenotfound = 1;
+static int reportfilenotfound = 0;
 
 /* XXX move to an 'image.c' when we grow it */
 Colormap AlternateCmap = None;
@@ -622,7 +622,6 @@ static Image *GetBitmapImage(char  *name, ColorPair cp)
 	strcpy(pref, name);
 	perc  = strchr(pref, '%');
 	*perc = '\0';
-	reportfilenotfound = 0;
 	for(i = 1;; i++) {
 		sprintf(path, "%s%d%s", pref, i, perc + 1);
 		r = LoadBitmapImage(path, cp);
@@ -638,7 +637,6 @@ static Image *GetBitmapImage(char  *name, ColorPair cp)
 			s = r;
 		}
 	}
-	reportfilenotfound = 1;
 	if(s != None) {
 		s->next = image;
 	}
@@ -695,7 +693,6 @@ void MaskScreen(char *file)
 	black.blue  = 0;
 	XAllocColor(dpy, Scr->WelcomeCmap, &black);
 
-	reportfilenotfound = 0;
 	AlternateCmap = Scr->WelcomeCmap;
 	if(! file) {
 		Scr->WelcomeImage  = GetImage("xwd:welcome.xwd", WelcomeCp);
@@ -709,7 +706,6 @@ void MaskScreen(char *file)
 		Scr->WelcomeImage  = GetImage(file, WelcomeCp);
 	}
 	AlternateCmap = None;
-	reportfilenotfound = 1;
 	if(Scr->WelcomeImage == None) {
 		return;
 	}
@@ -3483,7 +3479,6 @@ static Image *GetXwdImage(char *name, ColorPair cp)
 	strcpy(pref, name);
 	perc  = strchr(pref, '%');
 	*perc = '\0';
-	reportfilenotfound = 0;
 	for(i = 1;; i++) {
 		sprintf(path, "%s%d%s", pref, i, perc + 1);
 		r = LoadXwdImage(path, cp);
@@ -3499,7 +3494,6 @@ static Image *GetXwdImage(char *name, ColorPair cp)
 			s = r;
 		}
 	}
-	reportfilenotfound = 1;
 	if(s != None) {
 		s->next = image;
 	}
