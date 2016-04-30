@@ -29,7 +29,7 @@ docs_clean doc_clean:
 
 # asciidoc files
 adocs:
-	(cd doc && make all)
+	(cd doc && make all_set_version)
 adoc_clean:
 	(cd doc && make clean)
 
