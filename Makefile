@@ -29,7 +29,7 @@ docs_clean doc_clean:
 
 # asciidoc files
 adocs:
-	(cd doc && make all)
+	(cd doc && make all_set_version)
 adoc_clean:
 	(cd doc && make clean)
 
@@ -47,21 +47,21 @@ RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
 # Build those, the .html versions of the above docs, and the HTML/man
 # versions of the manual
-release_files: ${RELEASE_FILES} ${DOC_FILES} adocs
+release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES} ${DOC_FILES} adocs
 release_clean: doc_clean adoc_clean
 	rm -rf ${GEN}
 
-# The config grammar
-YACC?=/usr/bin/yacc
-YFLAGS=-d -b ${GEN}/gram
-${GEN}/gram.tab.c: ${GEN}/gram.tab.h
-${GEN}/gram.tab.h: ${GEN} gram.y
-	${YACC} ${YFLAGS} gram.y
+# Stuff for thunking to cmake
+build/MKTAR_GENFILES: build/Makefile
+	(cd build ; make mktar_genfiles)
 
-LEX?=/usr/bin/flex
-LFLAGS=-o ${GEN}/lex.c
-${GEN}/lex.c: ${GEN} lex.l
-	${LEX} ${LFLAGS} lex.l
+# The config grammar
+${GEN}/gram.tab.c: ${GEN}/gram.tab.h
+${GEN}/gram.tab.h: ${GEN} gram.y build/MKTAR_GENFILES
+	cp build/gram.tab.[ch] ${GEN}/
+
+${GEN}/lex.c: ${GEN} lex.l build/MKTAR_GENFILES
+	cp build/lex.c ${GEN}/
 
 # Setup version file
 ${GEN}/version.c: ${GEN} version.c.in .bzr/checkout/dirstate
