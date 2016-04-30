@@ -23,5 +23,7 @@ int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
                     );
 void proc_ewmh_ignore(void);
 void add_ewmh_ignore(char *s);
+void proc_mwm_ignore(void);
+void add_mwm_ignore(char *s);
 
 #endif /* _PARSE_BE_H */

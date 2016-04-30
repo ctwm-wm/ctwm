@@ -458,6 +458,7 @@ static TwmKeyword keytable[] = {
 	{ "movedelta",              NKEYWORD, kwn_MoveDelta },
 	{ "moveoffresistance",      NKEYWORD, kwn_MoveOffResistance },
 	{ "movepackresistance",     NKEYWORD, kwn_MovePackResistance },
+	{ "mwmignore",              MWM_IGNORE, 0 },
 	{ "nobackingstore",         KEYWORD, kw0_NoBackingStore },
 	{ "noborder",               NO_BORDER, 0 },
 	{ "nocasesensitive",        KEYWORD, kw0_NoCaseSensitive },
@@ -1919,4 +1920,32 @@ add_ewmh_ignore(char *s)
 	ParseError = 1;
 	return;
 #endif /* EWMH */
+}
+
+
+/*
+ * Parsing for MWMIgnore { } lists
+ */
+void
+proc_mwm_ignore(void)
+{
+	/* Nothing to do */
+	return;
+}
+void
+add_mwm_ignore(char *s)
+{
+#define HANDLE(x) \
+        if(strcasecmp(s, (x)) == 0) { \
+                AddToList(&Scr->MWMIgnore, (x), ""); \
+                return; \
+        }
+	HANDLE("DECOR_BORDER");
+	HANDLE("DECOR_TITLE");
+#undef HANDLE
+
+	twmrc_error_prefix();
+	fprintf(stderr, "Unexpected MWMIgnore value '%s'\n", s);
+	ParseError = 1;
+	return;
 }

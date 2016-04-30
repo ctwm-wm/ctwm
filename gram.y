@@ -128,6 +128,7 @@ extern int yylex(void);
 %token <num> IGNOREMODIFIER WINDOW_GEOMETRIES ALWAYSSQUEEZETOGRAVITY VIRTUAL_SCREENS
 %token <num> IGNORE_TRANSIENT
 %token <num> EWMH_IGNORE
+%token <num> MWM_IGNORE
 %token <num> RPLAY_SOUNDS
 %token <ptr> STRING
 
