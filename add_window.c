@@ -540,8 +540,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 #ifdef EWMH
 		        !EwmhHasBorder(tmp_win) ||
 #endif /* EWMH */
-		        ((mwmHints.flags & MWM_HINTS_DECORATIONS) &&
-		         (mwmHints.decorations & MWM_DECOR_BORDER) == 0) ||
+		        (mwm_has_border(&mwmHints) == 0) ||
 		        LookInList(Scr->NoBorder, tmp_win->full_name, &tmp_win->class)) {
 			tmp_win->frame_bw = 0;
 			tmp_win->frame_bw3D = 0;
@@ -562,8 +561,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 #ifdef EWMH
 		have_title = EwmhHasTitle(tmp_win);
 #endif /* EWMH */
-		if(mwmHints.flags & MWM_HINTS_DECORATIONS) {
-			have_title = (mwmHints.decorations & MWM_DECOR_TITLE) != 0;
+		if(mwm_sets_title(&mwmHints)) {
+			have_title = mwm_has_title(&mwmHints);
 		}
 		if(Scr->NoTitlebar) {
 			have_title = False;

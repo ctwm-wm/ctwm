@@ -1041,6 +1041,7 @@ static void InitVariables(void)
 	Scr->PreferredIconHeight = 48;
 	FreeList(&Scr->EWMHIgnore);
 #endif
+	FreeList(&Scr->MWMIgnore);
 
 	Scr->BorderTop    = 0;
 	Scr->BorderBottom = 0;

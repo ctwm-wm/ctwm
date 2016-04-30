@@ -468,6 +468,8 @@ struct ScreenInfo {
 	EwmhStrut *ewmhStruts;          /* remember values of _NET_WM_STRUT */
 	name_list *EWMHIgnore;    /* EWMH messages to ignore */
 #endif /* EWMH */
+
+	name_list *MWMIgnore;    /* Motif WM messages to ignore */
 };
 
 extern int NumScreens;
