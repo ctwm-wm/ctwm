@@ -457,6 +457,8 @@ stmt		: error
 		  geom_list
 		| EWMH_IGNORE		{ }
 		  ewmh_ignore_list
+		| MWM_IGNORE		{ }
+		  mwm_ignore_list
 		| RPLAY_SOUNDS { }
 		  rplay_sounds_list
 		;
@@ -776,6 +778,17 @@ ewmh_ignore_entries	: /* Empty */
 		;
 
 ewmh_ignore_entry	: string { add_ewmh_ignore($1); }
+		;
+
+
+mwm_ignore_list	: LB mwm_ignore_entries RB { proc_mwm_ignore(); }
+		;
+
+mwm_ignore_entries	: /* Empty */
+		| mwm_ignore_entries mwm_ignore_entry
+		;
+
+mwm_ignore_entry	: string { add_mwm_ignore($1); }
 		;
 
 
