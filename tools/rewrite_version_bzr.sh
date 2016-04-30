@@ -22,4 +22,4 @@ REVID=`echo "$REVID" | sed -e 's/\\\\/\\\\\\\\/g' -e 's/"/\\\\"/g' \
 	-e 's/\\\\/\\\\\\\\/g'`
 
 # That's all we need; just pass stdin through and sub
-sed -e "s/%%REVISION%%/\"${REVID}\"/"
+sed -e "s/%%VCSTYPE%%/\"bzr\"/" -e "s/%%REVISION%%/\"${REVID}\"/"
