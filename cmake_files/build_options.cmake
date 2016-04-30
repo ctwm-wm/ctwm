@@ -47,6 +47,7 @@ if(USE_JPEG)
 
 	include_directories(${JPEG_INCLUDE_DIR})
 	list(APPEND CTWMLIBS ${JPEG_LIBRARIES})
+	list(APPEND CTWMSRC image_jpeg.c)
 	message(STATUS "Enabling libjpeg support.")
 endif(USE_JPEG)
 
