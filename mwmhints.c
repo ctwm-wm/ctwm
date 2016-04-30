@@ -40,7 +40,9 @@
 #include <stdio.h>
 
 #include "ctwm_atoms.h"
+#include "list.h"
 #include "mwmhints.h"
+#include "screen.h"
 
 bool
 GetMWMHints(Window w, MotifWmHints *mwmHints)
@@ -120,19 +122,35 @@ mwm_sets_decorations(MotifWmHints *hints)
 int
 mwm_has_border(MotifWmHints *hints)
 {
+	/* No opinion if hints don't set decoration info */
 	if(!mwm_sets_decorations(hints)) {
 		return -1;
 	}
+	/* No opinion if the user told us to ignore it */
+	if(LookInNameList(Scr->MWMIgnore, "DECOR_BORDER")) {
+		return -1;
+	}
+	/* No border if hints said so */
 	if((hints->decorations & MWM_DECOR_BORDER) == 0) {
 		return 0;
 	}
+	/* Else border */
 	return 1;
 }
 
 bool
 mwm_sets_title(MotifWmHints *hints)
 {
-	return mwm_sets_decorations(hints);
+	/* Not if we don't have decoration info */
+	if(!mwm_sets_decorations(hints)) {
+		return false;
+	}
+	/* Not if the user wants to ignore title frobbing */
+	if(LookInNameList(Scr->MWMIgnore, "DECOR_TITLE")) {
+		return false;
+	}
+	/* Else we do have info to use */
+	return true;
 }
 
 bool
