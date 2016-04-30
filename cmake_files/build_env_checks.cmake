@@ -15,7 +15,6 @@ endif()
 
 
 # If we are, see if we can find bzr(1) installed
-set(IS_BZR_CO 0)
 set(HAS_BZR 0)
 if(IS_BZR_CO)
 	find_program(BZR_CMD bzr)
