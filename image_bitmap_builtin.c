@@ -736,3 +736,288 @@ static DEF_BI_SPM(Create3DZoomImage)
 }
 
 #undef DEF_BI_SPM
+
+
+
+/*
+ * And the animated builtins.  These are the ones specified with names
+ * like "%xpm:resize".
+ *
+ * These yield [ctwm struct] Image's.
+ */
+#define DEF_BI_ASPM(nm) Image *nm(ColorPair cp)
+
+/* Backend generators */
+static Image *Create3DResizeAnimation(Bool in, Bool left, Bool top,
+                                      ColorPair cp);
+static Image *Create3DMenuAnimation(Bool up, ColorPair cp);
+static Image *Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp);
+
+/* Frontends */
+/* Using: ResizeAnimation */
+static DEF_BI_ASPM(Create3DResizeInTopAnimation);
+static DEF_BI_ASPM(Create3DResizeOutTopAnimation);
+static DEF_BI_ASPM(Create3DResizeInBotAnimation);
+static DEF_BI_ASPM(Create3DResizeOutBotAnimation);
+/* Using: MenuAnimation */
+static DEF_BI_ASPM(Create3DMenuUpAnimation);
+static DEF_BI_ASPM(Create3DMenuDownAnimation);
+/* Using: ZoomAnimation */
+static DEF_BI_ASPM(Create3DMazeOutAnimation);
+static DEF_BI_ASPM(Create3DMazeInAnimation);
+static DEF_BI_ASPM(Create3DZoomInAnimation);
+static DEF_BI_ASPM(Create3DZoomOutAnimation);
+static DEF_BI_ASPM(Create3DZoomInOutAnimation);
+
+
+/*
+ * Entry for animated pixmaps
+ *
+ * This is where we find "%xpm:something".  Note that as above, these are
+ * _not_ XPM's, and have no relation to the configurable XPM support,
+ * which we get with images specified as "xpm:something" (no leading
+ * colon).  Still not confusing at _all_.
+ */
+Image *get_builtin_animated_pixmap(char *name, ColorPair cp)
+{
+	int    i;
+	static struct {
+		char *name;
+		DEF_BI_ASPM((*proc));
+	} pmtab[] = {
+		/* Lookup for "%xpm:" pixmaps */
+		{ "%xpm:resize-out-top", Create3DResizeInTopAnimation },
+		{ "%xpm:resize-in-top",  Create3DResizeOutTopAnimation },
+		{ "%xpm:resize-out-bot", Create3DResizeInBotAnimation },
+		{ "%xpm:resize-in-bot",  Create3DResizeOutBotAnimation },
+		{ "%xpm:menu-up",        Create3DMenuUpAnimation },
+		{ "%xpm:menu-down",      Create3DMenuDownAnimation },
+		{ "%xpm:maze-out",       Create3DMazeOutAnimation },
+		{ "%xpm:maze-in",        Create3DMazeInAnimation },
+		{ "%xpm:resize",         Create3DZoomOutAnimation }, // compat
+		{ "%xpm:zoom-out",       Create3DZoomOutAnimation },
+		{ "%xpm:zoom-in",        Create3DZoomInAnimation },
+		{ "%xpm:zoom-inout",     Create3DZoomInOutAnimation },
+	};
+
+	/* Seatbelts */
+	if(!name || (strncmp(name, "%xpm:", 5) != 0)) {
+		return None;
+	}
+
+	for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
+		if(strcasecmp(pmtab[i].name, name) == 0) {
+			Image *image = (*pmtab[i].proc)(cp);
+			if(image == None) {
+				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
+				        ProgramName, name);
+				return (None);
+			}
+			return image;
+		}
+	}
+
+	fprintf(stderr, "%s:  no such built-in pixmap \"%s\"\n", ProgramName, name);
+	return (None);
+}
+
+
+/*
+ * First a couple generator functions the actual functions use
+ */
+static Image *Create3DResizeAnimation(Bool in, Bool left, Bool top,
+                                      ColorPair cp)
+{
+	int         h, i, j;
+	Image       *image, *im, *im1;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = im1 = None;
+	for(i = (in ? 0 : (h / 4) - 1); (i < h / 4) && (i >= 0); i += (in ? 1 : -1)) {
+		im = (Image *) malloc(sizeof(Image));
+		if(! im) {
+			return (None);
+		}
+		im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+		if(im->pixmap == None) {
+			free(im);
+			return (None);
+		}
+		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
+		             False);
+		for(j = i; j <= h; j += (h / 4)) {
+			Draw3DBorder(im->pixmap, (left ? 0 : j), (top ? 0 : j),
+			             h - j, h - j, 2, cp, off, True, False);
+		}
+		im->mask   = None;
+		im->width  = h;
+		im->height = h;
+		im->next   = None;
+		if(image == None) {
+			image = im1 = im;
+		}
+		else {
+			im1->next = im;
+			im1 = im;
+		}
+	}
+	if(im1 != None) {
+		im1->next = image;
+	}
+	return (image);
+}
+
+static Image *Create3DMenuAnimation(Bool up, ColorPair cp)
+{
+	int   h, i, j;
+	Image *image, *im, *im1;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = im1 = None;
+	for(j = (up ? 4 : 0); j != (up ? -1 : 5); j += (up ? -1 : 1)) {
+		im = (Image *) malloc(sizeof(Image));
+		if(! im) {
+			return (None);
+		}
+		im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+		if(im->pixmap == None) {
+			free(im);
+			return (None);
+		}
+		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
+		             False);
+		for(i = j; i < h - 3; i += 5) {
+			Draw3DBorder(im->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
+		}
+		im->mask   = None;
+		im->width  = h;
+		im->height = h;
+		im->next   = None;
+		if(image == None) {
+			image = im1 = im;
+		}
+		else {
+			im1->next = im;
+			im1 = im;
+		}
+	}
+	if(im1 != None) {
+		im1->next = image;
+	}
+	return (image);
+}
+
+static Image *Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp)
+{
+	int         h, i, j, k;
+	Image       *image, *im, *im1;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	if(n == 0) {
+		n = (h / 2) - 2;
+	}
+
+	image = im1 = None;
+	for(j = (out ? -1 : 1) ; j < (in ? 2 : 0); j += 2) {
+		for(k = (j > 0 ? 0 : n - 1) ; (k >= 0) && (k < n); k += j) {
+			im = (Image *) malloc(sizeof(Image));
+			im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+			Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
+			             False);
+			for(i = 2 + k; i < (h / 2); i += n) {
+				Draw3DBorder(im->pixmap, i, i, h - (2 * i), h - (2 * i), 2, cp, off, True,
+				             False);
+			}
+			im->mask   = None;
+			im->width  = h;
+			im->height = h;
+			im->next   = None;
+			if(image == None) {
+				image = im1 = im;
+			}
+			else {
+				im1->next = im;
+				im1 = im;
+			}
+		}
+	}
+	if(im1 != None) {
+		im1->next = image;
+	}
+	return (image);
+}
+
+
+/*
+ * And the wrapper funcs for making the images
+ */
+static DEF_BI_ASPM(Create3DResizeInTopAnimation)
+{
+	return Create3DResizeAnimation(TRUE, FALSE, TRUE, cp);
+}
+
+static DEF_BI_ASPM(Create3DResizeOutTopAnimation)
+{
+	return Create3DResizeAnimation(False, FALSE, TRUE, cp);
+}
+
+static DEF_BI_ASPM(Create3DResizeInBotAnimation)
+{
+	return Create3DResizeAnimation(TRUE, TRUE, FALSE, cp);
+}
+
+static DEF_BI_ASPM(Create3DResizeOutBotAnimation)
+{
+	return Create3DResizeAnimation(False, TRUE, FALSE, cp);
+}
+
+
+static DEF_BI_ASPM(Create3DMenuUpAnimation)
+{
+	return Create3DMenuAnimation(TRUE, cp);
+}
+
+static DEF_BI_ASPM(Create3DMenuDownAnimation)
+{
+	return Create3DMenuAnimation(False, cp);
+}
+
+
+static DEF_BI_ASPM(Create3DMazeInAnimation)
+{
+	return Create3DZoomAnimation(TRUE, FALSE, 6, cp);
+}
+
+static DEF_BI_ASPM(Create3DMazeOutAnimation)
+{
+	return Create3DZoomAnimation(FALSE, TRUE, 6, cp);
+}
+
+static DEF_BI_ASPM(Create3DZoomInAnimation)
+{
+	return Create3DZoomAnimation(TRUE, FALSE, 0, cp);
+}
+
+static DEF_BI_ASPM(Create3DZoomOutAnimation)
+{
+	return Create3DZoomAnimation(FALSE, TRUE, 0, cp);
+}
+
+static DEF_BI_ASPM(Create3DZoomInOutAnimation)
+{
+	return Create3DZoomAnimation(TRUE, TRUE, 0, cp);
+}
+
+#undef DEF_BI_ASPM

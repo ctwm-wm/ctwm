@@ -118,8 +118,6 @@
 
 static Image *LoadXwdImage(char  *filename, ColorPair cp);
 static Image *GetXwdImage(char  *name, ColorPair cp);
-static Image  *Create3DResizeAnimation(Bool in, Bool left, Bool top,
-                                       ColorPair cp);
 static void PaintAllDecoration(void);
 static void PaintTitleButtons(TwmWindow *tmp_win);
 
@@ -1364,195 +1362,6 @@ Pixmap Create3DIconManagerIcon(ColorPair cp)
 	return (colori->pix);
 }
 
-static Image *Create3DResizeAnimation(Bool in, Bool left, Bool top,
-                                      ColorPair cp)
-{
-	int         h, i, j;
-	Image       *image, *im, *im1;
-
-	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
-	if(!(h & 1)) {
-		h--;
-	}
-
-	image = im1 = None;
-	for(i = (in ? 0 : (h / 4) - 1); (i < h / 4) && (i >= 0); i += (in ? 1 : -1)) {
-		im = (Image *) malloc(sizeof(Image));
-		if(! im) {
-			return (None);
-		}
-		im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
-		if(im->pixmap == None) {
-			free(im);
-			return (None);
-		}
-		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
-		             False);
-		for(j = i; j <= h; j += (h / 4)) {
-			Draw3DBorder(im->pixmap, (left ? 0 : j), (top ? 0 : j),
-			             h - j, h - j, 2, cp, off, True, False);
-		}
-		im->mask   = None;
-		im->width  = h;
-		im->height = h;
-		im->next   = None;
-		if(image == None) {
-			image = im1 = im;
-		}
-		else {
-			im1->next = im;
-			im1 = im;
-		}
-	}
-	if(im1 != None) {
-		im1->next = image;
-	}
-	return (image);
-}
-
-static Image *Create3DResizeInTopAnimation(ColorPair cp)
-{
-	return Create3DResizeAnimation(TRUE, FALSE, TRUE, cp);
-}
-
-static Image *Create3DResizeOutTopAnimation(ColorPair cp)
-{
-	return Create3DResizeAnimation(False, FALSE, TRUE, cp);
-}
-
-static Image *Create3DResizeInBotAnimation(ColorPair cp)
-{
-	return Create3DResizeAnimation(TRUE, TRUE, FALSE, cp);
-}
-
-static Image *Create3DResizeOutBotAnimation(ColorPair cp)
-{
-	return Create3DResizeAnimation(False, TRUE, FALSE, cp);
-}
-
-static Image *Create3DMenuAnimation(Bool up, ColorPair cp)
-{
-	int   h, i, j;
-	Image *image, *im, *im1;
-
-	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
-	if(!(h & 1)) {
-		h--;
-	}
-
-	image = im1 = None;
-	for(j = (up ? 4 : 0); j != (up ? -1 : 5); j += (up ? -1 : 1)) {
-		im = (Image *) malloc(sizeof(Image));
-		if(! im) {
-			return (None);
-		}
-		im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
-		if(im->pixmap == None) {
-			free(im);
-			return (None);
-		}
-		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
-		             False);
-		for(i = j; i < h - 3; i += 5) {
-			Draw3DBorder(im->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
-		}
-		im->mask   = None;
-		im->width  = h;
-		im->height = h;
-		im->next   = None;
-		if(image == None) {
-			image = im1 = im;
-		}
-		else {
-			im1->next = im;
-			im1 = im;
-		}
-	}
-	if(im1 != None) {
-		im1->next = image;
-	}
-	return (image);
-}
-
-static Image *Create3DMenuUpAnimation(ColorPair cp)
-{
-	return Create3DMenuAnimation(TRUE, cp);
-}
-
-static Image *Create3DMenuDownAnimation(ColorPair cp)
-{
-	return Create3DMenuAnimation(False, cp);
-}
-
-static Image *Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp)
-{
-	int         h, i, j, k;
-	Image       *image, *im, *im1;
-
-	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
-	if(!(h & 1)) {
-		h--;
-	}
-
-	if(n == 0) {
-		n = (h / 2) - 2;
-	}
-
-	image = im1 = None;
-	for(j = (out ? -1 : 1) ; j < (in ? 2 : 0); j += 2) {
-		for(k = (j > 0 ? 0 : n - 1) ; (k >= 0) && (k < n); k += j) {
-			im = (Image *) malloc(sizeof(Image));
-			im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
-			Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
-			             False);
-			for(i = 2 + k; i < (h / 2); i += n) {
-				Draw3DBorder(im->pixmap, i, i, h - (2 * i), h - (2 * i), 2, cp, off, True,
-				             False);
-			}
-			im->mask   = None;
-			im->width  = h;
-			im->height = h;
-			im->next   = None;
-			if(image == None) {
-				image = im1 = im;
-			}
-			else {
-				im1->next = im;
-				im1 = im;
-			}
-		}
-	}
-	if(im1 != None) {
-		im1->next = image;
-	}
-	return (image);
-}
-
-static Image *Create3DMazeInAnimation(ColorPair cp)
-{
-	return Create3DZoomAnimation(TRUE, FALSE, 6, cp);
-}
-
-static Image *Create3DMazeOutAnimation(ColorPair cp)
-{
-	return Create3DZoomAnimation(FALSE, TRUE, 6, cp);
-}
-
-static Image *Create3DZoomInAnimation(ColorPair cp)
-{
-	return Create3DZoomAnimation(TRUE, FALSE, 0, cp);
-}
-
-static Image *Create3DZoomOutAnimation(ColorPair cp)
-{
-	return Create3DZoomAnimation(FALSE, TRUE, 0, cp);
-}
-
-static Image *Create3DZoomInOutAnimation(ColorPair cp)
-{
-	return Create3DZoomAnimation(TRUE, TRUE, 0, cp);
-}
-
 
 Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
 {
@@ -2369,40 +2178,11 @@ Image *GetImage(char *name, ColorPair cp)
 		}
 	}
 	else if(strncmp(name, "%xpm:", 5) == 0) {
-		int    i;
-		static struct {
-			char *name;
-			Image *(*proc)(ColorPair colorpair);
-		} pmtab[] = {
-			{ "%xpm:menu-up", Create3DMenuUpAnimation },
-			{ "%xpm:menu-down", Create3DMenuDownAnimation },
-			{ "%xpm:resize", Create3DZoomOutAnimation }, /* compatibility */
-			{ "%xpm:resize-out-top", Create3DResizeInTopAnimation },
-			{ "%xpm:resize-in-top", Create3DResizeOutTopAnimation },
-			{ "%xpm:resize-out-bot", Create3DResizeInBotAnimation },
-			{ "%xpm:resize-in-bot", Create3DResizeOutBotAnimation },
-			{ "%xpm:maze-out", Create3DMazeOutAnimation },
-			{ "%xpm:maze-in", Create3DMazeInAnimation },
-			{ "%xpm:zoom-out", Create3DZoomOutAnimation },
-			{ "%xpm:zoom-in", Create3DZoomInAnimation },
-			{ "%xpm:zoom-inout", Create3DZoomInOutAnimation }
-		};
-
 		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
-			for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
-				if(strcasecmp(pmtab[i].name, name) == 0) {
-					image = (*pmtab[i].proc)(cp);
-					if(image == None) {
-						fprintf(stderr,
-						        "%s:  unable to build pixmap \"%s\"\n", ProgramName, name);
-						return (None);
-					}
-					break;
-				}
-			}
+			image = get_builtin_animated_pixmap(name, cp);
 			if(image == None) {
-				fprintf(stderr, "%s:  no such built-in pixmap \"%s\"\n", ProgramName, name);
+				/* g_b_a_p() already warned */
 				return (None);
 			}
 			AddToList(list, fullname, image);
