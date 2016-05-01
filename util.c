@@ -106,7 +106,7 @@
 
 
 #include "image.h"
-#include "image_xbm.h"
+#include "image_bitmap.h"
 #ifdef JPEG
 #include "image_jpeg.h"
 #endif

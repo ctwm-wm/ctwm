@@ -1,5 +1,12 @@
 /*
- * XBM image handling functions
+ * Bitmap image handling functions
+ *
+ * These are what's called "XBM", and represented by the Pixmap X data
+ * type (which has noting to do with "XPM" X PixMaps, just to confuse
+ * you).  This is the format used for various buildin images, buttons,
+ * and cursors, and is also the fallback type for any user-specified
+ * images.  Assuming any user has made and specified an XBM since the
+ * 1980's.
  */
 
 #include "ctwm.h"
@@ -11,7 +18,7 @@
 #include "types.h"
 
 #include "image.h"
-#include "image_xbm.h"
+#include "image_bitmap.h"
 
 
 static Image *LoadBitmapImage(char  *name, ColorPair cp);

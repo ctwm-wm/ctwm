@@ -25,7 +25,7 @@ set(CTWMSRC
 	gram.tab.c
 	iconmgr.c
 	icons.c
-	image_xbm.c
+	image_bitmap.c
 	lex.c
 	list.c
 	menus.c

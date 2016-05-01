@@ -68,7 +68,7 @@
 #include "screen.h"
 #include "util.h"
 #include "cursor.h"
-#include "image_xbm.h"
+#include "image_bitmap.h"
 
 static struct _CursorName {
 	const char          *name;
