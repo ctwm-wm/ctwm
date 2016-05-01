@@ -23,6 +23,8 @@
 
 
 static Image *LoadBitmapImage(char  *name, ColorPair cp);
+static Pixmap FindBitmap(char *name, unsigned int *widthp,
+		unsigned int *heightp);
 
 
 
@@ -42,7 +44,8 @@ static Image *LoadBitmapImage(char  *name, ColorPair cp);
  ***********************************************************************
  */
 
-Pixmap FindBitmap(char *name, unsigned int *widthp,
+static Pixmap
+FindBitmap(char *name, unsigned int *widthp,
                   unsigned int *heightp)
 {
 	char *bigname;
@@ -106,12 +109,14 @@ Pixmap FindBitmap(char *name, unsigned int *widthp,
 	return pm;
 }
 
-Pixmap GetBitmap(char *name)
+Pixmap
+GetBitmap(char *name)
 {
 	return FindBitmap(name, &JunkWidth, &JunkHeight);
 }
 
-static Image *LoadBitmapImage(char  *name, ColorPair cp)
+static Image *
+LoadBitmapImage(char  *name, ColorPair cp)
 {
 	Image        *image;
 	Pixmap       bm;

@@ -13,8 +13,6 @@
 #include "types.h"
 #include "util.h"
 
-Pixmap FindBitmap(char *name, unsigned int *widthp,
-                  unsigned int *heightp);
 Image *GetBitmapImage(char *name, ColorPair cp);
 Pixmap GetBitmap(char *name);
 
