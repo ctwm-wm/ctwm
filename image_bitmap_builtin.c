@@ -232,3 +232,5 @@ DEF_BI_PPM(CreateDotPixmap)
 	}
 	return Scr->tbpm.delete;
 }
+
+#undef DEF_BI_PPM
