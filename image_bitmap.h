@@ -1,8 +1,8 @@
 /*
- * XBM image handling function bits
+ * Bitmap image handling function bits
  */
-#ifndef _IMAGE_XBM_H
-#define _IMAGE_XBM_H
+#ifndef _IMAGE_BITMAP_H
+#define _IMAGE_BITMAP_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,4 +19,4 @@ Image *GetBitmapImage(char *name, ColorPair cp);
 Pixmap GetBitmap(char *name);
 
 
-#endif /* _IMAGE_XBM_H */
+#endif /* _IMAGE_BITMAP_H */
