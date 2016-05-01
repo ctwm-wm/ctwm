@@ -90,6 +90,7 @@
 #include "icons.h"
 #include "iconmgr.h"
 #include "version.h"
+#include "image.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif

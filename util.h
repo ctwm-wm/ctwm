@@ -149,16 +149,6 @@ void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
 extern int HotX, HotY;
 
-struct Image {
-	Pixmap pixmap;
-	Pixmap mask;
-	int    width;
-	int    height;
-	Image *next;
-};
-
-extern Image *GetImage(char *name, ColorPair cp);
-extern void FreeImage(Image *image);
 
 extern unsigned char *GetWMPropertyString(Window w, Atom prop);
 extern void FreeWMPropertyString(char *prop);
