@@ -38,7 +38,7 @@ static DEF_BI_PPM(CreateDotPixmap);
  * menu symbol as well....
  */
 Pixmap get_builtin_plain_pixmap(char *name, unsigned int *widthp,
-                  unsigned int *heightp)
+                                unsigned int *heightp)
 {
 	int i;
 	static struct {
@@ -69,9 +69,9 @@ Pixmap get_builtin_plain_pixmap(char *name, unsigned int *widthp,
 		if(strcasecmp(pmtab[i].name, name) == 0) {
 			Pixmap pm = (*pmtab[i].proc)(widthp, heightp);
 			if(pm == None) {
-					fprintf(stderr, "%s:  unable to build bitmap \"%s\"\n",
-						    ProgramName, name);
-					return None;
+				fprintf(stderr, "%s:  unable to build bitmap \"%s\"\n",
+				        ProgramName, name);
+				return None;
 			}
 			return pm;
 		}
@@ -79,7 +79,7 @@ Pixmap get_builtin_plain_pixmap(char *name, unsigned int *widthp,
 
 	/* Didn't find it */
 	fprintf(stderr, "%s:  no such built-in bitmap \"%s\"\n",
-		    ProgramName, name);
+	        ProgramName, name);
 	return None;
 }
 
@@ -302,7 +302,7 @@ Image *get_builtin_scalable_pixmap(char *name, ColorPair cp)
 			Image *image = (*pmtab[i].proc)(cp);
 			if(image == None) {
 				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
-						ProgramName, name);
+				        ProgramName, name);
 				return (None);
 			}
 			return image;
