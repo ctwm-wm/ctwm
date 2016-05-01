@@ -2365,8 +2365,8 @@ Image *GetImage(char *name, ColorPair cp)
 				/* g_b_s_p() already warned */
 				return (None);
 			}
+			AddToList(list, fullname, image);
 		}
-		AddToList(list, fullname, image);
 	}
 	else if(strncmp(name, "%xpm:", 5) == 0) {
 		int    i;
