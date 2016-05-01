@@ -66,6 +66,7 @@
 #include "util.h"
 #include "parse.h"
 #include "resize.h"
+#include "image.h"
 
 /* #define DEBUG_EWMH */
 

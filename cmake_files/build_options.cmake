@@ -28,6 +28,7 @@ if(USE_XPM)
 	endif(NOT X11_Xpm_FOUND)
 
 	list(APPEND CTWMLIBS ${X11_Xpm_LIB})
+	list(APPEND CTWMSRC image_xpm.c)
 	message(STATUS "Enabling XPM support: ${X11_Xpm_LIB}")
 
 	# DATADIR should already be defined; guard against me being stupid
@@ -47,6 +48,7 @@ if(USE_JPEG)
 
 	include_directories(${JPEG_INCLUDE_DIR})
 	list(APPEND CTWMLIBS ${JPEG_LIBRARIES})
+	list(APPEND CTWMSRC image_jpeg.c)
 	message(STATUS "Enabling libjpeg support.")
 endif(USE_JPEG)
 

@@ -89,6 +89,7 @@
 #include "iconmgr.h"
 #include "session.h"
 #include "mwmhints.h"
+#include "image.h"
 
 #define gray_width 2
 #define gray_height 2

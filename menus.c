@@ -94,6 +94,7 @@
 #include "cursor.h"
 #include "otp.h"
 #include "ctopts.h"
+#include "image.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif

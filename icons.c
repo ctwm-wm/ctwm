@@ -70,6 +70,7 @@
 #include "list.h"
 #include "parse.h"
 #include "util.h"
+#include "image.h"
 
 #define iconWidth(w)    (w->icon->border_width * 2 + \
                         Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width)
