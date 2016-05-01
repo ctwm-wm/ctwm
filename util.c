@@ -2873,7 +2873,7 @@ Image *GetImage(char *name, ColorPair cp)
 			pm = FindBitmap(name, &width, &height);
 			if(pm == None) {
 				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
-						ProgramName, name);
+				        ProgramName, name);
 				return (None);
 			}
 			image = (Image *) malloc(sizeof(Image));

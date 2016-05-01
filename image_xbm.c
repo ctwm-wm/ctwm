@@ -40,7 +40,7 @@ static Pixmap CreateDotPixmap(unsigned int *widthp, unsigned int *heightp);
  */
 
 Pixmap FindBitmap(char *name, unsigned int *widthp,
-		unsigned int *heightp)
+                  unsigned int *heightp)
 {
 	char *bigname;
 	Pixmap pm;
