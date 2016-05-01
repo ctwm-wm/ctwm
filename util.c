@@ -83,9 +83,7 @@
 
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
 #include <X11/Xmu/WinUtil.h>
-#include <X11/XWDFile.h>
 
 
 #include <signal.h>
