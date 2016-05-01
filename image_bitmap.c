@@ -19,15 +19,11 @@
 
 #include "image.h"
 #include "image_bitmap.h"
+#include "image_bitmap_builtin.h"
 
 
 static Image *LoadBitmapImage(char  *name, ColorPair cp);
 
-static Pixmap CreateXLogoPixmap(unsigned int *widthp, unsigned int *heightp);
-static Pixmap CreateResizePixmap(unsigned int *widthp, unsigned int *heightp);
-static Pixmap CreateQuestionPixmap(unsigned int *widthp, unsigned int *heightp);
-static Pixmap CreateMenuPixmap(unsigned int *widthp, unsigned int *heightp);
-static Pixmap CreateDotPixmap(unsigned int *widthp, unsigned int *heightp);
 
 
 /***********************************************************************
@@ -62,28 +58,7 @@ Pixmap FindBitmap(char *name, unsigned int *widthp,
 	 * menu symbol as well....
 	 */
 	if(name[0] == ':') {
-		int i;
-		static struct {
-			char *name;
-			Pixmap(*proc)(unsigned int *wp, unsigned int *hp);
-		} pmtab[] = {
-			{ TBPM_DOT,         CreateDotPixmap },
-			{ TBPM_ICONIFY,     CreateDotPixmap },
-			{ TBPM_RESIZE,      CreateResizePixmap },
-			{ TBPM_XLOGO,       CreateXLogoPixmap },
-			{ TBPM_DELETE,      CreateXLogoPixmap },
-			{ TBPM_MENU,        CreateMenuPixmap },
-			{ TBPM_QUESTION,    CreateQuestionPixmap },
-		};
-
-		for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
-			if(strcasecmp(pmtab[i].name, name) == 0) {
-				return (*pmtab[i].proc)(widthp, heightp);
-			}
-		}
-		fprintf(stderr, "%s:  no such built-in bitmap \"%s\"\n",
-		        ProgramName, name);
-		return None;
+		return get_builtin_plain_pixmap(name, widthp, heightp);
 	}
 
 	/*
@@ -203,158 +178,4 @@ GetBitmapImage(char  *name, ColorPair cp)
 		fprintf(stderr, "Cannot open any %s bitmap file\n", name);
 	}
 	return (image);
-}
-
-
-
-
-static Pixmap CreateXLogoPixmap(unsigned int *widthp, unsigned int *heightp)
-{
-	int h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
-	if(h < 0) {
-		h = 0;
-	}
-
-	*widthp = *heightp = (unsigned int) h;
-	if(Scr->tbpm.xlogo == None) {
-		GC gc, gcBack;
-
-		Scr->tbpm.xlogo = XCreatePixmap(dpy, Scr->Root, h, h, 1);
-		gc = XCreateGC(dpy, Scr->tbpm.xlogo, 0L, NULL);
-		XSetForeground(dpy, gc, 0);
-		XFillRectangle(dpy, Scr->tbpm.xlogo, gc, 0, 0, h, h);
-		XSetForeground(dpy, gc, 1);
-		gcBack = XCreateGC(dpy, Scr->tbpm.xlogo, 0L, NULL);
-		XSetForeground(dpy, gcBack, 0);
-
-		/*
-		 * draw the logo large so that it gets as dense as possible; then white
-		 * out the edges so that they look crisp
-		 */
-		XmuDrawLogo(dpy, Scr->tbpm.xlogo, gc, gcBack, -1, -1, h + 2, h + 2);
-		XDrawRectangle(dpy, Scr->tbpm.xlogo, gcBack, 0, 0, h - 1, h - 1);
-
-		/*
-		 * done drawing
-		 */
-		XFreeGC(dpy, gc);
-		XFreeGC(dpy, gcBack);
-	}
-	return Scr->tbpm.xlogo;
-}
-
-
-static Pixmap CreateResizePixmap(unsigned int *widthp, unsigned int *heightp)
-{
-	int h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
-	if(h < 1) {
-		h = 1;
-	}
-
-	*widthp = *heightp = (unsigned int) h;
-	if(Scr->tbpm.resize == None) {
-		XPoint  points[3];
-		GC gc;
-		int w;
-		int lw;
-
-		/*
-		 * create the pixmap
-		 */
-		Scr->tbpm.resize = XCreatePixmap(dpy, Scr->Root, h, h, 1);
-		gc = XCreateGC(dpy, Scr->tbpm.resize, 0L, NULL);
-		XSetForeground(dpy, gc, 0);
-		XFillRectangle(dpy, Scr->tbpm.resize, gc, 0, 0, h, h);
-		XSetForeground(dpy, gc, 1);
-		lw = h / 16;
-		if(lw == 1) {
-			lw = 0;
-		}
-		XSetLineAttributes(dpy, gc, lw, LineSolid, CapButt, JoinMiter);
-
-		/*
-		 * draw the resize button,
-		 */
-		w = (h * 2) / 3;
-		points[0].x = w;
-		points[0].y = 0;
-		points[1].x = w;
-		points[1].y = w;
-		points[2].x = 0;
-		points[2].y = w;
-		XDrawLines(dpy, Scr->tbpm.resize, gc, points, 3, CoordModeOrigin);
-		w = w / 2;
-		points[0].x = w;
-		points[0].y = 0;
-		points[1].x = w;
-		points[1].y = w;
-		points[2].x = 0;
-		points[2].y = w;
-		XDrawLines(dpy, Scr->tbpm.resize, gc, points, 3, CoordModeOrigin);
-
-		/*
-		 * done drawing
-		 */
-		XFreeGC(dpy, gc);
-	}
-	return Scr->tbpm.resize;
-}
-
-
-#define questionmark_width 8
-#define questionmark_height 8
-static char questionmark_bits[] = {
-	0x38, 0x7c, 0x64, 0x30, 0x18, 0x00, 0x18, 0x18
-};
-
-static Pixmap CreateQuestionPixmap(unsigned int *widthp,
-                                   unsigned int *heightp)
-{
-	*widthp = questionmark_width;
-	*heightp = questionmark_height;
-	if(Scr->tbpm.question == None) {
-		Scr->tbpm.question = XCreateBitmapFromData(dpy, Scr->Root,
-		                     questionmark_bits,
-		                     questionmark_width,
-		                     questionmark_height);
-	}
-	/*
-	 * this must succeed or else we are in deep trouble elsewhere
-	 */
-	return Scr->tbpm.question;
-}
-
-
-static Pixmap CreateMenuPixmap(unsigned int *widthp, unsigned int *heightp)
-{
-	return (CreateMenuIcon(Scr->TBInfo.width - Scr->TBInfo.border * 2, widthp,
-	                       heightp));
-}
-
-static Pixmap CreateDotPixmap(unsigned int *widthp, unsigned int *heightp)
-{
-	int h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
-
-	h = h * 3 / 4;
-	if(h < 1) {
-		h = 1;
-	}
-	if(!(h & 1)) {
-		h--;
-	}
-	*widthp = *heightp = (unsigned int) h;
-	if(Scr->tbpm.delete == None) {
-		GC  gc;
-		Pixmap pix;
-
-		pix = Scr->tbpm.delete = XCreatePixmap(dpy, Scr->Root, h, h, 1);
-		gc = XCreateGC(dpy, pix, 0L, NULL);
-		XSetLineAttributes(dpy, gc, h, LineSolid, CapRound, JoinRound);
-		XSetForeground(dpy, gc, 0L);
-		XFillRectangle(dpy, pix, gc, 0, 0, h, h);
-		XSetForeground(dpy, gc, 1L);
-		XDrawLine(dpy, pix, gc, h / 2, h / 2, h / 2, h / 2);
-		XFreeGC(dpy, gc);
-	}
-	return Scr->tbpm.delete;
 }
