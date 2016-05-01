@@ -107,6 +107,7 @@
 
 #include "image.h"
 #include "image_bitmap.h"
+#include "image_bitmap_builtin.h"
 #ifdef JPEG
 #include "image_jpeg.h"
 #endif
@@ -2870,7 +2871,7 @@ Image *GetImage(char *name, ColorPair cp)
 
 		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
-			pm = FindBitmap(name, &width, &height);
+			pm = get_builtin_plain_pixmap(name, &width, &height);
 			if(pm == None) {
 				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
 				        ProgramName, name);
