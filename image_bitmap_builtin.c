@@ -37,8 +37,9 @@ static DEF_BI_PPM(CreateDotPixmap);
  * look nice in title buttons.  Eventually, it would be nice to put in a
  * menu symbol as well....
  */
-Pixmap get_builtin_plain_pixmap(char *name, unsigned int *widthp,
-                                unsigned int *heightp)
+Pixmap
+get_builtin_plain_pixmap(char *name, unsigned int *widthp,
+                         unsigned int *heightp)
 {
 	int i;
 	static struct {
@@ -272,7 +273,8 @@ static DEF_BI_SPM(Create3DBoxImage);
  * get with images specified as "xpm:something" (no leading colon).
  * That's not confusing at all.
  */
-Image *get_builtin_scalable_pixmap(char *name, ColorPair cp)
+Image *
+get_builtin_scalable_pixmap(char *name, ColorPair cp)
 {
 	int    i;
 	static struct {
@@ -778,7 +780,8 @@ static DEF_BI_ASPM(Create3DZoomInOutAnimation);
  * which we get with images specified as "xpm:something" (no leading
  * colon).  Still not confusing at _all_.
  */
-Image *get_builtin_animated_pixmap(char *name, ColorPair cp)
+Image *
+get_builtin_animated_pixmap(char *name, ColorPair cp)
 {
 	int    i;
 	static struct {
@@ -825,8 +828,9 @@ Image *get_builtin_animated_pixmap(char *name, ColorPair cp)
 /*
  * First a couple generator functions the actual functions use
  */
-static Image *Create3DResizeAnimation(Bool in, Bool left, Bool top,
-                                      ColorPair cp)
+static Image *
+Create3DResizeAnimation(Bool in, Bool left, Bool top,
+                        ColorPair cp)
 {
 	int         h, i, j;
 	Image       *image, *im, *im1;
@@ -871,7 +875,8 @@ static Image *Create3DResizeAnimation(Bool in, Bool left, Bool top,
 	return (image);
 }
 
-static Image *Create3DMenuAnimation(Bool up, ColorPair cp)
+static Image *
+Create3DMenuAnimation(Bool up, ColorPair cp)
 {
 	int   h, i, j;
 	Image *image, *im, *im1;
@@ -915,7 +920,8 @@ static Image *Create3DMenuAnimation(Bool up, ColorPair cp)
 	return (image);
 }
 
-static Image *Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp)
+static Image *
+Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp)
 {
 	int         h, i, j, k;
 	Image       *image, *im, *im1;

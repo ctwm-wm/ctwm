@@ -21,7 +21,9 @@ static void   xpmErrorMessage(int status, char *name, char *fullname);
 
 static int reportxpmerror = 1;
 
-static Image *LoadXpmImage(char *name, ColorPair cp)
+
+static Image *
+LoadXpmImage(char *name, ColorPair cp)
 {
 	char        *fullname;
 	Image       *image;
@@ -120,7 +122,8 @@ GetXpmImage(char *name, ColorPair cp)
 	return (image);
 }
 
-static void xpmErrorMessage(int status, char *name, char *fullname)
+static void
+xpmErrorMessage(int status, char *name, char *fullname)
 {
 	switch(status) {
 		case XpmSuccess:

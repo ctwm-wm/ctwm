@@ -24,7 +24,7 @@
 
 static Image *LoadBitmapImage(char  *name, ColorPair cp);
 static Pixmap FindBitmap(char *name, unsigned int *widthp,
-		unsigned int *heightp);
+                         unsigned int *heightp);
 
 
 
@@ -46,7 +46,7 @@ static Pixmap FindBitmap(char *name, unsigned int *widthp,
 
 static Pixmap
 FindBitmap(char *name, unsigned int *widthp,
-                  unsigned int *heightp)
+           unsigned int *heightp)
 {
 	char *bigname;
 	Pixmap pm;
