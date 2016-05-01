@@ -2873,8 +2873,7 @@ Image *GetImage(char *name, ColorPair cp)
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
 			pm = get_builtin_plain_pixmap(name, &width, &height);
 			if(pm == None) {
-				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
-				        ProgramName, name);
+				/* g_b_p_p() already warned */
 				return (None);
 			}
 			image = (Image *) malloc(sizeof(Image));

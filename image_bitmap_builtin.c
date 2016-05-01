@@ -67,7 +67,13 @@ Pixmap get_builtin_plain_pixmap(char *name, unsigned int *widthp,
 	/* Find it */
 	for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
 		if(strcasecmp(pmtab[i].name, name) == 0) {
-			return (*pmtab[i].proc)(widthp, heightp);
+			Pixmap pm = (*pmtab[i].proc)(widthp, heightp);
+			if(pm == None) {
+					fprintf(stderr, "%s:  unable to build bitmap \"%s\"\n",
+						    ProgramName, name);
+					return None;
+			}
+			return pm;
 		}
 	}
 
