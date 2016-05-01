@@ -4,7 +4,14 @@
 
 #include "ctwm.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #include <X11/xpm.h>
+
+#include "screen.h"
+#include "types.h"
+#include "util.h"
 
 #include "image.h"
 #include "image_xpm.h"
