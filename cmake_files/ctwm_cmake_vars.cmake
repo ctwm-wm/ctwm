@@ -27,6 +27,7 @@ set(CTWMSRC
 	icons.c
 	image_bitmap.c
 	image_bitmap_builtin.c
+	image_xwd.c
 	lex.c
 	list.c
 	menus.c
