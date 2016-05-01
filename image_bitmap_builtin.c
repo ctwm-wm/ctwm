@@ -4,6 +4,9 @@
 
 #include "ctwm.h"
 
+#include <stdio.h>
+#include <stdbool.h>
+
 #include <X11/X.h>
 #include <X11/Xmu/Drawing.h>
 
@@ -750,10 +753,10 @@ static DEF_BI_SPM(Create3DZoomImage)
 #define DEF_BI_ASPM(nm) Image *nm(ColorPair cp)
 
 /* Backend generators */
-static Image *Create3DResizeAnimation(Bool in, Bool left, Bool top,
+static Image *Create3DResizeAnimation(bool in, bool left, bool top,
                                       ColorPair cp);
-static Image *Create3DMenuAnimation(Bool up, ColorPair cp);
-static Image *Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp);
+static Image *Create3DMenuAnimation(bool up, ColorPair cp);
+static Image *Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp);
 
 /* Frontends */
 /* Using: ResizeAnimation */
@@ -829,7 +832,7 @@ get_builtin_animated_pixmap(char *name, ColorPair cp)
  * First a couple generator functions the actual functions use
  */
 static Image *
-Create3DResizeAnimation(Bool in, Bool left, Bool top,
+Create3DResizeAnimation(bool in, bool left, bool top,
                         ColorPair cp)
 {
 	int         h, i, j;
@@ -876,7 +879,7 @@ Create3DResizeAnimation(Bool in, Bool left, Bool top,
 }
 
 static Image *
-Create3DMenuAnimation(Bool up, ColorPair cp)
+Create3DMenuAnimation(bool up, ColorPair cp)
 {
 	int   h, i, j;
 	Image *image, *im, *im1;
@@ -921,7 +924,7 @@ Create3DMenuAnimation(Bool up, ColorPair cp)
 }
 
 static Image *
-Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp)
+Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp)
 {
 	int         h, i, j, k;
 	Image       *image, *im, *im1;
@@ -971,59 +974,59 @@ Create3DZoomAnimation(Bool in, Bool out, int n, ColorPair cp)
  */
 static DEF_BI_ASPM(Create3DResizeInTopAnimation)
 {
-	return Create3DResizeAnimation(TRUE, FALSE, TRUE, cp);
+	return Create3DResizeAnimation(true, false, true, cp);
 }
 
 static DEF_BI_ASPM(Create3DResizeOutTopAnimation)
 {
-	return Create3DResizeAnimation(False, FALSE, TRUE, cp);
+	return Create3DResizeAnimation(false, false, true, cp);
 }
 
 static DEF_BI_ASPM(Create3DResizeInBotAnimation)
 {
-	return Create3DResizeAnimation(TRUE, TRUE, FALSE, cp);
+	return Create3DResizeAnimation(true, true, false, cp);
 }
 
 static DEF_BI_ASPM(Create3DResizeOutBotAnimation)
 {
-	return Create3DResizeAnimation(False, TRUE, FALSE, cp);
+	return Create3DResizeAnimation(false, true, false, cp);
 }
 
 
 static DEF_BI_ASPM(Create3DMenuUpAnimation)
 {
-	return Create3DMenuAnimation(TRUE, cp);
+	return Create3DMenuAnimation(true, cp);
 }
 
 static DEF_BI_ASPM(Create3DMenuDownAnimation)
 {
-	return Create3DMenuAnimation(False, cp);
+	return Create3DMenuAnimation(false, cp);
 }
 
 
 static DEF_BI_ASPM(Create3DMazeInAnimation)
 {
-	return Create3DZoomAnimation(TRUE, FALSE, 6, cp);
+	return Create3DZoomAnimation(true, false, 6, cp);
 }
 
 static DEF_BI_ASPM(Create3DMazeOutAnimation)
 {
-	return Create3DZoomAnimation(FALSE, TRUE, 6, cp);
+	return Create3DZoomAnimation(false, true, 6, cp);
 }
 
 static DEF_BI_ASPM(Create3DZoomInAnimation)
 {
-	return Create3DZoomAnimation(TRUE, FALSE, 0, cp);
+	return Create3DZoomAnimation(true, false, 0, cp);
 }
 
 static DEF_BI_ASPM(Create3DZoomOutAnimation)
 {
-	return Create3DZoomAnimation(FALSE, TRUE, 0, cp);
+	return Create3DZoomAnimation(false, true, 0, cp);
 }
 
 static DEF_BI_ASPM(Create3DZoomInOutAnimation)
 {
-	return Create3DZoomAnimation(TRUE, TRUE, 0, cp);
+	return Create3DZoomAnimation(true, true, 0, cp);
 }
 
 #undef DEF_BI_ASPM
