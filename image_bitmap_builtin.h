@@ -12,5 +12,6 @@
 
 Pixmap get_builtin_plain_pixmap(char *name, unsigned int *widthp,
                   unsigned int *heightp);
+Image *get_builtin_scalable_pixmap(char *name, ColorPair cp);
 
 #endif /* _IMAGE_BITMAP_BUILTIN_H */

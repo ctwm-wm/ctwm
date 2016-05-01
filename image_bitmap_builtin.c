@@ -240,3 +240,499 @@ DEF_BI_PPM(CreateDotPixmap)
 }
 
 #undef DEF_BI_PPM
+
+
+
+/*
+ * Next, the "3D/scalable" builtins.  These are the ones specified with
+ * names like ":xpm:resize".  I'm not entirely clear on how these differ
+ * from ":resize"; they both vary by UseThreeDTitles and look the same.
+ * But, whatever.
+ *
+ * These yield [ctwm struct] Image's rather than [X11 type] Pixmap's.
+ */
+#define DEF_BI_SPM(nm) Image *nm(ColorPair cp)
+static DEF_BI_SPM(Create3DMenuImage);
+static DEF_BI_SPM(Create3DDotImage);
+static DEF_BI_SPM(Create3DResizeImage);
+static DEF_BI_SPM(Create3DZoomImage);
+static DEF_BI_SPM(Create3DBarImage);
+static DEF_BI_SPM(Create3DVertBarImage);
+static DEF_BI_SPM(Create3DCrossImage);
+static DEF_BI_SPM(Create3DIconifyImage);
+static DEF_BI_SPM(Create3DSunkenResizeImage);
+static DEF_BI_SPM(Create3DBoxImage);
+
+
+/*
+ * Main lookup
+ *
+ * This is where we find ":xpm:something".  Note that these are _not_
+ * XPM's, and have no relation to the configurable XPM support, which we
+ * get with images specified as "xpm:something" (no leading colon).
+ * That's not confusing at all.
+ */
+Image *get_builtin_scalable_pixmap(char *name, ColorPair cp)
+{
+	int    i;
+	static struct {
+		char *name;
+		DEF_BI_SPM((*proc));
+	} pmtab[] = {
+		/* Lookup for ":xpm:" pixmaps */
+		{ TBPM_3DDOT,       Create3DDotImage },
+		{ TBPM_3DRESIZE,    Create3DResizeImage },
+		{ TBPM_3DMENU,      Create3DMenuImage },
+		{ TBPM_3DZOOM,      Create3DZoomImage },
+		{ TBPM_3DBAR,       Create3DBarImage },
+		{ TBPM_3DVBAR,      Create3DVertBarImage },
+		{ TBPM_3DCROSS,     Create3DCrossImage },
+		{ TBPM_3DICONIFY,   Create3DIconifyImage },
+		{ TBPM_3DBOX,       Create3DBoxImage },
+		{ TBPM_3DSUNKEN_RESIZE, Create3DSunkenResizeImage },
+	};
+
+	/* Seatbelts */
+	if(!name || (strncmp(name, ":xpm:", 5) != 0)) {
+		return None;
+	}
+
+	for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
+		if(strcasecmp(pmtab[i].name, name) == 0) {
+			Image *image = (*pmtab[i].proc)(cp);
+			if(image == None) {
+				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
+						ProgramName, name);
+				return (None);
+			}
+			return image;
+		}
+	}
+
+	fprintf(stderr, "%s:  no such built-in pixmap \"%s\"\n", ProgramName, name);
+	return (None);
+}
+
+
+
+#define LEVITTE_TEST
+static DEF_BI_SPM(Create3DCrossImage)
+{
+	Image *image;
+	int        h;
+	int    point;
+	int midpoint;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+	point = 4;
+	midpoint = h / 2;
+
+	image = (Image *)malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+
+#ifdef LEVITTE_TEST
+	FB(cp.shadc, cp.shadd);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point + 1, point - 1, point - 1,
+	          point + 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point + 1, point, point,
+	          point + 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point - 1, point + 1, midpoint - 2,
+	          midpoint);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, midpoint, midpoint + 2,
+	          h - point - 3, h - point - 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point + 1, h - point - 3,
+	          h - point - 2);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point - 1, h - point - 2,
+	          midpoint - 2, midpoint);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, midpoint, midpoint - 2,
+	          h - point - 2, point - 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, h - point - 2,
+	          h - point - 2, point);
+#endif
+
+	FB(cp.shadd, cp.shadc);
+#ifdef LEVITTE_TEST
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point + 2, point + 1,
+	          h - point - 1, h - point - 2);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point + 2, point, midpoint,
+	          midpoint - 2);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, midpoint + 2, midpoint, h - point,
+	          h - point - 2);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point, h - point - 2,
+	          h - point - 2, h - point);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point - 1, h - point - 2,
+	          h - point - 2, h - point - 1);
+#else
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point, h - point - 1,
+	          h - point - 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point - 1, point, h - point - 1,
+	          h - point);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point - 1, h - point,
+	          h - point - 1);
+#endif
+
+#ifdef LEVITTE_TEST
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, h - point - 1, point,
+	          h - point - 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point - 1, point,
+	          h - point - 1, point);
+#else
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, h - point - 1,
+	          h - point - 1, point);
+#endif
+#ifdef LEVITTE_TEST
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point + 1, h - point - 1,
+	          h - point - 1, point + 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point + 1, h - point, midpoint,
+	          midpoint + 2);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, midpoint + 2, midpoint, h - point,
+	          point + 1);
+#else
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point - 1, h - point - 1,
+	          h - point - 1, point - 1);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, h - point, h - point,
+	          point);
+#endif
+
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+
+	return (image);
+}
+#undef LEVITTE_TEST
+
+static DEF_BI_SPM(Create3DIconifyImage)
+{
+	Image *image;
+	int     h;
+	int point;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+	point = ((h / 2 - 2) * 2 + 1) / 3;
+
+	image = (Image *)malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	FB(cp.shadd, cp.shadc);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point, h / 2, h - point);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point, h - point, point);
+
+	FB(cp.shadc, cp.shadd);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point, point, h / 2 + 1,
+	          h - point);
+	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point - 1, point + 1,
+	          h / 2 + 1, h - point - 1);
+
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DSunkenResizeImage)
+{
+	int     h;
+	Image *image;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *)malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap, 3, 3, h - 6, h - 6, 1, cp, on, True, False);
+	Draw3DBorder(image->pixmap, 3, ((h - 6) / 3) + 3, ((h - 6) * 2 / 3) + 1,
+	             ((h - 6) * 2 / 3) + 1, 1, cp, on, True, False);
+	Draw3DBorder(image->pixmap, 3, ((h - 6) * 2 / 3) + 3, ((h - 6) / 3) + 1,
+	             ((h - 6) / 3) + 1, 1, cp, on, True, False);
+
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DBoxImage)
+{
+	int     h;
+	Image   *image;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap, (h / 2) - 4, (h / 2) - 4, 9, 9, 1, cp,
+	             off, True, False);
+
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DDotImage)
+{
+	Image *image;
+	int   h;
+	static int idepth = 2;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap, (h / 2) - idepth,
+	             (h / 2) - idepth,
+	             2 * idepth + 1,
+	             2 * idepth + 1,
+	             idepth, cp, off, True, False);
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DBarImage)
+{
+	Image *image;
+	int   h;
+	static int idepth = 2;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap,
+	             Scr->TitleButtonShadowDepth + 2,
+	             (h / 2) - idepth,
+	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
+	             2 * idepth + 1,
+	             idepth, cp, off, True, False);
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DVertBarImage)
+{
+	Image *image;
+	int   h;
+	static int idepth = 2;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap,
+	             (h / 2) - idepth,
+	             Scr->TitleButtonShadowDepth + 2,
+	             2 * idepth + 1,
+	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
+	             idepth, cp, off, True, False);
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DMenuImage)
+{
+	Image *image;
+	int   h, i;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	for(i = 4; i < h - 7; i += 5) {
+		Draw3DBorder(image->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
+	}
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DResizeImage)
+{
+	Image *image;
+	int   h;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap, 0, h / 4, ((3 * h) / 4) + 1, ((3 * h) / 4) + 1, 2,
+	             cp, off, True, False);
+	Draw3DBorder(image->pixmap, 0, h / 2, (h / 2) + 1, (h / 2) + 1, 2, cp, off,
+	             True, False);
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+	return (image);
+}
+
+static DEF_BI_SPM(Create3DZoomImage)
+{
+	Image *image;
+	int         h;
+	static int idepth = 2;
+
+	h = Scr->TBInfo.width - Scr->TBInfo.border * 2;
+	if(!(h & 1)) {
+		h--;
+	}
+
+	image = (Image *) malloc(sizeof(Image));
+	if(! image) {
+		return (None);
+	}
+	image->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
+	if(image->pixmap == None) {
+		free(image);
+		return (None);
+	}
+
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
+	             True, False);
+	Draw3DBorder(image->pixmap, Scr->TitleButtonShadowDepth + 2,
+	             Scr->TitleButtonShadowDepth + 2,
+	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
+	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
+	             idepth, cp, off, True, False);
+
+	image->mask   = None;
+	image->width  = h;
+	image->height = h;
+	image->next   = None;
+	return (image);
+}
+
+#undef DEF_BI_SPM
