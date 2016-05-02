@@ -28,72 +28,13 @@ static int reportxpmerror = 1;
 Image *
 GetXpmImage(char *name, ColorPair cp)
 {
-	Image   *image, *s;
-	char    *pref, *perc;
-	int     i;
-
 	/* For non-animated requests, just load the file */
 	if(! strchr(name, '%')) {
 		return (LoadXpmImage(name, cp));
 	}
 
-	/*
-	 * For animated requests, we load a series of files, replacing the %
-	 * with numbers in series.
-	 */
-	s = image = None;
-
-	/* Working copy of the filename split to before/after the % */
-	pref = strdup(name);
-	perc = strchr(pref, '%');
-	*perc = '\0';
-	if(*++perc == '\0') {
-		/* Safety belt */
-		fprintf(stderr, "Nothing after the percent in '%s'!\n", name);
-		free(pref);
-		return None;
-	}
-
-	/* "foo%.xpm" -> [ "foo1.xpm", "foo2.xpm", ...] */
-	for(i = 1 ; ; i++) {
-		char path[256];
-		Image *r;
-
-		snprintf(path, 256, "%s%d%s", pref, i, perc);
-
-		/*
-		 * Load this image, and set ->next so it's explicitly the
-		 * [current] tail of the list.
-		 */
-		r = LoadXpmImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next = None;
-
-		/*
-		 * If it's the first, it's the head (image) we return, as well as
-		 * our current tail marker (s).  Else, append to that tail.
-		 */
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	free(pref);
-
-	/* Set the tail to loop back to the head */
-	if(s != None) {
-		s->next = image;
-	}
-
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s XPM file\n", name);
-	}
-	return (image);
+	/* Else it's animated, so load/return the series */
+	return get_image_anim_cp(name, cp, LoadXpmImage);
 }
 
 

@@ -229,3 +229,97 @@ ExpandPixmapPath(char *name)
 	 */
 	return strdup(name);
 }
+
+
+/*
+ * Generalized loader for animations.
+ *
+ * These are specified with a '%' in the filename, which is replaced by a
+ * series of numbers.  So e.g.
+ *
+ * "foo%.xpm" -> [ "foo1.xpm", "foo2.xpm", ...]
+ *
+ * These then turn into a looped-linked-list of Image's.  We support
+ * these for all types of images, so write it up into a central handler
+ * once to centralize the logic.
+ */
+Image *
+get_image_anim_cp(const char *name,
+                  ColorPair cp, Image *(*imgloader)(char *, ColorPair))
+{
+	Image   *head, *tail;
+	char    *pref, *suff, *stmp;
+	int     i;
+
+	/* This shouldn't get called for non-animations */
+	if((stmp = strchr(name, '%')) == NULL) {
+		fprintf(stderr, "%s() called for non-animation '%s'\n", __func__, name);
+		return None;
+	}
+	if(stmp[1] == '\0') {
+		fprintf(stderr, "%s(): nothing after %% in '%s'\n", __func__, name);
+		return None;
+	}
+	stmp = NULL;
+
+	/*
+	 * For animated requests, we load a series of files, replacing the %
+	 * with numbers in series.
+	 */
+	tail = head = None;
+
+	/* Working copy of the filename split to before/after the % */
+	pref = strdup(name);
+	suff = strchr(pref, '%');
+	*suff++ = '\0';
+
+	/* "foo%.xpm" -> [ "foo1.xpm", "foo2.xpm", ...] */
+	for(i = 1 ; ; i++) {
+#define ANIM_PATHLEN 256
+		char path[ANIM_PATHLEN];
+		Image *tmp;
+
+		if(snprintf(path, ANIM_PATHLEN, "%s%d%s", pref, i, suff) >= (ANIM_PATHLEN - 1)) {
+			fprintf(stderr, "%s(): generated filename for '%s' #%d longer than %d.\n",
+			        __func__, name, i, ANIM_PATHLEN);
+			FreeImage(head);
+			return None;
+		}
+#undef ANIM_PATHLEN
+
+		/*
+		 * Load this image, and set ->next so it's explicitly the
+		 * [current] tail of the list.
+		 */
+		tmp = imgloader(path, cp);
+		if(tmp == None) {
+			break;
+		}
+		tmp->next = None;
+
+		/*
+		 * If it's the first, it's the head (image) we return, as well as
+		 * our current tail marker (s).  Else, append to that tail.
+		 */
+		if(head == None) {
+			tail = head = tmp;
+		}
+		else {
+			tail->next = tmp;
+			tail = tmp;
+		}
+	}
+	free(pref);
+
+	/* Set the tail to loop back to the head */
+	if(tail != None) {
+		tail->next = head;
+	}
+
+	/* Warn if we got nothing */
+	if(head == None) {
+		fprintf(stderr, "Cannot find any image frames for '%s'\n", name);
+	}
+
+	return head;
+}
