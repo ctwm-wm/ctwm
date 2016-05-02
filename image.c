@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "screen.h"
 #include "types.h"
@@ -160,4 +161,48 @@ FreeImage(Image *image)
 		free(im);
 		im = im2;
 	}
+}
+
+
+
+/*
+ * Utils for image*
+ */
+
+/*
+ * Expand out the real pathname for an image.  Turn ~ into $HOME if
+ * it's there, and look under the entries in PixmapDirectory if the
+ * result isn't a full path.
+ */
+char *
+ExpandPixmapPath(char *name)
+{
+	char    *ret, *colon;
+
+	ret = NULL;
+	if(name[0] == '~') {
+		ret = (char *) malloc(HomeLen + strlen(name) + 2);
+		sprintf(ret, "%s/%s", Home, &name[1]);
+	}
+	else if(name[0] == '/') {
+		ret = (char *) malloc(strlen(name) + 1);
+		strcpy(ret, name);
+	}
+	else if(Scr->PixmapDirectory) {
+		char *p = Scr->PixmapDirectory;
+		while((colon = strchr(p, ':'))) {
+			*colon = '\0';
+			ret = (char *) malloc(strlen(p) + strlen(name) + 2);
+			sprintf(ret, "%s/%s", p, name);
+			*colon = ':';
+			if(!access(ret, R_OK)) {
+				return (ret);
+			}
+			free(ret);
+			p = colon + 1;
+		}
+		ret = (char *) malloc(strlen(p) + strlen(name) + 2);
+		sprintf(ret, "%s/%s", p, name);
+	}
+	return (ret);
 }

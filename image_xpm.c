@@ -179,7 +179,7 @@ xpmErrorMessage(int status, char *name, char *fullname)
 			return;
 
 		case XpmOpenFailed:
-			if(reportxpmerror && reportfilenotfound) {
+			if(1 || (reportxpmerror && reportfilenotfound)) {
 				fprintf(stderr, "unable to locate XPM file : %s\n", fullname);
 			}
 			return;

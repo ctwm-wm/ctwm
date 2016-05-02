@@ -27,4 +27,6 @@ void FreeImage(Image *image);
 extern bool reportfilenotfound;
 extern Colormap AlternateCmap;
 
+char *ExpandPixmapPath(char *name);
+
 #endif /* _IMAGE_H */

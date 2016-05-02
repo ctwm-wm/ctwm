@@ -104,7 +104,6 @@ extern void     MoveOutline(Window root,
 extern void     GetUnknownIcon(char *name);
 extern char     *ExpandFilename(char *name);
 extern char     *ExpandFilePath(char *path);
-extern char     *ExpandPixmapPath(char *name);
 
 void MaskScreen(char *file);
 void UnmaskScreen(void);

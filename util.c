@@ -384,37 +384,6 @@ char *ExpandFilename(char *name)
 	return newname;
 }
 
-char *ExpandPixmapPath(char *name)
-{
-	char    *ret, *colon;
-
-	ret = NULL;
-	if(name[0] == '~') {
-		ret = (char *) malloc(HomeLen + strlen(name) + 2);
-		sprintf(ret, "%s/%s", Home, &name[1]);
-	}
-	else if(name[0] == '/') {
-		ret = (char *) malloc(strlen(name) + 1);
-		strcpy(ret, name);
-	}
-	else if(Scr->PixmapDirectory) {
-		char *p = Scr->PixmapDirectory;
-		while((colon = strchr(p, ':'))) {
-			*colon = '\0';
-			ret = (char *) malloc(strlen(p) + strlen(name) + 2);
-			sprintf(ret, "%s/%s", p, name);
-			*colon = ':';
-			if(!access(ret, R_OK)) {
-				return (ret);
-			}
-			free(ret);
-			p = colon + 1;
-		}
-		ret = (char *) malloc(strlen(p) + strlen(name) + 2);
-		sprintf(ret, "%s/%s", p, name);
-	}
-	return (ret);
-}
 
 /***********************************************************************
  *
