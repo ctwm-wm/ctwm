@@ -576,7 +576,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 
 		if(XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap,
 		                &JunkRoot, &JunkX, &JunkY, &IconWidth, &IconHeight, &JunkBW, &IconDepth)) {
-			image = (Image *) malloc(sizeof(Image));
+			image = AllocImage();
 			image->width  = IconWidth;
 			image->height = IconHeight;
 			image->pixmap = XCreatePixmap(dpy, Scr->Root, image->width,

@@ -62,7 +62,7 @@ LoadXpmImage(const char *name, ColorPair cp)
 		return (None);
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(image == None) {
 		free(fullname);
 		return (None);

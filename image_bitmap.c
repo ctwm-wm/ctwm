@@ -146,7 +146,7 @@ LoadBitmapImage(const char *name, ColorPair cp)
 		return (None);
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	image->pixmap = XCreatePixmap(dpy, Scr->Root, width, height, Scr->d_depth);
 	gcvalues.background = cp.back;
 	gcvalues.foreground = cp.fore;

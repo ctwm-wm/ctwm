@@ -99,7 +99,7 @@ LoadJpegImage(const char *name)
 		return (None);
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(image == None) {
 		free(fullname);
 		return (None);

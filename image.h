@@ -20,6 +20,7 @@ struct Image {
 
 
 Image *GetImage(const char *name, ColorPair cp);
+Image *AllocImage(void);
 void FreeImage(Image *image);
 
 

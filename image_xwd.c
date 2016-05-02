@@ -194,7 +194,7 @@ file_opened:
 		h = Scr->rooth;
 	}
 
-	ret = (Image *) malloc(sizeof(Image));
+	ret = AllocImage();
 	if(! ret) {
 		fprintf(stderr, "unable to allocate memory for image : %s\n", filename);
 		free(image);

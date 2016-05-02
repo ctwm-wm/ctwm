@@ -1799,7 +1799,7 @@ void HandlePropertyNotify(void)
 					/* Release the existing Image: it may be a shared one (UnknownIcon) */
 					ReleaseImage(icon);
 					/* conjure up a new Image */
-					Image *image = (Image *) calloc(1, sizeof(Image));
+					Image *image = AllocImage();
 					image->pixmap = pm;
 					image->width  = icon->width;
 					image->height = icon->height;

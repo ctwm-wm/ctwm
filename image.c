@@ -112,7 +112,7 @@ GetImage(const char *name, ColorPair cp)
 				/* g_b_p_p() already warned */
 				return (None);
 			}
-			image = (Image *) malloc(sizeof(Image));
+			image = AllocImage();
 			image->pixmap = XCreatePixmap(dpy, Scr->Root, width, height, Scr->d_depth);
 			if(Scr->rootGC == (GC) 0) {
 				Scr->rootGC = XCreateGC(dpy, Scr->Root, 0, &gcvalues);
@@ -142,8 +142,14 @@ GetImage(const char *name, ColorPair cp)
 
 
 /*
- * Cleanup an image
+ * Creation/cleanup of Image structs
  */
+Image *
+AllocImage(void)
+{
+	return calloc(1, sizeof(Image));
+}
+
 void
 FreeImage(Image *image)
 {
