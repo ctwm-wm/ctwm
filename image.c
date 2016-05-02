@@ -245,7 +245,7 @@ ExpandPixmapPath(char *name)
  */
 Image *
 get_image_anim_cp(const char *name,
-                  ColorPair cp, Image *(*imgloader)(char *, ColorPair))
+                  ColorPair cp, Image * (*imgloader)(char *, ColorPair))
 {
 	Image   *head, *tail;
 	char    *pref, *suff, *stmp;
@@ -279,7 +279,8 @@ get_image_anim_cp(const char *name,
 		char path[ANIM_PATHLEN];
 		Image *tmp;
 
-		if(snprintf(path, ANIM_PATHLEN, "%s%d%s", pref, i, suff) >= (ANIM_PATHLEN - 1)) {
+		if(snprintf(path, ANIM_PATHLEN, "%s%d%s", pref, i,
+		                suff) >= (ANIM_PATHLEN - 1)) {
 			fprintf(stderr, "%s(): generated filename for '%s' #%d longer than %d.\n",
 			        __func__, name, i, ANIM_PATHLEN);
 			FreeImage(head);

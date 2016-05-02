@@ -29,6 +29,6 @@ extern Colormap AlternateCmap;
 
 char *ExpandPixmapPath(char *name);
 Image *get_image_anim_cp(const char *name, ColorPair cp,
-                         Image *(*imgloader)(char *, ColorPair));
+                         Image * (*imgloader)(char *, ColorPair));
 
 #endif /* _IMAGE_H */
