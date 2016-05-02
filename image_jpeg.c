@@ -60,7 +60,7 @@ GetJpegImage(char *name)
 	}
 
 	/* Animated */
-	return get_image_anim_cp(name, (ColorPair){}, LoadJpegImageCp);
+	return get_image_anim_cp(name, (ColorPair) {}, LoadJpegImageCp);
 }
 
 
