@@ -80,19 +80,12 @@ FindBitmap(char *name, unsigned int *widthp,
 	pm = XmuLocateBitmapFile(ScreenOfDisplay(dpy, Scr->screen), bigname, NULL,
 	                         0, (int *)widthp, (int *)heightp, &HotX, &HotY);
 	if(pm == None && Scr->IconDirectory && bigname[0] != '/') {
-		free(bigname);
-
 		/*
-		 * Attempt to find icon in old IconDirectory (now obsolete)
+		 * Didn't find it.  Attempt to find icon in old IconDirectory
+		 * (now obsolete)
 		 */
-		bigname = (char *) malloc(strlen(name) + strlen(Scr->IconDirectory) + 2);
-		if(!bigname) {
-			fprintf(stderr,
-			        "%s:  unable to allocate memory for \"%s/%s\"\n",
-			        ProgramName, Scr->IconDirectory, name);
-			return None;
-		}
-		(void) sprintf(bigname, "%s/%s", Scr->IconDirectory, name);
+		free(bigname);
+		asprintf(&bigname, "%s/%s", Scr->IconDirectory, name);
 		if(XReadBitmapFile(dpy, Scr->Root, bigname, widthp, heightp, &pm,
 		                   &HotX, &HotY) != BitmapSuccess) {
 			pm = None;
