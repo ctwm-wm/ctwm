@@ -30,40 +30,13 @@ static void swaplong(char *bp, unsigned n);
 Image *
 GetXwdImage(char *name, ColorPair cp)
 {
-	Image *image, *r, *s;
-	char  path [128];
-	char  pref [128], *perc;
-	int   i;
-
+	/* Non-animated */
 	if(! strchr(name, '%')) {
 		return (LoadXwdImage(name, cp));
 	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadXwdImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next   = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s xwd file\n", name);
-	}
-	return (image);
+
+	/* Animated */
+	return get_image_anim_cp(name, cp, LoadXwdImage);
 }
 
 

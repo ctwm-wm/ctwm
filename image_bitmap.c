@@ -45,40 +45,13 @@ GetBitmap(char *name)
 Image *
 GetBitmapImage(char  *name, ColorPair cp)
 {
-	Image       *image, *r, *s;
-	char        path [128], pref [128];
-	char        *perc;
-	int         i;
-
+	/* Non-animated */
 	if(! strchr(name, '%')) {
 		return (LoadBitmapImage(name, cp));
 	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadBitmapImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s bitmap file\n", name);
-	}
-	return (image);
+
+	/* Animated */
+	return get_image_anim_cp(name, cp, LoadBitmapImage);
 }
 
 
