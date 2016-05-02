@@ -302,6 +302,11 @@ void Zoom(Window wf, Window wt)
 }
 
 
+/*
+ * Rewrite this, possibly in terms of replace_substr().  Alternately, the
+ * places it's being used might be better served by being preprocesses
+ * into arrays anyway.
+ */
 char *ExpandFilePath(char *path)
 {
 	char *ret, *colon, *p;
