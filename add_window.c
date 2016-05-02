@@ -1877,7 +1877,7 @@ static void CreateHighlightWindows(TwmWindow *tmp_win)
 		               &gcv);
 		if(gc) {
 			XCopyPlane(dpy, bm, pm, gc, 0, 0, gray_width, gray_height, 0, 0, 1);
-			tmp_win->HiliteImage = (Image *) malloc(sizeof(Image));
+			tmp_win->HiliteImage = AllocImage();
 			tmp_win->HiliteImage->pixmap = pm;
 			tmp_win->HiliteImage->width  = gray_width;
 			tmp_win->HiliteImage->height = gray_height;

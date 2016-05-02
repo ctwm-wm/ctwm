@@ -41,7 +41,7 @@ static DEF_BI_PPM(CreateDotPixmap);
  * menu symbol as well....
  */
 Pixmap
-get_builtin_plain_pixmap(char *name, unsigned int *widthp,
+get_builtin_plain_pixmap(const char *name, unsigned int *widthp,
                          unsigned int *heightp)
 {
 	int i;
@@ -277,7 +277,7 @@ static DEF_BI_SPM(Create3DBoxImage);
  * That's not confusing at all.
  */
 Image *
-get_builtin_scalable_pixmap(char *name, ColorPair cp)
+get_builtin_scalable_pixmap(const char *name, ColorPair cp)
 {
 	int    i;
 	static struct {
@@ -335,7 +335,7 @@ static DEF_BI_SPM(Create3DCrossImage)
 	point = 4;
 	midpoint = h / 2;
 
-	image = (Image *)malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -412,10 +412,8 @@ static DEF_BI_SPM(Create3DCrossImage)
 	          point);
 #endif
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -433,7 +431,7 @@ static DEF_BI_SPM(Create3DIconifyImage)
 	}
 	point = ((h / 2 - 2) * 2 + 1) / 3;
 
-	image = (Image *)malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -455,10 +453,8 @@ static DEF_BI_SPM(Create3DIconifyImage)
 	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point - 1, point + 1,
 	          h / 2 + 1, h - point - 1);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -473,7 +469,7 @@ static DEF_BI_SPM(Create3DSunkenResizeImage)
 		h--;
 	}
 
-	image = (Image *)malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -491,10 +487,8 @@ static DEF_BI_SPM(Create3DSunkenResizeImage)
 	Draw3DBorder(image->pixmap, 3, ((h - 6) * 2 / 3) + 3, ((h - 6) / 3) + 1,
 	             ((h - 6) / 3) + 1, 1, cp, on, True, False);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -509,7 +503,7 @@ static DEF_BI_SPM(Create3DBoxImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -524,10 +518,8 @@ static DEF_BI_SPM(Create3DBoxImage)
 	Draw3DBorder(image->pixmap, (h / 2) - 4, (h / 2) - 4, 9, 9, 1, cp,
 	             off, True, False);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -543,7 +535,7 @@ static DEF_BI_SPM(Create3DDotImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -560,10 +552,8 @@ static DEF_BI_SPM(Create3DDotImage)
 	             2 * idepth + 1,
 	             2 * idepth + 1,
 	             idepth, cp, off, True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -578,7 +568,7 @@ static DEF_BI_SPM(Create3DBarImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -596,10 +586,8 @@ static DEF_BI_SPM(Create3DBarImage)
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             2 * idepth + 1,
 	             idepth, cp, off, True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -614,7 +602,7 @@ static DEF_BI_SPM(Create3DVertBarImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -632,10 +620,8 @@ static DEF_BI_SPM(Create3DVertBarImage)
 	             2 * idepth + 1,
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             idepth, cp, off, True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -649,7 +635,7 @@ static DEF_BI_SPM(Create3DMenuImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -664,10 +650,8 @@ static DEF_BI_SPM(Create3DMenuImage)
 	for(i = 4; i < h - 7; i += 5) {
 		Draw3DBorder(image->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
 	}
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -681,7 +665,7 @@ static DEF_BI_SPM(Create3DResizeImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -697,10 +681,8 @@ static DEF_BI_SPM(Create3DResizeImage)
 	             cp, off, True, False);
 	Draw3DBorder(image->pixmap, 0, h / 2, (h / 2) + 1, (h / 2) + 1, 2, cp, off,
 	             True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -715,7 +697,7 @@ static DEF_BI_SPM(Create3DZoomImage)
 		h--;
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(! image) {
 		return (None);
 	}
@@ -733,10 +715,8 @@ static DEF_BI_SPM(Create3DZoomImage)
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             idepth, cp, off, True, False);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -784,7 +764,7 @@ static DEF_BI_ASPM(Create3DZoomInOutAnimation);
  * colon).  Still not confusing at _all_.
  */
 Image *
-get_builtin_animated_pixmap(char *name, ColorPair cp)
+get_builtin_animated_pixmap(const char *name, ColorPair cp)
 {
 	int    i;
 	static struct {
@@ -845,7 +825,7 @@ Create3DResizeAnimation(bool in, bool left, bool top,
 
 	image = im1 = None;
 	for(i = (in ? 0 : (h / 4) - 1); (i < h / 4) && (i >= 0); i += (in ? 1 : -1)) {
-		im = (Image *) malloc(sizeof(Image));
+		im = AllocImage();
 		if(! im) {
 			return (None);
 		}
@@ -891,7 +871,7 @@ Create3DMenuAnimation(bool up, ColorPair cp)
 
 	image = im1 = None;
 	for(j = (up ? 4 : 0); j != (up ? -1 : 5); j += (up ? -1 : 1)) {
-		im = (Image *) malloc(sizeof(Image));
+		im = AllocImage();
 		if(! im) {
 			return (None);
 		}
@@ -941,7 +921,7 @@ Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp)
 	image = im1 = None;
 	for(j = (out ? -1 : 1) ; j < (in ? 2 : 0); j += 2) {
 		for(k = (j > 0 ? 0 : n - 1) ; (k >= 0) && (k < n); k += j) {
-			im = (Image *) malloc(sizeof(Image));
+			im = AllocImage();
 			im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
 			Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
 			             False);

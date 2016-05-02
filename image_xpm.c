@@ -16,14 +16,34 @@
 #include "image.h"
 #include "image_xpm.h"
 
-static Image *LoadXpmImage(char  *name, ColorPair cp);
-static void   xpmErrorMessage(int status, char *name, char *fullname);
+static Image *LoadXpmImage(const char  *name, ColorPair cp);
+static void xpmErrorMessage(int status, const char *name, const char *fullname);
 
 static int reportxpmerror = 1;
 
 
+/*
+ * External entry point
+ */
+Image *
+GetXpmImage(const char *name, ColorPair cp)
+{
+	/* For non-animated requests, just load the file */
+	if(! strchr(name, '%')) {
+		return (LoadXpmImage(name, cp));
+	}
+
+	/* Else it's animated, so load/return the series */
+	return get_image_anim_cp(name, cp, LoadXpmImage);
+}
+
+
+
+/*
+ * Internal backend
+ */
 static Image *
-LoadXpmImage(char *name, ColorPair cp)
+LoadXpmImage(const char *name, ColorPair cp)
 {
 	char        *fullname;
 	Image       *image;
@@ -42,8 +62,9 @@ LoadXpmImage(char *name, ColorPair cp)
 		return (None);
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(image == None) {
+		free(fullname);
 		return (None);
 	}
 
@@ -72,62 +93,23 @@ LoadXpmImage(char *name, ColorPair cp)
 	                             &(image->pixmap), &(image->mask), &attributes);
 	if(status != XpmSuccess) {
 		xpmErrorMessage(status, name, fullname);
-		free(image);
 		free(fullname);
+		free(image);
 		return (None);
 	}
 	free(fullname);
 	image->width  = attributes.width;
 	image->height = attributes.height;
-	image->next   = None;
-	return (image);
-}
-
-Image *
-GetXpmImage(char *name, ColorPair cp)
-{
-	char    path [128], pref [128];
-	Image   *image, *r, *s;
-	char    *perc;
-	int     i;
-
-	if(! strchr(name, '%')) {
-		return (LoadXpmImage(name, cp));
-	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadXpmImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s XPM file\n", name);
-	}
 	return (image);
 }
 
 static void
-xpmErrorMessage(int status, char *name, char *fullname)
+xpmErrorMessage(int status, const char *name, const char *fullname)
 {
 	switch(status) {
 		case XpmSuccess:
-			break;
+			/* No error */
+			return;
 
 		case XpmColorError:
 			if(reportxpmerror)

@@ -22,11 +22,42 @@
 #include "image_bitmap_builtin.h"
 
 
-static Image *LoadBitmapImage(char  *name, ColorPair cp);
-static Pixmap FindBitmap(char *name, unsigned int *widthp,
+static Image *LoadBitmapImage(const char  *name, ColorPair cp);
+static Pixmap FindBitmap(const char *name, unsigned int *widthp,
                          unsigned int *heightp);
 
 
+/*
+ * External API's
+ */
+
+/* Simple load-by-name */
+Pixmap
+GetBitmap(const char *name)
+{
+	return FindBitmap(name, &JunkWidth, &JunkHeight);
+}
+
+
+/*
+ * Load with FG/BG adjusted to given colorpair
+ */
+Image *
+GetBitmapImage(const char *name, ColorPair cp)
+{
+	/* Non-animated */
+	if(! strchr(name, '%')) {
+		return (LoadBitmapImage(name, cp));
+	}
+
+	/* Animated */
+	return get_image_anim_cp(name, cp, LoadBitmapImage);
+}
+
+
+/*
+ * Internal bits used by the above
+ */
 
 /***********************************************************************
  *
@@ -43,9 +74,8 @@ static Pixmap FindBitmap(char *name, unsigned int *widthp,
  *
  ***********************************************************************
  */
-
 static Pixmap
-FindBitmap(char *name, unsigned int *widthp,
+FindBitmap(const char *name, unsigned int *widthp,
            unsigned int *heightp)
 {
 	char *bigname;
@@ -65,12 +95,12 @@ FindBitmap(char *name, unsigned int *widthp,
 	}
 
 	/*
-	 * Generate a full pathname if any special prefix characters (such as ~)
-	 * are used.  If the bigname is different from name, bigname will need to
-	 * be freed.
+	 * Generate a full pathname with any special prefix characters (such
+	 * as ~) expanded.
 	 */
 	bigname = ExpandFilename(name);
 	if(!bigname) {
+		/* Something failed bad */
 		return None;
 	}
 
@@ -80,28 +110,18 @@ FindBitmap(char *name, unsigned int *widthp,
 	pm = XmuLocateBitmapFile(ScreenOfDisplay(dpy, Scr->screen), bigname, NULL,
 	                         0, (int *)widthp, (int *)heightp, &HotX, &HotY);
 	if(pm == None && Scr->IconDirectory && bigname[0] != '/') {
-		if(bigname != name) {
-			free(bigname);
-		}
 		/*
-		 * Attempt to find icon in old IconDirectory (now obsolete)
+		 * Didn't find it.  Attempt to find icon in old IconDirectory
+		 * (now obsolete)
 		 */
-		bigname = (char *) malloc(strlen(name) + strlen(Scr->IconDirectory) + 2);
-		if(!bigname) {
-			fprintf(stderr,
-			        "%s:  unable to allocate memory for \"%s/%s\"\n",
-			        ProgramName, Scr->IconDirectory, name);
-			return None;
-		}
-		(void) sprintf(bigname, "%s/%s", Scr->IconDirectory, name);
+		free(bigname);
+		asprintf(&bigname, "%s/%s", Scr->IconDirectory, name);
 		if(XReadBitmapFile(dpy, Scr->Root, bigname, widthp, heightp, &pm,
 		                   &HotX, &HotY) != BitmapSuccess) {
 			pm = None;
 		}
 	}
-	if(bigname != name) {
-		free(bigname);
-	}
+	free(bigname);
 	if((pm == None) && reportfilenotfound) {
 		fprintf(stderr, "%s:  unable to find bitmap \"%s\"\n", ProgramName, name);
 	}
@@ -109,14 +129,9 @@ FindBitmap(char *name, unsigned int *widthp,
 	return pm;
 }
 
-Pixmap
-GetBitmap(char *name)
-{
-	return FindBitmap(name, &JunkWidth, &JunkHeight);
-}
 
 static Image *
-LoadBitmapImage(char  *name, ColorPair cp)
+LoadBitmapImage(const char *name, ColorPair cp)
 {
 	Image        *image;
 	Pixmap       bm;
@@ -131,7 +146,7 @@ LoadBitmapImage(char  *name, ColorPair cp)
 		return (None);
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	image->pixmap = XCreatePixmap(dpy, Scr->Root, width, height, Scr->d_depth);
 	gcvalues.background = cp.back;
 	gcvalues.foreground = cp.fore;
@@ -139,48 +154,8 @@ LoadBitmapImage(char  *name, ColorPair cp)
 	XCopyPlane(dpy, bm, image->pixmap, Scr->rootGC, 0, 0, width, height,
 	           0, 0, (unsigned long) 1);
 	XFreePixmap(dpy, bm);
-	image->mask   = None;
 	image->width  = width;
 	image->height = height;
-	image->next   = None;
 	return (image);
 }
 
-Image *
-GetBitmapImage(char  *name, ColorPair cp)
-{
-	Image       *image, *r, *s;
-	char        path [128], pref [128];
-	char        *perc;
-	int         i;
-
-	if(! strchr(name, '%')) {
-		return (LoadBitmapImage(name, cp));
-	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadBitmapImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s bitmap file\n", name);
-	}
-	return (image);
-}

@@ -17,7 +17,7 @@
 #include "image_xwd.h"
 
 
-static Image *LoadXwdImage(char *filename, ColorPair cp);
+static Image *LoadXwdImage(const char *filename, ColorPair cp);
 static void compress(XImage *image, XColor *colors, int *ncolors);
 static void swapshort(char *bp, unsigned n);
 static void swaplong(char *bp, unsigned n);
@@ -28,42 +28,15 @@ static void swaplong(char *bp, unsigned n);
  * External entry
  */
 Image *
-GetXwdImage(char *name, ColorPair cp)
+GetXwdImage(const char *name, ColorPair cp)
 {
-	Image *image, *r, *s;
-	char  path [128];
-	char  pref [128], *perc;
-	int   i;
-
+	/* Non-animated */
 	if(! strchr(name, '%')) {
 		return (LoadXwdImage(name, cp));
 	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadXwdImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next   = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s xwd file\n", name);
-	}
-	return (image);
+
+	/* Animated */
+	return get_image_anim_cp(name, cp, LoadXwdImage);
 }
 
 
@@ -71,7 +44,7 @@ GetXwdImage(char *name, ColorPair cp)
  * Internal backend
  */
 static Image *
-LoadXwdImage(char *filename, ColorPair cp)
+LoadXwdImage(const char *filename, ColorPair cp)
 {
 	FILE        *file;
 	char        *fullname;
@@ -94,19 +67,16 @@ LoadXwdImage(char *filename, ColorPair cp)
 	XGCValues   gcvalues;
 	XWDFileHeader header;
 	Image       *ret;
-	Bool        anim;
 	unsigned long swaptest = 1;
 
 	ispipe = 0;
-	anim   = False;
 	if(filename [0] == '|') {
 		file = (FILE *) popen(filename + 1, "r");
 		if(file == NULL) {
 			return (None);
 		}
 		ispipe = 1;
-		anim = AnimationActive;
-		if(anim) {
+		if(AnimationActive) {
 			StopAnimation();
 		}
 		goto file_opened;
@@ -221,7 +191,7 @@ file_opened:
 		h = Scr->rooth;
 	}
 
-	ret = (Image *) malloc(sizeof(Image));
+	ret = AllocImage();
 	if(! ret) {
 		fprintf(stderr, "unable to allocate memory for image : %s\n", filename);
 		free(image);

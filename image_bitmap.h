@@ -13,8 +13,8 @@
 #include "types.h"
 #include "util.h"
 
-Image *GetBitmapImage(char *name, ColorPair cp);
-Pixmap GetBitmap(char *name);
+Image *GetBitmapImage(const char *name, ColorPair cp);
+Pixmap GetBitmap(const char *name);
 
 
 #endif /* _IMAGE_BITMAP_H */

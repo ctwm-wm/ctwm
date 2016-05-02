@@ -29,7 +29,13 @@
 
 #include <X11/Xlib.h>
 
-static Image *LoadJpegImage(char *name);
+
+/* Various internal bits */
+static Image *LoadJpegImage(const char *name);
+static Image *LoadJpegImageCp(const char *name, ColorPair cp);
+static void convert_for_16(int w, int x, int y, int r, int g, int b);
+static void convert_for_32(int w, int x, int y, int r, int g, int b);
+static void jpeg_error_exit(j_common_ptr cinfo);
 
 struct jpeg_error {
 	struct jpeg_error_mgr pub;
@@ -38,73 +44,40 @@ struct jpeg_error {
 
 typedef struct jpeg_error *jerr_ptr;
 
-
 static uint16_t *buffer_16bpp;
 static uint32_t *buffer_32bpp;
 
-static void
-convert_for_16(int w, int x, int y, int r, int g, int b)
-{
-	buffer_16bpp [y * w + x] = ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
-}
 
-static void
-convert_for_32(int w, int x, int y, int r, int g, int b)
-{
-	buffer_32bpp [y * w + x] = ((r << 16) + (g << 8) + b) & 0xFFFFFFFF;
-}
-
-static void
-jpeg_error_exit(j_common_ptr cinfo)
-{
-	jerr_ptr errmgr = (jerr_ptr) cinfo->err;
-	cinfo->err->output_message(cinfo);
-	siglongjmp(errmgr->setjmp_buffer, 1);
-	return;
-}
-
-
+/*
+ * External entry point
+ */
 Image *
-GetJpegImage(char *name)
+GetJpegImage(const char *name)
 {
-	Image *image, *r, *s;
-	char  path [128];
-	char  pref [128], *perc;
-	int   i;
-
+	/* Non-animated */
 	if(! strchr(name, '%')) {
 		return (LoadJpegImage(name));
 	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadJpegImage(path);
-		if(r == None) {
-			break;
-		}
-		r->next   = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s jpeg file\n", name);
-	}
-	return (image);
+
+	/* Animated */
+	return get_image_anim_cp(name, (ColorPair) {}, LoadJpegImageCp);
 }
 
+
+/*
+ * Internal backend func
+ */
+
+/* Trivial thunk for get_image_anim_cp() callback */
 static Image *
-LoadJpegImage(char *name)
+LoadJpegImageCp(const char *name, ColorPair cp)
+{
+	return LoadJpegImage(name);
+}
+
+/* The actual loader */
+static Image *
+LoadJpegImage(const char *name)
 {
 	char   *fullname;
 	XImage *ximage;
@@ -126,7 +99,7 @@ LoadJpegImage(char *name)
 		return (None);
 	}
 
-	image = (Image *) malloc(sizeof(Image));
+	image = AllocImage();
 	if(image == None) {
 		free(fullname);
 		return (None);
@@ -225,8 +198,32 @@ LoadJpegImage(char *name)
 		XDestroyImage(ximage);
 	}
 	image->pixmap = pixret;
-	image->mask   = None;
-	image->next   = None;
 
 	return image;
+}
+
+
+
+/*
+ * Utils
+ */
+static void
+convert_for_16(int w, int x, int y, int r, int g, int b)
+{
+	buffer_16bpp [y * w + x] = ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
+}
+
+static void
+convert_for_32(int w, int x, int y, int r, int g, int b)
+{
+	buffer_32bpp [y * w + x] = ((r << 16) + (g << 8) + b) & 0xFFFFFFFF;
+}
+
+static void
+jpeg_error_exit(j_common_ptr cinfo)
+{
+	jerr_ptr errmgr = (jerr_ptr) cinfo->err;
+	cinfo->err->output_message(cinfo);
+	siglongjmp(errmgr->setjmp_buffer, 1);
+	return;
 }

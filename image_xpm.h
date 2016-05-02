@@ -6,7 +6,7 @@
 
 #include "types.h"
 
-Image *GetXpmImage(char *name, ColorPair cp);
+Image *GetXpmImage(const char *name, ColorPair cp);
 
 
 #endif /* _IMAGE_XPM_H */

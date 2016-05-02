@@ -933,13 +933,11 @@ static Image *ExtractIcon(ScreenInfo *scr, unsigned long *prop, int width,
 	}
 	free(maskbits);
 
-	image = calloc(1, sizeof(Image));
-
+	image = AllocImage();
 	image->width  = width;
 	image->height = height;
 	image->pixmap = pixret;
 	image->mask   = mask;
-	image->next   = None;
 
 	return image;
 }
