@@ -65,12 +65,12 @@ FindBitmap(char *name, unsigned int *widthp,
 	}
 
 	/*
-	 * Generate a full pathname if any special prefix characters (such as ~)
-	 * are used.  If the bigname is different from name, bigname will need to
-	 * be freed.
+	 * Generate a full pathname with any special prefix characters (such
+	 * as ~) expanded.
 	 */
 	bigname = ExpandFilename(name);
 	if(!bigname) {
+		/* Something failed bad */
 		return None;
 	}
 
@@ -80,9 +80,8 @@ FindBitmap(char *name, unsigned int *widthp,
 	pm = XmuLocateBitmapFile(ScreenOfDisplay(dpy, Scr->screen), bigname, NULL,
 	                         0, (int *)widthp, (int *)heightp, &HotX, &HotY);
 	if(pm == None && Scr->IconDirectory && bigname[0] != '/') {
-		if(bigname != name) {
-			free(bigname);
-		}
+		free(bigname);
+
 		/*
 		 * Attempt to find icon in old IconDirectory (now obsolete)
 		 */
@@ -99,9 +98,7 @@ FindBitmap(char *name, unsigned int *widthp,
 			pm = None;
 		}
 	}
-	if(bigname != name) {
-		free(bigname);
-	}
+	free(bigname);
 	if((pm == None) && reportfilenotfound) {
 		fprintf(stderr, "%s:  unable to find bitmap \"%s\"\n", ProgramName, name);
 	}

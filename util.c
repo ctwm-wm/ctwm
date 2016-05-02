@@ -365,26 +365,22 @@ char *ExpandFilePath(char *path)
  *      name    - the filename to expand
  *
  ***********************************************************************
+ *
+ * Currently only used in one place in image_bitmap.c.  I've left this
+ * here instead of moving it into images at the moment on the assumption
+ * that there might be other places in the codebase where it's useful.
  */
-
-char *ExpandFilename(char *name)
+char *
+ExpandFilename(const char *name)
 {
 	char *newname;
 
-	if(name[0] != '~') {
-		return name;
+	/* If it doesn't start with ~/ then it's not our concern */
+	if(name[0] != '~' || name[1] != '/') {
+		return strdup(name);
 	}
 
-	newname = (char *) malloc(HomeLen + strlen(name) + 2);
-	if(!newname) {
-		fprintf(stderr,
-		        "%s:  unable to allocate %lu bytes to expand filename %s/%s\n",
-		        ProgramName, (unsigned long) HomeLen + strlen(name) + 2,
-		        Home, &name[1]);
-	}
-	else {
-		(void) sprintf(newname, "%s/%s", Home, &name[1]);
-	}
+	asprintf(&newname, "%s/%s", Home, &name[1]);
 
 	return newname;
 }
