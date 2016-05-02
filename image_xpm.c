@@ -22,6 +22,53 @@ static void   xpmErrorMessage(int status, char *name, char *fullname);
 static int reportxpmerror = 1;
 
 
+/*
+ * External entry point
+ */
+Image *
+GetXpmImage(char *name, ColorPair cp)
+{
+	char    path [128], pref [128];
+	Image   *image, *r, *s;
+	char    *perc;
+	int     i;
+
+	if(! strchr(name, '%')) {
+		return (LoadXpmImage(name, cp));
+	}
+	s = image = None;
+	strcpy(pref, name);
+	perc  = strchr(pref, '%');
+	*perc = '\0';
+	for(i = 1;; i++) {
+		sprintf(path, "%s%d%s", pref, i, perc + 1);
+		r = LoadXpmImage(path, cp);
+		if(r == None) {
+			break;
+		}
+		r->next = None;
+		if(image == None) {
+			s = image = r;
+		}
+		else {
+			s->next = r;
+			s = r;
+		}
+	}
+	if(s != None) {
+		s->next = image;
+	}
+	if(image == None) {
+		fprintf(stderr, "Cannot open any %s XPM file\n", name);
+	}
+	return (image);
+}
+
+
+
+/*
+ * Internal backend
+ */
 static Image *
 LoadXpmImage(char *name, ColorPair cp)
 {
@@ -80,45 +127,6 @@ LoadXpmImage(char *name, ColorPair cp)
 	image->width  = attributes.width;
 	image->height = attributes.height;
 	image->next   = None;
-	return (image);
-}
-
-Image *
-GetXpmImage(char *name, ColorPair cp)
-{
-	char    path [128], pref [128];
-	Image   *image, *r, *s;
-	char    *perc;
-	int     i;
-
-	if(! strchr(name, '%')) {
-		return (LoadXpmImage(name, cp));
-	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadXpmImage(path, cp);
-		if(r == None) {
-			break;
-		}
-		r->next = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s XPM file\n", name);
-	}
 	return (image);
 }
 
