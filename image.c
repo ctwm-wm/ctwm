@@ -151,14 +151,27 @@ FreeImage(Image *image)
 
 	im = image;
 	while(im != None) {
+		/* Cleanup sub-bits */
 		if(im->pixmap) {
 			XFreePixmap(dpy, im->pixmap);
 		}
 		if(im->mask) {
 			XFreePixmap(dpy, im->mask);
 		}
+
+		/* Cleanup self */
 		im2 = im->next;
 		free(im);
+
+		/*
+		 * Loop back around, unless we hit the original.  e.g.,
+		 * "foo%.xpm" animations load the images into a closed loop, so
+		 * FreeImage() would do Very Bad Things running around the track
+		 * until it segfaults or the like.
+		 */
+		if(im2 == image) {
+			break;
+		}
 		im = im2;
 	}
 }
