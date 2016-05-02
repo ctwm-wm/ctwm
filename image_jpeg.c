@@ -31,8 +31,8 @@
 
 
 /* Various internal bits */
-static Image *LoadJpegImage(char *name);
-static Image *LoadJpegImageCp(char *name, ColorPair cp);
+static Image *LoadJpegImage(const char *name);
+static Image *LoadJpegImageCp(const char *name, ColorPair cp);
 static void convert_for_16(int w, int x, int y, int r, int g, int b);
 static void convert_for_32(int w, int x, int y, int r, int g, int b);
 static void jpeg_error_exit(j_common_ptr cinfo);
@@ -52,7 +52,7 @@ static uint32_t *buffer_32bpp;
  * External entry point
  */
 Image *
-GetJpegImage(char *name)
+GetJpegImage(const char *name)
 {
 	/* Non-animated */
 	if(! strchr(name, '%')) {
@@ -70,14 +70,14 @@ GetJpegImage(char *name)
 
 /* Trivial thunk for get_image_anim_cp() callback */
 static Image *
-LoadJpegImageCp(char *name, ColorPair cp)
+LoadJpegImageCp(const char *name, ColorPair cp)
 {
 	return LoadJpegImage(name);
 }
 
 /* The actual loader */
 static Image *
-LoadJpegImage(char *name)
+LoadJpegImage(const char *name)
 {
 	char   *fullname;
 	XImage *ximage;

@@ -34,8 +34,8 @@ Colormap AlternateCmap = None;
 /*
  * Find (load/generate) an image by name
  */
-Image
-*GetImage(char *name, ColorPair cp)
+Image *
+GetImage(const char *name, ColorPair cp)
 {
 	name_list **list;
 	char fullname [256];
@@ -175,7 +175,7 @@ FreeImage(Image *image)
  * result isn't a full path.
  */
 char *
-ExpandPixmapPath(char *name)
+ExpandPixmapPath(const char *name)
 {
 	char *ret;
 
@@ -245,7 +245,7 @@ ExpandPixmapPath(char *name)
  */
 Image *
 get_image_anim_cp(const char *name,
-                  ColorPair cp, Image * (*imgloader)(char *, ColorPair))
+                  ColorPair cp, Image * (*imgloader)(const char *, ColorPair))
 {
 	Image   *head, *tail;
 	char    *pref, *suff, *stmp;

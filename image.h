@@ -19,7 +19,7 @@ struct Image {
 };
 
 
-Image *GetImage(char *name, ColorPair cp);
+Image *GetImage(const char *name, ColorPair cp);
 void FreeImage(Image *image);
 
 
@@ -27,8 +27,8 @@ void FreeImage(Image *image);
 extern bool reportfilenotfound;
 extern Colormap AlternateCmap;
 
-char *ExpandPixmapPath(char *name);
+char *ExpandPixmapPath(const char *name);
 Image *get_image_anim_cp(const char *name, ColorPair cp,
-                         Image * (*imgloader)(char *, ColorPair));
+                         Image * (*imgloader)(const char *, ColorPair));
 
 #endif /* _IMAGE_H */

@@ -17,7 +17,7 @@
 #include "image_xwd.h"
 
 
-static Image *LoadXwdImage(char *filename, ColorPair cp);
+static Image *LoadXwdImage(const char *filename, ColorPair cp);
 static void compress(XImage *image, XColor *colors, int *ncolors);
 static void swapshort(char *bp, unsigned n);
 static void swaplong(char *bp, unsigned n);
@@ -28,7 +28,7 @@ static void swaplong(char *bp, unsigned n);
  * External entry
  */
 Image *
-GetXwdImage(char *name, ColorPair cp)
+GetXwdImage(const char *name, ColorPair cp)
 {
 	/* Non-animated */
 	if(! strchr(name, '%')) {
@@ -44,7 +44,7 @@ GetXwdImage(char *name, ColorPair cp)
  * Internal backend
  */
 static Image *
-LoadXwdImage(char *filename, ColorPair cp)
+LoadXwdImage(const char *filename, ColorPair cp)
 {
 	FILE        *file;
 	char        *fullname;

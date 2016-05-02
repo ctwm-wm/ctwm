@@ -16,8 +16,8 @@
 #include "image.h"
 #include "image_xpm.h"
 
-static Image *LoadXpmImage(char  *name, ColorPair cp);
-static void   xpmErrorMessage(int status, char *name, char *fullname);
+static Image *LoadXpmImage(const char  *name, ColorPair cp);
+static void xpmErrorMessage(int status, const char *name, const char *fullname);
 
 static int reportxpmerror = 1;
 
@@ -26,7 +26,7 @@ static int reportxpmerror = 1;
  * External entry point
  */
 Image *
-GetXpmImage(char *name, ColorPair cp)
+GetXpmImage(const char *name, ColorPair cp)
 {
 	/* For non-animated requests, just load the file */
 	if(! strchr(name, '%')) {
@@ -43,7 +43,7 @@ GetXpmImage(char *name, ColorPair cp)
  * Internal backend
  */
 static Image *
-LoadXpmImage(char *name, ColorPair cp)
+LoadXpmImage(const char *name, ColorPair cp)
 {
 	char        *fullname;
 	Image       *image;
@@ -104,7 +104,7 @@ LoadXpmImage(char *name, ColorPair cp)
 }
 
 static void
-xpmErrorMessage(int status, char *name, char *fullname)
+xpmErrorMessage(int status, const char *name, const char *fullname)
 {
 	switch(status) {
 		case XpmSuccess:

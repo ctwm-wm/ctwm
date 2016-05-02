@@ -22,8 +22,8 @@
 #include "image_bitmap_builtin.h"
 
 
-static Image *LoadBitmapImage(char  *name, ColorPair cp);
-static Pixmap FindBitmap(char *name, unsigned int *widthp,
+static Image *LoadBitmapImage(const char  *name, ColorPair cp);
+static Pixmap FindBitmap(const char *name, unsigned int *widthp,
                          unsigned int *heightp);
 
 
@@ -33,7 +33,7 @@ static Pixmap FindBitmap(char *name, unsigned int *widthp,
 
 /* Simple load-by-name */
 Pixmap
-GetBitmap(char *name)
+GetBitmap(const char *name)
 {
 	return FindBitmap(name, &JunkWidth, &JunkHeight);
 }
@@ -43,7 +43,7 @@ GetBitmap(char *name)
  * Load with FG/BG adjusted to given colorpair
  */
 Image *
-GetBitmapImage(char  *name, ColorPair cp)
+GetBitmapImage(const char *name, ColorPair cp)
 {
 	/* Non-animated */
 	if(! strchr(name, '%')) {
@@ -75,7 +75,7 @@ GetBitmapImage(char  *name, ColorPair cp)
  ***********************************************************************
  */
 static Pixmap
-FindBitmap(char *name, unsigned int *widthp,
+FindBitmap(const char *name, unsigned int *widthp,
            unsigned int *heightp)
 {
 	char *bigname;
@@ -131,7 +131,7 @@ FindBitmap(char *name, unsigned int *widthp,
 
 
 static Image *
-LoadBitmapImage(char  *name, ColorPair cp)
+LoadBitmapImage(const char *name, ColorPair cp)
 {
 	Image        *image;
 	Pixmap       bm;

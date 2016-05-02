@@ -8,7 +8,7 @@
 #include "types.h"
 #include "util.h"
 
-Image *GetJpegImage(char *name);
+Image *GetJpegImage(const char *name);
 
 
 #endif /* _IMAGE_JPEG_H */

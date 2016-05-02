@@ -41,7 +41,7 @@ static DEF_BI_PPM(CreateDotPixmap);
  * menu symbol as well....
  */
 Pixmap
-get_builtin_plain_pixmap(char *name, unsigned int *widthp,
+get_builtin_plain_pixmap(const char *name, unsigned int *widthp,
                          unsigned int *heightp)
 {
 	int i;
@@ -277,7 +277,7 @@ static DEF_BI_SPM(Create3DBoxImage);
  * That's not confusing at all.
  */
 Image *
-get_builtin_scalable_pixmap(char *name, ColorPair cp)
+get_builtin_scalable_pixmap(const char *name, ColorPair cp)
 {
 	int    i;
 	static struct {
@@ -784,7 +784,7 @@ static DEF_BI_ASPM(Create3DZoomInOutAnimation);
  * colon).  Still not confusing at _all_.
  */
 Image *
-get_builtin_animated_pixmap(char *name, ColorPair cp)
+get_builtin_animated_pixmap(const char *name, ColorPair cp)
 {
 	int    i;
 	static struct {
