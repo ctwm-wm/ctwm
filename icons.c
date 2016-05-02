@@ -581,8 +581,6 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 			image->height = IconHeight;
 			image->pixmap = XCreatePixmap(dpy, Scr->Root, image->width,
 			                              image->height, Scr->d_depth);
-			image->mask   = None;
-			image->next   = None;
 			if(IconDepth == Scr->d_depth)
 				XCopyArea(dpy, tmp_win->wmhints->icon_pixmap, image->pixmap, Scr->NormalGC,
 				          0, 0, image->width, image->height, 0, 0);

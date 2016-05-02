@@ -154,10 +154,8 @@ LoadBitmapImage(const char *name, ColorPair cp)
 	XCopyPlane(dpy, bm, image->pixmap, Scr->rootGC, 0, 0, width, height,
 	           0, 0, (unsigned long) 1);
 	XFreePixmap(dpy, bm);
-	image->mask   = None;
 	image->width  = width;
 	image->height = height;
-	image->next   = None;
 	return (image);
 }
 

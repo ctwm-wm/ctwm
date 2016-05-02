@@ -122,10 +122,8 @@ GetImage(const char *name, ColorPair cp)
 			XChangeGC(dpy, Scr->rootGC, GCForeground | GCBackground, &gcvalues);
 			XCopyPlane(dpy, pm, image->pixmap, Scr->rootGC, 0, 0, width, height, 0, 0,
 			           (unsigned long) 1);
-			image->mask   = None;
 			image->width  = width;
 			image->height = height;
-			image->next   = None;
 			AddToList(list, fullname, image);
 		}
 	}

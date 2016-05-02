@@ -99,7 +99,6 @@ LoadXpmImage(const char *name, ColorPair cp)
 	}
 	image->width  = attributes.width;
 	image->height = attributes.height;
-	image->next   = None;
 	return (image);
 }
 

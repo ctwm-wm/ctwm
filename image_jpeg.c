@@ -198,8 +198,6 @@ LoadJpegImage(const char *name)
 		XDestroyImage(ximage);
 	}
 	image->pixmap = pixret;
-	image->mask   = None;
-	image->next   = None;
 
 	return image;
 }

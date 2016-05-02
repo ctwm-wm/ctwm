@@ -412,10 +412,8 @@ static DEF_BI_SPM(Create3DCrossImage)
 	          point);
 #endif
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -455,10 +453,8 @@ static DEF_BI_SPM(Create3DIconifyImage)
 	XDrawLine(dpy, image->pixmap, Scr->NormalGC, h - point - 1, point + 1,
 	          h / 2 + 1, h - point - 1);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -491,10 +487,8 @@ static DEF_BI_SPM(Create3DSunkenResizeImage)
 	Draw3DBorder(image->pixmap, 3, ((h - 6) * 2 / 3) + 3, ((h - 6) / 3) + 1,
 	             ((h - 6) / 3) + 1, 1, cp, on, True, False);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -524,10 +518,8 @@ static DEF_BI_SPM(Create3DBoxImage)
 	Draw3DBorder(image->pixmap, (h / 2) - 4, (h / 2) - 4, 9, 9, 1, cp,
 	             off, True, False);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 
 	return (image);
 }
@@ -560,10 +552,8 @@ static DEF_BI_SPM(Create3DDotImage)
 	             2 * idepth + 1,
 	             2 * idepth + 1,
 	             idepth, cp, off, True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -596,10 +586,8 @@ static DEF_BI_SPM(Create3DBarImage)
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             2 * idepth + 1,
 	             idepth, cp, off, True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -632,10 +620,8 @@ static DEF_BI_SPM(Create3DVertBarImage)
 	             2 * idepth + 1,
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             idepth, cp, off, True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -664,10 +650,8 @@ static DEF_BI_SPM(Create3DMenuImage)
 	for(i = 4; i < h - 7; i += 5) {
 		Draw3DBorder(image->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
 	}
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -697,10 +681,8 @@ static DEF_BI_SPM(Create3DResizeImage)
 	             cp, off, True, False);
 	Draw3DBorder(image->pixmap, 0, h / 2, (h / 2) + 1, (h / 2) + 1, 2, cp, off,
 	             True, False);
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 
@@ -733,10 +715,8 @@ static DEF_BI_SPM(Create3DZoomImage)
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             idepth, cp, off, True, False);
 
-	image->mask   = None;
 	image->width  = h;
 	image->height = h;
-	image->next   = None;
 	return (image);
 }
 

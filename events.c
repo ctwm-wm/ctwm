@@ -1803,8 +1803,6 @@ void HandlePropertyNotify(void)
 					image->pixmap = pm;
 					image->width  = icon->width;
 					image->height = icon->height;
-					image->mask   = None;
-					image->next   = None;
 					icon->image = image;
 					icon->match = match_icon_pixmap_hint;
 				}
