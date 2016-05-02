@@ -91,12 +91,13 @@ LoadXpmImage(const char *name, ColorPair cp)
 	attributes.closeness = 65535; /* Never fail */
 	status = XpmReadFileToPixmap(dpy, Scr->Root, fullname,
 	                             &(image->pixmap), &(image->mask), &attributes);
-	free(fullname);
 	if(status != XpmSuccess) {
 		xpmErrorMessage(status, name, fullname);
+		free(fullname);
 		free(image);
 		return (None);
 	}
+	free(fullname);
 	image->width  = attributes.width;
 	image->height = attributes.height;
 	return (image);
