@@ -67,19 +67,16 @@ LoadXwdImage(const char *filename, ColorPair cp)
 	XGCValues   gcvalues;
 	XWDFileHeader header;
 	Image       *ret;
-	Bool        anim;
 	unsigned long swaptest = 1;
 
 	ispipe = 0;
-	anim   = False;
 	if(filename [0] == '|') {
 		file = (FILE *) popen(filename + 1, "r");
 		if(file == NULL) {
 			return (None);
 		}
 		ispipe = 1;
-		anim = AnimationActive;
-		if(anim) {
+		if(AnimationActive) {
 			StopAnimation();
 		}
 		goto file_opened;
