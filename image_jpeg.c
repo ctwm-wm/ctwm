@@ -29,7 +29,12 @@
 
 #include <X11/Xlib.h>
 
+
+/* Various internal bits */
 static Image *LoadJpegImage(char *name);
+static void convert_for_16(int w, int x, int y, int r, int g, int b);
+static void convert_for_32(int w, int x, int y, int r, int g, int b);
+static void jpeg_error_exit(j_common_ptr cinfo);
 
 struct jpeg_error {
 	struct jpeg_error_mgr pub;
@@ -38,32 +43,13 @@ struct jpeg_error {
 
 typedef struct jpeg_error *jerr_ptr;
 
-
 static uint16_t *buffer_16bpp;
 static uint32_t *buffer_32bpp;
 
-static void
-convert_for_16(int w, int x, int y, int r, int g, int b)
-{
-	buffer_16bpp [y * w + x] = ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
-}
 
-static void
-convert_for_32(int w, int x, int y, int r, int g, int b)
-{
-	buffer_32bpp [y * w + x] = ((r << 16) + (g << 8) + b) & 0xFFFFFFFF;
-}
-
-static void
-jpeg_error_exit(j_common_ptr cinfo)
-{
-	jerr_ptr errmgr = (jerr_ptr) cinfo->err;
-	cinfo->err->output_message(cinfo);
-	siglongjmp(errmgr->setjmp_buffer, 1);
-	return;
-}
-
-
+/*
+ * External entry point
+ */
 Image *
 GetJpegImage(char *name)
 {
@@ -103,6 +89,10 @@ GetJpegImage(char *name)
 	return (image);
 }
 
+
+/*
+ * Internal backend func
+ */
 static Image *
 LoadJpegImage(char *name)
 {
@@ -229,4 +219,30 @@ LoadJpegImage(char *name)
 	image->next   = None;
 
 	return image;
+}
+
+
+
+/*
+ * Utils
+ */
+static void
+convert_for_16(int w, int x, int y, int r, int g, int b)
+{
+	buffer_16bpp [y * w + x] = ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
+}
+
+static void
+convert_for_32(int w, int x, int y, int r, int g, int b)
+{
+	buffer_32bpp [y * w + x] = ((r << 16) + (g << 8) + b) & 0xFFFFFFFF;
+}
+
+static void
+jpeg_error_exit(j_common_ptr cinfo)
+{
+	jerr_ptr errmgr = (jerr_ptr) cinfo->err;
+	cinfo->err->output_message(cinfo);
+	siglongjmp(errmgr->setjmp_buffer, 1);
+	return;
 }
