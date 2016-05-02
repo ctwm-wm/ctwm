@@ -303,6 +303,7 @@ get_image_anim_cp(const char *name,
 			fprintf(stderr, "%s(): generated filename for '%s' #%d longer than %d.\n",
 			        __func__, name, i, ANIM_PATHLEN);
 			FreeImage(head);
+			free(pref);
 			return None;
 		}
 #undef ANIM_PATHLEN
