@@ -177,23 +177,36 @@ FreeImage(Image *image)
 char *
 ExpandPixmapPath(char *name)
 {
-	char    *ret, *colon;
+	char *ret;
 
 	ret = NULL;
-	if(name[0] == '~') {
-		ret = (char *) malloc(HomeLen + strlen(name) + 2);
-		sprintf(ret, "%s/%s", Home, &name[1]);
+
+	/* If it starts with '~/', replace it with our homedir */
+	if(name[0] == '~' && name[1] == '/') {
+		asprintf(&ret, "%s/%s", Home, name + 2);
+		return ret;
 	}
-	else if(name[0] == '/') {
-		ret = (char *) malloc(strlen(name) + 1);
-		strcpy(ret, name);
+
+	/*
+	 * If it starts with /, it's an absolute path, so just pass it
+	 * through.
+	 */
+	if(name[0] == '/') {
+		return strdup(name);
 	}
-	else if(Scr->PixmapDirectory) {
+
+	/*
+	 * If we got here, it's some sort of relative path (or a bare
+	 * filename), so search for it under PixmapDirectory if we have it.
+	 */
+	if(Scr->PixmapDirectory) {
+		char *colon;
 		char *p = Scr->PixmapDirectory;
+
+		/* PixmapDirectory is a colon-separated list */
 		while((colon = strchr(p, ':'))) {
 			*colon = '\0';
-			ret = (char *) malloc(strlen(p) + strlen(name) + 2);
-			sprintf(ret, "%s/%s", p, name);
+			asprintf(&ret, "%s/%s", p, name);
 			*colon = ':';
 			if(!access(ret, R_OK)) {
 				return (ret);
@@ -201,8 +214,18 @@ ExpandPixmapPath(char *name)
 			free(ret);
 			p = colon + 1;
 		}
-		ret = (char *) malloc(strlen(p) + strlen(name) + 2);
-		sprintf(ret, "%s/%s", p, name);
+
+		asprintf(&ret, "%s/%s", p, name);
+		if(!access(ret, R_OK)) {
+			return (ret);
+		}
+		free(ret);
 	}
-	return (ret);
+
+
+	/*
+	 * If we get here, we have no idea.  For simplicity and consistency
+	 * for our callers, just return what we were given.
+	 */
+	return strdup(name);
 }
