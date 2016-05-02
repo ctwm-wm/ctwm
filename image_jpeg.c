@@ -32,6 +32,7 @@
 
 /* Various internal bits */
 static Image *LoadJpegImage(char *name);
+static Image *LoadJpegImageCp(char *name, ColorPair cp);
 static void convert_for_16(int w, int x, int y, int r, int g, int b);
 static void convert_for_32(int w, int x, int y, int r, int g, int b);
 static void jpeg_error_exit(j_common_ptr cinfo);
@@ -53,46 +54,28 @@ static uint32_t *buffer_32bpp;
 Image *
 GetJpegImage(char *name)
 {
-	Image *image, *r, *s;
-	char  path [128];
-	char  pref [128], *perc;
-	int   i;
-
+	/* Non-animated */
 	if(! strchr(name, '%')) {
 		return (LoadJpegImage(name));
 	}
-	s = image = None;
-	strcpy(pref, name);
-	perc  = strchr(pref, '%');
-	*perc = '\0';
-	for(i = 1;; i++) {
-		sprintf(path, "%s%d%s", pref, i, perc + 1);
-		r = LoadJpegImage(path);
-		if(r == None) {
-			break;
-		}
-		r->next   = None;
-		if(image == None) {
-			s = image = r;
-		}
-		else {
-			s->next = r;
-			s = r;
-		}
-	}
-	if(s != None) {
-		s->next = image;
-	}
-	if(image == None) {
-		fprintf(stderr, "Cannot open any %s jpeg file\n", name);
-	}
-	return (image);
+
+	/* Animated */
+	return get_image_anim_cp(name, (ColorPair){}, LoadJpegImageCp);
 }
 
 
 /*
  * Internal backend func
  */
+
+/* Trivial thunk for get_image_anim_cp() callback */
+static Image *
+LoadJpegImageCp(char *name, ColorPair cp)
+{
+	return LoadJpegImage(name);
+}
+
+/* The actual loader */
 static Image *
 LoadJpegImage(char *name)
 {
