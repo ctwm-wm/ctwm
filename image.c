@@ -38,7 +38,8 @@ Image *
 GetImage(const char *name, ColorPair cp)
 {
 	name_list **list;
-	char fullname [256];
+#define GIFNLEN 256
+	char fullname[GIFNLEN];
 	Image *image;
 
 	if(name == NULL) {
@@ -51,7 +52,7 @@ GetImage(const char *name, ColorPair cp)
 		/* dummy */ ;
 #ifdef XPM
 	else if((name [0] == '@') || (strncmp(name, "xpm:", 4) == 0)) {
-		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
+		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
 			int startn = (name [0] == '@') ? 1 : 4;
@@ -79,7 +80,7 @@ GetImage(const char *name, ColorPair cp)
 		}
 	}
 	else if(strncmp(name, ":xpm:", 5) == 0) {
-		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
+		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
 			image = get_builtin_scalable_pixmap(name, cp);
 			if(image == None) {
@@ -90,7 +91,7 @@ GetImage(const char *name, ColorPair cp)
 		}
 	}
 	else if(strncmp(name, "%xpm:", 5) == 0) {
-		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
+		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
 			image = get_builtin_animated_pixmap(name, cp);
 			if(image == None) {
@@ -105,7 +106,7 @@ GetImage(const char *name, ColorPair cp)
 		Pixmap          pm = 0;
 		XGCValues       gcvalues;
 
-		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
+		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
 			pm = get_builtin_plain_pixmap(name, &width, &height);
 			if(pm == None) {
@@ -128,7 +129,7 @@ GetImage(const char *name, ColorPair cp)
 		}
 	}
 	else {
-		sprintf(fullname, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
+		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
 			if((image = GetBitmapImage(name, cp)) != None) {
 				AddToList(list, fullname, image);
@@ -136,6 +137,7 @@ GetImage(const char *name, ColorPair cp)
 		}
 	}
 	return (image);
+#undef GIFNLEN
 }
 
 
