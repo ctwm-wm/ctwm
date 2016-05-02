@@ -50,8 +50,8 @@ GetImage(const char *name, ColorPair cp)
 	list = &Scr->ImageCache;
 	if(0)
 		/* dummy */ ;
-#ifdef XPM
 	else if((name [0] == '@') || (strncmp(name, "xpm:", 4) == 0)) {
+#ifdef XPM
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 
 		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
@@ -60,17 +60,23 @@ GetImage(const char *name, ColorPair cp)
 				AddToList(list, fullname, image);
 			}
 		}
-	}
+#else
+		fprintf(stderr, "XPM support disabled, ignoring image %s\n", name);
+		return None;
 #endif
-#ifdef JPEG
+	}
 	else if(strncmp(name, "jpeg:", 5) == 0) {
+#ifdef JPEG
 		if((image = (Image *) LookInNameList(*list, name)) == None) {
 			if((image = GetJpegImage(&name [5])) != None) {
 				AddToList(list, name, image);
 			}
 		}
-	}
+#else
+		fprintf(stderr, "JPEG support disabled, ignoring image %s\n", name);
+		return None;
 #endif
+	}
 	else if((strncmp(name, "xwd:", 4) == 0) || (name [0] == '|')) {
 		int startn = (name [0] == '|') ? 0 : 4;
 		if((image = (Image *) LookInNameList(*list, name)) == None) {
