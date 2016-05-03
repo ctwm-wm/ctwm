@@ -85,6 +85,7 @@
 #include "events.h"
 #include "list.h"
 #include "util.h"
+#include "animate.h"
 #include "parse.h"
 #include "screen.h"
 #include "icons.h"

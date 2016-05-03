@@ -84,8 +84,6 @@ extern void AddDefaultBindings(void);
 extern void GrabButtons(TwmWindow *tmp_win);
 extern void GrabKeys(TwmWindow *tmp_win);
 extern void GetWindowSizeHints(TwmWindow *tmp_win);
-extern void AnimateButton(TBWindow *tbw);
-extern void AnimateHighlight(TwmWindow *t);
 extern void CreateWindowRegions(void);
 extern Bool PlaceWindowInRegion(TwmWindow *tmp_win,
                                 int *final_x, int *final_y);

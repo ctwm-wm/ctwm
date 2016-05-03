@@ -91,28 +91,13 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-extern int Animating;
-extern Bool AnimationActive;
-extern Bool MaybeAnimate;
-extern int AnimationSpeed;
-extern struct timeval AnimateTimeout;
+void     Zoom(Window wf, Window wt);
+void     MoveOutline(Window root,
+                     int x, int y, int width, int height,
+                     int bw, int th);
+char     *ExpandFilename(const char *name);
+char     *ExpandFilePath(char *path);
 
-extern void     Zoom(Window wf, Window wt);
-extern void     MoveOutline(Window root,
-                            int x, int y, int width, int height,
-                            int bw, int th);
-extern void     GetUnknownIcon(char *name);
-extern char     *ExpandFilename(const char *name);
-extern char     *ExpandFilePath(char *path);
-
-void MaskScreen(char *file);
-void UnmaskScreen(void);
-void StartAnimation(void);
-void StopAnimation(void);
-void SetAnimationSpeed(int speed);
-void ModifyAnimationSpeed(int incr);
-void Animate(void);
-void TryToAnimate(void);
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
                        Bool replace);
 void RemoveRGBColormap(Atom a);
@@ -146,14 +131,12 @@ void RescueWindows(void);
 void DebugTrace(char *file);
 void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
-extern int HotX, HotY;
 
-
-extern unsigned char *GetWMPropertyString(Window w, Atom prop);
-extern void FreeWMPropertyString(char *prop);
-extern void ConstrainByBorders1(int *left, int width, int *top, int height);
-extern void ConstrainByBorders(TwmWindow *twmwin,
-                               int *left, int width,
-                               int *top, int height);
+unsigned char *GetWMPropertyString(Window w, Atom prop);
+void FreeWMPropertyString(char *prop);
+void ConstrainByBorders1(int *left, int width, int *top, int height);
+void ConstrainByBorders(TwmWindow *twmwin,
+                        int *left, int width,
+                        int *top, int height);
 
 #endif /* _UTIL_ */

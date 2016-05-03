@@ -79,7 +79,6 @@
 
 #include "ctwm_atoms.h"
 #include "screen.h"
-#include "util.h"
 #include "parse.h"
 #include "parse_int.h"
 #include "deftwmrc.h"

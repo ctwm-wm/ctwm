@@ -94,6 +94,8 @@
 #include "menus.h"
 #include "events.h"
 #include "util.h"
+#include "mask_screen.h"
+#include "animate.h"
 #include "screen.h"
 #include "icons.h"
 #include "iconmgr.h"

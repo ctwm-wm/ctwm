@@ -85,6 +85,7 @@
 #include "resize.h"
 #include "parse.h"
 #include "util.h"
+#include "animate.h"
 #include "otp.h"
 #include "screen.h"
 #include "icons.h"

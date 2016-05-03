@@ -16,5 +16,7 @@
 Image *GetBitmapImage(const char *name, ColorPair cp);
 Pixmap GetBitmap(const char *name);
 
+/* Used for cursors */
+extern int HotX, HotY;
 
 #endif /* _IMAGE_BITMAP_H */

@@ -70,6 +70,7 @@
 #include "list.h"
 #include "parse.h"
 #include "util.h"
+#include "animate.h"
 #include "image.h"
 
 #define iconWidth(w)    (w->icon->border_width * 2 + \
@@ -999,40 +1000,3 @@ int GetIconOffset(Icon *icon)
 			return (0);
 	}
 }
-
-Bool AnimateIcons(ScreenInfo *scr, Icon *icon)
-{
-	Image       *image;
-	XRectangle  rect;
-	XSetWindowAttributes attr;
-	int         x;
-
-	image = icon->image;
-	attr.background_pixmap = image->pixmap;
-	XChangeWindowAttributes(dpy, icon->bm_w, CWBackPixmap, &attr);
-
-	if(image->mask != None) {
-		x = GetIconOffset(icon);
-		XShapeCombineMask(dpy, icon->bm_w, ShapeBounding, 0, 0, image->mask, ShapeSet);
-		if(icon->has_title) {
-			rect.x      = 0;
-			rect.y      = icon->height;
-			rect.width  = icon->w_width;
-			rect.height = scr->IconFont.height + 6;
-
-			XShapeCombineShape(dpy, scr->ShapeWindow, ShapeBounding, x, 0, icon->bm_w,
-			                   ShapeBounding, ShapeSet);
-			XShapeCombineRectangles(dpy, scr->ShapeWindow, ShapeBounding, 0, 0, &rect, 1,
-			                        ShapeUnion, 0);
-			XShapeCombineShape(dpy, icon->w, ShapeBounding, 0, 0, scr->ShapeWindow,
-			                   ShapeBounding, ShapeSet);
-		}
-		else
-			XShapeCombineShape(dpy, icon->w, ShapeBounding, x, 0, icon->bm_w,
-			                   ShapeBounding, ShapeSet);
-	}
-	XClearWindow(dpy, icon->bm_w);
-	icon->image  = image->next;
-	return (True);
-}
-

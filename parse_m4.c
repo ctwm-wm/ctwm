@@ -15,7 +15,6 @@
 #include "screen.h"
 #include "parse.h"
 #include "parse_int.h"
-#include "util.h"
 #include "version.h"
 
 
