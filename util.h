@@ -91,12 +91,12 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-extern void     Zoom(Window wf, Window wt);
-extern void     MoveOutline(Window root,
-                            int x, int y, int width, int height,
-                            int bw, int th);
-extern char     *ExpandFilename(const char *name);
-extern char     *ExpandFilePath(char *path);
+void     Zoom(Window wf, Window wt);
+void     MoveOutline(Window root,
+                     int x, int y, int width, int height,
+                     int bw, int th);
+char     *ExpandFilename(const char *name);
+char     *ExpandFilePath(char *path);
 
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
                        Bool replace);
