@@ -32,6 +32,7 @@ struct timeval AnimateTimeout;
 static void Animate(void);
 static void AnimateButton(TBWindow *tbw);
 static void AnimateHighlight(TwmWindow *t);
+static Bool AnimateIcons(ScreenInfo *scr, Icon *icon);
 
 
 /* XXX Hopefully temporary */
@@ -249,4 +250,43 @@ AnimateHighlight(TwmWindow *t)
 		XClearWindow(dpy, t->hilite_wr);
 	}
 	t->HiliteImage = image->next;
+}
+
+
+/* Originally in icons.c */
+static Bool
+AnimateIcons(ScreenInfo *scr, Icon *icon)
+{
+	Image       *image;
+	XRectangle  rect;
+	XSetWindowAttributes attr;
+	int         x;
+
+	image = icon->image;
+	attr.background_pixmap = image->pixmap;
+	XChangeWindowAttributes(dpy, icon->bm_w, CWBackPixmap, &attr);
+
+	if(image->mask != None) {
+		x = GetIconOffset(icon);
+		XShapeCombineMask(dpy, icon->bm_w, ShapeBounding, 0, 0, image->mask, ShapeSet);
+		if(icon->has_title) {
+			rect.x      = 0;
+			rect.y      = icon->height;
+			rect.width  = icon->w_width;
+			rect.height = scr->IconFont.height + 6;
+
+			XShapeCombineShape(dpy, scr->ShapeWindow, ShapeBounding, x, 0, icon->bm_w,
+			                   ShapeBounding, ShapeSet);
+			XShapeCombineRectangles(dpy, scr->ShapeWindow, ShapeBounding, 0, 0, &rect, 1,
+			                        ShapeUnion, 0);
+			XShapeCombineShape(dpy, icon->w, ShapeBounding, 0, 0, scr->ShapeWindow,
+			                   ShapeBounding, ShapeSet);
+		}
+		else
+			XShapeCombineShape(dpy, icon->w, ShapeBounding, x, 0, icon->bm_w,
+			                   ShapeBounding, ShapeSet);
+	}
+	XClearWindow(dpy, icon->bm_w);
+	icon->image  = image->next;
+	return (True);
 }
