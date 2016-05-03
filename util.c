@@ -386,23 +386,6 @@ ExpandFilename(const char *name)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      GetUnknownIcon - read in the bitmap file for the unknown icon
- *
- *  Inputs:
- *      name - the filename to read
- *
- ***********************************************************************
- */
-
-void GetUnknownIcon(char *name)
-{
-	Scr->UnknownImage = GetImage(name, Scr->IconC);
-}
-
-
 void MaskScreen(char *file)
 {
 	unsigned long valuemask;

@@ -125,5 +125,6 @@ extern void ExpandIconTitle(TwmWindow *tmp_win);
 extern void ReshapeIcon(Icon *icon);
 extern int GetIconOffset(Icon *icon);
 extern Bool AnimateIcons(ScreenInfo *scr, Icon *icon);
+void GetUnknownIcon(char *name);
 
 #endif /* ICONS_H */

@@ -101,7 +101,6 @@ extern void     Zoom(Window wf, Window wt);
 extern void     MoveOutline(Window root,
                             int x, int y, int width, int height,
                             int bw, int th);
-extern void     GetUnknownIcon(char *name);
 extern char     *ExpandFilename(const char *name);
 extern char     *ExpandFilePath(char *path);
 
