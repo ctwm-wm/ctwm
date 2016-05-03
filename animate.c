@@ -34,8 +34,15 @@ static void AnimateHighlight(TwmWindow *t);
 static void AnimateIcons(ScreenInfo *scr, Icon *icon);
 
 
-/* XXX Hopefully temporary */
-extern FILE *tracefile;
+/*
+ * XXX We're directly looking at this for hopefully hysterical raisins.
+ * Rexamine the whole tracefile subsystem at some point when we look at
+ * debugging.
+ *
+ * Currently get it via pollution from events.h anyway.
+ *
+ * extern FILE *tracefile;
+ */
 
 void
 TryToAnimate(void)
