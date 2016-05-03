@@ -150,7 +150,7 @@ unsigned char *GetWMPropertyString(Window w, Atom prop);
 void FreeWMPropertyString(char *prop);
 void ConstrainByBorders1(int *left, int width, int *top, int height);
 void ConstrainByBorders(TwmWindow *twmwin,
-                               int *left, int width,
-                               int *top, int height);
+                        int *left, int width,
+                        int *top, int height);
 
 #endif /* _UTIL_ */
