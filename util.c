@@ -1123,6 +1123,8 @@ void Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
 	return;
 }
 
+#undef FBGC
+
 void Draw3DCorner(Window w,
                   int x, int y, int width, int height, int thick, int bw,
                   ColorPair cp, int type)
