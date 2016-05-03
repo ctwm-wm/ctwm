@@ -146,10 +146,10 @@ void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 extern int HotX, HotY;
 
 
-extern unsigned char *GetWMPropertyString(Window w, Atom prop);
-extern void FreeWMPropertyString(char *prop);
-extern void ConstrainByBorders1(int *left, int width, int *top, int height);
-extern void ConstrainByBorders(TwmWindow *twmwin,
+unsigned char *GetWMPropertyString(Window w, Atom prop);
+void FreeWMPropertyString(char *prop);
+void ConstrainByBorders1(int *left, int width, int *top, int height);
+void ConstrainByBorders(TwmWindow *twmwin,
                                int *left, int width,
                                int *top, int height);
 
