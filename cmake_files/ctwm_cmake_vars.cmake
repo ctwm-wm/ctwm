@@ -12,6 +12,7 @@ set(SRCDOCDIR ${CMAKE_SOURCE_DIR}/doc)
 # Our base set of sources
 set(CTWMSRC
 	add_window.c
+	animate.c
 	clargs.c
 	clicktofocus.c
 	ctopts.c

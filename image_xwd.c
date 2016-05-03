@@ -12,6 +12,7 @@
 #include "screen.h"
 #include "types.h"
 #include "util.h"
+#include "animate.h"
 
 #include "image.h"
 #include "image_xwd.h"

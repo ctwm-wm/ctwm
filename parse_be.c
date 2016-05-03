@@ -18,6 +18,7 @@
 #include "ctwm_atoms.h"
 #include "screen.h"
 #include "util.h"
+#include "animate.h"
 #include "icons.h"
 #include "parse.h"
 #include "parse_be.h"

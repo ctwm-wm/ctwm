@@ -70,6 +70,7 @@
 #include "list.h"
 #include "parse.h"
 #include "util.h"
+#include "animate.h"
 #include "image.h"
 
 #define iconWidth(w)    (w->icon->border_width * 2 + \

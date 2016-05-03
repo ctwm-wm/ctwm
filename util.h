@@ -91,12 +91,6 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-extern int Animating;
-extern Bool AnimationActive;
-extern Bool MaybeAnimate;
-extern int AnimationSpeed;
-extern struct timeval AnimateTimeout;
-
 extern void     Zoom(Window wf, Window wt);
 extern void     MoveOutline(Window root,
                             int x, int y, int width, int height,
@@ -104,12 +98,6 @@ extern void     MoveOutline(Window root,
 extern char     *ExpandFilename(const char *name);
 extern char     *ExpandFilePath(char *path);
 
-void StartAnimation(void);
-void StopAnimation(void);
-void SetAnimationSpeed(int speed);
-void ModifyAnimationSpeed(int incr);
-void Animate(void);
-void TryToAnimate(void);
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
                        Bool replace);
 void RemoveRGBColormap(Atom a);
