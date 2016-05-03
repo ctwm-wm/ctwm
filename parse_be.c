@@ -20,6 +20,7 @@
 #include "util.h"
 #include "animate.h"
 #include "icons.h"
+#include "image.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
@@ -1006,7 +1007,7 @@ do_string_keyword(int keyword, char *s)
 
 		case kws_UnknownIcon:
 			if(Scr->FirstTime) {
-				GetUnknownIcon(s);
+				Scr->UnknownImage = GetImage(s, Scr->IconC);
 			}
 			return 1;
 

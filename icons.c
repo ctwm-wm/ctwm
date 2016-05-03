@@ -1000,21 +1000,3 @@ int GetIconOffset(Icon *icon)
 			return (0);
 	}
 }
-
-
-
-/***********************************************************************
- *
- *  Procedure:
- *      GetUnknownIcon - read in the bitmap file for the unknown icon
- *
- *  Inputs:
- *      name - the filename to read
- *
- ***********************************************************************
- */
-
-void GetUnknownIcon(char *name)
-{
-	Scr->UnknownImage = GetImage(name, Scr->IconC);
-}
