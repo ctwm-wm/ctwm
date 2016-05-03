@@ -31,6 +31,7 @@ set(CTWMSRC
 	image_xwd.c
 	lex.c
 	list.c
+	mask_screen.c
 	menus.c
 	mwmhints.c
 	otp.c

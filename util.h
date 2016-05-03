@@ -104,8 +104,6 @@ extern void     MoveOutline(Window root,
 extern char     *ExpandFilename(const char *name);
 extern char     *ExpandFilePath(char *path);
 
-void MaskScreen(char *file);
-void UnmaskScreen(void);
 void StartAnimation(void);
 void StopAnimation(void);
 void SetAnimationSpeed(int speed);
