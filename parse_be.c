@@ -19,7 +19,6 @@
 #include "screen.h"
 #include "util.h"
 #include "animate.h"
-#include "icons.h"
 #include "image.h"
 #include "parse.h"
 #include "parse_be.h"
