@@ -103,8 +103,6 @@
 #include "image.h"
 
 
-#define MAXANIMATIONSPEED 20
-
 /***********************************************************************
  *
  *  Procedure:
