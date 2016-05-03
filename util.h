@@ -131,8 +131,6 @@ void RescueWindows(void);
 void DebugTrace(char *file);
 void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
-extern int HotX, HotY;
-
 
 unsigned char *GetWMPropertyString(Window w, Atom prop);
 void FreeWMPropertyString(char *prop);

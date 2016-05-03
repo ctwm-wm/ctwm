@@ -105,8 +105,6 @@
 
 #define MAXANIMATIONSPEED 20
 
-int  HotX, HotY;
-
 /***********************************************************************
  *
  *  Procedure:

@@ -22,6 +22,10 @@
 #include "image_bitmap_builtin.h"
 
 
+/* Shared with cursor.c for bitmap cursors */
+int  HotX, HotY;
+
+
 static Image *LoadBitmapImage(const char  *name, ColorPair cp);
 static Pixmap FindBitmap(const char *name, unsigned int *widthp,
                          unsigned int *heightp);
