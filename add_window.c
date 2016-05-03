@@ -2518,35 +2518,6 @@ void GetWindowSizeHints(TwmWindow *tmp)
 	}
 }
 
-void AnimateButton(TBWindow *tbw)
-{
-	Image       *image;
-	XSetWindowAttributes attr;
-
-	image = tbw->image;
-	attr.background_pixmap = image->pixmap;
-	XChangeWindowAttributes(dpy, tbw->window, CWBackPixmap, &attr);
-	XClearWindow(dpy, tbw->window);
-	tbw->image = image->next;
-}
-
-void AnimateHighlight(TwmWindow *t)
-{
-	Image       *image;
-	XSetWindowAttributes attr;
-
-	image = t->HiliteImage;
-	attr.background_pixmap = image->pixmap;
-	if(t->hilite_wl) {
-		XChangeWindowAttributes(dpy, t->hilite_wl, CWBackPixmap, &attr);
-		XClearWindow(dpy, t->hilite_wl);
-	}
-	if(t->hilite_wr) {
-		XChangeWindowAttributes(dpy, t->hilite_wr, CWBackPixmap, &attr);
-		XClearWindow(dpy, t->hilite_wr);
-	}
-	t->HiliteImage = image->next;
-}
 
 name_list **AddWindowRegion(char *geom, int grav1, int grav2)
 {

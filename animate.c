@@ -17,7 +17,6 @@
 #include "util.h"
 
 #include "animate.h"
-#include "add_window.h"
 
 
 #define MAXANIMATIONSPEED 20
@@ -31,6 +30,8 @@ struct timeval AnimateTimeout;
 
 
 static void Animate(void);
+static void AnimateButton(TBWindow *tbw);
+static void AnimateHighlight(TwmWindow *t);
 
 
 /* XXX Hopefully temporary */
@@ -213,4 +214,39 @@ Animate(void)
 	}
 	XFlush(dpy);
 	return;
+}
+
+
+/* Originally in add_window.c */
+static void
+AnimateButton(TBWindow *tbw)
+{
+	Image       *image;
+	XSetWindowAttributes attr;
+
+	image = tbw->image;
+	attr.background_pixmap = image->pixmap;
+	XChangeWindowAttributes(dpy, tbw->window, CWBackPixmap, &attr);
+	XClearWindow(dpy, tbw->window);
+	tbw->image = image->next;
+}
+
+/* Originally in add_window.c */
+static void
+AnimateHighlight(TwmWindow *t)
+{
+	Image       *image;
+	XSetWindowAttributes attr;
+
+	image = t->HiliteImage;
+	attr.background_pixmap = image->pixmap;
+	if(t->hilite_wl) {
+		XChangeWindowAttributes(dpy, t->hilite_wl, CWBackPixmap, &attr);
+		XClearWindow(dpy, t->hilite_wl);
+	}
+	if(t->hilite_wr) {
+		XChangeWindowAttributes(dpy, t->hilite_wr, CWBackPixmap, &attr);
+		XClearWindow(dpy, t->hilite_wr);
+	}
+	t->HiliteImage = image->next;
 }
