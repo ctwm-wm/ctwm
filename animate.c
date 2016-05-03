@@ -32,7 +32,7 @@ struct timeval AnimateTimeout;
 static void Animate(void);
 static void AnimateButton(TBWindow *tbw);
 static void AnimateHighlight(TwmWindow *t);
-static Bool AnimateIcons(ScreenInfo *scr, Icon *icon);
+static void AnimateIcons(ScreenInfo *scr, Icon *icon);
 
 
 /* XXX Hopefully temporary */
@@ -254,7 +254,7 @@ AnimateHighlight(TwmWindow *t)
 
 
 /* Originally in icons.c */
-static Bool
+static void
 AnimateIcons(ScreenInfo *scr, Icon *icon)
 {
 	Image       *image;
@@ -288,5 +288,5 @@ AnimateIcons(ScreenInfo *scr, Icon *icon)
 	}
 	XClearWindow(dpy, icon->bm_w);
 	icon->image  = image->next;
-	return (True);
+	return;
 }
