@@ -26,7 +26,8 @@ static void PaintTitleButtons(TwmWindow *tmp_win);
 /*
  * Masking and unmasking; our public interface
  */
-void MaskScreen(char *file)
+void
+MaskScreen(char *file)
 {
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
@@ -110,7 +111,8 @@ void MaskScreen(char *file)
 
 
 
-void UnmaskScreen(void)
+void
+UnmaskScreen(void)
 {
 	struct timeval      timeout;
 	Colormap            stdcmap = Scr->RootColormaps.cwins[0]->colormap->c;
