@@ -13,7 +13,6 @@
 
 #include "screen.h"
 #include "types.h"
-#include "util.h"
 
 #include "image.h"
 #include "image_bitmap.h"

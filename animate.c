@@ -14,7 +14,6 @@
 #include "image.h"
 #include "screen.h"
 #include "types.h"
-#include "util.h"
 
 #include "animate.h"
 

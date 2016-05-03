@@ -71,7 +71,6 @@
 
 #include <stdio.h>
 
-#include "util.h"
 #include "gram.tab.h"
 #include "screen.h"
 #include "gc.h"
