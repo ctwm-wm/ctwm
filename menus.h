@@ -195,10 +195,6 @@ extern Bool AddFuncButton(int num, int cont, int mods, int func,
 extern void PopDownMenu(void);
 extern void HideMenu(MenuRoot *menu);
 extern void resizeFromCenter(Window w, TwmWindow *tmp_win);
-extern int ExecuteFunction(int func, void *action,
-                           Window w, TwmWindow *tmp_win,
-                           XEvent *eventp,
-                           int context, int pulldown);
 extern void ReGrab(void);
 void SetLastCursor(Cursor newcur);
 extern int CreateTitleButton(char *name, int func, char *action,
