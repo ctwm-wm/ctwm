@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include <X11/Xatom.h>
 
@@ -41,7 +42,7 @@ static void ShowIconManager(void);
 static void HideIconManager(void);
 static int DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
-static Bool belongs_to_twm_window(TwmWindow *t, Window w);
+static bool belongs_to_twm_window(TwmWindow *t, Window w);
 static void packwindow(TwmWindow *tmp_win, char *direction);
 static void fillwindow(TwmWindow *tmp_win, char *direction);
 static int NeedToDefer(MenuRoot *root);
@@ -755,7 +756,7 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_HYPERMOVE: {
-			Bool    cont = True;
+			bool    cont = true;
 			Window  root = RootWindow(dpy, Scr->screen);
 			Cursor  cursor;
 			CaptiveCTWM cctwm0, cctwm;
@@ -783,11 +784,11 @@ int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				           ButtonReleaseMask, &Event);
 				switch(Event.xany.type) {
 					case ButtonPress :
-						cont = False;
+						cont = false;
 						break;
 
 					case ButtonRelease :
-						cont = False;
+						cont = false;
 						cctwm = GetCaptiveCTWMUnderPointer();
 						free(cctwm.name);
 						if(cctwm.root == Scr->Root) {
@@ -2514,16 +2515,16 @@ info_dismiss:
 }
 
 
-static Bool
+static bool
 belongs_to_twm_window(TwmWindow *t, Window w)
 {
 	if(!t) {
-		return False;
+		return false;
 	}
 
 	if(w == t->frame || w == t->title_w || w == t->hilite_wl || w == t->hilite_wr ||
 	                (t->icon && (w == t->icon->w || w == t->icon->bm_w))) {
-		return True;
+		return true;
 	}
 
 	if(t && t->titlebuttons) {
@@ -2531,11 +2532,11 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 		for(tbw = t->titlebuttons; nb > 0; tbw++, nb--) {
 			if(tbw->window == w) {
-				return True;
+				return true;
 			}
 		}
 	}
-	return False;
+	return false;
 }
 
 
