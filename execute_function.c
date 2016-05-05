@@ -73,8 +73,9 @@ static int FindConstraint(TwmWindow *tmp_win, int direction);
  ***********************************************************************
  */
 
-int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
-                    XEvent *eventp, int context, int pulldown)
+int
+ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
+                XEvent *eventp, int context, int pulldown)
 {
 	static Time last_time = 0;
 	Window rootw;
