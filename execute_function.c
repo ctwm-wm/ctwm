@@ -34,7 +34,33 @@
 
 
 int RootFunction = 0;
-static Cursor LastCursor;
+int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
+
+
+/*
+ * Constrained move variables
+ *
+ * Gets used in event handling for ButtonRelease.
+ */
+int ConstMove = FALSE;
+int ConstMoveDir;
+int ConstMoveX;
+int ConstMoveY;
+int ConstMoveXL;
+int ConstMoveXR;
+int ConstMoveYT;
+int ConstMoveYB;
+
+int WindowMoved = FALSE;
+
+/*
+ * Globals used to keep track of whether the mouse has moved during a
+ * resize function.
+ */
+int ResizeOrigX;
+int ResizeOrigY;
+
+
 
 
 static void jump(TwmWindow *tmp_win, int direction, char *action);
@@ -2316,7 +2342,7 @@ static int
 DeferExecution(int context, int func, Cursor cursor)
 {
 	if((context == C_ROOT) || (context == C_ALTERNATE)) {
-		LastCursor = cursor;
+		SetLastCursor(cursor);
 		XGrabPointer(dpy,
 		             Scr->Root,
 		             True,

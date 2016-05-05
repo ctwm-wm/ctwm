@@ -158,18 +158,6 @@ struct FuncKey {
 
 extern MenuRoot *ActiveMenu;
 extern MenuItem *ActiveItem;
-extern int MoveFunction;
-extern int WindowMoved;
-extern int ConstMove;
-extern int ConstMoveDir;
-extern int ConstMoveX;
-extern int ConstMoveY;
-extern int ConstMoveXL;
-extern int ConstMoveXR;
-extern int ConstMoveYT;
-extern int ConstMoveYB;
-extern int ResizeOrigX;
-extern int ResizeOrigY;
 
 extern int menuFromFrameOrWindowOrTitlebar;
 extern char *CurrentSelectedWorkspace;
@@ -212,6 +200,7 @@ extern int ExecuteFunction(int func, void *action,
                            XEvent *eventp,
                            int context, int pulldown);
 extern void ReGrab(void);
+void SetLastCursor(Cursor newcur);
 extern int CreateTitleButton(char *name, int func, char *action,
                              MenuRoot *menuroot, Bool rightside,
                              Bool append);

@@ -70,62 +70,31 @@
 #include "ctwm.h"
 
 #include <stdio.h>
-#include <signal.h>
 #include <string.h>
 #include <strings.h>
 
-#include <X11/Xos.h>
-#include <X11/Xatom.h>
-#include <X11/SM/SMlib.h>
-
 #include "ctwm_atoms.h"
-#include "gc.h"
 #include "menus.h"
 #include "resize.h"
 #include "events.h"
-#include "list.h"
 #include "util.h"
-#include "animate.h"
 #include "parse.h"
-#include "screen.h"
 #include "icons.h"
 #include "add_window.h"
-#include "windowbox.h"
-#include "workmgr.h"
-#include "cursor.h"
 #include "otp.h"
-#include "ctopts.h"
 #include "image.h"
-#include "execute_function.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
-#include "version.h"
-
-#include "ext/repl_str.h"
 
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */
-int MoveFunction;                       /* either F_MOVE or F_FORCEMOVE */
-int WindowMoved = FALSE;
 int menuFromFrameOrWindowOrTitlebar = FALSE;
 char *CurrentSelectedWorkspace;
+
+/* Should probably move, since nothing in this file uses anymore */
 int AlternateKeymap;
 Bool AlternateContext;
-
-int ConstMove = FALSE;          /* constrained move variables */
-int ConstMoveDir;
-int ConstMoveX;
-int ConstMoveY;
-int ConstMoveXL;
-int ConstMoveXR;
-int ConstMoveYT;
-int ConstMoveYB;
-
-/* Globals used to keep track of whether the mouse has moved during
-   a resize function. */
-int ResizeOrigX;
-int ResizeOrigY;
 
 int MenuDepth = 0;              /* number of menus up */
 static struct {
@@ -1912,6 +1881,11 @@ void ReGrab(void)
 	             ButtonPressMask | ButtonReleaseMask,
 	             GrabModeAsync, GrabModeAsync,
 	             Scr->Root, LastCursor, CurrentTime);
+}
+void
+SetLastCursor(Cursor newcur)
+{
+	LastCursor = newcur;
 }
 
 
