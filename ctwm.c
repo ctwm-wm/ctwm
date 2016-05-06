@@ -124,8 +124,6 @@ static int RedirectError;       /* TRUE ==> another window manager running */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
 static int TwmErrorHandler(Display *display, XErrorEvent *event);
-char Info[INFO_LINES][INFO_SIZE];               /* info strings to print */
-int InfoLines;
 unsigned int InfoWidth, InfoHeight;
 static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
@@ -291,8 +289,6 @@ int main(int argc, char **argv)
 	else {
 		firstscrn = lastscrn = DefaultScreen(dpy);
 	}
-
-	InfoLines = 0;
 
 	/* for simplicity, always allocate NumScreens ScreenInfo struct pointers */
 	ScreenList = (ScreenInfo **) calloc(NumScreens, sizeof(ScreenInfo *));

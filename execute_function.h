@@ -19,6 +19,9 @@ extern int ConstMoveXR;
 extern int ConstMoveYT;
 extern int ConstMoveYB;
 
+extern char Info[INFO_LINES][INFO_SIZE];
+extern int InfoLines;
+
 /* Leaks to a few places */
 extern int RootFunction;
 extern int MoveFunction;
