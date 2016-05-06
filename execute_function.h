@@ -19,6 +19,8 @@ extern int ConstMoveXR;
 extern int ConstMoveYT;
 extern int ConstMoveYB;
 
+#define INFO_LINES 30
+#define INFO_SIZE 200
 extern char Info[INFO_LINES][INFO_SIZE];
 extern int InfoLines;
 
