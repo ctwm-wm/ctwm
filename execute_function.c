@@ -2500,6 +2500,13 @@ Identify(TwmWindow *t)
 info_dismiss:
 	snprintf(Info[n++], INFO_SIZE, "Click to dismiss....");
 
+
+	/*
+	 * OK, it's all built now.  Stash the size so [re]drawing it knows
+	 * how much to do.
+	 */
+	InfoLines  = n;
+
 	/* figure out the width and height of the info window */
 	height = n * (Scr->DefaultFont.height + 2);
 	width = 1;
@@ -2540,7 +2547,6 @@ info_dismiss:
 	}
 	XMoveResizeWindow(dpy, Scr->InfoWindow, px, py, width, height);
 	XMapRaised(dpy, Scr->InfoWindow);
-	InfoLines  = n;
 	InfoWidth  = width;
 	InfoHeight = height;
 }
