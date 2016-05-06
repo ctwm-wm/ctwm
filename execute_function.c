@@ -2502,10 +2502,8 @@ info_dismiss:
 
 
 	/*
-	 * OK, it's all built now.  Stash the size so [re]drawing it knows
-	 * how much to do.
+	 * OK, it's all built now.
 	 */
-	InfoLines  = n;
 
 	/* figure out the width and height of the info window */
 	height = n * (Scr->DefaultFont.height + 2);
@@ -2519,9 +2517,17 @@ info_dismiss:
 			width = twidth;
 		}
 	}
+
+	/*
+	 * If InfoLines is set, that means it was mapped, so hide it away.
+	 * Sorta odd way of flagging it, but...
+	 */
 	if(InfoLines) {
 		XUnmapWindow(dpy, Scr->InfoWindow);
 	}
+
+	/* Stash the new number of lines */
+	InfoLines  = n;
 
 	width += 10;                /* some padding */
 	height += 10;               /* some padding */
