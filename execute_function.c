@@ -2528,7 +2528,7 @@ info_dismiss:
 	}
 
 	/* Stash the new number of lines */
-	InfoLines  = n;
+	InfoLines = n;
 
 	width += 10;                /* some padding */
 	height += 10;               /* some padding */
