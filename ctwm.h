@@ -518,7 +518,6 @@ extern int JunkX;
 extern int JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 extern XGCValues Gcv;
-extern unsigned int InfoWidth, InfoHeight;
 extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;

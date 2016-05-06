@@ -39,6 +39,7 @@ int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
 /* Building the f.identify window.  The events code grubs in these. */
 char Info[INFO_LINES][INFO_SIZE];
 int InfoLines;
+unsigned int InfoWidth, InfoHeight;
 
 
 /*

@@ -23,6 +23,7 @@ extern int ConstMoveYB;
 #define INFO_SIZE 200
 extern char Info[INFO_LINES][INFO_SIZE];
 extern int InfoLines;
+extern unsigned int InfoWidth, InfoHeight;
 
 /* Leaks to a few places */
 extern int RootFunction;

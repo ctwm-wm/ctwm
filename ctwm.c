@@ -124,7 +124,6 @@ static int RedirectError;       /* TRUE ==> another window manager running */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
 static int TwmErrorHandler(Display *display, XErrorEvent *event);
-unsigned int InfoWidth, InfoHeight;
 static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
