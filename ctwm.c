@@ -752,7 +752,7 @@ int main(int argc, char **argv)
 		attributes.cursor = XCreateFontCursor(dpy, XC_hand2);
 		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
 		             CWBackingStore | CWCursor);
-		Scr->InfoWindow = XCreateWindow(dpy, Scr->Root, 0, 0,
+		Scr->InfoWindow.win = XCreateWindow(dpy, Scr->Root, 0, 0,
 		                                (unsigned int) 5, (unsigned int) 5,
 		                                (unsigned int) 0, 0,
 		                                (unsigned int) CopyFromParent,

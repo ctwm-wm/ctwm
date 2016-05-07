@@ -1057,7 +1057,7 @@ void HandleKeyPress(void)
 	Window w;
 
 	if(InfoLines) {
-		XUnmapWindow(dpy, Scr->InfoWindow);
+		XUnmapWindow(dpy, Scr->InfoWindow.win);
 		/*
 		 * XXX Not resetting InfoLines like we do on ButtonRelease -
 		 * should we?
@@ -2188,7 +2188,7 @@ void HandleExpose(void)
 		return;
 	}
 
-	if(Event.xany.window == Scr->InfoWindow && InfoLines) {
+	if(Event.xany.window == Scr->InfoWindow.win && InfoLines) {
 		draw_info_window();
 		flush_expose(Event.xany.window);
 	}
@@ -2875,7 +2875,7 @@ void HandleButtonRelease(void)
 
 	if(InfoLines) {             /* delete info box on 2nd button release  */
 		if(Context == C_IDENTIFY) {
-			XUnmapWindow(dpy, Scr->InfoWindow);
+			XUnmapWindow(dpy, Scr->InfoWindow.win);
 			InfoLines = 0;
 			Context = C_NO_CONTEXT;
 		}
@@ -3325,7 +3325,7 @@ void HandleButtonPress(void)
 
 	Context = C_NO_CONTEXT;
 
-	if(Event.xany.window == Scr->InfoWindow) {
+	if(Event.xany.window == Scr->InfoWindow.win) {
 		Context = C_IDENTIFY;
 	}
 
@@ -3514,7 +3514,7 @@ void HandleButtonPress(void)
 		}
 
 		/* make sure we are not trying to move an identify window */
-		if(Event.xany.window != Scr->InfoWindow)
+		if(Event.xany.window != Scr->InfoWindow.win)
 			ExecuteFunction(RootFunction, Action, Event.xany.window,
 			                Tmp_win, &Event, Context, FALSE);
 

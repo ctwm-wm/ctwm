@@ -57,6 +57,8 @@
 #ifndef _SCREEN_
 #define _SCREEN_
 
+#include <stdbool.h>
+
 #include "list.h"
 #include "menus.h"
 #include "iconmgr.h"
@@ -137,7 +139,12 @@ struct ScreenInfo {
 	 */
 
 	Window SizeWindow;          /* the resize dimensions window */
-	Window InfoWindow;          /* the information window */
+	struct {
+		Window       win;    // Actual X window
+		bool         mapped; // Flag for currently up
+		unsigned int width;  // Stash of
+		unsigned int height; // current measurements
+	} InfoWindow;               /* the information window */
 	Window WindowMask;          /* the window masking the screen at startup */
 	Window ShapeWindow;         /* an utilitary window for animated icons */
 

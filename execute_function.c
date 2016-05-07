@@ -2534,7 +2534,7 @@ info_dismiss:
 	 * Sorta odd way of flagging it, but...
 	 */
 	if(InfoLines) {
-		XUnmapWindow(dpy, Scr->InfoWindow);
+		XUnmapWindow(dpy, Scr->InfoWindow.win);
 	}
 
 	/* Stash the new number of lines */
@@ -2562,8 +2562,8 @@ info_dismiss:
 	else {
 		px = py = 0;
 	}
-	XMoveResizeWindow(dpy, Scr->InfoWindow, px, py, width, height);
-	XMapRaised(dpy, Scr->InfoWindow);
+	XMoveResizeWindow(dpy, Scr->InfoWindow.win, px, py, width, height);
+	XMapRaised(dpy, Scr->InfoWindow.win);
 	InfoWidth  = width;
 	InfoHeight = height;
 }
@@ -2579,14 +2579,14 @@ draw_info_window(void)
 	int i;
 	int height;
 
-	Draw3DBorder(Scr->InfoWindow, 0, 0, InfoWidth, InfoHeight,
+	Draw3DBorder(Scr->InfoWindow.win, 0, 0, InfoWidth, InfoHeight,
 	             2, Scr->DefaultC, off, True, False);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 
 	height = Scr->DefaultFont.height + 2;
 	for(i = 0; i < InfoLines; i++) {
-		XmbDrawString(dpy, Scr->InfoWindow, Scr->DefaultFont.font_set,
+		XmbDrawString(dpy, Scr->InfoWindow.win, Scr->DefaultFont.font_set,
 		              Scr->NormalGC, 5,
 		              (i * height) + Scr->DefaultFont.y + 5,
 		              Info[i], strlen(Info[i]));
