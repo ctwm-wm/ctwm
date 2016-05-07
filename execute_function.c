@@ -56,7 +56,7 @@ int ConstMoveXR;
 int ConstMoveYT;
 int ConstMoveYB;
 
-int WindowMoved = FALSE;
+bool WindowMoved = false;
 
 /*
  * Globals used to keep track of whether the mouse has moved during a
@@ -1099,7 +1099,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				}
 
 				if(Cancel) {
-					WindowMoved = FALSE;
+					WindowMoved = false;
 					if(!Scr->OpaqueMove) {
 						UninstallRootColormap();
 					}
@@ -1175,7 +1175,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					}
 				}
 
-				WindowMoved = TRUE;
+				WindowMoved = true;
 
 				if(ConstMove) {
 					switch(ConstMoveDir) {

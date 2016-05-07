@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <sys/time.h>
 
@@ -544,7 +545,7 @@ void HandleEvents(void)
 		if(ColortableThrashing && !QLength(dpy) && Scr) {
 			InstallColormaps(ColormapNotify, NULL);
 		}
-		WindowMoved = FALSE;
+		WindowMoved = false;
 
 		CtwmNextEvent(dpy, &Event);
 
@@ -2841,7 +2842,7 @@ void HandleMotionNotify(void)
 		   work with resize as well as move. */
 		if(abs(Event.xmotion.x - ResizeOrigX) >= Scr->MoveDelta
 		                || abs(Event.xmotion.y - ResizeOrigY) >= Scr->MoveDelta) {
-			WindowMoved = TRUE;
+			WindowMoved = true;
 		}
 
 		Tmp_win = GetTwmWindow(ResizeWindow);
