@@ -2,8 +2,8 @@
  * f.whatever function dispatcher
  */
 
-#ifndef _EXECUTE_FUNCTION_H
-#define _EXECUTE_FUNCTION_H
+#ifndef _FUNCTIONS_H
+#define _FUNCTIONS_H
 
 #include <stdbool.h>
 
@@ -27,4 +27,4 @@ extern bool WindowMoved;
 extern int  ResizeOrigX;
 extern int  ResizeOrigY;
 
-#endif /* _EXECUTE_FUNCTION_H */
+#endif /* _FUNCTIONS_H */
