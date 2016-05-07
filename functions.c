@@ -201,19 +201,19 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			ShowIconManager();
 			break;
 
-		case F_STARTANIMATION :
+		case F_STARTANIMATION:
 			StartAnimation();
 			break;
 
-		case F_STOPANIMATION :
+		case F_STOPANIMATION:
 			StopAnimation();
 			break;
 
-		case F_SPEEDUPANIMATION :
+		case F_SPEEDUPANIMATION:
 			ModifyAnimationSpeed(1);
 			break;
 
-		case F_SLOWDOWNANIMATION :
+		case F_SLOWDOWNANIMATION:
 			ModifyAnimationSpeed(-1);
 			break;
 
@@ -253,19 +253,19 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			break;
 
-		case F_TOGGLESTATE :
+		case F_TOGGLESTATE:
 			WMapToggleState(Scr->currentvs);
 			break;
 
-		case F_SETBUTTONSTATE :
+		case F_SETBUTTONSTATE:
 			WMapSetButtonsState(Scr->currentvs);
 			break;
 
-		case F_SETMAPSTATE :
+		case F_SETMAPSTATE:
 			WMapSetMapState(Scr->currentvs);
 			break;
 
-		case F_PIN :
+		case F_PIN:
 			if(! ActiveMenu) {
 				break;
 			}
@@ -308,7 +308,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVEMENU:
 			break;
 
-		case F_FITTOCONTENT :
+		case F_FITTOCONTENT:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
 				return TRUE;
 			}
@@ -466,25 +466,25 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			swidth = tmp_win->frame_width;
 			sheight = tmp_win->frame_height;
 			switch(grav) {
-				case ForgetGravity :
-				case StaticGravity :
-				case NorthWestGravity :
-				case NorthGravity :
-				case WestGravity :
-				case CenterGravity :
+				case ForgetGravity:
+				case StaticGravity:
+				case NorthWestGravity:
+				case NorthGravity:
+				case WestGravity:
+				case CenterGravity:
 					break;
 
-				case NorthEastGravity :
-				case EastGravity :
+				case NorthEastGravity:
+				case EastGravity:
 					x += swidth - width;
 					break;
 
-				case SouthWestGravity :
-				case SouthGravity :
+				case SouthWestGravity:
+				case SouthGravity:
 					y += sheight - height;
 					break;
 
-				case SouthEastGravity :
+				case SouthEastGravity:
 					x += swidth - width;
 					y += sheight - height;
 					break;
@@ -815,11 +815,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
 				           ButtonReleaseMask, &Event);
 				switch(Event.xany.type) {
-					case ButtonPress :
+					case ButtonPress:
 						cont = false;
 						break;
 
-					case ButtonRelease :
+					case ButtonRelease:
 						cont = false;
 						cctwm = GetCaptiveCTWMUnderPointer();
 						free(cctwm.name);
@@ -835,7 +835,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						XMapWindow(dpy, tmp_win->w);
 						break;
 
-					case MotionNotify :
+					case MotionNotify:
 						cctwm = GetCaptiveCTWMUnderPointer();
 						if(cctwm.root != cctwm0.root) {
 							XFreeCursor(dpy, cursor);
@@ -2228,7 +2228,7 @@ jump(TwmWindow *tmp_win, int  direction, char *action)
 	fwidth  = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
 	fheight = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 	switch(direction) {
-		case J_LEFT   :
+		case J_LEFT:
 			cons  = FindConstraint(tmp_win, J_LEFT);
 			if(cons == -1) {
 				return;
@@ -2238,7 +2238,7 @@ jump(TwmWindow *tmp_win, int  direction, char *action)
 				fx = cons;
 			}
 			break;
-		case J_RIGHT  :
+		case J_RIGHT:
 			cons  = FindConstraint(tmp_win, J_RIGHT);
 			if(cons == -1) {
 				return;
@@ -2248,7 +2248,7 @@ jump(TwmWindow *tmp_win, int  direction, char *action)
 				fx = cons - fwidth;
 			}
 			break;
-		case J_TOP    :
+		case J_TOP:
 			cons  = FindConstraint(tmp_win, J_TOP);
 			if(cons == -1) {
 				return;
@@ -2258,7 +2258,7 @@ jump(TwmWindow *tmp_win, int  direction, char *action)
 				fy = cons;
 			}
 			break;
-		case J_BOTTOM :
+		case J_BOTTOM:
 			cons  = FindConstraint(tmp_win, J_BOTTOM);
 			if(cons == -1) {
 				return;
@@ -3095,31 +3095,31 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 	int         ret;
 
 	switch(direction) {
-		case J_LEFT   :
+		case J_LEFT:
 			if(winx < Scr->BorderLeft) {
 				return -1;
 			}
 			ret = Scr->BorderLeft;
 			break;
-		case J_RIGHT  :
+		case J_RIGHT:
 			if(winx + winw > Scr->rootw - Scr->BorderRight) {
 				return -1;
 			}
 			ret = Scr->rootw - Scr->BorderRight;
 			break;
-		case J_TOP    :
+		case J_TOP:
 			if(winy < Scr->BorderTop) {
 				return -1;
 			}
 			ret = Scr->BorderTop;
 			break;
-		case J_BOTTOM :
+		case J_BOTTOM:
 			if(winy + winh > Scr->rooth - Scr->BorderBottom) {
 				return -1;
 			}
 			ret = Scr->rooth - Scr->BorderBottom;
 			break;
-		default       :
+		default:
 			return -1;
 	}
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
@@ -3136,7 +3136,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 		h = t->frame_height + 2 * t->frame_bw;
 
 		switch(direction) {
-			case J_LEFT :
+			case J_LEFT:
 				if(winx        <= t->frame_x + w) {
 					continue;
 				}
@@ -3148,7 +3148,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 				}
 				ret = MAX(ret, t->frame_x + w);
 				break;
-			case J_RIGHT :
+			case J_RIGHT:
 				if(winx + winw >= t->frame_x) {
 					continue;
 				}
@@ -3160,7 +3160,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 				}
 				ret = MIN(ret, t->frame_x);
 				break;
-			case J_TOP :
+			case J_TOP:
 				if(winy        <= t->frame_y + h) {
 					continue;
 				}
@@ -3172,7 +3172,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 				}
 				ret = MAX(ret, t->frame_y + h);
 				break;
-			case J_BOTTOM :
+			case J_BOTTOM:
 				if(winy + winh >= t->frame_y) {
 					continue;
 				}
