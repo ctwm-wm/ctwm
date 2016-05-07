@@ -41,7 +41,6 @@ int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
 #define INFO_SIZE 200
 char Info[INFO_LINES][INFO_SIZE];
 int InfoLines;
-unsigned int InfoWidth, InfoHeight;
 
 
 /*
@@ -2564,8 +2563,8 @@ info_dismiss:
 	}
 	XMoveResizeWindow(dpy, Scr->InfoWindow.win, px, py, width, height);
 	XMapRaised(dpy, Scr->InfoWindow.win);
-	InfoWidth  = width;
-	InfoHeight = height;
+	Scr->InfoWindow.width = width;
+	Scr->InfoWindow.height = height;
 }
 
 
@@ -2579,7 +2578,8 @@ draw_info_window(void)
 	int i;
 	int height;
 
-	Draw3DBorder(Scr->InfoWindow.win, 0, 0, InfoWidth, InfoHeight,
+	Draw3DBorder(Scr->InfoWindow.win, 0, 0,
+	             Scr->InfoWindow.width, Scr->InfoWindow.height,
 	             2, Scr->DefaultC, off, True, False);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
