@@ -14,10 +14,6 @@ extern int ConstMove;
 extern int ConstMoveDir;
 extern int ConstMoveX;
 extern int ConstMoveY;
-extern int ConstMoveXL;
-extern int ConstMoveXR;
-extern int ConstMoveYT;
-extern int ConstMoveYB;
 
 void draw_info_window(void);
 
