@@ -32,4 +32,30 @@ char *ExpandPixmapPath(const char *name);
 Image *get_image_anim_cp(const char *name, ColorPair cp,
                          Image * (*imgloader)(const char *, ColorPair));
 
+
+/*
+ * These are really image_pixmap_builtin stuff, but a few places in the
+ * codebase reference them, and there's no need for them to pull in a
+ * pretty deep internal header to do it.
+ */
+#define TBPM_DOT ":dot"         /* name of titlebar pixmap for dot */
+#define TBPM_ICONIFY ":iconify" /* same image as dot */
+#define TBPM_RESIZE ":resize"   /* name of titlebar pixmap for resize button */
+#define TBPM_XLOGO ":xlogo"     /* name of titlebar pixmap for xlogo */
+#define TBPM_DELETE ":delete"   /* same image as xlogo */
+#define TBPM_MENU ":menu"       /* name of titlebar pixmap for menus */
+#define TBPM_QUESTION ":question"       /* name of unknown titlebar pixmap */
+
+#define TBPM_3DCROSS ":xpm:cross"
+#define TBPM_3DICONIFY ":xpm:iconify"
+#define TBPM_3DSUNKEN_RESIZE ":xpm:sunkresize"
+#define TBPM_3DBOX ":xpm:box"
+
+#define TBPM_3DDOT ":xpm:dot"           /* name of titlebar pixmap for dot */
+#define TBPM_3DRESIZE ":xpm:resize"     /* name of titlebar pixmap for resize button */
+#define TBPM_3DMENU ":xpm:menu" /* name of titlebar pixmap for menus */
+#define TBPM_3DZOOM ":xpm:zoom"
+#define TBPM_3DBAR ":xpm:bar"
+#define TBPM_3DVBAR ":xpm:vbar"
+
 #endif /* _CTWM_IMAGE_H */

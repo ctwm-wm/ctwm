@@ -99,8 +99,6 @@
 #define  __attribute__(x)  /*NOTHING*/
 #endif
 
-#define MAXVIRTUALSCREENS (sizeof (int))
-
 #ifdef SIGNALRETURNSINT
 #define SIGNAL_T int
 #define SIGNAL_RETURN return 0
@@ -448,25 +446,6 @@ struct TWMWinConfigEntry {
 #define DoesWmSaveYourself      (1L << 1)
 #define DoesWmDeleteWindow      (1L << 2)
 
-#define TBPM_DOT ":dot"         /* name of titlebar pixmap for dot */
-#define TBPM_ICONIFY ":iconify" /* same image as dot */
-#define TBPM_RESIZE ":resize"   /* name of titlebar pixmap for resize button */
-#define TBPM_XLOGO ":xlogo"     /* name of titlebar pixmap for xlogo */
-#define TBPM_DELETE ":delete"   /* same image as xlogo */
-#define TBPM_MENU ":menu"       /* name of titlebar pixmap for menus */
-#define TBPM_QUESTION ":question"       /* name of unknown titlebar pixmap */
-
-#define TBPM_3DCROSS ":xpm:cross"
-#define TBPM_3DICONIFY ":xpm:iconify"
-#define TBPM_3DSUNKEN_RESIZE ":xpm:sunkresize"
-#define TBPM_3DBOX ":xpm:box"
-
-#define TBPM_3DDOT ":xpm:dot"           /* name of titlebar pixmap for dot */
-#define TBPM_3DRESIZE ":xpm:resize"     /* name of titlebar pixmap for resize button */
-#define TBPM_3DMENU ":xpm:menu" /* name of titlebar pixmap for menus */
-#define TBPM_3DZOOM ":xpm:zoom"
-#define TBPM_3DBAR ":xpm:bar"
-#define TBPM_3DVBAR ":xpm:vbar"
 
 #include <X11/Xosdefs.h>
 #ifndef X_NOT_STDC_ENV
