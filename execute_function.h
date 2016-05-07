@@ -19,10 +19,10 @@ void draw_info_window(void);
 
 
 /* Leaks to a few places */
-extern int RootFunction;
-extern int MoveFunction;
+extern int  RootFunction;
+extern int  MoveFunction;
 extern bool WindowMoved;
-extern int ResizeOrigX;
-extern int ResizeOrigY;
+extern int  ResizeOrigX;
+extern int  ResizeOrigY;
 
 #endif /* _EXECUTE_FUNCTION_H */
