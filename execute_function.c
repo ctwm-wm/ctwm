@@ -1,5 +1,5 @@
 /*
- * Dispatched for our f.whatever functions
+ * Dispatcher for our f.whatever functions
  */
 
 
