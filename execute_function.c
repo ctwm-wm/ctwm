@@ -2367,6 +2367,14 @@ DeferExecution(int context, int func, Cursor cursor)
 
 
 
+/*
+ * Backend for f.identify and f.version: Fills in the Info array with the
+ * appropriate bits for ctwm and the window specified (if any), and
+ * sizes/pops up the InfoWindow.
+ *
+ * Notably, the bits of Info aren't written into the window during this
+ * process; that happens later as a result of the expose event.
+ */
 static void
 Identify(TwmWindow *t)
 {
