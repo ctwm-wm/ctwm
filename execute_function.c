@@ -2562,7 +2562,7 @@ info_dismiss:
 	XMoveResizeWindow(dpy, Scr->InfoWindow.win, px, py, width, height);
 	XMapRaised(dpy, Scr->InfoWindow.win);
 	Scr->InfoWindow.mapped = true;
-	Scr->InfoWindow.width = width;
+	Scr->InfoWindow.width  = width;
 	Scr->InfoWindow.height = height;
 }
 
