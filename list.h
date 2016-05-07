@@ -61,8 +61,8 @@
  *
  **********************************************************************/
 
-#ifndef _LIST_
-#define _LIST_
+#ifndef _CTWM_LIST_H
+#define _CTWM_LIST_H
 
 #include "types.h"
 
@@ -85,5 +85,5 @@ extern void     FreeList(name_list **list);
 
 extern int      match(const char *pattern, const char *string);
 
-#endif /* _LIST_ */
+#endif /* _CTWM_LIST_H */
 

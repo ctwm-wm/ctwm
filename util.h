@@ -61,8 +61,8 @@
  *
  ***********************************************************************/
 
-#ifndef _UTIL_
-#define _UTIL_
+#ifndef _CTWM_UTIL_H
+#define _CTWM_UTIL_H
 
 #include <ctype.h>
 
@@ -139,4 +139,4 @@ void ConstrainByBorders(TwmWindow *twmwin,
                         int *left, int width,
                         int *top, int height);
 
-#endif /* _UTIL_ */
+#endif /* _CTWM_UTIL_H */

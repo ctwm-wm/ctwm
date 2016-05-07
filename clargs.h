@@ -1,10 +1,10 @@
 /*
  * Command-line arg handling
  */
-#ifndef _CLARGS_H
-#define _CLARGS_H
+#ifndef _CTWM_CLARGS_H
+#define _CTWM_CLARGS_H
 
 void clargs_parse(int argc, char *argv[]);
 void clargs_check(void);
 
-#endif /* _CLARGS_H */
+#endif /* _CTWM_CLARGS_H */

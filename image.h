@@ -1,8 +1,8 @@
 /*
  * General image handling function bits
  */
-#ifndef _IMAGE_H
-#define _IMAGE_H
+#ifndef _CTWM_IMAGE_H
+#define _CTWM_IMAGE_H
 
 #include <stdbool.h>
 
@@ -32,4 +32,4 @@ char *ExpandPixmapPath(const char *name);
 Image *get_image_anim_cp(const char *name, ColorPair cp,
                          Image * (*imgloader)(const char *, ColorPair));
 
-#endif /* _IMAGE_H */
+#endif /* _CTWM_IMAGE_H */

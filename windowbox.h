@@ -35,8 +35,8 @@
  *
  **********************************************************************/
 
-#ifndef _WINDOW_BOX_
-#define _WINDOW_BOX_
+#ifndef _CTWM_WINDOWBOX_H
+#define _CTWM_WINDOWBOX_H
 
 #include "types.h"
 
@@ -48,5 +48,5 @@ extern void ConstrainedToWinBox(TwmWindow *twmwin,
                                 int x, int y, int *nx, int *ny);
 extern void fittocontent(TwmWindow *twmwin);
 
-#endif /* _WINDOW_BOX_ */
+#endif /* _CTWM_WINDOWBOX_H */
 

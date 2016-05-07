@@ -1,5 +1,5 @@
-#ifndef CLICKTOFOCUS_H
-#define CLICKTOFOCUS_H
+#ifndef _CTWM_CLICKTOFOCUS_H
+#define _CTWM_CLICKTOFOCUS_H
 
 #include "ctwm.h"
 #include "iconmgr.h"

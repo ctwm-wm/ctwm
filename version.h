@@ -60,8 +60,8 @@
  *
  **********************************************************************/
 
-#ifndef _VERSION_
-#define _VERSION_
+#ifndef _CTWM_VERSION_H
+#define _CTWM_VERSION_H
 
 extern const char *TwmVersion;
 extern const char *VersionNumber;
@@ -73,4 +73,4 @@ extern const char *VersionNumber_addl;
 extern const char *VCSType;
 extern const char *VCSRevision;
 
-#endif /* _VERSION_ */
+#endif /* _CTWM_VERSION_H */

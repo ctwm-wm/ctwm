@@ -61,8 +61,8 @@
  *
  **********************************************************************/
 
-#ifndef _RESIZE_
-#define _RESIZE_
+#ifndef _CTWM_RESIZE_H
+#define _CTWM_RESIZE_H
 
 #include <stdbool.h>
 
@@ -92,4 +92,4 @@ extern void SetFrameShape(TwmWindow *tmp);
 
 extern void ChangeSize(char *in_string, TwmWindow *tmp_win);
 
-#endif /* _RESIZE_ */
+#endif /* _CTWM_RESIZE_H */

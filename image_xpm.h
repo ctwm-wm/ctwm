@@ -1,12 +1,12 @@
 /*
  * XPM image handling function bits
  */
-#ifndef _IMAGE_XPM_H
-#define _IMAGE_XPM_H
+#ifndef _CTWM_IMAGE_XPM_H
+#define _CTWM_IMAGE_XPM_H
 
 #include "types.h"
 
 Image *GetXpmImage(const char *name, ColorPair cp);
 
 
-#endif /* _IMAGE_XPM_H */
+#endif /* _CTWM_IMAGE_XPM_H */

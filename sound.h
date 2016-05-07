@@ -24,8 +24,8 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
-#ifndef _SOUND_H
-#define _SOUND_H
+#ifndef _CTWM_SOUND_H
+#define _CTWM_SOUND_H
 
 void sound_init(void);
 void sound_clear_list(void);
@@ -40,4 +40,4 @@ void set_sound_host(char *);
 int set_sound_event_name(const char *, const char *);
 int set_sound_event(int, const char *);
 
-#endif /* _SOUND_H */
+#endif /* _CTWM_SOUND_H */

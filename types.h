@@ -24,8 +24,8 @@
  * Author:  Richard Levitte [ richard@levitte.org ][ June 2004 ]
  */
 
-#ifndef _TYPES_
-#define _TYPES_
+#ifndef _CTWM_TYPES_H
+#define _CTWM_TYPES_H
 
 /* From icons.h */
 typedef struct Icon Icon;
@@ -86,4 +86,4 @@ typedef struct CaptiveCTWM CaptiveCTWM;
 /* from otp */
 typedef struct OtpWinList OtpWinList;
 typedef struct OtpPreferences OtpPreferences;
-#endif /* _TYPES_ */
+#endif /* _CTWM_TYPES_H */

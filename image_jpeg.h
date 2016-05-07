@@ -1,8 +1,8 @@
 /*
  * JPEG image handling function bits
  */
-#ifndef _IMAGE_JPEG_H
-#define _IMAGE_JPEG_H
+#ifndef _CTWM_IMAGE_JPEG_H
+#define _CTWM_IMAGE_JPEG_H
 
 /* For Image type */
 #include "types.h"
@@ -11,4 +11,4 @@
 Image *GetJpegImage(const char *name);
 
 
-#endif /* _IMAGE_JPEG_H */
+#endif /* _CTWM_IMAGE_JPEG_H */

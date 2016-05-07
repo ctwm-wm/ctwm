@@ -1,8 +1,8 @@
 /*
  * Header for the various parse_yacc/gram.y backend funcs
  */
-#ifndef _PARSE_YACC_H
-#define _PARSE_YACC_H
+#ifndef _CTWM_PARSE_YACC_H
+#define _CTWM_PARSE_YACC_H
 
 void yyerror(char *s);
 
@@ -30,4 +30,4 @@ extern int mods;
 #define DEFSTRING "default"
 
 
-#endif /* _PARSE_YACC_H */
+#endif /* _CTWM_PARSE_YACC_H */

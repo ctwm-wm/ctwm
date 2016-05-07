@@ -61,8 +61,8 @@
  *
  **********************************************************************/
 
-#ifndef _PARSE_H
-#define _PARSE_H
+#ifndef _CTWM_PARSE_H
+#define _CTWM_PARSE_H
 
 #include "types.h"
 #include "gram.tab.h"
@@ -243,4 +243,4 @@ void TwmOutput(int c);
 #define D_EAST                  3
 #define D_WEST                  4
 
-#endif /* _PARSE_H */
+#endif /* _CTWM_PARSE_H */

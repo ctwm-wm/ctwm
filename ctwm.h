@@ -61,8 +61,8 @@
  * 10-Oct-90 David M. Sternlicht        Storeing saved colors on root
  ***********************************************************************/
 
-#ifndef _CTWM_H
-#define _CTWM_H
+#ifndef _CTWM_CTWM_H
+#define _CTWM_CTWM_H
 
 /*
  * Include config first, before anything else.  Including ctwm.h should
@@ -566,4 +566,4 @@ typedef struct _ctwm_cl_args {
 extern ctwm_cl_args CLarg;
 
 
-#endif /* _CTWM_H */
+#endif /* _CTWM_CTWM_H */

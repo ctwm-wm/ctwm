@@ -61,8 +61,8 @@
  *
  ***********************************************************************/
 
-#ifndef _EVENTS_
-#define _EVENTS_
+#ifndef _CTWM_EVENTS_H
+#define _CTWM_EVENTS_H
 
 typedef void (*event_proc)(void);
 
@@ -135,4 +135,4 @@ extern int Cancel;
 
 extern XEvent Event;
 
-#endif /* _EVENTS_ */
+#endif /* _CTWM_EVENTS_H */

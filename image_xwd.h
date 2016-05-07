@@ -1,12 +1,12 @@
 /*
  * XWD image handling function bits
  */
-#ifndef _IMAGE_XWD_H
-#define _IMAGE_XWD_H
+#ifndef _CTWM_IMAGE_XWD_H
+#define _CTWM_IMAGE_XWD_H
 
 #include "types.h"
 
 Image *GetXwdImage(const char *name, ColorPair cp);
 
 
-#endif /* _IMAGE_XWD_H */
+#endif /* _CTWM_IMAGE_XWD_H */

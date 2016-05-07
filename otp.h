@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OTP_
-#define _OTP_
+#ifndef _CTWM_OTP_H
+#define _CTWM_OTP_H
 
 #include "types.h"
 
@@ -94,4 +94,4 @@ extern int OtpGetPriority(TwmWindow *twm_win);
 /* Other debugging functions */
 extern Bool OtpCheckConsistency(void);
 
-#endif /* _OTP_ */
+#endif /* _CTWM_OTP_H */

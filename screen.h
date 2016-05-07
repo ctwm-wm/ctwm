@@ -54,8 +54,8 @@
  *
  ***********************************************************************/
 
-#ifndef _SCREEN_
-#define _SCREEN_
+#ifndef _CTWM_SCREEN_H
+#define _CTWM_SCREEN_H
 
 #include <stdbool.h>
 
@@ -495,4 +495,4 @@ extern int FirstScreen;
 #define RP_ALL 1
 #define RP_UNMAPPED 2
 
-#endif /* _SCREEN_ */
+#endif /* _CTWM_SCREEN_H */

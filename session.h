@@ -24,12 +24,12 @@
  * Author:  Richard Levitte [ richard@levitte.org ][ June 2004 ]
  */
 
+#ifndef _CTWM_SESSION_H
+#define _CTWM_SESSION_H
+
 #include <stdio.h>
 #include <X11/SM/SMlib.h>
 #include "types.h"
-
-#ifndef _SESSION_
-#define _SESSION_
 
 extern SmcConn smcConn;
 extern XtInputId iceInputId;
@@ -65,5 +65,5 @@ void ShutdownCancelledCB(SmcConn smcCon, SmPointer clientData);
 void ProcessIceMsgProc(XtPointer client_data, int *source, XtInputId *id);
 void ConnectToSessionManager(char *previous_id);
 
-#endif /* _SESSION_ */
+#endif /* _CTWM_SESSION_H */
 

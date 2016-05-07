@@ -25,8 +25,8 @@
  * Author:  Olaf Seibert [ rhialto@falu.nl ][ May 2014 ]
  */
 
-#ifndef _EWMH_
-#define _EWMH_
+#ifndef _CTWM_EWMH_H
+#define _CTWM_EWMH_H
 
 #ifdef EWMH
 
@@ -105,4 +105,4 @@ extern void EwmhSet_NET_SHOWING_DESKTOP(int state);
 extern void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes);
 
 #endif /* EWMH */
-#endif /* _EWMH_ */
+#endif /* _CTWM_EWMH_H */

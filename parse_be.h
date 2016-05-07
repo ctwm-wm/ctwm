@@ -2,8 +2,8 @@
  * Parser backend header bits.  These are mostly things that wind up
  * called from the yacc routines
  */
-#ifndef _PARSE_BE_H
-#define _PARSE_BE_H
+#ifndef _CTWM_PARSE_BE_H
+#define _CTWM_PARSE_BE_H
 
 int parse_keyword(char *s, int *nump);
 
@@ -26,4 +26,4 @@ void add_ewmh_ignore(char *s);
 void proc_mwm_ignore(void);
 void add_mwm_ignore(char *s);
 
-#endif /* _PARSE_BE_H */
+#endif /* _CTWM_PARSE_BE_H */

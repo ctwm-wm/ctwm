@@ -1,5 +1,5 @@
-#ifndef _MWMHINTS_
-#define _MWMHINTS_
+#ifndef _CTWM_MWMHINTS_H
+#define _CTWM_MWMHINTS_H
 
 #include <stdbool.h>
 

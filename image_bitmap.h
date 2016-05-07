@@ -1,8 +1,8 @@
 /*
  * Bitmap image handling function bits
  */
-#ifndef _IMAGE_BITMAP_H
-#define _IMAGE_BITMAP_H
+#ifndef _CTWM_IMAGE_BITMAP_H
+#define _CTWM_IMAGE_BITMAP_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,4 +19,4 @@ Pixmap GetBitmap(const char *name);
 /* Used for cursors */
 extern int HotX, HotY;
 
-#endif /* _IMAGE_BITMAP_H */
+#endif /* _CTWM_IMAGE_BITMAP_H */

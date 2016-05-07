@@ -54,8 +54,8 @@
  *
  ***********************************************************************/
 
-#ifndef _ICONMGR_
-#define _ICONMGR_
+#ifndef _CTWM_ICONMGR_H
+#define _CTWM_ICONMGR_H
 
 struct WList {
 	struct WList *next;
@@ -121,4 +121,4 @@ extern void PackIconManagers(void);
 extern void dump_iconmanager(IconMgr *mgr, char *label);
 
 
-#endif /* _ICONMGR_ */
+#endif /* _CTWM_ICONMGR_H */

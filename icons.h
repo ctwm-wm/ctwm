@@ -56,8 +56,8 @@
 
 #include "screen.h"
 
-#ifndef ICONS_H
-#define ICONS_H
+#ifndef _CTWM_ICONS_H
+#define _CTWM_ICONS_H
 
 /* Where dit the Image for the Icon come from? */
 typedef enum {
@@ -125,4 +125,4 @@ extern void ExpandIconTitle(TwmWindow *tmp_win);
 extern void ReshapeIcon(Icon *icon);
 extern int GetIconOffset(Icon *icon);
 
-#endif /* ICONS_H */
+#endif /* _CTWM_ICONS_H */

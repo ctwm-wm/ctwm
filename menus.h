@@ -61,8 +61,8 @@
  *
  ***********************************************************************/
 
-#ifndef _MENUS_
-#define _MENUS_
+#ifndef _CTWM_MENUS_H
+#define _CTWM_MENUS_H
 
 #include "ctwm.h"
 
@@ -235,4 +235,4 @@ extern void Squeeze(TwmWindow *tmp_win);
 void WarpAlongRing(XButtonEvent *ev, Bool forward);
 int WarpToScreen(int n, int inc);
 
-#endif /* _MENUS_ */
+#endif /* _CTWM_MENUS_H */

@@ -24,8 +24,8 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
-#ifndef _WORKMGR_
-#define _WORKMGR_
+#ifndef _CTWM_WORKMGR_H
+#define _CTWM_WORKMGR_H
 
 #include <stdbool.h>
 
@@ -223,4 +223,4 @@ Bool visible(TwmWindow *tmp_win);
 
 extern int fullOccupation;
 
-#endif /* _WORKMGR_ */
+#endif /* _CTWM_WORKMGR_H */

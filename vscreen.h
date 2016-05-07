@@ -25,8 +25,8 @@
  */
 #include "types.h"
 
-#ifndef _VSCREEN_
-#define _VSCREEN_
+#ifndef _CTWM_VSCREEN_H
+#define _CTWM_VSCREEN_H
 
 struct VirtualScreen {
 	int   x, y, w, h;             /* x,y relative to XineramaRoot */
@@ -44,4 +44,4 @@ Bool CtwmGetVScreenMap(Display *display, Window rootw,
 Bool CtwmSetVScreenMap(Display *display, Window rootw,
                        struct VirtualScreen *firstvs);
 
-#endif /* -VSCREEN- */
+#endif /* _CTWM_VSCREEN_H */

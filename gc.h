@@ -36,9 +36,9 @@
  *
  **********************************************************************/
 
-#ifndef _GC_
-#define _GC_
+#ifndef _CTWM_GC_H
+#define _CTWM_GC_H
 
 extern void CreateGCs(void);
 
-#endif /* _GC_ */
+#endif /* _CTWM_GC_H */

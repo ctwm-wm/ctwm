@@ -64,8 +64,8 @@
 #include "ctwm.h"
 #include "iconmgr.h"
 
-#ifndef _ADD_WINDOW_
-#define _ADD_WINDOW_
+#ifndef _CTWM_ADD_WINDOW_H
+#define _CTWM_ADD_WINDOW_H
 
 extern char NoName[];
 extern int  resizeWhenAdd;
@@ -102,5 +102,5 @@ extern TwmColormap *CreateTwmColormap(Colormap c);
 extern ColormapWindow *CreateColormapWindow(Window w,
                 Bool creating_parent,
                 Bool property_window);
-#endif /* _ADD_WINDOW_ */
+#endif /* _CTWM_ADD_WINDOW_H */
 

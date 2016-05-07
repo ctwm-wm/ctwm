@@ -1,9 +1,9 @@
 /*
  * Compile-time options
  */
-#ifndef _CTOPTS_H
-#define _CTOPTS_H
+#ifndef _CTWM_CTOPTS_H
+#define _CTWM_CTOPTS_H
 
 char *ctopts_string(char *);
 
-#endif /* _CTOPTS_H */
+#endif /* _CTWM_CTOPTS_H */

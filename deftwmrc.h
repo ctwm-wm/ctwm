@@ -2,9 +2,9 @@
  * Compiled-in default config
  */
 
-#ifndef _DEFTWMRC_H
-#define _DEFTWMRC_H
+#ifndef _CTWM_DEFTWMRC_H
+#define _CTWM_DEFTWMRC_H
 
 extern const char *defTwmrc[];
 
-#endif /* _DEFTWMRC_H */
+#endif /* _CTWM_DEFTWMRC_H */
