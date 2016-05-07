@@ -2189,21 +2189,7 @@ void HandleExpose(void)
 	}
 
 	if(Event.xany.window == Scr->InfoWindow && InfoLines) {
-		int i;
-		int height;
-
-		Draw3DBorder(Scr->InfoWindow, 0, 0,
-		             InfoWidth, InfoHeight, 2, Scr->DefaultC, off, True, False);
-
-		FB(Scr->DefaultC.fore, Scr->DefaultC.back);
-
-		height = Scr->DefaultFont.height + 2;
-		for(i = 0; i < InfoLines; i++) {
-			XmbDrawString(dpy, Scr->InfoWindow, Scr->DefaultFont.font_set,
-			              Scr->NormalGC, 5,
-			              (i * height) + Scr->DefaultFont.y + 5,
-			              Info[i], strlen(Info[i]));
-		}
+		draw_info_window();
 		flush_expose(Event.xany.window);
 	}
 	else if(Tmp_win != NULL) {
