@@ -68,14 +68,14 @@ int ResizeOrigY;
 
 
 
-static void jump(TwmWindow *tmp_win, int direction, char *action);
+static void jump(TwmWindow *tmp_win, int direction, const char *action);
 static void ShowIconManager(void);
 static void HideIconManager(void);
 static int DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
-static void packwindow(TwmWindow *tmp_win, char *direction);
-static void fillwindow(TwmWindow *tmp_win, char *direction);
+static void packwindow(TwmWindow *tmp_win, const char *direction);
+static void fillwindow(TwmWindow *tmp_win, const char *direction);
 static int NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
@@ -2200,7 +2200,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
  * Utils
  */
 static void
-jump(TwmWindow *tmp_win, int  direction, char *action)
+jump(TwmWindow *tmp_win, int  direction, const char *action)
 {
 	int                 fx, fy, px, py, step, status, cons;
 	int                 fwidth, fheight;
@@ -2625,7 +2625,7 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 
 
 static void
-packwindow(TwmWindow *tmp_win, char *direction)
+packwindow(TwmWindow *tmp_win, const char *direction)
 {
 	int                 cons, newx, newy;
 	int                 x, y, px, py, junkX, junkY;
@@ -2682,7 +2682,7 @@ packwindow(TwmWindow *tmp_win, char *direction)
 
 
 static void
-fillwindow(TwmWindow *tmp_win, char *direction)
+fillwindow(TwmWindow *tmp_win, const char *direction)
 {
 	int cons, newx, newy, save;
 	unsigned int neww, newh;
