@@ -1587,16 +1587,16 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			else {
 				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
 					if(!ExecuteFunction(mitem->func, mitem->action, w,
-					                    tmp_win, eventp, context, pulldown))
+					                    tmp_win, eventp, context, pulldown)) {
 						/* pebl FIXME: the focus should be updated here,
 						 or the function would operate on the same window */
-					{
 						break;
 					}
 				}
 			}
+
+			break;
 		}
-		break;
 
 		case F_DEICONIFY:
 		case F_ICONIFY:
