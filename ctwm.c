@@ -124,9 +124,6 @@ static int RedirectError;       /* TRUE ==> another window manager running */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
 static int TwmErrorHandler(Display *display, XErrorEvent *event);
-char Info[INFO_LINES][INFO_SIZE];               /* info strings to print */
-int InfoLines;
-unsigned int InfoWidth, InfoHeight;
 static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
@@ -291,8 +288,6 @@ int main(int argc, char **argv)
 	else {
 		firstscrn = lastscrn = DefaultScreen(dpy);
 	}
-
-	InfoLines = 0;
 
 	/* for simplicity, always allocate NumScreens ScreenInfo struct pointers */
 	ScreenList = (ScreenInfo **) calloc(NumScreens, sizeof(ScreenInfo *));
@@ -757,12 +752,13 @@ int main(int argc, char **argv)
 		attributes.cursor = XCreateFontCursor(dpy, XC_hand2);
 		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
 		             CWBackingStore | CWCursor);
-		Scr->InfoWindow = XCreateWindow(dpy, Scr->Root, 0, 0,
-		                                (unsigned int) 5, (unsigned int) 5,
-		                                (unsigned int) 0, 0,
-		                                (unsigned int) CopyFromParent,
-		                                (Visual *) CopyFromParent,
-		                                valuemask, &attributes);
+		Scr->InfoWindow.win =
+		        XCreateWindow(dpy, Scr->Root, 0, 0,
+		                      (unsigned int) 5, (unsigned int) 5,
+		                      (unsigned int) 0, 0,
+		                      (unsigned int) CopyFromParent,
+		                      (Visual *) CopyFromParent,
+		                      valuemask, &attributes);
 
 		XmbTextExtents(Scr->SizeFont.font_set,
 		               " 8888 x 8888 ", 13,

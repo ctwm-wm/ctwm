@@ -121,10 +121,6 @@ typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 
 #define MAX_BUTTONS     11      /* max mouse buttons supported */
 
-/* info stings defines */
-#define INFO_LINES 30
-#define INFO_SIZE 200
-
 /* contexts for button presses */
 #define Alt1Mask        (1<<8)
 #define Alt2Mask        (1<<9)
@@ -522,9 +518,6 @@ extern int JunkX;
 extern int JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 extern XGCValues Gcv;
-extern int InfoLines;
-extern unsigned int InfoWidth, InfoHeight;
-extern char Info[][INFO_SIZE];
 extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;

@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <sys/time.h>
 
@@ -92,6 +93,7 @@
 #include "iconmgr.h"
 #include "version.h"
 #include "image.h"
+#include "functions.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif
@@ -543,7 +545,7 @@ void HandleEvents(void)
 		if(ColortableThrashing && !QLength(dpy) && Scr) {
 			InstallColormaps(ColormapNotify, NULL);
 		}
-		WindowMoved = FALSE;
+		WindowMoved = false;
 
 		CtwmNextEvent(dpy, &Event);
 
@@ -1055,8 +1057,9 @@ void HandleKeyPress(void)
 	unsigned int modifier;
 	Window w;
 
-	if(InfoLines) {
-		XUnmapWindow(dpy, Scr->InfoWindow);
+	if(Scr->InfoWindow.mapped) {
+		XUnmapWindow(dpy, Scr->InfoWindow.win);
+		Scr->InfoWindow.mapped = false;
 	}
 
 	if(ActiveMenu != NULL) {
@@ -2183,22 +2186,8 @@ void HandleExpose(void)
 		return;
 	}
 
-	if(Event.xany.window == Scr->InfoWindow && InfoLines) {
-		int i;
-		int height;
-
-		Draw3DBorder(Scr->InfoWindow, 0, 0,
-		             InfoWidth, InfoHeight, 2, Scr->DefaultC, off, True, False);
-
-		FB(Scr->DefaultC.fore, Scr->DefaultC.back);
-
-		height = Scr->DefaultFont.height + 2;
-		for(i = 0; i < InfoLines; i++) {
-			XmbDrawString(dpy, Scr->InfoWindow, Scr->DefaultFont.font_set,
-			              Scr->NormalGC, 5,
-			              (i * height) + Scr->DefaultFont.y + 5,
-			              Info[i], strlen(Info[i]));
-		}
+	if(Event.xany.window == Scr->InfoWindow.win && Scr->InfoWindow.mapped) {
+		draw_info_window();
 		flush_expose(Event.xany.window);
 	}
 	else if(Tmp_win != NULL) {
@@ -2853,7 +2842,7 @@ void HandleMotionNotify(void)
 		   work with resize as well as move. */
 		if(abs(Event.xmotion.x - ResizeOrigX) >= Scr->MoveDelta
 		                || abs(Event.xmotion.y - ResizeOrigY) >= Scr->MoveDelta) {
-			WindowMoved = TRUE;
+			WindowMoved = true;
 		}
 
 		Tmp_win = GetTwmWindow(ResizeWindow);
@@ -2882,10 +2871,10 @@ void HandleButtonRelease(void)
 	int xl, yt, w, h;
 	unsigned mask;
 
-	if(InfoLines) {             /* delete info box on 2nd button release  */
+	if(Scr->InfoWindow.mapped) {  /* delete info box on 2nd button release */
 		if(Context == C_IDENTIFY) {
-			XUnmapWindow(dpy, Scr->InfoWindow);
-			InfoLines = 0;
+			XUnmapWindow(dpy, Scr->InfoWindow.win);
+			Scr->InfoWindow.mapped = false;
 			Context = C_NO_CONTEXT;
 		}
 	}
@@ -3239,7 +3228,8 @@ void HandleButtonPress(void)
 	XSync(dpy, 0);
 	/* XXX - remove? */
 
-	if(ButtonPressed != -1 && !InfoLines) { /* want menus if we have info box */
+	/* want menus if we have info box */
+	if(ButtonPressed != -1 && !Scr->InfoWindow.mapped) {
 		/* we got another butt press in addition to one still held
 		 * down, we need to cancel the operation we were doing
 		 */
@@ -3334,7 +3324,7 @@ void HandleButtonPress(void)
 
 	Context = C_NO_CONTEXT;
 
-	if(Event.xany.window == Scr->InfoWindow) {
+	if(Event.xany.window == Scr->InfoWindow.win) {
 		Context = C_IDENTIFY;
 	}
 
@@ -3523,7 +3513,7 @@ void HandleButtonPress(void)
 		}
 
 		/* make sure we are not trying to move an identify window */
-		if(Event.xany.window != Scr->InfoWindow)
+		if(Event.xany.window != Scr->InfoWindow.win)
 			ExecuteFunction(RootFunction, Action, Event.xany.window,
 			                Tmp_win, &Event, Context, FALSE);
 

@@ -90,6 +90,7 @@
 #include "session.h"
 #include "mwmhints.h"
 #include "image.h"
+#include "functions.h"  // Only for RootFunction
 
 #define gray_width 2
 #define gray_height 2

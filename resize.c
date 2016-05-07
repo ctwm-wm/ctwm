@@ -214,7 +214,7 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
  */
 
 void StartResize(XEvent *evp, TwmWindow *tmp_win,
-                 Bool fromtitlebar, Bool from3dborder)
+                 bool fromtitlebar, bool from3dborder)
 {
 	Window      junkRoot, grabwin;
 	unsigned int junkbw, junkDepth;

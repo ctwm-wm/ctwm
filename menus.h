@@ -156,21 +156,8 @@ struct FuncKey {
 	MenuRoot *menu;             /* menu if func is F_MENU */
 };
 
-extern int RootFunction;
 extern MenuRoot *ActiveMenu;
 extern MenuItem *ActiveItem;
-extern int MoveFunction;
-extern int WindowMoved;
-extern int ConstMove;
-extern int ConstMoveDir;
-extern int ConstMoveX;
-extern int ConstMoveY;
-extern int ConstMoveXL;
-extern int ConstMoveXR;
-extern int ConstMoveYT;
-extern int ConstMoveYB;
-extern int ResizeOrigX;
-extern int ResizeOrigY;
 
 extern int menuFromFrameOrWindowOrTitlebar;
 extern char *CurrentSelectedWorkspace;
@@ -208,22 +195,22 @@ extern Bool AddFuncButton(int num, int cont, int mods, int func,
 extern void PopDownMenu(void);
 extern void HideMenu(MenuRoot *menu);
 extern void resizeFromCenter(Window w, TwmWindow *tmp_win);
-extern int ExecuteFunction(int func, void *action,
-                           Window w, TwmWindow *tmp_win,
-                           XEvent *eventp,
-                           int context, int pulldown);
 extern void ReGrab(void);
+void SetLastCursor(Cursor newcur);
 extern int CreateTitleButton(char *name, int func, char *action,
                              MenuRoot *menuroot, Bool rightside,
                              Bool append);
 extern void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
 extern void PaintMenu(MenuRoot *mr, XEvent *e);
+Bool cur_fromMenu(void);
 extern void UpdateMenu(void);
 extern void MakeMenus(void);
+void MakeMenu(MenuRoot *mr);
 extern void MoveMenu(XEvent *eventp);
 extern void DeIconify(TwmWindow *tmp_win);
 extern void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
 extern void SetMapStateProp(TwmWindow *tmp_win, int state);
+void send_clientmessage(Window w, Atom a, Time timestamp);
 extern void SendEndAnimationMessage(Window w, Time timestamp);
 extern void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
 extern void ModifyCurrentTB(int button, int mods, int func, char *action,
@@ -243,5 +230,9 @@ extern void WarpToWindow(TwmWindow *t, int must_raise);
 extern void DisplayPosition(TwmWindow *tmp_win, int x, int y);
 extern void AutoSqueeze(TwmWindow *tmp_win);
 extern void Squeeze(TwmWindow *tmp_win);
+
+/* To move soonish? */
+void WarpAlongRing(XButtonEvent *ev, Bool forward);
+int WarpToScreen(int n, int inc);
 
 #endif /* _MENUS_ */

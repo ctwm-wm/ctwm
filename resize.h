@@ -64,10 +64,12 @@
 #ifndef _RESIZE_
 #define _RESIZE_
 
+#include <stdbool.h>
+
 extern void OpaqueResizeSize(TwmWindow *tmp_win);
 extern void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
 extern void StartResize(XEvent *evp, TwmWindow *tmp_win,
-                        Bool fromtitlebar, Bool from3dborder);
+                        bool fromtitlebar, bool from3dborder);
 extern void AddStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
 extern void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win);
 extern void DoResize(int x_root, int y_root, TwmWindow *tmp_win);
