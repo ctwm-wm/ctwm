@@ -2783,10 +2783,10 @@ fillwindow(TwmWindow *tmp_win, char *direction)
 
 			/* if the bottom of the window has moved up
 			 * it will be pushed down */
-			if(newy + newh <
-			                tmp_win->save_frame_y + tmp_win->save_frame_height)
+			if(newy + newh < tmp_win->save_frame_y + tmp_win->save_frame_height) {
 				newy = tmp_win->save_frame_y +
 				       tmp_win->save_frame_height - newh;
+			}
 			tmp_win->zoomed = F_VERTZOOM;
 			SetupWindow(tmp_win, newx, newy, neww, newh, -1);
 		}
