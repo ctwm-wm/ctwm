@@ -214,6 +214,13 @@ int main(int argc, char **argv)
 
 
 	/*
+	 * Run consistency check.  This is mostly to keep devs from
+	 * accidental screwups; if a user ever sees anything from this,
+	 * something went very very wrong.
+	 */
+	chk_keytable_order();
+
+	/*
 	 * Parse-out command line args, and check the results.
 	 */
 	clargs_parse(argc, argv);

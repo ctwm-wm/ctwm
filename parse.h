@@ -89,6 +89,13 @@ int ParseAlignement(char *s);
 void assign_var_savecolor(void);
 
 /*
+ * This is in parse_be.c because it needs to look at keytable, but put
+ * here because it's only built to be used early in main() as a sanity
+ * test, to hopefully be seen by devs as soon as they mess up.
+ */
+void chk_keytable_order(void);
+
+/*
  * Historical support for non-flex lex's is presumed no longer necessary.
  * Remnants kept for the moment just in case.
  */

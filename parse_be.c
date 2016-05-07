@@ -618,6 +618,24 @@ parse_keyword(char *s, int *nump)
 }
 
 
+/*
+ * Simple tester function
+ */
+void
+chk_keytable_order(void)
+{
+	int i;
+
+	for(i = 0 ; i < (numkeywords - 1) ; i++) {
+		if(strcasecmp(keytable[i].name, keytable[i+1].name) >= 0) {
+			fprintf(stderr, "%s: INTERNAL ERROR: keytable sorting: "
+					"'%s' >= '%s'\n", ProgramName,
+					keytable[i].name, keytable[i+1].name);
+		}
+	}
+}
+
+
 
 /*
  * action routines called by grammar
