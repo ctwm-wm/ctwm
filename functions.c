@@ -1367,8 +1367,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			if(wintype == WinWin && tmp_win->zoomed != ZOOM_NONE) {
 				tmp_win->save_otpri = OtpGetPriority(tmp_win);
 			}
+
+			break;
 		}
-		break;
 
 		case F_MOVETITLEBAR: {
 			Window grabwin;
@@ -1883,8 +1884,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			else {
 				WarpToScreen(atoi(action), 0);
 			}
+
+			break;
 		}
-		break;
 
 		case F_COLORMAP: {
 			if(strcmp(action, COLORMAP_NEXT) == 0) {
@@ -1896,8 +1898,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			else {
 				BumpWindowColormap(tmp_win, 0);
 			}
+
+			break;
 		}
-		break;
 
 		case F_WARPTO: {
 			TwmWindow *tw;
@@ -1950,8 +1953,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			else {
 				XBell(dpy, 0);
 			}
+
+			break;
 		}
-		break;
 
 		case F_WARPTOICONMGR: {
 			TwmWindow *tw, *raisewin = NULL;
@@ -1988,8 +1992,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			else {
 				XBell(dpy, 0);
 			}
+
+			break;
 		}
-		break;
 
 		case F_RING:  /* Taken from vtwm version 5.3 */
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
@@ -2068,8 +2073,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			XMapWindow(dpy, w);
 			XDestroyWindow(dpy, w);
 			XFlush(dpy);
+
+			break;
 		}
-		break;
 
 		case F_OCCUPY:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
