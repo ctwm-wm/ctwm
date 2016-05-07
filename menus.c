@@ -670,12 +670,11 @@ void MakeWorkspacesMenu(void)
 			count++;
 		}
 		count++;
-		actions = (char **) malloc(count * sizeof(char *));
+		actions = calloc(count, sizeof(char *));
 		act = actions;
 		for(wlist = Scr->workSpaceMgr.workSpaceList; wlist != NULL;
 		                wlist = wlist->next) {
-			*act = (char *) malloc(strlen("WGOTO : ") + strlen(wlist->name) + 1);
-			sprintf(*act, "WGOTO : %s", wlist->name);
+			asprintf(act, "WGOTO : %s", wlist->name);
 			act++;
 		}
 		*act = NULL;
