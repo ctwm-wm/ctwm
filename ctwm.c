@@ -752,12 +752,13 @@ int main(int argc, char **argv)
 		attributes.cursor = XCreateFontCursor(dpy, XC_hand2);
 		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
 		             CWBackingStore | CWCursor);
-		Scr->InfoWindow.win = XCreateWindow(dpy, Scr->Root, 0, 0,
-		                                (unsigned int) 5, (unsigned int) 5,
-		                                (unsigned int) 0, 0,
-		                                (unsigned int) CopyFromParent,
-		                                (Visual *) CopyFromParent,
-		                                valuemask, &attributes);
+		Scr->InfoWindow.win =
+		        XCreateWindow(dpy, Scr->Root, 0, 0,
+		                      (unsigned int) 5, (unsigned int) 5,
+		                      (unsigned int) 0, 0,
+		                      (unsigned int) CopyFromParent,
+		                      (Visual *) CopyFromParent,
+		                      valuemask, &attributes);
 
 		XmbTextExtents(Scr->SizeFont.font_set,
 		               " 8888 x 8888 ", 13,
