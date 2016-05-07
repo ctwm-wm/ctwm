@@ -2202,11 +2202,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 static void
 jump(TwmWindow *tmp_win, int  direction, const char *action)
 {
-	int                 fx, fy, px, py, step, status, cons;
-	int                 fwidth, fheight;
-	int                 junkX, junkY;
-	unsigned int        junkK;
-	Window              junkW;
+	int          fx, fy, px, py, step, status, cons;
+	int          fwidth, fheight;
+	int          junkX, junkY;
+	unsigned int junkK;
+	Window       junkW;
 
 	if(! action) {
 		return;
@@ -2627,10 +2627,10 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 static void
 packwindow(TwmWindow *tmp_win, const char *direction)
 {
-	int                 cons, newx, newy;
-	int                 x, y, px, py, junkX, junkY;
-	unsigned int        junkK;
-	Window              junkW;
+	int          cons, newx, newy;
+	int          x, y, px, py, junkX, junkY;
+	unsigned int junkK;
+	Window       junkW;
 
 	if(!strcmp(direction,   "left")) {
 		cons  = FindConstraint(tmp_win, J_LEFT);
@@ -3086,13 +3086,13 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 static int
 FindConstraint(TwmWindow *tmp_win, int direction)
 {
-	TwmWindow   *t;
-	int         w, h;
-	int         winx = tmp_win->frame_x;
-	int         winy = tmp_win->frame_y;
-	int         winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	int         winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
-	int         ret;
+	TwmWindow  *t;
+	int w, h;
+	int winx = tmp_win->frame_x;
+	int winy = tmp_win->frame_y;
+	int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	int ret;
 
 	switch(direction) {
 		case J_LEFT:
