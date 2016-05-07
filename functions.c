@@ -2646,7 +2646,7 @@ packwindow(TwmWindow *tmp_win, char *direction)
 			return;
 		}
 		newx  = cons;
-		newx -= tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+		newx -= tmp_win->frame_width + 2 * tmp_win->frame_bw;
 		newy  = tmp_win->frame_y;
 	}
 	else if(!strcmp(direction,    "top")) {
@@ -2664,7 +2664,7 @@ packwindow(TwmWindow *tmp_win, char *direction)
 		}
 		newx  = tmp_win->frame_x;
 		newy  = cons;
-		newy -= tmp_win->frame_height  + 2 * tmp_win->frame_bw;
+		newy -= tmp_win->frame_height + 2 * tmp_win->frame_bw;
 	}
 	else {
 		return;
@@ -2676,8 +2676,8 @@ packwindow(TwmWindow *tmp_win, char *direction)
 	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, px, py);
 	OtpRaise(tmp_win, WinWin);
 	XMoveWindow(dpy, tmp_win->frame, newx, newy);
-	SetupWindow(tmp_win, newx, newy, tmp_win->frame_width, tmp_win->frame_height,
-	            -1);
+	SetupWindow(tmp_win, newx, newy, tmp_win->frame_width,
+	            tmp_win->frame_height, -1);
 }
 
 
