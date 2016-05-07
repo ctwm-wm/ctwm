@@ -142,6 +142,7 @@ struct ScreenInfo {
 	struct {
 		Window       win;    // Actual X window
 		bool         mapped; // Flag for currently up
+		int          lines;  // # of lines (internal)
 		unsigned int width;  // Stash of
 		unsigned int height; // current measurements
 	} InfoWindow;               /* the information window */

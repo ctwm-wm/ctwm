@@ -40,7 +40,6 @@ int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
 #define INFO_LINES 30
 #define INFO_SIZE 200
 char Info[INFO_LINES][INFO_SIZE];
-int InfoLines;
 
 
 /*
@@ -2536,7 +2535,7 @@ info_dismiss:
 	}
 
 	/* Stash the new number of lines */
-	InfoLines = n;
+	Scr->InfoWindow.lines = n;
 
 	width += 10;                /* some padding */
 	height += 10;               /* some padding */
@@ -2585,7 +2584,7 @@ draw_info_window(void)
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 
 	height = Scr->DefaultFont.height + 2;
-	for(i = 0; i < InfoLines; i++) {
+	for(i = 0; i < Scr->InfoWindow.lines ; i++) {
 		XmbDrawString(dpy, Scr->InfoWindow.win, Scr->DefaultFont.font_set,
 		              Scr->NormalGC, 5,
 		              (i * height) + Scr->DefaultFont.y + 5,
