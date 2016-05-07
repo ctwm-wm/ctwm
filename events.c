@@ -1056,12 +1056,9 @@ void HandleKeyPress(void)
 	unsigned int modifier;
 	Window w;
 
-	if(InfoLines) {
+	if(Scr->InfoWindow.mapped) {
 		XUnmapWindow(dpy, Scr->InfoWindow.win);
-		/*
-		 * XXX Not resetting InfoLines like we do on ButtonRelease -
-		 * should we?
-		 */
+		Scr->InfoWindow.mapped = false;
 	}
 
 	if(ActiveMenu != NULL) {
@@ -2188,7 +2185,7 @@ void HandleExpose(void)
 		return;
 	}
 
-	if(Event.xany.window == Scr->InfoWindow.win && InfoLines) {
+	if(Event.xany.window == Scr->InfoWindow.win && Scr->InfoWindow.mapped) {
 		draw_info_window();
 		flush_expose(Event.xany.window);
 	}
@@ -2873,10 +2870,10 @@ void HandleButtonRelease(void)
 	int xl, yt, w, h;
 	unsigned mask;
 
-	if(InfoLines) {             /* delete info box on 2nd button release  */
+	if(Scr->InfoWindow.mapped) {  /* delete info box on 2nd button release */
 		if(Context == C_IDENTIFY) {
 			XUnmapWindow(dpy, Scr->InfoWindow.win);
-			InfoLines = 0;
+			Scr->InfoWindow.mapped = false;
 			Context = C_NO_CONTEXT;
 		}
 	}
@@ -3230,7 +3227,8 @@ void HandleButtonPress(void)
 	XSync(dpy, 0);
 	/* XXX - remove? */
 
-	if(ButtonPressed != -1 && !InfoLines) { /* want menus if we have info box */
+	/* want menus if we have info box */
+	if(ButtonPressed != -1 && !Scr->InfoWindow.mapped) {
 		/* we got another butt press in addition to one still held
 		 * down, we need to cancel the operation we were doing
 		 */

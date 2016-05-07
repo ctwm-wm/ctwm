@@ -21,7 +21,6 @@ extern int ConstMoveYB;
 
 void draw_info_window(void);
 
-extern int InfoLines;  /* [Ab]used as a "InfoWindow mapped" flag */
 
 /* Leaks to a few places */
 extern int RootFunction;

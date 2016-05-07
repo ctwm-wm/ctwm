@@ -2528,11 +2528,8 @@ info_dismiss:
 		}
 	}
 
-	/*
-	 * If InfoLines is set, that means it was mapped, so hide it away.
-	 * Sorta odd way of flagging it, but...
-	 */
-	if(InfoLines) {
+	/* Unmap if it's currently up, while we muck with it */
+	if(Scr->InfoWindow.mapped) {
 		XUnmapWindow(dpy, Scr->InfoWindow.win);
 	}
 
@@ -2563,6 +2560,7 @@ info_dismiss:
 	}
 	XMoveResizeWindow(dpy, Scr->InfoWindow.win, px, py, width, height);
 	XMapRaised(dpy, Scr->InfoWindow.win);
+	Scr->InfoWindow.mapped = true;
 	Scr->InfoWindow.width = width;
 	Scr->InfoWindow.height = height;
 }
