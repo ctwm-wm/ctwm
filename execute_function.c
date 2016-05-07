@@ -2531,6 +2531,8 @@ info_dismiss:
 	/* Unmap if it's currently up, while we muck with it */
 	if(Scr->InfoWindow.mapped) {
 		XUnmapWindow(dpy, Scr->InfoWindow.win);
+		/* Don't really need to bother since we're about to reset, but...  */
+		Scr->InfoWindow.mapped = false;
 	}
 
 	/* Stash the new number of lines */
