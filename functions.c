@@ -30,7 +30,7 @@
 
 #include "ext/repl_str.h"
 
-#include "execute_function.h"
+#include "functions.h"
 
 
 int RootFunction = 0;

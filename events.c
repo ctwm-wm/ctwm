@@ -93,7 +93,7 @@
 #include "iconmgr.h"
 #include "version.h"
 #include "image.h"
-#include "execute_function.h"
+#include "functions.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif

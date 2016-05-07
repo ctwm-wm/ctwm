@@ -51,7 +51,7 @@
 #include "list.h"
 #include "workmgr.h"
 #include "image.h"
-#include "execute_function.h"
+#include "functions.h"
 #ifdef EWMH
 #  include "ewmh_atoms.h"
 #endif

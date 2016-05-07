@@ -22,7 +22,7 @@ set(CTWMSRC
 	deftwmrc.c
 	event_names.c
 	events.c
-	execute_function.c
+	functions.c
 	gc.c
 	gram.tab.c
 	iconmgr.c
