@@ -34,7 +34,7 @@ Image *get_image_anim_cp(const char *name, ColorPair cp,
 
 
 /*
- * These are really image_pixmap_builtin stuff, but a few places in the
+ * These are really image_bitmap_builtin stuff, but a few places in the
  * codebase reference them, and there's no need for them to pull in a
  * pretty deep internal header to do it.
  */
