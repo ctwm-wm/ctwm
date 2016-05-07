@@ -21,11 +21,7 @@ extern int ConstMoveYB;
 
 void draw_info_window(void);
 
-#define INFO_LINES 30
-#define INFO_SIZE 200
-extern char Info[INFO_LINES][INFO_SIZE];
-extern int InfoLines;
-extern unsigned int InfoWidth, InfoHeight;
+extern int InfoLines;  /* [Ab]used as a "InfoWindow mapped" flag */
 
 /* Leaks to a few places */
 extern int RootFunction;

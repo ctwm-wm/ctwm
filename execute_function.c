@@ -37,6 +37,8 @@ int RootFunction = 0;
 int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
 
 /* Building the f.identify window.  The events code grubs in these. */
+#define INFO_LINES 30
+#define INFO_SIZE 200
 char Info[INFO_LINES][INFO_SIZE];
 int InfoLines;
 unsigned int InfoWidth, InfoHeight;
