@@ -71,12 +71,12 @@ int ResizeOrigY;
 static void jump(TwmWindow *tmp_win, int direction, const char *action);
 static void ShowIconManager(void);
 static void HideIconManager(void);
-static int DeferExecution(int context, int func, Cursor cursor);
+static bool DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
 static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
-static int NeedToDefer(MenuRoot *root);
+static bool NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
@@ -99,27 +99,27 @@ static int FindConstraint(TwmWindow *tmp_win, int direction);
  *      pulldown- flag indicating execution from pull down menu
  *
  *  Returns:
- *      TRUE if should continue with remaining actions else FALSE to abort
+ *      true if should continue with remaining actions else false to abort
  *
  ***********************************************************************
  */
 
-int
+bool
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                 XEvent *eventp, int context, int pulldown)
 {
 	static Time last_time = 0;
 	Window rootw;
 	int origX, origY;
-	int do_next_action = TRUE;
-	int moving_icon = FALSE;
-	Bool fromtitlebar = False;
-	Bool from3dborder = False;
+	bool do_next_action = true;
+	bool moving_icon = false;
+	bool fromtitlebar = false;
+	bool from3dborder = false;
 	TwmWindow *t;
 
 	RootFunction = 0;
 	if(Cancel) {
-		return TRUE;        /* XXX should this be FALSE? */
+		return true;        /* XXX should this be FALSE? */
 	}
 
 	switch(func) {
@@ -167,7 +167,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_DELTASTOP:
 			if(WindowMoved) {
-				do_next_action = FALSE;
+				do_next_action = false;
 			}
 			break;
 
@@ -310,7 +310,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_FITTOCONTENT:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(!tmp_win->iswinbox) {
 				XBell(dpy, 0);
@@ -321,7 +321,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_VANISH:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			WMgrRemoveFromCurrentWorkSpace(Scr->currentvs, tmp_win);
@@ -333,56 +333,56 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_ADDTOWORKSPACE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			AddToWorkSpace(action, tmp_win);
 			break;
 
 		case F_REMOVEFROMWORKSPACE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			RemoveFromWorkSpace(action, tmp_win);
 			break;
 
 		case F_TOGGLEOCCUPATION:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			ToggleOccupation(action, tmp_win);
 			break;
 
 		case F_MOVETONEXTWORKSPACE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			MoveToNextWorkSpace(Scr->currentvs, tmp_win);
 			break;
 
 		case F_MOVETOPREVWORKSPACE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			MoveToPrevWorkSpace(Scr->currentvs, tmp_win);
 			break;
 
 		case F_MOVETONEXTWORKSPACEANDFOLLOW:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			MoveToNextWorkSpaceAndFollow(Scr->currentvs, tmp_win);
 			break;
 
 		case F_MOVETOPREVWORKSPACEANDFOLLOW:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			MoveToPrevWorkSpaceAndFollow(Scr->currentvs, tmp_win);
 			break;
 
 		case F_SORTICONMGR:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			{
@@ -409,21 +409,21 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			int alt, stat_;
 
 			if(! action) {
-				return TRUE;
+				return true;
 			}
 			stat_ = sscanf(action, "%d", &alt);
 			if(stat_ != 1) {
-				return TRUE;
+				return true;
 			}
 			if((alt < 1) || (alt > 5)) {
-				return TRUE;
+				return true;
 			}
 			AlternateKeymap = Alt1Mask << (alt - 1);
 			XGrabPointer(dpy, Scr->Root, True, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return TRUE;
+			return true;
 		}
 
 		case F_ALTCONTEXT: {
@@ -432,11 +432,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			XGrabKeyboard(dpy, Scr->Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return TRUE;
+			return true;
 		}
 		case F_IDENTIFY:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			Identify(tmp_win);
@@ -447,7 +447,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			unsigned int width, height, swidth, sheight;
 
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			grav = ((tmp_win->hints.flags & PWinGravity)
 			        ? tmp_win->hints.win_gravity : NorthWestGravity);
@@ -499,7 +499,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			int px = 20, py = 30;
 
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			mask = XParseGeometry(action, &x, &y, &width, &height);
 			if(!(mask &  WidthValue)) {
@@ -557,7 +557,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_AUTORAISE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			tmp_win->auto_raise = !tmp_win->auto_raise;
@@ -571,7 +571,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_AUTOLOWER:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			tmp_win->auto_lower = !tmp_win->auto_lower;
@@ -619,7 +619,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_RESIZE:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			PopDownMenu();
@@ -666,7 +666,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						           ButtonMotionMask | VisibilityChangeMask | ExposureMask, &Event);
 
 						if(fromtitlebar && Event.type == ButtonPress) {
-							fromtitlebar = False;
+							fromtitlebar = false;
 							continue;
 						}
 
@@ -686,7 +686,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 					}
 					while(!(Event.type == ButtonRelease || Cancel));
-					return TRUE;
+					return true;
 				}
 			}
 			break;
@@ -701,7 +701,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_TOPZOOM:
 		case F_BOTTOMZOOM:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -712,7 +712,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_PACK:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -723,7 +723,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_FILL:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -734,7 +734,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_JUMPLEFT:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -744,7 +744,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 		case F_JUMPRIGHT:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -754,7 +754,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 		case F_JUMPDOWN:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -764,7 +764,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 		case F_JUMPUP:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
@@ -775,14 +775,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_SAVEGEOMETRY:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			savegeometry(tmp_win);
 			break;
 
 		case F_RESTOREGEOMETRY:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			restoregeometry(tmp_win);
 			break;
@@ -794,7 +794,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			CaptiveCTWM cctwm0, cctwm;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->iswinbox || tmp_win->wspmgr) {
@@ -805,7 +805,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			cursor = MakeStringCursor(cctwm0.name);
 			free(cctwm0.name);
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			XGrabPointer(dpy, root, True,
@@ -862,7 +862,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			Window grabwin, dragroot;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			PopDownMenu();
@@ -924,7 +924,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				w = tmp_win->icon->w;
 				DragX = eventp->xbutton.x;
 				DragY = eventp->xbutton.y;
-				moving_icon = TRUE;
+				moving_icon = true;
 				if(tmp_win->OpaqueMove) {
 					Scr->OpaqueMove = TRUE;
 				}
@@ -1080,12 +1080,12 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						             ButtonReleaseMask | ButtonPressMask,
 						             GrabModeAsync, GrabModeAsync,
 						             Scr->Root, cur, CurrentTime);
-						return TRUE;
+						return true;
 					}
 				}
 
 				if(fromtitlebar && Event.type == ButtonPress) {
-					fromtitlebar = False;
+					fromtitlebar = false;
 					CurrentDragX = origX = Event.xbutton.x_root;
 					CurrentDragY = origY = Event.xbutton.y_root;
 					XTranslateCoordinates(dpy, rootw, tmp_win->frame,
@@ -1103,7 +1103,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					if(!Scr->OpaqueMove) {
 						UninstallRootColormap();
 					}
-					return TRUE;    /* XXX should this be FALSE? */
+					return true;    /* XXX should this be FALSE? */
 				}
 				if(Event.type == releaseEvent) {
 					MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
@@ -1335,7 +1335,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			char *endp;
 
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->icon && w == tmp_win->icon->w) {
@@ -1378,7 +1378,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			SqueezeInfo *si;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			PopDownMenu();
@@ -1579,11 +1579,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				}
 				fprintf(stderr, "%s: couldn't find function \"%s\"\n",
 				        ProgramName, (char *)action);
-				return TRUE;
+				return true;
 			}
 
 			if(NeedToDefer(mroot) && DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			else {
 				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
@@ -1602,7 +1602,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_DEICONIFY:
 		case F_ICONIFY:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->isicon) {
@@ -1616,7 +1616,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_SQUEEZE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			Squeeze(tmp_win);
@@ -1624,7 +1624,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_UNSQUEEZE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->squeezed) {
@@ -1638,7 +1638,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_RAISELOWER:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(!WindowMoved) {
@@ -1654,7 +1654,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_TINYRAISE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			/* check to make sure raise is not from the WindowFunction */
@@ -1669,7 +1669,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_TINYLOWER:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			/* check to make sure raise is not from the WindowFunction */
@@ -1684,7 +1684,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_RAISEORSQUEEZE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			/* FIXME using the same double-click ConstrainedMoveTime here */
@@ -1697,7 +1697,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_RAISE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			/* check to make sure raise is not from the WindowFunction */
@@ -1712,7 +1712,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_LOWER:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->icon && (w == tmp_win->icon->w)) {
@@ -1734,7 +1734,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_FOCUS:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->isicon == FALSE) {
@@ -1751,7 +1751,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_DESTROY:
 			if(DeferExecution(context, func, Scr->DestroyCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->iconmgr || tmp_win->iswinbox || tmp_win->wspmgr
@@ -1774,7 +1774,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_DELETE:
 			if(DeferExecution(context, func, Scr->DestroyCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->iconmgr) {          /* don't send ourself a message */
@@ -1805,7 +1805,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_DELETEORDESTROY:
 			if(DeferExecution(context, func, Scr->DestroyCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->iconmgr) {
@@ -1837,7 +1837,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_SAVEYOURSELF:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(tmp_win->protocols & DoesWmSaveYourself) {
@@ -1998,7 +1998,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_RING:  /* Taken from vtwm version 5.3 */
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			if(tmp_win->ring.next || tmp_win->ring.prev) {
 				/* It's in the ring, let's take it out. */
@@ -2079,14 +2079,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_OCCUPY:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			Occupy(tmp_win);
 			break;
 
 		case F_OCCUPYALL:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 			OccupyAll(tmp_win);
 			break;
@@ -2147,7 +2147,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_WINREFRESH:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			if(context == C_ICON && tmp_win->icon && tmp_win->icon->w)
@@ -2172,7 +2172,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_CHANGESIZE:
 			if(DeferExecution(context, func, Scr->SelectCursor)) {
-				return TRUE;
+				return true;
 			}
 
 			ChangeSize(action, tmp_win);
@@ -2349,7 +2349,7 @@ HideIconManager(void)
  ***********************************************************************
  */
 
-static int
+static bool
 DeferExecution(int context, int func, Cursor cursor)
 {
 	if((context == C_ROOT) || (context == C_ALTERNATE)) {
@@ -2365,10 +2365,10 @@ DeferExecution(int context, int func, Cursor cursor)
 		             CurrentTime);
 		RootFunction = func;
 
-		return (TRUE);
+		return true;
 	}
 
-	return (FALSE);
+	return false;
 }
 
 
@@ -2813,7 +2813,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
  *
  ***********************************************************************
  */
-static int
+static bool
 NeedToDefer(MenuRoot *root)
 {
 	MenuItem *mitem;
@@ -2844,10 +2844,10 @@ NeedToDefer(MenuRoot *root)
 			case F_AUTORAISE:
 			case F_AUTOLOWER:
 			case F_CHANGESIZE:
-				return TRUE;
+				return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 

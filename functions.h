@@ -5,9 +5,11 @@
 #ifndef _EXECUTE_FUNCTION_H
 #define _EXECUTE_FUNCTION_H
 
+#include <stdbool.h>
+
 /* All the outside world sees */
-int ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
-                    XEvent *eventp, int context, int pulldown);
+bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
+                     XEvent *eventp, int context, int pulldown);
 
 /* Needed in events.c */
 extern int ConstMove;
