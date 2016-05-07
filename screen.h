@@ -139,13 +139,13 @@ struct ScreenInfo {
 	 */
 
 	Window SizeWindow;          /* the resize dimensions window */
-	struct {
-		Window       win;    // Actual X window
-		bool         mapped; // Flag for currently up
-		int          lines;  // # of lines (internal)
-		unsigned int width;  // Stash of
-		unsigned int height; // current measurements
-	} InfoWindow;               /* the information window */
+	struct {                    /* the information window */
+		Window       win;          // Actual X window
+		bool         mapped;       // Flag for currently up
+		int          lines;        // # of lines (internal)
+		unsigned int width;        // Stash of
+		unsigned int height;       // current measurements
+	} InfoWindow;
 	Window WindowMask;          /* the window masking the screen at startup */
 	Window ShapeWindow;         /* an utilitary window for animated icons */
 
