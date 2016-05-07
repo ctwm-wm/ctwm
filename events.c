@@ -1058,6 +1058,10 @@ void HandleKeyPress(void)
 
 	if(InfoLines) {
 		XUnmapWindow(dpy, Scr->InfoWindow);
+		/*
+		 * XXX Not resetting InfoLines like we do on ButtonRelease -
+		 * should we?
+		 */
 	}
 
 	if(ActiveMenu != NULL) {
