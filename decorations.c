@@ -203,9 +203,11 @@ ComputeCommonTitleOffsets(void)
 	if(Scr->TBInfo.nleft  > 0) {
 		Scr->TBInfo.leftx    += Scr->ButtonIndent;
 	}
-	if(Scr->TBInfo.nright > 0) Scr->TBInfo.rightoff += (Scr->ButtonIndent +
-		                (Scr->TBInfo.nright * buttonwidth) -
-		                Scr->TBInfo.pad);
+	if(Scr->TBInfo.nright > 0) {
+		Scr->TBInfo.rightoff += (Scr->ButtonIndent
+		                         + (Scr->TBInfo.nright * buttonwidth)
+		                         - Scr->TBInfo.pad);
+	}
 
 	Scr->TBInfo.titlex = (Scr->TBInfo.leftx +
 	                      (Scr->TBInfo.nleft * buttonwidth) -
@@ -261,11 +263,10 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, Bool squeeze)
 	}
 	tmp_win->rightx = width - Scr->TBInfo.rightoff;
 	if(squeeze && tmp_win->squeeze_info && !tmp_win->squeezed) {
-		int rx = (tmp_win->highlightxr +
-		          (tmp_win->hilite_wr
-		           ? Scr->TBInfo.width * 2 : 0) +
-		          (Scr->TBInfo.nright > 0 ? Scr->TitlePadding : 0) +
-		          Scr->FramePadding);
+		int rx = (tmp_win->highlightxr
+		          + (tmp_win->hilite_wr ? Scr->TBInfo.width * 2 : 0)
+		          + (Scr->TBInfo.nright > 0 ? Scr->TitlePadding : 0)
+		          + Scr->FramePadding);
 		if(rx < tmp_win->rightx) {
 			tmp_win->rightx = rx;
 		}
@@ -315,12 +316,14 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		Pixmap pm = None;
 		Pixmap bm = None;
 
-		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR))
+		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR)) {
 			bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
 			                           (char *)black_bits, gray_width, gray_height);
-		else
+		}
+		else {
 			bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
 			                           (char *)gray_bits, gray_width, gray_height);
+		}
 
 		pm = XCreatePixmap(dpy, tmp_win->title_w, gray_width, gray_height,
 		                   Scr->d_depth);
@@ -361,20 +364,22 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	if(Scr->TitleJustification == J_LEFT) {
 		tmp_win->hilite_wl = (Window) 0;
 	}
-	else
+	else {
 		tmp_win->hilite_wl = XCreateWindow(dpy, tmp_win->title_w, 0, y,
 		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
 		                                   (unsigned int) 0, Scr->d_depth, (unsigned int) CopyFromParent,
 		                                   Scr->d_visual, valuemask, &attributes);
+	}
 
 	if(Scr->TitleJustification == J_RIGHT) {
 		tmp_win->hilite_wr = (Window) 0;
 	}
-	else
+	else {
 		tmp_win->hilite_wr = XCreateWindow(dpy, tmp_win->title_w, 0, y,
 		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
 		                                   (unsigned int) 0,  Scr->d_depth, (unsigned int) CopyFromParent,
 		                                   Scr->d_visual, valuemask, &attributes);
+	}
 }
 
 
@@ -449,18 +454,20 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 	if(Scr->TitleJustification == J_LEFT) {
 		tmp_win->lolite_wl = (Window) 0;
 	}
-	else
+	else {
 		tmp_win->lolite_wl = XCreateWindow(dpy, tmp_win->title_w, 0, y,
 		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
 		                                   (unsigned int) 0, Scr->d_depth, (unsigned int) CopyFromParent,
 		                                   Scr->d_visual, valuemask, &attributes);
+	}
 
 	if(Scr->TitleJustification == J_RIGHT) {
 		tmp_win->lolite_wr = (Window) 0;
 	}
-	else
+	else {
 		tmp_win->lolite_wr = XCreateWindow(dpy, tmp_win->title_w, 0, y,
 		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
 		                                   (unsigned int) 0,  Scr->d_depth, (unsigned int) CopyFromParent,
 		                                   Scr->d_visual, valuemask, &attributes);
+	}
 }
