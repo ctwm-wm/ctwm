@@ -272,7 +272,7 @@ static TitleButton *cur_tb = NULL;
  * CreateTitleButton() at the opening of the block.
  */
 void SetCurrentTBAction(int button, int nmods, int func, char *action,
-                     MenuRoot *menuroot)
+                        MenuRoot *menuroot)
 {
 	TitleButtonFunc *tbf;
 

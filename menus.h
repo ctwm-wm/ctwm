@@ -214,7 +214,7 @@ void send_clientmessage(Window w, Atom a, Time timestamp);
 extern void SendEndAnimationMessage(Window w, Time timestamp);
 extern void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
 void SetCurrentTBAction(int button, int mods, int func, char *action,
-                            MenuRoot *menuroot);
+                        MenuRoot *menuroot);
 extern void RaiseWindow(TwmWindow *tmp_win);
 extern void LowerWindow(TwmWindow *tmp_win);
 extern void RaiseLower(TwmWindow *tmp_win);
