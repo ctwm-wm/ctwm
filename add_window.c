@@ -1800,23 +1800,6 @@ void GrabKeys(TwmWindow *tmp_win)
 #undef grabkey
 #undef ungrabkey
 
-void ComputeCommonTitleOffsets(void)
-{
-	int buttonwidth = (Scr->TBInfo.width + Scr->TBInfo.pad);
-
-	Scr->TBInfo.leftx = Scr->TBInfo.rightoff = Scr->FramePadding;
-	if(Scr->TBInfo.nleft  > 0) {
-		Scr->TBInfo.leftx    += Scr->ButtonIndent;
-	}
-	if(Scr->TBInfo.nright > 0) Scr->TBInfo.rightoff += (Scr->ButtonIndent +
-		                (Scr->TBInfo.nright * buttonwidth) -
-		                Scr->TBInfo.pad);
-
-	Scr->TBInfo.titlex = (Scr->TBInfo.leftx +
-	                      (Scr->TBInfo.nleft * buttonwidth) -
-	                      Scr->TBInfo.pad +
-	                      Scr->TitlePadding);
-}
 
 
 void SetHighlightPixmap(char *filename)

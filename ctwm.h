@@ -456,7 +456,6 @@ extern void free();
 #endif
 extern void Reborder(Time tim);
 extern SIGNAL_T Done(int signum) __attribute__((noreturn));
-void ComputeCommonTitleOffsets(void);
 void CreateFonts(void);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
