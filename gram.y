@@ -613,8 +613,8 @@ binding_entries : /* Empty */
 		| binding_entries binding_entry
 		;
 
-binding_entry   : button keyaction { ModifyCurrentTB($1, mods, $2, Action, pull); mods = 0;}
-		| button EQUALS action { ModifyCurrentTB($1, 0, $3, Action, pull);}
+binding_entry   : button keyaction { SetCurrentTBAction($1, mods, $2, Action, pull); mods = 0;}
+		| button EQUALS action { SetCurrentTBAction($1, 0, $3, Action, pull);}
 		| button COLON action {
 			/* Deprecated since 3.8, no longer supported */
 			yyerror("Title buttons specifications without = are no "

@@ -255,7 +255,23 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 
 static TitleButton *cur_tb = NULL;
 
-void ModifyCurrentTB(int button, int nmods, int func, char *action,
+/*
+ * Sets the action for a given {mouse button,set of modifier keys} on the
+ * "current" button.  This happens during initialization, in a few
+ * different ways.
+ *
+ * CreateTitleButton() winds up creating a new button, and setting the
+ * cur_tb global we rely on.  It calls us then to initialize our action
+ * to what it was told (hardcoded for the !NoDefaults case in
+ * InitTitlebarButtons() for fallback config, from the config file when
+ * it's called via GotTitleButton() for the one-line string form of
+ * *TitleButton spec).
+ *
+ * It's also called directly from the config parsing for the block-form
+ * *TitleButton specs, when the cur_tb was previously set by
+ * CreateTitleButton() at the opening of the block.
+ */
+void SetCurrentTBAction(int button, int nmods, int func, char *action,
                      MenuRoot *menuroot)
 {
 	TitleButtonFunc *tbf;
@@ -313,7 +329,7 @@ int CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 	}
 
 	for(button = 0; button < MAX_BUTTONS; button++) {
-		ModifyCurrentTB(button + 1, 0, func, action, menuroot);
+		SetCurrentTBAction(button + 1, 0, func, action, menuroot);
 	}
 
 	/*
