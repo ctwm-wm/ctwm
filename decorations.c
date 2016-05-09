@@ -143,6 +143,18 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 				                            0, (unsigned int) CopyFromParent,
 				                            (Visual *) CopyFromParent,
 				                            valuemask, &attributes);
+				/*
+				 * XXX Can we just use tb->image for this instead?  I
+				 * think we can.  The TBInfo.head list is assembled in
+				 * calls to CreateTitleButton(), which happen during
+				 * config file parsing, and then during
+				 * InitTitlebarButtons(), which then goes through and
+				 * tb->image = GetImage()'s each of the entries.  I don't
+				 * believe anything ever gets added to TBInfo.head after
+				 * that.  And the setting in ITB() could only fail in
+				 * cases that would presumably also fail for us here.  So
+				 * this whole block is redundant?
+				 */
 				tbw->image = GetImage(tb->name, tmp_win->title);
 				if(! tbw->image) {
 					tbw->image = GetImage(TBPM_QUESTION, tmp_win->title);
