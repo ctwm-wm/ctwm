@@ -79,6 +79,7 @@
 
 #include "ctwm_atoms.h"
 #include "add_window.h"
+#include "decorations.h"
 #include "clicktofocus.h"
 #include "menus.h"
 #include "events.h"

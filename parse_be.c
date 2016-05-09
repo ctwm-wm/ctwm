@@ -1862,7 +1862,7 @@ do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
 	}
 	/* Process the special cases from the manual here rather than
 	 * each time we calculate the position of the title bar
-	 * in add_window.c:ComputeTitleLocation().
+	 * in ComputeTitleLocation().
 	 * In fact, it's better to get rid of them entirely, but we
 	 * probably should not do that for compatibility's sake.
 	 * By using a non-zero denominator the position will be relative.

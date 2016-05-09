@@ -77,6 +77,7 @@
 #include "otp.h"
 #include "resize.h"
 #include "add_window.h"
+#include "decorations.h"
 #include "screen.h"
 
 #define MINHEIGHT 0     /* had been 32 */
