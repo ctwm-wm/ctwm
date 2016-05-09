@@ -72,7 +72,7 @@ void ComputeTitleLocation(TwmWindow *tmp)
 
 
 /*
- * Despte being called "TitlebarButtons", this actually sets up most of
+ * Despite being called "TitlebarButtons", this actually sets up most of
  * the subwindows inside the titlebar.  There are windows for each
  * button, but also windows for the shifting-color regions on un/focus.
  */
