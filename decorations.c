@@ -24,7 +24,8 @@
  * to take the frame_bw into account since we want (0,0) of the title window
  * to line up with (0,0) of the frame window.
  */
-void ComputeTitleLocation(TwmWindow *tmp)
+void
+ComputeTitleLocation(TwmWindow *tmp)
 {
 	tmp->title_x = tmp->frame_bw3D - tmp->frame_bw;
 	tmp->title_y = tmp->frame_bw3D - tmp->frame_bw;
@@ -193,7 +194,8 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  * For the session; called during ctwm startup.  main() ->
  * InitTitleBarButtons() -> ComputeCommonTitleOffsets()
  */
-void ComputeCommonTitleOffsets(void)
+void
+ComputeCommonTitleOffsets(void)
 {
 	int buttonwidth = (Scr->TBInfo.width + Scr->TBInfo.pad);
 
