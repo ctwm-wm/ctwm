@@ -182,9 +182,6 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
 			break;
 		}
 	}
-	if(tmp && addingdefaults) {
-		return (True);
-	}
 
 	if(tmp == NULL) {
 		tmp = (FuncKey *) malloc(sizeof(FuncKey));
