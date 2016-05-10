@@ -79,7 +79,6 @@ extern TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp,
                             VirtualScreen *vs);
 extern TwmWindow *GetTwmWindow(Window w);
 extern int MappedNotOverride(Window w);
-extern void AddDefaultBindings(void);
 extern void GrabButtons(TwmWindow *tmp_win);
 extern void GrabKeys(TwmWindow *tmp_win);
 extern void GetWindowSizeHints(TwmWindow *tmp_win);

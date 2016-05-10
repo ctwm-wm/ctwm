@@ -252,6 +252,34 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 	return True;
 }
 
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      AddDefaultBindings - attach default bindings so that naive users
+ *      don't get messed up if they provide a minimal twmrc.
+ */
+static void do_add_binding(int button, int context, int modifier, int func)
+{
+	AddFuncButton(button, context, modifier, func, NULL, NULL);
+}
+
+void AddDefaultBindings(void)
+{
+#define NoModifierMask 0
+
+	do_add_binding(Button1, C_TITLE, NoModifierMask, F_MOVE);
+	do_add_binding(Button1, C_ICON, NoModifierMask, F_ICONIFY);
+	do_add_binding(Button1, C_ICONMGR, NoModifierMask, F_ICONIFY);
+
+	do_add_binding(Button2, C_TITLE, NoModifierMask, F_RAISELOWER);
+	do_add_binding(Button2, C_ICON, NoModifierMask, F_ICONIFY);
+	do_add_binding(Button2, C_ICONMGR, NoModifierMask, F_ICONIFY);
+
+#undef NoModifierMask
+}
+
+
 void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure)
 {
 	if(Scr->use3Dmenus) {
