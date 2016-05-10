@@ -180,7 +180,6 @@ extern int MenuDepth;
 #define COLORMAP_PREV "prev"
 #define COLORMAP_DEFAULT "default"
 
-extern void InitTitlebarButtons(void);
 extern void InitMenus(void);
 extern MenuRoot *NewMenuRoot(char *name);
 extern MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
@@ -197,9 +196,6 @@ extern void HideMenu(MenuRoot *menu);
 extern void resizeFromCenter(Window w, TwmWindow *tmp_win);
 extern void ReGrab(void);
 void SetLastCursor(Cursor newcur);
-extern int CreateTitleButton(char *name, int func, char *action,
-                             MenuRoot *menuroot, Bool rightside,
-                             Bool append);
 extern void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
 extern void PaintMenu(MenuRoot *mr, XEvent *e);
 Bool cur_fromMenu(void);
@@ -213,8 +209,6 @@ extern void SetMapStateProp(TwmWindow *tmp_win, int state);
 void send_clientmessage(Window w, Atom a, Time timestamp);
 extern void SendEndAnimationMessage(Window w, Time timestamp);
 extern void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
-void SetCurrentTBAction(int button, int mods, int func, char *action,
-                        MenuRoot *menuroot);
 extern void RaiseWindow(TwmWindow *tmp_win);
 extern void LowerWindow(TwmWindow *tmp_win);
 extern void RaiseLower(TwmWindow *tmp_win);

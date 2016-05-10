@@ -20,6 +20,7 @@ set(CTWMSRC
 	ctwm_atoms.c
 	cursor.c
 	decorations.c
+	decorations_init.c
 	deftwmrc.c
 	event_names.c
 	events.c
