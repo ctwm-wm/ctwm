@@ -253,11 +253,12 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 }
 
 
-/***********************************************************************
+/*
+ * AddDefaultFuncButtons - attach default bindings so that naive users
+ * don't get messed up if they provide a minimal twmrc.
  *
- *  Procedure:
- *      AddDefaultFuncButtons - attach default bindings so that naive
- *      users don't get messed up if they provide a minimal twmrc.
+ * This used to be in add_window.c, and maybe strictly speaking fits
+ * better there, but was moved here so addingdefaults wound up in scope.
  */
 void AddDefaultFuncButtons(void)
 {
