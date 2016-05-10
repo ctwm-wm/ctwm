@@ -266,6 +266,8 @@ static void do_add_binding(int button, int context, int modifier, int func)
 
 void AddDefaultBindings(void)
 {
+	addingdefaults = True;
+
 #define NoModifierMask 0
 
 	do_add_binding(Button1, C_TITLE, NoModifierMask, F_MOVE);
@@ -277,6 +279,8 @@ void AddDefaultBindings(void)
 	do_add_binding(Button2, C_ICONMGR, NoModifierMask, F_ICONIFY);
 
 #undef NoModifierMask
+
+	addingdefaults = False;
 }
 
 

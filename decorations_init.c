@@ -77,9 +77,7 @@ InitTitlebarButtons(void)
 				fprintf(stderr, "%s:  unable to add resize button\n", ProgramName);
 			}
 		}
-		//addingdefaults = True;
 		AddDefaultBindings();
-		//addingdefaults = False;
 	}
 	ComputeCommonTitleOffsets();
 
