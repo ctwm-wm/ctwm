@@ -158,7 +158,7 @@ SetCurrentTBAction(int button, int nmods, int func, char *action,
 		}
 	}
 	if(!tbf) {
-		tbf = (TitleButtonFunc *)malloc(sizeof(TitleButtonFunc));
+		tbf = malloc(sizeof(TitleButtonFunc));
 		if(!tbf) {
 			fprintf(stderr, "%s: out of memory\n", ProgramName);
 			return;
@@ -180,7 +180,7 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
                   Bool rightside, Bool append)
 {
 	int button;
-	cur_tb = (TitleButton *) malloc(sizeof(TitleButton));
+	cur_tb = calloc(1, sizeof(TitleButton));
 
 	if(!cur_tb) {
 		fprintf(stderr,
@@ -189,13 +189,8 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 		return 0;
 	}
 
-	cur_tb->next = NULL;
-	cur_tb->name = name;                      /* note that we are not copying */
-	cur_tb->image = None;                     /* WARNING, values not set yet */
-	cur_tb->width = 0;                        /* see InitTitlebarButtons */
-	cur_tb->height = 0;                       /* ditto */
+	cur_tb->name = name;           /* note that we are not copying */
 	cur_tb->rightside = rightside;
-	cur_tb->funs = NULL;
 	if(rightside) {
 		Scr->TBInfo.nright++;
 	}
