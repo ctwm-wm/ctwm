@@ -256,29 +256,22 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 /***********************************************************************
  *
  *  Procedure:
- *      AddDefaultBindings - attach default bindings so that naive users
- *      don't get messed up if they provide a minimal twmrc.
+ *      AddDefaultFuncButtons - attach default bindings so that naive
+ *      users don't get messed up if they provide a minimal twmrc.
  */
-static void do_add_binding(int button, int context, int modifier, int func)
-{
-	AddFuncButton(button, context, modifier, func, NULL, NULL);
-}
-
 void AddDefaultFuncButtons(void)
 {
 	addingdefaults = True;
 
-#define NoModifierMask 0
+#define SETDEF(btn, ctx, func) AddFuncButton(btn, ctx, 0, func, NULL, NULL)
+	SETDEF(Button1, C_TITLE,    F_MOVE);
+	SETDEF(Button1, C_ICON,     F_ICONIFY);
+	SETDEF(Button1, C_ICONMGR,  F_ICONIFY);
 
-	do_add_binding(Button1, C_TITLE, NoModifierMask, F_MOVE);
-	do_add_binding(Button1, C_ICON, NoModifierMask, F_ICONIFY);
-	do_add_binding(Button1, C_ICONMGR, NoModifierMask, F_ICONIFY);
-
-	do_add_binding(Button2, C_TITLE, NoModifierMask, F_RAISELOWER);
-	do_add_binding(Button2, C_ICON, NoModifierMask, F_ICONIFY);
-	do_add_binding(Button2, C_ICONMGR, NoModifierMask, F_ICONIFY);
-
-#undef NoModifierMask
+	SETDEF(Button2, C_TITLE,    F_RAISELOWER);
+	SETDEF(Button2, C_ICON,     F_ICONIFY);
+	SETDEF(Button2, C_ICONMGR,  F_ICONIFY);
+#undef SETDEF
 
 	addingdefaults = False;
 }
