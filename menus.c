@@ -264,7 +264,7 @@ static void do_add_binding(int button, int context, int modifier, int func)
 	AddFuncButton(button, context, modifier, func, NULL, NULL);
 }
 
-void AddDefaultBindings(void)
+void AddDefaultFuncButtons(void)
 {
 	addingdefaults = True;
 

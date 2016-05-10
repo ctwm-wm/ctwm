@@ -191,7 +191,7 @@ extern Bool AddFuncKey(char *name, int cont, int mods, int func,
                        MenuRoot *menu, char *win_name, char *action);
 extern Bool AddFuncButton(int num, int cont, int mods, int func,
                           MenuRoot *menu, MenuItem *item);
-void AddDefaultBindings(void);
+void AddDefaultFuncButtons(void);
 extern void PopDownMenu(void);
 extern void HideMenu(MenuRoot *menu);
 extern void resizeFromCenter(Window w, TwmWindow *tmp_win);
