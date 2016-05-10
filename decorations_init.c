@@ -240,6 +240,3 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 
 	return 1;
 }
-
-
-
