@@ -458,9 +458,14 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 
 
 
+
 /*
  * Painting the titlebars.  The actual displaying of the stuff that's
  * figured or stored above.
+ */
+
+/*
+ * Write in the window title
  */
 void
 PaintTitle(TwmWindow *tmp_win)
@@ -516,6 +521,9 @@ PaintTitle(TwmWindow *tmp_win)
 }
 
 
+/*
+ * Painting in the buttons on the titlebar
+ */
 void
 PaintTitleButtons(TwmWindow *tmp_win)
 {
@@ -529,7 +537,6 @@ PaintTitleButtons(TwmWindow *tmp_win)
 		}
 	}
 }
-
 
 void
 PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw)
