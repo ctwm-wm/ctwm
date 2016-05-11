@@ -118,6 +118,12 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	tmp_win->titlebuttons = NULL;
 	nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 	if(nb > 0) {
+		/*
+		 * XXX Reword this into a proper array, either NULL-terminated or
+		 * with a stored size, instead of manually implementing a re-calc
+		 * of the size and incrementing pointers every time we want to
+		 * walk this.
+		 */
 		tmp_win->titlebuttons = calloc(nb, sizeof(TBWindow));
 		if(!tmp_win->titlebuttons) {
 			fprintf(stderr, "%s:  unable to allocate %d titlebuttons\n",
