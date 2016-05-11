@@ -1263,58 +1263,6 @@ void PaintBorders(TwmWindow *tmp_win, Bool focus)
 	}
 }
 
-void PaintTitle(TwmWindow *tmp_win)
-{
-	int width, mwidth, len;
-	XRectangle ink_rect;
-	XRectangle logical_rect;
-
-	if(Scr->use3Dtitles) {
-		if(Scr->SunkFocusWindowTitle && (Scr->Focus == tmp_win) &&
-		                (tmp_win->title_height != 0))
-			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
-			             tmp_win->title_width - Scr->TBInfo.titlex -
-			             Scr->TBInfo.rightoff - Scr->TitlePadding,
-			             Scr->TitleHeight, Scr->TitleShadowDepth,
-			             tmp_win->title, on, True, False);
-		else
-			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
-			             tmp_win->title_width - Scr->TBInfo.titlex -
-			             Scr->TBInfo.rightoff - Scr->TitlePadding,
-			             Scr->TitleHeight, Scr->TitleShadowDepth,
-			             tmp_win->title, off, True, False);
-	}
-	FB(tmp_win->title.fore, tmp_win->title.back);
-	if(Scr->use3Dtitles) {
-		len    = strlen(tmp_win->name);
-		XmbTextExtents(Scr->TitleBarFont.font_set,
-		               tmp_win->name, strlen(tmp_win->name),
-		               &ink_rect, &logical_rect);
-		width = logical_rect.width;
-		mwidth = tmp_win->title_width  - Scr->TBInfo.titlex -
-		         Scr->TBInfo.rightoff  - Scr->TitlePadding  -
-		         Scr->TitleShadowDepth - 4;
-		while((len > 0) && (width > mwidth)) {
-			len--;
-			XmbTextExtents(Scr->TitleBarFont.font_set,
-			               tmp_win->name, len,
-			               &ink_rect, &logical_rect);
-			width = logical_rect.width;
-		}
-		((Scr->Monochrome != COLOR) ? XmbDrawImageString : XmbDrawString)
-		(dpy, tmp_win->title_w, Scr->TitleBarFont.font_set,
-		 Scr->NormalGC,
-		 tmp_win->name_x,
-		 (Scr->TitleHeight - logical_rect.height) / 2 + (- logical_rect.y),
-		 tmp_win->name, len);
-	}
-	else
-		XmbDrawString(dpy, tmp_win->title_w, Scr->TitleBarFont.font_set,
-		              Scr->NormalGC,
-		              tmp_win->name_x, Scr->TitleBarFont.y,
-		              tmp_win->name, strlen(tmp_win->name));
-}
-
 void PaintIcon(TwmWindow *tmp_win)
 {
 	int         width, twidth, mwidth, len, x;
@@ -1360,16 +1308,6 @@ void PaintIcon(TwmWindow *tmp_win)
 	              x + ((mwidth - twidth) / 2) +
 	              Scr->IconManagerShadowDepth + ICON_MGR_IBORDER,
 	              icon->y, tmp_win->icon_name, len);
-}
-
-void PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw)
-{
-	TitleButton *tb = tbw->info;
-
-	XCopyArea(dpy, tbw->image->pixmap, tbw->window, Scr->NormalGC,
-	          tb->srcx, tb->srcy, tb->width, tb->height,
-	          tb->dstx, tb->dsty);
-	return;
 }
 
 void AdoptWindow(void)

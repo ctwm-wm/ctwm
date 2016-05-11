@@ -9,6 +9,7 @@
 #include <sys/select.h>
 
 #include "util.h"
+#include "decorations.h"
 #include "screen.h"
 #include "icons.h"
 #include "cursor.h"

@@ -10,13 +10,15 @@
 #include "gram.tab.h"
 #include "image.h"
 #include "screen.h"
+#include "util.h"  // Border drawing
 
 #include "decorations.h"
 
 
 
 /*
- * Bits related to setting up titlebars
+ * Bits related to setting up titlebars.  Their subwindows, icons,
+ * highlights, etc.
  */
 
 /*
@@ -453,3 +455,74 @@ CreateLowlightWindows(TwmWindow *tmp_win)
  * highlight window one, in which case when THAT delete gets called all
  * the cleanup is done.
  */
+
+
+
+/*
+ * Painting the titlebars.  The actual displaying of the stuff that's
+ * figured or stored above.
+ */
+void
+PaintTitle(TwmWindow *tmp_win)
+{
+	int width, mwidth, len;
+	XRectangle ink_rect;
+	XRectangle logical_rect;
+
+	if(Scr->use3Dtitles) {
+		if(Scr->SunkFocusWindowTitle && (Scr->Focus == tmp_win) &&
+		                (tmp_win->title_height != 0))
+			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
+			             tmp_win->title_width - Scr->TBInfo.titlex -
+			             Scr->TBInfo.rightoff - Scr->TitlePadding,
+			             Scr->TitleHeight, Scr->TitleShadowDepth,
+			             tmp_win->title, on, True, False);
+		else
+			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
+			             tmp_win->title_width - Scr->TBInfo.titlex -
+			             Scr->TBInfo.rightoff - Scr->TitlePadding,
+			             Scr->TitleHeight, Scr->TitleShadowDepth,
+			             tmp_win->title, off, True, False);
+	}
+	FB(tmp_win->title.fore, tmp_win->title.back);
+	if(Scr->use3Dtitles) {
+		len    = strlen(tmp_win->name);
+		XmbTextExtents(Scr->TitleBarFont.font_set,
+		               tmp_win->name, strlen(tmp_win->name),
+		               &ink_rect, &logical_rect);
+		width = logical_rect.width;
+		mwidth = tmp_win->title_width  - Scr->TBInfo.titlex -
+		         Scr->TBInfo.rightoff  - Scr->TitlePadding  -
+		         Scr->TitleShadowDepth - 4;
+		while((len > 0) && (width > mwidth)) {
+			len--;
+			XmbTextExtents(Scr->TitleBarFont.font_set,
+			               tmp_win->name, len,
+			               &ink_rect, &logical_rect);
+			width = logical_rect.width;
+		}
+		((Scr->Monochrome != COLOR) ? XmbDrawImageString : XmbDrawString)
+		(dpy, tmp_win->title_w, Scr->TitleBarFont.font_set,
+		 Scr->NormalGC,
+		 tmp_win->name_x,
+		 (Scr->TitleHeight - logical_rect.height) / 2 + (- logical_rect.y),
+		 tmp_win->name, len);
+	}
+	else
+		XmbDrawString(dpy, tmp_win->title_w, Scr->TitleBarFont.font_set,
+		              Scr->NormalGC,
+		              tmp_win->name_x, Scr->TitleBarFont.y,
+		              tmp_win->name, strlen(tmp_win->name));
+}
+
+
+void
+PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw)
+{
+	TitleButton *tb = tbw->info;
+
+	XCopyArea(dpy, tbw->image->pixmap, tbw->window, Scr->NormalGC,
+	          tb->srcx, tb->srcy, tb->width, tb->height,
+	          tb->dstx, tb->dsty);
+	return;
+}

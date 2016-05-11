@@ -14,6 +14,9 @@ void CreateHighlightWindows(TwmWindow *tmp_win);
 void DeleteHighlightWindows(TwmWindow *tmp_win);
 void CreateLowlightWindows(TwmWindow *tmp_win);
 
+void PaintTitle(TwmWindow *tmp_win);
+void PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw);
+
 
 /* Used in decorations.c and add_window.c for building images */
 #define gray_width 2
