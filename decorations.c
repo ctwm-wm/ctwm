@@ -517,6 +517,21 @@ PaintTitle(TwmWindow *tmp_win)
 
 
 void
+PaintTitleButtons(TwmWindow *tmp_win)
+{
+	int i;
+	TBWindow *tbw;
+	int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
+
+	for(i = 0, tbw = tmp_win->titlebuttons; i < nb; i++, tbw++) {
+		if(tbw) {
+			PaintTitleButton(tmp_win, tbw);
+		}
+	}
+}
+
+
+void
 PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw)
 {
 	TitleButton *tb = tbw->info;
