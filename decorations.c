@@ -119,7 +119,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 	if(nb > 0) {
 		/*
-		 * XXX Reword this into a proper array, either NULL-terminated or
+		 * XXX Rework this into a proper array, either NULL-terminated or
 		 * with a stored size, instead of manually implementing a re-calc
 		 * of the size and incrementing pointers every time we want to
 		 * walk this.
