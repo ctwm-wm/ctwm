@@ -2215,6 +2215,12 @@ void HandleExpose(void)
 			Window w = Event.xany.window;
 			int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 
+			/*
+			 * This looks an awful lot like a manual reimplementation of
+			 * PaintTitleButtons().  It's not quite though, it's just
+			 * looking up one button to paint it.  And it would be a
+			 * little grody trying to shoehorn it in.
+			 */
 			for(i = 0, tbw = Tmp_win->titlebuttons; i < nb; i++, tbw++) {
 				if(w == tbw->window) {
 					PaintTitleButton(Tmp_win, tbw);
