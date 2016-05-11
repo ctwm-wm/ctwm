@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <strings.h>
 
@@ -104,7 +105,7 @@ static struct {
 	int y;
 } MenuOrigins[MAXMENUDEPTH];
 static Cursor LastCursor;
-static Bool addingdefaults = False;
+static bool addingdefaults = false;
 
 static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure);
 static void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, int exposure);
@@ -259,7 +260,7 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
  */
 void AddDefaultFuncButtons(void)
 {
-	addingdefaults = True;
+	addingdefaults = true;
 
 #define SETDEF(btn, ctx, func) AddFuncButton(btn, ctx, 0, func, NULL, NULL)
 	SETDEF(Button1, C_TITLE,    F_MOVE);
@@ -271,7 +272,7 @@ void AddDefaultFuncButtons(void)
 	SETDEF(Button2, C_ICONMGR,  F_ICONIFY);
 #undef SETDEF
 
-	addingdefaults = False;
+	addingdefaults = false;
 }
 
 
