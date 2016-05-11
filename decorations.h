@@ -8,7 +8,6 @@
 
 void ComputeTitleLocation(TwmWindow *tmp);
 void CreateWindowTitlebarButtons(TwmWindow *tmp_win);
-void ComputeCommonTitleOffsets(void);
 void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
                                Bool squeeze);
 void CreateHighlightWindows(TwmWindow *tmp_win);

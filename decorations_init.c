@@ -26,6 +26,11 @@
 static TitleButton *cur_tb = NULL;
 
 
+/* Internal func[s] */
+static void ComputeCommonTitleOffsets(void);
+
+
+
 /*
  * InitTitlebarButtons - Do all the necessary stuff to load in a titlebar
  * button.  If we can't find the button, then put in a question; if we can't
@@ -122,6 +127,34 @@ InitTitlebarButtons(void)
 			tb->srcy = 0;
 		}
 	}
+}
+
+
+/*
+ * Figure general sizing/locations for titlebar bits.
+ *
+ * For the session; called during ctwm startup.  main() ->
+ * InitTitleBarButtons() -> ComputeCommonTitleOffsets()
+ */
+static void
+ComputeCommonTitleOffsets(void)
+{
+	int buttonwidth = (Scr->TBInfo.width + Scr->TBInfo.pad);
+
+	Scr->TBInfo.leftx = Scr->TBInfo.rightoff = Scr->FramePadding;
+	if(Scr->TBInfo.nleft  > 0) {
+		Scr->TBInfo.leftx    += Scr->ButtonIndent;
+	}
+	if(Scr->TBInfo.nright > 0) {
+		Scr->TBInfo.rightoff += (Scr->ButtonIndent
+		                         + (Scr->TBInfo.nright * buttonwidth)
+		                         - Scr->TBInfo.pad);
+	}
+
+	Scr->TBInfo.titlex = (Scr->TBInfo.leftx +
+	                      (Scr->TBInfo.nleft * buttonwidth) -
+	                      Scr->TBInfo.pad +
+	                      Scr->TitlePadding);
 }
 
 

@@ -189,34 +189,6 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 
 
 /*
- * Figure general sizing/locations for titlebar bits.
- *
- * For the session; called during ctwm startup.  main() ->
- * InitTitleBarButtons() -> ComputeCommonTitleOffsets()
- */
-void
-ComputeCommonTitleOffsets(void)
-{
-	int buttonwidth = (Scr->TBInfo.width + Scr->TBInfo.pad);
-
-	Scr->TBInfo.leftx = Scr->TBInfo.rightoff = Scr->FramePadding;
-	if(Scr->TBInfo.nleft  > 0) {
-		Scr->TBInfo.leftx    += Scr->ButtonIndent;
-	}
-	if(Scr->TBInfo.nright > 0) {
-		Scr->TBInfo.rightoff += (Scr->ButtonIndent
-		                         + (Scr->TBInfo.nright * buttonwidth)
-		                         - Scr->TBInfo.pad);
-	}
-
-	Scr->TBInfo.titlex = (Scr->TBInfo.leftx +
-	                      (Scr->TBInfo.nleft * buttonwidth) -
-	                      Scr->TBInfo.pad +
-	                      Scr->TitlePadding);
-}
-
-
-/*
  * Figure out where the window title and the hi/lolite windows go within
  * the titlebar as a whole.
  *
