@@ -118,7 +118,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	tmp_win->titlebuttons = NULL;
 	nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 	if(nb > 0) {
-		tmp_win->titlebuttons = (TBWindow *) malloc(nb * sizeof(TBWindow));
+		tmp_win->titlebuttons = calloc(nb, sizeof(TBWindow));
 		if(!tmp_win->titlebuttons) {
 			fprintf(stderr, "%s:  unable to allocate %d titlebuttons\n",
 			        ProgramName, nb);
