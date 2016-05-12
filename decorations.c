@@ -1,5 +1,5 @@
 /*
- * Window decoration routiens
+ * Window decoration routines
  */
 
 
