@@ -691,45 +691,50 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, TopRight);
 	Draw3DCorner(tmp_win->frame,
-	             tmp_win->frame_width  - (Scr->TitleHeight + tmp_win->frame_bw3D),
-	             tmp_win->frame_height - (Scr->TitleHeight + tmp_win->frame_bw3D),
+	             tmp_win->frame_width  - CORNERLEN,
+	             tmp_win->frame_height - CORNERLEN,
 	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomRight);
 	Draw3DCorner(tmp_win->frame,
 	             0,
-	             tmp_win->frame_height - (Scr->TitleHeight + tmp_win->frame_bw3D),
+	             tmp_win->frame_height - CORNERLEN,
 	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomLeft);
-#undef CORNERLEN
 
 
 	/*
 	 * And draw the borders on the 4 sides between the corners
 	 */
+	/* Top */
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->title_x + Scr->TitleHeight,
 	             0,
 	             tmp_win->title_width - 2 * Scr->TitleHeight,
 	             tmp_win->frame_bw3D,
 	             Scr->BorderShadowDepth, cp, off, True, False);
+	/* Bottom */
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->frame_bw3D + Scr->TitleHeight,
 	             tmp_win->frame_height - tmp_win->frame_bw3D,
-	             tmp_win->frame_width - 2 * (Scr->TitleHeight + tmp_win->frame_bw3D),
+	             tmp_win->frame_width - 2 * CORNERLEN,
 	             tmp_win->frame_bw3D,
 	             Scr->BorderShadowDepth, cp, off, True, False);
+	/* Left */
 	Draw3DBorder(tmp_win->frame,
 	             0,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             tmp_win->frame_bw3D,
-	             tmp_win->frame_height - 2 * (Scr->TitleHeight + tmp_win->frame_bw3D),
+	             tmp_win->frame_height - 2 * CORNERLEN,
 	             Scr->BorderShadowDepth, cp, off, True, False);
+	/* Right */
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->frame_width  - tmp_win->frame_bw3D,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             tmp_win->frame_bw3D,
-	             tmp_win->frame_height - 2 * (Scr->TitleHeight + tmp_win->frame_bw3D),
+	             tmp_win->frame_height - 2 * CORNERLEN,
 	             Scr->BorderShadowDepth, cp, off, True, False);
+
+#undef CORNERLEN
 
 
 	/*
