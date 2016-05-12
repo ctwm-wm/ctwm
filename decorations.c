@@ -672,7 +672,7 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 
 	/*
 	 * Otherwise, we have to draw corners, which means we have to
-	 * individually draw the 3 side borders between them as well.
+	 * individually draw the 4 side borders between them as well.
 	 *
 	 * So start by laying out the 4 corners.
 	 */
