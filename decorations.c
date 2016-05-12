@@ -643,7 +643,17 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 {
 	ColorPair cp;
 
+	/* Set coloring based on focus/highlight state */
 	cp = (focus && tmp_win->highlight) ? tmp_win->borderC : tmp_win->border_tile;
+
+	/*
+	 * If there's no height to the title bar (e.g., on NoTitle windows),
+	 * there's nothing much to corner around, so we can just border up
+	 * the whole thing.  Since the bordering on the frame is "below" the
+	 * real window, we can just draw one giant square, and then one
+	 * slightly smaller (but still larger than the real-window itself)
+	 * square on top of it, and voila; border!
+	 */
 	if(tmp_win->title_height == 0) {
 		Draw3DBorder(tmp_win->frame,
 		             0,
@@ -659,6 +669,13 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 		             Scr->BorderShadowDepth, cp, on, True, False);
 		return;
 	}
+
+	/*
+	 * Otherwise, we have to draw corners, which means we have to
+	 * individually draw the 3 side borders between them as well.
+	 *
+	 * So start by laying out the 4 corners.
+	 */
 
 	/* How far the corners extend along the sides */
 #define CORNERLEN (Scr->TitleHeight + tmp_win->frame_bw3D)
@@ -685,6 +702,10 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomLeft);
 #undef CORNERLEN
 
+
+	/*
+	 * And draw the borders on the 4 sides between the corners
+	 */
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->title_x + Scr->TitleHeight,
 	             0,
@@ -710,13 +731,23 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 	             tmp_win->frame_height - 2 * (Scr->TitleHeight + tmp_win->frame_bw3D),
 	             Scr->BorderShadowDepth, cp, off, True, False);
 
+
+	/*
+	 * If SqueezeTitle is set for the window, and the window isn't
+	 * squeezed away (whether because it's focused, or it's just not
+	 * squeezed at all), then we need to draw a "top" border onto the
+	 * bare bits of the window to the left/right of where the titlebar
+	 * is.
+	 */
 	if(tmp_win->squeeze_info && !tmp_win->squeezed) {
+		/* To the left */
 		Draw3DBorder(tmp_win->frame,
 		             0,
 		             Scr->TitleHeight,
 		             tmp_win->title_x,
 		             tmp_win->frame_bw3D,
 		             Scr->BorderShadowDepth, cp, off, True, False);
+		/* And the right */
 		Draw3DBorder(tmp_win->frame,
 		             tmp_win->title_x + tmp_win->title_width,
 		             Scr->TitleHeight,
