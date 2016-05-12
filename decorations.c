@@ -35,18 +35,17 @@ static void Draw3DCorner(Window w, int x, int y, int width, int height,
 void
 ComputeTitleLocation(TwmWindow *tmp)
 {
-	tmp->title_x = tmp->frame_bw3D - tmp->frame_bw;
+	/* y position is always the same */
 	tmp->title_y = tmp->frame_bw3D - tmp->frame_bw;
 
+	/* x can vary depending on squeezing */
 	if(tmp->squeeze_info && !tmp->squeezed) {
 		SqueezeInfo *si = tmp->squeeze_info;
 		int basex;
 		int maxwidth = tmp->frame_width;
 		int tw = tmp->title_width + 2 * tmp->frame_bw3D;
 
-		/*
-		 * figure label base from squeeze info (justification fraction)
-		 */
+		/* figure label base from squeeze info (justification fraction) */
 		if(si->denom == 0) {            /* num is pixel based */
 			basex = si->num;
 		}
@@ -57,9 +56,7 @@ ComputeTitleLocation(TwmWindow *tmp)
 			basex += maxwidth;
 		}
 
-		/*
-		 * adjust for left (nop), center, right justify and clip
-		 */
+		/* adjust for left (nop), center, right justify */
 		switch(si->justify) {
 			case J_CENTER:
 				basex -= tw / 2;
@@ -68,6 +65,8 @@ ComputeTitleLocation(TwmWindow *tmp)
 				basex -= tw - 1;
 				break;
 		}
+
+		/* Clip */
 		if(basex > maxwidth - tw) {
 			basex = maxwidth - tw;
 		}
@@ -76,6 +75,9 @@ ComputeTitleLocation(TwmWindow *tmp)
 		}
 
 		tmp->title_x = basex - tmp->frame_bw + tmp->frame_bw3D;
+	}
+	else {
+		tmp->title_x = tmp->frame_bw3D - tmp->frame_bw;
 	}
 }
 
@@ -487,6 +489,11 @@ PaintTitle(TwmWindow *tmp_win)
 	XRectangle logical_rect;
 
 	if(Scr->use3Dtitles) {
+		/*
+		 * If SunkFocusWindowTitle, then we "sink in" the whole title
+		 * window when it's focused.  Otherwise (!SunkFocus || !focused)
+		 * it's popped up.
+		 */
 		if(Scr->SunkFocusWindowTitle && (Scr->Focus == tmp_win) &&
 		                (tmp_win->title_height != 0))
 			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
@@ -501,8 +508,18 @@ PaintTitle(TwmWindow *tmp_win)
 			             Scr->TitleHeight, Scr->TitleShadowDepth,
 			             tmp_win->title, off, True, False);
 	}
+
+	/* Setup the X graphics context for the drawing */
 	FB(tmp_win->title.fore, tmp_win->title.back);
+
+	/* And write in the name */
 	if(Scr->use3Dtitles) {
+		/*
+		 * Do a bunch of trying to chop the length down until it will fit
+		 * into the space.  This doesn't seem to actually accomplish
+		 * anything at the moment, as somehow we wind up with nothing
+		 * visible in the case of a long enough title.
+		 */
 		len    = strlen(tmp_win->name);
 		XmbTextExtents(Scr->TitleBarFont.font_set,
 		               tmp_win->name, strlen(tmp_win->name),
@@ -518,6 +535,12 @@ PaintTitle(TwmWindow *tmp_win)
 			               &ink_rect, &logical_rect);
 			width = logical_rect.width;
 		}
+
+		/*
+		 * Write it in.  The Y position is subtly different from the
+		 * !3Dtitles case due to the potential bordering around it.  It's
+		 * not quite clear whether it should be.
+		 */
 		((Scr->Monochrome != COLOR) ? XmbDrawImageString : XmbDrawString)
 		(dpy, tmp_win->title_w, Scr->TitleBarFont.font_set,
 		 Scr->NormalGC,
@@ -525,17 +548,28 @@ PaintTitle(TwmWindow *tmp_win)
 		 (Scr->TitleHeight - logical_rect.height) / 2 + (- logical_rect.y),
 		 tmp_win->name, len);
 	}
-	else
+	else {
+		/*
+		 * XXX The 3Dtitle case above has attempted correction for a lot of
+		 * stuff.  It's not entirely clear that it's either needed there,
+		 * or not needed here.  It's also not obvious that the magic
+		 * it does to support monochrome isn't applicable here, thought
+		 * it may be a side effect of differences in how the backing
+		 * titlebar is painted.  This requires investigation, and either
+		 * fixing the wrong or documentation of why it's right.
+		 */
 		XmbDrawString(dpy, tmp_win->title_w, Scr->TitleBarFont.font_set,
 		              Scr->NormalGC,
 		              tmp_win->name_x, Scr->TitleBarFont.y,
 		              tmp_win->name, strlen(tmp_win->name));
+	}
 }
 
 
 /*
  * Painting in the buttons on the titlebar
  */
+/* Iterate and show them all */
 void
 PaintTitleButtons(TwmWindow *tmp_win)
 {
@@ -550,8 +584,9 @@ PaintTitleButtons(TwmWindow *tmp_win)
 	}
 }
 
+/* Blit the pixmap into the right place */
 void
-PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw)
+PaintTitleButton(TwmWindow *tmp_win, TBWindow *tbw)
 {
 	TitleButton *tb = tbw->info;
 
