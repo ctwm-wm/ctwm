@@ -581,18 +581,21 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 
 	switch(type) {
 		case 0 :
+			/* Top left */
 			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
 			Draw3DBorder(w, x + thick - bw, y + thick - bw,
 			             width - thick + 2 * bw, height - thick + 2 * bw,
 			             bw, cp, on, True, False);
 			break;
 		case 1 :
+			/* Top right */
 			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
 			Draw3DBorder(w, x, y + thick - bw,
 			             width - thick + bw, height - thick,
 			             bw, cp, on, True, False);
 			break;
 		case 2 :
+			/* Bottom right */
 			rects [0].x      = x + width - thick;
 			rects [0].y      = y;
 			rects [0].width  = thick;
@@ -609,6 +612,7 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 			XSetClipMask(dpy, Scr->BorderGC, None);
 			break;
 		case 3 :
+			/* Bottom left */
 			rects [0].x      = x;
 			rects [0].y      = y;
 			rects [0].width  = thick;
@@ -623,6 +627,11 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 			             width - thick, height - thick + bw,
 			             bw, cp, on, True, False);
 			XSetClipMask(dpy, Scr->BorderGC, None);
+			break;
+		default:
+			/* Bad code */
+			fprintf(stderr, "Internal error: Invalid Draw3DCorner type %d\n",
+			        type);
 			break;
 	}
 	return;
