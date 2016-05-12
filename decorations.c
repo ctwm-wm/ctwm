@@ -659,30 +659,31 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 		             Scr->BorderShadowDepth, cp, on, True, False);
 		return;
 	}
+
+	/* How far the corners extend along the sides */
+#define CORNERLEN (Scr->TitleHeight + tmp_win->frame_bw3D)
+
 	Draw3DCorner(tmp_win->frame,
 	             tmp_win->title_x - tmp_win->frame_bw3D,
 	             0,
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
+	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, TopLeft);
 	Draw3DCorner(tmp_win->frame,
 	             tmp_win->title_x + tmp_win->title_width - Scr->TitleHeight,
 	             0,
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
+	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, TopRight);
 	Draw3DCorner(tmp_win->frame,
 	             tmp_win->frame_width  - (Scr->TitleHeight + tmp_win->frame_bw3D),
 	             tmp_win->frame_height - (Scr->TitleHeight + tmp_win->frame_bw3D),
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
+	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomRight);
 	Draw3DCorner(tmp_win->frame,
 	             0,
 	             tmp_win->frame_height - (Scr->TitleHeight + tmp_win->frame_bw3D),
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             Scr->TitleHeight + tmp_win->frame_bw3D,
+	             CORNERLEN, CORNERLEN,
 	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomLeft);
+#undef CORNERLEN
 
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->title_x + Scr->TitleHeight,
