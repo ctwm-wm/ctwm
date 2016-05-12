@@ -15,9 +15,10 @@
 #include "decorations.h"
 
 
-/* Internal funcs */
+/* Internal bits */
+typedef enum { TopLeft, TopRight, BottomRight, BottomLeft } CornerType;
 static void Draw3DCorner(Window w, int x, int y, int width, int height,
-                         int thick, int bw, ColorPair cp, int type);
+                         int thick, int bw, ColorPair cp, CornerType type);
 
 
 
@@ -575,27 +576,24 @@ PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw)
  */
 static void
 Draw3DCorner(Window w, int x, int y, int width, int height,
-             int thick, int bw, ColorPair cp, int type)
+             int thick, int bw, ColorPair cp, CornerType type)
 {
 	XRectangle rects [2];
 
 	switch(type) {
-		case 0 :
-			/* Top left */
+		case TopLeft:
 			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
 			Draw3DBorder(w, x + thick - bw, y + thick - bw,
 			             width - thick + 2 * bw, height - thick + 2 * bw,
 			             bw, cp, on, True, False);
 			break;
-		case 1 :
-			/* Top right */
+		case TopRight:
 			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
 			Draw3DBorder(w, x, y + thick - bw,
 			             width - thick + bw, height - thick,
 			             bw, cp, on, True, False);
 			break;
-		case 2 :
-			/* Bottom right */
+		case BottomRight:
 			rects [0].x      = x + width - thick;
 			rects [0].y      = y;
 			rects [0].width  = thick;
@@ -611,8 +609,7 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 			             bw, cp, on, True, False);
 			XSetClipMask(dpy, Scr->BorderGC, None);
 			break;
-		case 3 :
-			/* Bottom left */
+		case BottomLeft:
 			rects [0].x      = x;
 			rects [0].y      = y;
 			rects [0].width  = thick;
@@ -667,25 +664,25 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 	             0,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, 0);
+	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, TopLeft);
 	Draw3DCorner(tmp_win->frame,
 	             tmp_win->title_x + tmp_win->title_width - Scr->TitleHeight,
 	             0,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, 1);
+	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, TopRight);
 	Draw3DCorner(tmp_win->frame,
 	             tmp_win->frame_width  - (Scr->TitleHeight + tmp_win->frame_bw3D),
 	             tmp_win->frame_height - (Scr->TitleHeight + tmp_win->frame_bw3D),
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, 2);
+	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomRight);
 	Draw3DCorner(tmp_win->frame,
 	             0,
 	             tmp_win->frame_height - (Scr->TitleHeight + tmp_win->frame_bw3D),
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
-	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, 3);
+	             tmp_win->frame_bw3D, Scr->BorderShadowDepth, cp, BottomLeft);
 
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->title_x + Scr->TitleHeight,
