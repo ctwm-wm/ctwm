@@ -1163,3 +1163,71 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 		             Scr->BorderShadowDepth, cp, off, True, False);
 	}
 }
+
+
+
+/*
+ * End of code.  Random doc/notes follow.
+ */
+
+
+/*
+ * n.b.: Old doc about squeezed title.  Not recently vetted.  I'm pretty
+ * sure it's definitely wrong for the 3D-borders case at the least.
+ * Should be updated and migrated into developer docs at some point.
+ *
+ * Squeezed Title:
+ *
+ *                         tmp->title_x
+ *                   0     |
+ *  tmp->title_y   ........+--------------+.........  -+,- tmp->frame_bw
+ *             0   : ......| +----------+ |....... :  -++
+ *                 : :     | |          | |      : :   ||-Scr->TitleHeight
+ *                 : :     | |          | |      : :   ||
+ *                 +-------+ +----------+ +--------+  -+|-tmp->title_height
+ *                 | +---------------------------+ |  --+
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | +---------------------------+ |
+ *                 +-------------------------------+
+ *
+ *
+ * Unsqueezed Title:
+ *
+ *                 tmp->title_x
+ *                 | 0
+ *  tmp->title_y   +-------------------------------+  -+,tmp->frame_bw
+ *             0   | +---------------------------+ |  -+'
+ *                 | |                           | |   |-Scr->TitleHeight
+ *                 | |                           | |   |
+ *                 + +---------------------------+ +  -+
+ *                 |-+---------------------------+-|
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | |                           | |
+ *                 | +---------------------------+ |
+ *                 +-------------------------------+
+ *
+ *
+ *
+ * Dimensions and Positions:
+ *
+ *     frame orgin                 (0, 0)
+ *     frame upper left border     (-tmp->frame_bw, -tmp->frame_bw)
+ *     frame size w/o border       tmp->frame_width , tmp->frame_height
+ *     frame/title border width    tmp->frame_bw
+ *     extra title height w/o bdr  tmp->title_height = TitleHeight + frame_bw
+ *     title window height         Scr->TitleHeight
+ *     title origin w/o border     (tmp->title_x, tmp->title_y)
+ *     client origin               (0, Scr->TitleHeight + tmp->frame_bw)
+ *     client size                 tmp->attr.width , tmp->attr.height
+ *
+ * When shaping, need to remember that the width and height of rectangles
+ * are really deltax and deltay to lower right handle corner, so they need
+ * to have -1 subtracted from would normally be the actual extents.
+ */
