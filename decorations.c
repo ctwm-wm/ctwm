@@ -6,6 +6,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "gram.tab.h"
 #include "image.h"
@@ -17,7 +18,7 @@
 
 /* Internal bits */
 static void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
-                                      Bool squeeze);
+                                      bool squeeze);
 
 typedef enum { TopLeft, TopRight, BottomRight, BottomLeft } CornerType;
 static void Draw3DCorner(Window w, int x, int y, int width, int height,
@@ -121,7 +122,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	xwcm = CWWidth;
 	title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
 	title_height = Scr->TitleHeight + bw;
-	ComputeWindowTitleOffsets(tmp_win, xwc.width, True);
+	ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
 
 	reShape = (tmp_win->wShaped ? TRUE : FALSE);
 	if(tmp_win->squeeze_info/* && !tmp_win->squeezed*/) {       /* check for title shaping */
@@ -475,7 +476,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	 * create the title bar windows; let the event handler deal with painting
 	 * so that we don't have to spend two pixmaps (or deal with hashing)
 	 */
-	ComputeWindowTitleOffsets(tmp_win, tmp_win->attr.width, False);
+	ComputeWindowTitleOffsets(tmp_win, tmp_win->attr.width, false);
 
 	leftx = y = Scr->TBInfo.leftx;
 	rightx = tmp_win->rightx;
@@ -577,7 +578,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  * For a particular window, called during the AddWindow() process.
  */
 static void
-ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, Bool squeeze)
+ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 {
 	int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;
 
