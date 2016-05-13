@@ -1433,7 +1433,9 @@ OpaqueResize [{ `window-list` }]::
   `NoOpaqueResize` counterpart is also available.
 
 OpaqueResizeThreshold `threshold`::
-  The resize version of `OpaqueMoveThreshold`.
+  The resize version of `OpaqueMoveThreshold`.  The default is 1000.
+  Since 3.8.1, values >= 1000 are treated as infinity, causing all
+  windows to always `OpaqueResize` if eligible.
 
 OpenWindowTimeout `seconds`::
   seconds is an integer representing a number of second. When a window
