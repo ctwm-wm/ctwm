@@ -16,6 +16,9 @@
 
 
 /* Internal bits */
+static void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
+                                      Bool squeeze);
+
 typedef enum { TopLeft, TopRight, BottomRight, BottomLeft } CornerType;
 static void Draw3DCorner(Window w, int x, int y, int width, int height,
                          int thick, int bw, ColorPair cp, CornerType type);
@@ -573,7 +576,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  *
  * For a particular window, called during the AddWindow() process.
  */
-void
+static void
 ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, Bool squeeze)
 {
 	int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;

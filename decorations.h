@@ -14,8 +14,6 @@ void SetFrameShape(TwmWindow *tmp);
 
 void ComputeTitleLocation(TwmWindow *tmp);
 void CreateWindowTitlebarButtons(TwmWindow *tmp_win);
-void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
-                               Bool squeeze);
 void CreateHighlightWindows(TwmWindow *tmp_win);
 void DeleteHighlightWindows(TwmWindow *tmp_win);
 void CreateLowlightWindows(TwmWindow *tmp_win);
