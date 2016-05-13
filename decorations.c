@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "gram.tab.h"
 #include "image.h"
@@ -66,7 +67,6 @@ void
 SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
            bool sendEvent)        /* whether or not to force a send */
 {
-	XEvent client_event;
 	XWindowChanges frame_wc, xwc;
 	unsigned long frame_mask, xwcm;
 	int title_width, title_height;
@@ -286,6 +286,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 	WMapSetupWindow(tmp_win, x, y, w, h);
 	if(sendEvent) {
+		XEvent client_event;
+
+		memset(&client_event, 0, sizeof(client_event));  // JIC
+
 		client_event.type = ConfigureNotify;
 		client_event.xconfigure.display = dpy;
 		client_event.xconfigure.event = tmp_win->w;
