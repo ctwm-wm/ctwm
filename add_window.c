@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <sys/time.h>
 #include <X11/Xatom.h>
@@ -1443,7 +1444,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->mapped = FALSE;
 
 	SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-	           tmp_win->frame_width, tmp_win->frame_height, -1, True);
+	           tmp_win->frame_width, tmp_win->frame_height, -1, true);
 
 	/* wait until the window is iconified and the icon window is mapped
 	 * before creating the icon window

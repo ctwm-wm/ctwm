@@ -59,12 +59,12 @@ static void Draw3DCorner(Window w, int x, int y, int width, int height,
 void
 SetupWindow(TwmWindow *tmp_win, int x, int y, int w, int h, int bw)
 {
-	SetupFrame(tmp_win, x, y, w, h, bw, False);
+	SetupFrame(tmp_win, x, y, w, h, bw, false);
 }
 
 void
 SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
-           Bool sendEvent)        /* whether or not to force a send */
+           bool sendEvent)        /* whether or not to force a send */
 {
 	XEvent client_event;
 	XWindowChanges frame_wc, xwc;

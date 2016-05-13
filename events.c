@@ -4210,7 +4210,7 @@ void HandleConfigureRequest(void)
 	int x, y, width, height, bw;
 	int gravx, gravy;
 	XConfigureRequestEvent *cre = &Event.xconfigurerequest;
-	Bool sendEvent;
+	bool sendEvent;
 
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "ConfigureRequest\n");
@@ -4259,7 +4259,7 @@ void HandleConfigureRequest(void)
 		return;
 	}
 
-	sendEvent = False;
+	sendEvent = false;
 	if((cre->value_mask & CWStackMode) && Tmp_win->stackmode) {
 		TwmWindow *otherwin;
 
@@ -4289,7 +4289,7 @@ void HandleConfigureRequest(void)
 					;
 			}
 		}
-		sendEvent = True;
+		sendEvent = true;
 	}
 
 
@@ -4352,7 +4352,7 @@ void HandleConfigureRequest(void)
 	 * UseThreeDBorders or BorderWidth 0 is set.)
 	 */
 	if(!bw) {
-		sendEvent = True;
+		sendEvent = true;
 	}
 
 	/*

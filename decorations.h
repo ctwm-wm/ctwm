@@ -5,11 +5,13 @@
 #ifndef _CTWM_DECORATIONS_H
 #define _CTWM_DECORATIONS_H
 
+#include <stdbool.h>
+
 
 void SetupWindow(TwmWindow *tmp_win,
                  int x, int y, int w, int h, int bw);
 void SetupFrame(TwmWindow *tmp_win,
-                int x, int y, int w, int h, int bw, Bool sendEvent);
+                int x, int y, int w, int h, int bw, bool sendEvent);
 void SetFrameShape(TwmWindow *tmp);
 
 void ComputeTitleLocation(TwmWindow *tmp);
