@@ -631,7 +631,7 @@ pixmap_entries	: /* Empty */
 		| pixmap_entries pixmap_entry
 		;
 
-pixmap_entry	: TITLE_HILITE string { SetHighlightPixmap ($2); }
+pixmap_entry	: TITLE_HILITE string { Scr->HighlightPixmapName = strdup($2); }
 		;
 
 

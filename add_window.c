@@ -1775,12 +1775,6 @@ void GrabKeys(TwmWindow *tmp_win)
 
 
 
-void SetHighlightPixmap(char *filename)
-{
-	Scr->HighlightPixmapName = (char *) strdup(filename);
-}
-
-
 void FetchWmProtocols(TwmWindow *tmp)
 {
 	unsigned long flags = 0L;

@@ -92,7 +92,6 @@ extern int AddingY;
 extern unsigned int AddingW;
 extern unsigned int AddingH;
 
-extern void SetHighlightPixmap(char *filename);
 extern void FetchWmColormapWindows(TwmWindow *tmp);
 extern void FetchWmProtocols(TwmWindow *tmp);
 
