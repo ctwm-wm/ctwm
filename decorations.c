@@ -70,7 +70,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	XWindowChanges frame_wc, xwc;
 	unsigned long frame_mask, xwcm;
 	int title_width, title_height;
-	int reShape;
+	bool reShape;
 
 #ifdef DEBUG
 	fprintf(stderr, "SetupWindow: x=%d, y=%d, w=%d, h=%d, bw=%d\n",
@@ -116,7 +116,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	if(((x != tmp_win->frame_x || y != tmp_win->frame_y) &&
 	                (w == tmp_win->frame_width && h == tmp_win->frame_height)) ||
 	                (bw != tmp_win->frame_bw)) {
-		sendEvent = TRUE;
+		sendEvent = true;
 	}
 
 	xwcm = CWWidth;
@@ -124,7 +124,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	title_height = Scr->TitleHeight + bw;
 	ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
 
-	reShape = (tmp_win->wShaped ? TRUE : FALSE);
+	reShape = (tmp_win->wShaped ? true : false);
 	if(tmp_win->squeeze_info/* && !tmp_win->squeezed*/) {       /* check for title shaping */
 		title_width = tmp_win->rightx + Scr->TBInfo.rightoff;
 		if(title_width < xwc.width) {
@@ -133,12 +133,12 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			                tmp_win->frame_width != w ||
 			                tmp_win->frame_bw != bw ||
 			                title_width != tmp_win->title_width) {
-				reShape = TRUE;
+				reShape = true;
 			}
 		}
 		else {
 			if(!tmp_win->wShaped) {
-				reShape = TRUE;
+				reShape = true;
 			}
 			title_width = xwc.width;
 		}
