@@ -100,6 +100,8 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		if((y + h + bw <= 0)) {
 			y = -h + MARGIN;
 		}
+
+#undef MARGIN
 	}
 
 	if(tmp_win->iconmgr) {
