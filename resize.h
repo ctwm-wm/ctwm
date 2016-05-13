@@ -76,11 +76,6 @@ extern void DoResize(int x_root, int y_root, TwmWindow *tmp_win);
 extern void EndResize(void);
 extern void MenuEndResize(TwmWindow *tmp_win);
 extern void AddEndResize(TwmWindow *tmp_win);
-extern void SetupWindow(TwmWindow *tmp_win,
-                        int x, int y, int w, int h, int bw);
-extern void SetupFrame(TwmWindow *tmp_win,
-                       int x, int y, int w, int h, int bw,
-                       Bool sendEvent);
 extern void ConstrainSize(TwmWindow *tmp_win, unsigned
                           int *widthp, unsigned int *heightp);
 
@@ -88,7 +83,6 @@ extern void fullzoom(TwmWindow *tmp_win, int func);
 extern void unzoom(TwmWindow *tmp_win);
 extern void savegeometry(TwmWindow *tmp_win);
 extern void restoregeometry(TwmWindow *tmp_win);
-extern void SetFrameShape(TwmWindow *tmp);
 
 extern void ChangeSize(char *in_string, TwmWindow *tmp_win);
 

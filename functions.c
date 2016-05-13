@@ -16,6 +16,7 @@
 #include "ctopts.h"
 #include "ctwm_atoms.h"
 #include "cursor.h"
+#include "decorations.h"
 #include "events.h"
 #include "icons.h"
 #include "menus.h"

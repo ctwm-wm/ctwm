@@ -6,6 +6,12 @@
 #define _CTWM_DECORATIONS_H
 
 
+void SetupWindow(TwmWindow *tmp_win,
+                 int x, int y, int w, int h, int bw);
+void SetupFrame(TwmWindow *tmp_win,
+                int x, int y, int w, int h, int bw, Bool sendEvent);
+void SetFrameShape(TwmWindow *tmp);
+
 void ComputeTitleLocation(TwmWindow *tmp);
 void CreateWindowTitlebarButtons(TwmWindow *tmp_win);
 void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
