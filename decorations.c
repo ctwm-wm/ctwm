@@ -73,7 +73,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	bool reShape;
 
 #ifdef DEBUG
-	fprintf(stderr, "SetupWindow: x=%d, y=%d, w=%d, h=%d, bw=%d\n",
+	fprintf(stderr, "SetupFrame: x=%d, y=%d, w=%d, h=%d, bw=%d\n",
 	        x, y, w, h, bw);
 #endif
 
