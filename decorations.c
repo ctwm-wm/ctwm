@@ -83,29 +83,23 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 
 
-	{
-		int scrw, scrh;
-
-		scrw = Scr->rootw;
-		scrh = Scr->rooth;
-
 #define MARGIN  16                      /* one "average" cursor width */
 
-		if(x >= scrw) {
-			x = scrw - MARGIN;
-		}
-		if(y >= scrh) {
-			y = scrh - MARGIN;
-		}
-		if((x + w + bw <= 0)) {
-			x = -w + MARGIN;
-		}
-		if((y + h + bw <= 0)) {
-			y = -h + MARGIN;
-		}
+	if(x >= Scr->rootw) {
+		x = Scr->rootw - MARGIN;
+	}
+	if(y >= Scr->rooth) {
+		y = Scr->rooth - MARGIN;
+	}
+	if((x + w + bw <= 0)) {
+		x = -w + MARGIN;
+	}
+	if((y + h + bw <= 0)) {
+		y = -h + MARGIN;
+	}
 
 #undef MARGIN
-	}
+
 
 	if(tmp_win->iconmgr) {
 		tmp_win->iconmgrp->width = w - (2 * tmp_win->frame_bw3D);
