@@ -83,14 +83,29 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 
 
-#define MARGIN  16                      /* one "average" cursor width */
+	/*
+	 * Set some bounds on the window location, to be sure part of it is
+	 * visible.
+	 */
+#define MARGIN 16  /* one "average" cursor width */
 
+	/*
+	 * (x,y) is the top left of the window.  Make sure it's not off the
+	 * right or bottom of the screen
+	 */
 	if(x >= Scr->rootw) {
 		x = Scr->rootw - MARGIN;
 	}
 	if(y >= Scr->rooth) {
 		y = Scr->rooth - MARGIN;
 	}
+
+	/*
+	 * Make sure the bottom right isn't off the left or top of the
+	 * screen.
+	 *
+	 * XXX Should this be 2*bw?
+	 */
 	if((x + w + bw <= 0)) {
 		x = -w + MARGIN;
 	}
@@ -101,6 +116,15 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 #undef MARGIN
 
 
+	/*
+	 * Do some magic if the window being Setup'd is an icon manager.  The
+	 * width of an icon manager is variable, so something changing the
+	 * width of the window needs to pass that info down to the control
+	 * struct for the iconmgr.  The height is solely determined by its
+	 * contents though, so the h we're passed actually needs to be
+	 * overridden based on how tall the iconmgr itself thinks it should
+	 * be.
+	 */
 	if(tmp_win->iconmgr) {
 		tmp_win->iconmgrp->width = w - (2 * tmp_win->frame_bw3D);
 		h = tmp_win->iconmgrp->height + tmp_win->title_height +
