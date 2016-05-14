@@ -638,10 +638,9 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  * For a particular window, called during the AddWindow() process, and
  * also via Setup{Window,Frame}().
  *
- * This sets ->name_x (x offset for writing the name),
- * ->highlightx[lr] (x offset for left/right hilite windows), and
- *  ->rightx (x offset for the right buttons), all relative to the title
- *  window.
+ * This sets w->name_x (x offset for writing the name), w->highlightx[lr]
+ * (x offset for left/right hilite windows), and w->rightx (x offset for
+ * the right buttons), all relative to the title window.
  */
 static void
 ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
