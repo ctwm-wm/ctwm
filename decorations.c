@@ -114,6 +114,9 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * According to the July 27, 1988 ICCCM draft, we should send a
 	 * "synthetic" ConfigureNotify event to the client if the window
 	 * was moved but not resized.
+	 *
+	 * In section "4.2.3 Window Move" in ICCCM 2.0.  x-ref
+	 * <https://tronche.com/gui/x/icccm/sec-4.html#s-4.2.3>
 	 */
 	if(((x != tmp_win->frame_x || y != tmp_win->frame_y) &&
 	                (w == tmp_win->frame_width && h == tmp_win->frame_height)) ||
