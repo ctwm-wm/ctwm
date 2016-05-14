@@ -259,6 +259,23 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			xwcm = CWX | CWWidth;
 			XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
 		}
+		if(tmp_win->lolite_wl) {
+			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
+			if(Scr->use3Dtitles) {
+				xwc.width -= 4;
+			}
+			if(xwc.width <= 0) {
+				xwc.x = Scr->rootw;        /* move offscreen */
+				xwc.width = 1;
+			}
+			else {
+				xwc.x = tmp_win->highlightxl;
+			}
+
+			xwcm = CWX | CWWidth;
+			XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
+		}
+
 		if(tmp_win->hilite_wr) {
 			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
 			if(Scr->TBInfo.nright > 0) {
@@ -277,22 +294,6 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 
 			xwcm = CWX | CWWidth;
 			XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
-		}
-		if(tmp_win->lolite_wl) {
-			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
-			if(Scr->use3Dtitles) {
-				xwc.width -= 4;
-			}
-			if(xwc.width <= 0) {
-				xwc.x = Scr->rootw;        /* move offscreen */
-				xwc.width = 1;
-			}
-			else {
-				xwc.x = tmp_win->highlightxl;
-			}
-
-			xwcm = CWX | CWWidth;
-			XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
 		}
 		if(tmp_win->lolite_wr) {
 			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
