@@ -77,9 +77,12 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	        x, y, w, h, bw);
 #endif
 
+	/* Negative border width is a magic value for "use current frame's" */
 	if(bw < 0) {
-		bw = tmp_win->frame_bw;        /* -1 means current frame width */
+		bw = tmp_win->frame_bw;
 	}
+
+
 	{
 		int scrw, scrh;
 
