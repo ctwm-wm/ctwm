@@ -635,13 +635,31 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  * Figure out where the window title and the hi/lolite windows go within
  * the titlebar as a whole.
  *
- * For a particular window, called during the AddWindow() process.
+ * For a particular window, called during the AddWindow() process, and
+ * also via Setup{Window,Frame}().
+ *
+ * This sets ->name_x (x offset for writing the name),
+ * ->highlightx[lr] (x offset for left/right hilite windows), and
+ *  ->rightx (x offset for the right buttons), all relative to the title
+ *  window.
  */
 static void
 ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 {
 	int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;
 
+	/*
+	 * First figure where the window name goes, depending on
+	 * TitleJustification.  If it's on the left/right, and we're using 3d
+	 * titles, we have to move it past the TitleShadowDepth, plus a
+	 * little extra for visual padding.
+	 *
+	 * If it's in the middle, we just center on the middle of the
+	 * name, without taking into account what that will do if the name is
+	 * "too long" for our space, which causes really bad side effects.
+	 * The fixing below at least theoretically fixes that, though other
+	 * parts of the drawing will still cause Bad Side Effects.
+	 */
 	switch(Scr->TitleJustification) {
 		case J_LEFT :
 			tmp_win->name_x = Scr->TBInfo.titlex;
@@ -659,6 +677,15 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 			}
 			break;
 	}
+
+	/*
+	 * Adjust for sanity.  Make sure it's always no earlier than the
+	 * start of the titlebar (possible especially in the J_CENTER case,
+	 * but also theoretically if you set a negative ShadowDepth, which
+	 * would be stupid and might break other stuff).  In the 3d case,
+	 * allow twice the ShadowDepth (once for the shadow itself, the
+	 * second time for visual padding).
+	 */
 	if(Scr->use3Dtitles) {
 		if(tmp_win->name_x < (Scr->TBInfo.titlex + 2 * Scr->TitleShadowDepth)) {
 			tmp_win->name_x = Scr->TBInfo.titlex + 2 * Scr->TitleShadowDepth;
@@ -667,15 +694,52 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	else if(tmp_win->name_x < Scr->TBInfo.titlex) {
 		tmp_win->name_x = Scr->TBInfo.titlex;
 	}
-	tmp_win->highlightxl = Scr->TBInfo.titlex;
-	tmp_win->highlightxr = tmp_win->name_x + tmp_win->name_width + 2;
 
+
+	/*
+	 * Left hilite window starts at the left side, plus some space for a
+	 * shadow for 3d effects.  That's easy.
+	 */
+	tmp_win->highlightxl = Scr->TBInfo.titlex;
 	if(Scr->use3Dtitles) {
 		tmp_win->highlightxl += Scr->TitleShadowDepth;
+	}
+
+	/*
+	 * Right hilite window starts after the window name.
+	 *
+	 * With ThreeDTitles, add +2 to match the spacing added onto the left
+	 * size of name_x above.
+	 *
+	 * If there's a window to show for the hilite, and there are buttons
+	 * for the right side, we move it over even further.  This
+	 * particularly causes extra blank space between the name and hilite
+	 * bar in the !(UseThreeDTitles) case (because TitlePadding is >0 by
+	 * default there).  I'm not sure why this is here.  I seem to get
+	 * better results in both 3D/!3D cases by unconditionally doing the
+	 * +=2, and never adding the TitlePadding.  Perhaps it should be
+	 * changed?
+	 */
+	tmp_win->highlightxr = tmp_win->name_x + tmp_win->name_width;
+	if(Scr->use3Dtitles) {
+		tmp_win->highlightxr += 2;
 	}
 	if(tmp_win->hilite_wr || Scr->TBInfo.nright > 0) {
 		tmp_win->highlightxr += Scr->TitlePadding;
 	}
+
+
+	/*
+	 * rightoff tells us how much space we need on the right for the
+	 * buttons, a little math with the width tells us how far in from the
+	 * left to start for that.
+	 *
+	 * However, if the title bar is squeezed and the window's up, the
+	 * titlebar width will be smaller than our 'width' var (which
+	 * describes the window as a whole), so we have to make sure it can't
+	 * be too far.  So start where the right hilite window goes, with a
+	 * little space for it to show up, plus misc padding.
+	 */
 	tmp_win->rightx = width - Scr->TBInfo.rightoff;
 	if(squeeze && tmp_win->squeeze_info && !tmp_win->squeezed) {
 		int rx = (tmp_win->highlightxr
