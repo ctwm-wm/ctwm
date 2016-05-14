@@ -67,8 +67,8 @@ void
 SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
            bool sendEvent)        /* whether or not to force a send */
 {
-	XWindowChanges frame_wc, xwc;
-	unsigned int frame_mask, xwcm;
+	XWindowChanges xwc;
+	unsigned int xwcm;
 	int title_width, title_height;
 	bool reShape;
 
@@ -205,35 +205,41 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			tmp_win->actual_frame_y += y - tmp_win->frame_y;
 		}
 	}
+
 	/*
 	 * fix up frame and assign size/location values in tmp_win
 	 */
-	frame_mask = 0;
-	if(bw != tmp_win->frame_bw) {
-		frame_wc.border_width = tmp_win->frame_bw = bw;
-		if(bw == 0) {
-			tmp_win->frame_bw3D = 0;
-		}
-		frame_mask |= CWBorderWidth;
-	}
-	tmp_win->frame_x = x;
-	tmp_win->frame_y = y;
-	if(tmp_win->UnmapByMovingFarAway && !visible(tmp_win)) {
-		frame_wc.x = Scr->rootw  + 1;
-		frame_wc.y = Scr->rooth + 1;
-	}
-	else {
-		frame_wc.x = tmp_win->frame_x;
-		frame_wc.y = tmp_win->frame_y;
-	}
-	frame_wc.width = tmp_win->frame_width = w;
-	frame_wc.height = tmp_win->frame_height = h;
-	frame_mask |= (CWX | CWY | CWWidth | CWHeight);
-	XConfigureWindow(dpy, tmp_win->frame, frame_mask, &frame_wc);
+	{
+		XWindowChanges frame_wc;
+		unsigned int frame_mask;
 
-	XMoveResizeWindow(dpy, tmp_win->w, tmp_win->frame_bw3D,
-	                  tmp_win->title_height + tmp_win->frame_bw3D,
-	                  tmp_win->attr.width, tmp_win->attr.height);
+		frame_mask = 0;
+		if(bw != tmp_win->frame_bw) {
+			frame_wc.border_width = tmp_win->frame_bw = bw;
+			if(bw == 0) {
+				tmp_win->frame_bw3D = 0;
+			}
+			frame_mask |= CWBorderWidth;
+		}
+		tmp_win->frame_x = x;
+		tmp_win->frame_y = y;
+		if(tmp_win->UnmapByMovingFarAway && !visible(tmp_win)) {
+			frame_wc.x = Scr->rootw  + 1;
+			frame_wc.y = Scr->rooth + 1;
+		}
+		else {
+			frame_wc.x = tmp_win->frame_x;
+			frame_wc.y = tmp_win->frame_y;
+		}
+		frame_wc.width = tmp_win->frame_width = w;
+		frame_wc.height = tmp_win->frame_height = h;
+		frame_mask |= (CWX | CWY | CWWidth | CWHeight);
+		XConfigureWindow(dpy, tmp_win->frame, frame_mask, &frame_wc);
+
+		XMoveResizeWindow(dpy, tmp_win->w, tmp_win->frame_bw3D,
+		                  tmp_win->title_height + tmp_win->frame_bw3D,
+		                  tmp_win->attr.width, tmp_win->attr.height);
+	}
 
 	/*
 	 * fix up highlight window
