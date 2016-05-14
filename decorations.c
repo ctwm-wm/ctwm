@@ -277,13 +277,20 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		}
 
 		if(tmp_win->hilite_wr) {
+			/* Full width is from the *lite window start to buttons start */
 			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
+
+			/* If there are buttons to our right, cut down for the padding */
 			if(Scr->TBInfo.nright > 0) {
 				xwc.width -= 2 * Scr->TitlePadding;
 			}
+
+			/* ??? */
 			if(Scr->use3Dtitles) {
 				xwc.width -= Scr->TitleButtonShadowDepth;
 			}
+
+			/* Move offscreen if it's got no width to display, else place */
 			if(xwc.width <= 0) {
 				xwc.x = Scr->rootw; /* move offscreen */
 				xwc.width = 1;
