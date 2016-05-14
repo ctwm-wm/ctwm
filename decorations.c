@@ -455,6 +455,9 @@ SetFrameShape(TwmWindow *tmp)
  * ComputeTitleLocation - calculate the position of the title window; we need
  * to take the frame_bw into account since we want (0,0) of the title window
  * to line up with (0,0) of the frame window.
+ *
+ * This sets ->title_[xy], which are the (x,y) of the ->title_w relative
+ * to the frame window.
  */
 void
 ComputeTitleLocation(TwmWindow *tmp)
