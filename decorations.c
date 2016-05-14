@@ -242,75 +242,79 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 
 	/*
-	 * fix up highlight window
+	 * If there's a titlebar, we may have hilight/lolight windows in it
+	 * to fix up.
 	 */
-	if(tmp_win->title_height && tmp_win->hilite_wl) {
-		xwc.width = (tmp_win->name_x - tmp_win->highlightxl - 2);
-		if(xwc.width <= 0) {
-			xwc.x = Scr->rootw; /* move offscreen */
-			xwc.width = 1;
-		}
-		else {
-			xwc.x = tmp_win->highlightxl;
-		}
+	if(tmp_win->title_height) {
+		if(tmp_win->hilite_wl) {
+			xwc.width = (tmp_win->name_x - tmp_win->highlightxl - 2);
+			if(xwc.width <= 0) {
+				xwc.x = Scr->rootw; /* move offscreen */
+				xwc.width = 1;
+			}
+			else {
+				xwc.x = tmp_win->highlightxl;
+			}
 
-		xwcm = CWX | CWWidth;
-		XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
-	}
-	if(tmp_win->title_height && tmp_win->hilite_wr) {
-		xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
-		if(Scr->TBInfo.nright > 0) {
-			xwc.width -= 2 * Scr->TitlePadding;
+			xwcm = CWX | CWWidth;
+			XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
 		}
-		if(Scr->use3Dtitles) {
-			xwc.width -= Scr->TitleButtonShadowDepth;
-		}
-		if(xwc.width <= 0) {
-			xwc.x = Scr->rootw; /* move offscreen */
-			xwc.width = 1;
-		}
-		else {
-			xwc.x = tmp_win->highlightxr;
-		}
+		if(tmp_win->hilite_wr) {
+			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
+			if(Scr->TBInfo.nright > 0) {
+				xwc.width -= 2 * Scr->TitlePadding;
+			}
+			if(Scr->use3Dtitles) {
+				xwc.width -= Scr->TitleButtonShadowDepth;
+			}
+			if(xwc.width <= 0) {
+				xwc.x = Scr->rootw; /* move offscreen */
+				xwc.width = 1;
+			}
+			else {
+				xwc.x = tmp_win->highlightxr;
+			}
 
-		xwcm = CWX | CWWidth;
-		XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
-	}
-	if(tmp_win->title_height && tmp_win->lolite_wl) {
-		xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
-		if(Scr->use3Dtitles) {
-			xwc.width -= 4;
+			xwcm = CWX | CWWidth;
+			XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
 		}
-		if(xwc.width <= 0) {
-			xwc.x = Scr->rootw;        /* move offscreen */
-			xwc.width = 1;
-		}
-		else {
-			xwc.x = tmp_win->highlightxl;
-		}
+		if(tmp_win->lolite_wl) {
+			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
+			if(Scr->use3Dtitles) {
+				xwc.width -= 4;
+			}
+			if(xwc.width <= 0) {
+				xwc.x = Scr->rootw;        /* move offscreen */
+				xwc.width = 1;
+			}
+			else {
+				xwc.x = tmp_win->highlightxl;
+			}
 
-		xwcm = CWX | CWWidth;
-		XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
-	}
-	if(tmp_win->title_height && tmp_win->lolite_wr) {
-		xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
-		if(Scr->TBInfo.nright > 0) {
-			xwc.width -= Scr->TitlePadding;
+			xwcm = CWX | CWWidth;
+			XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
 		}
-		if(Scr->use3Dtitles) {
-			xwc.width -= 4;
-		}
-		if(xwc.width <= 0) {
-			xwc.x = Scr->rootw;        /* move offscreen */
-			xwc.width = 1;
-		}
-		else {
-			xwc.x = tmp_win->highlightxr;
-		}
+		if(tmp_win->lolite_wr) {
+			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
+			if(Scr->TBInfo.nright > 0) {
+				xwc.width -= Scr->TitlePadding;
+			}
+			if(Scr->use3Dtitles) {
+				xwc.width -= 4;
+			}
+			if(xwc.width <= 0) {
+				xwc.x = Scr->rootw;        /* move offscreen */
+				xwc.width = 1;
+			}
+			else {
+				xwc.x = tmp_win->highlightxr;
+			}
 
-		xwcm = CWX | CWWidth;
-		XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
+			xwcm = CWX | CWWidth;
+			XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
+		}
 	}
+
 	if(HasShape && reShape) {
 		SetFrameShape(tmp_win);
 	}
