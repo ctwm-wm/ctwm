@@ -645,6 +645,10 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 static void
 ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 {
+	/*
+	 * Space available for the window title for calculating name_x.
+	 * (window width) - (space reserved l and r for buttons)
+	 */
 	int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;
 
 	/*
