@@ -141,20 +141,40 @@ ComputeCommonTitleOffsets(void)
 {
 	int buttonwidth = (Scr->TBInfo.width + Scr->TBInfo.pad);
 
+	/* Start "+left" and "-right" with our padding */
 	Scr->TBInfo.leftx = Scr->TBInfo.rightoff = Scr->FramePadding;
-	if(Scr->TBInfo.nleft  > 0) {
-		Scr->TBInfo.leftx    += Scr->ButtonIndent;
+
+	/*
+	 * If there are buttons on the left, add a space to clear the right
+	 * edge of the last one.
+	 */
+	if(Scr->TBInfo.nleft > 0) {
+		Scr->TBInfo.leftx += Scr->ButtonIndent;
 	}
+
+	/*
+	 * Similar on the right, except we need to know how many there are
+	 * and account for all of that to leave enough space open for them.
+	 * We didn't need to do that above because leftx is already relative
+	 * to the end of the window holding them (and so means something like
+	 * "move over this much further"), whereas rightoff is relative to
+	 * the right side of the titlebar (and so means something like "we
+	 * have to leave this much space")?
+	 */
 	if(Scr->TBInfo.nright > 0) {
 		Scr->TBInfo.rightoff += (Scr->ButtonIndent
 		                         + (Scr->TBInfo.nright * buttonwidth)
 		                         - Scr->TBInfo.pad);
 	}
 
-	Scr->TBInfo.titlex = (Scr->TBInfo.leftx +
-	                      (Scr->TBInfo.nleft * buttonwidth) -
-	                      Scr->TBInfo.pad +
-	                      Scr->TitlePadding);
+	/*
+	 * titlex does however go from the far-left of the titlebar, so it
+	 * needs to account for the space the left-side buttons use.
+	 */
+	Scr->TBInfo.titlex = (Scr->TBInfo.leftx
+	                      + (Scr->TBInfo.nleft * buttonwidth)
+	                      - Scr->TBInfo.pad
+	                      + Scr->TitlePadding);
 }
 
 
