@@ -68,7 +68,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
            bool sendEvent)        /* whether or not to force a send */
 {
 	XWindowChanges frame_wc, xwc;
-	unsigned long frame_mask, xwcm;
+	unsigned int frame_mask, xwcm;
 	int title_width, title_height;
 	bool reShape;
 
