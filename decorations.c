@@ -233,9 +233,18 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		}
 		frame_wc.width = tmp_win->frame_width = w;
 		frame_wc.height = tmp_win->frame_height = h;
+
+		/* Move/resize the frame */
 		frame_mask |= (CWX | CWY | CWWidth | CWHeight);
 		XConfigureWindow(dpy, tmp_win->frame, frame_mask, &frame_wc);
 
+		/*
+		 * Move/resize the "real" window inside the frame.  Is it
+		 * actually meaningful to "move", since it's always the same
+		 * place inside the frame?  I'm not sure; this may be necessary
+		 * for the client to re-learn its new position in the screen as a
+		 * whole?
+		 */
 		XMoveResizeWindow(dpy, tmp_win->w, tmp_win->frame_bw3D,
 		                  tmp_win->title_height + tmp_win->frame_bw3D,
 		                  tmp_win->attr.width, tmp_win->attr.height);
