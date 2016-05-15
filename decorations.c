@@ -273,12 +273,19 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * enough that nobody who cares enough has noticed...
 	 */
 	if(tmp_win->title_height) {
-		if(tmp_win->hilite_wl) {
-			/* This looks particularly bad on !ThreeDTitles */
+		{
+			/*
+			 * Left-side window bits
+			 */
+			/* Starts from highlightxl, goes to name_x */
 			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
+
+			/* Pad for 3d pop-in/out */
 			if(Scr->use3Dtitles) {
 				xwc.width -= Scr->TitleButtonShadowDepth;
 			}
+
+			/* Move offscreen if it's got no width to display, else place */
 			if(xwc.width <= 0) {
 				xwc.x = Scr->rootw; /* move offscreen */
 				xwc.width = 1;
@@ -287,24 +294,16 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				xwc.x = tmp_win->highlightxl;
 			}
 
+			/* We're setting the X placement and width */
 			xwcm = CWX | CWWidth;
-			XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
-		}
-		if(tmp_win->lolite_wl) {
-			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
-			if(Scr->use3Dtitles) {
-				xwc.width -= Scr->TitleButtonShadowDepth;
+			
+			/* Move it/them */
+			if(tmp_win->hilite_wl) {
+				XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
 			}
-			if(xwc.width <= 0) {
-				xwc.x = Scr->rootw;        /* move offscreen */
-				xwc.width = 1;
+			if(tmp_win->lolite_wl) {
+				XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
 			}
-			else {
-				xwc.x = tmp_win->highlightxl;
-			}
-
-			xwcm = CWX | CWWidth;
-			XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
 		}
 
 		{
