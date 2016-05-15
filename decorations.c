@@ -271,7 +271,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		if(tmp_win->lolite_wl) {
 			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
 			if(Scr->use3Dtitles) {
-				xwc.width -= 4;
+				xwc.width -= Scr->TitleButtonShadowDepth;
 			}
 			if(xwc.width <= 0) {
 				xwc.x = Scr->rootw;        /* move offscreen */
