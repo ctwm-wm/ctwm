@@ -253,9 +253,28 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	/*
 	 * If there's a titlebar, we may have hilight/lolight windows in it
 	 * to fix up.
+	 *
+	 * The sizing/positioning is all wonked up.  In particularly, the
+	 * left-side hi/lolite windows don't work out right because they
+	 * extend from the left side (after buttons) until name_x, which is
+	 * the start of the title, which means they jam right up against the
+	 * text.  The math happens to mostly work out OK for UseThreeDTitles,
+	 * but it doesn't do well in the opposing case.
+	 *
+	 * The right side never jam right up against, because their inside
+	 * edge is highlightxr, figured in ComputeWindowTitleOffsets() to be
+	 * name_x + name_width.  Their placement is asymmetric with the above
+	 * especially in the 2d case, but that may be a case of the R being
+	 * wrong, not the L; x-ref discussion in CWTO() about it.
+	 *
+	 * It's probably necessary to fix both at once to get things coming
+	 * out right.  Of course, all the issues are invisible unless you're
+	 * using TitleJustification center or right, which may be rare
+	 * enough that nobody who cares enough has noticed...
 	 */
 	if(tmp_win->title_height) {
 		if(tmp_win->hilite_wl) {
+			/* This looks particularly bad on !ThreeDTitles */
 			xwc.width = (tmp_win->name_x - tmp_win->highlightxl - 2);
 			if(xwc.width <= 0) {
 				xwc.x = Scr->rootw; /* move offscreen */
