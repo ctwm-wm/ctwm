@@ -304,7 +304,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
 		}
 
-		if(tmp_win->hilite_wr) {
+		{
+			/*
+			 * Right-side window bits
+			 */
 			/* Full width is from the *lite window start to buttons start */
 			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
 
@@ -327,27 +330,16 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				xwc.x = tmp_win->highlightxr;
 			}
 
+			/* We're setting the X placement and width */
 			xwcm = CWX | CWWidth;
-			XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
-		}
-		if(tmp_win->lolite_wr) {
-			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
-			if(Scr->TBInfo.nright > 0) {
-				xwc.width -= 2 * Scr->TitlePadding;
-			}
-			if(Scr->use3Dtitles) {
-				xwc.width -= Scr->TitleButtonShadowDepth;
-			}
-			if(xwc.width <= 0) {
-				xwc.x = Scr->rootw;        /* move offscreen */
-				xwc.width = 1;
-			}
-			else {
-				xwc.x = tmp_win->highlightxr;
-			}
 
-			xwcm = CWX | CWWidth;
-			XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
+			/* Move it/them */
+			if(tmp_win->hilite_wr) {
+				XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
+			}
+			if(tmp_win->lolite_wr) {
+				XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
+			}
 		}
 	}
 
