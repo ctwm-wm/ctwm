@@ -294,7 +294,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				xwc.width -= 2 * Scr->TitlePadding;
 			}
 
-			/* ??? */
+			/* If we have 3d borders, cut down for the pop-in/out shadow */
 			if(Scr->use3Dtitles) {
 				xwc.width -= Scr->TitleButtonShadowDepth;
 			}
