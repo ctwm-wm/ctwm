@@ -275,7 +275,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	if(tmp_win->title_height) {
 		if(tmp_win->hilite_wl) {
 			/* This looks particularly bad on !ThreeDTitles */
-			xwc.width = (tmp_win->name_x - tmp_win->highlightxl - 2);
+			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
+			if(Scr->use3Dtitles) {
+				xwc.width -= Scr->TitleButtonShadowDepth;
+			}
 			if(xwc.width <= 0) {
 				xwc.x = Scr->rootw; /* move offscreen */
 				xwc.width = 1;
