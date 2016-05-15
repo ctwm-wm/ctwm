@@ -894,6 +894,10 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 	int y = Scr->FramePadding;
 	ColorPair cp;
 
+	/*
+	 * We don't even make lolite windows unless UseSunkTitlePixmap is
+	 * set.
+	 */
 	if(!Scr->UseSunkTitlePixmap || ! tmp_win->titlehighlight) {
 		tmp_win->lolite_wl = (Window) 0;
 		tmp_win->lolite_wr = (Window) 0;
