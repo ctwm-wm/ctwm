@@ -318,12 +318,11 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				xwc.width -= 2 * Scr->TitlePadding;
 			}
 
-			/* If we have 3d borders, cut down for the pop-in/out shadow */
+			/* Rest is similar to above for left-side */
 			if(Scr->use3Dtitles) {
 				xwc.width -= Scr->TitleButtonShadowDepth;
 			}
 
-			/* Move offscreen if it's got no width to display, else place */
 			if(xwc.width <= 0) {
 				xwc.x = Scr->rootw; /* move offscreen */
 				xwc.width = 1;
@@ -332,10 +331,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				xwc.x = tmp_win->highlightxr;
 			}
 
-			/* We're setting the X placement and width */
 			xwcm = CWX | CWWidth;
-
-			/* Move it/them */
 			if(tmp_win->hilite_wr) {
 				XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
 			}
