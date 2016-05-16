@@ -333,8 +333,9 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			xwc.width -= Scr->TitleButtonShadowDepth;
 		}
 
+		/* xwc.width different from above, so can't just reuse the values */
 		if(xwc.width <= 0) {
-			xwc.x = Scr->rootw; /* move offscreen */
+			xwc.x = Scr->rootw;
 			xwc.width = 1;
 		}
 		else {
