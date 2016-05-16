@@ -145,46 +145,54 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		sendEvent = true;
 	}
 
-	xwcm = CWWidth;
-	title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
-	title_height = Scr->TitleHeight + bw;
-	ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
 
-	reShape = (tmp_win->wShaped ? true : false);
-	if(tmp_win->squeeze_info/* && !tmp_win->squeezed*/) {       /* check for title shaping */
-		title_width = tmp_win->rightx + Scr->TBInfo.rightoff;
-		if(title_width < xwc.width) {
-			xwc.width = title_width;
-			if(tmp_win->frame_height != h ||
-			                tmp_win->frame_width != w ||
-			                tmp_win->frame_bw != bw ||
-			                title_width != tmp_win->title_width) {
-				reShape = true;
+	/*
+	 * Do the necessary sizing on the title window
+	 */
+	{
+		xwcm = CWWidth;
+		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
+		title_height = Scr->TitleHeight + bw;
+		ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
+
+		reShape = (tmp_win->wShaped ? true : false);
+		if(tmp_win->squeeze_info/* && !tmp_win->squeezed*/) {       /* check for title shaping */
+			title_width = tmp_win->rightx + Scr->TBInfo.rightoff;
+			if(title_width < xwc.width) {
+				xwc.width = title_width;
+				if(tmp_win->frame_height != h ||
+				                tmp_win->frame_width != w ||
+				                tmp_win->frame_bw != bw ||
+				                title_width != tmp_win->title_width) {
+					reShape = true;
+				}
+			}
+			else {
+				if(!tmp_win->wShaped) {
+					reShape = true;
+				}
+				title_width = xwc.width;
 			}
 		}
-		else {
-			if(!tmp_win->wShaped) {
-				reShape = true;
+
+		tmp_win->title_width = title_width;
+		if(tmp_win->title_height) {
+			tmp_win->title_height = title_height;
+		}
+
+		if(tmp_win->title_w) {
+			if(bw != tmp_win->frame_bw) {
+				xwc.border_width = bw;
+				tmp_win->title_x = xwc.x = tmp_win->frame_bw3D - bw;
+				tmp_win->title_y = xwc.y = tmp_win->frame_bw3D - bw;
+				xwcm |= (CWX | CWY | CWBorderWidth);
 			}
-			title_width = xwc.width;
+
+			XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
 		}
 	}
 
-	tmp_win->title_width = title_width;
-	if(tmp_win->title_height) {
-		tmp_win->title_height = title_height;
-	}
 
-	if(tmp_win->title_w) {
-		if(bw != tmp_win->frame_bw) {
-			xwc.border_width = bw;
-			tmp_win->title_x = xwc.x = tmp_win->frame_bw3D - bw;
-			tmp_win->title_y = xwc.y = tmp_win->frame_bw3D - bw;
-			xwcm |= (CWX | CWY | CWBorderWidth);
-		}
-
-		XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
-	}
 	if(tmp_win->attr.width != w) {
 		tmp_win->widthEverChangedByUser = True;
 	}
