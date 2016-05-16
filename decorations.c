@@ -285,71 +285,68 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		XWindowChanges xwc;
 		unsigned int xwcm;
 
-		{
-			/*
-			 * Left-side window bits
-			 */
-			/* Starts from highlightxl, goes to name_x */
-			xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
+		/*
+		 * Left-side window bits
+		 */
+		/* Starts from highlightxl, goes to name_x */
+		xwc.width = (tmp_win->name_x - tmp_win->highlightxl);
 
-			/* Pad for 3d pop-in/out */
-			if(Scr->use3Dtitles) {
-				xwc.width -= Scr->TitleButtonShadowDepth;
-			}
-
-			/* Move offscreen if it's got no width to display, else place */
-			if(xwc.width <= 0) {
-				xwc.x = Scr->rootw; /* move offscreen */
-				xwc.width = 1;
-			}
-			else {
-				xwc.x = tmp_win->highlightxl;
-			}
-
-			/* We're setting the X placement and width */
-			xwcm = CWX | CWWidth;
-
-			/* Move it/them */
-			if(tmp_win->hilite_wl) {
-				XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
-			}
-			if(tmp_win->lolite_wl) {
-				XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
-			}
+		/* Pad for 3d pop-in/out */
+		if(Scr->use3Dtitles) {
+			xwc.width -= Scr->TitleButtonShadowDepth;
 		}
 
-		{
-			/*
-			 * Right-side window bits
-			 */
-			/* Full width is from the *lite window start to buttons start */
-			xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
+		/* Move offscreen if it's got no width to display, else place */
+		if(xwc.width <= 0) {
+			xwc.x = Scr->rootw; /* move offscreen */
+			xwc.width = 1;
+		}
+		else {
+			xwc.x = tmp_win->highlightxl;
+		}
 
-			/* If there are buttons to our right, cut down for the padding */
-			if(Scr->TBInfo.nright > 0) {
-				xwc.width -= 2 * Scr->TitlePadding;
-			}
+		/* We're setting the X placement and width */
+		xwcm = CWX | CWWidth;
 
-			/* Rest is similar to above for left-side */
-			if(Scr->use3Dtitles) {
-				xwc.width -= Scr->TitleButtonShadowDepth;
-			}
+		/* Move it/them */
+		if(tmp_win->hilite_wl) {
+			XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
+		}
+		if(tmp_win->lolite_wl) {
+			XConfigureWindow(dpy, tmp_win->lolite_wl, xwcm, &xwc);
+		}
 
-			if(xwc.width <= 0) {
-				xwc.x = Scr->rootw; /* move offscreen */
-				xwc.width = 1;
-			}
-			else {
-				xwc.x = tmp_win->highlightxr;
-			}
 
-			xwcm = CWX | CWWidth;
-			if(tmp_win->hilite_wr) {
-				XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
-			}
-			if(tmp_win->lolite_wr) {
-				XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
-			}
+		/*
+		 * Right-side window bits
+		 */
+		/* Full width is from the *lite window start to buttons start */
+		xwc.width = (tmp_win->rightx - tmp_win->highlightxr);
+
+		/* If there are buttons to our right, cut down for the padding */
+		if(Scr->TBInfo.nright > 0) {
+			xwc.width -= 2 * Scr->TitlePadding;
+		}
+
+		/* Rest is similar to above for left-side */
+		if(Scr->use3Dtitles) {
+			xwc.width -= Scr->TitleButtonShadowDepth;
+		}
+
+		if(xwc.width <= 0) {
+			xwc.x = Scr->rootw; /* move offscreen */
+			xwc.width = 1;
+		}
+		else {
+			xwc.x = tmp_win->highlightxr;
+		}
+
+		xwcm = CWX | CWWidth;  // Not strictly necessary, same as above
+		if(tmp_win->hilite_wr) {
+			XConfigureWindow(dpy, tmp_win->hilite_wr, xwcm, &xwc);
+		}
+		if(tmp_win->lolite_wr) {
+			XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
 		}
 	}
 
