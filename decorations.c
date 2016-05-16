@@ -296,7 +296,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 
 			/* We're setting the X placement and width */
 			xwcm = CWX | CWWidth;
-			
+
 			/* Move it/them */
 			if(tmp_win->hilite_wl) {
 				XConfigureWindow(dpy, tmp_win->hilite_wl, xwcm, &xwc);
