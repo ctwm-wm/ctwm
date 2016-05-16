@@ -194,18 +194,24 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 
 
+	/*
+	 * Set a few flags and values for the window as a whole
+	 */
+	/* width/height changed? */
 	if(tmp_win->attr.width != w) {
 		tmp_win->widthEverChangedByUser = True;
 	}
-
 	if(tmp_win->attr.height != (h - tmp_win->title_height)) {
 		tmp_win->heightEverChangedByUser = True;
 	}
 
+	/* Write in new values, if the window isn't squeezed away */
 	if(!tmp_win->squeezed) {
 		tmp_win->attr.width  = w - (2 * tmp_win->frame_bw3D);
 		tmp_win->attr.height = h - tmp_win->title_height - (2 * tmp_win->frame_bw3D);
 	}
+
+	/* If it is squeezed, stash values for when we unsqueeze */
 	if(tmp_win->squeezed) {
 		if(x != tmp_win->frame_x) {
 			tmp_win->actual_frame_x += x - tmp_win->frame_x;
@@ -214,6 +220,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			tmp_win->actual_frame_y += y - tmp_win->frame_y;
 		}
 	}
+
 
 	/*
 	 * fix up frame and assign size/location values in tmp_win
@@ -258,6 +265,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		                  tmp_win->title_height + tmp_win->frame_bw3D,
 		                  tmp_win->attr.width, tmp_win->attr.height);
 	}
+
 
 	/*
 	 * If there's a titlebar, we may have hilight/lolight windows in it
@@ -350,6 +358,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			XConfigureWindow(dpy, tmp_win->lolite_wr, xwcm, &xwc);
 		}
 	}
+
 
 	if(HasShape && reShape) {
 		SetFrameShape(tmp_win);
