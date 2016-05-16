@@ -67,8 +67,6 @@ void
 SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
            bool sendEvent)        /* whether or not to force a send */
 {
-	XWindowChanges xwc;
-	unsigned int xwcm;
 	int title_width, title_height;
 	bool reShape;
 
@@ -150,6 +148,9 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * Do the necessary sizing on the title window
 	 */
 	{
+		XWindowChanges xwc;
+		unsigned int xwcm;
+
 		xwcm = CWWidth;
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
 		title_height = Scr->TitleHeight + bw;
@@ -281,6 +282,9 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * enough that nobody who cares enough has noticed...
 	 */
 	if(tmp_win->title_height) {
+		XWindowChanges xwc;
+		unsigned int xwcm;
+
 		{
 			/*
 			 * Left-side window bits
