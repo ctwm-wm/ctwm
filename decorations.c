@@ -149,11 +149,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	{
 		XWindowChanges xwc;
 		unsigned int xwcm;
-		int title_width, title_height;
+		int title_width;
 
 		xwcm = CWWidth;
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
-		title_height = Scr->TitleHeight + bw;
 		ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
 
 		reShape = (tmp_win->wShaped ? true : false);
@@ -178,7 +177,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 
 		tmp_win->title_width = title_width;
 		if(tmp_win->title_height) {
-			tmp_win->title_height = title_height;
+			tmp_win->title_height = Scr->TitleHeight + bw;
 		}
 
 		if(tmp_win->title_w) {
