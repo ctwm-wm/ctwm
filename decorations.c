@@ -156,7 +156,13 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
 
 		reShape = (tmp_win->wShaped ? true : false);
-		if(tmp_win->squeeze_info/* && !tmp_win->squeezed*/) {       /* check for title shaping */
+
+		/*
+		 * If the window has SqueezeTitle, the width of the titlebar may
+		 * not be the width of the window (the w we're passed), so figure
+		 * what it should be.
+		 */
+		if(tmp_win->squeeze_info) {
 			title_width = tmp_win->rightx + Scr->TBInfo.rightoff;
 			if(title_width < xwc.width) {
 				xwc.width = title_width;
