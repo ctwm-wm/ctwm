@@ -393,7 +393,14 @@ void
 SetFrameShape(TwmWindow *tmp)
 {
 	/*
-	 * see if the titlebar needs to move
+	 * See if the titlebar needs to move (relative to the frame).  A
+	 * common reason for this is using SqueezeTitle and squeezing the
+	 * window as well; when the window is squeezed away, the titlebar is
+	 * the only thing displayed, so the frame is coincident with it, and
+	 * it starts at (0,0).  But when the window is opened, and the
+	 * titlebar is narrower than it, it starts at some x offset, so
+	 * opening/closing the window squeeze needs to move the position
+	 * relative to the frame.
 	 */
 	if(tmp->title_w) {
 		int oldx = tmp->title_x, oldy = tmp->title_y;
