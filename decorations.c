@@ -153,7 +153,13 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 
 		xwcm = CWWidth;
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
-		ComputeWindowTitleOffsets(tmp_win, xwc.width, true);
+
+		/*
+		 * XXX This should happen later, after title_width is potentially
+		 * altered by the below block.  It seems to cause some other odd
+		 * side-effects in minor testing, so leaving it alone for now.
+		 */
+		ComputeWindowTitleOffsets(tmp_win, title_width, true);
 
 		reShape = (tmp_win->wShaped ? true : false);
 
