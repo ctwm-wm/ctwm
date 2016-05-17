@@ -743,6 +743,13 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 			tmp_win->name_x = Scr->TBInfo.titlex + (titlew - tmp_win->name_width) / 2;
 			break;
 		case J_RIGHT :
+			/*
+			 * XXX Since this pushes the end of the name way over to the
+			 * right, there's no room for the right highlight window.
+			 * But shrinking down the size of that is how the titlebar
+			 * gets squeezed for SqueezeTitle.  So if J_RIGHT, the
+			 * titlebar will never get squeezed.
+			 */
 			tmp_win->name_x = Scr->TBInfo.titlex + titlew - tmp_win->name_width;
 			if(Scr->use3Dtitles) {
 				tmp_win->name_x -= Scr->TitleShadowDepth - 2;
