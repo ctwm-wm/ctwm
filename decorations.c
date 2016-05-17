@@ -185,7 +185,9 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				 * w->rightx gets figured right, because we're now
 				 * passing the squeezed width.  The remaining values are
 				 * calculated the same, but will now be set right for the
-				 * samller size.
+				 * smaller size.
+				 *
+				 * See CWTO() comment for possible future cleanup.
 				 */
 				ComputeWindowTitleOffsets(tmp_win, title_width, false);
 				if(tmp_win->frame_height != h ||
@@ -704,12 +706,16 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  * (x offset for left/right hilite windows), and w->rightx (x offset for
  * the right buttons), all relative to the title window.
  *
+ *
  * The 'squeeze' argument controls whether rightoff should be corrected
  * for squeezing; when true, it means the passed width doesn't take into
- * account squeezing.  This relates to why it's called twice in
- * SetupFrame() to set things up right.  XXX Should more corrections get
- * moved in here to avoid the ugliness of calling it twice with sekrit
- * magic?
+ * account squeezing.  In fact, this adjustment of rightx is what winds
+ * up determining how small the bar gets squeezed to.  This relates to
+ * why it's called twice in SetupFrame() to set things up right.
+ *
+ * XXX Should probably either rework how the squeezed width is figured,
+ * or use squeeze to correct everything in here to reduce the scary magic
+ * double-calling.
  */
 static void
 ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
