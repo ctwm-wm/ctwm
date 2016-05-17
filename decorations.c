@@ -419,6 +419,12 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 }
 
 
+/*
+ * Set X Shape extension bits for the window.  This only gets called if
+ * we already know the server supports Shape, and if there's shaping to
+ * do.  There's shaping to do if either the real window itself wants
+ * Shape'ing, or if we're SqueezeTitle'ing it.
+ */
 void
 SetFrameShape(TwmWindow *tmp)
 {
