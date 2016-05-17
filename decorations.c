@@ -160,6 +160,12 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		 * w->rightx, which CWTO() sets, so leaving it until then causes
 		 * some truly wacky behavior.  So as a hack, call it again after
 		 * we change the width (if we do).
+		 *
+		 * We set squeezed=true here so that w->rightx gets calculated
+		 * right for the squeezed width from being passed the unsqueezed
+		 * width.  In the case that we're squeezing, that is the ONLY one
+		 * of the values that will be correct, since none of the others
+		 * are corrected for squeezing.
 		 */
 		ComputeWindowTitleOffsets(tmp_win, title_width, true);
 
@@ -174,8 +180,14 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			title_width = tmp_win->rightx + Scr->TBInfo.rightoff;
 			if(title_width < xwc.width) {
 				xwc.width = title_width;
-				/* x-ref above comment */
-				ComputeWindowTitleOffsets(tmp_win, title_width, true);
+				/*
+				 * x-ref above comment.  We set squeezed=false here so
+				 * w->rightx gets figured right, because we're now
+				 * passing the squeezed width.  The remaining values are
+				 * calculated the same, but will now be set right for the
+				 * samller size.
+				 */
+				ComputeWindowTitleOffsets(tmp_win, title_width, false);
 				if(tmp_win->frame_height != h ||
 				                tmp_win->frame_width != w ||
 				                tmp_win->frame_bw != bw ||
@@ -691,6 +703,13 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
  * This sets w->name_x (x offset for writing the name), w->highlightx[lr]
  * (x offset for left/right hilite windows), and w->rightx (x offset for
  * the right buttons), all relative to the title window.
+ *
+ * The 'squeeze' argument controls whether rightoff should be corrected
+ * for squeezing; when true, it means the passed width doesn't take into
+ * account squeezing.  This relates to why it's called twice in
+ * SetupFrame() to set things up right.  XXX Should more corrections get
+ * moved in here to avoid the ugliness of calling it twice with sekrit
+ * magic?
  */
 static void
 ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
