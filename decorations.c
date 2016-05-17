@@ -155,9 +155,11 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
 
 		/*
-		 * XXX This should happen later, after title_width is potentially
-		 * altered by the below block.  It seems to cause some other odd
-		 * side-effects in minor testing, so leaving it alone for now.
+		 * This should happen later, after title_width is potentially
+		 * altered by the below block.  However, that block uses
+		 * w->rightx, which CWTO() sets, so leaving it until then causes
+		 * some truly wacky behavior.  So as a hack, call it again after
+		 * we change the width (if we do).
 		 */
 		ComputeWindowTitleOffsets(tmp_win, title_width, true);
 
@@ -172,6 +174,8 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			title_width = tmp_win->rightx + Scr->TBInfo.rightoff;
 			if(title_width < xwc.width) {
 				xwc.width = title_width;
+				/* x-ref above comment */
+				ComputeWindowTitleOffsets(tmp_win, title_width, true);
 				if(tmp_win->frame_height != h ||
 				                tmp_win->frame_width != w ||
 				                tmp_win->frame_bw != bw ||
