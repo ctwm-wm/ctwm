@@ -409,10 +409,18 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 
 
+	/* Set X Shape stuff if we need to */
 	if(HasShape && reShape) {
 		SetFrameShape(tmp_win);
 	}
+
+	/* Possible change how it looks in the WorkspaceManager */
 	WMapSetupWindow(tmp_win, x, y, w, h);
+
+	/*
+	 * And send Configure notification to the (real) window if we decided
+	 * we have to, telling it about what all has happened.
+	 */
 	if(sendEvent) {
 		XEvent client_event;
 
