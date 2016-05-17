@@ -67,7 +67,6 @@ void
 SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
            bool sendEvent)        /* whether or not to force a send */
 {
-	int title_width, title_height;
 	bool reShape;
 
 #ifdef DEBUG
@@ -150,6 +149,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	{
 		XWindowChanges xwc;
 		unsigned int xwcm;
+		int title_width, title_height;
 
 		xwcm = CWWidth;
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
