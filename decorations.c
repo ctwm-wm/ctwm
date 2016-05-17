@@ -151,7 +151,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		unsigned int xwcm;
 		int title_width;
 
+		/* We're gonna be setting the width, even if it's unchanged */
 		xwcm = CWWidth;
+
+		/* Init: it's as wide as the window, minor borders */
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
 
 		/*
@@ -205,12 +208,29 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 			}
 		}
 
+		/* Write back whatever width we figured */
 		tmp_win->title_width = title_width;
+
+		/*
+		 * If there is a titlebar, set the height.
+		 *
+		 * title_height=0 is a slightly stupid and nonintuitive way of
+		 * flagging "we don't show a titlebar here", but what the heck...
+		 */
 		if(tmp_win->title_height) {
 			tmp_win->title_height = Scr->TitleHeight + bw;
 		}
 
+		/*
+		 * If we've got a title window, XConfigure it.
+		 *
+		 * XXX Hang on, if we don't have a title window, all that work we
+		 * just did was bogus, right?  And in fact, doesn't accomplish
+		 * much of anything anyway.  Should this if() be around this
+		 * whole block??
+		 */
 		if(tmp_win->title_w) {
+			/* If border width is changing, update it and the X/Y  too */
 			if(bw != tmp_win->frame_bw) {
 				xwc.border_width = bw;
 				tmp_win->title_x = xwc.x = tmp_win->frame_bw3D - bw;
