@@ -155,17 +155,17 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
 
 		/*
-		 * This should happen later, after title_width is potentially
-		 * altered by the below block.  However, that block uses
-		 * w->rightx, which CWTO() sets, so leaving it until then causes
-		 * some truly wacky behavior.  So as a hack, call it again after
-		 * we change the width (if we do).
+		 * We really want to compute the offsets later, after the below
+		 * block potentially changes title_width to deal with squeezing.
+		 * However, adjusting and setting w->rightx based on the final
+		 * 'squeeze' argument to CWTO() is what determines how far things
+		 * get squeezed, so we need to call that first so the block can
+		 * figure out the proper width to squeeze to.
 		 *
-		 * We set squeezed=true here so that w->rightx gets calculated
-		 * right for the squeezed width from being passed the unsqueezed
-		 * width.  In the case that we're squeezing, that is the ONLY one
-		 * of the values that will be correct, since none of the others
-		 * are corrected for squeezing.
+		 * In the non-squeezing case, that arg does nothing, and we get
+		 * all our values set.  In the squeezing, though, all the values
+		 * _but_ w->rightx get bogus values, so we'll have to call it
+		 * again after we re-figure the width.
 		 */
 		ComputeWindowTitleOffsets(tmp_win, title_width, true);
 
