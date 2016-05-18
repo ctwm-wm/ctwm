@@ -70,6 +70,7 @@ InitTitlebarButtons(void)
 						ProgramName); \
 			}
 
+		/* Iconify on the left, resize on the right */
 		if(Scr->use3Dtitles) {
 			MKBTN(3DDOT, ICONIFY, "iconify", 0)
 			MKBTN(3DRESIZE, RESIZE, "resize", 1)
@@ -228,6 +229,11 @@ SetCurrentTBAction(int button, int nmods, int func, char *action,
 
 
 
+/*
+ * XXX This return value is a little pointless.  The only failure it
+ * acknowledges is from malloc(), and that Never Fails On Real
+ * Systems(tm).  And if it does, we're pretty screwed anyway.
+ */
 int
 CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
                   Bool rightside, Bool append)
