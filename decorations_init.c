@@ -62,26 +62,26 @@ InitTitlebarButtons(void)
 	 */
 	if(!Scr->NoDefaults) {
 		/* insert extra buttons */
+#define dor(isright) (isright ? True : False)
+#define MKBTN(bmap, func, name, rt) \
+			if(!CreateTitleButton(TBPM_##bmap, F_##func, "", NULL, \
+						dor(rt), dor(rt))) { \
+				fprintf(stderr, "%s:  unable to add " name " button\n", \
+						ProgramName); \
+			}
+
 		if(Scr->use3Dtitles) {
-			if(!CreateTitleButton(TBPM_3DDOT, F_ICONIFY, "", (MenuRoot *) NULL,
-			                      False, False)) {
-				fprintf(stderr, "%s:  unable to add iconify button\n", ProgramName);
-			}
-			if(!CreateTitleButton(TBPM_3DRESIZE, F_RESIZE, "", (MenuRoot *) NULL,
-			                      True, True)) {
-				fprintf(stderr, "%s:  unable to add resize button\n", ProgramName);
-			}
+			MKBTN(3DDOT, ICONIFY, "iconify", 0)
+			MKBTN(3DRESIZE, RESIZE, "resize", 1)
 		}
 		else {
-			if(!CreateTitleButton(TBPM_ICONIFY, F_ICONIFY, "", (MenuRoot *) NULL,
-			                      False, False)) {
-				fprintf(stderr, "%s:  unable to add iconify button\n", ProgramName);
-			}
-			if(!CreateTitleButton(TBPM_RESIZE, F_RESIZE, "", (MenuRoot *) NULL,
-			                      True, True)) {
-				fprintf(stderr, "%s:  unable to add resize button\n", ProgramName);
-			}
+			MKBTN(ICONIFY, ICONIFY, "iconify", 0)
+			MKBTN(RESIZE, RESIZE, "resize", 1)
 		}
+
+#undef MKBTN
+#undef dor
+
 		AddDefaultFuncButtons();
 	}
 	ComputeCommonTitleOffsets();
