@@ -224,22 +224,30 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 {
 	FuncButton *tmp;
 
-	/* see if there already is a key defined for this context */
+	/* Find existing def for this button/context/modifier if any */
 	for(tmp = Scr->FuncButtonRoot.next; tmp != NULL; tmp = tmp->next) {
 		if((tmp->num == num) && (tmp->cont == cont) && (tmp->mods == nmods)) {
 			break;
 		}
 	}
+
+	/*
+	 * If it's already set, and we're addingdefault (i.e., called from
+	 * AddDefaultFuncButtons()), just return.  This lets us cram on
+	 * fallback mappings, without worrying about overriding user choices.
+	 */
 	if(tmp && addingdefaults) {
 		return (True);
 	}
 
+	/* No mapping yet; create a shell */
 	if(tmp == NULL) {
 		tmp = (FuncButton *) malloc(sizeof(FuncButton));
 		tmp->next = Scr->FuncButtonRoot.next;
 		Scr->FuncButtonRoot.next = tmp;
 	}
 
+	/* Set the new details */
 	tmp->num  = num;
 	tmp->cont = cont;
 	tmp->mods = nmods;
@@ -255,8 +263,12 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
  * AddDefaultFuncButtons - attach default bindings so that naive users
  * don't get messed up if they provide a minimal twmrc.
  *
- * This used to be in add_window.c, and maybe strictly speaking fits
- * better there, but was moved here so addingdefaults wound up in scope.
+ * This used to be in add_window.c, and probably fits better in
+ * decorations_init.c now, but is currently here so addingdefaults is in
+ * scope.
+ *
+ * XXX Probably better to adjust things so we can do that job _without_
+ * the magic global var...
  */
 void AddDefaultFuncButtons(void)
 {
