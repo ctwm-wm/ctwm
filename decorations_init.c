@@ -64,11 +64,11 @@ InitTitlebarButtons(void)
 		/* insert extra buttons */
 #define dor(isright) (isright ? True : False)
 #define MKBTN(bmap, func, name, rt) \
-			if(!CreateTitleButton(TBPM_##bmap, F_##func, "", NULL, \
-						dor(rt), dor(rt))) { \
-				fprintf(stderr, "%s:  unable to add " name " button\n", \
-						ProgramName); \
-			}
+                        if(!CreateTitleButton(TBPM_##bmap, F_##func, "", NULL, \
+                                                dor(rt), dor(rt))) { \
+                                fprintf(stderr, "%s:  unable to add " name " button\n", \
+                                                ProgramName); \
+                        }
 
 		/* Iconify on the left, resize on the right */
 		if(Scr->use3Dtitles) {
