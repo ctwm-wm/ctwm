@@ -189,8 +189,8 @@ extern void MakeWorkspacesMenu(void);
 extern MenuRoot *FindMenuRoot(char *name);
 extern Bool AddFuncKey(char *name, int cont, int mods, int func,
                        MenuRoot *menu, char *win_name, char *action);
-extern Bool AddFuncButton(int num, int cont, int mods, int func,
-                          MenuRoot *menu, MenuItem *item);
+void AddFuncButton(int num, int cont, int mods, int func,
+                   MenuRoot *menu, MenuItem *item);
 void AddDefaultFuncButtons(void);
 extern void PopDownMenu(void);
 extern void HideMenu(MenuRoot *menu);

@@ -219,8 +219,9 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
  ***********************************************************************
  */
 
-Bool AddFuncButton(int num, int cont, int nmods, int func,
-                   MenuRoot *menu, MenuItem *item)
+void
+AddFuncButton(int num, int cont, int nmods, int func,
+              MenuRoot *menu, MenuItem *item)
 {
 	FuncButton *tmp;
 
@@ -237,7 +238,7 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 	 * fallback mappings, without worrying about overriding user choices.
 	 */
 	if(tmp && addingdefaults) {
-		return (True);
+		return;
 	}
 
 	/* No mapping yet; create a shell */
@@ -255,7 +256,7 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 	tmp->menu = menu;
 	tmp->item = item;
 
-	return True;
+	return;
 }
 
 
