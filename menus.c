@@ -264,14 +264,15 @@ AddFuncButton(int num, int cont, int nmods, int func,
  * AddDefaultFuncButtons - attach default bindings so that naive users
  * don't get messed up if they provide a minimal twmrc.
  *
- * This used to be in add_window.c, and probably fits better in
- * decorations_init.c now, but is currently here so addingdefaults is in
- * scope.
+ * This used to be in add_window.c, and maybe fits better in
+ * decorations_init.c (only place it's called) now, but is currently here
+ * so addingdefaults is in scope.
  *
  * XXX Probably better to adjust things so we can do that job _without_
  * the magic global var...
  */
-void AddDefaultFuncButtons(void)
+void
+AddDefaultFuncButtons(void)
 {
 	addingdefaults = true;
 
