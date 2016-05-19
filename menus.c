@@ -242,7 +242,7 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 
 	/* No mapping yet; create a shell */
 	if(tmp == NULL) {
-		tmp = (FuncButton *) malloc(sizeof(FuncButton));
+		tmp = malloc(sizeof(FuncButton));
 		tmp->next = Scr->FuncButtonRoot.next;
 		Scr->FuncButtonRoot.next = tmp;
 	}
