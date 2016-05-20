@@ -83,17 +83,21 @@ InitTitlebarButtons(void)
 #undef MKBTN
 #undef dor
 
+		/* Default mouse bindings in titlebar/icon/iconmgr as fallback */
 		AddDefaultFuncButtons();
 	}
+
+	/* Init screen-wide dimensions for common titlebar bits */
 	ComputeCommonTitleOffsets();
+
 
 	/*
 	 * load in images and do appropriate centering
 	 */
-
 	for(tb = Scr->TBInfo.head; tb; tb = tb->next) {
 		tb->image = GetImage(tb->name, Scr->TitleC);
 		if(!tb->image) {
+			/* Couldn't find it, make a question mark */
 			tb->image = GetImage(TBPM_QUESTION, Scr->TitleC);
 			if(!tb->image) {
 				/*
@@ -109,6 +113,8 @@ InitTitlebarButtons(void)
 		}
 		tb->width  = tb->image->width;
 		tb->height = tb->image->height;
+
+		/* Figure centering.  Horizontally... */
 		tb->dstx = (h - tb->width + 1) / 2;
 		if(tb->dstx < 0) {              /* clip to minimize copying */
 			tb->srcx = -(tb->dstx);
@@ -118,6 +124,8 @@ InitTitlebarButtons(void)
 		else {
 			tb->srcx = 0;
 		}
+
+		/* ... and vertically */
 		tb->dsty = (h - tb->height + 1) / 2;
 		if(tb->dsty < 0) {
 			tb->srcy = -(tb->dsty);
