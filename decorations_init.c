@@ -62,26 +62,21 @@ InitTitlebarButtons(void)
 	 */
 	if(!Scr->NoDefaults) {
 		/* insert extra buttons */
-#define dor(isright) (isright ? True : False)
-#define MKBTN(bmap, func, name, rt) \
-                        if(!CreateTitleButton(TBPM_##bmap, F_##func, "", NULL, \
-                                                dor(rt), dor(rt))) { \
-                                fprintf(stderr, "%s:  unable to add " name " button\n", \
-                                                ProgramName); \
-                        }
+#define MKBTN(bmap, func, name, isrt) \
+                        CreateTitleButton(TBPM_##bmap, F_##func, "", NULL, \
+                                          isrt, isrt)
 
 		/* Iconify on the left, resize on the right */
 		if(Scr->use3Dtitles) {
-			MKBTN(3DDOT, ICONIFY, "iconify", 0)
-			MKBTN(3DRESIZE, RESIZE, "resize", 1)
+			MKBTN(3DDOT, ICONIFY, "iconify", False);
+			MKBTN(3DRESIZE, RESIZE, "resize", True);
 		}
 		else {
-			MKBTN(ICONIFY, ICONIFY, "iconify", 0)
-			MKBTN(RESIZE, RESIZE, "resize", 1)
+			MKBTN(ICONIFY, ICONIFY, "iconify", False);
+			MKBTN(RESIZE, RESIZE, "resize", True);
 		}
 
 #undef MKBTN
-#undef dor
 
 		/* Default mouse bindings in titlebar/icon/iconmgr as fallback */
 		AddDefaultFuncButtons();
