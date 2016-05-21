@@ -237,7 +237,7 @@ SetCurrentTBAction(int button, int nmods, int func, char *action,
  * acknowledges is from malloc(), and that Never Fails On Real
  * Systems(tm).  And if it does, we're pretty screwed anyway.
  */
-int
+bool
 CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
                   Bool rightside, Bool append)
 {
@@ -248,7 +248,7 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 		fprintf(stderr,
 		        "%s:  unable to allocate %lu bytes for title button\n",
 		        ProgramName, (unsigned long) sizeof(TitleButton));
-		return 0;
+		return false;
 	}
 
 	cur_tb->name = name;           /* note that we are not copying */
@@ -300,5 +300,5 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 		}
 	}
 
-	return 1;
+	return true;
 }
