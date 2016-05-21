@@ -62,18 +62,18 @@ InitTitlebarButtons(void)
 	 */
 	if(!Scr->NoDefaults) {
 		/* insert extra buttons */
-#define MKBTN(bmap, func, name, isrt) \
+#define MKBTN(bmap, func, isrt) \
                         CreateTitleButton(TBPM_##bmap, F_##func, "", NULL, \
                                           isrt, isrt)
 
 		/* Iconify on the left, resize on the right */
 		if(Scr->use3Dtitles) {
-			MKBTN(3DDOT, ICONIFY, "iconify", False);
-			MKBTN(3DRESIZE, RESIZE, "resize", True);
+			MKBTN(3DDOT, ICONIFY, False);
+			MKBTN(3DRESIZE, RESIZE, True);
 		}
 		else {
-			MKBTN(ICONIFY, ICONIFY, "iconify", False);
-			MKBTN(RESIZE, RESIZE, "resize", True);
+			MKBTN(ICONIFY, ICONIFY, False);
+			MKBTN(RESIZE, RESIZE, True);
 		}
 
 #undef MKBTN
