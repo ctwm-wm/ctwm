@@ -327,11 +327,11 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * text.  The math happens to mostly work out OK for UseThreeDTitles,
 	 * but it doesn't do well in the opposing case.
 	 *
-	 * The right side never jam right up against, because their inside
-	 * edge is highlightxr, figured in ComputeWindowTitleOffsets() to be
-	 * name_x + name_width.  Their placement is asymmetric with the above
-	 * especially in the 2d case, but that may be a case of the R being
-	 * wrong, not the L; x-ref discussion in CWTO() about it.
+	 * The right side never jam right up against the text, because their
+	 * inside edge is highlightxr, figured in ComputeWindowTitleOffsets()
+	 * to be name_x + name_width.  Their placement is asymmetric with the
+	 * above especially in the 2d case, but that may be a case of the R
+	 * being wrong, not the L; x-ref discussion in CWTO() about it.
 	 *
 	 * It's probably necessary to fix both at once to get things coming
 	 * out right.  Of course, all the issues are invisible unless you're
