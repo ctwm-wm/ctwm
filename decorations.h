@@ -16,9 +16,7 @@ void SetFrameShape(TwmWindow *tmp);
 
 void ComputeTitleLocation(TwmWindow *tmp);
 void CreateWindowTitlebarButtons(TwmWindow *tmp_win);
-void CreateHighlightWindows(TwmWindow *tmp_win);
 void DeleteHighlightWindows(TwmWindow *tmp_win);
-void CreateLowlightWindows(TwmWindow *tmp_win);
 
 void PaintTitle(TwmWindow *tmp_win);
 void PaintTitleButtons(TwmWindow *tmp_win);

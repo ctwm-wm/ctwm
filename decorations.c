@@ -20,6 +20,8 @@
 /* Internal bits */
 static void ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width,
                                       bool squeeze);
+static void CreateHighlightWindows(TwmWindow *tmp_win);
+static void CreateLowlightWindows(TwmWindow *tmp_win);
 
 typedef enum { TopLeft, TopRight, BottomRight, BottomLeft } CornerType;
 static void Draw3DCorner(Window w, int x, int y, int width, int height,
@@ -901,7 +903,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
  * Creation/destruction of "hi/lolite windows".  These are the
  * portion[s] of the title bar which change color/form to indicate focus.
  */
-void
+static void
 CreateHighlightWindows(TwmWindow *tmp_win)
 {
 	XSetWindowAttributes attributes;    /* attributes for create windows */
@@ -1005,6 +1007,7 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 }
 
 
+/* Used in events.c, not here */
 void
 DeleteHighlightWindows(TwmWindow *tmp_win)
 {
@@ -1025,7 +1028,7 @@ DeleteHighlightWindows(TwmWindow *tmp_win)
 }
 
 
-void
+static void
 CreateLowlightWindows(TwmWindow *tmp_win)
 {
 	XSetWindowAttributes attributes;    /* attributes for create windows */
