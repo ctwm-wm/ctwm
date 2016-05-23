@@ -1046,6 +1046,7 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 		tmp_win->lolite_wr = (Window) 0;
 		return;
 	}
+
 	/*
 	 * If a special highlight pixmap was given, use that.  Otherwise,
 	 * use a nice, even gray pattern.  The old horizontal lines look really
@@ -1058,7 +1059,6 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 	 * file.  If all else fails, use the foreground color to look like a
 	 * solid line.
 	 */
-
 	if(! tmp_win->LoliteImage) {
 		if(Scr->HighlightPixmapName) {
 			cp = tmp_win->title;
