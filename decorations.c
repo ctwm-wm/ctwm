@@ -898,7 +898,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 
 
 /*
- * Creation/destruction of "hi/lowlight windows".  These are the
+ * Creation/destruction of "hi/lolite windows".  These are the
  * portion[s] of the title bar which change color/form to indicate focus.
  */
 void
