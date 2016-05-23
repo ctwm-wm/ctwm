@@ -25,7 +25,12 @@ void PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw);
 void PaintBorders(TwmWindow *tmp_win, Bool focus);
 
 
-/* Used in decorations.c and add_window.c for building images */
+/*
+ * Used in decorations.c and add_window.c for building images.
+ *
+ * XXX Maybe this should be moved in the image* and just have a function
+ * to return the bitmaps, instead of manually building them?
+ */
 #define gray_width 2
 #define gray_height 2
 static unsigned char gray_bits[] = {
