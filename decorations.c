@@ -1021,7 +1021,13 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 }
 
 
-/* Used in events.c, not here */
+/*
+ * Used in events.c in HandleDestroyNotify(), not here.  Called during
+ * window destruction.  Technically, this isn't actually deleting the
+ * windows; the XDestroyWindow() call it makes will destroy all the
+ * sub-windows.  This is actually just for freeing the image we put in
+ * the window, if there is one.
+ */
 void
 DeleteHighlightWindows(TwmWindow *tmp_win)
 {
@@ -1118,8 +1124,8 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 /*
  * There is no DeleteLowlightWindows() as a counterpart to the
  * HighlightWindows variant.  That func doesn't delete the [sub-]window;
- * that happens semi-autotically when the frame window is destroyed.  It
- * only cleans up the Pixmap if there is one.  And the only way the
+ * that happens semi-automattically when the frame window is destroyed.
+ * It only cleans up the Pixmap if there is one.  And the only way the
  * Lowlight window can wind up with a pixmap is as a copy of the
  * highlight window one, in which case when THAT delete gets called all
  * the cleanup is done.
