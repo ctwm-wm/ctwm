@@ -985,7 +985,13 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		attributes.background_pixel = tmp_win->title.fore;
 	}
 
-	/* Adjust positioning and height for 3d extras */
+	/*
+	 * Adjust y-positioning and height for 3d extras.  Both are fixed
+	 * from the time the titlebar is created.  The X position gets
+	 * changed on any sort of resize etc, and SetupFrame() handles that.
+	 * We just left 'em at X position 0 here, they'll get moved by SF()
+	 * before being displayed anyway.
+	 */
 	if(Scr->use3Dtitles) {
 		y += Scr->TitleShadowDepth;
 		h -= 2 * Scr->TitleShadowDepth;
