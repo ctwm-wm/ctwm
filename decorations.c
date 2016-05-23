@@ -997,15 +997,17 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		h -= 2 * Scr->TitleShadowDepth;
 	}
 
+#define MKWIN() XCreateWindow(dpy, tmp_win->title_w, 0, y, \
+                              Scr->TBInfo.width, h, \
+                              0, Scr->d_depth, CopyFromParent, \
+                              Scr->d_visual, valuemask, &attributes)
+
 	/* Make the left highlight window, unless the title is flush left */
 	if(Scr->TitleJustification == J_LEFT) {
 		tmp_win->hilite_wl = (Window) 0;
 	}
 	else {
-		tmp_win->hilite_wl = XCreateWindow(dpy, tmp_win->title_w, 0, y,
-		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
-		                                   (unsigned int) 0, Scr->d_depth, (unsigned int) CopyFromParent,
-		                                   Scr->d_visual, valuemask, &attributes);
+		tmp_win->hilite_wl = MKWIN();
 	}
 
 	/* Make the right highlight window, unless the title is flush right */
@@ -1013,11 +1015,9 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		tmp_win->hilite_wr = (Window) 0;
 	}
 	else {
-		tmp_win->hilite_wr = XCreateWindow(dpy, tmp_win->title_w, 0, y,
-		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
-		                                   (unsigned int) 0,  Scr->d_depth, (unsigned int) CopyFromParent,
-		                                   Scr->d_visual, valuemask, &attributes);
+		tmp_win->hilite_wr = MKWIN();
 	}
+#undef MKWIN
 }
 
 
