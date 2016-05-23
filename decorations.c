@@ -1077,8 +1077,8 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 	}
 
 	if(Scr->use3Dtitles) {
-		y += 2;
-		h -= 4;
+		y += Scr->TitleShadowDepth;
+		h -= 2 * Scr->TitleShadowDepth;
 	}
 	if(Scr->TitleJustification == J_LEFT) {
 		tmp_win->lolite_wl = (Window) 0;
