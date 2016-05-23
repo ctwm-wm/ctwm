@@ -648,6 +648,9 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	valuemask = (CWWinGravity | CWBackPixel | CWBorderPixel | CWEventMask |
 	             CWCursor);
 
+	/*
+	 * Initialize the button images for the left/right.
+	 */
 	tmp_win->titlebuttons = NULL;
 	nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 	if(nb > 0) {
@@ -710,21 +713,37 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 		}
 	}
 
+	/* Windows in the titlebar that show focus */
 	CreateHighlightWindows(tmp_win);
 	CreateLowlightWindows(tmp_win);
+
+	/* Map all those windows we just created... */
 	XMapSubwindows(dpy, tmp_win->title_w);
+
+	/*
+	 * ...but hide away the hilite's, since they'll only show up when we
+	 * give the window focus.  And when we do (even if that when is
+	 * "right now", the focus handler will handle mapping them for us).
+	 */
 	if(tmp_win->hilite_wl) {
 		XUnmapWindow(dpy, tmp_win->hilite_wl);
 	}
 	if(tmp_win->hilite_wr) {
 		XUnmapWindow(dpy, tmp_win->hilite_wr);
 	}
+
+	/*
+	 * ... but DO show the lolite's, because...  XXX this shouldn't be
+	 * necessary at all, because they would already have been mapped
+	 * during the XMapSubwindows() call above?
+	 */
 	if(tmp_win->lolite_wl) {
 		XMapWindow(dpy, tmp_win->lolite_wl);
 	}
 	if(tmp_win->lolite_wr) {
 		XMapWindow(dpy, tmp_win->lolite_wr);
 	}
+
 	return;
 }
 
