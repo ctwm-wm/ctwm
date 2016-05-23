@@ -918,6 +918,7 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		tmp_win->hilite_wr = (Window) 0;
 		return;
 	}
+
 	/*
 	 * If a special highlight pixmap was given, use that.  Otherwise,
 	 * use a nice, even gray pattern.  The old horizontal lines look really
@@ -930,7 +931,6 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	 * file.  If all else fails, use the foreground color to look like a
 	 * solid line.
 	 */
-
 	if(! tmp_win->HiliteImage) {
 		if(Scr->HighlightPixmapName) {
 			tmp_win->HiliteImage = GetImage(Scr->HighlightPixmapName, tmp_win->title);
