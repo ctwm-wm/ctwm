@@ -621,6 +621,10 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	TitleButton *tb;
 	int nb;
 
+	/*
+	 * If there's no titlebar, we don't need any subwindows or anything,
+	 * so just make sure it's all empty and return.
+	 */
 	if(tmp_win->title_height == 0) {
 		tmp_win->hilite_wl = (Window) 0;
 		tmp_win->hilite_wr = (Window) 0;
@@ -630,15 +634,16 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	}
 
 
-	/*
-	 * create the title bar windows; let the event handler deal with painting
-	 * so that we don't have to spend two pixmaps (or deal with hashing)
-	 */
+	/* Figure where things go */
 	ComputeWindowTitleOffsets(tmp_win, tmp_win->attr.width, false);
 
 	leftx = y = Scr->TBInfo.leftx;
 	rightx = tmp_win->rightx;
 
+	/*
+	 * Setup default attributes for creating the subwindows for each
+	 * button.
+	 */
 	attributes.win_gravity = NorthWestGravity;
 	attributes.background_pixel = tmp_win->title.back;
 	attributes.border_pixel = tmp_win->title.fore;
@@ -649,7 +654,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	             CWCursor);
 
 	/*
-	 * Initialize the button images for the left/right.
+	 * Initialize the button images/subwindows for the left/right.
 	 */
 	tmp_win->titlebuttons = NULL;
 	nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
