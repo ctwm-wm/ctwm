@@ -913,6 +913,7 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	int h = (Scr->TitleHeight - 2 * Scr->FramePadding);
 	int y = Scr->FramePadding;
 
+	/* If this window has NoTitleHighlight, don't do nuthin' */
 	if(! tmp_win->titlehighlight) {
 		tmp_win->hilite_wl = (Window) 0;
 		tmp_win->hilite_wr = (Window) 0;
@@ -937,6 +938,7 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		}
 	}
 	if(! tmp_win->HiliteImage) {
+		/* No defined image, create shaded bars */
 		Pixmap pm = None;
 		Pixmap bm = None;
 
@@ -972,6 +974,8 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		}
 		XFreePixmap(dpy, bm);
 	}
+
+	/* Use what we came up with, or fall back to solid pixels */
 	if(tmp_win->HiliteImage) {
 		valuemask = CWBackPixmap;
 		attributes.background_pixmap = tmp_win->HiliteImage->pixmap;
@@ -981,10 +985,13 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		attributes.background_pixel = tmp_win->title.fore;
 	}
 
+	/* Adjust positioning and height for 3d extras */
 	if(Scr->use3Dtitles) {
 		y += Scr->TitleShadowDepth;
 		h -= 2 * Scr->TitleShadowDepth;
 	}
+
+	/* Make the left highlight window, unless the title is flush left */
 	if(Scr->TitleJustification == J_LEFT) {
 		tmp_win->hilite_wl = (Window) 0;
 	}
@@ -995,6 +1002,7 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		                                   Scr->d_visual, valuemask, &attributes);
 	}
 
+	/* Make the right highlight window, unless the title is flush right */
 	if(Scr->TitleJustification == J_RIGHT) {
 		tmp_win->hilite_wr = (Window) 0;
 	}
