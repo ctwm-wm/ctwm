@@ -1068,17 +1068,9 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 	}
 
 	/*
-	 * If a special highlight pixmap was given, use that.  Otherwise,
-	 * use a nice, even gray pattern.  The old horizontal lines look really
-	 * awful on interlaced monitors (as well as resembling other looks a
-	 * little bit too closely), but can be used by putting
-	 *
-	 *                 Pixmaps { TitleHighlight "hline2" }
-	 *
-	 * (or whatever the horizontal line bitmap is named) in the startup
-	 * file.  If all else fails, use the foreground color to look like a
-	 * solid line.
-	 */
+	 * If there's a defined pixmap for highlights, use that with some
+	 * flipped colors.
+	 * */
 	if(! tmp_win->LoliteImage) {
 		if(Scr->HighlightPixmapName) {
 			cp = tmp_win->title;
@@ -1087,6 +1079,8 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 			tmp_win->LoliteImage = GetImage(Scr->HighlightPixmapName, cp);
 		}
 	}
+
+	/* Use our image, or fall back to solid colored bar */
 	if(tmp_win->LoliteImage) {
 		valuemask = CWBackPixmap;
 		attributes.background_pixmap = tmp_win->LoliteImage->pixmap;
@@ -1096,29 +1090,33 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 		attributes.background_pixel = tmp_win->title.fore;
 	}
 
+	/* Extra padding for 3d decorations */
 	if(Scr->use3Dtitles) {
 		y += Scr->TitleShadowDepth;
 		h -= 2 * Scr->TitleShadowDepth;
 	}
+
+	/* Same invocation as for hilites above */
+#define MKWIN() XCreateWindow(dpy, tmp_win->title_w, 0, y, \
+                              Scr->TBInfo.width, h, \
+                              0, Scr->d_depth, CopyFromParent, \
+                              Scr->d_visual, valuemask, &attributes)
+
+	/* Bar on the left, unless the title is flush left, and ditto right */
 	if(Scr->TitleJustification == J_LEFT) {
 		tmp_win->lolite_wl = (Window) 0;
 	}
 	else {
-		tmp_win->lolite_wl = XCreateWindow(dpy, tmp_win->title_w, 0, y,
-		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
-		                                   (unsigned int) 0, Scr->d_depth, (unsigned int) CopyFromParent,
-		                                   Scr->d_visual, valuemask, &attributes);
+		tmp_win->lolite_wl = MKWIN();
 	}
 
 	if(Scr->TitleJustification == J_RIGHT) {
 		tmp_win->lolite_wr = (Window) 0;
 	}
 	else {
-		tmp_win->lolite_wr = XCreateWindow(dpy, tmp_win->title_w, 0, y,
-		                                   (unsigned int) Scr->TBInfo.width, (unsigned int) h,
-		                                   (unsigned int) 0,  Scr->d_depth, (unsigned int) CopyFromParent,
-		                                   Scr->d_visual, valuemask, &attributes);
+		tmp_win->lolite_wr = MKWIN();
 	}
+#undef MKWIN
 }
 
 /*
