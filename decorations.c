@@ -913,10 +913,12 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	int h = (Scr->TitleHeight - 2 * Scr->FramePadding);
 	int y = Scr->FramePadding;
 
+	/* Init */
+	tmp_win->hilite_wl = (Window) 0;
+	tmp_win->hilite_wr = (Window) 0;
+
 	/* If this window has NoTitleHighlight, don't do nuthin' */
 	if(! tmp_win->titlehighlight) {
-		tmp_win->hilite_wl = (Window) 0;
-		tmp_win->hilite_wr = (Window) 0;
 		return;
 	}
 
@@ -997,24 +999,18 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		h -= 2 * Scr->TitleShadowDepth;
 	}
 
+	/*
+	 * There's a left hilite window unless the title is flush left, and
+	 * similarly for the right.
+	 */
 #define MKWIN() XCreateWindow(dpy, tmp_win->title_w, 0, y, \
                               Scr->TBInfo.width, h, \
                               0, Scr->d_depth, CopyFromParent, \
                               Scr->d_visual, valuemask, &attributes)
-
-	/* Make the left highlight window, unless the title is flush left */
-	if(Scr->TitleJustification == J_LEFT) {
-		tmp_win->hilite_wl = (Window) 0;
-	}
-	else {
+	if(Scr->TitleJustification != J_LEFT) {
 		tmp_win->hilite_wl = MKWIN();
 	}
-
-	/* Make the right highlight window, unless the title is flush right */
-	if(Scr->TitleJustification == J_RIGHT) {
-		tmp_win->hilite_wr = (Window) 0;
-	}
-	else {
+	if(Scr->TitleJustification != J_RIGHT) {
 		tmp_win->hilite_wr = MKWIN();
 	}
 #undef MKWIN
@@ -1057,13 +1053,15 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 	int y = Scr->FramePadding;
 	ColorPair cp;
 
+	/* Init */
+	tmp_win->lolite_wl = (Window) 0;
+	tmp_win->lolite_wr = (Window) 0;
+
 	/*
 	 * We don't even make lolite windows unless UseSunkTitlePixmap is
 	 * set.
 	 */
 	if(!Scr->UseSunkTitlePixmap || ! tmp_win->titlehighlight) {
-		tmp_win->lolite_wl = (Window) 0;
-		tmp_win->lolite_wr = (Window) 0;
 		return;
 	}
 
@@ -1096,24 +1094,18 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 		h -= 2 * Scr->TitleShadowDepth;
 	}
 
-	/* Same invocation as for hilites above */
+	/*
+	 * Bar on the left, unless the title is flush left, and ditto right.
+	 * Same invocation as above for hilites.
+	 */
 #define MKWIN() XCreateWindow(dpy, tmp_win->title_w, 0, y, \
                               Scr->TBInfo.width, h, \
                               0, Scr->d_depth, CopyFromParent, \
                               Scr->d_visual, valuemask, &attributes)
-
-	/* Bar on the left, unless the title is flush left, and ditto right */
-	if(Scr->TitleJustification == J_LEFT) {
-		tmp_win->lolite_wl = (Window) 0;
-	}
-	else {
+	if(Scr->TitleJustification != J_LEFT) {
 		tmp_win->lolite_wl = MKWIN();
 	}
-
-	if(Scr->TitleJustification == J_RIGHT) {
-		tmp_win->lolite_wr = (Window) 0;
-	}
-	else {
+	if(Scr->TitleJustification != J_RIGHT) {
 		tmp_win->lolite_wr = MKWIN();
 	}
 #undef MKWIN
