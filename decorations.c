@@ -156,7 +156,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		/* We're gonna be setting the width, even if it's unchanged */
 		xwcm = CWWidth;
 
-		/* Init: it's as wide as the window, minor borders */
+		/* Init: it's as wide as the window, minus borders */
 		title_width  = xwc.width = w - (2 * tmp_win->frame_bw3D);
 
 		/*
