@@ -1179,7 +1179,7 @@ PaintTitle(TwmWindow *tmp_win)
 		XmbTextExtents(Scr->TitleBarFont.font_set,
 		               tmp_win->name, strlen(tmp_win->name),
 		               &ink_rect, &logical_rect);
-		width = logical_rect.width;
+		width  = logical_rect.width;
 		mwidth = tmp_win->title_width  - Scr->TBInfo.titlex -
 		         Scr->TBInfo.rightoff  - Scr->TitlePadding  -
 		         Scr->TitleShadowDepth - 4;
