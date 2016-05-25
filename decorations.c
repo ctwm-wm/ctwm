@@ -498,9 +498,14 @@ SetFrameShape(TwmWindow *tmp)
 	}
 	else {
 		/*
-		 * can optimize rectangular contents window
+		 * The window itself isn't shaped, so we only need to handle
+		 * shaping for what we're doing.
 		 */
 		if(tmp->squeeze_info && !tmp->squeezed) {
+			/*
+			 * Titlebar is squeezed and window is shown, so we need to
+			 * shape out the missing bits on the side
+			 * */
 			XRectangle  newBounding[2];
 			XRectangle  newClip[2];
 			int fbw2 = 2 * tmp->frame_bw;
@@ -536,10 +541,16 @@ SetFrameShape(TwmWindow *tmp)
 			                        newClip, 2, ShapeSet, YXBanded);
 		}
 		else {
-			(void) XShapeCombineMask(dpy, tmp->frame, ShapeBounding, 0, 0,
-			                         None, ShapeSet);
-			(void) XShapeCombineMask(dpy, tmp->frame, ShapeClip, 0, 0,
-			                         None, ShapeSet);
+			/*
+			 * Full width title (or it's squeezed, but the window is also
+			 * squeezed away, so it's the full width of what we're
+			 * showing anyway), so our simple rectangle covers
+			 * everything.
+			 */
+			XShapeCombineMask(dpy, tmp->frame, ShapeBounding, 0, 0,
+			                  None, ShapeSet);
+			XShapeCombineMask(dpy, tmp->frame, ShapeClip, 0, 0,
+			                  None, ShapeSet);
 		}
 	}
 }
