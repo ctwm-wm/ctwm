@@ -1146,6 +1146,7 @@ PaintTitle(TwmWindow *tmp_win)
 		 */
 		int wid = tmp_win->title_width - Scr->TBInfo.titlex
 		          - Scr->TBInfo.rightoff - Scr->TitlePadding;
+		int state = off;
 
 		/*
 		 * If SunkFocusWindowTitle, then we "sink in" the whole title
@@ -1153,14 +1154,13 @@ PaintTitle(TwmWindow *tmp_win)
 		 * it's popped up.
 		 */
 		if(Scr->SunkFocusWindowTitle && (Scr->Focus == tmp_win) &&
-		                (tmp_win->title_height != 0))
-			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0, wid,
-			             Scr->TitleHeight, Scr->TitleShadowDepth,
-			             tmp_win->title, on, True, False);
-		else
-			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0, wid,
-			             Scr->TitleHeight, Scr->TitleShadowDepth,
-			             tmp_win->title, off, True, False);
+		                (tmp_win->title_height != 0)) {
+			state = on;
+		}
+
+		Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0, wid,
+		             Scr->TitleHeight, Scr->TitleShadowDepth,
+		             tmp_win->title, state, True, False);
 	}
 
 	/* Setup the X graphics context for the drawing */
