@@ -883,7 +883,8 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * titlebar width will be smaller than our 'width' var (which
 	 * describes the window as a whole), so we have to make sure it can't
 	 * be too far.  So start where the right hilite window goes, with a
-	 * little space for it to show up, plus misc padding.
+	 * little space for it to show up, plus misc padding.  x-ref comment
+	 * at top of function about the weird ways this gets used.
 	 */
 	tmp_win->rightx = width - Scr->TBInfo.rightoff;
 	if(squeeze && tmp_win->squeeze_info && !tmp_win->squeezed) {
