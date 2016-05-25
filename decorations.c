@@ -1141,21 +1141,24 @@ PaintTitle(TwmWindow *tmp_win)
 
 	if(Scr->use3Dtitles) {
 		/*
+		 * From the start of the title bits (after left button), to the
+		 * start of the right buttons, minus padding.
+		 */
+		int wid = tmp_win->title_width - Scr->TBInfo.titlex
+		          - Scr->TBInfo.rightoff - Scr->TitlePadding;
+
+		/*
 		 * If SunkFocusWindowTitle, then we "sink in" the whole title
 		 * window when it's focused.  Otherwise (!SunkFocus || !focused)
 		 * it's popped up.
 		 */
 		if(Scr->SunkFocusWindowTitle && (Scr->Focus == tmp_win) &&
 		                (tmp_win->title_height != 0))
-			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
-			             tmp_win->title_width - Scr->TBInfo.titlex -
-			             Scr->TBInfo.rightoff - Scr->TitlePadding,
+			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0, wid,
 			             Scr->TitleHeight, Scr->TitleShadowDepth,
 			             tmp_win->title, on, True, False);
 		else
-			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0,
-			             tmp_win->title_width - Scr->TBInfo.titlex -
-			             Scr->TBInfo.rightoff - Scr->TitlePadding,
+			Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0, wid,
 			             Scr->TitleHeight, Scr->TitleShadowDepth,
 			             tmp_win->title, off, True, False);
 	}
