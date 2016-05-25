@@ -1135,10 +1135,7 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 void
 PaintTitle(TwmWindow *tmp_win)
 {
-	int width, mwidth, len;
-	XRectangle ink_rect;
-	XRectangle logical_rect;
-
+	/* Draw 3d border around title bits */
 	if(Scr->use3Dtitles) {
 		/*
 		 * From the start of the title bits (after left button), to the
@@ -1168,6 +1165,10 @@ PaintTitle(TwmWindow *tmp_win)
 
 	/* And write in the name */
 	if(Scr->use3Dtitles) {
+		int width, mwidth, len;
+		XRectangle ink_rect;
+		XRectangle logical_rect;
+
 		/*
 		 * Do a bunch of trying to chop the length down until it will fit
 		 * into the space.  This doesn't seem to actually accomplish
