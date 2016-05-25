@@ -706,6 +706,8 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 				                            0, (unsigned int) CopyFromParent,
 				                            (Visual *) CopyFromParent,
 				                            valuemask, &attributes);
+				XStoreName(dpy, tbw->window, "TB button");
+
 				/*
 				 * XXX Can we just use tb->image for this instead?  I
 				 * think we can.  The TBInfo.head list is assembled in
@@ -1021,9 +1023,11 @@ CreateHighlightWindows(TwmWindow *tmp_win)
                               Scr->d_visual, valuemask, &attributes)
 	if(Scr->TitleJustification != J_LEFT) {
 		tmp_win->hilite_wl = MKWIN();
+		XStoreName(dpy, tmp_win->hilite_wl, "hilite_wl");
 	}
 	if(Scr->TitleJustification != J_RIGHT) {
 		tmp_win->hilite_wr = MKWIN();
+		XStoreName(dpy, tmp_win->hilite_wr, "hilite_wr");
 	}
 #undef MKWIN
 }
@@ -1116,9 +1120,11 @@ CreateLowlightWindows(TwmWindow *tmp_win)
                               Scr->d_visual, valuemask, &attributes)
 	if(Scr->TitleJustification != J_LEFT) {
 		tmp_win->lolite_wl = MKWIN();
+		XStoreName(dpy, tmp_win->lolite_wl, "lolite_wl");
 	}
 	if(Scr->TitleJustification != J_RIGHT) {
 		tmp_win->lolite_wr = MKWIN();
+		XStoreName(dpy, tmp_win->lolite_wr, "lolite_wr");
 	}
 #undef MKWIN
 }

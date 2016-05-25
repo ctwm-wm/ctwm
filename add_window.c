@@ -1342,6 +1342,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	                               Scr->d_depth,
 	                               (unsigned int) CopyFromParent,
 	                               Scr->d_visual, valuemask, &attributes);
+	XStoreName(dpy, tmp_win->frame, "CTWM frame");
 
 	if(tmp_win->title_height) {
 		valuemask = (CWEventMask | CWDontPropagate | CWBorderPixel | CWBackPixel);
@@ -1360,6 +1361,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		                                 (unsigned int) CopyFromParent,
 		                                 Scr->d_visual, valuemask,
 		                                 &attributes);
+		XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");
 	}
 	else {
 		tmp_win->title_w = 0;
