@@ -1345,11 +1345,8 @@ PaintBorders(TwmWindow *tmp_win, Bool focus)
 	 * square on top of it, and voila; border!
 	 */
 	if(tmp_win->title_height == 0) {
-		Draw3DBorder(tmp_win->frame,
-		             0,
-		             0,
-		             tmp_win->frame_width,
-		             tmp_win->frame_height,
+		Draw3DBorder(tmp_win->frame, 0, 0,
+		             tmp_win->frame_width, tmp_win->frame_height,
 		             Scr->BorderShadowDepth, cp, off, True, False);
 		Draw3DBorder(tmp_win->frame,
 		             tmp_win->frame_bw3D - Scr->BorderShadowDepth,
