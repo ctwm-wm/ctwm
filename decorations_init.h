@@ -13,7 +13,7 @@ void SetCurrentTBAction(int button, int mods, int func, char *action,
                         MenuRoot *menuroot);
 bool CreateTitleButton(char *name, int func, char *action,
                        MenuRoot *menuroot, Bool rightside,
-                       Bool append);
+                       bool append);
 
 
 

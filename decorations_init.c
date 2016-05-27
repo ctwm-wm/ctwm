@@ -239,7 +239,7 @@ SetCurrentTBAction(int button, int nmods, int func, char *action,
  */
 bool
 CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
-                  Bool rightside, Bool append)
+                  Bool rightside, bool append)
 {
 	int button;
 	cur_tb = calloc(1, sizeof(TitleButton));
