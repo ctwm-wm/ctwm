@@ -68,12 +68,12 @@ InitTitlebarButtons(void)
 
 		/* Iconify on the left, resize on the right */
 		if(Scr->use3Dtitles) {
-			MKBTN(3DDOT, ICONIFY, False);
-			MKBTN(3DRESIZE, RESIZE, True);
+			MKBTN(3DDOT, ICONIFY, false);
+			MKBTN(3DRESIZE, RESIZE, true);
 		}
 		else {
-			MKBTN(ICONIFY, ICONIFY, False);
-			MKBTN(RESIZE, RESIZE, True);
+			MKBTN(ICONIFY, ICONIFY, false);
+			MKBTN(RESIZE, RESIZE, true);
 		}
 
 #undef MKBTN
@@ -239,7 +239,7 @@ SetCurrentTBAction(int button, int nmods, int func, char *action,
  */
 bool
 CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
-                  Bool rightside, bool append)
+                  bool rightside, bool append)
 {
 	int button;
 	cur_tb = calloc(1, sizeof(TitleButton));
@@ -252,7 +252,7 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 	}
 
 	cur_tb->name = name;           /* note that we are not copying */
-	cur_tb->rightside = rightside;
+	cur_tb->rightside = (rightside ? True : False);
 	if(rightside) {
 		Scr->TBInfo.nright++;
 	}

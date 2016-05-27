@@ -249,9 +249,9 @@ stmt		: error
 		| RIGHT_TITLEBUTTON string EQUALS action {
 					  GotTitleButton ($2, $4, true);
 					}
-		| LEFT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, FALSE, true); }
+		| LEFT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, false, true); }
 		  binding_list
-		| RIGHT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, TRUE, true); }
+		| RIGHT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, true, true); }
 		  binding_list
 		| button string		{
 		    root = GetRoot($2, NULL, NULL);

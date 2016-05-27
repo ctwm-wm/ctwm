@@ -12,7 +12,7 @@ void InitTitlebarButtons(void);
 void SetCurrentTBAction(int button, int mods, int func, char *action,
                         MenuRoot *menuroot);
 bool CreateTitleButton(char *name, int func, char *action,
-                       MenuRoot *menuroot, Bool rightside,
+                       MenuRoot *menuroot, bool rightside,
                        bool append);
 
 
