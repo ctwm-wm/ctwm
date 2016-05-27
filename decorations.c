@@ -219,7 +219,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		 * title_height=0 is a slightly stupid and nonintuitive way of
 		 * flagging "we don't show a titlebar here", but what the heck...
 		 */
-		if(tmp_win->title_height) {
+		if(tmp_win->title_height != 0) {
 			tmp_win->title_height = Scr->TitleHeight + bw;
 		}
 
@@ -340,7 +340,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * using TitleJustification center or right, which may be rare
 	 * enough that nobody who cares enough has noticed...
 	 */
-	if(tmp_win->title_height) {
+	if(tmp_win->title_height != 0) {
 		XWindowChanges xwc;
 		unsigned int xwcm;
 
