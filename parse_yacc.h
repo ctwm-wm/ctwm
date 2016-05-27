@@ -4,6 +4,8 @@
 #ifndef _CTWM_PARSE_YACC_H
 #define _CTWM_PARSE_YACC_H
 
+#include <stdbool.h>
+
 void yyerror(char *s);
 
 void InitGramVariables(void);
@@ -16,7 +18,7 @@ Bool CheckWarpRingArg(char *s);
 Bool CheckColormapArg(char *s);
 void GotButton(int butt, int func);
 void GotKey(char *key, int func);
-void GotTitleButton(char *bitmapname, int func, Bool rightside);
+void GotTitleButton(char *bitmapname, int func, bool rightside);
 
 
 extern char *Action;

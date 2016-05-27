@@ -207,7 +207,7 @@ void GotKey(char *key, int func)
 }
 
 
-void GotTitleButton(char *bitmapname, int func, Bool rightside)
+void GotTitleButton(char *bitmapname, int func, bool rightside)
 {
 	if(!CreateTitleButton(bitmapname, func, Action, pull, rightside, true)) {
 		twmrc_error_prefix();

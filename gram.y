@@ -244,10 +244,10 @@ stmt		: error
 		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = FALSE; }
 
 		| LEFT_TITLEBUTTON string EQUALS action {
-					  GotTitleButton ($2, $4, False);
+					  GotTitleButton ($2, $4, false);
 					}
 		| RIGHT_TITLEBUTTON string EQUALS action {
-					  GotTitleButton ($2, $4, True);
+					  GotTitleButton ($2, $4, true);
 					}
 		| LEFT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, FALSE, true); }
 		  binding_list
