@@ -1347,7 +1347,7 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
  * Draw the borders onto the frame for a window
  */
 void
-PaintBorders(TwmWindow *tmp_win, Bool focus)
+PaintBorders(TwmWindow *tmp_win, bool focus)
 {
 	ColorPair cp;
 

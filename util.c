@@ -678,7 +678,7 @@ void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
 	}
 	if(tmp_win->highlight) {
 		if(Scr->use3Dborders) {
-			PaintBorders(tmp_win, focus);
+			PaintBorders(tmp_win, (focus == True));
 		}
 		else {
 			if(focus) {

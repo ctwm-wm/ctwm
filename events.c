@@ -2193,7 +2193,7 @@ void HandleExpose(void)
 	}
 	else if(Tmp_win != NULL) {
 		if(Scr->use3Dborders && (Event.xany.window == Tmp_win->frame)) {
-			PaintBorders(Tmp_win, ((Tmp_win == Scr->Focus) ? True : False));
+			PaintBorders(Tmp_win, ((Tmp_win == Scr->Focus) ? true : false));
 			flush_expose(Event.xany.window);
 			return;
 		}

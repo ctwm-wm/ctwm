@@ -22,7 +22,7 @@ void PaintTitle(TwmWindow *tmp_win);
 void PaintTitleButtons(TwmWindow *tmp_win);
 void PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw);
 
-void PaintBorders(TwmWindow *tmp_win, Bool focus);
+void PaintBorders(TwmWindow *tmp_win, bool focus);
 
 
 /*
