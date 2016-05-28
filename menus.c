@@ -2188,7 +2188,7 @@ static void DestroyMenu(MenuRoot *menu)
 	for(item = menu->first; item;) {
 		MenuItem *tmp = item;
 		item = item->next;
-		free((char *) tmp);
+		free(tmp);
 	}
 }
 

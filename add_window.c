@@ -1248,7 +1248,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			Scr->RingLeader = Scr->Ring;
 		}
 
-		free((char *)tmp_win);
+		free(tmp_win);
 		XUngrabServer(dpy);
 		return(NULL);
 	}
@@ -1812,7 +1812,7 @@ TwmColormap *CreateTwmColormap(Colormap c)
 	cmap = malloc(sizeof(TwmColormap));
 	if(!cmap || XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
 		if(cmap) {
-			free((char *) cmap);
+			free(cmap);
 		}
 		return (NULL);
 	}
@@ -1836,7 +1836,7 @@ ColormapWindow *CreateColormapWindow(Window w,
 	if(cwin) {
 		if(!XGetWindowAttributes(dpy, w, &attributes) ||
 		                XSaveContext(dpy, w, ColormapContext, (XPointer) cwin)) {
-			free((char *) cwin);
+			free(cwin);
 			return (NULL);
 		}
 
@@ -1845,7 +1845,7 @@ ColormapWindow *CreateColormapWindow(Window w,
 			cwin->colormap = cmap = CreateTwmColormap(attributes.colormap);
 			if(!cmap) {
 				XDeleteContext(dpy, w, ColormapContext);
-				free((char *) cwin);
+				free(cwin);
 				return (NULL);
 			}
 		}
@@ -2008,7 +2008,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 done:
 	if(cmap_windows) {
 		if(can_free_cmap_windows) {
-			free((char *) cmap_windows);
+			free(cmap_windows);
 		}
 		else {
 			XFree((char *) cmap_windows);
@@ -2326,7 +2326,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 		                 (wp->y == we->y && wp->h == we->h))) {
 			wp->next = we->next;
 			mergeWindowEntries(we, wp);
-			free((char *) we);
+			free(we);
 			we = wp;
 			wp = prevWindowEntry(wp, wr);
 		}
@@ -2335,7 +2335,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 		                 (wn->y == we->y && wn->h == we->h))) {
 			we->next = wn->next;
 			mergeWindowEntries(wn, we);
-			free((char *) wn);
+			free(wn);
 			wn = we->next;
 		}
 		else {

@@ -3063,7 +3063,7 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 				cwins[j] = tmp->cmaps.cwins[i];
 			}
 
-			free((char *) tmp->cmaps.cwins);
+			free(tmp->cmaps.cwins);
 
 			tmp->cmaps.cwins = cwins;
 

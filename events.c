@@ -680,7 +680,7 @@ void HandleColormapNotify(void)
 
 		if(cmap->refcnt == 0) {
 			XDeleteContext(dpy, cmap->c, ColormapContext);
-			free((char *) cmap);
+			free(cmap);
 		}
 
 		return;
@@ -1490,13 +1490,13 @@ void free_cwins(TwmWindow *tmp)
 				cmap = tmp->cmaps.cwins[i]->colormap;
 				if(--cmap->refcnt == 0) {
 					XDeleteContext(dpy, cmap->c, ColormapContext);
-					free((char *) cmap);
+					free(cmap);
 				}
 				XDeleteContext(dpy, tmp->cmaps.cwins[i]->w, ColormapContext);
-				free((char *) tmp->cmaps.cwins[i]);
+				free(tmp->cmaps.cwins[i]);
 			}
 		}
-		free((char *) tmp->cmaps.cwins);
+		free(tmp->cmaps.cwins);
 		if(tmp->cmaps.number_cwins > 1) {
 			free(tmp->cmaps.scoreboard);
 			tmp->cmaps.scoreboard = NULL;
@@ -2521,7 +2521,7 @@ void HandleDestroyNotify(void)
 	}
 	DeleteHighlightWindows(Tmp_win);                            /* 13 */
 
-	free((char *)Tmp_win);
+	free(Tmp_win);
 	Tmp_win = NULL;
 
 	if(Scr->ClickToFocus || Scr->SloppyFocus) {

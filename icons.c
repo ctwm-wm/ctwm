@@ -363,7 +363,7 @@ void IconDown(TwmWindow *tmp_win)
 			                 (ip->y == ie->y && ip->h == ie->h))) {
 				ip->next = ie->next;
 				mergeEntries(ie, ip);
-				free((char *) ie);
+				free(ie);
 				ie = ip;
 				ip = prevIconEntry(ip, ir);
 			}
@@ -372,7 +372,7 @@ void IconDown(TwmWindow *tmp_win)
 			                 (in->y == ie->y && in->h == ie->h))) {
 				ie->next = in->next;
 				mergeEntries(in, ie);
-				free((char *) in);
+				free(in);
 				in = ie->next;
 			}
 			else {
@@ -880,7 +880,7 @@ void DeleteIconsList(TwmWindow *tmp_win)
 			DeleteIcon(icon);
 		}
 		free(nptr->name);
-		free((char *) nptr);
+		free(nptr);
 		nptr = next;
 	}
 	tmp_win->iconslist = NULL;

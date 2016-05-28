@@ -930,7 +930,7 @@ void RemoveIconManager(TwmWindow *tmp_win)
 
 		save = tmp;
 		tmp = tmp->nextv;
-		free((char *) save);
+		free(save);
 	}
 }
 

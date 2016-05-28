@@ -706,10 +706,10 @@ give_up:
 			}
 	}
 	if(entry->wm_command) {
-		free((char *) entry->wm_command);
+		free(entry->wm_command);
 	}
 
-	free((char *) entry);
+	free(entry);
 	*pentry = NULL;
 
 	return 0;
@@ -1091,7 +1091,7 @@ void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData)
 	props[1] = &prop2;
 
 	SmcSetProperties(smcCon, 2, props);
-	free((char *) prop1.vals);
+	free(prop1.vals);
 
 bad:
 	SmcSaveYourselfDone(smcCon, success);
