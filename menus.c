@@ -1381,11 +1381,10 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 
 	if(menu == Scr->Keys) {
 		FuncKey *tmpKey;
-		char *tmpStr, *tmpStr2;
+		char *tmpStr;
 		char modStr[6];
 		char *oldact = 0;
 		int oldmod = 0;
-		int tmpLen;
 
 		DestroyMenu(menu);
 
@@ -1429,14 +1428,9 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 				default:
 					break;
 			}
-			tmpLen = (strlen(tmpKey->name) + strlen(modStr) + 5);
-			tmpStr = malloc(sizeof(char) * tmpLen);
-			sprintf(tmpStr, "[%s + %s]", tmpKey->name, modStr);
-			tmpStr2 = malloc(sizeof(char) * (strlen(tmpKey->action) + tmpLen + 2));
-			sprintf(tmpStr2, "%s %s", tmpStr, tmpKey->action);
-			free(tmpStr);
+			asprintf(&tmpStr, "[%s + %s] %s", tmpKey->name, modStr, tmpKey->action);
 
-			AddToMenu(menu, tmpStr2, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
+			AddToMenu(menu, tmpStr, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
 			oldmod = tmpKey->mods;
 		}
