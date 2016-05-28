@@ -3042,7 +3042,7 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 	}
 
 	if(inc && tmp->cmaps.number_cwins > 0) {
-		cwins = malloc(sizeof(ColormapWindow *) * tmp->cmaps.number_cwins);
+		cwins = calloc(tmp->cmaps.number_cwins, sizeof(ColormapWindow *));
 		if(cwins) {
 			if((previously_installed =
 			                        /* SUPPRESS 560 */(Scr->cmapInfo.cmaps == &tmp->cmaps &&

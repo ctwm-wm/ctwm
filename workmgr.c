@@ -2218,7 +2218,7 @@ static void CreateOccupyWindow(void)
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, cp.back);
-	occwin->obuttonw = malloc(Scr->workSpaceMgr.count * sizeof(Window));
+	occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
 	i = 0;
 	j = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -2881,7 +2881,7 @@ void WMapRestack(WorkSpace *ws)
 
 	number = 0;
 	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &number);
-	smallws = malloc(number * sizeof(Window));
+	smallws = calloc(number, sizeof(Window));
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		j = 0;

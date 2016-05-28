@@ -1915,7 +1915,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 		}
 		if(i == number_cmap_windows) {   /* not in list */
 			Window *new_cmap_windows =
-			        malloc(sizeof(Window) * (number_cmap_windows + 1));
+			        calloc((number_cmap_windows + 1), sizeof(Window));
 
 			if(!new_cmap_windows) {
 				fprintf(stderr,
@@ -1933,7 +1933,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 			number_cmap_windows++;
 		}
 
-		cwins = malloc(sizeof(ColormapWindow *) * number_cmap_windows);
+		cwins = calloc(number_cmap_windows, sizeof(ColormapWindow *));
 		if(cwins) {
 			for(i = 0; i < number_cmap_windows; i++) {
 

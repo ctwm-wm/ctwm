@@ -1045,7 +1045,7 @@ void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData)
 	prop1.name = SmRestartCommand;
 	prop1.type = SmLISTofARRAY8;
 
-	prop1.vals = malloc((Argc + 4) * sizeof(SmPropValue));
+	prop1.vals = calloc((Argc + 4), sizeof(SmPropValue));
 
 	if(!prop1.vals) {
 		success = False;

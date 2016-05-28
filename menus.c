@@ -1265,7 +1265,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			}
 			WindowNameCount++;
 		}
-		WindowNames = malloc(sizeof(TwmWindow *)*WindowNameCount);
+		WindowNames = calloc(WindowNameCount, sizeof(TwmWindow *));
 		WindowNameCount = 0;
 		for(tmp_win = Scr->FirstWindow;
 		                tmp_win != NULL;
@@ -2539,7 +2539,7 @@ static void MosaicFade(TwmWindow *tmp_win, Window blanket)
 	XChangeGC(dpy, gc, GCFunction, &gcv);
 
 	nrects = ((width * height) / (srect * srect)) / 10;
-	rectangles = malloc(nrects * sizeof(XRectangle));
+	rectangles = calloc(nrects, sizeof(XRectangle));
 	for(j = 0; j < nrects; j++) {
 		rectangles [j].width  = srect;
 		rectangles [j].height = srect;
