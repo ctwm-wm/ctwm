@@ -34,6 +34,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #include "otp.h"

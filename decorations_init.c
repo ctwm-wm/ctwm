@@ -9,6 +9,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "add_window.h"
 #include "decorations.h"
