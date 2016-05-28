@@ -909,9 +909,10 @@ static char *unique_filename(char *path, char *prefix, int *fd)
 	}
 #else
 	char *tempFile;
+	mode_t prev_umask;
 
 	asprintf(&tempFile, "%s/%sXXXXXX", path, prefix);
-	mode_t prev_umask = umask(077);
+	prev_umask = umask(077);
 	*fd = mkstemp(tempFile);
 	umask(prev_umask);
 	if(*fd >= 0) {
