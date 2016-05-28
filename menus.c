@@ -185,7 +185,7 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
 	}
 
 	if(tmp == NULL) {
-		tmp = (FuncKey *) malloc(sizeof(FuncKey));
+		tmp = malloc(sizeof(FuncKey));
 		tmp->next = Scr->FuncKeyRoot.next;
 		Scr->FuncKeyRoot.next = tmp;
 	}
@@ -688,7 +688,7 @@ MenuRoot *NewMenuRoot(char *name)
 
 #define UNUSED_PIXEL ((unsigned long) (~0))     /* more than 24 bits */
 
-	tmp = (MenuRoot *) malloc(sizeof(MenuRoot));
+	tmp = malloc(sizeof(MenuRoot));
 	tmp->highlight.fore = UNUSED_PIXEL;
 	tmp->highlight.back = UNUSED_PIXEL;
 	tmp->name = name;
@@ -791,7 +791,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 	        item, action, sub, func);
 #endif
 
-	tmp = (MenuItem *) malloc(sizeof(MenuItem));
+	tmp = malloc(sizeof(MenuItem));
 	tmp->root = menu;
 
 	if(menu->first == NULL) {
@@ -1265,7 +1265,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			}
 			WindowNameCount++;
 		}
-		WindowNames = (TwmWindow **)malloc(sizeof(TwmWindow *)*WindowNameCount);
+		WindowNames = malloc(sizeof(TwmWindow *)*WindowNameCount);
 		WindowNameCount = 0;
 		for(tmp_win = Scr->FirstWindow;
 		                tmp_win != NULL;
@@ -2539,7 +2539,7 @@ static void MosaicFade(TwmWindow *tmp_win, Window blanket)
 	XChangeGC(dpy, gc, GCFunction, &gcv);
 
 	nrects = ((width * height) / (srect * srect)) / 10;
-	rectangles = (XRectangle *) malloc(nrects * sizeof(XRectangle));
+	rectangles = malloc(nrects * sizeof(XRectangle));
 	for(j = 0; j < nrects; j++) {
 		rectangles [j].width  = srect;
 		rectangles [j].height = srect;

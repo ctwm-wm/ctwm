@@ -279,7 +279,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				MenuRoot *menu;
 
 				if(ActiveMenu->pmenu == NULL) {
-					menu  = (MenuRoot *) malloc(sizeof(MenuRoot));
+					menu  = malloc(sizeof(MenuRoot));
 					*menu = *ActiveMenu;
 					menu->pinned = True;
 					menu->mapped = NEVER_MAPPED;
@@ -3042,8 +3042,7 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 	}
 
 	if(inc && tmp->cmaps.number_cwins > 0) {
-		cwins = (ColormapWindow **) malloc(sizeof(ColormapWindow *)*
-		                                   tmp->cmaps.number_cwins);
+		cwins = malloc(sizeof(ColormapWindow *) * tmp->cmaps.number_cwins);
 		if(cwins) {
 			if((previously_installed =
 			                        /* SUPPRESS 560 */(Scr->cmapInfo.cmaps == &tmp->cmaps &&

@@ -1018,7 +1018,7 @@ static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
                                   Bool switching,
                                   int priority)
 {
-	OtpWinList *owl = (OtpWinList *)malloc(sizeof(OtpWinList));
+	OtpWinList *owl = malloc(sizeof(OtpWinList));
 
 	owl->above = NULL;
 	owl->below = NULL;
@@ -1169,7 +1169,7 @@ name_list **OtpScrPriorityL(ScreenInfo *scr, WinType wintype, int priority)
 
 static OtpPreferences *new_OtpPreferences(void)
 {
-	OtpPreferences *pref = (OtpPreferences *)malloc(sizeof(OtpPreferences));
+	OtpPreferences *pref = malloc(sizeof(OtpPreferences));
 	int i;
 
 	/* initialize default values */

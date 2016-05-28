@@ -222,7 +222,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 	/* allocate space for the twm window */
-	tmp_win = (TwmWindow *)calloc(1, sizeof(TwmWindow));
+	tmp_win = calloc(1, sizeof(TwmWindow));
 	if(tmp_win == 0) {
 		fprintf(stderr, "%s: Unable to allocate memory to manage window ID %lx.\n",
 		        ProgramName, w);
@@ -602,7 +602,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	if(LookInList(Scr->StartIconified, tmp_win->full_name, &tmp_win->class)) {
 		if(!tmp_win->wmhints) {
-			tmp_win->wmhints = (XWMHints *)malloc(sizeof(XWMHints));
+			tmp_win->wmhints = malloc(sizeof(XWMHints));
 			tmp_win->wmhints->flags = 0;
 		}
 		tmp_win->wmhints->initial_state = IconicState;
@@ -1809,7 +1809,7 @@ void FetchWmProtocols(TwmWindow *tmp)
 TwmColormap *CreateTwmColormap(Colormap c)
 {
 	TwmColormap *cmap;
-	cmap = (TwmColormap *) malloc(sizeof(TwmColormap));
+	cmap = malloc(sizeof(TwmColormap));
 	if(!cmap ||
 	                XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
 		if(cmap) {
@@ -1833,7 +1833,7 @@ ColormapWindow *CreateColormapWindow(Window w,
 	TwmColormap *cmap;
 	XWindowAttributes attributes;
 
-	cwin = (ColormapWindow *) malloc(sizeof(ColormapWindow));
+	cwin = malloc(sizeof(ColormapWindow));
 	if(cwin) {
 		if(!XGetWindowAttributes(dpy, w, &attributes) ||
 		                XSaveContext(dpy, w, ColormapContext, (XPointer) cwin)) {
@@ -1916,7 +1916,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 		}
 		if(i == number_cmap_windows) {   /* not in list */
 			Window *new_cmap_windows =
-			        (Window *) malloc(sizeof(Window) * (number_cmap_windows + 1));
+			        malloc(sizeof(Window) * (number_cmap_windows + 1));
 
 			if(!new_cmap_windows) {
 				fprintf(stderr,
@@ -1934,8 +1934,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 			number_cmap_windows++;
 		}
 
-		cwins = (ColormapWindow **) malloc(sizeof(ColormapWindow *) *
-		                                   number_cmap_windows);
+		cwins = malloc(sizeof(ColormapWindow *) * number_cmap_windows);
 		if(cwins) {
 			for(i = 0; i < number_cmap_windows; i++) {
 
@@ -1983,7 +1982,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 
 		number_cmap_windows = 1;
 
-		cwins = (ColormapWindow **) malloc(sizeof(ColormapWindow *));
+		cwins = malloc(sizeof(ColormapWindow *));
 		if(XFindContext(dpy, tmp->w, ColormapContext, (XPointer *)&cwins[0]) ==
 		                XCNOENT)
 			cwins[0] = CreateColormapWindow(tmp->w,
@@ -2001,7 +2000,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 	tmp->cmaps.number_cwins = number_cmap_windows;
 	if(number_cmap_windows > 1)
 		tmp->cmaps.scoreboard =
-		        (char *) calloc(1, ColormapsScoreboardLength(&tmp->cmaps));
+		        calloc(1, ColormapsScoreboardLength(&tmp->cmaps));
 
 	if(previously_installed) {
 		InstallColormaps(PropertyNotify, NULL);
@@ -2085,7 +2084,7 @@ name_list **AddWindowRegion(char *geom, int grav1, int grav2)
 	WindowRegion *wr;
 	int mask;
 
-	wr = (WindowRegion *) malloc(sizeof(WindowRegion));
+	wr = malloc(sizeof(WindowRegion));
 	wr->next = NULL;
 
 	if(!Scr->FirstWindowRegion) {
@@ -2120,9 +2119,9 @@ void CreateWindowRegions(void)
 		wl->FirstWindowRegion = NULL;
 		wr2 = NULL;
 		for(wr = Scr->FirstWindowRegion; wr != NULL; wr = wr->next) {
-			wr1  = (WindowRegion *) malloc(sizeof(WindowRegion));
+			wr1  = malloc(sizeof(WindowRegion));
 			*wr1 = *wr;
-			wr1->entries = (WindowEntry *) malloc(sizeof(WindowEntry));
+			wr1->entries = malloc(sizeof(WindowEntry));
 			wr1->entries->next = 0;
 			wr1->entries->x = wr1->x;
 			wr1->entries->y = wr1->y;
@@ -2207,7 +2206,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, w, we->h);
 			}
 			if(h != we->h) {
-				new = (WindowEntry *) malloc(sizeof(WindowEntry));
+				new = malloc(sizeof(WindowEntry));
 				new->twm_win = 0;
 				new->used = 0;
 				new->next = we->next;
@@ -2231,7 +2230,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, we->w, h);
 			}
 			if(w != we->w) {
-				new = (WindowEntry *) malloc(sizeof(WindowEntry));
+				new = malloc(sizeof(WindowEntry));
 				new->twm_win = 0;
 				new->used = 0;
 				new->next = we->next;

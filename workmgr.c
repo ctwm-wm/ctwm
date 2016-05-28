@@ -164,7 +164,7 @@ void ConfigureWorkSpaceManager(void)
 		 * workspace will be random memory bytes, which can causes crashes on
 		 * e.g.  f.menu "TwmWindows".)
 		 */
-		WorkSpaceWindow *wsw = (WorkSpaceWindow *) calloc(1, sizeof(WorkSpaceWindow));
+		WorkSpaceWindow *wsw = calloc(1, sizeof(WorkSpaceWindow));
 		wsw->state = Scr->workSpaceMgr.initialstate; /* BUTTONSSTATE */
 		vs->wsw = wsw;
 	}
@@ -759,7 +759,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 
 	fullOccupation |= (1 << wsnum);
-	ws = (WorkSpace *) malloc(sizeof(WorkSpace));
+	ws = malloc(sizeof(WorkSpace));
 	ws->FirstWindowRegion = NULL;
 	ws->name  = (char *) strdup(name);
 	ws->label = (char *) strdup(name);
@@ -1456,14 +1456,14 @@ void AllocateOtherIconManagers(void)
 
 	oldp = Scr->iconmgr;
 	for(ws = Scr->workSpaceMgr.workSpaceList->next; ws != NULL; ws = ws->next) {
-		ws->iconmgr  = (IconMgr *) malloc(sizeof(IconMgr));
+		ws->iconmgr  = malloc(sizeof(IconMgr));
 		*ws->iconmgr = *oldp;
 		oldv = ws->iconmgr;
 		oldp->nextv = ws->iconmgr;
 		oldv->nextv = NULL;
 
 		for(ip = oldp->next; ip != NULL; ip = ip->next) {
-			p  = (IconMgr *) malloc(sizeof(IconMgr));
+			p  = malloc(sizeof(IconMgr));
 			*p = *ip;
 			ip->nextv  = p;
 			p->next    = NULL;
@@ -1947,10 +1947,8 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 		MapSubwindow *msw;
 		ButtonSubwindow *bsw;
 
-		vs->wsw->bswl [ws->number] = bsw =
-		                                     (ButtonSubwindow *) malloc(sizeof(ButtonSubwindow));
-		vs->wsw->mswl [ws->number] = msw =
-		                                     (MapSubwindow *)    malloc(sizeof(MapSubwindow));
+		vs->wsw->bswl [ws->number] = bsw = malloc(sizeof(ButtonSubwindow));
+		vs->wsw->mswl [ws->number] = msw = malloc(sizeof(MapSubwindow));
 
 		butsw = bsw->w =
 		                XCreateSimpleWindow(dpy, vs->wsw->w,
@@ -2220,7 +2218,7 @@ static void CreateOccupyWindow(void)
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, cp.back);
-	occwin->obuttonw = (Window *) malloc(Scr->workSpaceMgr.count * sizeof(Window));
+	occwin->obuttonw = malloc(Scr->workSpaceMgr.count * sizeof(Window));
 	i = 0;
 	j = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -2883,7 +2881,7 @@ void WMapRestack(WorkSpace *ws)
 
 	number = 0;
 	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &number);
-	smallws = (Window *) malloc(number * sizeof(Window));
+	smallws = malloc(number * sizeof(Window));
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		j = 0;
@@ -3510,7 +3508,7 @@ static void WMapAddToList(TwmWindow *win, WorkSpace *ws)
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		wf = (float)(vs->wsw->wwidth  - 2) / (float) vs->w;
 		hf = (float)(vs->wsw->wheight - 2) / (float) vs->h;
-		wl = (WinList) malloc(sizeof(struct winList));
+		wl = malloc(sizeof(struct winList));
 		wl->wlist  = ws;
 		wl->x      = (int)(win->frame_x * wf);
 		wl->y      = (int)(win->frame_y * hf);

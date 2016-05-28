@@ -110,7 +110,7 @@ void AddToList(name_list **list_head, const char *name, void *ptr)
 		return;        /* ignore empty inserts */
 	}
 
-	nptr = (name_list *)malloc(sizeof(name_list));
+	nptr = malloc(sizeof(name_list));
 	if(nptr == NULL) {
 		fprintf(stderr, "unable to allocate %lu bytes for name_list\n",
 		        (unsigned long) sizeof(name_list));

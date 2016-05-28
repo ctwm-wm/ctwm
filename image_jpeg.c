@@ -134,7 +134,7 @@ LoadJpegImage(const char *name)
 
 	if(Scr->d_depth == 16) {
 		store_data = &convert_for_16;
-		buffer_16bpp = (unsigned short int *) malloc((width) * (height) * 2);
+		buffer_16bpp = malloc((width) * (height) * 2);
 		ximage = XCreateImage(dpy, CopyFromParent, Scr->d_depth, ZPixmap, 0,
 		                      (char *) buffer_16bpp, width, height, 16, width * 2);
 	}

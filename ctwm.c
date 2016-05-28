@@ -298,7 +298,7 @@ int main(int argc, char **argv)
 	}
 
 	/* for simplicity, always allocate NumScreens ScreenInfo struct pointers */
-	ScreenList = (ScreenInfo **) calloc(NumScreens, sizeof(ScreenInfo *));
+	ScreenList = calloc(NumScreens, sizeof(ScreenInfo *));
 	if(ScreenList == NULL) {
 		fprintf(stderr, "%s: Unable to allocate memory for screen list, exiting.\n",
 		        ProgramName);
@@ -344,8 +344,7 @@ int main(int argc, char **argv)
 		XSync(dpy, 0); /* Flush possible previous errors */
 
 		/* Note:  ScreenInfo struct is calloc'ed to initialize to zero. */
-		Scr = ScreenList[scrnum] =
-		              (ScreenInfo *) calloc(1, sizeof(ScreenInfo));
+		Scr = ScreenList[scrnum] = calloc(1, sizeof(ScreenInfo));
 		if(Scr == NULL) {
 			fprintf(stderr,
 			        "%s: unable to allocate memory for ScreenInfo structure"
@@ -467,7 +466,7 @@ int main(int argc, char **argv)
 			}
 		}
 		Scr->RootColormaps.number_cwins = 1;
-		Scr->RootColormaps.cwins = (ColormapWindow **) malloc(sizeof(ColormapWindow *));
+		Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
 		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, True, False);
 		Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 

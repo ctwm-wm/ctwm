@@ -314,7 +314,7 @@ char *ExpandFilePath(char *path)
 		len += HomeLen - 1;
 	}
 	len += strlen(p);
-	ret = (char *) malloc(len + 1);
+	ret = malloc(len + 1);
 	*ret = 0;
 
 	p   = path;
@@ -881,7 +881,7 @@ Pixmap Create3DMenuIcon(unsigned int height,
 	if(col != NULL) {
 		return (col->pix);
 	}
-	col = (struct Colori *) malloc(sizeof(struct Colori));
+	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
 	col->next = colori;
@@ -911,7 +911,7 @@ Pixmap Create3DIconManagerIcon(ColorPair cp)
 	if(col != NULL) {
 		return (col->pix);
 	}
-	col = (struct Colori *) malloc(sizeof(struct Colori));
+	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
 	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, True, False);

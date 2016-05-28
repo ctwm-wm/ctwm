@@ -88,7 +88,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitEntry(ie, grav2, grav1, w, ie->h);
 			}
 			if(h != ie->h) {
-				new = (IconEntry *)malloc(sizeof(IconEntry));
+				new = malloc(sizeof(IconEntry));
 				new->twm_win = 0;
 				new->used = 0;
 				new->next = ie->next;
@@ -112,7 +112,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitEntry(ie, grav2, grav1, ie->w, h);
 			}
 			if(w != ie->w) {
-				new = (IconEntry *)malloc(sizeof(IconEntry));
+				new = malloc(sizeof(IconEntry));
 				new->twm_win = 0;
 				new->used = 0;
 				new->next = ie->next;
@@ -390,7 +390,7 @@ name_list **AddIconRegion(char *geom,
 	IconRegion *ir;
 	int mask, tmp;
 
-	ir = (IconRegion *)malloc(sizeof(IconRegion));
+	ir = malloc(sizeof(IconRegion));
 	ir->next = NULL;
 
 	if(Scr->LastRegion) {
@@ -425,7 +425,7 @@ name_list **AddIconRegion(char *geom,
 		ir->y += Scr->rooth - ir->h;
 	}
 
-	ir->entries = (IconEntry *)malloc(sizeof(IconEntry));
+	ir->entries = malloc(sizeof(IconEntry));
 	ir->entries->next = 0;
 	ir->entries->x = ir->x;
 	ir->entries->y = ir->y;
@@ -515,7 +515,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	Image       *image = None;
 	char        *pattern;
 
-	icon = (Icon *) malloc(sizeof(struct Icon));
+	icon = malloc(sizeof(struct Icon));
 
 	icon->otp           = NULL;
 	icon->border        = Scr->IconBorderColor;

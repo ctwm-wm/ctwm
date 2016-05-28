@@ -46,7 +46,7 @@ void InitVirtualScreens(ScreenInfo *scr)
 
 	if(scr->VirtualScreens == NULL) {
 		if(userealroot) {
-			VirtualScreen *vs = (VirtualScreen *) malloc(sizeof(VirtualScreen));
+			VirtualScreen *vs = malloc(sizeof(VirtualScreen));
 
 			vs->x      = 0;
 			vs->y      = 0;
@@ -61,9 +61,9 @@ void InitVirtualScreens(ScreenInfo *scr)
 			return;
 		}
 		else {
-			scr->VirtualScreens = (name_list *) malloc(sizeof(name_list));
+			scr->VirtualScreens = malloc(sizeof(name_list));
 			scr->VirtualScreens->next = NULL;
-			scr->VirtualScreens->name = (char *) malloc(64);
+			scr->VirtualScreens->name = malloc(64);
 			sprintf(scr->VirtualScreens->name, "%dx%d+0+0", scr->rootw, scr->rooth);
 		}
 	}
@@ -95,7 +95,7 @@ void InitVirtualScreens(ScreenInfo *scr)
 			fprintf(stderr, "InitVirtualScreens : invalid geometry : %s\n", geometry);
 			continue;
 		}
-		vs = (VirtualScreen *) malloc(sizeof(VirtualScreen));
+		vs = malloc(sizeof(VirtualScreen));
 		vs->x = x;
 		vs->y = y;
 		vs->w = w;
