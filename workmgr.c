@@ -1045,8 +1045,7 @@ Bool RedirectToCaptive(Window window)
 		Atom             XA_WM_CTWM_ROOT_name;
 
 		safecopy(cctwm, value.addr, sizeof(cctwm));
-		atomname = (char *) malloc(strlen("WM_CTWM_ROOT_") + strlen(cctwm) + 1);
-		sprintf(atomname, "WM_CTWM_ROOT_%s", cctwm);
+		asprintf(&atomname, "WM_CTWM_ROOT_%s", cctwm);
 		/*
 		 * Set only_if_exists to True: the atom for the requested
 		 * captive ctwm won't exist if the captive ctwm itself does not exist.
@@ -4018,8 +4017,7 @@ AddToCaptiveList(const char *cptname)
 
 	/* Stash property/atom of our captivename */
 	root = RootWindow(dpy, scrnum);
-	atomname = (char *) malloc(strlen("WM_CTWM_ROOT_") + strlen(rcname) + 1);
-	sprintf(atomname, "WM_CTWM_ROOT_%s", rcname);
+	asprintf(&atomname, "WM_CTWM_ROOT_%s", rcname);
 	XA_WM_CTWM_ROOT_our_name = XInternAtom(dpy, atomname, False);
 	free(atomname);
 	XChangeProperty(dpy, root, XA_WM_CTWM_ROOT_our_name, XA_WINDOW, 32,

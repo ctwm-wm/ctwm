@@ -621,13 +621,7 @@ void GetFont(MyFont *font)
 		XFreeFontSet(dpy, font->font_set);
 	}
 
-	basename2 = (char *)malloc(strlen(font->basename) + 3);
-	if(basename2) {
-		sprintf(basename2, "%s,*", font->basename);
-	}
-	else {
-		basename2 = font->basename;
-	}
+	asprintf(&basename2, "%s,*", font->basename);
 	if((font->font_set = XCreateFontSet(dpy, basename2,
 	                                    &missing_charset_list_return,
 	                                    &missing_charset_count_return,
@@ -645,9 +639,7 @@ void GetFont(MyFont *font)
 			exit(1);
 		}
 	}
-	if(basename2 != font->basename) {
-		free(basename2);
-	}
+	free(basename2);
 	font_extents = XExtentsOfFontSet(font->font_set);
 
 	fnum = XFontsOfFontSet(font->font_set, &xfonts, &font_names);
