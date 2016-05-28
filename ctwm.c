@@ -92,6 +92,7 @@
 #include "parse.h"
 #include "version.h"
 #include "menus.h"
+#include "decorations_init.h"
 #include "events.h"
 #include "util.h"
 #include "mask_screen.h"

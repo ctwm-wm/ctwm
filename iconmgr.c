@@ -70,6 +70,7 @@
 #include "util.h"
 #include "parse.h"
 #include "screen.h"
+#include "decorations.h"
 #include "resize.h"
 #include "otp.h"
 #include "add_window.h"

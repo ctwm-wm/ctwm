@@ -9,6 +9,7 @@
 #include <sys/select.h>
 
 #include "util.h"
+#include "decorations.h"
 #include "screen.h"
 #include "icons.h"
 #include "cursor.h"
@@ -20,7 +21,6 @@
 
 /* Various internal subbits */
 static void PaintAllDecoration(void);
-static void PaintTitleButtons(TwmWindow *tmp_win);
 
 
 /*
@@ -257,20 +257,5 @@ PaintAllDecoration(void)
 	}
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		PaintWorkSpaceManager(vs);
-	}
-}
-
-
-static void
-PaintTitleButtons(TwmWindow *tmp_win)
-{
-	int i;
-	TBWindow *tbw;
-	int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
-
-	for(i = 0, tbw = tmp_win->titlebuttons; i < nb; i++, tbw++) {
-		if(tbw) {
-			PaintTitleButton(tmp_win, tbw);
-		}
 	}
 }

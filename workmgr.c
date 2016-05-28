@@ -42,6 +42,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "icons.h"
+#include "decorations.h"
 #include "resize.h"
 #include "add_window.h"
 #include "events.h"

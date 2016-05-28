@@ -118,14 +118,7 @@ void Draw3DBorder(Window w,
                   int x, int y, int width, int height, int bw,
                   ColorPair cp,
                   int state, int fill, int forcebw);
-void Draw3DCorner(Window w,
-                  int x, int y, int width, int height, int thick, int bw,
-                  ColorPair cp,
-                  int type);
-void PaintBorders(TwmWindow *tmp_win, Bool focus);
-void PaintTitle(TwmWindow *tmp_win);
 void PaintIcon(TwmWindow *tmp_win);
-void PaintTitleButton(TwmWindow *tmp_win, TBWindow  *tbw);
 void AdoptWindow(void);
 void RescueWindows(void);
 void DebugTrace(char *file);

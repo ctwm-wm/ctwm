@@ -11,6 +11,7 @@
 #include <string.h>
 #include <strings.h>
 
+#include "decorations_init.h"
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
@@ -206,9 +207,9 @@ void GotKey(char *key, int func)
 }
 
 
-void GotTitleButton(char *bitmapname, int func, Bool rightside)
+void GotTitleButton(char *bitmapname, int func, bool rightside)
 {
-	if(!CreateTitleButton(bitmapname, func, Action, pull, rightside, True)) {
+	if(!CreateTitleButton(bitmapname, func, Action, pull, rightside, true)) {
 		twmrc_error_prefix();
 		fprintf(stderr,
 		        "unable to create %s titlebutton \"%s\"\n",

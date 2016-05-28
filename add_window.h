@@ -78,9 +78,7 @@ extern void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 extern TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp,
                             VirtualScreen *vs);
 extern TwmWindow *GetTwmWindow(Window w);
-extern void DeleteHighlightWindows(TwmWindow *tmp_win);
 extern int MappedNotOverride(Window w);
-extern void AddDefaultBindings(void);
 extern void GrabButtons(TwmWindow *tmp_win);
 extern void GrabKeys(TwmWindow *tmp_win);
 extern void GetWindowSizeHints(TwmWindow *tmp_win);
@@ -94,7 +92,6 @@ extern int AddingY;
 extern unsigned int AddingW;
 extern unsigned int AddingH;
 
-extern void SetHighlightPixmap(char *filename);
 extern void FetchWmColormapWindows(TwmWindow *tmp);
 extern void FetchWmProtocols(TwmWindow *tmp);
 

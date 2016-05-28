@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <strings.h>
 
@@ -81,6 +82,7 @@
 #include "parse.h"
 #include "icons.h"
 #include "add_window.h"
+#include "decorations.h"
 #include "otp.h"
 #include "image.h"
 #include "functions.h"
@@ -103,7 +105,7 @@ static struct {
 	int y;
 } MenuOrigins[MAXMENUDEPTH];
 static Cursor LastCursor;
-static Bool addingdefaults = False;
+static bool addingdefaults = false;
 
 static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure);
 static void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, int exposure);
@@ -181,9 +183,6 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
 			break;
 		}
 	}
-	if(tmp && addingdefaults) {
-		return (True);
-	}
 
 	if(tmp == NULL) {
 		tmp = (FuncKey *) malloc(sizeof(FuncKey));
@@ -220,27 +219,36 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
  ***********************************************************************
  */
 
-Bool AddFuncButton(int num, int cont, int nmods, int func,
-                   MenuRoot *menu, MenuItem *item)
+void
+AddFuncButton(int num, int cont, int nmods, int func,
+              MenuRoot *menu, MenuItem *item)
 {
 	FuncButton *tmp;
 
-	/* see if there already is a key defined for this context */
+	/* Find existing def for this button/context/modifier if any */
 	for(tmp = Scr->FuncButtonRoot.next; tmp != NULL; tmp = tmp->next) {
 		if((tmp->num == num) && (tmp->cont == cont) && (tmp->mods == nmods)) {
 			break;
 		}
 	}
+
+	/*
+	 * If it's already set, and we're addingdefault (i.e., called from
+	 * AddDefaultFuncButtons()), just return.  This lets us cram on
+	 * fallback mappings, without worrying about overriding user choices.
+	 */
 	if(tmp && addingdefaults) {
-		return (True);
+		return;
 	}
 
+	/* No mapping yet; create a shell */
 	if(tmp == NULL) {
-		tmp = (FuncButton *) malloc(sizeof(FuncButton));
+		tmp = malloc(sizeof(FuncButton));
 		tmp->next = Scr->FuncButtonRoot.next;
 		Scr->FuncButtonRoot.next = tmp;
 	}
 
+	/* Set the new details */
 	tmp->num  = num;
 	tmp->cont = cont;
 	tmp->mods = nmods;
@@ -248,211 +256,39 @@ Bool AddFuncButton(int num, int cont, int nmods, int func,
 	tmp->menu = menu;
 	tmp->item = item;
 
-	return True;
-}
-
-
-static TitleButton *cur_tb = NULL;
-
-void ModifyCurrentTB(int button, int nmods, int func, char *action,
-                     MenuRoot *menuroot)
-{
-	TitleButtonFunc *tbf;
-
-	if(!cur_tb) {
-		fprintf(stderr, "%s: can't find titlebutton\n", ProgramName);
-		return;
-	}
-	for(tbf = cur_tb->funs; tbf; tbf = tbf->next) {
-		if(tbf->num == button && tbf->mods == nmods) {
-			break;
-		}
-	}
-	if(!tbf) {
-		tbf = (TitleButtonFunc *)malloc(sizeof(TitleButtonFunc));
-		if(!tbf) {
-			fprintf(stderr, "%s: out of memory\n", ProgramName);
-			return;
-		}
-		tbf->next = cur_tb->funs;
-		cur_tb->funs = tbf;
-	}
-	tbf->num = button;
-	tbf->mods = nmods;
-	tbf->func = func;
-	tbf->action = action;
-	tbf->menuroot = menuroot;
-}
-
-int CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
-                      Bool rightside, Bool append)
-{
-	int button;
-	cur_tb = (TitleButton *) malloc(sizeof(TitleButton));
-
-	if(!cur_tb) {
-		fprintf(stderr,
-		        "%s:  unable to allocate %lu bytes for title button\n",
-		        ProgramName, (unsigned long) sizeof(TitleButton));
-		return 0;
-	}
-
-	cur_tb->next = NULL;
-	cur_tb->name = name;                      /* note that we are not copying */
-	cur_tb->image = None;                     /* WARNING, values not set yet */
-	cur_tb->width = 0;                        /* see InitTitlebarButtons */
-	cur_tb->height = 0;                       /* ditto */
-	cur_tb->rightside = rightside;
-	cur_tb->funs = NULL;
-	if(rightside) {
-		Scr->TBInfo.nright++;
-	}
-	else {
-		Scr->TBInfo.nleft++;
-	}
-
-	for(button = 0; button < MAX_BUTTONS; button++) {
-		ModifyCurrentTB(button + 1, 0, func, action, menuroot);
-	}
-
-	/*
-	 * Cases for list:
-	 *
-	 *     1.  empty list, prepend left       put at head of list
-	 *     2.  append left, prepend right     put in between left and right
-	 *     3.  append right                   put at tail of list
-	 *
-	 * Do not refer to widths and heights yet since buttons not created
-	 * (since fonts not loaded and heights not known).
-	 */
-	if((!Scr->TBInfo.head) || ((!append) && (!rightside))) {    /* 1 */
-		cur_tb->next = Scr->TBInfo.head;
-		Scr->TBInfo.head = cur_tb;
-	}
-	else if(append && rightside) {      /* 3 */
-		TitleButton *t;
-		for /* SUPPRESS 530 */
-		(t = Scr->TBInfo.head; t->next; t = t->next);
-		t->next = cur_tb;
-		cur_tb->next = NULL;
-	}
-	else {                              /* 2 */
-		TitleButton *t, *prev = NULL;
-		for(t = Scr->TBInfo.head; t && !t->rightside; t = t->next) {
-			prev = t;
-		}
-		if(prev) {
-			cur_tb->next = prev->next;
-			prev->next = cur_tb;
-		}
-		else {
-			cur_tb->next = Scr->TBInfo.head;
-			Scr->TBInfo.head = cur_tb;
-		}
-	}
-
-	return 1;
+	return;
 }
 
 
 /*
- * InitTitlebarButtons - Do all the necessary stuff to load in a titlebar
- * button.  If we can't find the button, then put in a question; if we can't
- * find the question mark, something is wrong and we are probably going to be
- * in trouble later on.
+ * AddDefaultFuncButtons - attach default bindings so that naive users
+ * don't get messed up if they provide a minimal twmrc.
+ *
+ * This used to be in add_window.c, and maybe fits better in
+ * decorations_init.c (only place it's called) now, but is currently here
+ * so addingdefaults is in scope.
+ *
+ * XXX Probably better to adjust things so we can do that job _without_
+ * the magic global var...
  */
-void InitTitlebarButtons(void)
+void
+AddDefaultFuncButtons(void)
 {
-	TitleButton *tb;
-	int h;
+	addingdefaults = true;
 
-	/*
-	 * initialize dimensions
-	 */
-	Scr->TBInfo.width = (Scr->TitleHeight -
-	                     2 * (Scr->FramePadding + Scr->ButtonIndent));
-	if(Scr->use3Dtitles)
-		Scr->TBInfo.pad = ((Scr->TitlePadding > 1)
-		                   ? ((Scr->TitlePadding + 1) / 2) : 0);
-	else
-		Scr->TBInfo.pad = ((Scr->TitlePadding > 1)
-		                   ? ((Scr->TitlePadding + 1) / 2) : 1);
-	h = Scr->TBInfo.width - 2 * Scr->TBInfo.border;
+#define SETDEF(btn, ctx, func) AddFuncButton(btn, ctx, 0, func, NULL, NULL)
+	SETDEF(Button1, C_TITLE,    F_MOVE);
+	SETDEF(Button1, C_ICON,     F_ICONIFY);
+	SETDEF(Button1, C_ICONMGR,  F_ICONIFY);
 
-	/*
-	 * add in some useful buttons and bindings so that novices can still
-	 * use the system.
-	 */
-	if(!Scr->NoDefaults) {
-		/* insert extra buttons */
-		if(Scr->use3Dtitles) {
-			if(!CreateTitleButton(TBPM_3DDOT, F_ICONIFY, "", (MenuRoot *) NULL,
-			                      False, False)) {
-				fprintf(stderr, "%s:  unable to add iconify button\n", ProgramName);
-			}
-			if(!CreateTitleButton(TBPM_3DRESIZE, F_RESIZE, "", (MenuRoot *) NULL,
-			                      True, True)) {
-				fprintf(stderr, "%s:  unable to add resize button\n", ProgramName);
-			}
-		}
-		else {
-			if(!CreateTitleButton(TBPM_ICONIFY, F_ICONIFY, "", (MenuRoot *) NULL,
-			                      False, False)) {
-				fprintf(stderr, "%s:  unable to add iconify button\n", ProgramName);
-			}
-			if(!CreateTitleButton(TBPM_RESIZE, F_RESIZE, "", (MenuRoot *) NULL,
-			                      True, True)) {
-				fprintf(stderr, "%s:  unable to add resize button\n", ProgramName);
-			}
-		}
-		addingdefaults = True;
-		AddDefaultBindings();
-		addingdefaults = False;
-	}
-	ComputeCommonTitleOffsets();
+	SETDEF(Button2, C_TITLE,    F_RAISELOWER);
+	SETDEF(Button2, C_ICON,     F_ICONIFY);
+	SETDEF(Button2, C_ICONMGR,  F_ICONIFY);
+#undef SETDEF
 
-	/*
-	 * load in images and do appropriate centering
-	 */
-
-	for(tb = Scr->TBInfo.head; tb; tb = tb->next) {
-		tb->image = GetImage(tb->name, Scr->TitleC);
-		if(!tb->image) {
-			tb->image = GetImage(TBPM_QUESTION, Scr->TitleC);
-			if(!tb->image) {
-				/*
-				 * (sorta) Can't Happen.  Calls a static function that
-				 * builds from static data, so could only possibly fail
-				 * if XCreateBitmapFromData() failed (which should be
-				 * vanishingly rare; memory allocation failures etc).
-				 */
-				fprintf(stderr, "%s:  unable to add titlebar button \"%s\"\n",
-				        ProgramName, tb->name);
-				continue;
-			}
-		}
-		tb->width  = tb->image->width;
-		tb->height = tb->image->height;
-		tb->dstx = (h - tb->width + 1) / 2;
-		if(tb->dstx < 0) {              /* clip to minimize copying */
-			tb->srcx = -(tb->dstx);
-			tb->width = h;
-			tb->dstx = 0;
-		}
-		else {
-			tb->srcx = 0;
-		}
-		tb->dsty = (h - tb->height + 1) / 2;
-		if(tb->dsty < 0) {
-			tb->srcy = -(tb->dsty);
-			tb->height = h;
-			tb->dsty = 0;
-		}
-		else {
-			tb->srcy = 0;
-		}
-	}
+	addingdefaults = false;
 }
+
 
 void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure)
 {

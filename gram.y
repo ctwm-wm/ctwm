@@ -76,6 +76,7 @@
 #include "icons.h"
 #include "windowbox.h"
 #include "add_window.h"
+#include "decorations_init.h"
 #include "list.h"
 #include "util.h"
 #include "screen.h"
@@ -243,14 +244,14 @@ stmt		: error
 		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = FALSE; }
 
 		| LEFT_TITLEBUTTON string EQUALS action {
-					  GotTitleButton ($2, $4, False);
+					  GotTitleButton ($2, $4, false);
 					}
 		| RIGHT_TITLEBUTTON string EQUALS action {
-					  GotTitleButton ($2, $4, True);
+					  GotTitleButton ($2, $4, true);
 					}
-		| LEFT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, FALSE, TRUE); }
+		| LEFT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, false, true); }
 		  binding_list
-		| RIGHT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, TRUE, TRUE); }
+		| RIGHT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, true, true); }
 		  binding_list
 		| button string		{
 		    root = GetRoot($2, NULL, NULL);
@@ -613,8 +614,8 @@ binding_entries : /* Empty */
 		| binding_entries binding_entry
 		;
 
-binding_entry   : button keyaction { ModifyCurrentTB($1, mods, $2, Action, pull); mods = 0;}
-		| button EQUALS action { ModifyCurrentTB($1, 0, $3, Action, pull);}
+binding_entry   : button keyaction { SetCurrentTBAction($1, mods, $2, Action, pull); mods = 0;}
+		| button EQUALS action { SetCurrentTBAction($1, 0, $3, Action, pull);}
 		| button COLON action {
 			/* Deprecated since 3.8, no longer supported */
 			yyerror("Title buttons specifications without = are no "
@@ -630,7 +631,7 @@ pixmap_entries	: /* Empty */
 		| pixmap_entries pixmap_entry
 		;
 
-pixmap_entry	: TITLE_HILITE string { SetHighlightPixmap ($2); }
+pixmap_entry	: TITLE_HILITE string { Scr->HighlightPixmapName = strdup($2); }
 		;
 
 

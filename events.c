@@ -79,6 +79,7 @@
 
 #include "ctwm_atoms.h"
 #include "add_window.h"
+#include "decorations.h"
 #include "clicktofocus.h"
 #include "menus.h"
 #include "events.h"
@@ -2192,7 +2193,7 @@ void HandleExpose(void)
 	}
 	else if(Tmp_win != NULL) {
 		if(Scr->use3Dborders && (Event.xany.window == Tmp_win->frame)) {
-			PaintBorders(Tmp_win, ((Tmp_win == Scr->Focus) ? True : False));
+			PaintBorders(Tmp_win, ((Tmp_win == Scr->Focus) ? true : false));
 			flush_expose(Event.xany.window);
 			return;
 		}
@@ -2214,6 +2215,12 @@ void HandleExpose(void)
 			Window w = Event.xany.window;
 			int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 
+			/*
+			 * This looks an awful lot like a manual reimplementation of
+			 * PaintTitleButtons().  It's not quite though, it's just
+			 * looking up one button to paint it.  And it would be a
+			 * little grody trying to shoehorn it in.
+			 */
 			for(i = 0, tbw = Tmp_win->titlebuttons; i < nb; i++, tbw++) {
 				if(w == tbw->window) {
 					PaintTitleButton(Tmp_win, tbw);
@@ -4203,7 +4210,7 @@ void HandleConfigureRequest(void)
 	int x, y, width, height, bw;
 	int gravx, gravy;
 	XConfigureRequestEvent *cre = &Event.xconfigurerequest;
-	Bool sendEvent;
+	bool sendEvent;
 
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "ConfigureRequest\n");
@@ -4252,7 +4259,7 @@ void HandleConfigureRequest(void)
 		return;
 	}
 
-	sendEvent = False;
+	sendEvent = false;
 	if((cre->value_mask & CWStackMode) && Tmp_win->stackmode) {
 		TwmWindow *otherwin;
 
@@ -4282,7 +4289,7 @@ void HandleConfigureRequest(void)
 					;
 			}
 		}
-		sendEvent = True;
+		sendEvent = true;
 	}
 
 
@@ -4345,7 +4352,7 @@ void HandleConfigureRequest(void)
 	 * UseThreeDBorders or BorderWidth 0 is set.)
 	 */
 	if(!bw) {
-		sendEvent = True;
+		sendEvent = true;
 	}
 
 	/*
