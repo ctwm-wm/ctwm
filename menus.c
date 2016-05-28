@@ -1382,7 +1382,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 	if(menu == Scr->Keys) {
 		FuncKey *tmpKey;
 		char *tmpStr;
-		char modStr[6];
+		char *modStr;
 		char *oldact = 0;
 		int oldmod = 0;
 
@@ -1405,27 +1405,27 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			if((tmpKey->action == oldact) && (tmpKey->mods == oldmod)) {
 				continue;
 			}
-			strcpy(modStr, "");
 			switch(tmpKey->mods) {
 				case  1:
-					strcpy(modStr, "S");
+					modStr = "S";
 					break;
 				case  4:
-					strcpy(modStr, "C");
+					modStr = "C";
 					break;
 				case  5:
-					strcpy(modStr, "S + C");
+					modStr = "S + C";
 					break;
 				case  8:
-					strcpy(modStr, "M");
+					modStr = "M";
 					break;
 				case  9:
-					strcpy(modStr, "S + M");
+					modStr = "S + M";
 					break;
 				case 12:
-					strcpy(modStr, "C + M");
+					modStr = "C + M";
 					break;
 				default:
+					modStr = "";
 					break;
 			}
 			asprintf(&tmpStr, "[%s + %s] %s", tmpKey->name, modStr, tmpKey->action);
