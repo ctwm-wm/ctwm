@@ -1810,8 +1810,7 @@ TwmColormap *CreateTwmColormap(Colormap c)
 {
 	TwmColormap *cmap;
 	cmap = malloc(sizeof(TwmColormap));
-	if(!cmap ||
-	                XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
+	if(!cmap || XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
 		if(cmap) {
 			free((char *) cmap);
 		}
