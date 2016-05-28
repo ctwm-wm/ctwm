@@ -118,7 +118,7 @@ void AddToList(name_list **list_head, const char *name, void *ptr)
 	}
 
 	nptr->next = *list_head;
-	nptr->name = (char *) strdup(name);
+	nptr->name = strdup(name);
 	nptr->ptr = (ptr == NULL) ? (char *)TRUE : ptr;
 	*list_head = nptr;
 }

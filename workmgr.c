@@ -761,8 +761,8 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	fullOccupation |= (1 << wsnum);
 	ws = malloc(sizeof(WorkSpace));
 	ws->FirstWindowRegion = NULL;
-	ws->name  = (char *) strdup(name);
-	ws->label = (char *) strdup(name);
+	ws->name  = strdup(name);
+	ws->label = strdup(name);
 	ws->clientlist = NULL;
 	ws->save_focus = NULL;
 
@@ -3862,7 +3862,7 @@ static char **GetCaptivesList(int scrnum)
 	l = 0;
 	i = 0;
 	while(l < len) {
-		ret [i++] = (char *) strdup((char *) p);
+		ret [i++] = strdup((char *) p);
 		l += strlen((char *)p) + 1;
 		p += strlen((char *)p) + 1;
 	}
@@ -3998,7 +3998,7 @@ AddToCaptiveList(const char *cptname)
 	/* Put together new list of captives */
 	newclist = calloc(count + 2, sizeof(char *));
 	for(i = 0; i < count; i++) {
-		newclist [i] = (char *) strdup(clist [i]);
+		newclist [i] = strdup(clist [i]);
 	}
 	newclist [count] = strdup(rcname);
 	newclist [count + 1] = NULL;
@@ -4118,7 +4118,7 @@ CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
 		cctwm.root = root;
 		XFetchName(dpy, root, &cctwm.name);
 		if(!cctwm.name) {
-			cctwm.name = (char *) strdup("Root");
+			cctwm.name = strdup("Root");
 		}
 		return (cctwm);
 	}
