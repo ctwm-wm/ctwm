@@ -63,8 +63,8 @@ void InitVirtualScreens(ScreenInfo *scr)
 		else {
 			scr->VirtualScreens = malloc(sizeof(name_list));
 			scr->VirtualScreens->next = NULL;
-			scr->VirtualScreens->name = malloc(64);
-			sprintf(scr->VirtualScreens->name, "%dx%d+0+0", scr->rootw, scr->rooth);
+			asprintf(&scr->VirtualScreens->name, "%dx%d+0+0",
+			         scr->rootw, scr->rooth);
 		}
 	}
 	scr->numVscreens = 0;
