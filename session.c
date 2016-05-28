@@ -908,18 +908,17 @@ static char *unique_filename(char *path, char *prefix, int *fd)
 		free(name);
 	}
 #else
-	char tempFile[PATH_MAX];
+	char *tempFile;
 
-	sprintf(tempFile, "%s/%sXXXXXX", path, prefix);
+	asprintf(&tempFile, "%s/%sXXXXXX", path, prefix);
 	mode_t prev_umask = umask(077);
 	*fd = mkstemp(tempFile);
 	umask(prev_umask);
 	if(*fd >= 0) {
-		char *ptr = (char *) malloc(strlen(tempFile) + 1);
-		strcpy(ptr, tempFile);
-		return ptr;
+		return tempFile;
 	}
 	else {
+		free(tempFile);
 		return NULL;
 	}
 #endif
