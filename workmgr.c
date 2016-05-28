@@ -3986,12 +3986,7 @@ AddToCaptiveList(const char *cptname)
 			fprintf(stderr, "Cannot find a suitable name for captive ctwm\n");
 			exit(1);
 		}
-		rcname = malloc(strlen("ctwm-XX") + 1);
-		if(rcname == NULL) {
-			fprintf(stderr, "malloc() for rcname failed!\n");
-			abort();
-		}
-		sprintf(rcname, "ctwm-%d", i);
+		asprintf(&rcname, "ctwm-%d", i);
 	}
 	else {
 		rcname = strdup(cptname);
