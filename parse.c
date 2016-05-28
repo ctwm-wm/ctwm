@@ -423,8 +423,7 @@ static int twmFileInput(void)
 			rc_includes[include_file].fp = fp;
 			rc_includes[include_file].lineno = twmrc_lineno;
 			twmrc_lineno = 0;
-			rc_includes[include_file].name = malloc(strlen(p) + 1);
-			strcpy(rc_includes[include_file].name, p);
+			rc_includes[include_file].name = strdup(p);
 			continue;
 		}
 		ptr = 0;
