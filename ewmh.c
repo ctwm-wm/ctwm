@@ -1659,7 +1659,7 @@ void EwmhSet_NET_CLIENT_LIST_STACKING(void)
 
 	/* Expect the same number of windows as in the _NET_CLIENT_LIST */
 	size = Scr->ewmh_CLIENT_LIST_used + 10;
-	prop = malloc(size * sizeof(unsigned long));
+	prop = calloc(size, sizeof(unsigned long));
 	if(prop == NULL) {
 		return;
 	}
