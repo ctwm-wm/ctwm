@@ -871,7 +871,7 @@ static Image *ExtractIcon(ScreenInfo *scr, unsigned long *prop, int width,
 	/** XXX sort of duplicated from util.c:LoadJpegImage() */
 	if(scr->d_depth == 16) {
 		store_data = convert_for_16;
-		buffer_16bpp = malloc(width * height * 2);
+		buffer_16bpp = malloc(width * height * sizeof(buffer_16bpp[0]));
 		buffer_32bpp = NULL;
 		ximage = XCreateImage(dpy, CopyFromParent, scr->d_depth, ZPixmap, 0,
 		                      (char *) buffer_16bpp, width, height, 16, width * 2);
