@@ -565,19 +565,10 @@ int ReadWinConfigEntry(FILE *configFile, unsigned short version,
 	unsigned char byte;
 	int i;
 
-	*pentry = entry = malloc(sizeof(TWMWinConfigEntry));
+	*pentry = entry = calloc(1, sizeof(TWMWinConfigEntry));
 	if(!*pentry) {
 		return 0;
 	}
-
-	entry->tag = 0;
-	entry->client_id = NULL;
-	entry->window_role = NULL;
-	entry->class.res_name = NULL;
-	entry->class.res_class = NULL;
-	entry->wm_name = NULL;
-	entry->wm_command = NULL;
-	entry->wm_command_count = 0;
 
 	if(!read_counted_string(configFile, &entry->client_id)) {
 		goto give_up;
