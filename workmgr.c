@@ -3998,10 +3998,10 @@ AddToCaptiveList(const char *cptname)
 	/* Put together new list of captives */
 	newclist = calloc(count + 2, sizeof(char *));
 	for(i = 0; i < count; i++) {
-		newclist [i] = strdup(clist [i]);
+		newclist[i] = strdup(clist[i]);
 	}
-	newclist [count] = strdup(rcname);
-	newclist [count + 1] = NULL;
+	newclist[count] = strdup(rcname);
+	newclist[count + 1] = NULL;
 	SetCaptivesList(scrnum, newclist);
 	freeCaptiveList(clist);
 	freeCaptiveList(newclist);
