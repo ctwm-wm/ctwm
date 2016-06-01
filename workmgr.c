@@ -164,7 +164,7 @@ void ConfigureWorkSpaceManager(void)
 		 * workspace will be random memory bytes, which can causes crashes on
 		 * e.g.  f.menu "TwmWindows".)
 		 */
-		WorkSpaceWindow *wsw = (WorkSpaceWindow *) calloc(1, sizeof(WorkSpaceWindow));
+		WorkSpaceWindow *wsw = calloc(1, sizeof(WorkSpaceWindow));
 		wsw->state = Scr->workSpaceMgr.initialstate; /* BUTTONSSTATE */
 		vs->wsw = wsw;
 	}
@@ -759,10 +759,10 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 
 	fullOccupation |= (1 << wsnum);
-	ws = (WorkSpace *) malloc(sizeof(WorkSpace));
+	ws = malloc(sizeof(WorkSpace));
 	ws->FirstWindowRegion = NULL;
-	ws->name  = (char *) strdup(name);
-	ws->label = (char *) strdup(name);
+	ws->name  = strdup(name);
+	ws->label = strdup(name);
 	ws->clientlist = NULL;
 	ws->save_focus = NULL;
 
@@ -1045,8 +1045,7 @@ Bool RedirectToCaptive(Window window)
 		Atom             XA_WM_CTWM_ROOT_name;
 
 		safecopy(cctwm, value.addr, sizeof(cctwm));
-		atomname = (char *) malloc(strlen("WM_CTWM_ROOT_") + strlen(cctwm) + 1);
-		sprintf(atomname, "WM_CTWM_ROOT_%s", cctwm);
+		asprintf(&atomname, "WM_CTWM_ROOT_%s", cctwm);
 		/*
 		 * Set only_if_exists to True: the atom for the requested
 		 * captive ctwm won't exist if the captive ctwm itself does not exist.
@@ -1457,14 +1456,14 @@ void AllocateOtherIconManagers(void)
 
 	oldp = Scr->iconmgr;
 	for(ws = Scr->workSpaceMgr.workSpaceList->next; ws != NULL; ws = ws->next) {
-		ws->iconmgr  = (IconMgr *) malloc(sizeof(IconMgr));
+		ws->iconmgr  = malloc(sizeof(IconMgr));
 		*ws->iconmgr = *oldp;
 		oldv = ws->iconmgr;
 		oldp->nextv = ws->iconmgr;
 		oldv->nextv = NULL;
 
 		for(ip = oldp->next; ip != NULL; ip = ip->next) {
-			p  = (IconMgr *) malloc(sizeof(IconMgr));
+			p  = malloc(sizeof(IconMgr));
 			*p = *ip;
 			ip->nextv  = p;
 			p->next    = NULL;
@@ -1948,10 +1947,8 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 		MapSubwindow *msw;
 		ButtonSubwindow *bsw;
 
-		vs->wsw->bswl [ws->number] = bsw =
-		                                     (ButtonSubwindow *) malloc(sizeof(ButtonSubwindow));
-		vs->wsw->mswl [ws->number] = msw =
-		                                     (MapSubwindow *)    malloc(sizeof(MapSubwindow));
+		vs->wsw->bswl [ws->number] = bsw = malloc(sizeof(ButtonSubwindow));
+		vs->wsw->mswl [ws->number] = msw = malloc(sizeof(MapSubwindow));
 
 		butsw = bsw->w =
 		                XCreateSimpleWindow(dpy, vs->wsw->w,
@@ -2221,7 +2218,7 @@ static void CreateOccupyWindow(void)
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, cp.back);
-	occwin->obuttonw = (Window *) malloc(Scr->workSpaceMgr.count * sizeof(Window));
+	occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
 	i = 0;
 	j = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -2884,7 +2881,7 @@ void WMapRestack(WorkSpace *ws)
 
 	number = 0;
 	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &number);
-	smallws = (Window *) malloc(number * sizeof(Window));
+	smallws = calloc(number, sizeof(Window));
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		j = 0;
@@ -3511,7 +3508,7 @@ static void WMapAddToList(TwmWindow *win, WorkSpace *ws)
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		wf = (float)(vs->wsw->wwidth  - 2) / (float) vs->w;
 		hf = (float)(vs->wsw->wheight - 2) / (float) vs->h;
-		wl = (WinList) malloc(sizeof(struct winList));
+		wl = malloc(sizeof(struct winList));
 		wl->wlist  = ws;
 		wl->x      = (int)(win->frame_x * wf);
 		wl->y      = (int)(win->frame_y * hf);
@@ -3865,7 +3862,7 @@ static char **GetCaptivesList(int scrnum)
 	l = 0;
 	i = 0;
 	while(l < len) {
-		ret [i++] = (char *) strdup((char *) p);
+		ret [i++] = strdup((char *) p);
 		l += strlen((char *)p) + 1;
 		p += strlen((char *)p) + 1;
 	}
@@ -3987,12 +3984,7 @@ AddToCaptiveList(const char *cptname)
 			fprintf(stderr, "Cannot find a suitable name for captive ctwm\n");
 			exit(1);
 		}
-		rcname = malloc(strlen("ctwm-XX") + 1);
-		if(rcname == NULL) {
-			fprintf(stderr, "malloc() for rcname failed!\n");
-			abort();
-		}
-		sprintf(rcname, "ctwm-%d", i);
+		asprintf(&rcname, "ctwm-%d", i);
 	}
 	else {
 		rcname = strdup(cptname);
@@ -4006,10 +3998,10 @@ AddToCaptiveList(const char *cptname)
 	/* Put together new list of captives */
 	newclist = calloc(count + 2, sizeof(char *));
 	for(i = 0; i < count; i++) {
-		newclist [i] = (char *) strdup(clist [i]);
+		newclist[i] = strdup(clist[i]);
 	}
-	newclist [count] = strdup(rcname);
-	newclist [count + 1] = NULL;
+	newclist[count] = strdup(rcname);
+	newclist[count + 1] = NULL;
 	SetCaptivesList(scrnum, newclist);
 	freeCaptiveList(clist);
 	freeCaptiveList(newclist);
@@ -4018,8 +4010,7 @@ AddToCaptiveList(const char *cptname)
 
 	/* Stash property/atom of our captivename */
 	root = RootWindow(dpy, scrnum);
-	atomname = (char *) malloc(strlen("WM_CTWM_ROOT_") + strlen(rcname) + 1);
-	sprintf(atomname, "WM_CTWM_ROOT_%s", rcname);
+	asprintf(&atomname, "WM_CTWM_ROOT_%s", rcname);
 	XA_WM_CTWM_ROOT_our_name = XInternAtom(dpy, atomname, False);
 	free(atomname);
 	XChangeProperty(dpy, root, XA_WM_CTWM_ROOT_our_name, XA_WINDOW, 32,
@@ -4127,7 +4118,7 @@ CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
 		cctwm.root = root;
 		XFetchName(dpy, root, &cctwm.name);
 		if(!cctwm.name) {
-			cctwm.name = (char *) strdup("Root");
+			cctwm.name = strdup("Root");
 		}
 		return (cctwm);
 	}

@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <strings.h>
@@ -185,7 +186,7 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
 	}
 
 	if(tmp == NULL) {
-		tmp = (FuncKey *) malloc(sizeof(FuncKey));
+		tmp = malloc(sizeof(FuncKey));
 		tmp->next = Scr->FuncKeyRoot.next;
 		Scr->FuncKeyRoot.next = tmp;
 	}
@@ -688,7 +689,7 @@ MenuRoot *NewMenuRoot(char *name)
 
 #define UNUSED_PIXEL ((unsigned long) (~0))     /* more than 24 bits */
 
-	tmp = (MenuRoot *) malloc(sizeof(MenuRoot));
+	tmp = malloc(sizeof(MenuRoot));
 	tmp->highlight.fore = UNUSED_PIXEL;
 	tmp->highlight.back = UNUSED_PIXEL;
 	tmp->name = name;
@@ -791,7 +792,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 	        item, action, sub, func);
 #endif
 
-	tmp = (MenuItem *) malloc(sizeof(MenuItem));
+	tmp = malloc(sizeof(MenuItem));
 	tmp->root = menu;
 
 	if(menu->first == NULL) {
@@ -1265,7 +1266,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			}
 			WindowNameCount++;
 		}
-		WindowNames = (TwmWindow **)malloc(sizeof(TwmWindow *)*WindowNameCount);
+		WindowNames = calloc(WindowNameCount, sizeof(TwmWindow *));
 		WindowNameCount = 0;
 		for(tmp_win = Scr->FirstWindow;
 		                tmp_win != NULL;
@@ -1381,11 +1382,10 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 
 	if(menu == Scr->Keys) {
 		FuncKey *tmpKey;
-		char *tmpStr, *tmpStr2;
-		char modStr[6];
+		char *tmpStr;
+		char *modStr;
 		char *oldact = 0;
 		int oldmod = 0;
-		int tmpLen;
 
 		DestroyMenu(menu);
 
@@ -1406,37 +1406,32 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			if((tmpKey->action == oldact) && (tmpKey->mods == oldmod)) {
 				continue;
 			}
-			strcpy(modStr, "");
 			switch(tmpKey->mods) {
 				case  1:
-					strcpy(modStr, "S");
+					modStr = "S";
 					break;
 				case  4:
-					strcpy(modStr, "C");
+					modStr = "C";
 					break;
 				case  5:
-					strcpy(modStr, "S + C");
+					modStr = "S + C";
 					break;
 				case  8:
-					strcpy(modStr, "M");
+					modStr = "M";
 					break;
 				case  9:
-					strcpy(modStr, "S + M");
+					modStr = "S + M";
 					break;
 				case 12:
-					strcpy(modStr, "C + M");
+					modStr = "C + M";
 					break;
 				default:
+					modStr = "";
 					break;
 			}
-			tmpLen = (strlen(tmpKey->name) + strlen(modStr) + 5);
-			tmpStr = malloc(sizeof(char) * tmpLen);
-			sprintf(tmpStr, "[%s + %s]", tmpKey->name, modStr);
-			tmpStr2 = malloc(sizeof(char) * (strlen(tmpKey->action) + tmpLen + 2));
-			sprintf(tmpStr2, "%s %s", tmpStr, tmpKey->action);
-			free(tmpStr);
+			asprintf(&tmpStr, "[%s + %s] %s", tmpKey->name, modStr, tmpKey->action);
 
-			AddToMenu(menu, tmpStr2, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
+			AddToMenu(menu, tmpStr, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
 			oldmod = tmpKey->mods;
 		}
@@ -2194,7 +2189,7 @@ static void DestroyMenu(MenuRoot *menu)
 	for(item = menu->first; item;) {
 		MenuItem *tmp = item;
 		item = item->next;
-		free((char *) tmp);
+		free(tmp);
 	}
 }
 
@@ -2545,7 +2540,7 @@ static void MosaicFade(TwmWindow *tmp_win, Window blanket)
 	XChangeGC(dpy, gc, GCFunction, &gcv);
 
 	nrects = ((width * height) / (srect * srect)) / 10;
-	rectangles = (XRectangle *) malloc(nrects * sizeof(XRectangle));
+	rectangles = calloc(nrects, sizeof(XRectangle));
 	for(j = 0; j < nrects; j++) {
 		rectangles [j].width  = srect;
 		rectangles [j].height = srect;

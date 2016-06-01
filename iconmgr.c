@@ -63,6 +63,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <X11/Xatom.h>
@@ -930,7 +931,7 @@ void RemoveIconManager(TwmWindow *tmp_win)
 
 		save = tmp;
 		tmp = tmp->nextv;
-		free((char *) save);
+		free(save);
 	}
 }
 

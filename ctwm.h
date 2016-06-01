@@ -447,13 +447,6 @@ struct TWMWinConfigEntry {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-#include <X11/Xosdefs.h>
-#ifndef X_NOT_STDC_ENV
-#    include <stdlib.h>
-#else
-extern char *malloc(), *calloc(), *realloc(), *getenv();
-extern void free();
-#endif
 extern void Reborder(Time tim);
 extern SIGNAL_T Done(int signum) __attribute__((noreturn));
 void CreateFonts(void);

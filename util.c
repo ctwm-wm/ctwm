@@ -77,6 +77,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <stdbool.h>
@@ -314,7 +315,7 @@ char *ExpandFilePath(char *path)
 		len += HomeLen - 1;
 	}
 	len += strlen(p);
-	ret = (char *) malloc(len + 1);
+	ret = malloc(len + 1);
 	*ret = 0;
 
 	p   = path;
@@ -621,13 +622,7 @@ void GetFont(MyFont *font)
 		XFreeFontSet(dpy, font->font_set);
 	}
 
-	basename2 = (char *)malloc(strlen(font->basename) + 3);
-	if(basename2) {
-		sprintf(basename2, "%s,*", font->basename);
-	}
-	else {
-		basename2 = font->basename;
-	}
+	asprintf(&basename2, "%s,*", font->basename);
 	if((font->font_set = XCreateFontSet(dpy, basename2,
 	                                    &missing_charset_list_return,
 	                                    &missing_charset_count_return,
@@ -645,9 +640,7 @@ void GetFont(MyFont *font)
 			exit(1);
 		}
 	}
-	if(basename2 != font->basename) {
-		free(basename2);
-	}
+	free(basename2);
 	font_extents = XExtentsOfFontSet(font->font_set);
 
 	fnum = XFontsOfFontSet(font->font_set, &xfonts, &font_names);
@@ -889,7 +882,7 @@ Pixmap Create3DMenuIcon(unsigned int height,
 	if(col != NULL) {
 		return (col->pix);
 	}
-	col = (struct Colori *) malloc(sizeof(struct Colori));
+	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
 	col->next = colori;
@@ -919,7 +912,7 @@ Pixmap Create3DIconManagerIcon(ColorPair cp)
 	if(col != NULL) {
 		return (col->pix);
 	}
-	col = (struct Colori *) malloc(sizeof(struct Colori));
+	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
 	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, True, False);

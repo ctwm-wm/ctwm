@@ -147,7 +147,7 @@ file_opened:
 	gc      = DefaultGC(dpy, scrn);
 
 	buffer_size = header.bytes_per_line * h;
-	imagedata = (unsigned char *) malloc(buffer_size);
+	imagedata = malloc(buffer_size);
 	if(! imagedata) {
 		fprintf(stderr, "cannot allocate memory for image %s\n", filename);
 		return (None);

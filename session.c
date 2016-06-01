@@ -126,6 +126,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>           /* For umask */
 
 #include "ctwm_atoms.h"
@@ -564,20 +565,10 @@ int ReadWinConfigEntry(FILE *configFile, unsigned short version,
 	unsigned char byte;
 	int i;
 
-	*pentry = entry = (TWMWinConfigEntry *) malloc(
-	                          sizeof(TWMWinConfigEntry));
+	*pentry = entry = calloc(1, sizeof(TWMWinConfigEntry));
 	if(!*pentry) {
 		return 0;
 	}
-
-	entry->tag = 0;
-	entry->client_id = NULL;
-	entry->window_role = NULL;
-	entry->class.res_name = NULL;
-	entry->class.res_class = NULL;
-	entry->wm_name = NULL;
-	entry->wm_command = NULL;
-	entry->wm_command_count = 0;
 
 	if(!read_counted_string(configFile, &entry->client_id)) {
 		goto give_up;
@@ -707,10 +698,10 @@ give_up:
 			}
 	}
 	if(entry->wm_command) {
-		free((char *) entry->wm_command);
+		free(entry->wm_command);
 	}
 
-	free((char *) entry);
+	free(entry);
 	*pentry = NULL;
 
 	return 0;
@@ -908,18 +899,18 @@ static char *unique_filename(char *path, char *prefix, int *fd)
 		free(name);
 	}
 #else
-	char tempFile[PATH_MAX];
+	char *tempFile;
+	mode_t prev_umask;
 
-	sprintf(tempFile, "%s/%sXXXXXX", path, prefix);
-	mode_t prev_umask = umask(077);
+	asprintf(&tempFile, "%s/%sXXXXXX", path, prefix);
+	prev_umask = umask(077);
 	*fd = mkstemp(tempFile);
 	umask(prev_umask);
 	if(*fd >= 0) {
-		char *ptr = (char *) malloc(strlen(tempFile) + 1);
-		strcpy(ptr, tempFile);
-		return ptr;
+		return tempFile;
 	}
 	else {
+		free(tempFile);
 		return NULL;
 	}
 #endif
@@ -1046,8 +1037,7 @@ void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData)
 	prop1.name = SmRestartCommand;
 	prop1.type = SmLISTofARRAY8;
 
-	prop1.vals = (SmPropValue *) malloc(
-	                     (Argc + 4) * sizeof(SmPropValue));
+	prop1.vals = calloc((Argc + 4), sizeof(SmPropValue));
 
 	if(!prop1.vals) {
 		success = False;
@@ -1093,7 +1083,7 @@ void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData)
 	props[1] = &prop2;
 
 	SmcSetProperties(smcCon, 2, props);
-	free((char *) prop1.vals);
+	free(prop1.vals);
 
 bad:
 	SmcSaveYourselfDone(smcCon, success);

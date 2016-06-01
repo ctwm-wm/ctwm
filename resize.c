@@ -70,6 +70,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "parse.h"
 #include "events.h"

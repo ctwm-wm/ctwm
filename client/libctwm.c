@@ -96,7 +96,7 @@ char **CtwmListWorkspaces(Display *display, int scrnum)
 		p += strlen(p) + 1;
 		count++;
 	}
-	ret = (char **) malloc((count + 1) * sizeof(char *));
+	ret = calloc(count + 1, sizeof(char *));
 
 	p = (char *)prop;
 	l = 0;
@@ -184,7 +184,7 @@ char **CtwmCurrentOccupation(Display *display, Window window)
 		p += strlen(p) + 1;
 		count++;
 	}
-	ret = (char **) malloc((count + 1) * sizeof(char *));
+	ret = calloc(count + 1, sizeof(char *));
 
 	p = (char *)prop;
 	l = 0;
@@ -215,7 +215,7 @@ int CtwmSetOccupation(Display *display, Window window, char **occupation)
 	while(*occ++) {
 		len += strlen(*occupation) + 1;
 	}
-	occup = (char *) malloc(len * sizeof(char));
+	occup = calloc(len, sizeof(char));
 
 	o = occup;
 	while(*occupation) {

@@ -49,6 +49,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <inttypes.h>
 #include <assert.h>
@@ -870,7 +871,7 @@ static Image *ExtractIcon(ScreenInfo *scr, unsigned long *prop, int width,
 	/** XXX sort of duplicated from util.c:LoadJpegImage() */
 	if(scr->d_depth == 16) {
 		store_data = convert_for_16;
-		buffer_16bpp = (uint16_t *) malloc(width * height * 2);
+		buffer_16bpp = malloc(width * height * sizeof(buffer_16bpp[0]));
 		buffer_32bpp = NULL;
 		ximage = XCreateImage(dpy, CopyFromParent, scr->d_depth, ZPixmap, 0,
 		                      (char *) buffer_16bpp, width, height, 16, width * 2);
@@ -899,7 +900,7 @@ static Image *ExtractIcon(ScreenInfo *scr, unsigned long *prop, int width,
 
 	transparency = 0;
 	rowbytes = (width + 7) / 8;
-	maskbits = (unsigned char *) calloc(height, rowbytes);
+	maskbits = calloc(height, rowbytes);
 
 	/*
 	 * Copy all ARGB pixels to the pixmap (the RGB part), and the bitmap (the
@@ -1658,7 +1659,7 @@ void EwmhSet_NET_CLIENT_LIST_STACKING(void)
 
 	/* Expect the same number of windows as in the _NET_CLIENT_LIST */
 	size = Scr->ewmh_CLIENT_LIST_used + 10;
-	prop = malloc(size * sizeof(unsigned long));
+	prop = calloc(size, sizeof(unsigned long));
 	if(prop == NULL) {
 		return;
 	}
