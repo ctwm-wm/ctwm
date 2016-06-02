@@ -157,10 +157,6 @@ typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 #define MOD_SIZE        ((ShiftMask | ControlMask | Mod1Mask \
                           | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask) + 1)
 
-#define TITLE_BAR_SPACE         1       /* 2 pixel space bordering chars */
-#define TITLE_BAR_FONT_HEIGHT   15      /* max of 15 pixel high chars */
-#define TITLE_BAR_HEIGHT        (TITLE_BAR_FONT_HEIGHT+(2*TITLE_BAR_SPACE))
-
 /* defines for zooming/unzooming */
 #define ZOOM_NONE 0
 
