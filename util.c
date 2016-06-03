@@ -692,7 +692,7 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 	}
 
 	if(focus) {
-		Bool hil = False;
+		bool hil = false;
 
 		if(tmp_win->lolite_wl) {
 			XUnmapWindow(dpy, tmp_win->lolite_wl);
@@ -702,11 +702,11 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 		}
 		if(tmp_win->hilite_wl) {
 			XMapWindow(dpy, tmp_win->hilite_wl);
-			hil = True;
+			hil = true;
 		}
 		if(tmp_win->hilite_wr) {
 			XMapWindow(dpy, tmp_win->hilite_wr);
-			hil = True;
+			hil = true;
 		}
 		if(hil && tmp_win->HiliteImage && tmp_win->HiliteImage->next) {
 			MaybeAnimate = True;
