@@ -582,7 +582,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 			}
 			else if(twmWin->hasfocusvisible) {
 				focuswindow = twmWin;
-				SetFocusVisualAttributes(focuswindow, False);
+				SetFocusVisualAttributes(focuswindow, false);
 			}
 		}
 	}
@@ -623,7 +623,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	}
 	CurrentIconManagerEntry(wl);
 	if(focuswindow) {
-		SetFocusVisualAttributes(focuswindow, True);
+		SetFocusVisualAttributes(focuswindow, true);
 	}
 	vs->wsw->currentwspc = newws;
 	if(Scr->ReverseCurrentWorkspace && vs->wsw->state == MAPSTATE) {

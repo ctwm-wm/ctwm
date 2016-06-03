@@ -378,7 +378,7 @@ ExpandFilename(const char *name)
 
 
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       Bool replace)
+                       bool replace)
 {
 	StdCmap *sc = NULL;
 
@@ -468,7 +468,7 @@ void LocateStandardColormaps(void)
 
 		if(XGetRGBColormaps(dpy, Scr->Root, &maps, &nmaps, atoms[i])) {
 			/* if got one, then append to current list */
-			InsertRGBColormap(atoms[i], maps, nmaps, False);
+			InsertRGBColormap(atoms[i], maps, nmaps, false);
 		}
 	}
 	if(atoms) {
@@ -586,7 +586,8 @@ void GetShadeColors(ColorPair *cp)
 	Scr->FirstTime = save;
 }
 
-Bool UpdateFont(MyFont *font, int height)
+bool
+UpdateFont(MyFont *font, int height)
 {
 	int prev = font->avg_height;
 	font->avg_fheight = (font->avg_fheight * font->avg_count + height)
@@ -660,7 +661,8 @@ void GetFont(MyFont *font)
 }
 
 
-void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
+void
+SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 {
 	if(! tmp_win) {
 		return;
@@ -671,7 +673,7 @@ void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
 	}
 	if(tmp_win->highlight) {
 		if(Scr->use3Dborders) {
-			PaintBorders(tmp_win, (focus == True));
+			PaintBorders(tmp_win, focus);
 		}
 		else {
 			if(focus) {
@@ -835,13 +837,13 @@ void SetFocus(TwmWindow *tmp_win, Time tim)
 		if(Scr->Focus->AutoSqueeze && !Scr->Focus->squeezed) {
 			AutoSqueeze(Scr->Focus);
 		}
-		SetFocusVisualAttributes(Scr->Focus, False);
+		SetFocusVisualAttributes(Scr->Focus, false);
 	}
 	if(tmp_win)    {
 		if(tmp_win->AutoSqueeze && tmp_win->squeezed) {
 			AutoSqueeze(tmp_win);
 		}
-		SetFocusVisualAttributes(tmp_win, True);
+		SetFocusVisualAttributes(tmp_win, true);
 	}
 	Scr->Focus = tmp_win;
 }

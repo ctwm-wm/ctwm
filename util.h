@@ -65,6 +65,7 @@
 #define _CTWM_UTIL_H
 
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "types.h"
 
@@ -99,14 +100,14 @@ char     *ExpandFilename(const char *name);
 char     *ExpandFilePath(char *path);
 
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       Bool replace);
+                       bool replace);
 void RemoveRGBColormap(Atom a);
 void LocateStandardColormaps(void);
 void GetColor(int kind, Pixel *what, char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
-Bool UpdateFont(MyFont *font, int height);
-void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus);
+bool UpdateFont(MyFont *font, int height);
+void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 void move_to_after(TwmWindow *t, TwmWindow *after);
 void SetFocus(TwmWindow *tmp_win, Time tim);
 Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp);

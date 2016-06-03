@@ -1382,7 +1382,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			                Scr->d_depth);
 
 		tmp_win->hasfocusvisible = True;
-		SetFocusVisualAttributes(tmp_win, False);
+		SetFocusVisualAttributes(tmp_win, false);
 	}
 	else {
 		tmp_win->gray = None;

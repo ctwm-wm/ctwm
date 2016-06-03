@@ -859,7 +859,7 @@ void HandleFocusIn(XFocusInEvent *event)
 	if(Tmp_win->AutoSqueeze && Tmp_win->squeezed) {
 		AutoSqueeze(Tmp_win);
 	}
-	SetFocusVisualAttributes(Tmp_win, True);
+	SetFocusVisualAttributes(Tmp_win, true);
 #ifdef EWMH
 	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
 		OtpSetPriority(Tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
@@ -887,7 +887,7 @@ void HandleFocusOut(XFocusOutEvent *event)
 	if(Tmp_win->AutoSqueeze && !Tmp_win->squeezed) {
 		AutoSqueeze(Tmp_win);
 	}
-	SetFocusVisualAttributes(Tmp_win, False);
+	SetFocusVisualAttributes(Tmp_win, false);
 #ifdef EWMH
 	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
 		OtpSetPriority(Tmp_win, WinWin, EwmhGetPriority(Tmp_win), Above);
@@ -1559,7 +1559,7 @@ void HandlePropertyNotify(void)
 				if(XGetRGBColormaps(dpy, Scr->Root, &maps, &nmaps,
 				                    Event.xproperty.atom)) {
 					/* if got one, then replace any existing entry */
-					InsertRGBColormap(Event.xproperty.atom, maps, nmaps, True);
+					InsertRGBColormap(Event.xproperty.atom, maps, nmaps, true);
 				}
 				return;
 
