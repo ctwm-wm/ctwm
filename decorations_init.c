@@ -12,7 +12,6 @@
 #include <stdlib.h>
 
 #include "add_window.h"
-#include "decorations.h"
 #include "image.h"
 #include "parse.h"
 #include "screen.h"
