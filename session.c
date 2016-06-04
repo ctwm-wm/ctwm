@@ -101,27 +101,7 @@
 
 #include "ctwm.h"
 
-#include <X11/Xos.h>
-
-#ifndef X_NOT_POSIX
-#ifdef _POSIX_SOURCE
-#include <limits.h>
-#else
-#define _POSIX_SOURCE
-#include <limits.h>
-#undef _POSIX_SOURCE
-#endif
-#endif /* X_NOT_POSIX */
-#ifndef PATH_MAX
-#include <sys/param.h>
-#ifndef PATH_MAX
-#ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
-#else
-#define PATH_MAX 1024
-#endif
-#endif
-#endif /* PATH_MAX */
+//#include <limits.h>  // PATH_MAX
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
