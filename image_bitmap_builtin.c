@@ -1053,7 +1053,6 @@ get_blackgray_size(int *width, int *height)
 	if(height) {
 		*height = BG_HEIGHT;
 	}
-	return;
 }
 
 #undef BG_HEIGHT
