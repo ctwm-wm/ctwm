@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
 #include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"

@@ -34,7 +34,6 @@
 #include <assert.h>
 
 #include <X11/Xatom.h>
-#include <X11/Xresource.h>
 
 #include "ctwm_atoms.h"
 #include "util.h"

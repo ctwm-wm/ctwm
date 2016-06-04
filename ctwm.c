@@ -73,6 +73,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <locale.h>
 
 #ifdef __WAIT_FOR_CHILDS
 #  include <sys/wait.h>
@@ -82,8 +83,6 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Xmu/Error.h>
-#include <X11/SM/SMlib.h>
-#include <X11/Xlocale.h>
 #include <X11/extensions/shape.h>
 
 

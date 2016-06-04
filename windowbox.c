@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <X11/Xatom.h>
 
 #include "screen.h"
