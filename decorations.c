@@ -973,8 +973,6 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		tmp_win->HiliteImage->pixmap = pm;
 		tmp_win->HiliteImage->width  = gray_width;
 		tmp_win->HiliteImage->height = gray_height;
-		tmp_win->HiliteImage->mask   = None;
-		tmp_win->HiliteImage->next   = None;
 	}
 
 	/* Use what we came up with, or fall back to solid pixels */
