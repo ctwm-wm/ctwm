@@ -95,7 +95,7 @@
 
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */
-int menuFromFrameOrWindowOrTitlebar = FALSE;
+bool menuFromFrameOrWindowOrTitlebar = false;
 char *CurrentSelectedWorkspace;
 
 /* Should probably move, since nothing in this file uses anymore */
@@ -568,7 +568,7 @@ void UpdateMenu(void)
 		}
 
 		if((! ActiveMenu) || Cancel) {
-			menuFromFrameOrWindowOrTitlebar = FALSE;
+			menuFromFrameOrWindowOrTitlebar = false;
 			fromMenu = FALSE;
 			return;
 		}
@@ -1571,7 +1571,7 @@ void PopDownMenu(void)
 	XUngrabKeyboard(dpy, CurrentTime);
 	if(Context == C_WINDOW || Context == C_FRAME || Context == C_TITLE
 	                || Context == C_ICON) {
-		menuFromFrameOrWindowOrTitlebar = TRUE;
+		menuFromFrameOrWindowOrTitlebar = true;
 	}
 
 	return;

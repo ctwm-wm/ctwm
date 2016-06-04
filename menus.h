@@ -66,6 +66,8 @@
 
 #include "ctwm.h"
 
+#include <stdbool.h>
+
 #define TWM_ROOT        "bLoB_GoOp"     /* my private root menu */
 #define TWM_WINDOWS     "TwmWindows"    /* for f.menu "TwmWindows" */
 #define TWM_ICONS       "TwmIcons"      /* for f.menu "TwmIcons" */
@@ -159,7 +161,7 @@ struct FuncKey {
 extern MenuRoot *ActiveMenu;
 extern MenuItem *ActiveItem;
 
-extern int menuFromFrameOrWindowOrTitlebar;
+extern bool menuFromFrameOrWindowOrTitlebar;
 extern char *CurrentSelectedWorkspace;
 extern Bool AlternateContext;
 extern int AlternateKeymap;
