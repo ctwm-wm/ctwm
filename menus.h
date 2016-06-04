@@ -163,7 +163,6 @@ extern int menuFromFrameOrWindowOrTitlebar;
 extern char *CurrentSelectedWorkspace;
 extern Bool AlternateContext;
 extern int AlternateKeymap;
-extern Window Lowerontop;
 
 #define MAXMENUDEPTH    10      /* max number of nested menus */
 extern int MenuDepth;
