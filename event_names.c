@@ -7,8 +7,6 @@
 #include <stddef.h>
 #include <strings.h>
 
-#include <X11/X.h>  // Event #define's
-
 #include "event_names.h"
 
 /* num->name lookup table (generated build-time) */
