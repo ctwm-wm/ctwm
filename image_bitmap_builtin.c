@@ -1018,6 +1018,7 @@ static DEF_BI_ASPM(Create3DZoomInOutAnimation)
  */
 #define BG_WIDTH  2
 #define BG_HEIGHT 2
+
 Pixmap
 mk_blackgray_pixmap(const char *which, Drawable dw,
                     unsigned long fg, unsigned long bg)
