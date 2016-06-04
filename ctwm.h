@@ -354,7 +354,7 @@ struct TwmWindow {
 	unsigned int save_frame_width;  /* width of frame   (saved from zoom)*/
 	unsigned int save_frame_height; /* height of frame  (saved from zoom)*/
 	int save_otpri;             /* on top priority      (saved from zoom)*/
-	short zoomed;               /* is the window zoomed? */
+	int zoomed;                 /* ZOOM_NONE || function causing zoom */
 	short wShaped;              /* this window has a bounding shape */
 	unsigned long protocols;    /* which protocols this window handles */
 	Colormaps cmaps;            /* colormaps for this application */
