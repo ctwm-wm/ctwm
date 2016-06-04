@@ -215,6 +215,7 @@ struct SqueezeInfo {
 	int denom;                          /* 0 for pix count or denominator */
 };
 
+/* Justifications */
 #define J_UNDEF                 0
 #define J_LEFT                  1
 #define J_CENTER                2
