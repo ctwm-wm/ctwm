@@ -956,8 +956,7 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	}
 	if(! tmp_win->HiliteImage) {
 		/* No defined image, create shaded bars */
-		Pixmap pm = None;
-		Pixmap bm = None;
+		Pixmap pm;
 		char *bits;
 
 		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR)) {
@@ -966,31 +965,18 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		else {
 			bits = gray_bits;
 		}
-		bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
-		                           bits, gray_width, gray_height);
 
-		pm = XCreatePixmap(dpy, tmp_win->title_w, gray_width, gray_height,
-		                   Scr->d_depth);
-		gcv.foreground = tmp_win->title.fore;
-		gcv.background = tmp_win->title.back;
-		gcv.graphics_exposures = False;
-		gc = XCreateGC(dpy, pm, (GCForeground | GCBackground | GCGraphicsExposures),
-		               &gcv);
-		if(gc) {
-			XCopyPlane(dpy, bm, pm, gc, 0, 0, gray_width, gray_height, 0, 0, 1);
-			tmp_win->HiliteImage = AllocImage();
-			tmp_win->HiliteImage->pixmap = pm;
-			tmp_win->HiliteImage->width  = gray_width;
-			tmp_win->HiliteImage->height = gray_height;
-			tmp_win->HiliteImage->mask   = None;
-			tmp_win->HiliteImage->next   = None;
-			XFreeGC(dpy, gc);
-		}
-		else {
-			XFreePixmap(dpy, pm);
-			pm = None;
-		}
-		XFreePixmap(dpy, bm);
+		pm = XCreatePixmapFromBitmapData(dpy, tmp_win->title_w,
+		                                 bits, gray_width, gray_height,
+		                                 tmp_win->title.fore, tmp_win->title.back,
+		                                 Scr->d_depth);
+
+		tmp_win->HiliteImage = AllocImage();
+		tmp_win->HiliteImage->pixmap = pm;
+		tmp_win->HiliteImage->width  = gray_width;
+		tmp_win->HiliteImage->height = gray_height;
+		tmp_win->HiliteImage->mask   = None;
+		tmp_win->HiliteImage->next   = None;
 	}
 
 	/* Use what we came up with, or fall back to solid pixels */
