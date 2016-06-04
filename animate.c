@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <X11/extensions/shape.h>
+
 #include "events.h"
 #include "icons.h"
 #include "image.h"

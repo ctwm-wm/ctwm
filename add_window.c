@@ -74,7 +74,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/time.h>
+
 #include <X11/Xatom.h>
+#include <X11/extensions/shape.h>
 
 #include "ctwm_atoms.h"
 #include "add_window.h"

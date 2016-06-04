@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <X11/extensions/shape.h>
+
 #include "gram.tab.h"
 #include "image.h"
 #include "screen.h"

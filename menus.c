@@ -75,6 +75,8 @@
 #include <string.h>
 #include <strings.h>
 
+#include <X11/extensions/shape.h>
+
 #include "ctwm_atoms.h"
 #include "menus.h"
 #include "resize.h"

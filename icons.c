@@ -65,6 +65,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <X11/extensions/shape.h>
+
 #include "screen.h"
 #include "icons.h"
 #include "otp.h"
