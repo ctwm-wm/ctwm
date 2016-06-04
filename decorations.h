@@ -33,10 +33,10 @@ void PaintBorders(TwmWindow *tmp_win, bool focus);
  */
 #define gray_width 2
 #define gray_height 2
-static unsigned char gray_bits[] = {
+static char gray_bits[] = {
 	0x02, 0x01
 };
-static unsigned char black_bits[] = {
+static char black_bits[] = {
 	0xFF, 0xFF
 };
 
