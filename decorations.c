@@ -922,8 +922,6 @@ static void
 CreateHighlightWindows(TwmWindow *tmp_win)
 {
 	XSetWindowAttributes attributes;    /* attributes for create windows */
-	GC gc;
-	XGCValues gcv;
 	unsigned long valuemask;
 	int h = (Scr->TitleHeight - 2 * Scr->FramePadding);
 	int y = Scr->FramePadding;
@@ -956,40 +954,23 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	}
 	if(! tmp_win->HiliteImage) {
 		/* No defined image, create shaded bars */
-		Pixmap pm = None;
-		Pixmap bm = None;
+		Pixmap pm;
+		char *which;
 
 		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR)) {
-			bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
-			                           (char *)black_bits, gray_width, gray_height);
+			which = "black";
 		}
 		else {
-			bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
-			                           (char *)gray_bits, gray_width, gray_height);
+			which = "gray";
 		}
 
-		pm = XCreatePixmap(dpy, tmp_win->title_w, gray_width, gray_height,
-		                   Scr->d_depth);
-		gcv.foreground = tmp_win->title.fore;
-		gcv.background = tmp_win->title.back;
-		gcv.graphics_exposures = False;
-		gc = XCreateGC(dpy, pm, (GCForeground | GCBackground | GCGraphicsExposures),
-		               &gcv);
-		if(gc) {
-			XCopyPlane(dpy, bm, pm, gc, 0, 0, gray_width, gray_height, 0, 0, 1);
-			tmp_win->HiliteImage = AllocImage();
-			tmp_win->HiliteImage->pixmap = pm;
-			tmp_win->HiliteImage->width  = gray_width;
-			tmp_win->HiliteImage->height = gray_height;
-			tmp_win->HiliteImage->mask   = None;
-			tmp_win->HiliteImage->next   = None;
-			XFreeGC(dpy, gc);
-		}
-		else {
-			XFreePixmap(dpy, pm);
-			pm = None;
-		}
-		XFreePixmap(dpy, bm);
+		pm = mk_blackgray_pixmap(which, tmp_win->title_w,
+		                         tmp_win->title.fore, tmp_win->title.back);
+
+		tmp_win->HiliteImage = AllocImage();
+		tmp_win->HiliteImage->pixmap = pm;
+		get_blackgray_size(&(tmp_win->HiliteImage->width),
+		                   &(tmp_win->HiliteImage->height));
 	}
 
 	/* Use what we came up with, or fall back to solid pixels */

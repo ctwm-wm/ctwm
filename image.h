@@ -58,4 +58,9 @@ Image *get_image_anim_cp(const char *name, ColorPair cp,
 #define TBPM_3DBAR ":xpm:bar"
 #define TBPM_3DVBAR ":xpm:vbar"
 
+/* Ditto for a few funcs */
+Pixmap mk_blackgray_pixmap(const char *which, Drawable dw,
+                           unsigned long fg, unsigned long bg);
+void get_blackgray_size(int *width, int *height);
+
 #endif /* _CTWM_IMAGE_H */
