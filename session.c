@@ -103,6 +103,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/stat.h>  // For umask
 #include <limits.h>    // PATH_MAX
 
