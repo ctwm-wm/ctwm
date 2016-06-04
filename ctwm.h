@@ -75,8 +75,13 @@
 #include <dmalloc.h>
 #endif
 
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>  // Needed for Pixel def
+/*
+ * Intrinsic.h is needed for at least the Pixel type, which we use in
+ * this file.  And Intrinsic.h (always?) implicitly brings in Xlib.h
+ * anyway.
+ */
+//#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
 
 #include "types.h"
 #ifdef EWMH
