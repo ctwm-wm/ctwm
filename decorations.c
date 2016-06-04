@@ -922,8 +922,6 @@ static void
 CreateHighlightWindows(TwmWindow *tmp_win)
 {
 	XSetWindowAttributes attributes;    /* attributes for create windows */
-	GC gc;
-	XGCValues gcv;
 	unsigned long valuemask;
 	int h = (Scr->TitleHeight - 2 * Scr->FramePadding);
 	int y = Scr->FramePadding;
