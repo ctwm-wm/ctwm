@@ -107,7 +107,6 @@
 #include <sys/stat.h>  // For umask
 #include <limits.h>    // PATH_MAX
 
-#include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"
