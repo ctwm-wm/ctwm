@@ -86,6 +86,7 @@ main(int argc, char **argv)
 						usage();
 					}
 					name = argv[i]; /* not implemented yet */
+					(void)name; // Silence unused warning
 					continue;
 				case 'r':
 					switch(arg[2]) {
