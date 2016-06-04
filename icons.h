@@ -111,18 +111,18 @@ struct IconEntry {
 	short               used;
 };
 
-extern int IconUp(TwmWindow *tmp_win);
-extern void IconDown(TwmWindow *tmp_win);
-extern name_list **AddIconRegion(char *geom, int grav1, int grav2,
-                                 int stepx, int stepy,
-                                 char *ijust, char *just, char *align);
-extern void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);
-extern void ReleaseImage(Icon *icon);
-extern void DeleteIcon(Icon *icon);
-extern void DeleteIconsList(TwmWindow *tmp_win);
-extern void ShrinkIconTitle(TwmWindow *tmp_win);
-extern void ExpandIconTitle(TwmWindow *tmp_win);
-extern void ReshapeIcon(Icon *icon);
-extern int GetIconOffset(Icon *icon);
+int IconUp(TwmWindow *tmp_win);
+void IconDown(TwmWindow *tmp_win);
+name_list **AddIconRegion(char *geom, int grav1, int grav2,
+                          int stepx, int stepy,
+                          char *ijust, char *just, char *align);
+void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);
+void ReleaseImage(Icon *icon);
+void DeleteIcon(Icon *icon);
+void DeleteIconsList(TwmWindow *tmp_win);
+void ShrinkIconTitle(TwmWindow *tmp_win);
+void ExpandIconTitle(TwmWindow *tmp_win);
+void ReshapeIcon(Icon *icon);
+int GetIconOffset(Icon *icon);
 
 #endif /* _CTWM_ICONS_H */

@@ -70,34 +70,34 @@
 extern char NoName[];
 extern int  resizeWhenAdd;
 
-extern void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
+void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 #define ADD_WINDOW_NORMAL               0
 #define ADD_WINDOW_ICON_MANAGER         1
 #define ADD_WINDOW_WINDOWBOX            2
 #define ADD_WINDOW_WORKSPACE_MANAGER    3
-extern TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp,
-                            VirtualScreen *vs);
-extern TwmWindow *GetTwmWindow(Window w);
-extern int MappedNotOverride(Window w);
-extern void GrabButtons(TwmWindow *tmp_win);
-extern void GrabKeys(TwmWindow *tmp_win);
-extern void GetWindowSizeHints(TwmWindow *tmp_win);
-extern void CreateWindowRegions(void);
-extern Bool PlaceWindowInRegion(TwmWindow *tmp_win,
-                                int *final_x, int *final_y);
-extern void RemoveWindowFromRegion(TwmWindow   *tmp_win);
-extern name_list **AddWindowRegion(char *geom, int  grav1, int grav2);
+TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp,
+                     VirtualScreen *vs);
+TwmWindow *GetTwmWindow(Window w);
+int MappedNotOverride(Window w);
+void GrabButtons(TwmWindow *tmp_win);
+void GrabKeys(TwmWindow *tmp_win);
+void GetWindowSizeHints(TwmWindow *tmp_win);
+void CreateWindowRegions(void);
+Bool PlaceWindowInRegion(TwmWindow *tmp_win,
+                         int *final_x, int *final_y);
+void RemoveWindowFromRegion(TwmWindow   *tmp_win);
+name_list **AddWindowRegion(char *geom, int  grav1, int grav2);
 extern int AddingX;
 extern int AddingY;
 extern unsigned int AddingW;
 extern unsigned int AddingH;
 
-extern void FetchWmColormapWindows(TwmWindow *tmp);
-extern void FetchWmProtocols(TwmWindow *tmp);
+void FetchWmColormapWindows(TwmWindow *tmp);
+void FetchWmProtocols(TwmWindow *tmp);
 
-extern TwmColormap *CreateTwmColormap(Colormap c);
-extern ColormapWindow *CreateColormapWindow(Window w,
-                Bool creating_parent,
-                Bool property_window);
+TwmColormap *CreateTwmColormap(Colormap c);
+ColormapWindow *CreateColormapWindow(Window w,
+                                     Bool creating_parent,
+                                     Bool property_window);
 #endif /* _CTWM_ADD_WINDOW_H */
 

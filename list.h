@@ -72,18 +72,18 @@ struct name_list {
 	void      *ptr;             /* list dependent data */
 };
 
-extern void     AddToList(name_list **list_head, const char *name, void *ptr);
-extern void    *LookInList(name_list *list_head, const char *name,
+void     AddToList(name_list **list_head, const char *name, void *ptr);
+void    *LookInList(name_list *list_head, const char *name,
+                    XClassHint *class);
+void    *LookInNameList(name_list *list_head, const char *name);
+void    *LookPatternInList(name_list *list_head, const char *name,
                            XClassHint *class);
-extern void    *LookInNameList(name_list *list_head, const char *name);
-extern void    *LookPatternInList(name_list *list_head, const char *name,
-                                  XClassHint *class);
-extern void    *LookPatternInNameList(name_list *list_head, const char *name);
-extern int      GetColorFromList(name_list *list_head, char *name,
-                                 XClassHint *class, Pixel *ptr);
-extern void     FreeList(name_list **list);
+void    *LookPatternInNameList(name_list *list_head, const char *name);
+int      GetColorFromList(name_list *list_head, char *name,
+                          XClassHint *class, Pixel *ptr);
+void     FreeList(name_list **list);
 
-extern int      match(const char *pattern, const char *string);
+int      match(const char *pattern, const char *string);
 
 #endif /* _CTWM_LIST_H */
 

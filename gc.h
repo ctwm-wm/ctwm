@@ -39,6 +39,6 @@
 #ifndef _CTWM_GC_H
 #define _CTWM_GC_H
 
-extern void CreateGCs(void);
+void CreateGCs(void);
 
 #endif /* _CTWM_GC_H */

@@ -180,51 +180,51 @@ extern int MenuDepth;
 #define COLORMAP_PREV "prev"
 #define COLORMAP_DEFAULT "default"
 
-extern void InitMenus(void);
-extern MenuRoot *NewMenuRoot(char *name);
-extern MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
-                           MenuRoot *sub, int func, char *fore, char *back);
-extern Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center);
-extern void MakeWorkspacesMenu(void);
-extern MenuRoot *FindMenuRoot(char *name);
-extern Bool AddFuncKey(char *name, int cont, int mods, int func,
-                       MenuRoot *menu, char *win_name, char *action);
+void InitMenus(void);
+MenuRoot *NewMenuRoot(char *name);
+MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
+                    MenuRoot *sub, int func, char *fore, char *back);
+Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center);
+void MakeWorkspacesMenu(void);
+MenuRoot *FindMenuRoot(char *name);
+Bool AddFuncKey(char *name, int cont, int mods, int func,
+                MenuRoot *menu, char *win_name, char *action);
 void AddFuncButton(int num, int cont, int mods, int func,
                    MenuRoot *menu, MenuItem *item);
 void AddDefaultFuncButtons(void);
-extern void PopDownMenu(void);
-extern void HideMenu(MenuRoot *menu);
-extern void resizeFromCenter(Window w, TwmWindow *tmp_win);
-extern void ReGrab(void);
+void PopDownMenu(void);
+void HideMenu(MenuRoot *menu);
+void resizeFromCenter(Window w, TwmWindow *tmp_win);
+void ReGrab(void);
 void SetLastCursor(Cursor newcur);
-extern void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
-extern void PaintMenu(MenuRoot *mr, XEvent *e);
+void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
+void PaintMenu(MenuRoot *mr, XEvent *e);
 Bool cur_fromMenu(void);
-extern void UpdateMenu(void);
-extern void MakeMenus(void);
+void UpdateMenu(void);
+void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
-extern void MoveMenu(XEvent *eventp);
-extern void DeIconify(TwmWindow *tmp_win);
-extern void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
-extern void SetMapStateProp(TwmWindow *tmp_win, int state);
+void MoveMenu(XEvent *eventp);
+void DeIconify(TwmWindow *tmp_win);
+void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
+void SetMapStateProp(TwmWindow *tmp_win, int state);
 void send_clientmessage(Window w, Atom a, Time timestamp);
-extern void SendEndAnimationMessage(Window w, Time timestamp);
-extern void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
-extern void RaiseWindow(TwmWindow *tmp_win);
-extern void LowerWindow(TwmWindow *tmp_win);
-extern void RaiseLower(TwmWindow *tmp_win);
-extern void RaiseLowerFrame(Window frame, int ontop);
-extern void MapRaised(TwmWindow *tmp_win);
-extern void RaiseFrame(Window frame);
-extern void FocusOnRoot(void);
-extern void TryToPack(TwmWindow *tmp_win, int *x, int *y);
-extern void TryToPush(TwmWindow *tmp_win, int x, int y, int dir);
-extern void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
-extern void WarpCursorToDefaultEntry(MenuRoot *menu);
-extern void WarpToWindow(TwmWindow *t, int must_raise);
-extern void DisplayPosition(TwmWindow *tmp_win, int x, int y);
-extern void AutoSqueeze(TwmWindow *tmp_win);
-extern void Squeeze(TwmWindow *tmp_win);
+void SendEndAnimationMessage(Window w, Time timestamp);
+void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
+void RaiseWindow(TwmWindow *tmp_win);
+void LowerWindow(TwmWindow *tmp_win);
+void RaiseLower(TwmWindow *tmp_win);
+void RaiseLowerFrame(Window frame, int ontop);
+void MapRaised(TwmWindow *tmp_win);
+void RaiseFrame(Window frame);
+void FocusOnRoot(void);
+void TryToPack(TwmWindow *tmp_win, int *x, int *y);
+void TryToPush(TwmWindow *tmp_win, int x, int y, int dir);
+void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
+void WarpCursorToDefaultEntry(MenuRoot *menu);
+void WarpToWindow(TwmWindow *t, int must_raise);
+void DisplayPosition(TwmWindow *tmp_win, int x, int y);
+void AutoSqueeze(TwmWindow *tmp_win);
+void Squeeze(TwmWindow *tmp_win);
 
 /* To move soonish? */
 void WarpAlongRing(XButtonEvent *ev, Bool forward);

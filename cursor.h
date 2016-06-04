@@ -38,8 +38,8 @@
 #ifndef _CTWM_CURSOR_H
 #define _CTWM_CURSOR_H
 
-extern void NewFontCursor(Cursor *cp, const char *str);
-extern int NewBitmapCursor(Cursor *cp, char *source, char *mask);
-extern Cursor MakeStringCursor(char *string);
+void NewFontCursor(Cursor *cp, const char *str);
+int NewBitmapCursor(Cursor *cp, char *source, char *mask);
+Cursor MakeStringCursor(char *string);
 #endif /* _CTWM_CURSOR_H */
 

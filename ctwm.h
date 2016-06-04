@@ -434,8 +434,8 @@ struct TWMWinConfigEntry {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-extern void Reborder(Time tim);
-extern SIGNAL_T Done(int signum) __attribute__((noreturn));
+void Reborder(Time tim);
+SIGNAL_T Done(int signum) __attribute__((noreturn));
 void CreateFonts(void);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
@@ -478,10 +478,10 @@ extern char **Argv;
 extern Bool ShowWelcomeWindow;
 
 extern Bool RestartPreviousState;
-extern Bool GetWMState(Window w, int *statep, Window *iwp);
+Bool GetWMState(Window w, int *statep, Window *iwp);
 
 extern Bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
-extern void DoRestart(Time t);  /* Function to perform a restart */
+void DoRestart(Time t);         /* Function to perform a restart */
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
 

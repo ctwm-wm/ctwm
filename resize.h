@@ -66,24 +66,24 @@
 
 #include <stdbool.h>
 
-extern void OpaqueResizeSize(TwmWindow *tmp_win);
-extern void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
-extern void StartResize(XEvent *evp, TwmWindow *tmp_win,
-                        bool fromtitlebar, bool from3dborder);
-extern void AddStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
-extern void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win);
-extern void DoResize(int x_root, int y_root, TwmWindow *tmp_win);
-extern void EndResize(void);
-extern void MenuEndResize(TwmWindow *tmp_win);
-extern void AddEndResize(TwmWindow *tmp_win);
-extern void ConstrainSize(TwmWindow *tmp_win, unsigned
-                          int *widthp, unsigned int *heightp);
+void OpaqueResizeSize(TwmWindow *tmp_win);
+void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
+void StartResize(XEvent *evp, TwmWindow *tmp_win,
+                 bool fromtitlebar, bool from3dborder);
+void AddStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
+void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win);
+void DoResize(int x_root, int y_root, TwmWindow *tmp_win);
+void EndResize(void);
+void MenuEndResize(TwmWindow *tmp_win);
+void AddEndResize(TwmWindow *tmp_win);
+void ConstrainSize(TwmWindow *tmp_win, unsigned
+                   int *widthp, unsigned int *heightp);
 
-extern void fullzoom(TwmWindow *tmp_win, int func);
-extern void unzoom(TwmWindow *tmp_win);
-extern void savegeometry(TwmWindow *tmp_win);
-extern void restoregeometry(TwmWindow *tmp_win);
+void fullzoom(TwmWindow *tmp_win, int func);
+void unzoom(TwmWindow *tmp_win);
+void savegeometry(TwmWindow *tmp_win);
+void restoregeometry(TwmWindow *tmp_win);
 
-extern void ChangeSize(char *in_string, TwmWindow *tmp_win);
+void ChangeSize(char *in_string, TwmWindow *tmp_win);
 
 #endif /* _CTWM_RESIZE_H */

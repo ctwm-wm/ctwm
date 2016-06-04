@@ -38,60 +38,60 @@
 typedef enum WinType { WinWin, IconWin } WinType;
 
 /* Wrapper functions to maintain the internal list uptodate.  */
-extern int ReparentWindow(Display *display, TwmWindow *twm_win,
-                          WinType wintype, Window parent, int x, int y);
-extern void ReparentWindowAndIcon(Display *display, TwmWindow *twm_win,
-                                  Window parent, int win_x, int win_y,
-                                  int icon_x, int icon_y);
+int ReparentWindow(Display *display, TwmWindow *twm_win,
+                   WinType wintype, Window parent, int x, int y);
+void ReparentWindowAndIcon(Display *display, TwmWindow *twm_win,
+                           Window parent, int win_x, int win_y,
+                           int icon_x, int icon_y);
 
 /* misc functions that are not specific to OTP */
-extern Bool isTransientOf(TwmWindow *, TwmWindow *);
-extern Bool isSmallTransientOf(TwmWindow *, TwmWindow *);
-extern Bool isGroupLeaderOf(TwmWindow *, TwmWindow *);
-extern Bool isGroupLeader(TwmWindow *);
+Bool isTransientOf(TwmWindow *, TwmWindow *);
+Bool isSmallTransientOf(TwmWindow *, TwmWindow *);
+Bool isGroupLeaderOf(TwmWindow *, TwmWindow *);
+Bool isGroupLeader(TwmWindow *);
 
 /* functions to "move" windows */
-extern void OtpRaise(TwmWindow *, WinType);
-extern void OtpLower(TwmWindow *, WinType);
-extern void OtpRaiseLower(TwmWindow *, WinType);
-extern void OtpTinyRaise(TwmWindow *, WinType);
-extern void OtpTinyLower(TwmWindow *, WinType);
-extern void OtpCirculateSubwindows(VirtualScreen *vs, int direction);
-extern void OtpHandleCirculateNotify(VirtualScreen *vs, TwmWindow *twm_win,
-                                     WinType wintype, int place);
+void OtpRaise(TwmWindow *, WinType);
+void OtpLower(TwmWindow *, WinType);
+void OtpRaiseLower(TwmWindow *, WinType);
+void OtpTinyRaise(TwmWindow *, WinType);
+void OtpTinyLower(TwmWindow *, WinType);
+void OtpCirculateSubwindows(VirtualScreen *vs, int direction);
+void OtpHandleCirculateNotify(VirtualScreen *vs, TwmWindow *twm_win,
+                              WinType wintype, int place);
 
 /* functions to change a window's OTP value */
-extern void OtpSetPriority(TwmWindow *, WinType, int, int);
-extern void OtpChangePriority(TwmWindow *, WinType, int);
-extern void OtpSwitchPriority(TwmWindow *, WinType);
-extern void OtpToggleSwitching(TwmWindow *, WinType);
-extern void OtpRecomputeValues(TwmWindow *);
-extern void OtpForcePlacement(TwmWindow *, int, TwmWindow *);
+void OtpSetPriority(TwmWindow *, WinType, int, int);
+void OtpChangePriority(TwmWindow *, WinType, int);
+void OtpSwitchPriority(TwmWindow *, WinType);
+void OtpToggleSwitching(TwmWindow *, WinType);
+void OtpRecomputeValues(TwmWindow *);
+void OtpForcePlacement(TwmWindow *, int, TwmWindow *);
 
-extern void OtpReassignIcon(TwmWindow *twm_win, Icon *old_icon);
-extern void OtpFreeIcon(TwmWindow *twm_win);
+void OtpReassignIcon(TwmWindow *twm_win, Icon *old_icon);
+void OtpFreeIcon(TwmWindow *twm_win);
 
 /* functions to manage the preferences. The second arg specifies icon prefs */
-extern void OtpScrInitData(ScreenInfo *);
-extern name_list **OtpScrSwitchingL(ScreenInfo *, WinType);
-extern name_list **OtpScrPriorityL(ScreenInfo *, WinType, int);
-extern void OtpScrSetSwitching(ScreenInfo *, WinType, Bool);
-extern void OtpScrSetZero(ScreenInfo *, WinType, int);
+void OtpScrInitData(ScreenInfo *);
+name_list **OtpScrSwitchingL(ScreenInfo *, WinType);
+name_list **OtpScrPriorityL(ScreenInfo *, WinType, int);
+void OtpScrSetSwitching(ScreenInfo *, WinType, Bool);
+void OtpScrSetZero(ScreenInfo *, WinType, int);
 
 /* functions to inform OTP-manager of window creation/destruction */
-extern void OtpAdd(TwmWindow *, WinType);
-extern void OtpRemove(TwmWindow *, WinType);
+void OtpAdd(TwmWindow *, WinType);
+void OtpRemove(TwmWindow *, WinType);
 
 /* Iterators.  */
-extern TwmWindow *OtpBottomWin(void);
-extern TwmWindow *OtpTopWin(void);
-extern TwmWindow *OtpNextWinUp(TwmWindow *);
-extern TwmWindow *OtpNextWinDown(TwmWindow *);
+TwmWindow *OtpBottomWin(void);
+TwmWindow *OtpTopWin(void);
+TwmWindow *OtpNextWinUp(TwmWindow *);
+TwmWindow *OtpNextWinDown(TwmWindow *);
 
 /* Other access functions */
-extern int OtpGetPriority(TwmWindow *twm_win);
+int OtpGetPriority(TwmWindow *twm_win);
 
 /* Other debugging functions */
-extern Bool OtpCheckConsistency(void);
+Bool OtpCheckConsistency(void);
 
 #endif /* _CTWM_OTP_H */

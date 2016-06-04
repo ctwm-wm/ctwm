@@ -79,30 +79,30 @@ typedef struct EwmhStrut {
 #define EWMH_PRI_NORMAL                  0
 #define EWMH_PRI_ABOVE                   2
 
-extern void EwmhInit(void);
-extern int EwmhInitScreenEarly(ScreenInfo *scr);
-extern void EwmhInitScreenLate(ScreenInfo *scr);
-extern void EwmhInitVirtualRoots(ScreenInfo *scr);
-extern void EwmhTerminate(void);
-extern void EwhmSelectionClear(XSelectionClearEvent *sev);
-extern int EwmhClientMessage(XClientMessageEvent *msg);
-extern Image *EwhmGetIcon(ScreenInfo *scr, TwmWindow *twm_win);
-extern int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win);
-extern void EwmhSet_NET_WM_DESKTOP(TwmWindow *twm_win);
-extern void EwmhSet_NET_WM_DESKTOP_ws(TwmWindow *twm_win, WorkSpace *ws);
-extern int EwmhGetOccupation(TwmWindow *twm_win);
-extern void EwmhUnmapNotify(TwmWindow *twm_win);
-extern void EwmhAddClientWindow(TwmWindow *new_win);
-extern void EwmhDeleteClientWindow(TwmWindow *old_win);
-extern void EwmhSet_NET_CLIENT_LIST_STACKING(void);
-extern void EwmhSet_NET_ACTIVE_WINDOW(Window w);
-extern void EwmhGetProperties(TwmWindow *twm_win);
-extern int EwmhGetPriority(TwmWindow *twm_win);
-extern Bool EwmhHasBorder(TwmWindow *twm_win);
-extern Bool EwmhHasTitle(TwmWindow *twm_win);
-extern Bool EwmhOnWindowRing(TwmWindow *twm_win);
-extern void EwmhSet_NET_SHOWING_DESKTOP(int state);
-extern void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes);
+void EwmhInit(void);
+int EwmhInitScreenEarly(ScreenInfo *scr);
+void EwmhInitScreenLate(ScreenInfo *scr);
+void EwmhInitVirtualRoots(ScreenInfo *scr);
+void EwmhTerminate(void);
+void EwhmSelectionClear(XSelectionClearEvent *sev);
+int EwmhClientMessage(XClientMessageEvent *msg);
+Image *EwhmGetIcon(ScreenInfo *scr, TwmWindow *twm_win);
+int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win);
+void EwmhSet_NET_WM_DESKTOP(TwmWindow *twm_win);
+void EwmhSet_NET_WM_DESKTOP_ws(TwmWindow *twm_win, WorkSpace *ws);
+int EwmhGetOccupation(TwmWindow *twm_win);
+void EwmhUnmapNotify(TwmWindow *twm_win);
+void EwmhAddClientWindow(TwmWindow *new_win);
+void EwmhDeleteClientWindow(TwmWindow *old_win);
+void EwmhSet_NET_CLIENT_LIST_STACKING(void);
+void EwmhSet_NET_ACTIVE_WINDOW(Window w);
+void EwmhGetProperties(TwmWindow *twm_win);
+int EwmhGetPriority(TwmWindow *twm_win);
+Bool EwmhHasBorder(TwmWindow *twm_win);
+Bool EwmhHasTitle(TwmWindow *twm_win);
+Bool EwmhOnWindowRing(TwmWindow *twm_win);
+void EwmhSet_NET_SHOWING_DESKTOP(int state);
+void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes);
 
 #endif /* EWMH */
 #endif /* _CTWM_EWMH_H */
