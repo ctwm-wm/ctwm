@@ -1028,10 +1028,10 @@ mk_blackgray_pixmap(const char *which, Drawable dw,
 	char *bits;
 
 	/* Which are we asking for? */
-	if(strcmp(which, "black")) {
+	if(strcmp(which, "black") == 0) {
 		bits = black_bits;
 	}
-	else if(strcmp(which, "gray")) {
+	else if(strcmp(which, "gray") == 0) {
 		bits = gray_bits;
 	}
 	else {
