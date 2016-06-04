@@ -77,7 +77,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/Intrinsic.h>
+#include <X11/Intrinsic.h>  // Needed for Pixel def
 #include <X11/extensions/shape.h>
 #include <X11/Xfuncs.h>
 
