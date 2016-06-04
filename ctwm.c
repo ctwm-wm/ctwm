@@ -1325,14 +1325,11 @@ static int CatchRedirectError(Display *display, XErrorEvent *event)
  * XA_WM_END_OF_ANIMATION     Used to throttle animation.
  */
 
-Atom XA_WM_WORKSPACESLIST;
 Atom XCTWMAtom[NUM_CTWM_XATOMS];
 
 void InternUsefulAtoms(void)
 {
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
-
-	XA_WM_WORKSPACESLIST   = XInternAtom(dpy, "WM_WORKSPACESLIST", False);
 }
 
 static Window CreateRootWindow(int x, int y,

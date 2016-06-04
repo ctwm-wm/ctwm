@@ -483,8 +483,6 @@ extern Bool GetWMState(Window w, int *statep, Window *iwp);
 extern Bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
 extern void DoRestart(Time t);  /* Function to perform a restart */
 
-extern Atom XA_WM_WORKSPACESLIST;
-
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
 
 
