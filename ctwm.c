@@ -84,6 +84,7 @@
 #include <X11/Xmu/Error.h>
 #include <X11/SM/SMlib.h>
 #include <X11/Xlocale.h>
+#include <X11/cursorfont.h>
 
 
 #include "ctwm_atoms.h"

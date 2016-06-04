@@ -64,6 +64,8 @@
 
 #include <stdio.h>
 
+#include <X11/cursorfont.h>
+
 #include "screen.h"
 #include "cursor.h"
 #include "image_bitmap.h"
