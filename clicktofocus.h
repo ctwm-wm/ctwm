@@ -1,7 +1,6 @@
 #ifndef _CTWM_CLICKTOFOCUS_H
 #define _CTWM_CLICKTOFOCUS_H
 
-#include "ctwm.h"
 #include "iconmgr.h"
 #include "workmgr.h"
 

@@ -64,8 +64,6 @@
 #ifndef _CTWM_MENUS_H
 #define _CTWM_MENUS_H
 
-#include "ctwm.h"
-
 #include <stdbool.h>
 
 #define TWM_ROOT        "bLoB_GoOp"     /* my private root menu */

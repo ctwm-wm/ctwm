@@ -61,11 +61,10 @@
  *
  **********************************************************************/
 
-#include "ctwm.h"
-#include "iconmgr.h"
-
 #ifndef _CTWM_ADD_WINDOW_H
 #define _CTWM_ADD_WINDOW_H
+
+#include "iconmgr.h"
 
 extern char NoName[];
 extern int  resizeWhenAdd;
