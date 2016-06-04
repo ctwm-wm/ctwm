@@ -1370,18 +1370,17 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 	if(tmp_win->highlight) {
-		char *bits;
+		char *which;
 
 		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR)) {
-			bits = black_bits;
+			which = "black";
 		}
 		else {
-			bits = gray_bits;
+			which = "gray";
 		}
-		tmp_win->gray = XCreatePixmapFromBitmapData(dpy, vroot,
-		                bits, gray_width, gray_height,
-		                tmp_win->border_tile.fore, tmp_win->border_tile.back,
-		                Scr->d_depth);
+		tmp_win->gray = mk_blackgray_pixmap(which, vroot,
+		                                    tmp_win->border_tile.fore,
+		                                    tmp_win->border_tile.back);
 
 		tmp_win->hasfocusvisible = True;
 		SetFocusVisualAttributes(tmp_win, False);

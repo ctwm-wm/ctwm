@@ -955,24 +955,22 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 	if(! tmp_win->HiliteImage) {
 		/* No defined image, create shaded bars */
 		Pixmap pm;
-		char *bits;
+		char *which;
 
 		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR)) {
-			bits = black_bits;
+			which = "black";
 		}
 		else {
-			bits = gray_bits;
+			which = "gray";
 		}
 
-		pm = XCreatePixmapFromBitmapData(dpy, tmp_win->title_w,
-		                                 bits, gray_width, gray_height,
-		                                 tmp_win->title.fore, tmp_win->title.back,
-		                                 Scr->d_depth);
+		pm = mk_blackgray_pixmap(which, tmp_win->title_w,
+		                         tmp_win->title.fore, tmp_win->title.back);
 
 		tmp_win->HiliteImage = AllocImage();
 		tmp_win->HiliteImage->pixmap = pm;
-		tmp_win->HiliteImage->width  = gray_width;
-		tmp_win->HiliteImage->height = gray_height;
+		get_blackgray_size(&(tmp_win->HiliteImage->width),
+		                   &(tmp_win->HiliteImage->height));
 	}
 
 	/* Use what we came up with, or fall back to solid pixels */
