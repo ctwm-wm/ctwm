@@ -54,10 +54,10 @@
  *
  **********************************************************************/
 
-#include "screen.h"
-
 #ifndef _CTWM_ICONS_H
 #define _CTWM_ICONS_H
+
+#include "screen.h"
 
 /* Where dit the Image for the Icon come from? */
 typedef enum {

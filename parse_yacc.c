@@ -18,6 +18,8 @@
 #include "parse_be.h"
 #include "parse_yacc.h"
 
+#include "gram.tab.h"
+
 char *Action = "";
 char *Name = "";
 MenuRoot *root, *pull = NULL;

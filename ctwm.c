@@ -109,6 +109,8 @@
 #  include "sound.h"
 #endif
 
+#include "gram.tab.h"
+
 
 XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */

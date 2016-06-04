@@ -56,6 +56,8 @@
 #  include "ewmh_atoms.h"
 #endif
 
+#include "gram.tab.h"
+
 /***********************************************************************
  *
  *  Procedure:

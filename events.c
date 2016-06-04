@@ -100,6 +100,8 @@
 #include "sound.h"
 #endif
 
+#include "gram.tab.h"
+
 static void CtwmNextEvent(Display *display, XEvent  *event);
 static void RedoIcon(void);
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */

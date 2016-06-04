@@ -97,6 +97,8 @@
 #include "functions.h"  // Only for RootFunction
 #include "decorations.h"
 
+#include "gram.tab.h"
+
 
 int AddingX;
 int AddingY;

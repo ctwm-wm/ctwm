@@ -29,6 +29,8 @@
 #  include "sound.h"
 #endif
 
+#include "gram.tab.h"
+
 
 static int ParseRandomPlacement(char *s);
 static int ParseButtonStyle(char *s);

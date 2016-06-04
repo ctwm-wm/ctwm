@@ -64,9 +64,6 @@
 #ifndef _CTWM_PARSE_H
 #define _CTWM_PARSE_H
 
-#include "types.h"
-#include "gram.tab.h"
-
 extern unsigned int mods_used;
 extern int ConstrainedMoveTime;
 extern int RaiseDelay;

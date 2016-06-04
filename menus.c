@@ -93,6 +93,8 @@
 #  include "sound.h"
 #endif
 
+#include "gram.tab.h"
+
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */
 bool menuFromFrameOrWindowOrTitlebar = false;

@@ -65,6 +65,8 @@
 #include "parse.h"
 #include "parse_be.h"
 
+#include "gram.tab.h"
+
 /*
  * flex uses a YY_INPUT macro internally rather than input.  It doesn't
  * need unput since it maintains state internally.
