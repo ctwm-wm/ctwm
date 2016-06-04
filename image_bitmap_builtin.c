@@ -5,6 +5,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include <X11/Xmu/Drawing.h>

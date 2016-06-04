@@ -6,7 +6,6 @@
 
 /* For Image type */
 #include "types.h"
-#include "util.h"
 
 Image *GetJpegImage(const char *name);
 
