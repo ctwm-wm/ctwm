@@ -96,15 +96,8 @@
 #define  __attribute__(x)  /*NOTHING*/
 #endif
 
-#ifdef SIGNALRETURNSINT
-#define SIGNAL_T int
-#define SIGNAL_RETURN return 0
-#else
+/* signal(3) handlers have been void since c89 */
 #define SIGNAL_T void
-#define SIGNAL_RETURN return
-#endif
-
-typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
