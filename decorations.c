@@ -958,15 +958,16 @@ CreateHighlightWindows(TwmWindow *tmp_win)
 		/* No defined image, create shaded bars */
 		Pixmap pm = None;
 		Pixmap bm = None;
+		char *bits;
 
 		if(Scr->use3Dtitles && (Scr->Monochrome != COLOR)) {
-			bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
-			                           (char *)black_bits, gray_width, gray_height);
+			bits = black_bits;
 		}
 		else {
-			bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
-			                           (char *)gray_bits, gray_width, gray_height);
+			bits = gray_bits;
 		}
+		bm = XCreateBitmapFromData(dpy, tmp_win->title_w,
+		                           bits, gray_width, gray_height);
 
 		pm = XCreatePixmap(dpy, tmp_win->title_w, gray_width, gray_height,
 		                   Scr->d_depth);
