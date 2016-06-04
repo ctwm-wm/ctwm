@@ -683,6 +683,13 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 				}
 			}
 			else {
+				/*
+				 * XXX It seems possible this could be replaced by a
+				 * single global 'gray' pixmap; I don't think it actually
+				 * varies per window, and I don't see any obvious reason
+				 * it can't be reused, so we may be able to save an
+				 * allocation for each window by doing so...
+				 */
 				XSetWindowBorderPixmap(dpy, tmp_win->frame, tmp_win->gray);
 				if(tmp_win->title_w) {
 					XSetWindowBorderPixmap(dpy, tmp_win->title_w, tmp_win->gray);
