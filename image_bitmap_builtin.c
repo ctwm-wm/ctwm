@@ -1016,8 +1016,8 @@ static DEF_BI_ASPM(Create3DZoomInOutAnimation)
  * Lastly, some gray/black pixmaps that are used in window border and
  * hilite bars.
  */
-#define bg_width  2
-#define bg_height 2
+#define BG_WIDTH  2
+#define BG_HEIGHT 2
 Pixmap
 mk_blackgray_pixmap(const char *which, Drawable dw,
                     unsigned long fg, unsigned long bg)
@@ -1040,7 +1040,7 @@ mk_blackgray_pixmap(const char *which, Drawable dw,
 
 	/* Make it */
 	return XCreatePixmapFromBitmapData(dpy, dw,
-	                                   bits, bg_width, bg_height,
+	                                   bits, BG_WIDTH, BG_HEIGHT,
 	                                   fg, bg, Scr->d_depth);
 }
 
@@ -1048,13 +1048,13 @@ void
 get_blackgray_size(int *width, int *height)
 {
 	if(width) {
-		*width  = bg_width;
+		*width  = BG_WIDTH;
 	}
 	if(height) {
-		*height = bg_height;
+		*height = BG_HEIGHT;
 	}
 	return;
 }
 
-#undef bg_height
-#undef bg_widt
+#undef BG_HEIGHT
+#undef BG_WIDTH
