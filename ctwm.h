@@ -88,10 +88,6 @@
 #include "ewmh.h"
 #endif
 
-#ifndef WithdrawnState
-#define WithdrawnState 0
-#endif
-
 /*
  * This appears to be the standard way of testing this for portability,
  * though calling it GNUC is sorta non-portable portability   :)
