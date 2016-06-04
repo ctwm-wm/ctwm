@@ -63,7 +63,6 @@
 #include "ctwm.h"
 
 #include <stdio.h>
-#include <X11/Xos.h>
 
 #include "screen.h"
 #include "cursor.h"
