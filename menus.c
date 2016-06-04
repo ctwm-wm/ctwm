@@ -2093,6 +2093,10 @@ void Squeeze(TwmWindow *tmp_win)
 	UnmapTransients(tmp_win, 0, eventMask);
 }
 
+/*
+ * Set WM_STATE; x-ref ICCCM section 4.1.3.1
+ * https://tronche.com/gui/x/icccm/sec-4.html#s-4.1.3.1
+ */
 void SetMapStateProp(TwmWindow *tmp_win, int state)
 {
 	unsigned long data[2];              /* "suggested" by ICCCM version 1 */
