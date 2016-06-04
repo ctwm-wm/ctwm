@@ -84,7 +84,6 @@
 #include <X11/Xmu/Error.h>
 #include <X11/SM/SMlib.h>
 #include <X11/Xlocale.h>
-#include <X11/cursorfont.h>
 
 
 #include "ctwm_atoms.h"
@@ -758,7 +757,7 @@ int main(int argc, char **argv)
 		attributes.event_mask = (ExposureMask | ButtonPressMask |
 		                         KeyPressMask | ButtonReleaseMask);
 		attributes.backing_store = NotUseful;
-		attributes.cursor = XCreateFontCursor(dpy, XC_hand2);
+		NewFontCursor(&attributes.cursor, "hand2");
 		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
 		             CWBackingStore | CWCursor);
 		Scr->InfoWindow.win =
