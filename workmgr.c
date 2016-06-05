@@ -108,7 +108,7 @@ int fullOccupation = 0;
 static int useBackgroundInfo = False;
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
-static Bool DontRedirect(Window window);
+static bool DontRedirect(Window window);
 static Atom XA_WM_CTWM_ROOT_our_name;
 
 void InitWorkSpaceManager(void)
@@ -1008,7 +1008,7 @@ void safecopy(char *dest, char *src, int size)
 	dest[size - 1] = '\0';
 }
 
-Bool RedirectToCaptive(Window window)
+bool RedirectToCaptive(Window window)
 {
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
@@ -1018,26 +1018,26 @@ Bool RedirectToCaptive(Window window)
 	Bool                status;
 	char                *str_type;
 	XrmValue            value;
-	int                 ret;
+	bool                ret;
 	char                *atomname;
 	Window              newroot;
 	XWindowAttributes   wa;
 	XrmDatabase         db = NULL;
 
 	if(DontRedirect(window)) {
-		return (False);
+		return false;
 	}
 	if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
-		return (False);
+		return false;
 	}
 	XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
 	if(db == NULL) {
 		if(cliargv) {
 			XFreeStringList(cliargv);
 		}
-		return False;
+		return false;
 	}
-	ret = False;
+	ret = false;
 	status = XrmGetResource(db, "ctwm.redirect", "Ctwm.Redirect", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
@@ -1068,7 +1068,7 @@ Bool RedirectToCaptive(Window window)
 				if(XGetWindowAttributes(dpy, newroot, &wa)) {
 					XReparentWindow(dpy, window, newroot, 0, 0);
 					XMapWindow(dpy, window);
-					ret = True;
+					ret = true;
 				}
 			}
 			XFree((char *)prop);
@@ -1086,13 +1086,13 @@ Bool RedirectToCaptive(Window window)
 			if(XGetWindowAttributes(dpy, newroot, &wa)) {
 				XReparentWindow(dpy, window, newroot, 0, 0);
 				XMapWindow(dpy, window);
-				ret = True;
+				ret = true;
 			}
 		}
 	}
 	XrmDestroyDatabase(db);
 	XFreeStringList(cliargv);
-	return (ret);
+	return ret;
 }
 
 /*
@@ -3037,7 +3037,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	unsigned int        modifier;
 	XSetWindowAttributes attrs;
 	float               wf, hf;
-	Boolean             alreadyvivible, realmovemode, startincurrent;
+	bool                alreadyvivible, realmovemode, startincurrent;
 	Time                etime;
 
 	parent   = event->xbutton.window;
@@ -4131,7 +4131,7 @@ void SetNoRedirect(Window window)
 	                PropModeReplace, (unsigned char *) "Yes", 4);
 }
 
-static Bool DontRedirect(Window window)
+static bool DontRedirect(Window window)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;
@@ -4142,16 +4142,16 @@ static Bool DontRedirect(Window window)
 	if(XGetWindowProperty(dpy, window, XA_WM_NOREDIRECT, 0L, 1L,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return (False);
+		return false;
 	}
 	if(len == 0) {
-		return (False);
+		return false;
 	}
 	XFree((char *)prop);
-	return (True);
+	return true;
 }
 
-Bool visible(TwmWindow *tmp_win)
+bool visible(TwmWindow *tmp_win)
 {
 	return (tmp_win->vs != NULL);
 }

@@ -205,7 +205,7 @@ char *GetCurrentWorkSpaceName(VirtualScreen *vs);
 Bool AnimateRoot(void);
 char *AddToCaptiveList(const char *cptname);
 void RemoveFromCaptiveList(const char *cptname);
-Bool RedirectToCaptive(Window window);
+bool RedirectToCaptive(Window window);
 void SetPropsIfCaptiveCtwm(TwmWindow *win);
 Window CaptiveCtwmRootWindow(Window window);
 
@@ -219,7 +219,7 @@ void SetNoRedirect(Window window);
 
 void ShowBackground(VirtualScreen *vs, int state);
 
-Bool visible(TwmWindow *tmp_win);
+bool visible(TwmWindow *tmp_win);
 
 extern int fullOccupation;
 
