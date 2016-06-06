@@ -531,7 +531,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	{
 		MotifWmHints mwmHints;
-		Boolean have_title;
+		bool have_title;
 
 		GetMWMHints(tmp_win->w, &mwmHints);
 
@@ -557,7 +557,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		bw2 = tmp_win->frame_bw * 2;
 
 
-		have_title = True;
+		have_title = true;
 #ifdef EWMH
 		have_title = EwmhHasTitle(tmp_win);
 #endif /* EWMH */
@@ -565,13 +565,13 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			have_title = mwm_has_title(&mwmHints);
 		}
 		if(Scr->NoTitlebar) {
-			have_title = False;
+			have_title = false;
 		}
 		if(LookInList(Scr->MakeTitle, tmp_win->full_name, &tmp_win->class)) {
-			have_title = True;
+			have_title = true;
 		}
 		if(LookInList(Scr->NoTitle, tmp_win->full_name, &tmp_win->class)) {
-			have_title = False;
+			have_title = false;
 		}
 
 		if(have_title) {
@@ -884,7 +884,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		else {                            /* else prompt */
 			if(!(tmp_win->wmhints && tmp_win->wmhints->flags & StateHint &&
 			                tmp_win->wmhints->initial_state == IconicState)) {
-				Bool firsttime = True;
+				bool firsttime = true;
 
 				/* better wait until all the mouse buttons have been
 				 * released.
@@ -922,7 +922,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 						if(Scr->currentvs) {
 							vroot = Scr->currentvs->window;
 						}
-						firsttime = False;
+						firsttime = false;
 					}
 					if(winbox) {
 						vroot = winbox->window;
@@ -1890,7 +1890,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 {
 	int i, j;
 	Window *cmap_windows = NULL;
-	Bool can_free_cmap_windows = False;
+	bool can_free_cmap_windows = false;
 	int number_cmap_windows = 0;
 	ColormapWindow **cwins = NULL;
 	int previously_installed;
@@ -1910,7 +1910,6 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 	                         &number_cmap_windows) &&
 	                number_cmap_windows > 0) {
 
-		can_free_cmap_windows = False;
 		/*
 		 * check if the top level is in the list, add to front if not
 		 */
@@ -1934,7 +1933,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 				new_cmap_windows[i + 1] = cmap_windows[i];
 			}
 			XFree((char *) cmap_windows);
-			can_free_cmap_windows = True;  /* do not use XFree any more */
+			can_free_cmap_windows = true;  /* do not use XFree any more */
 			cmap_windows = new_cmap_windows;
 			number_cmap_windows++;
 		}
