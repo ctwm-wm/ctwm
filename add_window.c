@@ -207,7 +207,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	Bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
 	Bool        random_placed = False;
-	int         found = 0;
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout;
@@ -885,6 +884,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			if(!(tmp_win->wmhints && tmp_win->wmhints->flags & StateHint &&
 			                tmp_win->wmhints->initial_state == IconicState)) {
 				bool firsttime = true;
+				int found = 0;
 
 				/* better wait until all the mouse buttons have been
 				 * released.
