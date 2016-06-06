@@ -5,10 +5,12 @@
 #ifndef _CTWM_ANIMATE_H
 #define _CTWM_ANIMATE_H
 
+#include <stdbool.h>
+
 /* Current code requires these to be leaked */
 extern int Animating;
-extern Bool AnimationActive;
-extern Bool MaybeAnimate;
+extern bool AnimationActive;
+extern bool MaybeAnimate;
 extern int AnimationSpeed;
 extern struct timeval AnimateTimeout;
 

@@ -733,7 +733,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	if(Scr->ClickToFocus || Scr->SloppyFocus) {
 		set_last_window(newws);
 	}
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 char *GetCurrentWorkSpaceName(VirtualScreen *vs)
@@ -2629,7 +2629,7 @@ void WMapSetMapState(VirtualScreen *vs)
 		XMapWindow(dpy, vs->wsw->mswl [ws->number]->w);
 	}
 	vs->wsw->state = MAPSTATE;
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 void WMapSetButtonsState(VirtualScreen *vs)
@@ -3763,16 +3763,16 @@ void WMapCreateDefaultBackGround(char *border,
 	ws->defImage = image;
 }
 
-Bool AnimateRoot(void)
+bool AnimateRoot(void)
 {
 	VirtualScreen *vs;
 	ScreenInfo *scr;
 	int        scrnum;
 	Image      *image;
 	WorkSpace  *ws;
-	Bool       maybeanimate;
+	bool       maybeanimate;
 
-	maybeanimate = False;
+	maybeanimate = false;
 	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
 		if((scr = ScreenList [scrnum]) == NULL) {
 			continue;
@@ -3796,7 +3796,7 @@ Bool AnimateRoot(void)
 			XSetWindowBackgroundPixmap(dpy, vs->window, image->pixmap);
 			XClearWindow(dpy, scr->Root);
 			vs->wsw->currentwspc->image = image->next;
-			maybeanimate = True;
+			maybeanimate = true;
 		}
 	}
 	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
@@ -3820,11 +3820,11 @@ Bool AnimateRoot(void)
 				XSetWindowBackgroundPixmap(dpy, vs->wsw->mswl [ws->number]->w, image->pixmap);
 				XClearWindow(dpy, vs->wsw->mswl [ws->number]->w);
 				ws->image = image->next;
-				maybeanimate = True;
+				maybeanimate = true;
 			}
 		}
 	}
-	return (maybeanimate);
+	return maybeanimate;
 }
 
 static char **GetCaptivesList(int scrnum)

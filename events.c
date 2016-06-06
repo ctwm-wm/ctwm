@@ -2690,7 +2690,7 @@ void HandleMapRequest(void)
 	if(Tmp_win->mapped) {
 		WMapMapWindow(Tmp_win);
 	}
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 

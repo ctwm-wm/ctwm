@@ -715,7 +715,7 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 			hil = true;
 		}
 		if(hil && tmp_win->HiliteImage && tmp_win->HiliteImage->next) {
-			MaybeAnimate = True;
+			MaybeAnimate = true;
 		}
 		if(tmp_win->iconmanagerlist) {
 			ActiveIconManager(tmp_win->iconmanagerlist);

@@ -25,8 +25,8 @@
 
 int  Animating        = 0;
 int  AnimationSpeed   = 0;
-Bool AnimationActive  = False;
-Bool MaybeAnimate     = True;
+bool AnimationActive  = false;
+bool MaybeAnimate     = true;
 struct timeval AnimateTimeout;
 
 
@@ -104,14 +104,14 @@ StartAnimation(void)
 			AnimateTimeout.tv_sec  = 0;
 			AnimateTimeout.tv_usec = 1000000 / AnimationSpeed;
 	}
-	AnimationActive = True;
+	AnimationActive = true;
 }
 
 
 void
 StopAnimation(void)
 {
-	AnimationActive = False;
+	AnimationActive = false;
 }
 
 
@@ -151,7 +151,7 @@ ModifyAnimationSpeed(int incr)
 		AnimateTimeout.tv_sec  = 0;
 		AnimateTimeout.tv_usec = 1000000 / AnimationSpeed;
 	}
-	AnimationActive = True;
+	AnimationActive = true;
 }
 
 
@@ -181,7 +181,7 @@ Animate(void)
 		return;
 	}
 
-	MaybeAnimate = False;
+	MaybeAnimate = false;
 	scr = NULL;
 	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
 		if((scr = ScreenList [scrnum]) == NULL) {
@@ -195,14 +195,14 @@ Animate(void)
 			if(t->icon_on && t->icon && t->icon->bm_w && t->icon->image &&
 			                t->icon->image->next) {
 				AnimateIcons(scr, t->icon);
-				MaybeAnimate = True;
+				MaybeAnimate = true;
 			}
 			else if(t->mapped && t->titlebuttons) {
 				nb = scr->TBInfo.nleft + scr->TBInfo.nright;
 				for(i = 0, tbw = t->titlebuttons; i < nb; i++, tbw++) {
 					if(tbw->image && tbw->image->next) {
 						AnimateButton(tbw);
-						MaybeAnimate = True;
+						MaybeAnimate = true;
 					}
 				}
 			}
@@ -212,7 +212,7 @@ Animate(void)
 			if(t->mapped && t->titlehighlight && t->title_height &&
 			                t->HiliteImage && t->HiliteImage->next) {
 				AnimateHighlight(t);
-				MaybeAnimate = True;
+				MaybeAnimate = true;
 			}
 		}
 	}

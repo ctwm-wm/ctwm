@@ -313,7 +313,7 @@ int IconUp(TwmWindow *tmp_win)
 		tmp_win->icon->w_y = y;
 		tmp_win->icon_moved = FALSE;    /* since we've restored it */
 	}
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 	return (0);
 }
 
@@ -834,7 +834,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	XSaveContext(dpy, icon->w, TwmContext, (XPointer)tmp_win);
 	XSaveContext(dpy, icon->w, ScreenContext, (XPointer)Scr);
 	XDefineCursor(dpy, icon->w, Scr->IconCursor);
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 void DeleteIcon(Icon *icon)
