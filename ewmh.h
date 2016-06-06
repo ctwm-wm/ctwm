@@ -30,6 +30,8 @@
 
 #ifdef EWMH
 
+#include <stdbool.h>
+
 #include "types.h"
 
 /*
@@ -98,9 +100,9 @@ void EwmhSet_NET_CLIENT_LIST_STACKING(void);
 void EwmhSet_NET_ACTIVE_WINDOW(Window w);
 void EwmhGetProperties(TwmWindow *twm_win);
 int EwmhGetPriority(TwmWindow *twm_win);
-Bool EwmhHasBorder(TwmWindow *twm_win);
-Bool EwmhHasTitle(TwmWindow *twm_win);
-Bool EwmhOnWindowRing(TwmWindow *twm_win);
+bool EwmhHasBorder(TwmWindow *twm_win);
+bool EwmhHasTitle(TwmWindow *twm_win);
+bool EwmhOnWindowRing(TwmWindow *twm_win);
 void EwmhSet_NET_SHOWING_DESKTOP(int state);
 void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes);
 

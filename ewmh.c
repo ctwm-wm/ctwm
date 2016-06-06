@@ -1748,36 +1748,36 @@ int EwmhGetPriority(TwmWindow *twm_win)
 	}
 }
 
-Bool EwmhHasBorder(TwmWindow *twm_win)
+bool EwmhHasBorder(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
 		case wt_Desktop:
 		case wt_Dock:
-			return False;
+			return false;
 		default:
-			return True;
+			return true;
 	}
 }
 
-Bool EwmhHasTitle(TwmWindow *twm_win)
+bool EwmhHasTitle(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
 		case wt_Desktop:
 		case wt_Dock:
-			return False;
+			return false;
 		default:
-			return True;
+			return true;
 	}
 }
 
-Bool EwmhOnWindowRing(TwmWindow *twm_win)
+bool EwmhOnWindowRing(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
 		case wt_Desktop:
 		case wt_Dock:
-			return False;
+			return false;
 		default:
-			return True;
+			return true;
 	}
 }
 
