@@ -1295,13 +1295,11 @@ ChildExit(int signum)
  * manipulating the client's window.
  */
 
-static Bool ErrorOccurred = False;
 static XErrorEvent LastErrorEvent;
 
 static int TwmErrorHandler(Display *display, XErrorEvent *event)
 {
 	LastErrorEvent = *event;
-	ErrorOccurred = True;
 
 	if(CLarg.PrintErrorMessages &&                 /* don't be too obnoxious */
 	                event->error_code != BadWindow &&       /* watch for dead puppies */
@@ -1318,7 +1316,6 @@ static int CatchRedirectError(Display *display, XErrorEvent *event)
 {
 	RedirectError = TRUE;
 	LastErrorEvent = *event;
-	ErrorOccurred = True;
 	return 0;
 }
 
