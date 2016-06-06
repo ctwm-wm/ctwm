@@ -720,7 +720,7 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_RestartPreviousState:
-			RestartPreviousState = True;
+			RestartPreviousState = true;
 			return 1;
 
 		case kw0_ClientBorderWidth:

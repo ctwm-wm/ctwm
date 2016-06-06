@@ -1185,7 +1185,7 @@ void AdoptWindow(void)
 	unsigned int        nchildren, key_buttons;
 	int                 root_x, root_y, win_x, win_y;
 	int                 ret;
-	int                 savedRestartPreviousState;
+	bool                savedRestartPreviousState;
 
 	localroot = w = RootWindow(dpy, Scr->screen);
 	XGrabPointer(dpy, localroot, False,
@@ -1261,7 +1261,7 @@ void AdoptWindow(void)
 	 * when it happens...
 	 */
 	savedRestartPreviousState = RestartPreviousState;
-	RestartPreviousState = False;
+	RestartPreviousState = false;
 	SimulateMapRequest(w);
 	RestartPreviousState = savedRestartPreviousState;
 	return;

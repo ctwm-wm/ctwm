@@ -75,6 +75,8 @@
 #include <dmalloc.h>
 #endif
 
+#include <stdbool.h>
+
 /*
  * Intrinsic.h is needed for at least the Pixel type, which we use in
  * this file.  And Intrinsic.h (always?) implicitly brings in Xlib.h
@@ -477,10 +479,10 @@ extern int Argc;
 extern char **Argv;
 extern Bool ShowWelcomeWindow;
 
-extern Bool RestartPreviousState;
+extern bool RestartPreviousState;
 Bool GetWMState(Window w, int *statep, Window *iwp);
 
-extern Bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
+extern bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
 void DoRestart(Time t);         /* Function to perform a restart */
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))

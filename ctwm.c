@@ -171,9 +171,9 @@ char *ProgramName;
 int Argc;
 char **Argv;
 
-Bool RestartPreviousState = False;      /* try to restart in previous state */
+bool RestartPreviousState = false;      /* try to restart in previous state */
 
-Bool RestartFlag = 0;
+bool RestartFlag = false;
 SIGNAL_T Restart(int signum);
 SIGNAL_T Crash(int signum);
 #ifdef __WAIT_FOR_CHILDS
@@ -822,7 +822,7 @@ int main(int argc, char **argv)
 	play_startup_sound();
 #endif
 
-	RestartPreviousState = True;
+	RestartPreviousState = true;
 	HandlingEvents = TRUE;
 	InitEvents();
 	StartAnimation();
@@ -1250,12 +1250,12 @@ SIGNAL_T Crash(int signum)
 SIGNAL_T Restart(int signum)
 {
 	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
-	RestartFlag = 1;
+	RestartFlag = true;
 }
 
 void DoRestart(Time t)
 {
-	RestartFlag = 0;
+	RestartFlag = false;
 
 	StopAnimation();
 	XSync(dpy, 0);
