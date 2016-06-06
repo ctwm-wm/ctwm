@@ -2796,7 +2796,7 @@ void TryToPush(TwmWindow *tmp_win, int x, int y, int dir)
 {
 	TwmWindow   *t;
 	int         newx, newy, ndir;
-	Boolean     move;
+	bool        move;
 	int         w, h;
 	int         winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
 	int         winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
@@ -2830,34 +2830,34 @@ void TryToPush(TwmWindow *tmp_win, int x, int y, int dir)
 			continue;
 		}
 
-		move = False;
+		move = false;
 		if((dir == 0 || dir == J_LEFT) &&
 		                (x + Scr->MovePackResistance > t->frame_x + w)) {
 			newx = x - w;
 			newy = t->frame_y;
 			ndir = J_LEFT;
-			move = True;
+			move = true;
 		}
 		else if((dir == 0 || dir == J_RIGHT) &&
 		                (x + winw < t->frame_x + Scr->MovePackResistance)) {
 			newx = x + winw;
 			newy = t->frame_y;
 			ndir = J_RIGHT;
-			move = True;
+			move = true;
 		}
 		else if((dir == 0 || dir == J_TOP) &&
 		                (y + Scr->MovePackResistance > t->frame_y + h)) {
 			newx = t->frame_x;
 			newy = y - h;
 			ndir = J_TOP;
-			move = True;
+			move = true;
 		}
 		else if((dir == 0 || dir == J_BOTTOM) &&
 		                (y + winh < t->frame_y + Scr->MovePackResistance)) {
 			newx = t->frame_x;
 			newy = y + winh;
 			ndir = J_BOTTOM;
-			move = True;
+			move = true;
 		}
 		if(move) {
 			TryToPush(t, newx, newy, ndir);
