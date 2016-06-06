@@ -171,7 +171,7 @@ VirtualScreen *getVScreenOf(int x, int y)
  * list.  This is stored this way so everything ends up in the right place
  * on a ctwm restart.
  */
-Bool CtwmGetVScreenMap(Display *display, Window rootw,
+bool CtwmGetVScreenMap(Display *display, Window rootw,
                        char *outbuf, int *outbuf_len)
 {
 	unsigned char       *prop;
@@ -181,24 +181,24 @@ Bool CtwmGetVScreenMap(Display *display, Window rootw,
 	int                 actual_format;
 
 	if(XA_WM_CTWM_VSCREENMAP == None) {
-		return (False);
+		return false;
 	}
 	if(XGetWindowProperty(display, rootw, XA_WM_CTWM_VSCREENMAP, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return (False);
+		return false;
 	}
 	if(len == 0) {
-		return (False);
+		return false;
 	}
 	*outbuf_len = (len >= *outbuf_len) ? *outbuf_len - 1 : len;
 	memcpy(outbuf, prop, *outbuf_len);
 	outbuf[*outbuf_len] = '\0';
 	XFree((char *)prop);
-	return True;
+	return true;
 }
 
-Bool CtwmSetVScreenMap(Display *display, Window rootw,
+bool CtwmSetVScreenMap(Display *display, Window rootw,
                        struct VirtualScreen *firstvs)
 {
 	char                        buf[1024];
@@ -206,7 +206,7 @@ Bool CtwmSetVScreenMap(Display *display, Window rootw,
 	struct VirtualScreen        *vs;
 
 	if(XA_WM_CTWM_VSCREENMAP == None) {
-		return(False);
+		return false;
 	}
 
 	memset(buf, 0, sizeof(buf));
@@ -221,10 +221,10 @@ Bool CtwmSetVScreenMap(Display *display, Window rootw,
 	}
 
 	if(! tally) {
-		return(False);
+		return false;
 	}
 
 	XChangeProperty(display, rootw, XA_WM_CTWM_VSCREENMAP, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *)buf, strlen(buf));
-	return(True);
+	return true;
 }

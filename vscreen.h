@@ -28,6 +28,8 @@
 #ifndef _CTWM_VSCREEN_H
 #define _CTWM_VSCREEN_H
 
+#include <stdbool.h>
+
 struct VirtualScreen {
 	int   x, y, w, h;             /* x,y relative to XineramaRoot */
 	Window window;
@@ -39,9 +41,9 @@ struct VirtualScreen {
 void InitVirtualScreens(ScreenInfo *scr);
 VirtualScreen *findIfVScreenOf(int x, int y);
 VirtualScreen *getVScreenOf(int x, int y);
-Bool CtwmGetVScreenMap(Display *display, Window rootw,
+bool CtwmGetVScreenMap(Display *display, Window rootw,
                        char *outbuf, int *outbuf_len);
-Bool CtwmSetVScreenMap(Display *display, Window rootw,
+bool CtwmSetVScreenMap(Display *display, Window rootw,
                        struct VirtualScreen *firstvs);
 
 #endif /* _CTWM_VSCREEN_H */

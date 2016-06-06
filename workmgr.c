@@ -195,7 +195,7 @@ void CreateWorkSpaceManager(void)
 	NewFontCursor(&handCursor, "top_left_arrow");
 
 	vsmaplen = sizeof(vsmapbuf);
-	if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen) == True) {
+	if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen) == true) {
 		vsmap = strtok(vsmapbuf, ",");
 	}
 	else {
