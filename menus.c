@@ -1194,7 +1194,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 	                (menu == Scr->Visible)) {
 		TwmWindow *tmp_win;
 		WorkSpace *ws;
-		Boolean all, icons, visible_, allicons; /* visible, allicons:
+		bool all, icons, visible_, allicons; /* visible, allicons:
                                                   Added by dl */
 		int func;
 

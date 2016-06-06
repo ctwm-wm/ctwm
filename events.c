@@ -1160,19 +1160,19 @@ void HandleKeyPress(void)
 			modifier = set_mask_ignore(modifier);
 
 			while(item != startitem) {
-				Boolean  matched = False;
+				bool matched = false;
 				offset = 0;
 				switch(item->item [0]) {
 					case '^' :
 						if((modifier & ControlMask) &&
 						                (keynam [0] == Tolower(item->item [1]))) {
-							matched = True;
+							matched = true;
 						}
 						break;
 					case '~' :
 						if((modifier & Mod1Mask) &&
 						                (keynam [0] == Tolower(item->item [1]))) {
-							matched = True;
+							matched = true;
 						}
 						break;
 					case ' ' :
@@ -1186,7 +1186,7 @@ void HandleKeyPress(void)
 
 						                (!(modifier & ShiftMask) && Islower(item->item [offset]) &&
 						                 (keynam [0] == item->item [offset]))) {
-							matched = True;
+							matched = true;
 						}
 						break;
 				}
@@ -1361,14 +1361,14 @@ void HandleKeyPress(void)
 				return;
 			}
 			else {
-				int matched = FALSE;
+				bool matched = false;
 				len = strlen(key->win_name);
 
 				/* try and match the name first */
 				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 				                Tmp_win = Tmp_win->next) {
 					if(!strncmp(key->win_name, Tmp_win->name, len)) {
-						matched = TRUE;
+						matched = true;
 						ExecuteFunction(key->func, key->action, Tmp_win->frame,
 						                Tmp_win, &Event, C_FRAME, FALSE);
 						if(!AlternateKeymap && !AlternateContext) {
@@ -1382,7 +1382,7 @@ void HandleKeyPress(void)
 					for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 					                Tmp_win = Tmp_win->next) {
 						if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
-							matched = TRUE;
+							matched = true;
 							ExecuteFunction(key->func, key->action, Tmp_win->frame,
 							                Tmp_win, &Event, C_FRAME, FALSE);
 							if(!AlternateKeymap && !AlternateContext) {
@@ -1396,7 +1396,7 @@ void HandleKeyPress(void)
 					for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 					                Tmp_win = Tmp_win->next) {
 						if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
-							matched = TRUE;
+							matched = true;
 							ExecuteFunction(key->func, key->action, Tmp_win->frame,
 							                Tmp_win, &Event, C_FRAME, FALSE);
 							if(!AlternateKeymap && !AlternateContext) {
