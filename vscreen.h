@@ -23,12 +23,12 @@
  *
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
-#include "types.h"
-
 #ifndef _CTWM_VSCREEN_H
 #define _CTWM_VSCREEN_H
 
 #include <stdbool.h>
+
+#include "types.h"
 
 struct VirtualScreen {
 	int   x, y, w, h;             /* x,y relative to XineramaRoot */
