@@ -477,7 +477,6 @@ extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 extern XGCValues Gcv;
 extern int Argc;
 extern char **Argv;
-extern Bool ShowWelcomeWindow;
 
 extern bool RestartPreviousState;
 Bool GetWMState(Window w, int *statep, Window *iwp);
