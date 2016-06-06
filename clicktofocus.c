@@ -3,7 +3,7 @@
 #include "screen.h"
 #include "clicktofocus.h"
 
-TwmWindow *get_last_window(WorkSpace *current)
+static TwmWindow *get_last_window(WorkSpace *current)
 {
 	TwmWindow           *t;
 	TwmWindow  *first = NULL;
