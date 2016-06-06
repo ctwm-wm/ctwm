@@ -2112,24 +2112,24 @@ void SetMapStateProp(TwmWindow *tmp_win, int state)
 }
 
 
-Bool GetWMState(Window w, int *statep, Window *iwp)
+bool GetWMState(Window w, int *statep, Window *iwp)
 {
 	Atom actual_type;
 	int actual_format;
 	unsigned long nitems, bytesafter;
 	unsigned long *datap = NULL;
-	Bool retval = False;
+	bool retval = false;
 
 	if(XGetWindowProperty(dpy, w, XA_WM_STATE, 0L, 2L, False, XA_WM_STATE,
 	                      &actual_type, &actual_format, &nitems, &bytesafter,
 	                      (unsigned char **) &datap) != Success || !datap) {
-		return False;
+		return false;
 	}
 
 	if(nitems <= 2) {                   /* "suggested" by ICCCM version 1 */
 		*statep = (int) datap[0];
 		*iwp = (Window) datap[1];
-		retval = True;
+		retval = true;
 	}
 
 	XFree((char *) datap);

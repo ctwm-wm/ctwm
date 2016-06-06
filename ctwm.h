@@ -479,7 +479,6 @@ extern int Argc;
 extern char **Argv;
 
 extern bool RestartPreviousState;
-Bool GetWMState(Window w, int *statep, Window *iwp);
 
 extern bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
 void DoRestart(Time t);         /* Function to perform a restart */

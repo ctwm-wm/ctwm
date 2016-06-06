@@ -206,6 +206,7 @@ void MoveMenu(XEvent *eventp);
 void DeIconify(TwmWindow *tmp_win);
 void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
 void SetMapStateProp(TwmWindow *tmp_win, int state);
+bool GetWMState(Window w, int *statep, Window *iwp);
 void send_clientmessage(Window w, Atom a, Time timestamp);
 void SendEndAnimationMessage(Window w, Time timestamp);
 void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
