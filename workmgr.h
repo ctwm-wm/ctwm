@@ -29,8 +29,6 @@
 
 #include <stdbool.h>
 
-#include "vscreen.h"
-
 #define MAXWORKSPACE 32
 #define MAPSTATE      0
 #define BUTTONSSTATE  1
