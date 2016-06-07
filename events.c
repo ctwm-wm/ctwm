@@ -106,6 +106,7 @@ static void CtwmNextEvent(Display *display, XEvent  *event);
 static void RedoIcon(void);
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w);             /* invoking window or None */
+static bool StashEventTime(XEvent *ev);
 
 FILE *tracefile = NULL;
 
@@ -270,38 +271,39 @@ void InitEvents(void)
 
 Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
 
-Bool StashEventTime(XEvent *ev)
+static bool
+StashEventTime(XEvent *ev)
 {
 	switch(ev->type) {
 		case KeyPress:
 		case KeyRelease:
 			lastTimestamp = ev->xkey.time;
-			return True;
+			return true;
 		case ButtonPress:
 		case ButtonRelease:
 			lastTimestamp = ev->xbutton.time;
-			return True;
+			return true;
 		case MotionNotify:
 			lastTimestamp = ev->xmotion.time;
-			return True;
+			return true;
 		case EnterNotify:
 		case LeaveNotify:
 			lastTimestamp = ev->xcrossing.time;
-			return True;
+			return true;
 		case PropertyNotify:
 			lastTimestamp = ev->xproperty.time;
-			return True;
+			return true;
 		case SelectionClear:
 			lastTimestamp = ev->xselectionclear.time;
-			return True;
+			return true;
 		case SelectionRequest:
 			lastTimestamp = ev->xselectionrequest.time;
-			return True;
+			return true;
 		case SelectionNotify:
 			lastTimestamp = ev->xselection.time;
-			return True;
+			return true;
 	}
-	return False;
+	return false;
 }
 
 
@@ -442,7 +444,8 @@ static ScreenInfo *GetTwmScreen(XEvent *event)
  *
  ***********************************************************************
  */
-Bool DispatchEvent2(void)
+bool
+DispatchEvent2(void)
 {
 	Window w = Event.xany.window;
 	ScreenInfo *thisScr;
@@ -454,7 +457,7 @@ Bool DispatchEvent2(void)
 	dumpevent(&Event);
 
 	if(!thisScr) {
-		return False;
+		return false;
 	}
 	Scr = thisScr;
 
@@ -475,7 +478,7 @@ Bool DispatchEvent2(void)
 		}
 	}
 
-	return True;
+	return true;
 }
 
 /***********************************************************************
@@ -485,7 +488,8 @@ Bool DispatchEvent2(void)
  *
  ***********************************************************************
  */
-Bool DispatchEvent(void)
+bool
+DispatchEvent(void)
 {
 	Window w = Event.xany.window;
 	ScreenInfo *thisScr;
@@ -497,7 +501,7 @@ Bool DispatchEvent(void)
 	dumpevent(&Event);
 
 	if(!thisScr) {
-		return False;
+		return false;
 	}
 	Scr = thisScr;
 
@@ -505,7 +509,7 @@ Bool DispatchEvent(void)
 		if((Event.type == ConfigureNotify)
 		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
 			ConfigureRootWindow(&Event);
-			return (False);
+			return false;
 		}
 	}
 	FixRootEvent(&Event);
@@ -515,7 +519,7 @@ Bool DispatchEvent(void)
 #endif
 		(*EventHandler[Event.type])();
 	}
-	return True;
+	return true;
 }
 
 
@@ -1432,7 +1436,7 @@ void HandleKeyPress(void)
 
 
 static void free_window_names(TwmWindow *tmp,
-                              Bool nukefull, Bool nukename, Bool nukeicon)
+                              bool nukefull, bool nukename, bool nukeicon)
 {
 	/*
 	 * XXX - are we sure that nobody ever sets these to another constant (check
@@ -1595,7 +1599,7 @@ void HandlePropertyNotify(void)
 				}
 			}
 #endif
-			free_window_names(Tmp_win, True, True, False);
+			free_window_names(Tmp_win, true, true, false);
 
 			Tmp_win->full_name = (char *) prop;
 			Tmp_win->name = (char *) prop;
@@ -1682,7 +1686,7 @@ void HandlePropertyNotify(void)
 			}
 #endif
 			icon_change = strcmp(Tmp_win->icon_name, (char *) prop);
-			free_window_names(Tmp_win, False, False, True);
+			free_window_names(Tmp_win, false, false, true);
 			Tmp_win->icon_name = (char *) prop;
 
 			if(icon_change) {
@@ -2501,7 +2505,7 @@ void HandleDestroyNotify(void)
 		Scr->NumAutoLowers--;
 	}
 
-	free_window_names(Tmp_win, True, True, True);               /* 1, 2, 3 */
+	free_window_names(Tmp_win, true, true, true);               /* 1, 2, 3 */
 	if(Tmp_win->wmhints) {                                      /* 4 */
 		XFree((char *)Tmp_win->wmhints);
 	}
@@ -3804,7 +3808,7 @@ void HandleEnterNotify(void)
 			 * focus on this window
 			 */
 			if(Scr->FocusRoot && (!scanArgs.leaves || scanArgs.inferior)) {
-				Bool accinput;
+				bool accinput;
 
 				if(Scr->ShrinkIconTitles &&
 				                Tmp_win->icon &&
@@ -4086,7 +4090,7 @@ void HandleLeaveNotify(void)
 	}
 
 	if(Tmp_win != NULL) {
-		Bool inicon;
+		bool inicon;
 
 		/*
 		 * We're not interested in pseudo Enter/Leave events generated

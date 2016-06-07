@@ -67,7 +67,6 @@
 typedef void (*event_proc)(void);
 
 void InitEvents(void);
-Bool StashEventTime(XEvent *ev);
 extern Time lastTimestamp;
 void SimulateMapRequest(Window w);
 void AutoRaiseWindow(TwmWindow *tmp);
@@ -77,8 +76,8 @@ void AutoLowerWindow(TwmWindow *tmp);
 #define LastTimestamp() lastTimestamp
 Window WindowOfEvent(XEvent *e);
 void FixRootEvent(XEvent *e);
-Bool DispatchEvent(void);
-Bool DispatchEvent2(void);
+bool DispatchEvent(void);
+bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
 void HandleExpose(void);
 void HandleDestroyNotify(void);
