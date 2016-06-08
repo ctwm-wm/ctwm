@@ -32,6 +32,8 @@
 #ifndef _CTWM_OTP_H
 #define _CTWM_OTP_H
 
+#include <stdbool.h>
+
 #include "types.h"
 
 /* kind of window */
@@ -45,10 +47,10 @@ void ReparentWindowAndIcon(Display *display, TwmWindow *twm_win,
                            int icon_x, int icon_y);
 
 /* misc functions that are not specific to OTP */
-Bool isTransientOf(TwmWindow *, TwmWindow *);
-Bool isSmallTransientOf(TwmWindow *, TwmWindow *);
-Bool isGroupLeaderOf(TwmWindow *, TwmWindow *);
-Bool isGroupLeader(TwmWindow *);
+bool isTransientOf(TwmWindow *, TwmWindow *);
+bool isSmallTransientOf(TwmWindow *, TwmWindow *);
+bool isGroupLeaderOf(TwmWindow *, TwmWindow *);
+bool isGroupLeader(TwmWindow *);
 
 /* functions to "move" windows */
 void OtpRaise(TwmWindow *, WinType);
@@ -75,7 +77,7 @@ void OtpFreeIcon(TwmWindow *twm_win);
 void OtpScrInitData(ScreenInfo *);
 name_list **OtpScrSwitchingL(ScreenInfo *, WinType);
 name_list **OtpScrPriorityL(ScreenInfo *, WinType, int);
-void OtpScrSetSwitching(ScreenInfo *, WinType, Bool);
+void OtpScrSetSwitching(ScreenInfo *, WinType, bool);
 void OtpScrSetZero(ScreenInfo *, WinType, int);
 
 /* functions to inform OTP-manager of window creation/destruction */
@@ -92,6 +94,6 @@ TwmWindow *OtpNextWinDown(TwmWindow *);
 int OtpGetPriority(TwmWindow *twm_win);
 
 /* Other debugging functions */
-Bool OtpCheckConsistency(void);
+bool OtpCheckConsistency(void);
 
 #endif /* _CTWM_OTP_H */
