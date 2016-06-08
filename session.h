@@ -31,10 +31,8 @@
 #include <X11/SM/SMlib.h>
 #include "types.h"
 
+/* XXX Only used in one place, should convert to a func? */
 extern SmcConn smcConn;
-extern XtInputId iceInputId;
-extern char *twm_clientId;
-extern TWMWinConfigEntry *winConfigHead;
 
 char *GetClientID(Window window);
 char *GetWindowRole(Window window);

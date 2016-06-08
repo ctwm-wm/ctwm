@@ -115,9 +115,9 @@
 #include "session.h"
 
 SmcConn smcConn = NULL;
-XtInputId iceInputId;
-char *twm_clientId;
-TWMWinConfigEntry *winConfigHead = NULL;
+static XtInputId iceInputId;
+static char *twm_clientId;
+static TWMWinConfigEntry *winConfigHead = NULL;
 static bool sent_save_done = false;
 
 #define SAVEFILE_VERSION 2
