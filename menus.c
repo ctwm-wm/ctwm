@@ -1175,7 +1175,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	TwmWindow *tmp_win2, *tmp_win3;
 	int i;
 	int xl, yt;
-	Bool clipped;
+	bool clipped;
 #ifdef CLAUDE
 	char tmpname3 [256], tmpname4 [256];
 	int hasmoz = 0;
@@ -1491,22 +1491,22 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	/*
 	* clip to screen
 	*/
-	clipped = FALSE;
+	clipped = false;
 	if(x + menu->width > Scr->rootw) {
 		x = Scr->rootw - menu->width;
-		clipped = TRUE;
+		clipped = true;
 	}
 	if(x < 0) {
 		x = 0;
-		clipped = TRUE;
+		clipped = true;
 	}
 	if(y + menu->height > Scr->rooth) {
 		y = Scr->rooth - menu->height;
-		clipped = TRUE;
+		clipped = true;
 	}
 	if(y < 0) {
 		y = 0;
-		clipped = TRUE;
+		clipped = true;
 	}
 	MenuOrigins[MenuDepth].x = x;
 	MenuOrigins[MenuDepth].y = y;
@@ -2405,7 +2405,7 @@ void MoveMenu(XEvent *eventp)
 
 {
 	int    XW, YW, newX, newY, cont;
-	Bool   newev;
+	bool   newev;
 	unsigned long event_mask;
 	XEvent ev;
 
@@ -2437,9 +2437,9 @@ void MoveMenu(XEvent *eventp)
 				cont = FALSE;
 			case MotionNotify :
 				if(!cont) {
-					newev = False;
+					newev = false;
 					while(XCheckMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask, &ev)) {
-						newev = True;
+						newev = true;
 						if(ev.type == ButtonRelease) {
 							break;
 						}
