@@ -118,7 +118,6 @@ SmcConn smcConn = NULL;
 XtInputId iceInputId;
 char *twm_clientId;
 TWMWinConfigEntry *winConfigHead = NULL;
-Bool gotFirstSave = 0;
 Bool sent_save_done = 0;
 
 #define SAVEFILE_VERSION 2
