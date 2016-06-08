@@ -200,8 +200,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	int bw2;
 	short saved_x, saved_y, restore_icon_x, restore_icon_y;
 	unsigned short saved_width, saved_height;
-	Bool restore_iconified;
-	Bool restore_icon_info_present;
+	Bool restore_iconified = 0;
+	Bool restore_icon_info_present = 0;
 	int restoredFromPrevSession;
 	Bool width_ever_changed_by_user;
 	Bool height_ever_changed_by_user;
