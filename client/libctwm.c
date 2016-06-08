@@ -38,7 +38,7 @@ Atom _XA_WM_WORKSPACESLIST;
 /* Note that this doesn't assure that ctwm is really running,
    i should set up a communication via flipping a property */
 
-Bool CtwmIsRunning(Display *display, int scrnum)
+bool CtwmIsRunning(Display *display, int scrnum)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;

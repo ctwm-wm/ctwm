@@ -27,7 +27,9 @@
 #ifndef _CTWM_CLIENT_H
 #define _CTWM_CLIENT_H
 
-Bool    CtwmIsRunning(Display *display, int scrnum);
+#include <stdbool.h>
+
+bool    CtwmIsRunning(Display *display, int scrnum);
 char    **CtwmListWorkspaces(Display *display, int scrnum);
 char    *CtwmCurrentWorkspace(Display *display, int scrnum);
 int     CtwmChangeWorkspace(Display *display, int scrnum,
