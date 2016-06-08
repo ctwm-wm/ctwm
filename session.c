@@ -118,7 +118,7 @@ SmcConn smcConn = NULL;
 XtInputId iceInputId;
 char *twm_clientId;
 TWMWinConfigEntry *winConfigHead = NULL;
-Bool sent_save_done = 0;
+static bool sent_save_done = false;
 
 #define SAVEFILE_VERSION 2
 
@@ -1066,7 +1066,7 @@ void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData)
 
 bad:
 	SmcSaveYourselfDone(smcCon, success);
-	sent_save_done = 1;
+	sent_save_done = true;
 
 	if(configFile) {
 		fclose(configFile);
@@ -1087,10 +1087,10 @@ void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
 {
 	if(!SmcRequestSaveYourselfPhase2(smcCon, SaveYourselfPhase2CB, NULL)) {
 		SmcSaveYourselfDone(smcCon, False);
-		sent_save_done = 1;
+		sent_save_done = true;
 	}
 	else {
-		sent_save_done = 0;
+		sent_save_done = false;
 	}
 }
 
@@ -1123,7 +1123,7 @@ void ShutdownCancelledCB(SmcConn smcCon, SmPointer clientData)
 {
 	if(!sent_save_done) {
 		SmcSaveYourselfDone(smcCon, False);
-		sent_save_done = 1;
+		sent_save_done = true;
 	}
 }
 

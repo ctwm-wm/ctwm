@@ -35,7 +35,6 @@ extern SmcConn smcConn;
 extern XtInputId iceInputId;
 extern char *twm_clientId;
 extern TWMWinConfigEntry *winConfigHead;
-extern Bool sent_save_done;
 
 char *GetClientID(Window window);
 char *GetWindowRole(Window window);
