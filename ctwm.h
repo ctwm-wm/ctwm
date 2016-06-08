@@ -406,6 +406,7 @@ struct TwmWindow {
 #endif /* EWMH */
 };
 
+/* Used in stashing session info */
 struct TWMWinConfigEntry {
 	struct TWMWinConfigEntry *next;
 	int tag;
@@ -418,10 +419,10 @@ struct TWMWinConfigEntry {
 	short x, y;
 	unsigned short width, height;
 	short icon_x, icon_y;
-	Bool iconified;
-	Bool icon_info_present;
-	Bool width_ever_changed_by_user;
-	Bool height_ever_changed_by_user;
+	bool iconified;
+	bool icon_info_present;
+	bool width_ever_changed_by_user;
+	bool height_ever_changed_by_user;
 	/* ===================[ Matthew McNeill Feb 1997 ]======================= *
 	 * Added this property to facilitate restoration of workspaces when
 	 * restarting a session.

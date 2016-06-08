@@ -200,11 +200,11 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	int bw2;
 	short saved_x, saved_y, restore_icon_x, restore_icon_y;
 	unsigned short saved_width, saved_height;
-	Bool restore_iconified = False;
-	Bool restore_icon_info_present = False;
+	bool restore_iconified = false;
+	bool restore_icon_info_present = false;
 	int restoredFromPrevSession;
-	Bool width_ever_changed_by_user;
-	Bool height_ever_changed_by_user;
+	bool width_ever_changed_by_user;
+	bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
 	fd_set      mask;

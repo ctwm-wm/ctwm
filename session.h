@@ -44,11 +44,11 @@ void ReadWinConfigFile(char *filename);
 int GetWindowConfig(TwmWindow *theWindow,
                     short *x, short *y,
                     unsigned short *width, unsigned short *height,
-                    Bool *iconified,
-                    Bool *icon_info_present,
+                    bool *iconified,
+                    bool *icon_info_present,
                     short *icon_x, short *icon_y,
-                    Bool *width_ever_changed_by_user,
-                    Bool *height_ever_changed_by_user,
+                    bool *width_ever_changed_by_user,
+                    bool *height_ever_changed_by_user,
                     int *occupation /* <== [ Matthew McNeill Feb 1997 ] == */
                    );
 void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData);
