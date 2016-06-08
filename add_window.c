@@ -206,7 +206,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	Bool width_ever_changed_by_user;
 	Bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
-	Bool        random_placed = False;
+	bool random_placed = false;
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout;
@@ -878,7 +878,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 				PlaceY += Scr->RandomDisplacementY;
 			}
 
-			random_placed = True;
+			random_placed = true;
 		}
 		else {                            /* else prompt */
 			if(!(tmp_win->wmhints && tmp_win->wmhints->flags & StateHint &&
