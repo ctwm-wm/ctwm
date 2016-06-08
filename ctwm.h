@@ -498,7 +498,7 @@ typedef struct _ctwm_cl_args {
 	char  *display_name;       // --display, X server display
 
 	Bool   PrintErrorMessages; // --verbose, show more debug output
-	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
+	bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
 	int    is_captive;         // --window (flag), running captive
 	Window capwin;             // --window (arg), existing window to capture

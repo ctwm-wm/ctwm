@@ -32,9 +32,9 @@ ctwm_cl_args CLarg = {
 	.display_name    = NULL,
 	.PrintErrorMessages = False,
 #ifdef DEBUG
-	.ShowWelcomeWindow  = False,
+	.ShowWelcomeWindow  = false,
 #else
-	.ShowWelcomeWindow  = True,
+	.ShowWelcomeWindow  = true,
 #endif
 	.is_captive      = FALSE,
 	.capwin          = (Window) 0,
@@ -170,7 +170,7 @@ clargs_parse(int argc, char *argv[])
 				CLarg.PrintErrorMessages = False;
 				break;
 			case 'W':
-				CLarg.ShowWelcomeWindow = False;
+				CLarg.ShowWelcomeWindow = false;
 				break;
 			case 'f':
 				CLarg.InitFile = optarg;

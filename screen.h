@@ -463,7 +463,7 @@ struct ScreenInfo {
 	short NoWarpToMenuTitle; /* warp cursor to clipped menu title */
 	short NoImagesInWorkSpaceManager;   /* do not display mini images of the desktop background images on WSmap */
 	short DontToggleWorkspaceManagerState;
-	Bool  ShowWelcomeWindow;
+	bool  ShowWelcomeWindow;
 
 	FuncKey FuncKeyRoot;
 	FuncButton FuncButtonRoot;
