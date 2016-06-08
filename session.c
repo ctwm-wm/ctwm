@@ -120,6 +120,10 @@ static char *twm_clientId;
 static TWMWinConfigEntry *winConfigHead = NULL;
 static bool sent_save_done = false;
 
+static void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
+                           int saveType, Bool shutdown, int interactStyle,
+                           Bool fast);
+
 #define SAVEFILE_VERSION 2
 
 
@@ -1079,8 +1083,9 @@ bad:
 
 /*===[ Save Yourself SM CallBack ]===========================================*/
 
-void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
-                    int saveType, Bool shutdown, int interactStyle, Bool fast)
+static void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
+                           int saveType, Bool shutdown, int interactStyle,
+                           Bool fast)
 /* this procedure is called by the session manager when requesting the
  * window manager to save its status, ie all the window configurations
  */

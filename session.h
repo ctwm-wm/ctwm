@@ -52,9 +52,6 @@ int GetWindowConfig(TwmWindow *theWindow,
                     int *occupation /* <== [ Matthew McNeill Feb 1997 ] == */
                    );
 void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData);
-void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
-                    int saveType, Bool shutdown,
-                    int interactStyle, Bool fast);
 void DieCB(SmcConn smcCon, SmPointer clientData);
 void SaveCompleteCB(SmcConn smcCon, SmPointer clientData);
 void ShutdownCancelledCB(SmcConn smcCon, SmPointer clientData);
