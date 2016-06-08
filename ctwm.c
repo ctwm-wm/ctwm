@@ -470,7 +470,7 @@ int main(int argc, char **argv)
 		}
 		Scr->RootColormaps.number_cwins = 1;
 		Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
-		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, True, False);
+		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, true, false);
 		Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 
 		Scr->cmapInfo.cmaps = NULL;

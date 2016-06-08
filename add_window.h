@@ -64,6 +64,8 @@
 #ifndef _CTWM_ADD_WINDOW_H
 #define _CTWM_ADD_WINDOW_H
 
+#include <stdbool.h>
+
 #include "iconmgr.h"
 
 extern char NoName[];
@@ -82,7 +84,7 @@ void GrabButtons(TwmWindow *tmp_win);
 void GrabKeys(TwmWindow *tmp_win);
 void GetWindowSizeHints(TwmWindow *tmp_win);
 void CreateWindowRegions(void);
-Bool PlaceWindowInRegion(TwmWindow *tmp_win,
+bool PlaceWindowInRegion(TwmWindow *tmp_win,
                          int *final_x, int *final_y);
 void RemoveWindowFromRegion(TwmWindow   *tmp_win);
 name_list **AddWindowRegion(char *geom, int  grav1, int grav2);
@@ -96,7 +98,7 @@ void FetchWmProtocols(TwmWindow *tmp);
 
 TwmColormap *CreateTwmColormap(Colormap c);
 ColormapWindow *CreateColormapWindow(Window w,
-                                     Bool creating_parent,
-                                     Bool property_window);
+                                     bool creating_parent,
+                                     bool property_window);
 #endif /* _CTWM_ADD_WINDOW_H */
 

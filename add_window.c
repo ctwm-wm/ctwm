@@ -1831,8 +1831,8 @@ TwmColormap *CreateTwmColormap(Colormap c)
 }
 
 ColormapWindow *CreateColormapWindow(Window w,
-                                     Bool creating_parent,
-                                     Bool property_window)
+                                     bool creating_parent,
+                                     bool property_window)
 {
 	ColormapWindow *cwin;
 	TwmColormap *cmap;
@@ -1962,8 +1962,8 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 					if(XFindContext(dpy, cmap_windows[i], ColormapContext,
 					                (XPointer *)&cwins[i]) == XCNOENT) {
 						if((cwins[i] = CreateColormapWindow(cmap_windows[i],
-						                                    (Bool) tmp->cmaps.number_cwins == 0,
-						                                    True)) == NULL) {
+						                                    tmp->cmaps.number_cwins == 0,
+						                                    true)) == NULL) {
 							int k;
 							for(k = i + 1; k < number_cmap_windows; k++) {
 								cmap_windows[k - 1] = cmap_windows[k];
@@ -1990,7 +1990,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 		if(XFindContext(dpy, tmp->w, ColormapContext, (XPointer *)&cwins[0]) ==
 		                XCNOENT)
 			cwins[0] = CreateColormapWindow(tmp->w,
-			                                (Bool) tmp->cmaps.number_cwins == 0, False);
+			                                tmp->cmaps.number_cwins == 0, false);
 		else {
 			cwins[0]->refcnt++;
 		}
@@ -2148,7 +2148,7 @@ void CreateWindowRegions(void)
 }
 
 
-Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
+bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 {
 	WindowRegion  *wr;
 	WindowEntry   *we;
@@ -2156,7 +2156,7 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	WorkSpace     *wl;
 
 	if(!Scr->FirstWindowRegion) {
-		return (False);
+		return false;
 	}
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		if(OCCUPY(tmp_win, wl)) {
@@ -2164,7 +2164,7 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 		}
 	}
 	if(!wl) {
-		return (False);
+		return false;
 	}
 	w = tmp_win->frame_width;
 	h = tmp_win->frame_height;
@@ -2186,7 +2186,7 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	}
 	tmp_win->wr = (WindowRegion *) 0;
 	if(!we) {
-		return (False);
+		return false;
 	}
 
 	splitWindowRegionEntry(we, wr->grav1, wr->grav2, w, h);
@@ -2195,7 +2195,7 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	*final_x = we->x;
 	*final_y = we->y;
 	tmp_win->wr = wr;
-	return (True);
+	return true;
 }
 
 static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
