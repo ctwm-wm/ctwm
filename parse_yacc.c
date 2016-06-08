@@ -221,37 +221,40 @@ void GotTitleButton(char *bitmapname, int func, bool rightside)
 	pull = NULL;
 }
 
-Bool CheckWarpScreenArg(char *s)
+bool
+CheckWarpScreenArg(char *s)
 {
 	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_PREV) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_BACK) == 0) {
-		return True;
+		return true;
 	}
 
 	for(; *s && Isascii(*s) && Isdigit(*s); s++) ;  /* SUPPRESS 530 */
-	return (*s ? False : True);
+	return (*s ? false : true);
 }
 
 
-Bool CheckWarpRingArg(char *s)
+bool
+CheckWarpRingArg(char *s)
 {
 	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_PREV) == 0) {
-		return True;
+		return true;
 	}
 
-	return False;
+	return false;
 }
 
 
-Bool CheckColormapArg(char *s)
+bool
+CheckColormapArg(char *s)
 {
 	if(strcasecmp(s, COLORMAP_NEXT) == 0 ||
 	                strcasecmp(s, COLORMAP_PREV) == 0 ||
 	                strcasecmp(s, COLORMAP_DEFAULT) == 0) {
-		return True;
+		return true;
 	}
 
-	return False;
+	return false;
 }
