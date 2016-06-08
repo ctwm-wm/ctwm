@@ -102,7 +102,7 @@ char *CurrentSelectedWorkspace;
 
 /* Should probably move, since nothing in this file uses anymore */
 int AlternateKeymap;
-Bool AlternateContext;
+bool AlternateContext;
 
 int MenuDepth = 0;              /* number of menus up */
 static struct {
@@ -164,7 +164,7 @@ void InitMenus(void)
  ***********************************************************************
  */
 
-Bool AddFuncKey(char *name, int cont, int nmods, int func,
+bool AddFuncKey(char *name, int cont, int nmods, int func,
                 MenuRoot *menu, char *win_name, char *action)
 {
 	FuncKey *tmp;
@@ -177,7 +177,7 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
 	 */
 	if((keysym = XStringToKeysym(name)) == NoSymbol ||
 	                (keycode = XKeysymToKeycode(dpy, keysym)) == 0) {
-		return False;
+		return false;
 	}
 
 	/* see if there already is a key defined for this context */
@@ -205,7 +205,7 @@ Bool AddFuncKey(char *name, int cont, int nmods, int func,
 	tmp->win_name = win_name;
 	tmp->action = action;
 
-	return True;
+	return true;
 }
 
 /***********************************************************************
@@ -530,8 +530,8 @@ void MakeWorkspacesMenu(void)
 	MakeMenu(Scr->Workspaces);
 }
 
-static Bool fromMenu;
-Bool
+static bool fromMenu;
+bool
 cur_fromMenu()
 {
 	return fromMenu;
@@ -544,7 +544,7 @@ void UpdateMenu(void)
 	int done;
 	MenuItem *badItem = NULL;
 
-	fromMenu = TRUE;
+	fromMenu = true;
 
 	while(TRUE) {
 		/* block until there is an event */
@@ -571,7 +571,7 @@ void UpdateMenu(void)
 
 		if((! ActiveMenu) || Cancel) {
 			menuFromFrameOrWindowOrTitlebar = false;
-			fromMenu = FALSE;
+			fromMenu = false;
 			return;
 		}
 
@@ -1167,7 +1167,8 @@ void MakeMenu(MenuRoot *mr)
  ***********************************************************************
  */
 
-Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
+bool
+PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 {
 	int WindowNameCount;
 	TwmWindow **WindowNames;
@@ -1180,7 +1181,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 	int hasmoz = 0;
 #endif
 	if(!menu) {
-		return False;
+		return false;
 	}
 
 	InstallRootColormap();
@@ -1240,7 +1241,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 			}
 		}
 		if(!Scr->currentvs) {
-			return False;
+			return false;
 		}
 		if(!ws) {
 			ws = Scr->currentvs->wsw->currentwspc;
@@ -1443,12 +1444,12 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 		MakeMenu(menu);
 	}
 	if(menu->w == None || menu->items == 0) {
-		return False;
+		return false;
 	}
 
 	/* Prevent recursively bringing up menus. */
 	if((!menu->pinned) && (menu->mapped == MAPPED)) {
-		return False;
+		return false;
 	}
 
 	/*
@@ -1466,7 +1467,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 		MenuDepth++;
 
 		XRaiseWindow(dpy, menu->w);
-		return (True);
+		return true;
 	}
 
 	XGrabPointer(dpy, Scr->Root, True,
@@ -1533,7 +1534,7 @@ Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
 		XMapWindow(dpy, menu->shadow);
 	}
 	XSync(dpy, 0);
-	return True;
+	return true;
 }
 
 
@@ -2206,7 +2207,7 @@ static void DestroyMenu(MenuRoot *menu)
  * warping routines
  */
 
-void WarpAlongRing(XButtonEvent *ev, Bool forward)
+void WarpAlongRing(XButtonEvent *ev, bool forward)
 {
 	TwmWindow *r, *head;
 

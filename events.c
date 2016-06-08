@@ -1279,7 +1279,7 @@ void HandleKeyPress(void)
 		if(AlternateContext) {
 			XUngrabPointer(dpy, CurrentTime);
 			XUngrabKeyboard(dpy, CurrentTime);
-			AlternateContext = False;
+			AlternateContext = false;
 			Context = C_ALTERNATE;
 		}
 		else if(AlternateKeymap && Event.xkey.subwindow) {
@@ -3346,7 +3346,7 @@ void HandleButtonPress(void)
 		if(AlternateContext) {
 			XUngrabPointer(dpy, CurrentTime);
 			XUngrabKeyboard(dpy, CurrentTime);
-			AlternateContext = False;
+			AlternateContext = false;
 			Context = C_ALTERNATE;
 		}
 		else if(AlternateKeymap && Event.xbutton.subwindow) {

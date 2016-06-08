@@ -161,7 +161,7 @@ extern MenuItem *ActiveItem;
 
 extern bool menuFromFrameOrWindowOrTitlebar;
 extern char *CurrentSelectedWorkspace;
-extern Bool AlternateContext;
+extern bool AlternateContext;
 extern int AlternateKeymap;
 
 #define MAXMENUDEPTH    10      /* max number of nested menus */
@@ -183,10 +183,10 @@ void InitMenus(void);
 MenuRoot *NewMenuRoot(char *name);
 MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
                     MenuRoot *sub, int func, char *fore, char *back);
-Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center);
+bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center);
 void MakeWorkspacesMenu(void);
 MenuRoot *FindMenuRoot(char *name);
-Bool AddFuncKey(char *name, int cont, int mods, int func,
+bool AddFuncKey(char *name, int cont, int mods, int func,
                 MenuRoot *menu, char *win_name, char *action);
 void AddFuncButton(int num, int cont, int mods, int func,
                    MenuRoot *menu, MenuItem *item);
@@ -198,7 +198,7 @@ void ReGrab(void);
 void SetLastCursor(Cursor newcur);
 void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
 void PaintMenu(MenuRoot *mr, XEvent *e);
-Bool cur_fromMenu(void);
+bool cur_fromMenu(void);
 void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
@@ -227,7 +227,7 @@ void AutoSqueeze(TwmWindow *tmp_win);
 void Squeeze(TwmWindow *tmp_win);
 
 /* To move soonish? */
-void WarpAlongRing(XButtonEvent *ev, Bool forward);
+void WarpAlongRing(XButtonEvent *ev, bool forward);
 int WarpToScreen(int n, int inc);
 
 #endif /* _CTWM_MENUS_H */

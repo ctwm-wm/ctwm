@@ -428,7 +428,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		}
 
 		case F_ALTCONTEXT: {
-			AlternateContext = True;
+			AlternateContext = true;
 			XGrabPointer(dpy, Scr->Root, False, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
@@ -2045,10 +2045,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_WARPRING:
 			switch(((char *)action)[0]) {
 				case 'n':
-					WarpAlongRing(&eventp->xbutton, True);
+					WarpAlongRing(&eventp->xbutton, true);
 					break;
 				case 'p':
-					WarpAlongRing(&eventp->xbutton, False);
+					WarpAlongRing(&eventp->xbutton, false);
 					break;
 				default:
 					XBell(dpy, 0);
