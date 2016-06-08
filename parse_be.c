@@ -1534,12 +1534,12 @@ do_colorlist_keyword(int keyword, int colormode, char *s)
 
 		case kwcl_MapWindowBackground:
 			GetColor(colormode, &Scr->workSpaceMgr.windowcp.back, s);
-			Scr->workSpaceMgr.windowcpgiven = True;
+			Scr->workSpaceMgr.windowcpgiven = true;
 			return &Scr->workSpaceMgr.windowBackgroundL;
 
 		case kwcl_MapWindowForeground:
 			GetColor(colormode, &Scr->workSpaceMgr.windowcp.fore, s);
-			Scr->workSpaceMgr.windowcpgiven = True;
+			Scr->workSpaceMgr.windowcpgiven = true;
 			return &Scr->workSpaceMgr.windowForegroundL;
 	}
 	return NULL;

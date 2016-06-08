@@ -120,7 +120,7 @@ void InitWorkSpaceManager(void)
 	Scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
 	Scr->workSpaceMgr.windowcp.back = Scr->White;
 	Scr->workSpaceMgr.windowcp.fore = Scr->Black;
-	Scr->workSpaceMgr.windowcpgiven = False;
+	Scr->workSpaceMgr.windowcpgiven = false;
 
 	Scr->workSpaceMgr.occupyWindow = calloc(1, sizeof(OccupyWindow));
 	Scr->workSpaceMgr.occupyWindow->name      = "Occupy Window";
@@ -136,7 +136,7 @@ void InitWorkSpaceManager(void)
 	Scr->workSpaceMgr.defColors.back  = Scr->White;
 	Scr->workSpaceMgr.defColors.fore  = Scr->Black;
 	Scr->workSpaceMgr.curImage        = None;
-	Scr->workSpaceMgr.curPaint        = False;
+	Scr->workSpaceMgr.curPaint        = false;
 	Scr->workSpaceMgr.defImage        = None;
 	Scr->workSpaceMgr.vspace          = Scr->WMgrVertButtonIndent;
 	Scr->workSpaceMgr.hspace          = Scr->WMgrHorizButtonIndent;
@@ -3713,7 +3713,7 @@ void WMapCreateCurrentBackGround(char *border,
 	if(background == NULL) {
 		return;
 	}
-	ws->curPaint = True;
+	ws->curPaint = true;
 	GetColor(Scr->Monochrome, &ws->curColors.back, background);
 	if(foreground == NULL) {
 		return;

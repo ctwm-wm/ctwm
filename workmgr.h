@@ -56,7 +56,7 @@ struct WorkSpaceMgr {
 	MyFont          buttonFont;
 	MyFont          windowFont;
 	ColorPair       windowcp;
-	Bool            windowcpgiven;
+	bool            windowcpgiven;
 	ColorPair       cp;
 	long            count;
 	char            *geometry;
@@ -70,7 +70,7 @@ struct WorkSpaceMgr {
 	ColorPair           curColors;
 	Image               *curImage;
 	unsigned long       curBorderColor;
-	Bool                curPaint;
+	bool                curPaint;
 
 	ColorPair           defColors;
 	Image              *defImage;
