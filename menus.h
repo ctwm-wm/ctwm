@@ -183,7 +183,7 @@ void InitMenus(void);
 MenuRoot *NewMenuRoot(char *name);
 MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
                     MenuRoot *sub, int func, char *fore, char *back);
-bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center);
+bool PopUpMenu(MenuRoot *menu, int x, int y, bool center);
 void MakeWorkspacesMenu(void);
 MenuRoot *FindMenuRoot(char *name);
 bool AddFuncKey(char *name, int cont, int mods, int func,

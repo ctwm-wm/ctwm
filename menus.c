@@ -1168,7 +1168,7 @@ void MakeMenu(MenuRoot *mr)
  */
 
 bool
-PopUpMenu(MenuRoot *menu, int x, int y, Bool center)
+PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 {
 	int WindowNameCount;
 	TwmWindow **WindowNames;

@@ -3154,7 +3154,7 @@ static void do_menu(MenuRoot *menu,     /* menu to pop up */
 {
 	int x = Event.xbutton.x_root;
 	int y = Event.xbutton.y_root;
-	Bool center;
+	bool center;
 
 	if(!Scr->NoGrabServer) {
 		XGrabServer(dpy);
@@ -3164,10 +3164,10 @@ static void do_menu(MenuRoot *menu,     /* menu to pop up */
 		Window child;
 
 		(void) XTranslateCoordinates(dpy, w, Scr->Root, 0, h, &x, &y, &child);
-		center = False;
+		center = false;
 	}
 	else {
-		center = True;
+		center = true;
 	}
 	if(PopUpMenu(menu, x, y, center)) {
 		UpdateMenu();
@@ -3182,7 +3182,7 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
 {
 	int x = Event.xkey.x_root;
 	int y = Event.xkey.y_root;
-	Bool center;
+	bool center;
 
 	/* I don't think this is necessary.
 	    if (!Scr->NoGrabServer) XGrabServer(dpy);
@@ -3192,10 +3192,10 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
 		Window child;
 
 		(void) XTranslateCoordinates(dpy, w, Scr->Root, 0, h, &x, &y, &child);
-		center = False;
+		center = false;
 	}
 	else {
-		center = True;
+		center = true;
 	}
 	if(PopUpMenu(menu, x, y, center)) {
 		UpdateMenu();
@@ -3978,7 +3978,7 @@ void HandleEnterNotify(void)
 	}
 
 	if(! ActiveMenu && mr->pinned && (RootFunction == 0)) {
-		PopUpMenu(mr, 0, 0, 0);
+		PopUpMenu(mr, 0, 0, false);
 		Context = C_ROOT;
 		UpdateMenu();
 		return;
