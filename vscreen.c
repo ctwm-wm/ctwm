@@ -41,7 +41,7 @@ void InitVirtualScreens(ScreenInfo *scr)
 	unsigned long valuemask, attrmask;
 	XSetWindowAttributes attributes;
 	name_list *nptr;
-	Bool userealroot = True;
+	bool userealroot = true;
 	VirtualScreen *vs00 = NULL;
 
 	NewFontCursor(&cursor, "X_cursor");
