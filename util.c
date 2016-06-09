@@ -80,7 +80,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <stdbool.h>
 
 #include <X11/Xatom.h>
 #include <X11/Xmu/WinUtil.h>

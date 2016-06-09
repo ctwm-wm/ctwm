@@ -57,8 +57,6 @@
 #ifndef _CTWM_SCREEN_H
 #define _CTWM_SCREEN_H
 
-#include <stdbool.h>
-
 #include "list.h"
 #include "menus.h"
 #include "iconmgr.h"

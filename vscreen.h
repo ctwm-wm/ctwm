@@ -26,8 +26,6 @@
 #ifndef _CTWM_VSCREEN_H
 #define _CTWM_VSCREEN_H
 
-#include <stdbool.h>
-
 #include "types.h"
 
 struct VirtualScreen {

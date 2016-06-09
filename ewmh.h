@@ -30,8 +30,6 @@
 
 #ifdef EWMH
 
-#include <stdbool.h>
-
 #include "types.h"
 
 /*

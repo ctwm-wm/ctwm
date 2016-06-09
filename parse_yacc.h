@@ -4,8 +4,6 @@
 #ifndef _CTWM_PARSE_YACC_H
 #define _CTWM_PARSE_YACC_H
 
-#include <stdbool.h>
-
 void yyerror(char *s);
 
 void InitGramVariables(void);

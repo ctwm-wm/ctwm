@@ -5,8 +5,6 @@
 #ifndef _CTWM_ANIMATE_H
 #define _CTWM_ANIMATE_H
 
-#include <stdbool.h>
-
 /* Current code requires these to be leaked */
 extern int Animating;
 extern bool AnimationActive;

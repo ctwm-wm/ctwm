@@ -64,8 +64,6 @@
 #ifndef _CTWM_RESIZE_H
 #define _CTWM_RESIZE_H
 
-#include <stdbool.h>
-
 void OpaqueResizeSize(TwmWindow *tmp_win);
 void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h);
 void StartResize(XEvent *evp, TwmWindow *tmp_win,

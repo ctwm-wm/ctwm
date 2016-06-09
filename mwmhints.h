@@ -1,8 +1,6 @@
 #ifndef _CTWM_MWMHINTS_H
 #define _CTWM_MWMHINTS_H
 
-#include <stdbool.h>
-
 /*
  * Contents of the _MOTIF_WM_HINTS property.
  */

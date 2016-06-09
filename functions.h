@@ -5,8 +5,6 @@
 #ifndef _CTWM_FUNCTIONS_H
 #define _CTWM_FUNCTIONS_H
 
-#include <stdbool.h>
-
 /* All the outside world sees */
 bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                      XEvent *eventp, int context, int pulldown);

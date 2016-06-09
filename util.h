@@ -65,7 +65,6 @@
 #define _CTWM_UTIL_H
 
 #include <ctype.h>
-#include <stdbool.h>
 
 #include "types.h"
 

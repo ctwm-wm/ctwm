@@ -27,8 +27,6 @@
 #ifndef _CTWM_WORKMGR_H
 #define _CTWM_WORKMGR_H
 
-#include <stdbool.h>
-
 #define MAXWORKSPACE 32
 #define MAPSTATE      0
 #define BUTTONSSTATE  1

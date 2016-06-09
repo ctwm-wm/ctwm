@@ -64,8 +64,6 @@
 #ifndef _CTWM_MENUS_H
 #define _CTWM_MENUS_H
 
-#include <stdbool.h>
-
 #define TWM_ROOT        "bLoB_GoOp"     /* my private root menu */
 #define TWM_WINDOWS     "TwmWindows"    /* for f.menu "TwmWindows" */
 #define TWM_ICONS       "TwmIcons"      /* for f.menu "TwmIcons" */
