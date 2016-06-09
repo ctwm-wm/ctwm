@@ -228,6 +228,22 @@ clargs_parse(int argc, char *argv[])
 					break;
 				}
 #endif
+
+				/* Simple value-setting */
+				IFIS("name") {
+					CLarg.captivename = optarg;
+					break;
+				}
+				IFIS("clientId") {
+					CLarg.client_id = optarg;
+					break;
+				}
+				IFIS("restore") {
+					CLarg.restore_filename = optarg;
+					break;
+				}
+
+				/* Some immediate actions */
 				IFIS("version") {
 					print_version();
 					exit(0);
@@ -240,10 +256,8 @@ clargs_parse(int argc, char *argv[])
 					dump_default_config();
 					exit(0);
 				}
-				IFIS("name") {
-					CLarg.captivename = optarg;
-					break;
-				}
+
+				/* Misc */
 				IFIS("xrm") {
 					/*
 					 * Quietly ignored by us; Xlib processes it
@@ -251,17 +265,13 @@ clargs_parse(int argc, char *argv[])
 					 */
 					break;
 				}
-				IFIS("clientId") {
-					CLarg.client_id = optarg;
-					break;
-				}
-				IFIS("restore") {
-					CLarg.restore_filename = optarg;
-					break;
-				}
 #undef IFIS
 
-				/* Some choices may just be internally setting a flag */
+				/*
+				 * Some choices may just be internally setting a flag.
+				 * We have none right now, but leave this in case we grow
+				 * more later.
+				 */
 				if(long_options[optidx].flag != NULL) {
 					break;
 				}
