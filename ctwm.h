@@ -491,27 +491,27 @@ void DoRestart(Time t);         /* Function to perform a restart */
  * Command-line arg handling bits
  */
 typedef struct _ctwm_cl_args {
-	int    MultiScreen;        // ! --single, grab multiple screens
-	int    Monochrome;         // --mono, force monochrome
-	int    cfgchk;             // --cfgchk, check config and exit
+	bool   MultiScreen;        // ! --single, grab multiple screens
+	bool   Monochrome;         // --mono, force monochrome
+	bool   cfgchk;             // --cfgchk, check config and exit
 	char  *InitFile;           // --file, config filename
 	char  *display_name;       // --display, X server display
 
-	Bool   PrintErrorMessages; // --verbose, show more debug output
+	bool   PrintErrorMessages; // --verbose, show more debug output
 	bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
-	int    is_captive;         // --window (flag), running captive
+	bool   is_captive;         // --window (flag), running captive
 	Window capwin;             // --window (arg), existing window to capture
 	char  *captivename;        // --name, captive name
 
 #ifdef USEM4
-	int    KeepTmpFile;        // --keep-defs, keep generated m4 defs
+	bool   KeepTmpFile;        // --keep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output
-	int    GoThroughM4;        // ! --nom4, do m4 processing
+	bool   GoThroughM4;        // ! --nom4, do m4 processing
 #endif
 
 #ifdef EWMH
-	int    ewmh_replace;       // --replace, replacing running WM
+	bool   ewmh_replace;       // --replace, replacing running WM
 #endif
 
 	char  *client_id;          // --clientId, session client id

@@ -25,27 +25,27 @@ static void dump_default_config(void);
  * Command-line args.  Initialize with useful default values.
  */
 ctwm_cl_args CLarg = {
-	.MultiScreen     = TRUE,
-	.Monochrome      = FALSE,
+	.MultiScreen     = true,
+	.Monochrome      = false,
 	.cfgchk          = 0,
 	.InitFile        = NULL,
 	.display_name    = NULL,
-	.PrintErrorMessages = False,
+	.PrintErrorMessages = false,
 #ifdef DEBUG
 	.ShowWelcomeWindow  = false,
 #else
 	.ShowWelcomeWindow  = true,
 #endif
-	.is_captive      = FALSE,
+	.is_captive      = false,
 	.capwin          = (Window) 0,
 	.captivename     = NULL,
 #ifdef USEM4
-	.KeepTmpFile     = False,
+	.KeepTmpFile     = false,
 	.keepM4_filename = NULL,
-	.GoThroughM4     = True,
+	.GoThroughM4     = true,
 #endif
 #ifdef EWMH
-	.ewmh_replace    = 0,
+	.ewmh_replace    = false,
 #endif
 	.client_id       = NULL,
 	.restore_filename = NULL,
@@ -66,15 +66,15 @@ clargs_parse(int argc, char *argv[])
 	 */
 	static struct option long_options[] = {
 		/* Simple flags */
-		{ "single",    no_argument,       &CLarg.MultiScreen, FALSE },
-		{ "mono",      no_argument,       &CLarg.Monochrome, TRUE },
+		{ "single",    no_argument,       NULL, 0 },
+		{ "mono",      no_argument,       NULL, 0 },
 		{ "verbose",   no_argument,       NULL, 'v' },
 		{ "quiet",     no_argument,       NULL, 'q' },
 		{ "nowelcome", no_argument,       NULL, 'W' },
 
 		/* Config/file related */
 		{ "file",      required_argument, NULL, 'f' },
-		{ "cfgchk",    no_argument,       &CLarg.cfgchk, 1 },
+		{ "cfgchk",    no_argument,       NULL, 0 },
 
 		/* Show something and exit right away */
 		{ "help",      no_argument,       NULL, 'h' },
@@ -89,7 +89,7 @@ clargs_parse(int argc, char *argv[])
 		{ "xrm",       required_argument, NULL, 0 },
 
 #ifdef EWMH
-		{ "replace",   no_argument,       &CLarg.ewmh_replace, 1 },
+		{ "replace",   no_argument,       NULL, 0 },
 #endif
 
 		/* M4 control params */
@@ -139,7 +139,7 @@ clargs_parse(int argc, char *argv[])
 			exit(0);
 		}
 		CHK("-cfgchk") {
-			CLarg.cfgchk = 1;
+			CLarg.cfgchk = true;
 			*argv[1] = '\0';
 		}
 		CHK("-display") {
@@ -164,10 +164,10 @@ clargs_parse(int argc, char *argv[])
 		switch(ch) {
 			/* First handle the simple cases that have short args */
 			case 'v':
-				CLarg.PrintErrorMessages = True;
+				CLarg.PrintErrorMessages = true;
 				break;
 			case 'q':
-				CLarg.PrintErrorMessages = False;
+				CLarg.PrintErrorMessages = false;
 				break;
 			case 'W':
 				CLarg.ShowWelcomeWindow = false;
@@ -181,8 +181,8 @@ clargs_parse(int argc, char *argv[])
 				CLarg.display_name = optarg;
 				break;
 			case 'w':
-				CLarg.is_captive = True;
-				CLarg.MultiScreen = False;
+				CLarg.is_captive = true;
+				CLarg.MultiScreen = false;
 				if(optarg != NULL) {
 					sscanf(optarg, "%x", (unsigned int *)&CLarg.capwin);
 					/* Failure will just leave capwin as initialized */
@@ -192,29 +192,42 @@ clargs_parse(int argc, char *argv[])
 #ifdef USEM4
 			/* Args that only mean anything if we're built with m4 */
 			case 'k':
-				CLarg.KeepTmpFile = True;
+				CLarg.KeepTmpFile = true;
 				break;
 			case 'K':
 				CLarg.keepM4_filename = optarg;
 				break;
 			case 'n':
-				CLarg.GoThroughM4 = False;
+				CLarg.GoThroughM4 = false;
 				break;
 #endif
 
 
 			/*
-			 * Now the stuff that doesn't have short variants.  Many of
-			 * them just set flags, so we don't need to do anything with
-			 * them.  Only the ones with NULL flags matter.
+			 * Now the stuff that doesn't have short variants.
 			 */
 			case 0:
-				if(long_options[optidx].flag != NULL) {
-					/* It only existed to set a flag; we're done */
-					break;
-				}
 
 #define IFIS(x) if(strcmp(long_options[optidx].name, (x)) == 0)
+				/* Simple flag-setting */
+				IFIS("single") {
+					CLarg.MultiScreen = false;
+					break;
+				}
+				IFIS("mono") {
+					CLarg.Monochrome = true;
+					break;
+				}
+				IFIS("cfgchk") {
+					CLarg.cfgchk = true;
+					break;
+				}
+#ifdef EWMH
+				IFIS("replace") {
+					CLarg.ewmh_replace = true;
+					break;
+				}
+#endif
 				IFIS("version") {
 					print_version();
 					exit(0);
@@ -247,6 +260,11 @@ clargs_parse(int argc, char *argv[])
 					break;
 				}
 #undef IFIS
+
+				/* Some choices may just be internally setting a flag */
+				if(long_options[optidx].flag != NULL) {
+					break;
+				}
 
 				/* Don't think it should be possible to get here... */
 				fprintf(stderr, "Internal error in getopt: '%s' unhandled.\n",
