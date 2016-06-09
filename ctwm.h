@@ -201,7 +201,7 @@ struct TitleButton {
 	int srcx, srcy;                     /* from where to start copying */
 	unsigned int width, height;         /* size of pixmap */
 	int dstx, dsty;                     /* to where to start copying */
-	Bool rightside;                     /* t: on right, f: on left */
+	bool rightside;                     /* t: on right, f: on left */
 	TitleButtonFunc *funs;              /* funcs assoc'd to each button */
 };
 

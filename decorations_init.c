@@ -252,7 +252,7 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 	}
 
 	cur_tb->name = name;           /* note that we are not copying */
-	cur_tb->rightside = (rightside ? True : False);
+	cur_tb->rightside = rightside;
 	if(rightside) {
 		Scr->TBInfo.nright++;
 	}
