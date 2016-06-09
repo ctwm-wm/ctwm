@@ -824,7 +824,7 @@ void SetFocus(TwmWindow *tmp_win, Time tim)
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
 	int f_iconmgr = 0;
 
-	if(Scr->Focus && (Scr->Focus->iconmgr)) {
+	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
 		f_iconmgr = 1;
 	}
 	if(Scr->SloppyFocus && (w == PointerRoot) && (!f_iconmgr)) {

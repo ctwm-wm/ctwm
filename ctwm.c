@@ -747,7 +747,7 @@ int main(int argc, char **argv)
 				else {
 					XMapWindow(dpy, vs->wsw->w);
 				}
-				vs->wsw->twm_win->mapped = TRUE;
+				vs->wsw->twm_win->mapped = true;
 			}
 		}
 

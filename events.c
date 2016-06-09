@@ -191,7 +191,7 @@ void AutoPopupMaybe(TwmWindow *tmp)
 			}
 		}
 		else {
-			tmp->mapped = TRUE;
+			tmp->mapped = true;
 		}
 	}
 }
@@ -853,7 +853,7 @@ void HandleFocusIn(XFocusInEvent *event)
 	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
 #endif
 
-	if(Tmp_win->iconmgr) {
+	if(Tmp_win->isiconmgr) {
 		return;
 	}
 	if(Tmp_win->wmhints && ! Tmp_win->wmhints->input) {
@@ -881,7 +881,7 @@ void HandleFocusOut(XFocusOutEvent *event)
 	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
 #endif
 
-	if(Tmp_win->iconmgr) {
+	if(Tmp_win->isiconmgr) {
 		return;
 	}
 	if(Scr->Focus != Tmp_win) {
@@ -1320,7 +1320,7 @@ void HandleKeyPress(void)
 				Context = C_ICONMGR;
 			}
 		}
-		if(Tmp_win->wspmgr) {
+		if(Tmp_win->iswspmgr) {
 			Context = C_WORKSPACE;
 		}
 	}
@@ -1603,7 +1603,7 @@ void HandlePropertyNotify(void)
 
 			Tmp_win->full_name = (char *) prop;
 			Tmp_win->name = (char *) prop;
-			Tmp_win->nameChanged = 1;
+			Tmp_win->nameChanged = true;
 			XmbTextExtents(Scr->TitleBarFont.font_set,
 			               Tmp_win->name, strlen(Tmp_win->name),
 			               &inc_rect, &logical_rect);
@@ -2594,7 +2594,7 @@ void HandleMapRequest(void)
 		}
 	}
 
-	if(Tmp_win->iconmgr) {
+	if(Tmp_win->isiconmgr) {
 		return;
 	}
 	if(Tmp_win->squeezed) {
@@ -2631,7 +2631,7 @@ void HandleMapRequest(void)
 				XMapWindow(dpy, Tmp_win->frame);
 				SetMapStateProp(Tmp_win, NormalState);
 				SetRaiseWindow(Tmp_win);
-				Tmp_win->mapped = TRUE;
+				Tmp_win->mapped = true;
 				if(Scr->ClickToFocus &&
 				                Tmp_win->wmhints  &&
 				                Tmp_win->wmhints->input) {
@@ -2639,7 +2639,7 @@ void HandleMapRequest(void)
 				}
 				/* kai */
 				if(Scr->AutoFocusToTransients &&
-				                Tmp_win->transient &&
+				                Tmp_win->istransient &&
 				                Tmp_win->wmhints   &&
 				                Tmp_win->wmhints->input) {
 					SetFocus(Tmp_win, CurrentTime);
@@ -2655,7 +2655,7 @@ void HandleMapRequest(void)
 					}
 					AddToWorkSpace(Scr->currentvs->wsw->currentwspc->name, Tmp_win);
 				}
-				Tmp_win->mapped = TRUE;
+				Tmp_win->mapped = true;
 				if(Tmp_win->UnmapByMovingFarAway) {
 					XMoveWindow(dpy, Tmp_win->frame, Scr->rootw + 1, Scr->rooth + 1);
 					XMapWindow(dpy, Tmp_win->w);
@@ -2688,7 +2688,7 @@ void HandleMapRequest(void)
 			SetRaiseWindow(Tmp_win);
 		}
 		else {
-			Tmp_win->mapped = TRUE;
+			Tmp_win->mapped = true;
 		}
 	}
 	if(Tmp_win->mapped) {
@@ -2750,9 +2750,9 @@ void HandleMapNotify(void)
 	XMapWindow(dpy, Tmp_win->frame);
 	XUngrabServer(dpy);
 	XFlush(dpy);
-	Tmp_win->mapped = TRUE;
-	Tmp_win->isicon = FALSE;
-	Tmp_win->icon_on = FALSE;
+	Tmp_win->mapped = true;
+	Tmp_win->isicon = false;
+	Tmp_win->icon_on = false;
 }
 
 
@@ -3460,7 +3460,7 @@ void HandleButtonPress(void)
 				SetFocus(Tmp_win, CurrentTime);
 			}
 		}
-		else if(Tmp_win->wspmgr ||
+		else if(Tmp_win->iswspmgr ||
 		                (Tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 			/*Context = C_WINDOW; probably a typo */
 			Context = C_WORKSPACE;
@@ -4452,9 +4452,10 @@ void HandleUnknown(void)
  ***********************************************************************
  */
 
-int Transient(Window w, Window *propw)
+bool
+Transient(Window w, Window *propw)
 {
-	return (XGetTransientForHint(dpy, w, propw));
+	return (bool)XGetTransientForHint(dpy, w, propw);
 }
 
 

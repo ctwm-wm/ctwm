@@ -395,7 +395,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				if(context == C_ICONMGR) {
 					SortIconManager((IconMgr *) NULL);
 				}
-				else if(tmp_win->iconmgr) {
+				else if(tmp_win->isiconmgr) {
 					SortIconManager(tmp_win->iconmgrp);
 				}
 				else {
@@ -798,7 +798,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iswinbox || tmp_win->wspmgr) {
+			if(tmp_win->iswinbox || tmp_win->iswspmgr) {
 				XBell(dpy, 0);
 				break;
 			}
@@ -1111,7 +1111,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					if(moving_icon &&
 					                ((CurrentDragX != origDragX ||
 					                  CurrentDragY != origDragY))) {
-						tmp_win->icon_moved = TRUE;
+						tmp_win->icon_moved = true;
 					}
 					if(!Scr->OpaqueMove && menuFromFrameOrWindowOrTitlebar) {
 						int xl = Event.xbutton.x_root - (DragWidth  / 2),
@@ -1738,7 +1738,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->isicon == FALSE) {
+			if(!tmp_win->isicon) {
 				if(!Scr->FocusRoot && Scr->Focus == tmp_win) {
 					FocusOnRoot();
 				}
@@ -1755,7 +1755,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iconmgr || tmp_win->iswinbox || tmp_win->wspmgr
+			if(tmp_win->isiconmgr || tmp_win->iswinbox || tmp_win->iswspmgr
 			                || (Scr->workSpaceMgr.occupyWindow
 			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 				XBell(dpy, 0);
@@ -1778,11 +1778,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iconmgr) {          /* don't send ourself a message */
+			if(tmp_win->isiconmgr) {     /* don't send ourself a message */
 				HideIconManager();
 				break;
 			}
-			if(tmp_win->iswinbox || tmp_win->wspmgr
+			if(tmp_win->iswinbox || tmp_win->iswspmgr
 			                || (Scr->workSpaceMgr.occupyWindow
 			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 				XBell(dpy, 0);
@@ -1809,11 +1809,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iconmgr) {
+			if(tmp_win->isiconmgr) {
 				HideIconManager();
 				break;
 			}
-			if(tmp_win->iswinbox || tmp_win->wspmgr
+			if(tmp_win->iswinbox || tmp_win->iswspmgr
 			                || (Scr->workSpaceMgr.occupyWindow
 			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 				XBell(dpy, 0);
@@ -1910,6 +1910,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			len = strlen(action);
 
 #ifdef WARPTO_FROM_ICONMGR
+			/* XXX should be iconmgrp? */
 			if(len == 0 && tmp_win && tmp_win->iconmgr) {
 				printf("curren iconmgr entry: %s", tmp_win->iconmgr->Current);
 			}
@@ -2306,8 +2307,8 @@ ShowIconManager(void)
 					XUnmapWindow(dpy, i->twm_win->icon->w);
 				}
 			}
-			i->twm_win->mapped = TRUE;
-			i->twm_win->isicon = FALSE;
+			i->twm_win->mapped = true;
+			i->twm_win->isicon = false;
 		}
 	}
 }
@@ -2329,8 +2330,8 @@ HideIconManager(void)
 			if(i->twm_win->icon && i->twm_win->icon->w) {
 				XUnmapWindow(dpy, i->twm_win->icon->w);
 			}
-			i->twm_win->mapped = FALSE;
-			i->twm_win->isicon = TRUE;
+			i->twm_win->mapped = false;
+			i->twm_win->isicon = true;
 		}
 	}
 }

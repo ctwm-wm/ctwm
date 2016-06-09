@@ -311,7 +311,7 @@ int IconUp(TwmWindow *tmp_win)
 		XMoveWindow(dpy, tmp_win->icon->w, x, y);
 		tmp_win->icon->w_x = x;
 		tmp_win->icon->w_y = y;
-		tmp_win->icon_moved = FALSE;    /* since we've restored it */
+		tmp_win->icon_moved = false;    /* since we've restored it */
 	}
 	MaybeAnimate = true;
 	return (0);
@@ -497,7 +497,7 @@ static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
 		icon->image  = image;
 		icon->width  = image->width;
 		icon->height = image->height;
-		tmp_win->forced = TRUE;
+		tmp_win->forced = true;
 	}
 	else {
 		icon->match = match_none;
@@ -542,7 +542,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	icon->image   = None;
 	icon->ir      = (IconRegion *) 0;
 
-	tmp_win->forced = FALSE;
+	tmp_win->forced = false;
 	icon->w_not_ours = FALSE;
 
 	pattern = NULL;
@@ -827,7 +827,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->w_x = final_x;
 		icon->w_y = final_y;
 	}
-	tmp_win->iconified = TRUE;
+	tmp_win->iconified = true;
 	OtpAdd(tmp_win, IconWin);
 
 	XMapSubwindows(dpy, icon->w);

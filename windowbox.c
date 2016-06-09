@@ -107,7 +107,7 @@ void createWindowBoxes(void)
 			fprintf(stderr, "cannot create %s window box, exiting...\n", winbox->name);
 			exit(1);
 		}
-		winbox->twmwin->iswinbox = TRUE;
+		winbox->twmwin->iswinbox = true;
 		XMapWindow(dpy, win);
 	}
 }

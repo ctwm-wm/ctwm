@@ -234,7 +234,7 @@ PaintAllDecoration(void)
 		if(! visible(tmp_win)) {
 			continue;
 		}
-		if(tmp_win->mapped == TRUE) {
+		if(tmp_win->mapped) {
 			if(tmp_win->frame_bw3D) {
 				PaintBorders(tmp_win,
 				             (tmp_win->highlight && tmp_win == Scr->Focus));
@@ -246,7 +246,7 @@ PaintAllDecoration(void)
 				PaintTitleButtons(tmp_win);
 			}
 		}
-		else if((tmp_win->icon_on == TRUE)  &&
+		else if((tmp_win->icon_on == true)  &&
 		                !Scr->NoIconTitlebar    &&
 		                tmp_win->icon           &&
 		                tmp_win->icon->w        &&

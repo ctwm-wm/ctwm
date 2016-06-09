@@ -1253,7 +1253,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			if(tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win) {
 				continue;
 			}
-			if(Scr->ShortAllWindowsMenus && (tmp_win->wspmgr || tmp_win->iconmgr)) {
+			if(Scr->ShortAllWindowsMenus && (tmp_win->iswspmgr || tmp_win->isiconmgr)) {
 				continue;
 			}
 
@@ -1287,7 +1287,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			                tmp_win == Scr->currentvs->wsw->twm_win) {
 				continue;
 			}
-			if(Scr->ShortAllWindowsMenus && tmp_win->iconmgr) {
+			if(Scr->ShortAllWindowsMenus && tmp_win->isiconmgr) {
 				continue;
 			}
 
@@ -1754,7 +1754,7 @@ static void ReMapOne(TwmWindow *t, TwmWindow *leader)
 	if(!t->squeezed) {
 		XMapWindow(dpy, t->w);
 	}
-	t->mapped = TRUE;
+	t->mapped = true;
 	if(False && Scr->Root != Scr->CaptiveRoot) {        /* XXX dubious test */
 		ReparentWindow(dpy, t, WinWin, Scr->Root, t->frame_x, t->frame_y);
 	}
@@ -1778,8 +1778,8 @@ static void ReMapOne(TwmWindow *t, TwmWindow *leader)
 			XUnmapWindow(dpy, wl->icon);
 		}
 	}
-	t->isicon = FALSE;
-	t->icon_on = FALSE;
+	t->isicon = false;
+	t->icon_on = false;
 	WMapDeIconify(t);
 }
 
@@ -1790,7 +1790,7 @@ static void ReMapTransients(TwmWindow *tmp_win)
 	/* find t such that it is a transient or group member window */
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
 		if(t != tmp_win &&
-		                ((t->transient && t->transientfor == tmp_win->w) ||
+		                ((t->istransient && t->transientfor == tmp_win->w) ||
 		                 (t->group == tmp_win->w && t->isicon))) {
 			ReMapOne(t, tmp_win);
 		}
@@ -1842,14 +1842,14 @@ void DeIconify(TwmWindow *tmp_win)
 	XSync(dpy, 0);
 }
 
-static void UnmapTransients(TwmWindow *tmp_win, int iconify,
+static void UnmapTransients(TwmWindow *tmp_win, bool iconify,
                             unsigned long eventMask)
 {
 	TwmWindow *t;
 
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
 		if(t != tmp_win &&
-		                ((t->transient && t->transientfor == tmp_win->w) ||
+		                ((t->istransient && t->transientfor == tmp_win->w) ||
 		                 t->group == tmp_win->w)) {
 			if(iconify) {
 				if(t->icon_on) {
@@ -1864,7 +1864,7 @@ static void UnmapTransients(TwmWindow *tmp_win, int iconify,
 			 * Prevent the receipt of an UnmapNotify, since that would
 			 * cause a transition to the Withdrawn state.
 			 */
-			t->mapped = FALSE;
+			t->mapped = false;
 			XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
 			XUnmapWindow(dpy, t->w);
 			XUnmapWindow(dpy, t->frame);
@@ -1882,8 +1882,8 @@ static void UnmapTransients(TwmWindow *tmp_win, int iconify,
 			if(t->iconmanagerlist) {
 				XMapWindow(dpy, t->iconmanagerlist->icon);
 			}
-			t->isicon = TRUE;
-			t->icon_on = FALSE;
+			t->isicon = true;
+			t->icon_on = false;
 			WMapIconify(t);
 		}
 	}
@@ -1892,7 +1892,7 @@ static void UnmapTransients(TwmWindow *tmp_win, int iconify,
 void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 {
 	TwmWindow *t;
-	int iconify;
+	bool iconify;
 	XWindowAttributes winattrs;
 	unsigned long eventMask;
 	WList *wl;
@@ -1901,7 +1901,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 
 	iconify = (!tmp_win->iconify_by_unmapping);
 	t = (TwmWindow *) 0;
-	if(tmp_win->transient) {
+	if(tmp_win->istransient) {
 		leader = tmp_win->transientfor;
 		t = GetTwmWindow(leader);
 	}
@@ -1909,7 +1909,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		t = GetTwmWindow(leader);
 	}
 	if(t && t->icon_on) {
-		iconify = False;
+		iconify = false;
 	}
 	if(iconify) {
 		if(!tmp_win->icon || !tmp_win->icon->w) {
@@ -1949,7 +1949,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 	 * Prevent the receipt of an UnmapNotify, since that would
 	 * cause a transition to the Withdrawn state.
 	 */
-	tmp_win->mapped = FALSE;
+	tmp_win->mapped = false;
 
 	if((Scr->IconifyStyle != ICONIFY_NORMAL) && !Scr->WindowMask) {
 		XSetWindowAttributes attr;
@@ -1994,8 +1994,8 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 			Scr->FocusRoot = TRUE;
 		}
 	}
-	tmp_win->isicon = TRUE;
-	tmp_win->icon_on = iconify ? TRUE : FALSE;
+	tmp_win->isicon = true;
+	tmp_win->icon_on = iconify;
 	WMapIconify(tmp_win);
 	if(! Scr->WindowMask && Scr->IconifyFunction.func != 0) {
 		char *action;
@@ -2010,7 +2010,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 
 void AutoSqueeze(TwmWindow *tmp_win)
 {
-	if(tmp_win->iconmgr) {
+	if(tmp_win->isiconmgr) {
 		return;
 	}
 	if(Scr->RaiseWhenAutoUnSqueeze && tmp_win->squeezed) {
@@ -2060,7 +2060,7 @@ void Squeeze(TwmWindow *tmp_win)
 		south = False;
 	}
 
-	tmp_win->squeezed = True;
+	tmp_win->squeezed = true;
 	tmp_win->actual_frame_width  = tmp_win->frame_width;
 	tmp_win->actual_frame_height = tmp_win->frame_height;
 	savex = fx = tmp_win->frame_x;
@@ -2093,7 +2093,7 @@ void Squeeze(TwmWindow *tmp_win)
 	tmp_win->actual_frame_y = savey;
 
 	/* Now make the group members disappear */
-	UnmapTransients(tmp_win, 0, eventMask);
+	UnmapTransients(tmp_win, false, eventMask);
 }
 
 /*

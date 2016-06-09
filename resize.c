@@ -700,7 +700,7 @@ void EndResize(void)
 	SetupWindow(tmp_win, dragx - tmp_win->frame_bw, dragy - tmp_win->frame_bw,
 	            dragWidth, dragHeight, -1);
 
-	if(tmp_win->iconmgr) {
+	if(tmp_win->isiconmgr) {
 		int ncols = tmp_win->iconmgrp->cur_columns;
 		if(ncols == 0) {
 			ncols = 1;

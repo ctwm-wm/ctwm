@@ -127,7 +127,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * overridden based on how tall the iconmgr itself thinks it should
 	 * be.
 	 */
-	if(tmp_win->iconmgr) {
+	if(tmp_win->isiconmgr) {
 		tmp_win->iconmgrp->width = w - (2 * tmp_win->frame_bw3D);
 		h = tmp_win->iconmgrp->height + tmp_win->title_height +
 		    (2 * tmp_win->frame_bw3D);
@@ -177,7 +177,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		 */
 		ComputeWindowTitleOffsets(tmp_win, title_width, true);
 
-		reShape = (tmp_win->wShaped ? true : false);
+		reShape = tmp_win->wShaped;
 
 		/*
 		 * If the window has SqueezeTitle, the width of the titlebar may
@@ -253,10 +253,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 */
 	/* width/height changed? */
 	if(tmp_win->attr.width != w) {
-		tmp_win->widthEverChangedByUser = True;
+		tmp_win->widthEverChangedByUser = true;
 	}
 	if(tmp_win->attr.height != (h - tmp_win->title_height)) {
-		tmp_win->heightEverChangedByUser = True;
+		tmp_win->heightEverChangedByUser = true;
 	}
 
 	/* Write in new values, if the window isn't squeezed away */

@@ -213,8 +213,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 	WindowBox *winbox;
-	int iswinbox = 0;
-	int iswman = 0;
+	bool iswinbox = false;
+	bool iswman = false;
 	Window vroot;
 
 #ifdef DEBUG
@@ -240,11 +240,11 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			/* iconm remains nonzero */
 			break;
 		case  ADD_WINDOW_WINDOWBOX:
-			iswinbox = 1;
+			iswinbox = true;
 			iconm  = 0;
 			break;
 		case ADD_WINDOW_WORKSPACE_MANAGER :
-			iswman = 1;
+			iswman = true;
 			iconm  = 0;
 			break;
 		default :
@@ -253,9 +253,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	}
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
-	tmp_win->iconmgr = iconm;
+	tmp_win->isiconmgr = iconm;
 	tmp_win->iconmgrp = iconp;
-	tmp_win->wspmgr = iswman;
+	tmp_win->iswspmgr = iswman;
 	tmp_win->iswinbox = iswinbox;
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
@@ -294,8 +294,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		restoredFromPrevSession = 1;
 	}
 	else {
-		tmp_win->widthEverChangedByUser = False;
-		tmp_win->heightEverChangedByUser = False;
+		tmp_win->widthEverChangedByUser = false;
+		tmp_win->heightEverChangedByUser = false;
 
 		restoredFromPrevSession = 0;
 	}
@@ -359,9 +359,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	 * fields in the WM_NORMAL_HINTS property.
 	 */
 
-	tmp_win->transient = Transient(tmp_win->w, &tmp_win->transientfor);
+	tmp_win->istransient = Transient(tmp_win->w, &tmp_win->transientfor);
 
-	tmp_win->nameChanged = 0;
+	tmp_win->nameChanged = false;
 	if(tmp_win->name == NULL) {
 		tmp_win->name = NoName;
 	}
@@ -387,7 +387,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	namelen = strlen(tmp_win->name);
 
 	if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->transient = 0;
+		tmp_win->istransient = false;
 	}
 
 	tmp_win->highlight = Scr->Highlight &&
@@ -426,17 +426,17 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	                                LookInList(Scr->IconifyByUn, tmp_win->full_name, &tmp_win->class);
 
 	if(LookInList(Scr->UnmapByMovingFarAway, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->UnmapByMovingFarAway = True;
+		tmp_win->UnmapByMovingFarAway = true;
 	}
 	else {
-		tmp_win->UnmapByMovingFarAway = False;
+		tmp_win->UnmapByMovingFarAway = false;
 	}
 
 	if(LookInList(Scr->DontSetInactive, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->DontSetInactive = True;
+		tmp_win->DontSetInactive = true;
 	}
 	else {
-		tmp_win->DontSetInactive = False;
+		tmp_win->DontSetInactive = false;
 	}
 
 #ifdef EWMH
@@ -444,10 +444,10 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 #endif /* EWMH */
 
 	if(LookInList(Scr->AutoSqueeze, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->AutoSqueeze = True;
+		tmp_win->AutoSqueeze = true;
 	}
 	else {
-		tmp_win->AutoSqueeze = False;
+		tmp_win->AutoSqueeze = false;
 	}
 
 	if(
@@ -455,24 +455,24 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
 #endif /* EWMH */
 	        LookInList(Scr->StartSqueezed, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->StartSqueezed = True;
+		tmp_win->StartSqueezed = true;
 	}
 	else {
-		tmp_win->StartSqueezed = False;
+		tmp_win->StartSqueezed = false;
 	}
 
 	if(Scr->AlwaysSqueezeToGravity
 	                || LookInList(Scr->AlwaysSqueezeToGravityL, tmp_win->full_name,
 	                              &tmp_win->class)) {
-		tmp_win->AlwaysSqueezeToGravity = True;
+		tmp_win->AlwaysSqueezeToGravity = true;
 	}
 	else {
-		tmp_win->AlwaysSqueezeToGravity = False;
+		tmp_win->AlwaysSqueezeToGravity = false;
 	}
 
-	if(tmp_win->transient || tmp_win->group) {
+	if(tmp_win->istransient || tmp_win->group) {
 		TwmWindow *t = NULL;
-		if(tmp_win->transient) {
+		if(tmp_win->istransient) {
 			t = GetTwmWindow(tmp_win->transientfor);
 		}
 		if(!t && tmp_win->group) {
@@ -583,24 +583,24 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->OpaqueMove = Scr->DoOpaqueMove;
 	if(LookInList(Scr->OpaqueMoveList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueMove = TRUE;
+		tmp_win->OpaqueMove = true;
 	}
 	else if(LookInList(Scr->NoOpaqueMoveList, tmp_win->full_name,
 	                   &tmp_win->class)) {
-		tmp_win->OpaqueMove = FALSE;
+		tmp_win->OpaqueMove = false;
 	}
 
 	tmp_win->OpaqueResize = Scr->DoOpaqueResize;
 	if(LookInList(Scr->OpaqueResizeList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueResize = TRUE;
+		tmp_win->OpaqueResize = true;
 	}
 	else if(LookInList(Scr->NoOpaqueResizeList, tmp_win->full_name,
 	                   &tmp_win->class)) {
-		tmp_win->OpaqueResize = FALSE;
+		tmp_win->OpaqueResize = false;
 	}
 
 	/* if it is a transient window, don't put a title on it */
-	if(tmp_win->transient && !Scr->DecorateTransients) {
+	if(tmp_win->istransient && !Scr->DecorateTransients) {
 		tmp_win->title_height = 0;
 	}
 
@@ -638,7 +638,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	 *        NON_ZERO if the window is at other than (0,0)
 	 */
 	ask_user = TRUE;
-	if(tmp_win->transient ||
+	if(tmp_win->istransient ||
 	                (tmp_win->hints.flags & USPosition) ||
 	                ((tmp_win->hints.flags & PPosition) && Scr->UsePPosition &&
 	                 (Scr->UsePPosition == PPOS_ON ||
@@ -1222,10 +1222,10 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 	}
 
-	tmp_win->squeezed = FALSE;
-	tmp_win->iconified = FALSE;
-	tmp_win->isicon = FALSE;
-	tmp_win->icon_on = FALSE;
+	tmp_win->squeezed = false;
+	tmp_win->iconified = false;
+	tmp_win->isicon = false;
+	tmp_win->icon_on = false;
 
 	XGrabServer(dpy);
 
@@ -1386,7 +1386,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		                                    tmp_win->border_tile.fore,
 		                                    tmp_win->border_tile.back);
 
-		tmp_win->hasfocusvisible = True;
+		tmp_win->hasfocusvisible = true;
 		SetFocusVisualAttributes(tmp_win, false);
 	}
 	else {
@@ -1436,7 +1436,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wShaped = boundingShaped;
 	}
 
-	if(!tmp_win->iconmgr && ! iswman &&
+	if(!tmp_win->isiconmgr && ! iswman &&
 	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
@@ -1449,7 +1449,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	 * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
 	 * again in HandleMapNotify.
 	 */
-	tmp_win->mapped = FALSE;
+	tmp_win->mapped = false;
 
 	SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
 	           tmp_win->frame_width, tmp_win->frame_height, -1, true);
@@ -1460,7 +1460,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->icon = (Icon *) 0;
 	tmp_win->iconslist = (name_list *) 0;
 
-	if(!tmp_win->iconmgr) {
+	if(!tmp_win->isiconmgr) {
 		GrabButtons(tmp_win);
 		GrabKeys(tmp_win);
 	}

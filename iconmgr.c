@@ -212,17 +212,17 @@ void CreateIconManagers(void)
 			sizehints.win_gravity = gravity;
 			XSetWMSizeHints(dpy, p->w, &sizehints, XA_WM_NORMAL_HINTS);
 
-			p->twm_win->mapped = FALSE;
+			p->twm_win->mapped = false;
 			SetMapStateProp(p->twm_win, WithdrawnState);
 			if(p->twm_win && p->twm_win->wmhints &&
 			                (p->twm_win->wmhints->initial_state == IconicState)) {
-				p->twm_win->isicon = TRUE;
+				p->twm_win->isicon = true;
 			}
 			else if(!Scr->NoIconManagers && Scr->ShowIconManager) {
-				p->twm_win->isicon = FALSE;
+				p->twm_win->isicon = false;
 			}
 			else {
-				p->twm_win->isicon = TRUE;
+				p->twm_win->isicon = true;
 			}
 		}
 		if(ws != NULL) {
@@ -614,7 +614,7 @@ WList *AddIconManager(TwmWindow *tmp_win)
 	IconMgr *ip;
 
 	/* Some window types don't wind up in icon managers ever */
-	if(tmp_win->iconmgr || tmp_win->transient || tmp_win->wspmgr
+	if(tmp_win->isiconmgr || tmp_win->istransient || tmp_win->iswspmgr
 	                || tmp_win->w == Scr->workSpaceMgr.occupyWindow->w) {
 		return NULL;
 	}
@@ -754,7 +754,7 @@ WList *AddIconManager(TwmWindow *tmp_win)
 				XMapWindow(dpy, ip->w);
 				XMapWindow(dpy, ip->twm_win->frame);
 			}
-			ip->twm_win->mapped = TRUE;
+			ip->twm_win->mapped = true;
 		}
 
 
@@ -921,7 +921,7 @@ void RemoveIconManager(TwmWindow *tmp_win)
 
 		if(ip->count == 0) {
 			XUnmapWindow(dpy, ip->twm_win->frame);
-			ip->twm_win->mapped = FALSE;
+			ip->twm_win->mapped = false;
 		}
 		if(tmp1 == NULL) {
 			tmp_win->iconmanagerlist = tmp_win->iconmanagerlist->nextv;

@@ -148,7 +148,7 @@ static bool isOnScreen(OtpWinList *owl)
 
 bool isTransientOf(TwmWindow *trans, TwmWindow *main)
 {
-	return (trans->transient && trans->transientfor == main->w);
+	return (trans->istransient && trans->transientfor == main->w);
 }
 
 bool isGroupLeader(TwmWindow *twm_win)
@@ -1048,7 +1048,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	}
 
 	/* now see if the preferences have something to say */
-	if(!(parent != NULL && twm_win->transient)) {
+	if(!(parent != NULL && twm_win->istransient)) {
 		ApplyPreferences(prefs, owl);
 	}
 
@@ -1073,7 +1073,7 @@ void OtpAdd(TwmWindow *twm_win, WinType wintype)
 		parent->switching = false;
 	}
 	/* in case it's a transient, find the parent */
-	else if(wintype == WinWin && (twm_win->transient || !isGroupLeader(twm_win))) {
+	else if(wintype == WinWin && (twm_win->istransient || !isGroupLeader(twm_win))) {
 		other_win = Scr->FirstWindow;
 		while(other_win != NULL
 		                && !isTransientOf(twm_win, other_win)

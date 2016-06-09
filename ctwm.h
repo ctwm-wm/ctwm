@@ -334,23 +334,23 @@ struct TwmWindow {
 	ColorPair borderC;          /* border color */
 	ColorPair border_tile;
 	ColorPair title;
-	short iconified;            /* has the window ever been iconified? */
-	short isicon;               /* is the window an icon now ? */
-	short icon_on;              /* is the icon visible */
-	short mapped;               /* is the window mapped ? */
-	short squeezed;             /* is the window squeezed ? */
-	short auto_raise;           /* should we auto-raise this window ? */
-	short auto_lower;           /* should we auto-lower this window ? */
-	short forced;               /* has had an icon forced upon it */
-	short icon_moved;           /* user explicitly moved the icon */
-	short highlight;            /* should highlight this window */
-	short stackmode;            /* honor stackmode requests */
-	short iconify_by_unmapping; /* unmap window to iconify it */
-	short iconmgr;              /* this is an icon manager window */
-	short wspmgr;               /* this is a workspace manager manager window */
-	short transient;            /* this is a transient window */
+	bool iconified;             /* has the window ever been iconified? */
+	bool isicon;                /* is the window an icon now ? */
+	bool icon_on;               /* is the icon visible */
+	bool mapped;                /* is the window mapped ? */
+	bool squeezed;              /* is the window squeezed ? */
+	bool auto_raise;            /* should we auto-raise this window ? */
+	bool auto_lower;            /* should we auto-lower this window ? */
+	bool forced;                /* has had an icon forced upon it */
+	bool icon_moved;            /* user explicitly moved the icon */
+	bool highlight;             /* should highlight this window */
+	bool stackmode;             /* honor stackmode requests */
+	bool iconify_by_unmapping;  /* unmap window to iconify it */
+	bool isiconmgr;             /* this is an icon manager window */
+	bool iswspmgr;              /* this is a workspace manager manager window */
+	bool istransient;           /* this is a transient window */
 	Window transientfor;        /* window contained in XA_XM_TRANSIENT_FOR */
-	short titlehighlight;       /* should I highlight the title bar */
+	bool titlehighlight;        /* should I highlight the title bar */
 	struct IconMgr *iconmgrp;   /* pointer to it if this is an icon manager */
 	int save_frame_x;           /* x position of frame  (saved from zoom) */
 	int save_frame_y;           /* y position of frame  (saved from zoom)*/
@@ -358,7 +358,7 @@ struct TwmWindow {
 	unsigned int save_frame_height; /* height of frame  (saved from zoom)*/
 	int save_otpri;             /* on top priority      (saved from zoom)*/
 	int zoomed;                 /* ZOOM_NONE || function causing zoom */
-	short wShaped;              /* this window has a bounding shape */
+	bool wShaped;               /* this window has a bounding shape */
 	unsigned long protocols;    /* which protocols this window handles */
 	Colormaps cmaps;            /* colormaps for this application */
 	TBWindow *titlebuttons;
@@ -370,20 +370,20 @@ struct TwmWindow {
 		int curs_x, curs_y;
 	} ring;
 
-	short OpaqueMove;
-	short OpaqueResize;
-	short UnmapByMovingFarAway;
-	short AutoSqueeze;
-	short StartSqueezed;
-	short AlwaysSqueezeToGravity;
-	short DontSetInactive;
-	short hasfocusvisible;      /* The window has visible focus*/
+	bool OpaqueMove;
+	bool OpaqueResize;
+	bool UnmapByMovingFarAway;
+	bool AutoSqueeze;
+	bool StartSqueezed;
+	bool AlwaysSqueezeToGravity;
+	bool DontSetInactive;
+	bool hasfocusvisible;      /* The window has visible focus*/
 	int  occupation;
 	Image *HiliteImage;         /* focus highlight window background */
 	Image *LoliteImage;         /* focus lowlight window background */
 	WindowRegion *wr;
 	WindowBox *winbox;
-	short iswinbox;
+	bool iswinbox;
 	struct {
 		int x, y;
 		unsigned int width, height;
@@ -396,10 +396,10 @@ struct TwmWindow {
 
 	struct VirtualScreen *savevs;       /* for ShowBackground only */
 
-	short nameChanged;  /* did WM_NAME ever change? */
-	/* did the user ever change the width/height? {yes, no, or unknown} */
-	short widthEverChangedByUser;
-	short heightEverChangedByUser;
+	bool nameChanged;  /* did WM_NAME ever change? */
+	/* did the user ever change the width/height? */
+	bool widthEverChangedByUser;
+	bool heightEverChangedByUser;
 #ifdef EWMH
 	EwmhWindowType ewmhWindowType;
 	int ewmhFlags;

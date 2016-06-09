@@ -1583,8 +1583,8 @@ void EwmhAddClientWindow(TwmWindow *new_win)
 		return;
 	}
 	if(new_win->iconmanagerlist != NULL &&
-	                !new_win->wspmgr &&
-	                !new_win->iconmgr) {
+	                !new_win->iswspmgr &&
+	                !new_win->isiconmgr) {
 		Scr->ewmh_CLIENT_LIST_used++;
 		if(Scr->ewmh_CLIENT_LIST_used > Scr->ewmh_CLIENT_LIST_size) {
 			Scr->ewmh_CLIENT_LIST_size *= 2;
@@ -1668,8 +1668,8 @@ void EwmhSet_NET_CLIENT_LIST_STACKING(void)
 	                twm_win != NULL;
 	                twm_win = OtpNextWinUp(twm_win)) {
 		if(twm_win->iconmanagerlist != NULL &&
-		                !twm_win->wspmgr &&
-		                !twm_win->iconmgr) {
+		                !twm_win->iswspmgr &&
+		                !twm_win->isiconmgr) {
 			prop[i] = twm_win->w;
 			i++;
 			if(i > size) {

@@ -863,7 +863,7 @@ void SetupOccupation(TwmWindow *twm_win,
 		return;
 	}
 
-	if(twm_win->wspmgr) {
+	if(twm_win->iswspmgr) {
 		return;
 	}
 
@@ -909,12 +909,12 @@ void SetupOccupation(TwmWindow *twm_win,
 	}
 #endif /* EWMH */
 
-	if(twm_win->iconmgr) {
+	if(twm_win->isiconmgr) {
 		return;        /* someone tried to modify occupation of icon managers */
 	}
 
 	if(! Scr->TransientHasOccupation) {
-		if(twm_win->transient) {
+		if(twm_win->istransient) {
 			t = GetTwmWindow(twm_win->transientfor);
 			if(t != NULL) {
 				twm_win->occupation = t->occupation;
@@ -1111,11 +1111,11 @@ static int CanChangeOccupation(TwmWindow **twm_winp)
 		return 0;
 	}
 	twm_win = *twm_winp;
-	if(twm_win->iconmgr) {
+	if(twm_win->isiconmgr) {
 		return 0;
 	}
 	if(!Scr->TransientHasOccupation) {
-		if(twm_win->transient) {
+		if(twm_win->istransient) {
 			return 0;
 		}
 		if(twm_win->group != (Window) 0 && twm_win->group != twm_win->w) {
@@ -1200,7 +1200,7 @@ void Occupy(TwmWindow *twm_win)
 	OtpSetPriority(occupy_twm, WinWin, 0, Above);
 
 	/* Mark it shown, and stash what window we're showing it for */
-	occupyWindow->twm_win->mapped = TRUE;
+	occupyWindow->twm_win->mapped = true;
 	occupyWin = twm_win;
 }
 
@@ -1251,14 +1251,14 @@ void OccupyHandleButtonEvent(XEvent *event)
 		}
 		ChangeOccupation(occupyWin, occupyW->tmpOccupation);
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
-		occupyW->twm_win->mapped = FALSE;
+		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
 		occupyWin = (TwmWindow *) 0;
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->cancel) {
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
-		occupyW->twm_win->mapped = FALSE;
+		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
 		occupyWin = (TwmWindow *) 0;
 		XSync(dpy, 0);
@@ -1738,7 +1738,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	if(! Scr->TransientHasOccupation) {
 		for(t = Scr->FirstWindow; t != NULL; t = t->next) {
 			if(t != tmp_win &&
-			                ((t->transient && t->transientfor == tmp_win->w) ||
+			                ((t->istransient && t->transientfor == tmp_win->w) ||
 			                 t->group == tmp_win->w)) {
 				ChangeOccupation(t, tmp_win->occupation);
 			}
@@ -2656,13 +2656,13 @@ void WMapSetButtonsState(VirtualScreen *vs)
  */
 int WMapWindowMayBeAdded(TwmWindow *win)
 {
-	if(win->iconmgr) {
+	if(win->isiconmgr) {
 		return 0;
 	}
 	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
 		return 0;
 	}
-	if(win->wspmgr) {
+	if(win->iswspmgr) {
 		return 0;
 	}
 	if(Scr->workSpaceMgr.noshowoccupyall &&
@@ -2699,7 +2699,7 @@ void WMapDestroyWindow(TwmWindow *win)
 	if(win == occupyWin) {
 		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 		XUnmapWindow(dpy, occwin->twm_win->frame);
-		occwin->twm_win->mapped = FALSE;
+		occwin->twm_win->mapped = false;
 		occwin->twm_win->occupation = 0;
 		occupyWin = (TwmWindow *) 0;
 	}
@@ -2731,14 +2731,14 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 	WinList       wl;
 	float         wf, hf;
 
-	if(win->iconmgr) {
+	if(win->isiconmgr) {
 		return;
 	}
 	if(!win->vs) {
 		return;
 	}
 
-	if(win->wspmgr) {
+	if(win->iswspmgr) {
 		if(w == -1) {
 			return;
 		}
@@ -3082,7 +3082,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		return;
 	}
 	win = wl->twm_win;
-	if((! Scr->TransientHasOccupation) && win->transient) {
+	if((! Scr->TransientHasOccupation) && win->istransient) {
 		return;
 	}
 

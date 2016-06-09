@@ -102,7 +102,7 @@ void HandleFocusOut(XFocusOutEvent *event);
 void SynthesiseFocusOut(Window w);
 void SynthesiseFocusIn(Window w);
 void HandleCirculateNotify(void);
-int Transient(Window w, Window *propw);
+bool Transient(Window w, Window *propw);
 void RedoIconName(void);
 
 ScreenInfo *FindScreenInfo(Window w);
