@@ -366,7 +366,7 @@ struct TwmWindow {
 	int squeeze_info_copied;    /* must above SqueezeInfo be freed? */
 	struct {
 		struct TwmWindow *next, *prev;
-		Bool cursor_valid;
+		bool cursor_valid;
 		int curs_x, curs_y;
 	} ring;
 

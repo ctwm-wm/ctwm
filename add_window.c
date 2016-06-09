@@ -503,7 +503,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	else {
 		tmp_win->ring.next = tmp_win->ring.prev = NULL;
 	}
-	tmp_win->ring.cursor_valid = False;
+	tmp_win->ring.cursor_valid = false;
 
 	tmp_win->squeeze_info = NULL;
 	tmp_win->squeeze_info_copied = 0;

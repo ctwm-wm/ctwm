@@ -4121,20 +4121,20 @@ void HandleLeaveNotify(void)
 #endif
 			if(!inicon) {
 				if(Event.xcrossing.window != Tmp_win->frame /*was: Tmp_win->mapped*/) {
-					Tmp_win->ring.cursor_valid = False;
+					Tmp_win->ring.cursor_valid = false;
 #ifdef DEBUG
-					fprintf(stderr, "HandleLeaveNotify: cursor_valid = False\n");
+					fprintf(stderr, "HandleLeaveNotify: cursor_valid = false\n");
 #endif
 				}
 				else {          /* Event.xcrossing.window == Tmp_win->frame */
-					Tmp_win->ring.cursor_valid = True;
+					Tmp_win->ring.cursor_valid = true;
 					Tmp_win->ring.curs_x = (Event.xcrossing.x_root -
 					                        Tmp_win->frame_x);
 					Tmp_win->ring.curs_y = (Event.xcrossing.y_root -
 					                        Tmp_win->frame_y);
 #ifdef DEBUG
 					fprintf(stderr,
-					        "HandleLeaveNotify: cursor_valid = True; x = %d (%d-%d), y = %d (%d-%d)\n",
+					        "HandleLeaveNotify: cursor_valid = true; x = %d (%d-%d), y = %d (%d-%d)\n",
 					        Tmp_win->ring.curs_x, Event.xcrossing.x_root, Tmp_win->frame_x,
 					        Tmp_win->ring.curs_y, Event.xcrossing.y_root, Tmp_win->frame_y);
 #endif

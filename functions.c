@@ -2039,7 +2039,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					tmp_win->ring.next = tmp_win->ring.prev = Scr->Ring = tmp_win;
 				}
 			}
-			/*tmp_win->ring.cursor_valid = False;*/
+			/*tmp_win->ring.cursor_valid = false;*/
 			break;
 
 		case F_WARPRING:

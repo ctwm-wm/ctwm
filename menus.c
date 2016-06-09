@@ -2250,12 +2250,12 @@ void WarpAlongRing(XButtonEvent *ev, bool forward)
 		if(p && p->mapped &&
 		                (t = GetTwmWindow(ev->window)) &&
 		                p == t) {
-			p->ring.cursor_valid = True;
+			p->ring.cursor_valid = true;
 			p->ring.curs_x = ev->x_root - t->frame_x;
 			p->ring.curs_y = ev->y_root - t->frame_y;
 #ifdef DEBUG
 			fprintf(stderr,
-			        "WarpAlongRing: cursor_valid := True; x := %d (%d-%d), y := %d (%d-%d)\n",
+			        "WarpAlongRing: cursor_valid := true; x := %d (%d-%d), y := %d (%d-%d)\n",
 			        Tmp_win->ring.curs_x, ev->x_root, t->frame_x, Tmp_win->ring.curs_y, ev->y_root,
 			        t->frame_y);
 #endif
