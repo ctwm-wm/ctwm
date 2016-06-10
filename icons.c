@@ -352,7 +352,7 @@ void IconDown(TwmWindow *tmp_win)
 
 	ie = FindIconEntry(tmp_win, &ir);
 	if(ie) {
-		ie->twm_win = 0;
+		ie->twm_win = NULL;
 		ie->used = 0;
 		ip = prevIconEntry(ie, ir);
 		in = ie->next;

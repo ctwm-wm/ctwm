@@ -2313,7 +2313,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 		return;
 	}
 
-	we->twm_win = 0;
+	we->twm_win = NULL;
 	we->used = 0;
 	wp = prevWindowEntry(we, wr);
 	wn = we->next;
