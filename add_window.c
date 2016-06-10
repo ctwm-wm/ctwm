@@ -2124,14 +2124,11 @@ void CreateWindowRegions(void)
 		for(wr = Scr->FirstWindowRegion; wr != NULL; wr = wr->next) {
 			wr1  = malloc(sizeof(WindowRegion));
 			*wr1 = *wr;
-			wr1->entries = malloc(sizeof(WindowEntry));
-			wr1->entries->next = 0;
+			wr1->entries = calloc(1, sizeof(WindowEntry));
 			wr1->entries->x = wr1->x;
 			wr1->entries->y = wr1->y;
 			wr1->entries->w = wr1->w;
 			wr1->entries->h = wr1->h;
-			wr1->entries->twm_win = (TwmWindow *) 0;
-			wr1->entries->used = 0;
 			if(wr2) {
 				wr2->next = wr1;
 			}
@@ -2209,9 +2206,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, w, we->h);
 			}
 			if(h != we->h) {
-				new = malloc(sizeof(WindowEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(WindowEntry));
 				new->next = we->next;
 				we->next  = new;
 				new->x    = we->x;
@@ -2233,9 +2228,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, we->w, h);
 			}
 			if(w != we->w) {
-				new = malloc(sizeof(WindowEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(WindowEntry));
 				new->next = we->next;
 				we->next  = new;
 				new->y    = we->y;

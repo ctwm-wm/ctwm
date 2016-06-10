@@ -91,9 +91,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitEntry(ie, grav2, grav1, w, ie->h);
 			}
 			if(h != ie->h) {
-				new = malloc(sizeof(IconEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(IconEntry));
 				new->next = ie->next;
 				ie->next = new;
 				new->x = ie->x;
@@ -115,9 +113,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitEntry(ie, grav2, grav1, ie->w, h);
 			}
 			if(w != ie->w) {
-				new = malloc(sizeof(IconEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(IconEntry));
 				new->next = ie->next;
 				ie->next = new;
 				new->y = ie->y;
@@ -428,14 +424,11 @@ name_list **AddIconRegion(char *geom,
 		ir->y += Scr->rooth - ir->h;
 	}
 
-	ir->entries = malloc(sizeof(IconEntry));
-	ir->entries->next = 0;
+	ir->entries = calloc(1, sizeof(IconEntry));
 	ir->entries->x = ir->x;
 	ir->entries->y = ir->y;
 	ir->entries->w = ir->w;
 	ir->entries->h = ir->h;
-	ir->entries->twm_win = 0;
-	ir->entries->used = 0;
 
 	tmp = ParseJustification(ijust);
 	if((tmp < 0) || (tmp == J_BORDER)) {
