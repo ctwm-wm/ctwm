@@ -121,17 +121,17 @@ char *CtwmCurrentWorkspace(Display *display, int scrnum)
 
 	_XA_WM_CURRENTWORKSPACE = XInternAtom(display, "WM_CURRENTWORKSPACE", True);
 	if(_XA_WM_CURRENTWORKSPACE == None) {
-		return ((char *) 0);
+		return NULL;
 	}
 
 	if(XGetWindowProperty(display, RootWindow(display, scrnum),
 	                      _XA_WM_CURRENTWORKSPACE, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return ((char *) 0);
+		return NULL;
 	}
 	if(len == 0) {
-		return ((char *) 0);
+		return NULL;
 	}
 	return ((char *) prop);
 }
@@ -164,16 +164,16 @@ char **CtwmCurrentOccupation(Display *display, Window window)
 
 	_XA_WM_OCCUPATION = XInternAtom(display, "WM_OCCUPATION", True);
 	if(_XA_WM_OCCUPATION == None) {
-		return ((char **) 0);
+		return NULL;
 	}
 
 	if(XGetWindowProperty(display, window, _XA_WM_OCCUPATION, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return 0;
+		return NULL;
 	}
 	if(len == 0) {
-		return 0;
+		return NULL;
 	}
 
 	count = 0;
@@ -196,7 +196,7 @@ char **CtwmCurrentOccupation(Display *display, Window window)
 	}
 	ret [i] = NULL;
 	XFree((char *)prop);
-	return (ret);
+	return ret;
 }
 
 int CtwmSetOccupation(Display *display, Window window, char **occupation)

@@ -3842,10 +3842,10 @@ static char **GetCaptivesList(int scrnum)
 	if(XGetWindowProperty(dpy, root, XA_WM_CTWMSLIST, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return ((char **) 0);
+		return NULL;
 	}
 	if(len == 0) {
-		return ((char **) 0);
+		return NULL;
 	}
 
 	count = 0;
@@ -3869,7 +3869,7 @@ static char **GetCaptivesList(int scrnum)
 	ret [i] = NULL;
 	XFree((char *)prop);
 
-	return (ret);
+	return ret;
 }
 
 static void SetCaptivesList(int scrnum, char **clist)

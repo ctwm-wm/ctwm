@@ -116,20 +116,20 @@ WindowBox *findWindowBox(TwmWindow *twmwin)
 {
 	WindowBox *winbox;
 	if(twmwin->iswinbox) {
-		return ((WindowBox *)0);
+		return NULL;
 	}
 	if(!Scr->FirstWindowBox) {
-		return ((WindowBox *)0);
+		return NULL;
 	}
 	for(winbox = Scr->FirstWindowBox; winbox; winbox = winbox->next) {
 		if(LookInList(winbox->winlist, twmwin->full_name, &twmwin->class)) {
 			if(visible(winbox->twmwin)) {
 				twmwin->winbox = winbox;
-				return (winbox);
+				return winbox;
 			}
 		}
 	}
-	return ((WindowBox *)0);
+	return NULL;
 }
 
 void ConstrainedToWinBox(TwmWindow *twmwin, int x, int y, int *nx, int *ny)
