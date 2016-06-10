@@ -1899,7 +1899,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 	Window blanket = (Window) - 1;
 
 	iconify = (!tmp_win->iconify_by_unmapping);
-	t = (TwmWindow *) 0;
+	t = NULL;
 	if(tmp_win->istransient) {
 		leader = tmp_win->transientfor;
 		t = GetTwmWindow(leader);

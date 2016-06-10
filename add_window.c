@@ -1456,8 +1456,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	/* wait until the window is iconified and the icon window is mapped
 	 * before creating the icon window
 	 */
-	tmp_win->icon = (Icon *) 0;
-	tmp_win->iconslist = (name_list *) 0;
+	tmp_win->icon = NULL;
+	tmp_win->iconslist = NULL;
 
 	if(!tmp_win->isiconmgr) {
 		GrabButtons(tmp_win);
@@ -2164,7 +2164,7 @@ bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	}
 	w = tmp_win->frame_width;
 	h = tmp_win->frame_height;
-	we = (WindowEntry *) 0;
+	we = NULL;
 	for(wr = wl->FirstWindowRegion; wr; wr = wr->next) {
 		if(LookInList(wr->clientlist, tmp_win->full_name, &tmp_win->class)) {
 			for(we = wr->entries; we; we = we->next) {
@@ -2180,7 +2180,7 @@ bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 			}
 		}
 	}
-	tmp_win->wr = (WindowRegion *) 0;
+	tmp_win->wr = NULL;
 	if(!we) {
 		return false;
 	}
@@ -2263,7 +2263,7 @@ static WindowEntry *findWindowEntry(WorkSpace *wl, TwmWindow *tmp_win,
 			}
 		}
 	}
-	return (WindowEntry *) 0;
+	return NULL;
 }
 
 static WindowEntry *prevWindowEntry(WindowEntry *we, WindowRegion *wr)
@@ -2302,7 +2302,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 	if(!Scr->FirstWindowRegion) {
 		return;
 	}
-	we = (WindowEntry *) 0;
+	we = NULL;
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		we = findWindowEntry(wl, tmp_win, &wr);
 		if(we) {

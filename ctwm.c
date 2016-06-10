@@ -441,7 +441,7 @@ int main(int argc, char **argv)
 		Scr->NoOpaqueResizeList = NULL;
 		Scr->ImageCache = NULL;
 		Scr->HighlightPixmapName = NULL;
-		Scr->Workspaces = (MenuRoot *) 0;
+		Scr->Workspaces = NULL;
 		Scr->IconMenuDontShow = NULL;
 		Scr->VirtualScreens = NULL;
 		Scr->IgnoreTransientL = NULL;

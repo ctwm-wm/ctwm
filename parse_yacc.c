@@ -165,12 +165,12 @@ void GotButton(int butt, int func)
 
 		if(func == F_MENU) {
 			pull->prev = NULL;
-			AddFuncButton(butt, i, mods, func, pull, (MenuItem *) 0);
+			AddFuncButton(butt, i, mods, func, pull, NULL);
 		}
 		else {
 			root = GetRoot(TWM_ROOT, NULL, NULL);
 			item = AddToMenu(root, "x", Action, NULL, func, NULL, NULL);
-			AddFuncButton(butt, i, mods, func, (MenuRoot *) 0, item);
+			AddFuncButton(butt, i, mods, func, NULL, item);
 		}
 	}
 
@@ -196,7 +196,7 @@ void GotKey(char *key, int func)
 				break;
 			}
 		}
-		else if(!AddFuncKey(key, i, mods, func, (MenuRoot *) 0, Name, Action)) {
+		else if(!AddFuncKey(key, i, mods, func, NULL, Name, Action)) {
 			break;
 		}
 	}

@@ -255,12 +255,12 @@ stmt		: error
 		  binding_list
 		| button string		{
 		    root = GetRoot($2, NULL, NULL);
-		    AddFuncButton ($1, C_ROOT, 0, F_MENU, root, (MenuItem*) 0);
+		    AddFuncButton ($1, C_ROOT, 0, F_MENU, root, NULL);
 		}
 		| button action		{
 			if ($2 == F_MENU) {
 			    pull->prev = NULL;
-			    AddFuncButton ($1, C_ROOT, 0, $2, pull, (MenuItem*) 0);
+			    AddFuncButton ($1, C_ROOT, 0, $2, pull, NULL);
 			}
 			else {
 			    MenuItem *item;
@@ -268,7 +268,7 @@ stmt		: error
 			    root = GetRoot(TWM_ROOT,NULL,NULL);
 			    item = AddToMenu (root, "x", Action,
 					NULL, $2, NULL, NULL);
-			    AddFuncButton ($1, C_ROOT, 0, $2, (MenuRoot*) 0, item);
+			    AddFuncButton ($1, C_ROOT, 0, $2, NULL, item);
 			}
 			Action = "";
 			pull = NULL;
@@ -1009,7 +1009,7 @@ function_entry	: action		{ AddToMenu(root, "", Action, NULL, $1,
 					}
 		;
 
-menu		: LB menu_entries RB {lastmenuitem = (MenuItem*) 0;}
+menu		: LB menu_entries RB {lastmenuitem = NULL;}
 		;
 
 menu_entries	: /* Empty */

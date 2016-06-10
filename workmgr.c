@@ -126,7 +126,7 @@ void InitWorkSpaceManager(void)
 	Scr->workSpaceMgr.occupyWindow->icon_name = "Occupy Window Icon";
 	Scr->workSpaceMgr.occupyWindow->geometry  = NULL;
 	Scr->workSpaceMgr.occupyWindow->columns   = 0;
-	Scr->workSpaceMgr.occupyWindow->twm_win   = (TwmWindow *) 0;
+	Scr->workSpaceMgr.occupyWindow->twm_win   = NULL;
 	Scr->workSpaceMgr.occupyWindow->vspace    = Scr->WMgrVertButtonIndent;
 	Scr->workSpaceMgr.occupyWindow->hspace    = Scr->WMgrHorizButtonIndent;
 
@@ -614,7 +614,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 			twmWin->iconmanagerlist = wl;
 		}
 	}
-	wl = (WList *)0;
+	wl = NULL;
 	for(iconmgr = newws->iconmgr; iconmgr; iconmgr = iconmgr->next) {
 		if(iconmgr->first) {
 			wl = iconmgr->first;
@@ -710,7 +710,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		action = Scr->ChangeWorkspaceFunction.item ?
 		         Scr->ChangeWorkspaceFunction.item->action : NULL;
 		ExecuteFunction(Scr->ChangeWorkspaceFunction.func, action,
-		                (Window) 0, (TwmWindow *) 0, &event, C_ROOT, FALSE);
+		                (Window) 0, NULL, &event, C_ROOT, FALSE);
 	}
 
 	/* If SaveWorkspaceFocus is on, try to restore the focus to the last
@@ -1097,7 +1097,7 @@ bool RedirectToCaptive(Window window)
 /*
  * The window whose occupation is being manipulated.
  */
-static TwmWindow *occupyWin = (TwmWindow *) 0;
+static TwmWindow *occupyWin = NULL;
 
 static int CanChangeOccupation(TwmWindow **twm_winp)
 {
@@ -1212,7 +1212,7 @@ void OccupyHandleButtonEvent(XEvent *event)
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
-	if(occupyWin == (TwmWindow *) 0) {
+	if(occupyWin == NULL) {
 		return;
 	}
 
@@ -1252,14 +1252,14 @@ void OccupyHandleButtonEvent(XEvent *event)
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
 		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
-		occupyWin = (TwmWindow *) 0;
+		occupyWin = NULL;
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->cancel) {
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
 		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
-		occupyWin = (TwmWindow *) 0;
+		occupyWin = NULL;
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->allworkspc) {
@@ -2700,7 +2700,7 @@ void WMapDestroyWindow(TwmWindow *win)
 		XUnmapWindow(dpy, occwin->twm_win->frame);
 		occwin->twm_win->mapped = false;
 		occwin->twm_win->occupation = 0;
-		occupyWin = (TwmWindow *) 0;
+		occupyWin = NULL;
 	}
 }
 

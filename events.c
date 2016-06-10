@@ -1077,7 +1077,7 @@ void HandleKeyPress(void)
 		int xx, yy, wx, wy;
 		Window junkW;
 
-		item = (MenuItem *) 0;
+		item = NULL;
 
 		keysym = XLookupKeysym((XKeyEvent *) &Event, 0);
 		if(! keysym) {
@@ -1156,7 +1156,7 @@ void HandleKeyPress(void)
 
 			startitem = ActiveItem ? ActiveItem : ActiveMenu->first;
 			item = startitem->next;
-			if(item == (MenuItem *) 0) {
+			if(item == NULL) {
 				item = ActiveMenu->first;
 			}
 			modifier = (Event.xkey.state & mods_used);
@@ -1197,7 +1197,7 @@ void HandleKeyPress(void)
 					break;
 				}
 				item = item->next;
-				if(item == (MenuItem *) 0) {
+				if(item == NULL) {
 					item = ActiveMenu->first;
 				}
 			}
@@ -1944,7 +1944,7 @@ static void RedoIcon(void)
 		RedoIconName();
 		return;
 	}
-	icon = (Icon *) 0;
+	icon = NULL;
 	if((pattern = LookPatternInNameList(Scr->IconNames, Tmp_win->icon_name))) {
 		icon = (Icon *) LookInNameList(Tmp_win->iconslist, pattern);
 	}
@@ -2004,7 +2004,7 @@ static void RedoIcon(void)
 		}
 		else {
 			OtpFreeIcon(Tmp_win);
-			Tmp_win->icon = (Icon *) 0;
+			Tmp_win->icon = NULL;
 			WMapUpdateIconName(Tmp_win);
 		}
 		RedoIconName();
@@ -3227,7 +3227,7 @@ void HandleButtonPress(void)
 
 	if(XFindContext(dpy, Event.xbutton.window, MenuContext,
 	                (XPointer *) &mr) != XCSUCCESS) {
-		mr = (MenuRoot *) 0;
+		mr = NULL;
 	}
 	if(ActiveMenu && (! ActiveMenu->pinned) &&
 	                (Event.xbutton.subwindow != ActiveMenu->w)) {
@@ -3519,7 +3519,7 @@ void HandleButtonPress(void)
 			Event.xbutton.y = JunkY;
 			Context = C_WINDOW;
 		}
-		else if(mr != (MenuRoot *) 0) {
+		else if(mr != NULL) {
 			RootFunction = 0;
 			XBell(dpy, 0);
 			return;

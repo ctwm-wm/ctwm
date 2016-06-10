@@ -236,7 +236,7 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	else {
 		*final_x = def_x;
 		*final_y = def_y;
-		tmp_win->icon->ir = (IconRegion *)0;
+		tmp_win->icon->ir = NULL;
 		return;
 	}
 	if(Scr->ShrinkIconTitles && tmp_win->icon->has_title) {
@@ -533,7 +533,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 
 	icon->match   = match_none;
 	icon->image   = None;
-	icon->ir      = (IconRegion *) 0;
+	icon->ir      = NULL;
 
 	tmp_win->forced = false;
 	icon->w_not_ours = FALSE;

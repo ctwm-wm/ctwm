@@ -1477,10 +1477,10 @@ unsigned char *GetWMPropertyString(Window w, Atom prop)
 			if(text_list_count == 0) {
 				stringptr = NULL;
 			}
-			else if(text_list == (char **)0) {
+			else if(text_list == NULL) {
 				stringptr = NULL;
 			}
-			else if(text_list [0] == (char *)0) {
+			else if(text_list [0] == NULL) {
 				stringptr = NULL;
 			}
 			else if(status < 0 || text_list_count < 0) {
