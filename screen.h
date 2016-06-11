@@ -250,7 +250,7 @@ struct ScreenInfo {
 	Cursor AlterCursor;         /* cursor for alternate keymaps */
 
 	WorkSpaceMgr workSpaceMgr;
-	short       workSpaceManagerActive;
+	bool workSpaceManagerActive;
 
 	VirtualScreen *vScreenList;
 	VirtualScreen *currentvs;

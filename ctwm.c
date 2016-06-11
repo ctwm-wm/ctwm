@@ -901,7 +901,7 @@ static void InitVariables(void)
 	NewFontCursor(&Scr->DestroyCursor, "pirate");
 	NewFontCursor(&Scr->AlterCursor, "question_arrow");
 
-	Scr->workSpaceManagerActive = FALSE;
+	Scr->workSpaceManagerActive = false;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
 	Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;

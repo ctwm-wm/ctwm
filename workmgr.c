@@ -825,7 +825,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		}
 		wstmp->next = ws;
 	}
-	Scr->workSpaceManagerActive = 1;
+	Scr->workSpaceManagerActive = true;
 }
 
 static XrmOptionDescRec table [] = {
