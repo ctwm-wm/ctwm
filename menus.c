@@ -1823,7 +1823,7 @@ void DeIconify(TwmWindow *tmp_win)
 	if(isicon &&
 	                (Scr->WarpCursor ||
 	                 LookInList(Scr->WarpCursorL, tmp_win->full_name, &tmp_win->class))) {
-		WarpToWindow(tmp_win, 0);
+		WarpToWindow(tmp_win, false);
 	}
 
 	/* now de-iconify any window group transients */
@@ -2244,7 +2244,7 @@ void WarpAlongRing(XButtonEvent *ev, bool forward)
 		TwmWindow *p = Scr->RingLeader, *t;
 
 		Scr->RingLeader = r;
-		WarpToWindow(r, 1);
+		WarpToWindow(r, true);
 
 		if(p && p->mapped &&
 		                (t = GetTwmWindow(ev->window)) &&
@@ -2267,7 +2267,8 @@ void WarpAlongRing(XButtonEvent *ev, bool forward)
 }
 
 
-void WarpToWindow(TwmWindow *t, int must_raise)
+void
+WarpToWindow(TwmWindow *t, bool must_raise)
 {
 	int x, y;
 
@@ -2322,7 +2323,7 @@ void WarpToWindow(TwmWindow *t, int must_raise)
 	if(XTranslateCoordinates(dpy, t->frame, Scr->Root, x, y, &dest_x, &dest_y,
 	                         &child)) {
 		if(child != t->frame) {
-			must_raise = 1;
+			must_raise = true;
 		}
 	}
 #endif

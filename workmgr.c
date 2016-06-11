@@ -718,7 +718,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	if(Scr->SaveWorkspaceFocus && newws->save_focus) {
 		twmWin = newws->save_focus;
 		if(OCCUPY(twmWin, newws)) {     /* check should not even be needed anymore */
-			WarpToWindow(twmWin, 0);
+			WarpToWindow(twmWin, false);
 		}
 		else {
 			newws->save_focus = NULL;

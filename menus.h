@@ -219,7 +219,7 @@ void TryToPack(TwmWindow *tmp_win, int *x, int *y);
 void TryToPush(TwmWindow *tmp_win, int x, int y, int dir);
 void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
-void WarpToWindow(TwmWindow *t, int must_raise);
+void WarpToWindow(TwmWindow *t, bool must_raise);
 void DisplayPosition(TwmWindow *tmp_win, int x, int y);
 void AutoSqueeze(TwmWindow *tmp_win);
 void Squeeze(TwmWindow *tmp_win);
