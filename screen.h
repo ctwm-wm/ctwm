@@ -281,11 +281,6 @@ struct ScreenInfo {
 	short       TitleShadowDepth;
 	short       MenuShadowDepth;
 	short       IconManagerShadowDepth;
-	/* Spacing between the text and the outer border.  */
-#define ICON_MGR_IBORDER 3
-	/* Thickness of the outer border (3d or not).  */
-#define ICON_MGR_OBORDER \
-    (Scr->use3Diconmanagers ? Scr->IconManagerShadowDepth : 2)
 	short       ReallyMoveInWorkspaceManager;
 	short       ShowWinWhenMovingInWmgr;
 	short       ReverseCurrentWorkspace;
@@ -492,5 +487,13 @@ extern int FirstScreen;
 #define RP_OFF 0
 #define RP_ALL 1
 #define RP_UNMAPPED 2
+
+
+/* XXX should be in iconmgr.h? */
+/* Spacing between the text and the outer border.  */
+#define ICON_MGR_IBORDER 3
+/* Thickness of the outer border (3d or not).  */
+#define ICON_MGR_OBORDER \
+    (Scr->use3Diconmanagers ? Scr->IconManagerShadowDepth : 2)
 
 #endif /* _CTWM_SCREEN_H */
