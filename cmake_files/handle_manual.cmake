@@ -279,3 +279,21 @@ endif(MANUAL_BUILD_PDF)
 if(HAS_PDF)
 	add_custom_target(man-pdf DEPENDS ${MANPDF})
 endif(HAS_PDF)
+
+
+
+
+#
+# Handy target
+#
+set(MAN_TYPES)
+if(HAS_MAN)
+	list(APPEND MAN_TYPES man)
+endif()
+if(HAS_HTML)
+	list(APPEND MAN_TYPES man-html)
+endif()
+if(HAS_PDF)
+	list(APPEND MAN_TYPES man-pdf)
+endif()
+add_custom_target(man-all DEPENDS ${MAN_TYPES})
