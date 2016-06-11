@@ -261,3 +261,62 @@ function(asciidoc_mk_html OUTFILE ADFILE)
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(asciidoc_mk_html)
+
+
+# Building DocBook XML
+function(asciidoctor_mk_docbook OUTFILE ADFILE)
+	# Guard
+	if(NOT ASCIIDOCTOR_CAN_DBXML)
+		message(FATAL_ERROR "asciidoctor can't do DocBook")
+	endif()
+
+	_ad_mk_boilerplate(asciidoctor docbook ${ARGN})
+
+	add_custom_command(OUTPUT ${OUTFILE}
+		DEPENDS ${dependancies}
+		COMMAND ${ASCIIDOCTOR} -b docbook45 -o ${OUTFILE} ${ADFILE}
+		COMMENT ${_ARGS_COMMENT}
+	)
+endfunction(asciidoctor_mk_docbook)
+
+function(asciidoc_mk_docbook OUTFILE ADFILE)
+	# Guard
+	if(NOT ASCIIDOC_CAN_DBXML)
+		message(FATAL_ERROR "asciidoc can't do DocBook")
+	endif()
+
+	_ad_mk_boilerplate(asciidoc docbook ${ARGN})
+
+	add_custom_command(OUTPUT ${OUTFILE}
+		DEPENDS ${dependancies}
+		COMMAND ${ASCIIDOCTOR} -b docbook45 -o ${OUTFILE} ${ADFILE}
+		COMMENT ${_ARGS_COMMENT}
+	)
+endfunction(asciidoc_mk_docbook)
+
+
+# PDF via dblatex
+function(dblatex_mk_pdf OUTFILE XMLFILE)
+	if(NOT DBLATEX_CAN_PDF)
+		message(FATAL_ERROR "dblatex can't do PDF")
+	endif()
+
+	_ad_mk_boilerplate(asciidoc docbook ${ARGN})
+
+	# Passes through to LaTeX geometry.
+	# Likely choices: letterpaper, a4paper
+	if(NOT DBLATEX_PAPERSIZE)
+		set(DBLATEX_PAPERSIZE "a4paper")
+	endif()
+
+	add_custom_command(OUTPUT ${OUTFILE}
+		DEPENDS ${XMLFILE} ${dependancies}
+		COMMAND ${DBLATEX}
+			-tpdf
+			-Pdoc.collab.show=0
+			-Platex.output.revhistory=0
+			-Ppaper.type=${DBLATEX_PAPERSIZE}
+			-o ${OUTFILE} ${XMLFILE}
+		COMMENT ${_ARGS_COMMENT}
+	)
+endfunction(dblatex_mk_pdf)
