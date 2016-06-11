@@ -141,7 +141,7 @@ MenuRoot *GetRoot(char *name, char *fore, char *back)
 	}
 
 	if(fore) {
-		int save;
+		bool save;
 
 		save = Scr->FirstTime;
 		Scr->FirstTime = true;

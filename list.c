@@ -227,7 +227,7 @@ void *LookPatternInNameList(name_list *list_head, const char *name)
 bool GetColorFromList(name_list *list_head, char *name,
                       XClassHint *class, Pixel *ptr)
 {
-	int save;
+	bool save;
 	name_list *nptr;
 
 	for(nptr = list_head; nptr != NULL; nptr = nptr->next)

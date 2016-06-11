@@ -857,7 +857,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 
 	tmp->user_colors = false;
 	if(Scr->Monochrome == COLOR && fore != NULL) {
-		int save;
+		bool save;
 
 		save = Scr->FirstTime;
 		Scr->FirstTime = true;
@@ -1004,7 +1004,7 @@ void MakeMenu(MenuRoot *mr)
 	                && (mr->highlight.back == UNUSED_PIXEL)) {
 		XColor xcol;
 		char colname [32];
-		short save;
+		bool save;
 
 		xcol.pixel = Scr->MenuC.back;
 		XQueryColor(dpy, cmap, &xcol);
@@ -1022,7 +1022,7 @@ void MakeMenu(MenuRoot *mr)
 	                && (mr->highlight.fore == UNUSED_PIXEL)) {
 		XColor xcol;
 		char colname [32];
-		short save;
+		bool save;
 
 		xcol.pixel = Scr->MenuC.fore;
 		XQueryColor(dpy, cmap, &xcol);

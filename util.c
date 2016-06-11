@@ -558,7 +558,7 @@ void GetShadeColors(ColorPair *cp)
 {
 	XColor      xcol;
 	Colormap    cmap = Scr->RootColormaps.cwins[0]->colormap->c;
-	int         save;
+	bool        save;
 	float       clearfactor;
 	float       darkfactor;
 	char        clearcol [32], darkcol [32];
