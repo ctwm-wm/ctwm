@@ -7,6 +7,7 @@
 find_program(ASCIIDOCTOR asciidoctor)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
+find_program(DBLATEX dblatex)
 
 
 # If we have asciidoctor, we need to figure out the version, as manpage
@@ -39,10 +40,12 @@ if(ASCIIDOCTOR)
 	# DTRT too.  We assume any version can do HTML.
 	set(ASCIIDOCTOR_CAN_MAN  0)
 	set(ASCIIDOCTOR_CAN_HTML 1)
+	set(ASCIIDOCTOR_CAN_DBXML 1)
 	if(${ASCIIDOCTOR_VERSION} VERSION_GREATER "1.5.2")
 		set(ASCIIDOCTOR_CAN_MAN 1)
 	elseif(${ASCIIDOCTOR_VERSION} VERSION_LESS "0.0.1")
 		set(ASCIIDOCTOR_CAN_HTML 0)
+		set(ASCIIDOCTOR_CAN_DBXML 0)
 	endif()
 endif(ASCIIDOCTOR)
 
@@ -75,6 +78,7 @@ if(ASCIIDOC)
 	if(${ASCIIDOC_VERSION} VERSION_GREATER "0.0.0")
 		set(ASCIIDOC_CAN_MAN  1)
 		set(ASCIIDOC_CAN_HTML 1)
+		set(ASCIIDOC_CAN_DBXML 1)
 	endif()
 
 	# This is an example of 'horked'...
@@ -82,6 +86,41 @@ if(ASCIIDOC)
 		set(ASCIIDOC_CAN_MAN 0)
 	endif()
 endif(ASCIIDOC)
+
+
+# dblatex lets us build PDF's from the DocBook XML.  This is pretty
+# fringe and not part of normal builds, so try to minimize the impact of
+# the checks.
+if(DBLATEX)
+	# Don't really care about the version, so save the extra checks
+	if(0)
+		execute_process(
+			COMMAND ${DBLATEX} --version
+			RESULT_VARIABLE _dblatex_result
+			OUTPUT_VARIABLE _dblatex_verout
+			ERROR_QUIET
+		)
+		if(NOT ${_dblatex_result} EQUAL "0")
+			# Err...
+			message(WARNING "Unexpected result trying dblatex --version.")
+			set(_dblatex_verout "dblatex 0.0.0 FAKE")
+		endif()
+		unset(_dblatex_result)
+
+		# Break out the version.
+		set(_dblatex_veregex "dblatex version ([0-9]+\\.[0-9]+\\.[0-9]+).*")
+		string(REGEX REPLACE ${_dblatex_veregex} "\\1"
+			DBLATEX_VERSION ${_dblatex_verout})
+		unset(_dblatex_verout)
+		unset(_dblatex_veregex)
+		message(STATUS "Found dblatex (${DBLATEX}) version ${DBLATEX_VERSION}")
+	else()
+		message(STATUS "Found dblatex (${DBLATEX})")
+	endif()
+
+	# I guess it works...
+	set(DBLATEX_CAN_PDF 1)
+endif(DBLATEX)
 
 
 
