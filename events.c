@@ -3137,7 +3137,7 @@ void HandleButtonRelease(void)
 		EventHandler[LeaveNotify] = HandleLeaveNotify;
 		ButtonPressed = -1;
 		if(DownIconManager) {
-			DownIconManager->down = FALSE;
+			DownIconManager->down = false;
 			if(Scr->Highlight) {
 				DrawIconManagerBorder(DownIconManager, False);
 			}
@@ -3467,7 +3467,7 @@ void HandleButtonPress(void)
 		else if(Tmp_win->iconmanagerlist) {
 			if((Event.xany.window == Tmp_win->iconmanagerlist->icon) ||
 			                (Event.xany.window == Tmp_win->iconmanagerlist->w)) {
-				Tmp_win->iconmanagerlist->down = TRUE;
+				Tmp_win->iconmanagerlist->down = true;
 				if(Scr->Highlight) {
 					DrawIconManagerBorder(Tmp_win->iconmanagerlist, False);
 				}

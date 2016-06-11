@@ -72,8 +72,8 @@ struct WList {
 	Pixel highlight;
 	Pixmap iconifypm;
 	unsigned top, bottom;
-	short active;
-	short down;
+	bool active;
+	bool down;
 };
 
 struct IconMgr {

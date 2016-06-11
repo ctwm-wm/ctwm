@@ -943,7 +943,7 @@ void CurrentIconManagerEntry(WList *current)
 
 void ActiveIconManager(WList *active)
 {
-	active->active = TRUE;
+	active->active = true;
 	Active = active;
 	Active->iconmgr->active = active;
 	Current = Active;
@@ -952,7 +952,7 @@ void ActiveIconManager(WList *active)
 
 void NotActiveIconManager(WList *active)
 {
-	active->active = FALSE;
+	active->active = false;
 	DrawIconManagerBorder(active, False);
 }
 
