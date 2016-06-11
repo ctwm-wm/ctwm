@@ -1021,7 +1021,8 @@ void SortIconManager(IconMgr *ip)
 				break;
 			}
 		}
-	} while(!done);
+	}
+	while(!done);
 	PackIconManager(ip);
 }
 
