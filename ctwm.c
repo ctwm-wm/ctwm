@@ -117,13 +117,13 @@ Display *dpy;                   /* which display are we talking to */
 Window ResizeWindow;            /* the window we are resizing */
 
 int NumScreens;                 /* number of screens in ScreenList */
-int HasShape;                   /* server supports shape extension? */
+bool HasShape;                  /* server supports shape extension? */
 int ShapeEventBase, ShapeErrorBase;
 ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
-int FirstScreen;                /* TRUE ==> first screen of display */
-static int RedirectError;       /* TRUE ==> another window manager running */
+static bool FirstScreen;        /* TRUE ==> first screen of display */
+static bool RedirectError;      /* TRUE ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
@@ -159,7 +159,7 @@ XGCValues Gcv;
 char *Home;                     /* the HOME environment variable */
 int HomeLen;                    /* length of Home */
 
-int HandlingEvents = FALSE;     /* are we handling events yet? */
+bool HandlingEvents = false;    /* are we handling events yet? */
 
 Window JunkRoot;                /* junk window */
 Window JunkChild;               /* junk window */
@@ -309,7 +309,7 @@ int main(int argc, char **argv)
 	}
 	numManaged = 0;
 	PreviousScreen = DefaultScreen(dpy);
-	FirstScreen = TRUE;
+	FirstScreen = true;
 #ifdef EWMH
 	EwmhInit();
 #endif /* EWMH */
@@ -361,7 +361,7 @@ int main(int argc, char **argv)
 #ifdef EWMH
 		EwmhInitScreenEarly(Scr);
 #endif /* EWMH */
-		RedirectError = FALSE;
+		RedirectError = false;
 		XSetErrorHandler(CatchRedirectError);
 		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		           SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
@@ -806,7 +806,7 @@ int main(int argc, char **argv)
 			UnmaskScreen();
 		}
 
-		FirstScreen = FALSE;
+		FirstScreen = false;
 		Scr->FirstTime = FALSE;
 	} /* for */
 
@@ -823,7 +823,7 @@ int main(int argc, char **argv)
 #endif
 
 	RestartPreviousState = true;
-	HandlingEvents = TRUE;
+	HandlingEvents = true;
 	InitEvents();
 	StartAnimation();
 	HandleEvents();
@@ -1314,7 +1314,7 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event)
 /* ARGSUSED*/
 static int CatchRedirectError(Display *display, XErrorEvent *event)
 {
-	RedirectError = TRUE;
+	RedirectError = true;
 	LastErrorEvent = *event;
 	return 0;
 }

@@ -446,7 +446,7 @@ extern char *ProgramName;
 extern Display *dpy;
 extern XtAppContext appContext;
 extern Window ResizeWindow;     /* the window we are resizing */
-extern int HasShape;            /* this server supports Shape extension */
+extern bool HasShape;           /* this server supports Shape extension */
 extern int ShapeEventBase, ShapeErrorBase;
 
 extern int PreviousScreen;
@@ -466,7 +466,7 @@ extern XContext ColormapContext;
 extern char *Home;
 extern int HomeLen;
 
-extern int HandlingEvents;
+extern bool HandlingEvents;
 extern Cursor TopCursor, TopLeftCursor, LeftCursor, BottomLeftCursor,
        BottomCursor, BottomRightCursor, RightCursor, TopRightCursor;
 
