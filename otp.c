@@ -1073,7 +1073,8 @@ void OtpAdd(TwmWindow *twm_win, WinType wintype)
 		parent->switching = false;
 	}
 	/* in case it's a transient, find the parent */
-	else if(wintype == WinWin && (twm_win->istransient || !isGroupLeader(twm_win))) {
+	else if(wintype == WinWin && (twm_win->istransient
+	                              || !isGroupLeader(twm_win))) {
 		other_win = Scr->FirstWindow;
 		while(other_win != NULL
 		                && !isTransientOf(twm_win, other_win)
