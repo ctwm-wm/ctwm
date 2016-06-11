@@ -475,7 +475,6 @@ struct ScreenInfo {
 extern int NumScreens;
 extern ScreenInfo **ScreenList;
 extern ScreenInfo *Scr;
-extern int FirstScreen;
 
 #define PPOS_OFF 0
 #define PPOS_ON 1
