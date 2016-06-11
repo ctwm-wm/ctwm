@@ -1160,7 +1160,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					}
 					if(DragWindow == t->frame) {
 						if(moving_icon) {
-							fprintf(stderr, "moving_icon is TRUE incorrectly!\n");
+							fprintf(stderr, "moving_icon is true incorrectly!\n");
 						}
 						OtpRaise(t, WinWin);
 					}

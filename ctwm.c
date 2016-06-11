@@ -122,8 +122,8 @@ int ShapeEventBase, ShapeErrorBase;
 ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
-static bool FirstScreen;        /* TRUE ==> first screen of display */
-static bool RedirectError;      /* TRUE ==> another window manager running */
+static bool FirstScreen;        /* true ==> first screen of display */
+static bool RedirectError;      /* true ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
