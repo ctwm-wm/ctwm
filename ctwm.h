@@ -269,7 +269,7 @@ struct WindowEntry {
 	struct WindowEntry  *next;
 	int                 x, y, w, h;
 	struct TwmWindow    *twm_win;
-	short               used;
+	bool                used;
 };
 
 struct WindowBox {

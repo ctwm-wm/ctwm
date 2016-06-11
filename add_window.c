@@ -2186,7 +2186,7 @@ bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	}
 
 	splitWindowRegionEntry(we, wr->grav1, wr->grav2, w, h);
-	we->used = 1;
+	we->used = true;
 	we->twm_win = tmp_win;
 	*final_x = we->x;
 	*final_y = we->y;
@@ -2314,11 +2314,11 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 	}
 
 	we->twm_win = NULL;
-	we->used = 0;
+	we->used = false;
 	wp = prevWindowEntry(we, wr);
 	wn = we->next;
 	for(;;) {
-		if(wp && wp->used == 0 &&
+		if(wp && wp->used == false &&
 		                ((wp->x == we->x && wp->w == we->w) ||
 		                 (wp->y == we->y && wp->h == we->h))) {
 			wp->next = we->next;
@@ -2327,7 +2327,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 			we = wp;
 			wp = prevWindowEntry(wp, wr);
 		}
-		else if(wn && wn->used == 0 &&
+		else if(wn && wn->used == false &&
 		                ((wn->x == we->x && wn->w == we->w) ||
 		                 (wn->y == we->y && wn->h == we->h))) {
 			we->next = wn->next;

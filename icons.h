@@ -108,7 +108,7 @@ struct IconEntry {
 	struct IconEntry    *next;
 	int                 x, y, w, h;
 	TwmWindow           *twm_win;
-	short               used;
+	bool                used;
 };
 
 int IconUp(TwmWindow *tmp_win);
