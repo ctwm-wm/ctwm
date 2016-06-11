@@ -578,7 +578,7 @@ void GetShadeColors(ColorPair *cp)
 	        (unsigned short)(xcol.blue  * darkfactor));
 
 	save = Scr->FirstTime;
-	Scr->FirstTime = True;
+	Scr->FirstTime = true;
 	GetColor(Scr->Monochrome, &cp->shadc, clearcol);
 	GetColor(Scr->Monochrome, &cp->shadd,  darkcol);
 	Scr->FirstTime = save;

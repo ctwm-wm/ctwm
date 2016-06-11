@@ -233,7 +233,7 @@ bool GetColorFromList(name_list *list_head, char *name,
 	for(nptr = list_head; nptr != NULL; nptr = nptr->next)
 		if(match(nptr->name, name)) {
 			save = Scr->FirstTime;
-			Scr->FirstTime = TRUE;
+			Scr->FirstTime = true;
 			GetColor(Scr->Monochrome, ptr, nptr->ptr);
 			Scr->FirstTime = save;
 			return true;
@@ -243,7 +243,7 @@ bool GetColorFromList(name_list *list_head, char *name,
 		for(nptr = list_head; nptr != NULL; nptr = nptr->next)
 			if(match(nptr->name, class->res_name)) {
 				save = Scr->FirstTime;
-				Scr->FirstTime = TRUE;
+				Scr->FirstTime = true;
 				GetColor(Scr->Monochrome, ptr, nptr->ptr);
 				Scr->FirstTime = save;
 				return true;
@@ -252,7 +252,7 @@ bool GetColorFromList(name_list *list_head, char *name,
 		for(nptr = list_head; nptr != NULL; nptr = nptr->next)
 			if(match(nptr->name, class->res_class)) {
 				save = Scr->FirstTime;
-				Scr->FirstTime = TRUE;
+				Scr->FirstTime = true;
 				GetColor(Scr->Monochrome, ptr, nptr->ptr);
 				Scr->FirstTime = save;
 				return true;

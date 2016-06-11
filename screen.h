@@ -262,35 +262,35 @@ struct ScreenInfo {
 	name_list   *DontSetInactive;
 	name_list   *AutoSqueeze;
 	name_list   *StartSqueezed;
-	short       use3Dmenus;
-	short       use3Dtitles;
-	short       use3Diconmanagers;
-	short       use3Dborders;
-	short       use3Dwmap;
-	short       use3Diconborders;
-	short       SunkFocusWindowTitle;
+	bool        use3Dmenus;
+	bool        use3Dtitles;
+	bool        use3Diconmanagers;
+	bool        use3Dborders;
+	bool        use3Dwmap;
+	bool        use3Diconborders;
+	bool        SunkFocusWindowTitle;
 	short       WMgrVertButtonIndent;
 	short       WMgrHorizButtonIndent;
 	short       WMgrButtonShadowDepth;
-	short       BeNiceToColormap;
-	short       BorderCursors;
-	short       AutoPopup;
+	bool        BeNiceToColormap;
+	bool        BorderCursors;
+	bool        AutoPopup;
 	short       BorderShadowDepth;
 	short       TitleButtonShadowDepth;
 	short       TitleShadowDepth;
 	short       MenuShadowDepth;
 	short       IconManagerShadowDepth;
-	short       ReallyMoveInWorkspaceManager;
-	short       ShowWinWhenMovingInWmgr;
-	short       ReverseCurrentWorkspace;
-	short       DontWarpCursorInWMap;
+	bool        ReallyMoveInWorkspaceManager;
+	bool        ShowWinWhenMovingInWmgr;
+	bool        ReverseCurrentWorkspace;
+	bool        DontWarpCursorInWMap;
 	short       XMoveGrid, YMoveGrid;
-	short       FastServer;
-	short       CenterFeedbackWindow;
-	short       ShrinkIconTitles;
-	short       AutoRaiseIcons;
-	short       AutoFocusToTransients; /* kai */
-	short       PackNewWindows;
+	bool        FastServer;  // XXX Unused?
+	bool        CenterFeedbackWindow;
+	bool        ShrinkIconTitles;
+	bool        AutoRaiseIcons;
+	bool        AutoFocusToTransients; /* kai */
+	bool        PackNewWindows;
 
 	struct OtpPreferences *OTP;
 	struct OtpPreferences *IconOTP;
@@ -380,81 +380,82 @@ struct ScreenInfo {
 	int NumAutoRaises;          /* number of autoraise windows on screen */
 	int NumAutoLowers;          /* number of autolower windows on screen */
 	int TransientOnTop;         /* Percentage of the surface of it's leader */
-	short AutoRaiseDefault;     /* AutoRaise all windows if true */
-	short AutoLowerDefault;     /* AutoLower all windows if true */
-	short NoDefaults;           /* do not add in default UI stuff */
+	bool  AutoRaiseDefault;     /* AutoRaise all windows if true */
+	bool  AutoLowerDefault;     /* AutoLower all windows if true */
+	bool  NoDefaults;           /* do not add in default UI stuff */
 	short UsePPosition;         /* what do with PPosition, see values below */
-	short UseSunkTitlePixmap;
-	short AutoRelativeResize;   /* start resize relative to position in quad */
-	short FocusRoot;            /* is the input focus on the root ? */
-	short WarpCursor;           /* warp cursor on de-iconify ? */
-	short ForceIcon;            /* force the icon to the user specified */
-	short NoGrabServer;         /* don't do server grabs */
-	short NoRaiseMove;          /* don't raise window following move */
-	short NoRaiseResize;        /* don't raise window following resize */
-	short NoRaiseDeicon;        /* don't raise window on deiconify */
-	short RaiseOnWarp;          /* do raise window on warp */
-	short DontMoveOff;          /* don't allow windows to be moved off */
+	bool  UseSunkTitlePixmap;
+	bool  AutoRelativeResize;   /* start resize relative to position in quad */
+	bool  FocusRoot;            /* is the input focus on the root ? */
+	bool  WarpCursor;           /* warp cursor on de-iconify ? */
+	bool  ForceIcon;            /* force the icon to the user specified */
+	bool  NoGrabServer;         /* don't do server grabs */
+	bool  NoRaiseMove;          /* don't raise window following move */
+	bool  NoRaiseResize;        /* don't raise window following resize */
+	bool  NoRaiseDeicon;        /* don't raise window on deiconify */
+	bool  RaiseOnWarp;          /* do raise window on warp */
+	bool  DontMoveOff;          /* don't allow windows to be moved off */
 	int MoveOffResistance;      /* nb of pixel before moveOff gives up */
 	int MovePackResistance;     /* nb of pixel before f.movepack gives up */
-	short DoZoom;               /* zoom in and out of icons */
-	short TitleFocus;           /* focus on window in title bar ? */
-	short IconManagerFocus;     /* focus on iconified window ? */
-	short NoIconTitlebar;       /* put title bars on icons */
-	short NoTitlebar;           /* put title bars on windows */
-	short DecorateTransients;   /* put title bars on transients */
-	short IconifyByUnmapping;   /* simply unmap windows when iconifying */
-	short ShowIconManager;      /* display the window list */
-	short ShowWorkspaceManager; /* display the workspace manager */
-	short IconManagerDontShow;  /* show nothing in the icon manager */
-	short AutoOccupy;           /* Do we automatically change occupation when name changes */
-	short AutoPriority;         /* Do we automatically change priority when name changes */
-	short TransientHasOccupation;       /* Do transient-for windows have their own occupation */
-	short DontPaintRootWindow;  /* don't paint anything on the root window */
-	short BackingStore;         /* use backing store for menus */
-	short SaveUnder;            /* use save under's for menus */
+	bool  DoZoom;               /* zoom in and out of icons */
+	bool  TitleFocus;           /* focus on window in title bar ? */
+	bool  IconManagerFocus;     /* focus on iconified window ? */
+	bool  NoIconTitlebar;       /* put title bars on icons */
+	bool  NoTitlebar;           /* put title bars on windows */
+	bool  DecorateTransients;   /* put title bars on transients */
+	bool  IconifyByUnmapping;   /* simply unmap windows when iconifying */
+	bool  ShowIconManager;      /* display the window list */
+	bool  ShowWorkspaceManager; /* display the workspace manager */
+	bool  IconManagerDontShow;  /* show nothing in the icon manager */
+	bool  AutoOccupy;           /* Do we automatically change occupation when name changes */
+	bool  AutoPriority;         /* Do we automatically change priority when name changes */
+	bool  TransientHasOccupation;       /* Do transient-for windows have their own occupation */
+	bool  DontPaintRootWindow;  /* don't paint anything on the root window */
+	bool  BackingStore;         /* use backing store for menus */
+	bool  SaveUnder;            /* use save under's for menus */
 	short RandomPlacement;      /* randomly place windows that no give hints */
 	short RandomDisplacementX;  /* randomly displace by this much horizontally */
 	short RandomDisplacementY;  /* randomly displace by this much vertically */
-	short OpaqueMove;           /* move the window rather than outline */
-	short DoOpaqueMove;         /* move the window rather than outline */
+	bool  OpaqueMove;           /* move the window rather than outline */
+	bool  DoOpaqueMove;         /* move the window rather than outline */
 	unsigned short OpaqueMoveThreshold;         /*  */
-	short DoOpaqueResize;               /* resize the window rather than outline */
-	short OpaqueResize;         /* resize the window rather than outline */
+	bool  DoOpaqueResize;               /* resize the window rather than outline */
+	bool  OpaqueResize;         /* resize the window rather than outline */
 	unsigned short OpaqueResizeThreshold;       /*  */
-	short Highlight;            /* should we highlight the window borders */
-	short StackMode;            /* should we honor stack mode requests */
-	short TitleHighlight;       /* should we highlight the titlebar */
+	bool  Highlight;            /* should we highlight the window borders */
+	bool  StackMode;            /* should we honor stack mode requests */
+	bool  TitleHighlight;       /* should we highlight the titlebar */
 	short MoveDelta;            /* number of pixels before f.move starts */
 	short ZoomCount;            /* zoom outline count */
-	short SortIconMgr;          /* sort entries in the icon manager */
-	short Shadow;               /* show the menu shadow */
-	short InterpolateMenuColors;/* make pretty menus */
-	short StayUpMenus;          /* stay up menus */
-	short WarpToDefaultMenuEntry; /* warp cursor to default menu entry, if any  */
-	short ClickToFocus;         /* click to focus */
-	short SloppyFocus;          /* "sloppy" focus */
-	short SaveWorkspaceFocus;   /* Save and restore focus on workspace change. */
-	short NoIconManagers;       /* Don't create any icon managers */
-	short ClientBorderWidth;    /* respect client window border width */
-	short SqueezeTitle;         /* make title as small as possible */
-	short AlwaysSqueezeToGravity; /* squeeze toward gravity */
-	short HaveFonts;            /* set if fonts have been loaded */
-	short FirstTime;            /* first time we've read .twmrc */
-	short CaseSensitive;        /* be case-sensitive when sorting names */
-	short WarpUnmapped;         /* allow warping to unmapped windows */
-	short WindowRingAll;        /* add all windows to the ring */
-	short WarpRingAnyWhere;     /* warp to ring even if window is not visible */
-	short ShortAllWindowsMenus; /* Eliminates Icon and Workspace Managers */
+	bool  SortIconMgr;          /* sort entries in the icon manager */
+	bool  Shadow;               /* show the menu shadow */
+	bool  InterpolateMenuColors;/* make pretty menus */
+	bool  StayUpMenus;          /* stay up menus */
+	bool  WarpToDefaultMenuEntry; /* warp cursor to default menu entry, if any  */
+	bool  ClickToFocus;         /* click to focus */
+	bool  SloppyFocus;          /* "sloppy" focus */
+	bool  SaveWorkspaceFocus;   /* Save and restore focus on workspace change. */
+	bool  NoIconManagers;       /* Don't create any icon managers */
+	bool  ClientBorderWidth;    /* respect client window border width */
+	bool  SqueezeTitle;         /* make title as small as possible */
+	bool  SqueezeTitleSet;      /* has ST been set yet */
+	bool  AlwaysSqueezeToGravity; /* squeeze toward gravity */
+	bool  HaveFonts;            /* set if fonts have been loaded */
+	bool  FirstTime;            /* first time we've read .twmrc */
+	bool  CaseSensitive;        /* be case-sensitive when sorting names */
+	bool  WarpUnmapped;         /* allow warping to unmapped windows */
+	bool  WindowRingAll;        /* add all windows to the ring */
+	bool  WarpRingAnyWhere;     /* warp to ring even if window is not visible */
+	bool  ShortAllWindowsMenus; /* Eliminates Icon and Workspace Managers */
 	short OpenWindowTimeout;    /* Timeout when a window tries to open */
-	short RaiseWhenAutoUnSqueeze;
-	short RaiseOnClick;         /* Raise a window when clieked into */
+	bool  RaiseWhenAutoUnSqueeze;
+	bool  RaiseOnClick;         /* Raise a window when clieked into */
 	short RaiseOnClickButton;           /* Raise a window when clieked into */
 	unsigned int IgnoreModifier;/* We should ignore these modifiers */
-	short IgnoreCaseInMenuSelection;    /* Should we ignore case in menu selection */
-	short NoWarpToMenuTitle; /* warp cursor to clipped menu title */
-	short NoImagesInWorkSpaceManager;   /* do not display mini images of the desktop background images on WSmap */
-	short DontToggleWorkspaceManagerState;
+	bool  IgnoreCaseInMenuSelection;    /* Should we ignore case in menu selection */
+	bool  NoWarpToMenuTitle; /* warp cursor to clipped menu title */
+	bool  NoImagesInWorkSpaceManager;   /* do not display mini images of the desktop background images on WSmap */
+	bool  DontToggleWorkspaceManagerState;
 	bool  ShowWelcomeWindow;
 
 	FuncKey FuncKeyRoot;

@@ -217,31 +217,31 @@ stmt		: error
 
 		| ZOOM number		{ if (Scr->FirstTime)
 					  {
-						Scr->DoZoom = TRUE;
+						Scr->DoZoom = true;
 						Scr->ZoomCount = $2;
 					  }
 					}
 		| ZOOM			{ if (Scr->FirstTime)
-						Scr->DoZoom = TRUE; }
+						Scr->DoZoom = true; }
 		| PIXMAPS pixmap_list	{}
 		| CURSORS cursor_list	{}
 		| ICONIFY_BY_UNMAPPING	{ curplist = &Scr->IconifyByUn; }
 		  win_list
 		| ICONIFY_BY_UNMAPPING	{ if (Scr->FirstTime)
-		    Scr->IconifyByUnmapping = TRUE; }
+		    Scr->IconifyByUnmapping = true; }
 
 		| OPAQUEMOVE	{ curplist = &Scr->OpaqueMoveList; }
 		  win_list
-		| OPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = TRUE; }
+		| OPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = true; }
 		| NOOPAQUEMOVE	{ curplist = &Scr->NoOpaqueMoveList; }
 		  win_list
-		| NOOPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = FALSE; }
+		| NOOPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = false; }
 		| OPAQUERESIZE	{ curplist = &Scr->OpaqueMoveList; }
 		  win_list
-		| OPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = TRUE; }
+		| OPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = true; }
 		| NOOPAQUERESIZE	{ curplist = &Scr->NoOpaqueResizeList; }
 		  win_list
-		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = FALSE; }
+		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = false; }
 
 		| LEFT_TITLEBUTTON string EQUALS action {
 					  GotTitleButton ($2, $4, false);
@@ -297,14 +297,14 @@ stmt		: error
 		  win_list
 		| STARTSQUEEZED		{ curplist = &Scr->StartSqueezed; }
 		  win_list
-		| ALWAYSSQUEEZETOGRAVITY	{ Scr->AlwaysSqueezeToGravity = TRUE; }
+		| ALWAYSSQUEEZETOGRAVITY	{ Scr->AlwaysSqueezeToGravity = true; }
 		| ALWAYSSQUEEZETOGRAVITY	{ curplist = &Scr->AlwaysSqueezeToGravityL; }
 		  win_list
 		| DONTSETINACTIVE	{ curplist = &Scr->DontSetInactive; }
 		  win_list
 		| ICONMGR_NOSHOW	{ curplist = &Scr->IconMgrNoShow; }
 		  win_list
-		| ICONMGR_NOSHOW	{ Scr->IconManagerDontShow = TRUE; }
+		| ICONMGR_NOSHOW	{ Scr->IconManagerDontShow = true; }
 		| ICONMGRS		{ curplist = &Scr->IconMgrs; }
 		  iconm_list
 		| ICONMGR_SHOW		{ curplist = &Scr->IconMgrShow; }
@@ -312,11 +312,11 @@ stmt		: error
 		| NO_TITLE_HILITE	{ curplist = &Scr->NoTitleHighlight; }
 		  win_list
 		| NO_TITLE_HILITE	{ if (Scr->FirstTime)
-						Scr->TitleHighlight = FALSE; }
+						Scr->TitleHighlight = false; }
 		| NO_HILITE		{ curplist = &Scr->NoHighlight; }
 		  win_list
 		| NO_HILITE		{ if (Scr->FirstTime)
-						Scr->Highlight = FALSE; }
+						Scr->Highlight = false; }
                 | ON_TOP_PRIORITY signed_number 
                                         { OtpScrSetZero(Scr, WinWin, $2); }
 		| ON_TOP_PRIORITY ICONS signed_number
@@ -348,10 +348,10 @@ stmt		: error
 		| NO_STACKMODE		{ curplist = &Scr->NoStackModeL; }
 		  win_list
 		| NO_STACKMODE		{ if (Scr->FirstTime)
-						Scr->StackMode = FALSE; }
+						Scr->StackMode = false; }
 		| NO_BORDER		{ curplist = &Scr->NoBorder; }
 		  win_list
-		| AUTO_POPUP		{ Scr->AutoPopup = TRUE; }
+		| AUTO_POPUP		{ Scr->AutoPopup = true; }
 		| AUTO_POPUP		{ curplist = &Scr->AutoPopupL; }
 		  win_list
 		| DONT_SAVE		{ curplist = &Scr->DontSave; }
@@ -359,11 +359,11 @@ stmt		: error
 		| NO_ICON_TITLE		{ curplist = &Scr->NoIconTitle; }
 		  win_list
 		| NO_ICON_TITLE		{ if (Scr->FirstTime)
-						Scr->NoIconTitlebar = TRUE; }
+						Scr->NoIconTitlebar = true; }
 		| NO_TITLE		{ curplist = &Scr->NoTitle; }
 		  win_list
 		| NO_TITLE		{ if (Scr->FirstTime)
-						Scr->NoTitlebar = TRUE; }
+						Scr->NoTitlebar = true; }
 		| IGNORE_TRANSIENT	{ curplist = &Scr->IgnoreTransientL; }
 		  win_list
 		| MAKE_TITLE		{ curplist = &Scr->MakeTitle; }
@@ -372,12 +372,12 @@ stmt		: error
 		  win_list
 		| AUTO_RAISE		{ curplist = &Scr->AutoRaise; }
 		  win_list
-		| AUTO_RAISE		{ Scr->AutoRaiseDefault = TRUE; }
+		| AUTO_RAISE		{ Scr->AutoRaiseDefault = true; }
 		| WARP_ON_DEICONIFY	{ curplist = &Scr->WarpOnDeIconify; }
 		  win_list
 		| AUTO_LOWER		{ curplist = &Scr->AutoLower; }
 		  win_list
-		| AUTO_LOWER		{ Scr->AutoLowerDefault = TRUE; }
+		| AUTO_LOWER		{ Scr->AutoLowerDefault = true; }
 		| MENU string LP string COLON string RP	{
 					root = GetRoot($2, $4, $6); }
 		  menu			{ root->real_menu = true;}
@@ -444,12 +444,12 @@ stmt		: error
 		| WARP_CURSOR		{ curplist = &Scr->WarpCursorL; }
 		  win_list
 		| WARP_CURSOR		{ if (Scr->FirstTime)
-					    Scr->WarpCursor = TRUE; }
+					    Scr->WarpCursor = true; }
 		| WINDOW_RING		{ curplist = &Scr->WindowRingL; }
 		  win_list
-		| WINDOW_RING		{ Scr->WindowRingAll = TRUE; }
+		| WINDOW_RING		{ Scr->WindowRingAll = true; }
 		| WINDOW_RING_EXCLUDE	{ if (!Scr->WindowRingL)
-					    Scr->WindowRingAll = TRUE;
+					    Scr->WindowRingAll = true;
 					  curplist = &Scr->WindowRingExcludeL; }
 		  win_list
 		| WINDOW_GEOMETRIES	{  }
@@ -794,14 +794,15 @@ mwm_ignore_entry	: string { add_mwm_ignore($1); }
 
 
 squeeze		: SQUEEZE_TITLE {
-				    if (HasShape) Scr->SqueezeTitle = TRUE;
+				    if (HasShape) Scr->SqueezeTitle = true;
+				    Scr->SqueezeTitleSet = true;
 				}
 		| SQUEEZE_TITLE { curplist = &Scr->SqueezeTitleL;
-				  if (HasShape && Scr->SqueezeTitle == -1)
-				    Scr->SqueezeTitle = TRUE;
+				  if (HasShape && !Scr->SqueezeTitleSet)
+				    Scr->SqueezeTitle = true;
 				}
 		  LB win_sqz_entries RB
-		| DONT_SQUEEZE_TITLE { Scr->SqueezeTitle = FALSE; }
+		| DONT_SQUEEZE_TITLE { Scr->SqueezeTitle = false; }
 		| DONT_SQUEEZE_TITLE { curplist = &Scr->DontSqueezeTitleL; }
 		  win_list
 		;

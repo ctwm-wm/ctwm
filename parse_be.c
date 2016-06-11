@@ -650,73 +650,73 @@ do_single_keyword(int keyword)
 {
 	switch(keyword) {
 		case kw0_NoDefaults:
-			Scr->NoDefaults = TRUE;
+			Scr->NoDefaults = true;
 			return 1;
 
 		case kw0_AutoRelativeResize:
-			Scr->AutoRelativeResize = TRUE;
+			Scr->AutoRelativeResize = true;
 			return 1;
 
 		case kw0_ForceIcons:
 			if(Scr->FirstTime) {
-				Scr->ForceIcon = TRUE;
+				Scr->ForceIcon = true;
 			}
 			return 1;
 
 		case kw0_NoIconManagers:
-			Scr->NoIconManagers = TRUE;
+			Scr->NoIconManagers = true;
 			return 1;
 
 		case kw0_InterpolateMenuColors:
 			if(Scr->FirstTime) {
-				Scr->InterpolateMenuColors = TRUE;
+				Scr->InterpolateMenuColors = true;
 			}
 			return 1;
 
 		case kw0_SortIconManager:
 			if(Scr->FirstTime) {
-				Scr->SortIconMgr = TRUE;
+				Scr->SortIconMgr = true;
 			}
 			return 1;
 
 		case kw0_NoGrabServer:
-			Scr->NoGrabServer = TRUE;
+			Scr->NoGrabServer = true;
 			return 1;
 
 		case kw0_NoMenuShadows:
 			if(Scr->FirstTime) {
-				Scr->Shadow = FALSE;
+				Scr->Shadow = false;
 			}
 			return 1;
 
 		case kw0_NoRaiseOnMove:
 			if(Scr->FirstTime) {
-				Scr->NoRaiseMove = TRUE;
+				Scr->NoRaiseMove = true;
 			}
 			return 1;
 
 		case kw0_NoRaiseOnResize:
 			if(Scr->FirstTime) {
-				Scr->NoRaiseResize = TRUE;
+				Scr->NoRaiseResize = true;
 			}
 			return 1;
 
 		case kw0_NoRaiseOnDeiconify:
 			if(Scr->FirstTime) {
-				Scr->NoRaiseDeicon = TRUE;
+				Scr->NoRaiseDeicon = true;
 			}
 			return 1;
 
 		case kw0_DontMoveOff:
-			Scr->DontMoveOff = TRUE;
+			Scr->DontMoveOff = true;
 			return 1;
 
 		case kw0_NoBackingStore:
-			Scr->BackingStore = FALSE;
+			Scr->BackingStore = false;
 			return 1;
 
 		case kw0_NoSaveUnders:
-			Scr->SaveUnder = FALSE;
+			Scr->SaveUnder = false;
 			return 1;
 
 		case kw0_RestartPreviousState:
@@ -725,24 +725,24 @@ do_single_keyword(int keyword)
 
 		case kw0_ClientBorderWidth:
 			if(Scr->FirstTime) {
-				Scr->ClientBorderWidth = TRUE;
+				Scr->ClientBorderWidth = true;
 			}
 			return 1;
 
 		case kw0_NoTitleFocus:
-			Scr->TitleFocus = FALSE;
+			Scr->TitleFocus = false;
 			return 1;
 
 		case kw0_DecorateTransients:
-			Scr->DecorateTransients = TRUE;
+			Scr->DecorateTransients = true;
 			return 1;
 
 		case kw0_ShowIconManager:
-			Scr->ShowIconManager = TRUE;
+			Scr->ShowIconManager = true;
 			return 1;
 
 		case kw0_ShowWorkspaceManager:
-			Scr->ShowWorkspaceManager = TRUE;
+			Scr->ShowWorkspaceManager = true;
 			return 1;
 
 		case kw0_StartInMapState:
@@ -754,23 +754,23 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_AutoOccupy:
-			Scr->AutoOccupy = TRUE;
+			Scr->AutoOccupy = true;
 			return 1;
 
 		case kw0_AutoPriority:
-			Scr->AutoPriority = TRUE;
+			Scr->AutoPriority = true;
 			return 1;
 
 		case kw0_TransientHasOccupation:
-			Scr->TransientHasOccupation = TRUE;
+			Scr->TransientHasOccupation = true;
 			return 1;
 
 		case kw0_DontPaintRootWindow:
-			Scr->DontPaintRootWindow = TRUE;
+			Scr->DontPaintRootWindow = true;
 			return 1;
 
 		case kw0_UseSunkTitlePixmap:
-			Scr->UseSunkTitlePixmap = TRUE;
+			Scr->UseSunkTitlePixmap = true;
 			return 1;
 
 		case kw0_Use3DBorders:
@@ -794,84 +794,84 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_SunkFocusWindowTitle:
-			Scr->SunkFocusWindowTitle = TRUE;
+			Scr->SunkFocusWindowTitle = true;
 			return 1;
 
 		case kw0_BeNiceToColormap:
-			Scr->BeNiceToColormap = TRUE;
+			Scr->BeNiceToColormap = true;
 			return 1;
 
 		case kw0_BorderResizeCursors:
-			Scr->BorderCursors = TRUE;
+			Scr->BorderCursors = true;
 			return 1;
 
 		case kw0_NoCaseSensitive:
-			Scr->CaseSensitive = FALSE;
+			Scr->CaseSensitive = false;
 			return 1;
 
 		case kw0_NoRaiseOnWarp:
-			Scr->RaiseOnWarp = FALSE;
+			Scr->RaiseOnWarp = false;
 			return 1;
 
 		case kw0_RaiseOnWarp:
-			Scr->RaiseOnWarp = TRUE;
+			Scr->RaiseOnWarp = true;
 			return 1;
 
 		case kw0_WarpUnmapped:
-			Scr->WarpUnmapped = TRUE;
+			Scr->WarpUnmapped = true;
 			return 1;
 
 		case kw0_WarpRingOnScreen:
-			Scr->WarpRingAnyWhere = FALSE;
+			Scr->WarpRingAnyWhere = false;
 			return 1;
 
 		case kw0_NoIconManagerFocus:
-			Scr->IconManagerFocus = FALSE;
+			Scr->IconManagerFocus = false;
 			return 1;
 
 		case kw0_StayUpMenus:
-			Scr->StayUpMenus = TRUE;
+			Scr->StayUpMenus = true;
 			return 1;
 
 		case kw0_ClickToFocus:
-			Scr->ClickToFocus = TRUE;
+			Scr->ClickToFocus = true;
 			return 1;
 
 		case kw0_ReallyMoveInWorkspaceManager:
-			Scr->ReallyMoveInWorkspaceManager = TRUE;
+			Scr->ReallyMoveInWorkspaceManager = true;
 			return 1;
 
 		case kw0_ShowWinWhenMovingInWmgr:
-			Scr->ShowWinWhenMovingInWmgr = TRUE;
+			Scr->ShowWinWhenMovingInWmgr = true;
 			return 1;
 
 		case kw0_ReverseCurrentWorkspace:
-			Scr->ReverseCurrentWorkspace = TRUE;
+			Scr->ReverseCurrentWorkspace = true;
 			return 1;
 
 		case kw0_DontWarpCursorInWMap:
-			Scr->DontWarpCursorInWMap = TRUE;
+			Scr->DontWarpCursorInWMap = true;
 			return 1;
 
 		case kw0_CenterFeedbackWindow:
-			Scr->CenterFeedbackWindow = TRUE;
+			Scr->CenterFeedbackWindow = true;
 			return 1;
 
 		case kw0_WarpToDefaultMenuEntry:
-			Scr->WarpToDefaultMenuEntry = TRUE;
+			Scr->WarpToDefaultMenuEntry = true;
 			return 1;
 
 		case kw0_ShrinkIconTitles:
-			Scr->ShrinkIconTitles = TRUE;
+			Scr->ShrinkIconTitles = true;
 			return 1;
 
 		case kw0_AutoRaiseIcons:
-			Scr->AutoRaiseIcons = TRUE;
+			Scr->AutoRaiseIcons = true;
 			return 1;
 
 		/* kai */
 		case kw0_AutoFocusToTransients:
-			Scr->AutoFocusToTransients = TRUE;
+			Scr->AutoFocusToTransients = true;
 			return 1;
 
 		case kw0_use3DIconBorders:
@@ -879,15 +879,15 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_ShortAllWindowsMenus:
-			Scr->ShortAllWindowsMenus = TRUE;
+			Scr->ShortAllWindowsMenus = true;
 			return 1;
 
 		case kw0_RaiseWhenAutoUnSqueeze:
-			Scr->RaiseWhenAutoUnSqueeze = TRUE;
+			Scr->RaiseWhenAutoUnSqueeze = true;
 			return 1;
 
 		case kw0_RaiseOnClick:
-			Scr->RaiseOnClick = TRUE;
+			Scr->RaiseOnClick = true;
 			return 1;
 
 		case kw0_IgnoreLockModifier:
@@ -895,27 +895,27 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_PackNewWindows:
-			Scr->PackNewWindows = TRUE;
+			Scr->PackNewWindows = true;
 			return 1;
 
 		case kw0_IgnoreCaseInMenuSelection:
-			Scr->IgnoreCaseInMenuSelection = TRUE;
+			Scr->IgnoreCaseInMenuSelection = true;
 			return 1;
 
 		case kw0_SloppyFocus:
-			Scr->SloppyFocus = TRUE;
+			Scr->SloppyFocus = true;
 			return 1;
 
 		case kw0_SaveWorkspaceFocus:
-			Scr->SaveWorkspaceFocus = TRUE;
+			Scr->SaveWorkspaceFocus = true;
 			return 1;
 
 		case kw0_NoImagesInWorkSpaceManager:
-			Scr->NoImagesInWorkSpaceManager = TRUE;
+			Scr->NoImagesInWorkSpaceManager = true;
 			return 1;
 
 		case kw0_NoWarpToMenuTitle:
-			Scr->NoWarpToMenuTitle = TRUE;
+			Scr->NoWarpToMenuTitle = true;
 			return 1;
 
 		case kw0_DontShowWelcomeWindow:
@@ -923,7 +923,7 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_DontToggleWorkspacemanagerState:
-			Scr->DontToggleWorkspaceManagerState = True;
+			Scr->DontToggleWorkspaceManagerState = true;
 			return 1;
 
 	}

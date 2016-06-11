@@ -178,7 +178,7 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
 		 * >= 1000 is "infinity" and don't bother calculating.
 		 */
 		if(Scr->OpaqueResizeThreshold >= 1000) {
-			Scr->OpaqueResize = TRUE;
+			Scr->OpaqueResize = true;
 		}
 		else {
 			/*
@@ -189,15 +189,15 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
 			winsz = tmp_win->frame_width * tmp_win->frame_height;
 			scrsz = Scr->rootw  * Scr->rooth;
 			if(winsz > (scrsz * (Scr->OpaqueResizeThreshold / 100.0))) {
-				Scr->OpaqueResize = FALSE;
+				Scr->OpaqueResize = false;
 			}
 			else {
-				Scr->OpaqueResize = TRUE;
+				Scr->OpaqueResize = true;
 			}
 		}
 	}
 	else {
-		Scr->OpaqueResize = FALSE;
+		Scr->OpaqueResize = false;
 	}
 }
 

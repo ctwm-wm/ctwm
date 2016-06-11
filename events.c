@@ -1996,7 +1996,7 @@ static void RedoIcon(void)
 			 */
 			OtpFreeIcon(Tmp_win);
 			int saveForceIcon = Scr->ForceIcon;
-			Scr->ForceIcon = True;
+			Scr->ForceIcon = true;
 			CreateIconWindow(Tmp_win, -100, -100);
 			Scr->ForceIcon = saveForceIcon;
 			OtpRaise(Tmp_win, IconWin);
@@ -2667,7 +2667,7 @@ void HandleMapRequest(void)
 
 			case IconicState:
 				zoom_save = Scr->DoZoom;
-				Scr->DoZoom = FALSE;
+				Scr->DoZoom = false;
 				Iconify(Tmp_win, -100, -100);
 				Scr->DoZoom = zoom_save;
 				break;

@@ -389,7 +389,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				int save_sort;
 
 				save_sort = Scr->SortIconMgr;
-				Scr->SortIconMgr = TRUE;
+				Scr->SortIconMgr = true;
 
 				if(context == C_ICONMGR) {
 					SortIconManager((IconMgr *) NULL);
@@ -874,14 +874,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				ss = Scr->rootw  * Scr->rooth;
 				sf = Scr->OpaqueMoveThreshold / 100.0;
 				if(sw > (ss * sf)) {
-					Scr->OpaqueMove = FALSE;
+					Scr->OpaqueMove = false;
 				}
 				else {
-					Scr->OpaqueMove = TRUE;
+					Scr->OpaqueMove = true;
 				}
 			}
 			else {
-				Scr->OpaqueMove = FALSE;
+				Scr->OpaqueMove = false;
 			}
 
 			dragroot = Scr->XineramaRoot;
@@ -926,7 +926,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				DragY = eventp->xbutton.y;
 				moving_icon = true;
 				if(tmp_win->OpaqueMove) {
-					Scr->OpaqueMove = TRUE;
+					Scr->OpaqueMove = true;
 				}
 			}
 
@@ -1744,7 +1744,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				else {
 					InstallWindowColormaps(0, tmp_win);
 					SetFocus(tmp_win, eventp->xbutton.time);
-					Scr->FocusRoot = FALSE;
+					Scr->FocusRoot = false;
 				}
 			}
 			break;

@@ -3097,14 +3097,14 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		sw2 = win->frame_width * win->frame_height;
 		ss = vs->w * vs->h;
 		if(sw2 > ((ss * Scr->OpaqueMoveThreshold) / 100)) {
-			Scr->OpaqueMove = FALSE;
+			Scr->OpaqueMove = false;
 		}
 		else {
-			Scr->OpaqueMove = TRUE;
+			Scr->OpaqueMove = true;
 		}
 	}
 	else {
-		Scr->OpaqueMove = FALSE;
+		Scr->OpaqueMove = false;
 	}
 	/*
 	 * Buttons inside the workspace manager, when clicking on the

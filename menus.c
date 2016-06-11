@@ -860,7 +860,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 		int save;
 
 		save = Scr->FirstTime;
-		Scr->FirstTime = TRUE;
+		Scr->FirstTime = true;
 		GetColor(COLOR, &tmp->normal.fore, fore);
 		GetColor(COLOR, &tmp->normal.back, back);
 		if(Scr->use3Dmenus && !Scr->BeNiceToColormap) {
@@ -1013,7 +1013,7 @@ void MakeMenu(MenuRoot *mr)
 		        5 * ((int)xcol.green / 6),
 		        5 * ((int)xcol.blue  / 6));
 		save = Scr->FirstTime;
-		Scr->FirstTime = True;
+		Scr->FirstTime = true;
 		GetColor(Scr->Monochrome, &mr->highlight.back, colname);
 		Scr->FirstTime = save;
 	}
@@ -1031,7 +1031,7 @@ void MakeMenu(MenuRoot *mr)
 		        5 * ((int)xcol.green / 6),
 		        5 * ((int)xcol.blue  / 6));
 		save = Scr->FirstTime;
-		Scr->FirstTime = True;
+		Scr->FirstTime = true;
 		GetColor(Scr->Monochrome, &mr->highlight.fore, colname);
 		Scr->FirstTime = save;
 	}
@@ -1737,7 +1737,7 @@ void FocusOnRoot(void)
 	SetFocus((TwmWindow *) NULL, LastTimestamp());
 	InstallColormaps(0, &Scr->RootColormaps);
 	if(! Scr->ClickToFocus) {
-		Scr->FocusRoot = TRUE;
+		Scr->FocusRoot = true;
 	}
 }
 
@@ -1875,7 +1875,7 @@ static void UnmapTransients(TwmWindow *tmp_win, bool iconify,
 			if(t == Scr->Focus) {
 				SetFocus((TwmWindow *) NULL, LastTimestamp());
 				if(! Scr->ClickToFocus) {
-					Scr->FocusRoot = TRUE;
+					Scr->FocusRoot = true;
 				}
 			}
 			if(t->iconmanagerlist) {
@@ -1990,7 +1990,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 	if(tmp_win == Scr->Focus) {
 		SetFocus((TwmWindow *) NULL, LastTimestamp());
 		if(! Scr->ClickToFocus) {
-			Scr->FocusRoot = TRUE;
+			Scr->FocusRoot = true;
 		}
 	}
 	tmp_win->isicon = true;

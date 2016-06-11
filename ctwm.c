@@ -402,7 +402,7 @@ int main(int argc, char **argv)
 		Scr->IconForegroundL = NULL;
 		Scr->IconBackgroundL = NULL;
 		Scr->AutoPopupL = NULL;
-		Scr->AutoPopup = FALSE;
+		Scr->AutoPopup = false;
 		Scr->NoBorder = NULL;
 		Scr->NoIconTitle = NULL;
 		Scr->NoTitle = NULL;
@@ -513,7 +513,7 @@ int main(int argc, char **argv)
 		}
 
 		/* setup default colors */
-		Scr->FirstTime = TRUE;
+		Scr->FirstTime = true;
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
@@ -588,12 +588,12 @@ int main(int argc, char **argv)
 		}
 		if(Scr->ClickToFocus) {
 			Scr->FocusRoot  = FALSE;
-			Scr->TitleFocus = FALSE;
+			Scr->TitleFocus = false;
 		}
 
 
 		if(Scr->use3Dborders) {
-			Scr->ClientBorderWidth = FALSE;
+			Scr->ClientBorderWidth = false;
 		}
 
 		if(Scr->use3Dtitles) {
@@ -665,9 +665,6 @@ int main(int argc, char **argv)
 		}
 
 		assign_var_savecolor(); /* storeing pixels for twmrc "entities" */
-		if(Scr->SqueezeTitle == -1) {
-			Scr->SqueezeTitle = FALSE;
-		}
 		if(!Scr->HaveFonts) {
 			CreateFonts();
 		}
@@ -807,7 +804,7 @@ int main(int argc, char **argv)
 		}
 
 		FirstScreen = false;
-		Scr->FirstTime = FALSE;
+		Scr->FirstTime = false;
 	} /* for */
 
 	if(numManaged == 0) {
@@ -933,33 +930,33 @@ static void InitVariables(void)
 	Scr->NumAutoRaises = 0;
 	Scr->NumAutoLowers = 0;
 	Scr->TransientOnTop = 30;
-	Scr->NoDefaults = FALSE;
+	Scr->NoDefaults = false;
 	Scr->UsePPosition = PPOS_OFF;
-	Scr->UseSunkTitlePixmap = FALSE;
-	Scr->FocusRoot = TRUE;
+	Scr->UseSunkTitlePixmap = false;
+	Scr->FocusRoot = true;
 	Scr->Focus = NULL;
-	Scr->WarpCursor = FALSE;
-	Scr->ForceIcon = FALSE;
-	Scr->NoGrabServer = FALSE;
-	Scr->NoRaiseMove = FALSE;
-	Scr->NoRaiseResize = FALSE;
-	Scr->NoRaiseDeicon = FALSE;
-	Scr->RaiseOnWarp = TRUE;
-	Scr->DontMoveOff = FALSE;
-	Scr->DoZoom = FALSE;
-	Scr->TitleFocus = TRUE;
-	Scr->IconManagerFocus = TRUE;
-	Scr->StayUpMenus = FALSE;
-	Scr->WarpToDefaultMenuEntry = FALSE;
-	Scr->ClickToFocus = FALSE;
-	Scr->SloppyFocus = FALSE;
-	Scr->SaveWorkspaceFocus = FALSE;
-	Scr->NoIconTitlebar = FALSE;
-	Scr->NoTitlebar = FALSE;
-	Scr->DecorateTransients = FALSE;
-	Scr->IconifyByUnmapping = FALSE;
-	Scr->ShowIconManager = FALSE;
-	Scr->ShowWorkspaceManager = FALSE;
+	Scr->WarpCursor = false;
+	Scr->ForceIcon = false;
+	Scr->NoGrabServer = false;
+	Scr->NoRaiseMove = false;
+	Scr->NoRaiseResize = false;
+	Scr->NoRaiseDeicon = false;
+	Scr->RaiseOnWarp = true;
+	Scr->DontMoveOff = false;
+	Scr->DoZoom = false;
+	Scr->TitleFocus = true;
+	Scr->IconManagerFocus = true;
+	Scr->StayUpMenus = false;
+	Scr->WarpToDefaultMenuEntry = false;
+	Scr->ClickToFocus = false;
+	Scr->SloppyFocus = false;
+	Scr->SaveWorkspaceFocus = false;
+	Scr->NoIconTitlebar = false;
+	Scr->NoTitlebar = false;
+	Scr->DecorateTransients = false;
+	Scr->IconifyByUnmapping = false;
+	Scr->ShowIconManager = false;
+	Scr->ShowWorkspaceManager = false;
 	Scr->WMgrButtonShadowDepth = 2;
 	Scr->WMgrVertButtonIndent  = 5;
 	Scr->WMgrHorizButtonIndent = 5;
@@ -968,82 +965,83 @@ static void InitVariables(void)
 	Scr->TitleButtonShadowDepth = 2;
 	Scr->MenuShadowDepth = 2;
 	Scr->IconManagerShadowDepth = 2;
-	Scr->AutoOccupy = FALSE;
-	Scr->TransientHasOccupation = FALSE;
-	Scr->DontPaintRootWindow = FALSE;
-	Scr->IconManagerDontShow = FALSE;
-	Scr->BackingStore = TRUE;
-	Scr->SaveUnder = TRUE;
+	Scr->AutoOccupy = false;
+	Scr->TransientHasOccupation = false;
+	Scr->DontPaintRootWindow = false;
+	Scr->IconManagerDontShow = false;
+	Scr->BackingStore = true;
+	Scr->SaveUnder = true;
 	Scr->RandomPlacement = RP_OFF;
 	Scr->RandomDisplacementX = 30;
 	Scr->RandomDisplacementY = 30;
-	Scr->DoOpaqueMove = FALSE;
-	Scr->OpaqueMove = FALSE;
+	Scr->DoOpaqueMove = false;
+	Scr->OpaqueMove = false;
 	Scr->OpaqueMoveThreshold = 200;
-	Scr->OpaqueResize = FALSE;
-	Scr->DoOpaqueResize = FALSE;
+	Scr->OpaqueResize = false;
+	Scr->DoOpaqueResize = false;
 	Scr->OpaqueResizeThreshold = 1000;
-	Scr->Highlight = TRUE;
-	Scr->StackMode = TRUE;
-	Scr->TitleHighlight = TRUE;
+	Scr->Highlight = true;
+	Scr->StackMode = true;
+	Scr->TitleHighlight = true;
 	Scr->MoveDelta = 1;         /* so that f.deltastop will work */
 	Scr->MoveOffResistance = -1;
 	Scr->MovePackResistance = 20;
 	Scr->ZoomCount = 8;
-	Scr->SortIconMgr = FALSE;
-	Scr->Shadow = TRUE;
-	Scr->InterpolateMenuColors = FALSE;
-	Scr->NoIconManagers = FALSE;
-	Scr->ClientBorderWidth = FALSE;
-	Scr->SqueezeTitle = -1;
+	Scr->SortIconMgr = false;
+	Scr->Shadow = true;
+	Scr->InterpolateMenuColors = false;
+	Scr->NoIconManagers = false;
+	Scr->ClientBorderWidth = false;
+	Scr->SqueezeTitleSet = false;
+	Scr->SqueezeTitle = false;
 	Scr->FirstRegion = NULL;
 	Scr->LastRegion = NULL;
 	Scr->FirstWindowRegion = NULL;
-	Scr->FirstTime = TRUE;
-	Scr->HaveFonts = FALSE;             /* i.e. not loaded yet */
-	Scr->CaseSensitive = TRUE;
-	Scr->WarpUnmapped = FALSE;
-	Scr->WindowRingAll = FALSE;
-	Scr->WarpRingAnyWhere = TRUE;
-	Scr->ShortAllWindowsMenus = FALSE;
+	Scr->FirstTime = true;
+	Scr->HaveFonts = false;             /* i.e. not loaded yet */
+	Scr->CaseSensitive = true;
+	Scr->WarpUnmapped = false;
+	Scr->WindowRingAll = false;
+	Scr->WarpRingAnyWhere = true;
+	Scr->ShortAllWindowsMenus = false;
 	Scr->use3Diconmanagers = FALSE;
 	Scr->use3Dmenus = FALSE;
 	Scr->use3Dtitles = FALSE;
 	Scr->use3Dborders = FALSE;
 	Scr->use3Dwmap = FALSE;
-	Scr->SunkFocusWindowTitle = FALSE;
+	Scr->SunkFocusWindowTitle = false;
 	Scr->ClearShadowContrast = 50;
 	Scr->DarkShadowContrast  = 40;
-	Scr->BeNiceToColormap = FALSE;
-	Scr->BorderCursors = FALSE;
+	Scr->BeNiceToColormap = false;
+	Scr->BorderCursors = false;
 	Scr->IconJustification = J_CENTER;
 	Scr->IconRegionJustification = J_CENTER;
 	Scr->IconRegionAlignement = J_CENTER;
 	Scr->TitleJustification = J_LEFT;
 	Scr->IconifyStyle = ICONIFY_NORMAL;
 	Scr->MaxIconTitleWidth = Scr->rootw;
-	Scr->ReallyMoveInWorkspaceManager = FALSE;
-	Scr->ShowWinWhenMovingInWmgr = FALSE;
-	Scr->ReverseCurrentWorkspace = FALSE;
-	Scr->DontWarpCursorInWMap = FALSE;
+	Scr->ReallyMoveInWorkspaceManager = false;
+	Scr->ShowWinWhenMovingInWmgr = false;
+	Scr->ReverseCurrentWorkspace = false;
+	Scr->DontWarpCursorInWMap = false;
 	Scr->XMoveGrid = 1;
 	Scr->YMoveGrid = 1;
-	Scr->FastServer = True;
-	Scr->CenterFeedbackWindow = False;
-	Scr->ShrinkIconTitles = False;
-	Scr->AutoRaiseIcons = False;
-	Scr->AutoFocusToTransients = False; /* kai */
+	Scr->FastServer = true;
+	Scr->CenterFeedbackWindow = false;
+	Scr->ShrinkIconTitles = false;
+	Scr->AutoRaiseIcons = false;
+	Scr->AutoFocusToTransients = false; /* kai */
 	Scr->use3Diconborders = False;
 	Scr->OpenWindowTimeout = 0;
-	Scr->RaiseWhenAutoUnSqueeze = False;
-	Scr->RaiseOnClick = False;
+	Scr->RaiseWhenAutoUnSqueeze = false;
+	Scr->RaiseOnClick = false;
 	Scr->RaiseOnClickButton = 1;
 	Scr->IgnoreModifier = 0;
-	Scr->IgnoreCaseInMenuSelection = False;
-	Scr->PackNewWindows = False;
-	Scr->AlwaysSqueezeToGravity = FALSE;
-	Scr->NoWarpToMenuTitle = FALSE;
-	Scr->DontToggleWorkspaceManagerState = False;
+	Scr->IgnoreCaseInMenuSelection = false;
+	Scr->PackNewWindows = false;
+	Scr->AlwaysSqueezeToGravity = false;
+	Scr->NoWarpToMenuTitle = false;
+	Scr->DontToggleWorkspaceManagerState = false;
 #ifdef EWMH
 	Scr->PreferredIconWidth = 48;
 	Scr->PreferredIconHeight = 48;
@@ -1087,7 +1085,7 @@ void CreateFonts(void)
 	GetFont(&Scr->IconManagerFont);
 	GetFont(&Scr->DefaultFont);
 	GetFont(&Scr->workSpaceMgr.windowFont);
-	Scr->HaveFonts = TRUE;
+	Scr->HaveFonts = true;
 }
 
 

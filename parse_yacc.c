@@ -144,7 +144,7 @@ MenuRoot *GetRoot(char *name, char *fore, char *back)
 		int save;
 
 		save = Scr->FirstTime;
-		Scr->FirstTime = TRUE;
+		Scr->FirstTime = true;
 		GetColor(COLOR, &tmp->highlight.fore, fore);
 		GetColor(COLOR, &tmp->highlight.back, back);
 		Scr->FirstTime = save;
