@@ -257,8 +257,7 @@ struct ScreenInfo {
 	name_list     *VirtualScreens;
 	int         numVscreens;
 
-	name_list
-	*OccupyAll;     /* list of window names occupying all workspaces at startup */
+	name_list *OccupyAll;     /* window names occupying all workspaces at startup */
 	name_list   *UnmapByMovingFarAway;
 	name_list   *DontSetInactive;
 	name_list   *AutoSqueeze;
