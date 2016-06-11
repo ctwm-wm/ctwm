@@ -316,6 +316,8 @@ function(dblatex_mk_pdf OUTFILE XMLFILE)
 			-Pdoc.collab.show=0
 			-Platex.output.revhistory=0
 			-Ppaper.type=${DBLATEX_PAPERSIZE}
+			-Ppage.margin.top=2cm
+			-Ppage.margin.bottom=2cm
 			-o ${OUTFILE} ${XMLFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
