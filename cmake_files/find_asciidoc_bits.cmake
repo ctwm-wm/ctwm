@@ -301,7 +301,7 @@ function(dblatex_mk_pdf OUTFILE XMLFILE)
 		message(FATAL_ERROR "dblatex can't do PDF")
 	endif()
 
-	_ad_mk_boilerplate(asciidoc docbook ${ARGN})
+	_ad_mk_boilerplate(dblatex pdf ${ARGN})
 
 	# Passes through to LaTeX geometry.
 	# Likely choices: letterpaper, a4paper
