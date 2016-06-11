@@ -27,6 +27,8 @@ set(ADOC_TMPSRC ${MAN_TMPDIR}/ctwm.1.adoc)
 # Where the end products wind up
 set(MANPAGE ${CMAKE_BINARY_DIR}/ctwm.1)
 set(MANHTML ${CMAKE_BINARY_DIR}/ctwm.1.html)
+set(MANDBXML ${CMAKE_BINARY_DIR}/ctwm.1.xml)
+set(MANPDF   ${CMAKE_BINARY_DIR}/ctwm.1.pdf)
 
 # How we rewrite vars in the manual.  I decided not to use
 # configure_file() for this, as it opens up too many chances for
@@ -74,6 +76,19 @@ if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE asciidoctor)
 elseif(A2X AND ASCIIDOC_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE a2x)
+endif()
+
+# PDF output is not hooked into the build process by default, but is made
+# available by an extra target.
+set(MANUAL_BUILD_DBXML)
+if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_DBXML)
+	set(MANUAL_BUILD_DBXML asciidoctor)
+elseif(ASCIIDOC AND ASCIIDOC_CAN_DBXML)
+	set(MANUAL_BUILD_DBXML asciidoc)
+endif()
+set(MANUAL_BUILD_PDF)
+if(DBLATEX AND DBLATEX_CAN_PDF AND MANUAL_BUILD_DBXML)
+	set(MANUAL_BUILD_PDF dblatex)
 endif()
 
 
@@ -215,3 +230,52 @@ if(HAS_HTML)
 	add_custom_target(man-html ALL DEPENDS ${MANHTML})
 	set(INSTHTML ${MANHTML})
 endif(HAS_HTML)
+
+
+
+
+#
+# Building DocBook XML
+#
+set(HAS_DBXML 0)
+if(MANUAL_BUILD_DBXML)
+	# Got the tool to build it
+	#message(STATUS "Building DocBook XML with ${MANUAL_BUILD_DBXML}.")
+	set(HAS_DBXML 1)
+
+	if(${MANUAL_BUILD_DBXML} STREQUAL "asciidoctor")
+		# We don't need the hoops for a2x here, since asciidoctor lets us
+		# specify the output directly.
+		asciidoctor_mk_docbook(${MANDBXML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
+	elseif(${MANUAL_BUILD_DBXML} STREQUAL "asciidoc")
+		# a2x has to jump through some stupid hoops
+		asciidoc_mk_docbook(${MANDBXML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
+	else()
+		message(FATAL_ERROR "I don't know what to do with that DocBook "
+			"building type!")
+	endif()
+endif(MANUAL_BUILD_DBXML)
+
+
+
+
+#
+# And the PDF output
+#
+set(HAS_PDF 0)
+if(MANUAL_BUILD_PDF)
+	# Got the tool to build it
+	#message(STATUS "Building PDF with ${MANUAL_BUILD_PDF}.")
+	set(HAS_PDF 1)
+
+	if(${MANUAL_BUILD_PDF} STREQUAL "dblatex")
+		dblatex_mk_pdf(${MANPDF} ${MANDBXML})
+	else()
+		message(FATAL_ERROR "I don't know what to do with that PDF "
+			"building type!")
+	endif()
+endif(MANUAL_BUILD_PDF)
+
+if(HAS_PDF)
+	add_custom_target(man-pdf DEPENDS ${MANPDF})
+endif(HAS_PDF)
