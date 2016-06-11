@@ -274,7 +274,7 @@ function(asciidoctor_mk_docbook OUTFILE ADFILE)
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOCTOR} -b docbook45 -o ${OUTFILE} ${ADFILE}
+		COMMAND ${ASCIIDOCTOR} -b docbook5 -o ${OUTFILE} ${ADFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(asciidoctor_mk_docbook)
