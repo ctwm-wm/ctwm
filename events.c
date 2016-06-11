@@ -1765,7 +1765,7 @@ void HandlePropertyNotify(void)
 					 * The new icon window isn't our window, so note that fact
 					 * so that we don't treat it as ours.
 					 */
-					icon->w_not_ours = TRUE;
+					icon->w_not_ours = true;
 
 					/*
 					 * Now make the new window the icon window for this window,

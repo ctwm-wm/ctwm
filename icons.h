@@ -86,8 +86,8 @@ struct Icon {
 	ColorPair   iconc;
 	int         border_width;
 	struct IconRegion   *ir;
-	short       has_title, title_shrunk;
-	short       w_not_ours;     /* Icon.w comes from IconWindowHint */
+	bool        has_title, title_shrunk;
+	bool        w_not_ours;     /* Icon.w comes from IconWindowHint */
 };
 
 struct IconRegion {

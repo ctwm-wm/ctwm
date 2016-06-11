@@ -1767,7 +1767,7 @@ static void ReMapOne(TwmWindow *t, TwmWindow *leader)
 		XUnmapWindow(dpy, t->icon->w);
 		IconDown(t);
 		if(Scr->ShrinkIconTitles) {
-			t->icon->title_shrunk = True;
+			t->icon->title_shrunk = true;
 		}
 	}
 	if(t->iconmanagerlist) {

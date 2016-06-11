@@ -517,7 +517,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	icon->border        = Scr->IconBorderColor;
 	icon->iconc.fore    = Scr->IconC.fore;
 	icon->iconc.back    = Scr->IconC.back;
-	icon->title_shrunk  = False;
+	icon->title_shrunk  = false;
 
 	GetColorFromList(Scr->IconBorderColorL, tmp_win->full_name, &tmp_win->class,
 	                 &icon->border);
@@ -536,7 +536,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	icon->ir      = NULL;
 
 	tmp_win->forced = false;
-	icon->w_not_ours = FALSE;
+	icon->w_not_ours = false;
 
 	pattern = NULL;
 
@@ -643,7 +643,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->w_height = icon->height;
 		icon->x = 0;
 		icon->y = 0;
-		icon->has_title = False;
+		icon->has_title = false;
 	}
 	else {
 		XRectangle inc_rect;
@@ -669,7 +669,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->y = icon->height + Scr->IconFont.height + Scr->IconManagerShadowDepth;
 		icon->w_height = icon->height + Scr->IconFont.height +
 		                 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
-		icon->has_title = True;
+		icon->has_title = true;
 		if(icon->height) {
 			icon->border_width = 0;
 		}
@@ -687,11 +687,11 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		}
 		else {
 			image = None;
-			icon->w_not_ours = TRUE;
+			icon->w_not_ours = true;
 			icon->width  = icon->w_width;
 			icon->height = icon->w_height;
 			icon->image  = image;
-			icon->has_title = False;
+			icon->has_title = false;
 			event_mask = 0;
 		}
 	}
@@ -760,14 +760,14 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 				rect.y      = icon->height;
 				rect.width  = icon->width;
 				rect.height = icon->w_height - icon->height;
-				icon->title_shrunk = True;
+				icon->title_shrunk = true;
 			}
 			else {
 				rect.x      = 0;
 				rect.y      = icon->height;
 				rect.width  = icon->w_width;
 				rect.height = icon->w_height - icon->height;
-				icon->title_shrunk = False;
+				icon->title_shrunk = false;
 			}
 			XShapeCombineRectangles(dpy, icon->w, ShapeBounding,
 			                        0, 0, &rect, 1, ShapeUnion, 0);
@@ -907,7 +907,7 @@ void ShrinkIconTitle(TwmWindow *tmp_win)
 	rect.height = icon->w_height;
 	XShapeCombineRectangles(dpy, icon->w, ShapeBounding, 0, 0, &rect, 1,
 	                        ShapeIntersect, 0);
-	icon->title_shrunk = True;
+	icon->title_shrunk = true;
 	XClearArea(dpy, icon->w, 0, icon->height, icon->w_width,
 	           icon->w_height - icon->height, True);
 }
@@ -937,7 +937,7 @@ void ExpandIconTitle(TwmWindow *tmp_win)
 	rect.height = icon->w_height - icon->height;
 	XShapeCombineRectangles(dpy, icon->w, ShapeBounding, 0, 0, &rect, 1, ShapeUnion,
 	                        0);
-	icon->title_shrunk = False;
+	icon->title_shrunk = false;
 	XClearArea(dpy, icon->w, 0, icon->height, icon->w_width,
 	           icon->w_height - icon->height, True);
 }
