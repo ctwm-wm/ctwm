@@ -417,7 +417,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
 	if(Scr->IconifyByUnmapping) {
-		tmp_win->iconify_by_unmapping = iconm ? FALSE :
+		tmp_win->iconify_by_unmapping = iconm ? false :
 		                                !LookInList(Scr->DontIconify, tmp_win->full_name,
 		                                                &tmp_win->class);
 	}
