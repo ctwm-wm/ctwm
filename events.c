@@ -532,7 +532,7 @@ DispatchEvent(void)
 
 void HandleEvents(void)
 {
-	while(TRUE) {
+	while(1) {
 		if(enter_flag && !QLength(dpy)) {
 			if(enter_win && enter_win != raise_win) {
 				AutoRaiseWindow(enter_win);   /* sets enter_flag T */

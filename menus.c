@@ -545,7 +545,7 @@ void UpdateMenu(void)
 
 	fromMenu = true;
 
-	while(TRUE) {
+	while(1) {
 		/* block until there is an event */
 		if(!menuFromFrameOrWindowOrTitlebar) {
 			XMaskEvent(dpy,
@@ -1076,7 +1076,7 @@ void MakeMenu(MenuRoot *mr)
 	}
 
 	start = mr->first;
-	while(TRUE) {
+	while(1) {
 		for(; start != NULL; start = start->next) {
 			if(start->user_colors) {
 				break;
@@ -1652,7 +1652,7 @@ void resizeFromCenter(Window w, TwmWindow *tmp_win)
 	lasty = -10000;
 
 	MenuStartResize(tmp_win, origDragX, origDragY, DragWidth, DragHeight);
-	while(TRUE) {
+	while(1) {
 		XMaskEvent(dpy,
 		           ButtonPressMask | PointerMotionMask | ExposureMask, &Event);
 

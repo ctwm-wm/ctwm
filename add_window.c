@@ -888,7 +888,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 				/* better wait until all the mouse buttons have been
 				 * released.
 				 */
-				while(TRUE) {
+				while(1) {
 					XUngrabServer(dpy);
 					XSync(dpy, 0);
 					XGrabServer(dpy);
@@ -984,7 +984,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 				tmp_win->frame_width  = AddingW;
 				tmp_win->frame_height = AddingH;
 				/*SetFocus ((TwmWindow *) NULL, CurrentTime);*/
-				while(TRUE) {
+				while(1) {
 					if(Scr->OpenWindowTimeout) {
 						fd = ConnectionNumber(dpy);
 						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
@@ -1097,7 +1097,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 						lastx = -10000;
 						lasty = -10000;
-						while(TRUE) {
+						while(1) {
 							XMaskEvent(dpy,
 							           ButtonReleaseMask | ButtonMotionMask, &event);
 

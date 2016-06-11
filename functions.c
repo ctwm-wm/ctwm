@@ -1024,7 +1024,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 
 			DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
-			while(TRUE) {
+			while(1) {
 				long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
 				                    ButtonPress : ButtonRelease;
 				long movementMask = menuFromFrameOrWindowOrTitlebar ?
@@ -1475,7 +1475,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XFlush(dpy);
 			}
 
-			while(TRUE) {
+			while(1) {
 				long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
 				                    ButtonPress : ButtonRelease;
 				long movementMask = menuFromFrameOrWindowOrTitlebar ?
