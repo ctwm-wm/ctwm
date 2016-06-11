@@ -77,7 +77,7 @@ void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp,
                      VirtualScreen *vs);
 TwmWindow *GetTwmWindow(Window w);
-int MappedNotOverride(Window w);
+bool MappedNotOverride(Window w);
 void GrabButtons(TwmWindow *tmp_win);
 void GrabKeys(TwmWindow *tmp_win);
 void GetWindowSizeHints(TwmWindow *tmp_win);

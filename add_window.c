@@ -1557,8 +1557,8 @@ TwmWindow *GetTwmWindow(Window w)
  *              put a twm frame on the window
  *
  *  Returned Value:
- *      TRUE    - go ahead and frame the window
- *      FALSE   - don't frame the window
+ *      true    - go ahead and frame the window
+ *      false   - don't frame the window
  *
  *  Inputs:
  *      w       - the window to check
@@ -1566,7 +1566,8 @@ TwmWindow *GetTwmWindow(Window w)
  ***********************************************************************
  */
 
-int MappedNotOverride(Window w)
+bool
+MappedNotOverride(Window w)
 {
 	XWindowAttributes wa;
 
