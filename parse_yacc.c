@@ -33,7 +33,7 @@ void yyerror(char *s)
 {
 	twmrc_error_prefix();
 	fprintf(stderr, "error in input file:  %s\n", s ? s : "");
-	ParseError = 1;
+	ParseError = true;
 }
 
 void InitGramVariables(void)

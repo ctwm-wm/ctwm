@@ -1913,7 +1913,7 @@ proc_ewmh_ignore(void)
 #ifndef EWMH
 	twmrc_error_prefix();
 	fprintf(stderr, "EWMH not enabled, EWMHIgnore { } ignored.\n");
-	ParseError = 1;
+	ParseError = true;
 	return;
 #endif
 	/* else nada */
@@ -1941,7 +1941,7 @@ add_ewmh_ignore(char *s)
 
 	twmrc_error_prefix();
 	fprintf(stderr, "Unexpected EWMHIgnore value '%s'\n", s);
-	ParseError = 1;
+	ParseError = true;
 	return;
 #endif /* EWMH */
 }
@@ -1970,6 +1970,6 @@ add_mwm_ignore(char *s)
 
 	twmrc_error_prefix();
 	fprintf(stderr, "Unexpected MWMIgnore value '%s'\n", s);
-	ParseError = 1;
+	ParseError = true;
 	return;
 }

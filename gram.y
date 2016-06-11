@@ -469,7 +469,7 @@ noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
 					    fprintf (stderr,
 					"unknown singleton keyword %d\n",
 						     $1);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -479,7 +479,7 @@ sarg		: SKEYWORD string	{ if (!do_string_keyword ($1, $2)) {
 					    fprintf (stderr,
 				"unknown string keyword %d (value \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| SKEYWORD		{ if (!do_string_keyword ($1, DEFSTRING)) {
@@ -487,7 +487,7 @@ sarg		: SKEYWORD string	{ if (!do_string_keyword ($1, $2)) {
 					    fprintf (stderr,
 				"unknown string keyword %d (no value)\n",
 						     $1);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -498,7 +498,7 @@ sarg		: SSKEYWORD string string
 					    fprintf (stderr,
 				"unknown strings keyword %d (value \"%s\" and \"%s\")\n",
 						     $1, $2, $3);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| SSKEYWORD string	{ if (!do_string_string_keyword ($1, $2, NULL)) {
@@ -506,7 +506,7 @@ sarg		: SSKEYWORD string string
 					    fprintf (stderr,
 				"unknown string keyword %d (value \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| SSKEYWORD		{ if (!do_string_string_keyword ($1, NULL, NULL)) {
@@ -514,7 +514,7 @@ sarg		: SSKEYWORD string string
 					    fprintf (stderr,
 				"unknown string keyword %d (no value)\n",
 						     $1);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -524,7 +524,7 @@ narg		: NKEYWORD number	{ if (!do_number_keyword ($1, $2)) {
 					    fprintf (stderr,
 				"unknown numeric keyword %d (value %d)\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -553,7 +553,7 @@ key		: META			{ mods |= Mod1Mask; }
 					     fprintf (stderr,
 				"bad altkeymap number (%d), must be 1-5\n",
 						      $2);
-					     ParseError = 1;
+					     ParseError = true;
 					  } else {
 					     mods |= (Alt1Mask << ($2 - 1));
 					  }
@@ -563,7 +563,7 @@ key		: META			{ mods |= Mod1Mask; }
 					     fprintf (stderr,
 				"bad modifier number (%d), must be 1-5\n",
 						      $2);
-					     ParseError = 1;
+					     ParseError = true;
 					  } else {
 					     mods |= (Mod1Mask << ($2 - 1));
 					  }
@@ -702,7 +702,7 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    fprintf (stderr,
 			"unhandled list color keyword %d (string \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| CLKEYWORD string	{ curplist = do_colorlist_keyword($1,color,
@@ -712,7 +712,7 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    fprintf (stderr,
 			"unhandled color list keyword %d (string \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		  win_color_list
@@ -722,7 +722,7 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    fprintf (stderr,
 			"unhandled color keyword %d (string \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;

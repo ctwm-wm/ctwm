@@ -110,7 +110,7 @@ number				[0-9]+
 				      fprintf (stderr,
 				       "ignoring unknown keyword:  %s\n", 
 					       yytext);
-				      ParseError = 1;
+				      ParseError = true;
 				  } else 
 				    return token;
 				}
@@ -127,7 +127,7 @@ number				[0-9]+
 				  fprintf (stderr, 
 					   "ignoring character \"%s\"\n",
 					   yytext);
-				  ParseError = 1;
+				  ParseError = true;
 				}
 %%
 
