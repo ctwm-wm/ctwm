@@ -750,7 +750,7 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_NoShowOccupyAll:
-			Scr->workSpaceMgr.noshowoccupyall = TRUE;
+			Scr->workSpaceMgr.noshowoccupyall = true;
 			return 1;
 
 		case kw0_AutoOccupy:

@@ -59,7 +59,7 @@ struct WorkSpaceMgr {
 	long            count;
 	char            *geometry;
 	int             lines, columns;
-	int             noshowoccupyall;
+	bool            noshowoccupyall;
 	int             initialstate;
 	short           buttonStyle;
 	name_list       *windowBackgroundL;
