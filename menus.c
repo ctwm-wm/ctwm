@@ -525,7 +525,7 @@ void MakeWorkspacesMenu(void)
 		AddToMenu(Scr->Workspaces, wlist->name, *act, Scr->Windows, F_MENU, NULL, NULL);
 		act++;
 	}
-	Scr->Workspaces->pinned = False;
+	Scr->Workspaces->pinned = false;
 	MakeMenu(Scr->Workspaces);
 }
 
@@ -703,10 +703,10 @@ MenuRoot *NewMenuRoot(char *name)
 	tmp->items = 0;
 	tmp->width = 0;
 	tmp->mapped = NEVER_MAPPED;
-	tmp->pull = FALSE;
+	tmp->pull = false;
 	tmp->w = None;
 	tmp->shadow = None;
-	tmp->real_menu = FALSE;
+	tmp->real_menu = false;
 
 	if(Scr->MenuList == NULL) {
 		Scr->MenuList = tmp;
@@ -837,7 +837,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 	tmp->sub = NULL;
 	tmp->state = 0;
 	tmp->func = func;
-	tmp->separated = 0;
+	tmp->separated = false;
 
 	if(!Scr->HaveFonts) {
 		CreateFonts();
@@ -855,7 +855,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 		menu->width = width;
 	}
 
-	tmp->user_colors = FALSE;
+	tmp->user_colors = false;
 	if(Scr->Monochrome == COLOR && fore != NULL) {
 		int save;
 
@@ -867,11 +867,11 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 			GetShadeColors(&tmp->normal);
 		}
 		Scr->FirstTime = save;
-		tmp->user_colors = TRUE;
+		tmp->user_colors = true;
 	}
 	if(sub != NULL) {
 		tmp->sub = sub;
-		menu->pull = TRUE;
+		menu->pull = true;
 	}
 	tmp->item_num = menu->items++;
 
@@ -884,11 +884,11 @@ void MakeMenus(void)
 	MenuRoot *mr;
 
 	for(mr = Scr->MenuList; mr != NULL; mr = mr->next) {
-		if(mr->real_menu == FALSE) {
+		if(mr->real_menu == false) {
 			continue;
 		}
 
-		mr->pinned = False;
+		mr->pinned = false;
 		MakeMenu(mr);
 	}
 }
@@ -916,7 +916,7 @@ void MakeMenu(MenuRoot *mr)
 	if(mr->mapped == NEVER_MAPPED) {
 		int max_entry_height = 0;
 
-		if(mr->pull == TRUE) {
+		if(mr->pull == true) {
 			mr->width += 16 + 10;
 		}
 		width = mr->width + 10;
@@ -1369,7 +1369,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			                strncasecmp(WindowNames[i]->class.res_class, "mozilla",   7) &&
 			                strncasecmp(WindowNames[i]->class.res_class, "netscape",  8) &&
 			                strncasecmp(WindowNames[i]->class.res_class, "konqueror", 9)) {
-				menu->last->separated = 1;
+				menu->last->separated = true;
 				hasmoz = 0;
 			}
 #endif
@@ -1378,7 +1378,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		}
 		free(WindowNames);
 
-		menu->pinned = False;
+		menu->pinned = false;
 		MakeMenu(menu);
 	}
 
@@ -1439,7 +1439,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			oldact = tmpKey->action;
 			oldmod = tmpKey->mods;
 		}
-		menu->pinned = False;
+		menu->pinned = false;
 		MakeMenu(menu);
 	}
 	if(menu->w == None || menu->items == 0) {
@@ -1460,7 +1460,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	if(menu->pinned) {
 		ActiveMenu    = menu;
 		menu->mapped  = MAPPED;
-		menu->entered = TRUE;
+		menu->entered = true;
 		MenuOrigins [MenuDepth].x = menu->x;
 		MenuOrigins [MenuDepth].y = menu->y;
 		MenuDepth++;
@@ -1480,7 +1480,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 	ActiveMenu = menu;
 	menu->mapped = MAPPED;
-	menu->entered = FALSE;
+	menu->entered = false;
 
 	if(center) {
 		x -= (menu->width / 2);

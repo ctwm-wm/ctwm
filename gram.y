@@ -380,9 +380,9 @@ stmt		: error
 		| AUTO_LOWER		{ Scr->AutoLowerDefault = TRUE; }
 		| MENU string LP string COLON string RP	{
 					root = GetRoot($2, $4, $6); }
-		  menu			{ root->real_menu = TRUE;}
+		  menu			{ root->real_menu = true;}
 		| MENU string		{ root = GetRoot($2, NULL, NULL); }
-		  menu			{ root->real_menu = TRUE; }
+		  menu			{ root->real_menu = true; }
 		| FUNCTION string	{ root = GetRoot($2, NULL, NULL); }
 		  function
 		| ICONS			{ curplist = &Scr->IconNames; }
@@ -1018,7 +1018,7 @@ menu_entries	: /* Empty */
 
 menu_entry	: string action		{
 			if ($2 == F_SEPARATOR) {
-			    if (lastmenuitem) lastmenuitem->separated = 1;
+			    if (lastmenuitem) lastmenuitem->separated = true;
 			}
 			else {
 			    lastmenuitem = AddToMenu(root, $1, Action, pull, $2, NULL, NULL);
@@ -1028,7 +1028,7 @@ menu_entry	: string action		{
 		}
 		| string LP string COLON string RP action {
 			if ($7 == F_SEPARATOR) {
-			    if (lastmenuitem) lastmenuitem->separated = 1;
+			    if (lastmenuitem) lastmenuitem->separated = true;
 			}
 			else {
 			    lastmenuitem = AddToMenu(root, $1, Action, pull, $7, $3, $5);

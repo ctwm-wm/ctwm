@@ -280,7 +280,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				if(ActiveMenu->pmenu == NULL) {
 					menu  = malloc(sizeof(MenuRoot));
 					*menu = *ActiveMenu;
-					menu->pinned = True;
+					menu->pinned = true;
 					menu->mapped = NEVER_MAPPED;
 					menu->width -= 10;
 					if(menu->pull) {

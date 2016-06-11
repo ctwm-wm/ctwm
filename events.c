@@ -3982,7 +3982,7 @@ void HandleEnterNotify(void)
 		UpdateMenu();
 		return;
 	}
-	mr->entered = TRUE;
+	mr->entered = true;
 	if(RootFunction == 0) {
 		for(tmp = ActiveMenu; tmp; tmp = tmp->prev) {
 			if(tmp == mr) {

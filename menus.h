@@ -92,8 +92,8 @@ struct MenuItem {
 	short func;                 /* twm built in function */
 	short state;                /* video state, 0 = normal, 1 = reversed */
 	short strlen;               /* strlen(item) */
-	short user_colors;          /* colors were specified */
-	short separated;            /* separated from the next item */
+	bool  user_colors;          /* colors were specified */
+	bool  separated;            /* separated from the next item */
 };
 
 struct MenuRoot {
@@ -111,11 +111,11 @@ struct MenuRoot {
 	short height;               /* height of the menu */
 	short width;                /* width of the menu */
 	short items;                /* number of items in the menu */
-	short pull;                 /* is there a pull right entry ? */
-	short entered;              /* EnterNotify following pop up */
-	short real_menu;            /* this is a real menu */
+	bool  pull;                 /* is there a pull right entry ? */
+	bool  entered;              /* EnterNotify following pop up */
+	bool  real_menu;            /* this is a real menu */
 	short x, y;                 /* position (for pinned menus) */
-	short pinned;               /* is this a pinned menu*/
+	bool  pinned;               /* is this a pinned menu*/
 	struct MenuRoot *pmenu;     /* the associated pinned menu */
 };
 
