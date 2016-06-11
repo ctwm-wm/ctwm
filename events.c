@@ -4442,8 +4442,8 @@ void HandleUnknown(void)
  *      Transient - checks to see if the window is a transient
  *
  *  Returned Value:
- *      TRUE    - window is a transient
- *      FALSE   - window is not a transient
+ *      true    - window is a transient
+ *      false   - window is not a transient
  *
  *  Inputs:
  *      w       - the window to check

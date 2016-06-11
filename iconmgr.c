@@ -368,7 +368,7 @@ void MoveIconManager(int dir)
 			break;
 	}
 
-	/* If got_it is FALSE ast this point then we got a left, right,
+	/* If got_it is false ast this point then we got a left, right,
 	 * up, or down, command.  We will enter this loop until we find
 	 * a window to warp to.
 	 */
