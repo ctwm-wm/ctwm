@@ -1587,9 +1587,18 @@ void EwmhAddClientWindow(TwmWindow *new_win)
 	                !new_win->isiconmgr) {
 		Scr->ewmh_CLIENT_LIST_used++;
 		if(Scr->ewmh_CLIENT_LIST_used > Scr->ewmh_CLIENT_LIST_size) {
+			long *tp;
+			int tsz = Scr->ewmh_CLIENT_LIST_size;
+
 			Scr->ewmh_CLIENT_LIST_size *= 2;
-			Scr->ewmh_CLIENT_LIST = realloc(Scr->ewmh_CLIENT_LIST,
-			                                sizeof(long) * Scr->ewmh_CLIENT_LIST_size);
+			tp = realloc(Scr->ewmh_CLIENT_LIST,
+			             sizeof(long) * Scr->ewmh_CLIENT_LIST_size);
+			if(tp == NULL) {
+				Scr->ewmh_CLIENT_LIST_size = tsz;
+				fprintf(stderr, "Unable to allocate memory for EWMH client list.\n");
+				return;
+			}
+			Scr->ewmh_CLIENT_LIST = tp;
 		}
 		if(Scr->ewmh_CLIENT_LIST) {
 			Scr->ewmh_CLIENT_LIST[Scr->ewmh_CLIENT_LIST_used - 1] = new_win->w;
