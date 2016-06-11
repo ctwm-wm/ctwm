@@ -210,8 +210,8 @@ void *LookPatternInNameList(name_list *list_head, const char *name)
  *      GetColorFromList - look through a list for a window name, or class
  *
  *  Returned Value:
- *      TRUE if the name was found
- *      FALSE if the name was not found
+ *      true  if the name was found
+ *      false if the name was not found
  *
  *  Inputs:
  *      list    - a pointer to the head of a list
