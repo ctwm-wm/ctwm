@@ -7,7 +7,7 @@
 
 /* All the outside world sees */
 bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
-                     XEvent *eventp, int context, int pulldown);
+                     XEvent *eventp, int context, bool pulldown);
 
 /* Needed in events.c */
 extern bool ConstMove;

@@ -1305,7 +1305,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			xevent.xbutton.time = lastTimestamp;
 			menuFromFrameOrWindowOrTitlebar = true;
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
-			                &xevent, C_TITLE, False);
+			                &xevent, C_TITLE, false);
 			menuFromFrameOrWindowOrTitlebar = false;
 			/*
 			 * This should probably happen in HandleButtonRelease...

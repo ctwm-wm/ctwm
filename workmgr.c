@@ -710,7 +710,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		action = Scr->ChangeWorkspaceFunction.item ?
 		         Scr->ChangeWorkspaceFunction.item->action : NULL;
 		ExecuteFunction(Scr->ChangeWorkspaceFunction.func, action,
-		                (Window) 0, NULL, &event, C_ROOT, FALSE);
+		                (Window) 0, NULL, &event, C_ROOT, false);
 	}
 
 	/* If SaveWorkspaceFocus is on, try to restore the focus to the last

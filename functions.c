@@ -106,7 +106,7 @@ static int FindConstraint(TwmWindow *tmp_win, int direction);
 
 bool
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
-                XEvent *eventp, int context, int pulldown)
+                XEvent *eventp, int context, bool pulldown)
 {
 	static Time last_time = 0;
 	Window rootw;
@@ -595,7 +595,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			if(Scr->WindowFunction.func != 0) {
 				ExecuteFunction(Scr->WindowFunction.func,
 				                Scr->WindowFunction.item->action,
-				                w, tmp_win, eventp, C_FRAME, FALSE);
+				                w, tmp_win, eventp, C_FRAME, false);
 			}
 			else {
 				DeIconify(tmp_win);

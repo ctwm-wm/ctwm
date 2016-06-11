@@ -1836,7 +1836,7 @@ void DeIconify(TwmWindow *tmp_win)
 		action = Scr->DeIconifyFunction.item ?
 		         Scr->DeIconifyFunction.item->action : NULL;
 		ExecuteFunction(Scr->DeIconifyFunction.func, action,
-		                (Window) 0, tmp_win, &event, C_ROOT, FALSE);
+		                (Window) 0, tmp_win, &event, C_ROOT, false);
 	}
 	XSync(dpy, 0);
 }
@@ -2002,7 +2002,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 
 		action = Scr->IconifyFunction.item ? Scr->IconifyFunction.item->action : NULL;
 		ExecuteFunction(Scr->IconifyFunction.func, action,
-		                (Window) 0, tmp_win, &event, C_ROOT, FALSE);
+		                (Window) 0, tmp_win, &event, C_ROOT, false);
 	}
 	XSync(dpy, 0);
 }

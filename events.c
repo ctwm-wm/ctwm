@@ -1230,7 +1230,7 @@ void HandleKeyPress(void)
 						else {
 							ExecuteFunction(item->func, item->action,
 							                ButtonWindow ? ButtonWindow->frame : None,
-							                ButtonWindow, &Event, Context, FALSE);
+							                ButtonWindow, &Event, Context, false);
 							PopDownMenu();
 						}
 						return;
@@ -1263,7 +1263,7 @@ void HandleKeyPress(void)
 					}
 					ExecuteFunction(item->func, item->action,
 					                ButtonWindow ? ButtonWindow->frame : None,
-					                ButtonWindow, &Event, Context, FALSE);
+					                ButtonWindow, &Event, Context, false);
 			}
 		}
 		else {
@@ -1356,7 +1356,7 @@ void HandleKeyPress(void)
 					}
 #endif /* EWMH */
 					ExecuteFunction(key->func, key->action, Event.xany.window,
-					                Tmp_win, &Event, Context, FALSE);
+					                Tmp_win, &Event, Context, false);
 					if(!AlternateKeymap && !AlternateContext) {
 						XUngrabPointer(dpy, CurrentTime);
 					}
@@ -1373,7 +1373,7 @@ void HandleKeyPress(void)
 					if(!strncmp(key->win_name, Tmp_win->name, len)) {
 						matched = true;
 						ExecuteFunction(key->func, key->action, Tmp_win->frame,
-						                Tmp_win, &Event, C_FRAME, FALSE);
+						                Tmp_win, &Event, C_FRAME, false);
 						if(!AlternateKeymap && !AlternateContext) {
 							XUngrabPointer(dpy, CurrentTime);
 						}
@@ -1387,7 +1387,7 @@ void HandleKeyPress(void)
 						if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
 							matched = true;
 							ExecuteFunction(key->func, key->action, Tmp_win->frame,
-							                Tmp_win, &Event, C_FRAME, FALSE);
+							                Tmp_win, &Event, C_FRAME, false);
 							if(!AlternateKeymap && !AlternateContext) {
 								XUngrabPointer(dpy, CurrentTime);
 							}
@@ -1401,7 +1401,7 @@ void HandleKeyPress(void)
 						if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
 							matched = true;
 							ExecuteFunction(key->func, key->action, Tmp_win->frame,
-							                Tmp_win, &Event, C_FRAME, FALSE);
+							                Tmp_win, &Event, C_FRAME, false);
 							if(!AlternateKeymap && !AlternateContext) {
 								XUngrabPointer(dpy, CurrentTime);
 							}
@@ -2144,7 +2144,7 @@ void HandleClientMessage(void)
 				              &JunkX, &JunkY, &JunkMask);
 
 				ExecuteFunction(F_ICONIFY, NULL, Event.xany.window,
-				                Tmp_win, &button, FRAME, FALSE);
+				                Tmp_win, &button, FRAME, false);
 				XUngrabPointer(dpy, CurrentTime);
 			}
 		}
@@ -3073,7 +3073,7 @@ void HandleButtonRelease(void)
 			}
 			ExecuteFunction(func, Action,
 			                ButtonWindow ? ButtonWindow->frame : None,
-			                ButtonWindow, &Event, Context, TRUE);
+			                ButtonWindow, &Event, Context, true);
 			Context = C_NO_CONTEXT;
 			ButtonWindow = NULL;
 
@@ -3326,7 +3326,7 @@ void HandleButtonPress(void)
 							default :
 								ExecuteFunction(tbf->func, tbf->action,
 								                Event.xany.window, Tmp_win,
-								                &Event, C_TITLE, FALSE);
+								                &Event, C_TITLE, false);
 						}
 						return;
 					}
@@ -3528,7 +3528,7 @@ void HandleButtonPress(void)
 		/* make sure we are not trying to move an identify window */
 		if(Event.xany.window != Scr->InfoWindow.win)
 			ExecuteFunction(RootFunction, Action, Event.xany.window,
-			                Tmp_win, &Event, Context, FALSE);
+			                Tmp_win, &Event, Context, false);
 
 		RootFunction = 0;
 		return;
@@ -3576,7 +3576,7 @@ void HandleButtonPress(void)
 					}
 #endif /* EWMH */
 					ExecuteFunction(func,
-					                Action, Event.xany.window, Tmp_win, &Event, Context, FALSE);
+					                Action, Event.xany.window, Tmp_win, &Event, Context, false);
 				}
 		}
 	}
@@ -3597,7 +3597,7 @@ void HandleButtonPress(void)
 			Action = Scr->DefaultFunction.item ?
 			         Scr->DefaultFunction.item->action : NULL;
 			ExecuteFunction(Scr->DefaultFunction.func, Action,
-			                Event.xany.window, Tmp_win, &Event, Context, FALSE);
+			                Event.xany.window, Tmp_win, &Event, Context, false);
 		}
 	}
 }
