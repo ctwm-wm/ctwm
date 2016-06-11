@@ -540,7 +540,7 @@ void UpdateMenu(void)
 {
 	MenuItem *mi;
 	int i, x, y, x_root, y_root, entry;
-	int done;
+	bool done;
 	MenuItem *badItem = NULL;
 
 	fromMenu = true;
@@ -578,7 +578,7 @@ void UpdateMenu(void)
 			continue;
 		}
 
-		done = FALSE;
+		done = false;
 		XQueryPointer(dpy, ActiveMenu->w, &JunkRoot, &JunkChild,
 		              &x_root, &y_root, &x, &y, &JunkMask);
 
@@ -611,7 +611,7 @@ void UpdateMenu(void)
 		if(ActiveItem) {
 			/* is the active item the one we are on ? */
 			if(ActiveItem->item_num == entry && ActiveItem->state) {
-				done = TRUE;
+				done = true;
 			}
 
 			/* if we weren't on the active entry, let's turn the old
@@ -1799,14 +1799,14 @@ static void ReMapTransients(TwmWindow *tmp_win)
 void DeIconify(TwmWindow *tmp_win)
 {
 	TwmWindow *t = tmp_win;
-	int isicon = FALSE;
+	bool isicon = false;
 
 	/* de-iconify the main window */
 	if(Scr->WindowMask) {
 		XRaiseWindow(dpy, Scr->WindowMask);
 	}
 	if(tmp_win->isicon) {
-		isicon = TRUE;
+		isicon = true;
 		if(tmp_win->icon_on && tmp_win->icon && tmp_win->icon->w) {
 			Zoom(tmp_win->icon->w, tmp_win->frame);
 		}
@@ -2403,7 +2403,8 @@ void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp)
 void MoveMenu(XEvent *eventp)
 
 {
-	int    XW, YW, newX, newY, cont;
+	int    XW, YW, newX, newY;
+	bool   cont;
 	bool   newev;
 	unsigned long event_mask;
 	XEvent ev;
@@ -2424,7 +2425,7 @@ void MoveMenu(XEvent *eventp)
 
 	newX = ActiveMenu->x;
 	newY = ActiveMenu->y;
-	cont = TRUE;
+	cont = true;
 	event_mask = ButtonPressMask | ButtonMotionMask | ButtonReleaseMask |
 	             ExposureMask;
 	XMaskEvent(dpy, event_mask, &ev);
@@ -2433,7 +2434,7 @@ void MoveMenu(XEvent *eventp)
 		ev.xbutton.y_root -= Scr->rooty;
 		switch(ev.xany.type) {
 			case ButtonRelease :
-				cont = FALSE;
+				cont = false;
 			case MotionNotify :
 				if(!cont) {
 					newev = false;
@@ -2461,7 +2462,7 @@ void MoveMenu(XEvent *eventp)
 				XMaskEvent(dpy, event_mask, &ev);
 				break;
 			case ButtonPress :
-				cont = FALSE;
+				cont = false;
 				newX = ActiveMenu->x;
 				newY = ActiveMenu->y;
 				break;

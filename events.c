@@ -128,13 +128,13 @@ unsigned int DragBW;
 int CurrentDragX;
 int CurrentDragY;
 
-static int enter_flag;
-static int leave_flag;
-static int ColortableThrashing;
+static bool enter_flag;
+static bool leave_flag;
+static bool ColortableThrashing;
 static TwmWindow *enter_win, *raise_win, *leave_win, *lower_win;
 
 int ButtonPressed = -1;
-int Cancel = FALSE;
+bool Cancel = false;
 
 void HandleCreateNotify(void);
 void HandleShapeNotify(void);
@@ -163,18 +163,18 @@ void AutoRaiseWindow(TwmWindow *tmp)
 	}
 	XSync(dpy, 0);
 	enter_win = NULL;
-	enter_flag = TRUE;
+	enter_flag = true;
 	raise_win = tmp;
 	WMapRaise(tmp);
 }
 
 void SetRaiseWindow(TwmWindow *tmp)
 {
-	enter_flag = TRUE;
+	enter_flag = true;
 	enter_win = NULL;
 	raise_win = tmp;
 	leave_win = NULL;
-	leave_flag = FALSE;
+	leave_flag = false;
 	lower_win = NULL;
 	XSync(dpy, 0);
 }
@@ -204,10 +204,10 @@ void AutoLowerWindow(TwmWindow *tmp)
 	}
 	XSync(dpy, 0);
 	enter_win = NULL;
-	enter_flag = FALSE;
+	enter_flag = false;
 	raise_win = NULL;
 	leave_win = NULL;
-	leave_flag = TRUE;
+	leave_flag = true;
 	lower_win = tmp;
 	WMapLower(tmp);
 }
@@ -228,9 +228,9 @@ void InitEvents(void)
 
 	ResizeWindow = (Window) 0;
 	DragWindow = (Window) 0;
-	enter_flag = FALSE;
+	enter_flag = false;
 	enter_win = raise_win = NULL;
-	leave_flag = FALSE;
+	leave_flag = false;
 	leave_win = lower_win = NULL;
 
 	for(i = 0; i < MAX_X_EVENT; i++) {
@@ -538,7 +538,7 @@ void HandleEvents(void)
 				AutoRaiseWindow(enter_win);   /* sets enter_flag T */
 			}
 			else {
-				enter_flag = FALSE;
+				enter_flag = false;
 			}
 		}
 		if(leave_flag && !QLength(dpy)) {
@@ -546,7 +546,7 @@ void HandleEvents(void)
 				AutoLowerWindow(leave_win);  /* sets leave_flag T */
 			}
 			else {
-				leave_flag = FALSE;
+				leave_flag = false;
 			}
 		}
 		if(ColortableThrashing && !QLength(dpy) && Scr) {
@@ -700,7 +700,7 @@ void HandleColormapNotify(void)
 		cmap->state &= ~CM_INSTALLED;
 
 		if(!ColortableThrashing) {
-			ColortableThrashing = TRUE;
+			ColortableThrashing = true;
 			XSync(dpy, 0);
 		}
 
@@ -784,7 +784,7 @@ void HandleColormapNotify(void)
 				InstallColormaps(ColormapNotify, NULL);
 			}
 			else {
-				ColortableThrashing = FALSE; /* Gross Hack for HP WABI. CL. */
+				ColortableThrashing = false; /* Gross Hack for HP WABI. CL. */
 			}
 		}
 	}
@@ -1529,8 +1529,8 @@ void HandlePropertyNotify(void)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	Pixmap pm;
-	int icon_change;
-	int name_change;
+	bool icon_change;
+	bool name_change;
 	XRectangle inc_rect;
 	XRectangle logical_rect;
 	Icon *icon;
@@ -1588,7 +1588,7 @@ void HandlePropertyNotify(void)
 			}
 
 			name_change = strcmp((char *)Tmp_win->full_name, (char *)prop);
-			icon_change = FALSE;
+			icon_change = false;
 
 #ifdef CLAUDE
 			{
@@ -1661,7 +1661,7 @@ void HandlePropertyNotify(void)
 			 */
 			if(Tmp_win->icon_name == NoName) {
 				Tmp_win->icon_name = Tmp_win->name;
-				icon_change = TRUE;
+				icon_change = true;
 			}
 			if(name_change || icon_change) {
 				if(icon_change) {
@@ -2319,14 +2319,14 @@ static void remove_window_from_ring(TwmWindow *tmp)
 	TwmWindow *prev = tmp->ring.prev, *next = tmp->ring.next;
 
 	if(enter_win == tmp) {
-		enter_flag = FALSE;
+		enter_flag = false;
 		enter_win = NULL;
 	}
 	if(raise_win == Tmp_win) {
 		raise_win = NULL;
 	}
 	if(leave_win == tmp) {
-		leave_flag = FALSE;
+		leave_flag = false;
 		leave_win = NULL;
 	}
 	if(lower_win == Tmp_win) {
@@ -3013,7 +3013,7 @@ void HandleButtonRelease(void)
 		}
 
 		if(Scr->NumAutoRaises) {
-			enter_flag = TRUE;
+			enter_flag = true;
 			enter_win = NULL;
 			raise_win = ((DragWindow == Tmp_win->frame && !Scr->NoRaiseMove)
 			             ? Tmp_win : NULL);
@@ -3023,7 +3023,7 @@ void HandleButtonRelease(void)
 
 #if 0
 		if(Scr->NumAutoLowers) {
-			leave_flag = TRUE;
+			leave_flag = true;
 			leave_win = NULL;
 			lower_win = ((DragWindow == Tmp_win->frame)
 			             ? Tmp_win : NULL);
@@ -3031,7 +3031,7 @@ void HandleButtonRelease(void)
 #endif
 
 		DragWindow = (Window) 0;
-		ConstMove = FALSE;
+		ConstMove = false;
 	}
 
 	if(ResizeWindow != (Window) 0) {
@@ -3143,7 +3143,7 @@ void HandleButtonRelease(void)
 			}
 			DownIconManager = NULL;
 		}
-		Cancel = FALSE;
+		Cancel = false;
 	}
 }
 
@@ -3246,7 +3246,7 @@ void HandleButtonPress(void)
 		/* we got another butt press in addition to one still held
 		 * down, we need to cancel the operation we were doing
 		 */
-		Cancel = TRUE;
+		Cancel = true;
 		CurrentDragX = origDragX;
 		CurrentDragY = origDragY;
 		if(!menuFromFrameOrWindowOrTitlebar) {
@@ -3951,7 +3951,7 @@ void HandleEnterNotify(void)
 			 */
 			if(Tmp_win->auto_raise) {
 				enter_win = Tmp_win;
-				if(enter_flag == FALSE) {
+				if(enter_flag == false) {
 					AutoRaiseWindow(Tmp_win);
 				}
 			}
@@ -4187,7 +4187,7 @@ void HandleLeaveNotify(void)
 		/* Autolower modification. */
 		if(Tmp_win->auto_lower) {
 			leave_win = Tmp_win;
-			if(leave_flag == FALSE) {
+			if(leave_flag == false) {
 				AutoLowerWindow(Tmp_win);
 			}
 		}
@@ -4569,7 +4569,7 @@ int InstallColormaps(int type, Colormaps *cmaps)
 	cwins = Scr->cmapInfo.cmaps->cwins;
 	scoreboard = Scr->cmapInfo.cmaps->scoreboard;
 
-	ColortableThrashing = FALSE; /* in case installation aborted */
+	ColortableThrashing = false; /* in case installation aborted */
 
 	state = CM_INSTALLED;
 

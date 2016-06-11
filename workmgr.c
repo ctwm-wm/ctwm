@@ -3025,7 +3025,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	TwmWindow           *win;
 	int                 occupation;
 	unsigned int        W0, H0, bw;
-	int                 cont;
+	bool                cont;
 	XEvent              ev;
 	Window              w = 0, sw, parent;
 	int                 X0, Y0, X1, Y1, XW, YW, XSW, YSW;
@@ -3171,7 +3171,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor, CurrentTime);
 
 	alreadyvivible = False;
-	cont = TRUE;
+	cont = true;
 	while(cont) {
 		MapSubwindow *msw;
 		XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
@@ -3182,7 +3182,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 				if(ev.xbutton.button != button) {
 					break;
 				}
-				cont = FALSE;
+				cont = false;
 				newX = ev.xbutton.x;
 				newY = ev.xbutton.y;
 

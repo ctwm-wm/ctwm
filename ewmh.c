@@ -1319,7 +1319,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			 * TODO: check if the twm_win is the same.
 			 * TODO: check how to make this actually work.
 			 */
-			Cancel = True;
+			Cancel = true;
 			break;
 	}
 }

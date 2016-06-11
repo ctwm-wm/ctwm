@@ -47,7 +47,7 @@ char Info[INFO_LINES][INFO_SIZE];
  *
  * Gets used in event handling for ButtonRelease.
  */
-int ConstMove = FALSE;
+bool ConstMove = false;
 int ConstMoveDir;
 int ConstMoveX;
 int ConstMoveY;
@@ -964,7 +964,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			                (eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
 				int width, height;
 
-				ConstMove = TRUE;
+				ConstMove = true;
 				ConstMoveDir = MOVE_NONE;
 				ConstMoveX = eventp->xbutton.x_root - DragX - JunkBW;
 				ConstMoveY = eventp->xbutton.y_root - DragY - JunkBW;

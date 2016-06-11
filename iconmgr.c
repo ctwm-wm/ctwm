@@ -322,7 +322,7 @@ void MoveIconManager(int dir)
 	WList *tmp = NULL;
 	int cur_row, cur_col, new_row, new_col;
 	int row_inc, col_inc;
-	int got_it;
+	bool got_it;
 
 	if(!Current) {
 		return;
@@ -334,21 +334,21 @@ void MoveIconManager(int dir)
 
 	row_inc = 0;
 	col_inc = 0;
-	got_it = FALSE;
+	got_it = false;
 
 	switch(dir) {
 		case F_FORWICONMGR:
 			if((tmp = Current->next) == NULL) {
 				tmp = ip->first;
 			}
-			got_it = TRUE;
+			got_it = true;
 			break;
 
 		case F_BACKICONMGR:
 			if((tmp = Current->prev) == NULL) {
 				tmp = ip->last;
 			}
-			got_it = TRUE;
+			got_it = true;
 			break;
 
 		case F_UPICONMGR:
@@ -396,7 +396,7 @@ void MoveIconManager(int dir)
 		 */
 		for(tmp = ip->first; tmp != NULL; tmp = tmp->next) {
 			if(tmp->row == new_row && tmp->col == new_col) {
-				got_it = TRUE;
+				got_it = true;
 				break;
 			}
 		}
@@ -453,7 +453,7 @@ void MoveMappedIconManager(int dir)
 	IconMgr *ip;
 	WList *tmp = NULL;
 	WList *orig = NULL;
-	int got_it;
+	bool got_it;
 
 	if(!Current) {
 		Current = Active;
@@ -464,7 +464,7 @@ void MoveMappedIconManager(int dir)
 
 	ip = Current->iconmgr;
 
-	got_it = 0;
+	got_it = false;
 	tmp = Current;
 	orig = Current;
 
@@ -483,7 +483,7 @@ void MoveMappedIconManager(int dir)
 				break;
 		}
 		if(tmp->twm->mapped) {
-			got_it = 1;
+			got_it = true;
 			break;
 		}
 		if(tmp == orig) {
@@ -535,7 +535,7 @@ void MoveMappedIconManager(int dir)
 void JumpIconManager(int dir)
 {
 	IconMgr *ip, *tmp_ip = NULL;
-	int got_it = FALSE;
+	bool got_it = false;
 	ScreenInfo *sp;
 	int screen;
 
@@ -547,7 +547,7 @@ void JumpIconManager(int dir)
 #define ITER(i) (dir == F_NEXTICONMGR ? (i)->next : (i)->prev)
 #define IPOFSP(sp) (dir == F_NEXTICONMGR ? sp->iconmgr : sp->iconmgr->lasti)
 #define TEST(ip) if ((ip)->count != 0 && (ip)->twm_win->mapped) \
-                 { got_it = TRUE; break; }
+                 { got_it = true; break; }
 
 	ip = Current->iconmgr;
 	for(tmp_ip = ITER(ip); tmp_ip; tmp_ip = ITER(tmp_ip)) {
@@ -813,14 +813,14 @@ WList *AddIconManager(TwmWindow *tmp_win)
 void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win)
 {
 	WList *tmp1;
-	int added;
+	bool added;
 
-	added = FALSE;
+	added = false;
 	if(ip->first == NULL) {
 		ip->first = tmp;
 		tmp->prev = NULL;
 		ip->last = tmp;
-		added = TRUE;
+		added = true;
 	}
 	else if(Scr->SortIconMgr) {
 		for(tmp1 = ip->first; tmp1 != NULL; tmp1 = tmp1->next) {
@@ -841,7 +841,7 @@ void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win)
 				else {
 					tmp->prev->next = tmp;
 				}
-				added = TRUE;
+				added = true;
 				break;
 			}
 		}
@@ -1000,12 +1000,12 @@ void SortIconManager(IconMgr *ip)
 		ip = Active->iconmgr;
 	}
 
-	done = FALSE;
+	done = false;
 	do {
 		for(tmp1 = ip->first; tmp1 != NULL; tmp1 = tmp1->next) {
 			int compresult;
 			if((tmp2 = tmp1->next) == NULL) {
-				done = TRUE;
+				done = true;
 				break;
 			}
 			if(Scr->CaseSensitive) {
@@ -1021,8 +1021,7 @@ void SortIconManager(IconMgr *ip)
 				break;
 			}
 		}
-	}
-	while(!done);
+	} while(!done);
 	PackIconManager(ip);
 }
 

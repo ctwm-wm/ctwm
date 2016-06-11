@@ -130,7 +130,7 @@ extern int Context;
 extern FILE *tracefile;
 
 extern int ButtonPressed;
-extern int Cancel;
+extern bool Cancel;
 
 extern XEvent Event;
 

@@ -67,7 +67,7 @@
 #include "iconmgr.h"
 
 extern char NoName[];
-extern int  resizeWhenAdd;
+extern bool resizeWhenAdd;
 
 void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 #define ADD_WINDOW_NORMAL               0

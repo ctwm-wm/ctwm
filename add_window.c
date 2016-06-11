@@ -120,7 +120,7 @@ static WindowEntry      *prevWindowEntry(WindowEntry   *we,
 static void             mergeWindowEntries(WindowEntry *old, WindowEntry *we);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
-int  resizeWhenAdd;
+bool resizeWhenAdd;
 
 /************************************************************************
  *
@@ -193,7 +193,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	int width, height;                  /* tmp variable */
-	int ask_user;               /* don't know where to put the window */
+	bool ask_user;               /* don't know where to put the window */
 	int gravx, gravy;                   /* gravity signs for positioning */
 	int namelen;
 	int bw2;
@@ -636,13 +636,13 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	 *     o  a PPosition was requested and UsePPosition is ON or
 	 *        NON_ZERO if the window is at other than (0,0)
 	 */
-	ask_user = TRUE;
+	ask_user = true;
 	if(tmp_win->istransient ||
 	                (tmp_win->hints.flags & USPosition) ||
 	                ((tmp_win->hints.flags & PPosition) && Scr->UsePPosition &&
 	                 (Scr->UsePPosition == PPOS_ON ||
 	                  tmp_win->attr.x != 0 || tmp_win->attr.y != 0))) {
-		ask_user = FALSE;
+		ask_user = false;
 	}
 
 	/*===============[ Matthew McNeill 1997 ]==========================*
@@ -672,7 +672,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
 	winbox = findWindowBox(tmp_win);
 	if(PlaceWindowInRegion(tmp_win, &(tmp_win->attr.x), &(tmp_win->attr.y))) {
-		ask_user = False;
+		ask_user = false;
 	}
 	if(LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class)) {
 		char *geom;
@@ -688,7 +688,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		if(mask_ & YNegative) {
 			tmp_win->attr.y += Scr->rooth - tmp_win->attr.height;
 		}
-		ask_user = False;
+		ask_user = false;
 	}
 
 	vs = tmp_win->parent_vs;
@@ -1129,9 +1129,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 							              &JunkX, &JunkY, &AddingX, &AddingY, &JunkMask);
 
 							if(lastx != AddingX || lasty != AddingY) {
-								resizeWhenAdd = TRUE;
+								resizeWhenAdd = true;
 								DoResize(AddingX, AddingY, tmp_win);
-								resizeWhenAdd = FALSE;
+								resizeWhenAdd = false;
 
 								lastx = AddingX;
 								lasty = AddingY;

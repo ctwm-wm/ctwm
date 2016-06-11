@@ -10,7 +10,7 @@ bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                      XEvent *eventp, int context, int pulldown);
 
 /* Needed in events.c */
-extern int ConstMove;
+extern bool ConstMove;
 extern int ConstMoveDir;
 extern int ConstMoveX;
 extern int ConstMoveY;
