@@ -119,7 +119,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 	RootFunction = 0;
 	if(Cancel) {
-		return true;        /* XXX should this be FALSE? */
+		return true;        /* XXX should this be false? */
 	}
 
 	switch(func) {
@@ -1103,7 +1103,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					if(!Scr->OpaqueMove) {
 						UninstallRootColormap();
 					}
-					return true;    /* XXX should this be FALSE? */
+					return true;    /* XXX should this be false? */
 				}
 				if(Event.type == releaseEvent) {
 					MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
@@ -1166,7 +1166,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					}
 					else if(t->icon && DragWindow == t->icon->w) {
 						if(!moving_icon) {
-							fprintf(stderr, "moving_icon is FALSE incorrectly!\n");
+							fprintf(stderr, "moving_icon is false incorrectly!\n");
 						}
 						OtpRaise(t, IconWin);
 					}

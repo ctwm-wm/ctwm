@@ -1444,7 +1444,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	                tmp_win->title_height + tmp_win->frame_bw3D);
 	/*
 	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
-	 * Set the map state to FALSE to prevent a transition back to
+	 * Set the map state to false to prevent a transition back to
 	 * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
 	 * again in HandleMapNotify.
 	 */

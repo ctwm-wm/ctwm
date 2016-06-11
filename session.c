@@ -541,7 +541,7 @@ int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
 int ReadWinConfigEntry(FILE *configFile, unsigned short version,
                        TWMWinConfigEntry **pentry)
 /* this function reads the next window configuration entry from the given file
- * else it returns FALSE if none exists or there is a problem
+ * else it returns 0 if none exists or there is a problem
  */
 {
 	TWMWinConfigEntry *entry;
