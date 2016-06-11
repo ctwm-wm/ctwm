@@ -79,11 +79,11 @@ void *LookInNameList(name_list *list_head, const char *name);
 void *LookPatternInList(name_list *list_head, const char *name,
                         XClassHint *class);
 void *LookPatternInNameList(name_list *list_head, const char *name);
-int  GetColorFromList(name_list *list_head, char *name,
+bool GetColorFromList(name_list *list_head, char *name,
                       XClassHint *class, Pixel *ptr);
 void FreeList(name_list **list);
 
-int match(const char *pattern, const char *string);
+bool match(const char *pattern, const char *string);
 
 #endif /* _CTWM_LIST_H */
 
