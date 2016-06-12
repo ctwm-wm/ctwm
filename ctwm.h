@@ -104,11 +104,6 @@
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
 
-#ifndef TRUE
-#define TRUE    1
-#define FALSE   0
-#endif
-
 #define MAX_BUTTONS     11      /* max mouse buttons supported */
 
 /* contexts for button presses */
