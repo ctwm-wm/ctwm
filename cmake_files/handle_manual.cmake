@@ -76,6 +76,8 @@ if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE asciidoctor)
 elseif(A2X AND ASCIIDOC_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE a2x)
+elseif(XMLTO AND XMLTO_CAN_STUFF)
+	set(MANUAL_BUILD_MANPAGE xmlto)
 endif()
 
 # PDF output is not hooked into the build process by default, but is made
@@ -139,6 +141,9 @@ if(MANUAL_BUILD_MANPAGE)
 	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "a2x")
 		# a2x has to jump through some stupid hoops
 		a2x_mk_manpage(${MANPAGE} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
+	elseif(${MANUAL_BUILD_MANPAGE} STREQUAL "xmlto")
+		# xmlto does its own hoops too
+		xmlto_mk_manpage(${MANPAGE} ${MANDBXML})
 	else()
 		message(FATAL_ERROR "I don't know what to do with that manpage "
 			"building type!")
