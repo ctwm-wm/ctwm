@@ -252,10 +252,10 @@ if(MANUAL_BUILD_DBXML)
 	if(${MANUAL_BUILD_DBXML} STREQUAL "asciidoctor")
 		# We don't need the hoops for a2x here, since asciidoctor lets us
 		# specify the output directly.
-		asciidoctor_mk_docbook(${MANDBXML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
+		asciidoctor_mk_docbook(${MANDBXML} ${ADOC_TMPSRC} manpage DEPENDS mk_adoc_tmpsrc)
 	elseif(${MANUAL_BUILD_DBXML} STREQUAL "asciidoc")
 		# a2x has to jump through some stupid hoops
-		asciidoc_mk_docbook(${MANDBXML} ${ADOC_TMPSRC} DEPENDS mk_adoc_tmpsrc)
+		asciidoc_mk_docbook(${MANDBXML} ${ADOC_TMPSRC} manpage DEPENDS mk_adoc_tmpsrc)
 	else()
 		message(FATAL_ERROR "I don't know what to do with that DocBook "
 			"building type!")

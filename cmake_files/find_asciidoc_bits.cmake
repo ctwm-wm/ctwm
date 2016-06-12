@@ -334,7 +334,7 @@ endfunction(asciidoc_mk_html)
 
 
 # Building DocBook XML
-function(asciidoctor_mk_docbook OUTFILE ADFILE)
+function(asciidoctor_mk_docbook OUTFILE ADFILE DTYPE)
 	# Guard
 	if(NOT ASCIIDOCTOR_CAN_DBXML)
 		message(FATAL_ERROR "asciidoctor can't do DocBook")
@@ -344,12 +344,12 @@ function(asciidoctor_mk_docbook OUTFILE ADFILE)
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOCTOR} -b docbook5 -o ${OUTFILE} ${ADFILE}
-		COMMENT ${_ARGS_COMMENT}
+		COMMAND ${ASCIIDOCTOR} -b docbook5 -d ${DTYPE} -o ${OUTFILE} ${ADFILE}
+		COMMENT "${_ARGS_COMMENT} (doctype=${DTYPE})"
 	)
 endfunction(asciidoctor_mk_docbook)
 
-function(asciidoc_mk_docbook OUTFILE ADFILE)
+function(asciidoc_mk_docbook OUTFILE ADFILE DTYPE)
 	# Guard
 	if(NOT ASCIIDOC_CAN_DBXML)
 		message(FATAL_ERROR "asciidoc can't do DocBook")
@@ -359,8 +359,8 @@ function(asciidoc_mk_docbook OUTFILE ADFILE)
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOC} -b docbook45 -o ${OUTFILE} ${ADFILE}
-		COMMENT ${_ARGS_COMMENT}
+		COMMAND ${ASCIIDOC} -b docbook45 -o -d ${DTYPE} ${OUTFILE} ${ADFILE}
+		COMMENT "${_ARGS_COMMENT} (doctype=${DTYPE})"
 	)
 endfunction(asciidoc_mk_docbook)
 
