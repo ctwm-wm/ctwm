@@ -48,19 +48,19 @@ bool CtwmIsRunning(Display *display, int scrnum)
 
 	_XA_WM_WORKSPACESLIST = XInternAtom(display, "WM_WORKSPACESLIST", True);
 	if(_XA_WM_WORKSPACESLIST == None) {
-		return (False);
+		return false;
 	}
 	if(XGetWindowProperty(display, RootWindow(display, scrnum),
 	                      _XA_WM_WORKSPACESLIST, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return (False);
+		return false;
 	}
 	if(len == 0) {
-		return (False);
+		return false;
 	}
 	XFree((char *)prop);
-	return (True);
+	return true;
 }
 
 char **CtwmListWorkspaces(Display *display, int scrnum)
