@@ -8,6 +8,7 @@ find_program(ASCIIDOCTOR asciidoctor)
 find_program(ASCIIDOC asciidoc)
 find_program(A2X a2x)
 find_program(DBLATEX dblatex)
+find_program(XMLTO xmlto)
 
 
 # If we have asciidoctor, we need to figure out the version, as manpage
@@ -123,6 +124,43 @@ if(DBLATEX)
 endif(DBLATEX)
 
 
+# xmlto is another frontend for DocBook XML -> stuff.  It can indirect
+# through dblatex (like we just do manually above) or through fop for PDF
+# output, but also knows how to invoke xsltproc to generate manpage
+# output, which gives us another route from adoc -> XML -> manpage.  And
+# potentially other formats, if we start caring.
+if(XMLTO)
+	# Don't really care about the version, so save the extra checks
+	if(0)
+		execute_process(
+			COMMAND ${XMLTO} --version
+			RESULT_VARIABLE _xmlto_result
+			OUTPUT_VARIABLE _xmlto_verout
+			ERROR_QUIET
+		)
+		if(NOT ${_xmlto_result} EQUAL "0")
+			# Err...
+			message(WARNING "Unexpected result trying xmlto --version.")
+			set(_xmlto_verout "xmlto 0.0.0 FAKE")
+		endif()
+		unset(_xmlto_result)
+
+		# Break out the version.
+		set(_xmlto_veregex "xmlto version ([0-9]+\\.[0-9]+\\.[0-9]+).*")
+		string(REGEX REPLACE ${_xmlto_veregex} "\\1"
+			XMLTO_VERSION ${_xmlto_verout})
+		unset(_xmlto_verout)
+		unset(_xmlto_veregex)
+		message(STATUS "Found xmlto (${XMLTO}) version ${XMLTO_VERSION}")
+	else()
+		message(STATUS "Found xmlto (${XMLTO})")
+	endif()
+
+	# I guess it can do whatever...
+	set(XMLTO_CAN_STUFF 1)
+endif(XMLTO)
+
+
 
 
 #
@@ -224,6 +262,34 @@ function(a2x_mk_manpage OUTFILE ADFILE)
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(a2x_mk_manpage)
+
+
+# Build a manpage via xmlto
+function(xmlto_mk_manpage OUTFILE XMLFILE)
+	# Guard
+	if(NOT XMLTO)
+		message(FATAL_ERROR "xmlto can't do man")
+	endif()
+
+	_ad_mk_boilerplate(xmlto manpage ${ARGN})
+
+	# As with a2x, this had better already be named
+	# "someprog.somesection.xml" because we have so little control over
+	# the output location.
+	get_filename_component(inbasename ${XMLFILE} NAME)
+	string(REGEX REPLACE "(.*)\\.xml$" "\\1" outbasename ${inbasename})
+	if(NOT outbasename)
+		message(FATAL_ERROR "Can't figure output for ${inbasename}")
+	endif()
+
+	get_filename_component(basedir ${XMLFILE} DIRECTORY)
+	add_custom_command(OUTPUT ${OUTFILE}
+		DEPENDS ${XMLFILE} ${dependancies}
+		COMMAND cp ${ADFILE} ${a2x_intmp}
+		COMMAND ${xmlto} --skip-validation -o ${basedir} man ${XMLFILE}
+		COMMENT ${_ARGS_COMMENT}
+	)
+endfunction(xmlto_mk_manpage)
 
 
 
