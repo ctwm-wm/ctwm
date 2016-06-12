@@ -117,7 +117,7 @@ Pixmap Create3DIconManagerIcon(ColorPair cp);
 void Draw3DBorder(Window w,
                   int x, int y, int width, int height, int bw,
                   ColorPair cp,
-                  int state, int fill, int forcebw);
+                  int state, bool fill, bool forcebw);
 void PaintIcon(TwmWindow *tmp_win);
 void AdoptWindow(void);
 void RescueWindows(void);

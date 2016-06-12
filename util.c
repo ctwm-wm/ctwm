@@ -745,7 +745,7 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 		             tmp_win->title_width - Scr->TBInfo.titlex -
 		             Scr->TBInfo.rightoff - Scr->TitlePadding,
 		             Scr->TitleHeight, Scr->TitleShadowDepth,
-		             tmp_win->title, bs, False, False);
+		             tmp_win->title, bs, false, false);
 	}
 	tmp_win->hasfocusvisible = focus;
 }
@@ -895,9 +895,9 @@ Pixmap Create3DMenuIcon(unsigned int height,
 	col->next = colori;
 	colori = col;
 
-	Draw3DBorder(col->pix, 0, 0, w, h, 1, cp, off, True, False);
+	Draw3DBorder(col->pix, 0, 0, w, h, 1, cp, off, true, false);
 	for(i = 3; i + 5 < h; i += 5) {
-		Draw3DBorder(col->pix, 4, i, w - 8, 3, 1, Scr->MenuC, off, True, False);
+		Draw3DBorder(col->pix, 4, i, w - 8, 3, 1, Scr->MenuC, off, true, false);
 	}
 	return (colori->pix);
 }
@@ -922,7 +922,7 @@ Pixmap Create3DIconManagerIcon(ColorPair cp)
 	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
-	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, True, False);
+	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, true, false);
 	col->next = colori;
 	colori = col;
 
@@ -1011,8 +1011,9 @@ Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
     Gcv.background = fix_back;\
     XChangeGC(dpy, gc, GCForeground|GCBackground,&Gcv)
 
-void Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
-                  ColorPair cp, int state, int fill, int forcebw)
+void
+Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
+             ColorPair cp, int state, bool fill, bool forcebw)
 {
 	int           i;
 	XGCValues     gcv;
@@ -1154,7 +1155,7 @@ void PaintIcon(TwmWindow *tmp_win)
 		Draw3DBorder(icon->w, x, icon->height, width,
 		             Scr->IconFont.height +
 		             2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER),
-		             Scr->IconManagerShadowDepth, icon->iconc, off, False, False);
+		             Scr->IconManagerShadowDepth, icon->iconc, off, false, false);
 	}
 	while((len > 0) && (twidth > mwidth)) {
 		len--;

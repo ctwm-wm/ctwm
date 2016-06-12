@@ -658,7 +658,7 @@ static void DisplaySize(TwmWindow *tmp_win, int width, int height)
 	Draw3DBorder(Scr->SizeWindow, 0, 0,
 	             Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
 	             Scr->SizeFont.height + SIZE_VINDENT * 2,
-	             2, Scr->DefaultC, off, False, False);
+	             2, Scr->DefaultC, off, false, false);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,

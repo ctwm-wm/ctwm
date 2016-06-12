@@ -326,7 +326,7 @@ static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure)
 		if(mi->state) {
 			Draw3DBorder(mr->w, Scr->MenuShadowDepth, y_offset,
 			             mr->width - 2 * Scr->MenuShadowDepth, Scr->EntryHeight, 1,
-			             mi->highlight, off, True, False);
+			             mi->highlight, off, true, false);
 			FB(mi->highlight.fore, mi->highlight.back);
 			XmbDrawImageString(dpy, mr->w, Scr->MenuFont.font_set, gc,
 			                   mi->x + Scr->MenuShadowDepth, text_y, mi->item, mi->strlen);
@@ -375,7 +375,7 @@ static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure)
 	else {
 		Draw3DBorder(mr->w, Scr->MenuShadowDepth, y_offset,
 		             mr->width - 2 * Scr->MenuShadowDepth, Scr->EntryHeight, 1,
-		             mi->normal, off, True, False);
+		             mi->normal, off, true, false);
 		FB(mi->normal.fore, mi->normal.back);
 		XmbDrawImageString(dpy, mr->w, Scr->MenuFont.font_set, Scr->NormalGC,
 		                   mi->x + 2, text_y, mi->item, mi->strlen);
@@ -474,7 +474,7 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
 
 	if(Scr->use3Dmenus) {
 		Draw3DBorder(mr->w, 0, 0, mr->width, mr->height,
-		             Scr->MenuShadowDepth, Scr->MenuC, off, False, False);
+		             Scr->MenuShadowDepth, Scr->MenuC, off, false, false);
 	}
 	for(mi = mr->first; mi != NULL; mi = mi->next) {
 		int y_offset = mi->item_num * Scr->EntryHeight;
@@ -2522,7 +2522,7 @@ void DisplayPosition(TwmWindow *tmp_win, int x, int y)
 	Draw3DBorder(Scr->SizeWindow, 0, 0,
 	             Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
 	             Scr->SizeFont.height + SIZE_VINDENT * 2,
-	             2, Scr->DefaultC, off, False, False);
+	             2, Scr->DefaultC, off, false, false);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,

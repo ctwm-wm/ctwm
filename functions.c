@@ -2586,7 +2586,7 @@ draw_info_window(void)
 
 	Draw3DBorder(Scr->InfoWindow.win, 0, 0,
 	             Scr->InfoWindow.width, Scr->InfoWindow.height,
-	             2, Scr->DefaultC, off, True, False);
+	             2, Scr->DefaultC, off, true, false);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 

@@ -2121,7 +2121,7 @@ static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 	width  = vs->wsw->width;
 	height = vs->wsw->height;
 	Draw3DBorder(vs->wsw->w, 0, 0, width, height, 2, Scr->workSpaceMgr.cp, off,
-	             True, False);
+	             true, false);
 }
 
 static ColorPair occupyButtoncp;
@@ -2325,7 +2325,7 @@ void PaintOccupyWindow(void)
 	width  = occwin->width;
 	height = occwin->height;
 
-	Draw3DBorder(occwin->w, 0, 0, width, height, 2, occwin->cp, off, True, False);
+	Draw3DBorder(occwin->w, 0, 0, width, height, 2, occwin->cp, off, true, false);
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window bw = occwin->obuttonw [ws->number];
@@ -2388,7 +2388,7 @@ static void PaintButton(int which,
 
 	if(Scr->Monochrome == COLOR) {
 		Draw3DBorder(w, 0, 0, bwidth, bheight, Scr->WMgrButtonShadowDepth,
-		             cp, state, True, False);
+		             cp, state, true, false);
 
 		switch(Scr->workSpaceMgr.buttonStyle) {
 			case STYLE_NORMAL :
@@ -2400,7 +2400,7 @@ static void PaintButton(int which,
 				             Scr->WMgrButtonShadowDepth - 1,
 				             bwidth  - 2 * Scr->WMgrButtonShadowDepth + 2,
 				             bheight - 2 * Scr->WMgrButtonShadowDepth + 2,
-				             1, cp, (state == on) ? off : on, True, False);
+				             1, cp, (state == on) ? off : on, true, false);
 				break;
 
 			case STYLE_STYLE2 :
@@ -2409,7 +2409,7 @@ static void PaintButton(int which,
 				             Scr->WMgrButtonShadowDepth / 2,
 				             bwidth  - Scr->WMgrButtonShadowDepth,
 				             bheight - Scr->WMgrButtonShadowDepth,
-				             1, cp, (state == on) ? off : on, True, False);
+				             1, cp, (state == on) ? off : on, true, false);
 				break;
 
 			case STYLE_STYLE3 :
@@ -2418,7 +2418,7 @@ static void PaintButton(int which,
 				             1,
 				             bwidth  - 2,
 				             bheight - 2,
-				             1, cp, (state == on) ? off : on, True, False);
+				             1, cp, (state == on) ? off : on, true, false);
 				break;
 		}
 		FB(cp.fore, cp.back);
@@ -2427,7 +2427,7 @@ static void PaintButton(int which,
 	}
 	else {
 		Draw3DBorder(w, 0, 0, bwidth, bheight, Scr->WMgrButtonShadowDepth,
-		             cp, state, True, False);
+		             cp, state, true, false);
 		if(state == on) {
 			FB(cp.fore, cp.back);
 			XmbDrawImageString(dpy, w, font.font_set, Scr->NormalGC, hspace, vspace,
@@ -3464,7 +3464,7 @@ static void WMapRedrawWindow(Window window, int width, int height,
 	y = ((height + strhei) / 2) - descent;
 
 	if(Scr->use3Dwmap) {
-		Draw3DBorder(window, 0, 0, width, height, 1, cp, off, True, False);
+		Draw3DBorder(window, 0, 0, width, height, 1, cp, off, true, false);
 		FB(cp.fore, cp.back);
 	}
 	else {

@@ -962,7 +962,7 @@ void DrawIconManagerBorder(WList *tmp, int fill)
 		Draw3DBorder(tmp->w, 0, 0, tmp->width, tmp->height,
 		             Scr->IconManagerShadowDepth, tmp->cp,
 		             (tmp->active && Scr->Highlight ? on : off),
-		             fill, False);
+		             fill, false);
 	}
 	else {
 		XSetForeground(dpy, Scr->NormalGC, tmp->cp.fore);
