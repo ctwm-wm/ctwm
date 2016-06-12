@@ -1830,9 +1830,8 @@ TwmColormap *CreateTwmColormap(Colormap c)
 	return (cmap);
 }
 
-ColormapWindow *CreateColormapWindow(Window w,
-                                     bool creating_parent,
-                                     bool property_window)
+ColormapWindow *
+CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 {
 	ColormapWindow *cwin;
 	TwmColormap *cmap;
@@ -2145,7 +2144,8 @@ void CreateWindowRegions(void)
 }
 
 
-bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
+bool
+PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 {
 	WindowRegion  *wr;
 	WindowEntry   *we;
