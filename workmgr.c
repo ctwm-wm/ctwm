@@ -1007,7 +1007,8 @@ void safecopy(char *dest, char *src, int size)
 	dest[size - 1] = '\0';
 }
 
-bool RedirectToCaptive(Window window)
+bool
+RedirectToCaptive(Window window)
 {
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
@@ -3762,7 +3763,8 @@ void WMapCreateDefaultBackGround(char *border,
 	ws->defImage = image;
 }
 
-bool AnimateRoot(void)
+bool
+AnimateRoot(void)
 {
 	VirtualScreen *vs;
 	ScreenInfo *scr;
@@ -4130,7 +4132,8 @@ void SetNoRedirect(Window window)
 	                PropModeReplace, (unsigned char *) "Yes", 4);
 }
 
-static bool DontRedirect(Window window)
+static bool
+DontRedirect(Window window)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;
@@ -4150,7 +4153,8 @@ static bool DontRedirect(Window window)
 	return true;
 }
 
-bool visible(TwmWindow *tmp_win)
+bool
+visible(TwmWindow *tmp_win)
 {
 	return (tmp_win->vs != NULL);
 }

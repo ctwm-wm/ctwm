@@ -164,8 +164,9 @@ void InitMenus(void)
  ***********************************************************************
  */
 
-bool AddFuncKey(char *name, int cont, int nmods, int func,
-                MenuRoot *menu, char *win_name, char *action)
+bool
+AddFuncKey(char *name, int cont, int nmods, int func,
+           MenuRoot *menu, char *win_name, char *action)
 {
 	FuncKey *tmp;
 	KeySym keysym;
@@ -1845,8 +1846,9 @@ void DeIconify(TwmWindow *tmp_win)
 	XSync(dpy, 0);
 }
 
-static void UnmapTransients(TwmWindow *tmp_win, bool iconify,
-                            unsigned long eventMask)
+static void
+UnmapTransients(TwmWindow *tmp_win, bool iconify,
+                unsigned long eventMask)
 {
 	TwmWindow *t;
 
@@ -2117,7 +2119,8 @@ void SetMapStateProp(TwmWindow *tmp_win, int state)
 }
 
 
-bool GetWMState(Window w, int *statep, Window *iwp)
+bool
+GetWMState(Window w, int *statep, Window *iwp)
 {
 	Atom actual_type;
 	int actual_format;
@@ -2211,7 +2214,8 @@ static void DestroyMenu(MenuRoot *menu)
  * warping routines
  */
 
-void WarpAlongRing(XButtonEvent *ev, bool forward)
+void
+WarpAlongRing(XButtonEvent *ev, bool forward)
 {
 	TwmWindow *r, *head;
 

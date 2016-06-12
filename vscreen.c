@@ -171,8 +171,9 @@ VirtualScreen *getVScreenOf(int x, int y)
  * list.  This is stored this way so everything ends up in the right place
  * on a ctwm restart.
  */
-bool CtwmGetVScreenMap(Display *display, Window rootw,
-                       char *outbuf, int *outbuf_len)
+bool
+CtwmGetVScreenMap(Display *display, Window rootw,
+                  char *outbuf, int *outbuf_len)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;
@@ -198,8 +199,9 @@ bool CtwmGetVScreenMap(Display *display, Window rootw,
 	return true;
 }
 
-bool CtwmSetVScreenMap(Display *display, Window rootw,
-                       struct VirtualScreen *firstvs)
+bool
+CtwmSetVScreenMap(Display *display, Window rootw,
+                  struct VirtualScreen *firstvs)
 {
 	char                        buf[1024];
 	int                         tally = 0;
