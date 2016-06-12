@@ -80,12 +80,12 @@ typedef struct EwmhStrut {
 #define EWMH_PRI_ABOVE                   2
 
 void EwmhInit(void);
-int EwmhInitScreenEarly(ScreenInfo *scr);
+bool EwmhInitScreenEarly(ScreenInfo *scr);
 void EwmhInitScreenLate(ScreenInfo *scr);
 void EwmhInitVirtualRoots(ScreenInfo *scr);
 void EwmhTerminate(void);
 void EwhmSelectionClear(XSelectionClearEvent *sev);
-int EwmhClientMessage(XClientMessageEvent *msg);
+bool EwmhClientMessage(XClientMessageEvent *msg);
 Image *EwhmGetIcon(ScreenInfo *scr, TwmWindow *twm_win);
 int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win);
 void EwmhSet_NET_WM_DESKTOP(TwmWindow *twm_win);

@@ -947,16 +947,16 @@ void ActiveIconManager(WList *active)
 	Active = active;
 	Active->iconmgr->active = active;
 	Current = Active;
-	DrawIconManagerBorder(active, False);
+	DrawIconManagerBorder(active, false);
 }
 
 void NotActiveIconManager(WList *active)
 {
 	active->active = false;
-	DrawIconManagerBorder(active, False);
+	DrawIconManagerBorder(active, false);
 }
 
-void DrawIconManagerBorder(WList *tmp, int fill)
+void DrawIconManagerBorder(WList *tmp, bool fill)
 {
 	if(Scr->use3Diconmanagers) {
 		Draw3DBorder(tmp->w, 0, 0, tmp->width, tmp->height,

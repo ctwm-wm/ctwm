@@ -114,7 +114,7 @@ void RemoveIconManager(TwmWindow *tmp_win);
 void CurrentIconManagerEntry(WList *current);
 void ActiveIconManager(WList *active);
 void NotActiveIconManager(WList *active);
-void DrawIconManagerBorder(WList *tmp, int fill);
+void DrawIconManagerBorder(WList *tmp, bool fill);
 void SortIconManager(IconMgr *ip);
 void PackIconManager(IconMgr *ip);
 void PackIconManagers(void);

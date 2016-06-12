@@ -111,8 +111,8 @@ static struct {
 static Cursor LastCursor;
 static bool addingdefaults = false;
 
-static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure);
-static void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, int exposure);
+static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
+static void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 static void MosaicFade(TwmWindow *tmp_win, Window blanket);
 static void DestroyMenu(MenuRoot *menu);
 static void ZoomInWindow(TwmWindow *tmp_win, Window blanket);
@@ -294,7 +294,8 @@ AddDefaultFuncButtons(void)
 }
 
 
-void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure)
+void
+PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 {
 	if(Scr->use3Dmenus) {
 		Paint3DEntry(mr, mi, exposure);
@@ -307,7 +308,8 @@ void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure)
 	}
 }
 
-static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure)
+static void
+Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 {
 	int y_offset;
 	int text_y;
@@ -383,7 +385,8 @@ static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, int exposure)
 }
 
 
-void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, int exposure)
+static void
+PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 {
 	int y_offset;
 	int text_y;
@@ -484,7 +487,7 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
 		 */
 		if(e->xexpose.y <= (y_offset + Scr->EntryHeight) &&
 		                (e->xexpose.y + e->xexpose.height) >= y_offset) {
-			PaintEntry(mr, mi, True);
+			PaintEntry(mr, mi, true);
 		}
 	}
 	XSync(dpy, 0);
@@ -593,7 +596,7 @@ void UpdateMenu(void)
 		                x >= ActiveMenu->width || y >= ActiveMenu->height) {
 			if(ActiveItem && ActiveItem->func != F_TITLE) {
 				ActiveItem->state = 0;
-				PaintEntry(ActiveMenu, ActiveItem, False);
+				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 			ActiveItem = NULL;
 			continue;
@@ -619,7 +622,7 @@ void UpdateMenu(void)
 			 */
 			if(!done && ActiveItem->func != F_TITLE) {
 				ActiveItem->state = 0;
-				PaintEntry(ActiveMenu, ActiveItem, False);
+				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 		}
 
@@ -630,7 +633,7 @@ void UpdateMenu(void)
 			ActiveItem = mi;
 			if(ActiveItem && ActiveItem->func != F_TITLE && !ActiveItem->state) {
 				ActiveItem->state = 1;
-				PaintEntry(ActiveMenu, ActiveItem, False);
+				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 		}
 
@@ -660,7 +663,7 @@ void UpdateMenu(void)
 			/* if the menu did get popped up, unhighlight the active item */
 			if(save != ActiveMenu && ActiveItem->state) {
 				ActiveItem->state = 0;
-				PaintEntry(save, ActiveItem, False);
+				PaintEntry(save, ActiveItem, false);
 				ActiveItem = NULL;
 			}
 		}
@@ -1556,7 +1559,7 @@ void PopDownMenu(void)
 
 	if(ActiveItem) {
 		ActiveItem->state = 0;
-		PaintEntry(ActiveMenu, ActiveItem, False);
+		PaintEntry(ActiveMenu, ActiveItem, false);
 	}
 
 	for(tmp = ActiveMenu; tmp != NULL; tmp = tmp->prev) {

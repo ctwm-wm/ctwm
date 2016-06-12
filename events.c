@@ -1241,7 +1241,7 @@ void HandleKeyPress(void)
 					                      &wx, &wy, &junkW);
 					if(ActiveItem) {
 						ActiveItem->state = 0;
-						PaintEntry(ActiveMenu, ActiveItem,  False);
+						PaintEntry(ActiveMenu, ActiveItem, false);
 						ActiveItem = NULL;
 					}
 					xx -= (wx - ActiveMenu->width);
@@ -2274,7 +2274,7 @@ void HandleExpose(void)
 					PackIconManagers();
 				}
 
-				DrawIconManagerBorder(iconmanagerlist, True);
+				DrawIconManagerBorder(iconmanagerlist, true);
 
 				FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
 				((Scr->use3Diconmanagers && (Scr->Monochrome != COLOR)) ?
@@ -3139,7 +3139,7 @@ void HandleButtonRelease(void)
 		if(DownIconManager) {
 			DownIconManager->down = false;
 			if(Scr->Highlight) {
-				DrawIconManagerBorder(DownIconManager, False);
+				DrawIconManagerBorder(DownIconManager, false);
 			}
 			DownIconManager = NULL;
 		}
@@ -3469,7 +3469,7 @@ void HandleButtonPress(void)
 			                (Event.xany.window == Tmp_win->iconmanagerlist->w)) {
 				Tmp_win->iconmanagerlist->down = true;
 				if(Scr->Highlight) {
-					DrawIconManagerBorder(Tmp_win->iconmanagerlist, False);
+					DrawIconManagerBorder(Tmp_win->iconmanagerlist, false);
 				}
 				DownIconManager = Tmp_win->iconmanagerlist;
 				Context = C_ICONMGR;
@@ -4004,7 +4004,7 @@ void HandleEnterNotify(void)
 
 		if(ActiveItem) {
 			ActiveItem->state = 0;
-			PaintEntry(ActiveMenu, ActiveItem,  False);
+			PaintEntry(ActiveMenu, ActiveItem, false);
 		}
 		ActiveItem = NULL;
 		ActiveMenu = mr;
@@ -4024,7 +4024,7 @@ void HandleEnterNotify(void)
 				if(mi) {
 					ActiveItem = mi;
 					ActiveItem->state = 1;
-					PaintEntry(ActiveMenu, ActiveItem, False);
+					PaintEntry(ActiveMenu, ActiveItem, false);
 				}
 			}
 		}

@@ -194,7 +194,7 @@ void HideMenu(MenuRoot *menu);
 void resizeFromCenter(Window w, TwmWindow *tmp_win);
 void ReGrab(void);
 void SetLastCursor(Cursor newcur);
-void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
+void PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 void PaintMenu(MenuRoot *mr, XEvent *e);
 bool cur_fromMenu(void);
 void UpdateMenu(void);

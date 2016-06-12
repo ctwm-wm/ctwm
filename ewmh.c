@@ -97,7 +97,7 @@ static void EwmhClientMessage_NET_WM_STATE(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_ACTIVE_WINDOW(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg);
 static unsigned long EwmhGetWindowProperty(Window w, Atom name, Atom type);
-static void EwmhGetStrut(TwmWindow *twm_win, int update);
+static void EwmhGetStrut(TwmWindow *twm_win, bool update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
 static void EwmhSet_NET_WORKAREA(ScreenInfo *scr);
 static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win);
@@ -198,7 +198,7 @@ static void GenerateTimestamp(ScreenInfo *scr)
  *
  * TODO: convert the selection to atom VERSION.
  */
-static int EwmhReplaceWM(ScreenInfo *scr)
+static bool EwmhReplaceWM(ScreenInfo *scr)
 {
 	char atomname[32];
 	Atom wmAtom;
@@ -236,7 +236,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 		if(!CLarg.ewmh_replace) {
 			fprintf(stderr, "A window manager is already running on screen %d\n",
 			        scr->screen);
-			return False;
+			return false;
 		}
 	}
 
@@ -245,7 +245,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 	if(XGetSelectionOwner(dpy, wmAtom) != scr->icccm_Window) {
 		fprintf(stderr, "Did not get window manager selection on screen %d\n",
 		        scr->screen);
-		return False;
+		return false;
 	}
 
 	/*
@@ -276,7 +276,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 			fprintf(stderr, "Timed out waiting for other window manager "
 			        "on screen %d to quit\n",
 			        scr->screen);
-			return False;
+			return false;
 		}
 	}
 
@@ -295,7 +295,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 	                    XA_MANAGER, lastTimestamp, wmAtom, scr->icccm_Window, 0, 0,
 	                    StructureNotifyMask);
 
-	return True;
+	return true;
 }
 
 /*
@@ -306,7 +306,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
  *
  * Create the ICCCM window that owns the WM_Sn selection.
  */
-int EwmhInitScreenEarly(ScreenInfo *scr)
+bool EwmhInitScreenEarly(ScreenInfo *scr)
 {
 	XSetWindowAttributes attrib;
 
@@ -315,7 +315,7 @@ int EwmhInitScreenEarly(ScreenInfo *scr)
 	scr->ewmh_CLIENT_LIST = calloc(scr->ewmh_CLIENT_LIST_size,
 	                               sizeof(scr->ewmh_CLIENT_LIST[0]));
 	if(scr->ewmh_CLIENT_LIST == NULL) {
-		return False;
+		return false;
 	}
 
 #ifdef DEBUG_EWMH
@@ -341,17 +341,17 @@ int EwmhInitScreenEarly(ScreenInfo *scr)
 		scr->icccm_Window = None;
 
 #ifdef DEBUG_EWMH
-		fprintf(stderr, "EwmhInitScreenEarly: return False\n");
+		fprintf(stderr, "EwmhInitScreenEarly: return false\n");
 #endif
-		return False;
+		return false;
 	}
 
 	scr->ewmhStruts = NULL;
 
 #ifdef DEBUG_EWMH
-	fprintf(stderr, "EwmhInitScreenEarly: return True\n");
+	fprintf(stderr, "EwmhInitScreenEarly: return true\n");
 #endif
-	return True;
+	return true;
 }
 
 /*
@@ -565,28 +565,28 @@ void EwhmSelectionClear(XSelectionClearEvent *sev)
  *
  * Should perhaps also accept any other virtual screen.
  */
-int EwmhClientMessage(XClientMessageEvent *msg)
+bool EwmhClientMessage(XClientMessageEvent *msg)
 {
 	if(msg->format != 32) {
-		return False;
+		return false;
 	}
 
 	/* Messages regarding any window */
 	if(msg->message_type == XA__NET_WM_DESKTOP) {
 		EwmhClientMessage_NET_WM_DESKTOP(msg);
-		return True;
+		return true;
 	}
 	else if(msg->message_type == XA__NET_WM_STATE) {
 		EwmhClientMessage_NET_WM_STATE(msg);
-		return True;
+		return true;
 	}
 	else if(msg->message_type == XA__NET_ACTIVE_WINDOW) {
 		EwmhClientMessage_NET_ACTIVE_WINDOW(msg);
-		return True;
+		return true;
 	}
 	else if(msg->message_type == XA__NET_WM_MOVERESIZE) {
 		EwmhClientMessage_NET_WM_MOVERESIZE(msg);
-		return True;
+		return true;
 	}
 
 	/* Messages regarding the root window */
@@ -596,12 +596,12 @@ int EwmhClientMessage(XClientMessageEvent *msg)
 		fprintf(stderr, "Received unrecognized client message: %s\n",
 		        XGetAtomName(dpy, msg->message_type));
 #endif
-		return False;
+		return false;
 	}
 
 	if(msg->message_type == XA__NET_CURRENT_DESKTOP) {
 		GotoWorkSpaceByNumber(Scr->currentvs, msg->data.l[0]);
-		return True;
+		return true;
 	}
 	else if(msg->message_type == XA__NET_SHOWING_DESKTOP) {
 		ShowBackground(Scr->currentvs, msg->data.l[0] ? 1 : 0);
@@ -613,7 +613,7 @@ int EwmhClientMessage(XClientMessageEvent *msg)
 #endif
 	}
 
-	return False;
+	return false;
 }
 
 /*
@@ -1020,7 +1020,7 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 static void EwmhHandle_NET_WM_STRUTNotify(XPropertyEvent *event,
                 TwmWindow *twm_win)
 {
-	EwmhGetStrut(twm_win, True);
+	EwmhGetStrut(twm_win, true);
 }
 
 /*
@@ -1733,7 +1733,7 @@ void EwmhGetProperties(TwmWindow *twm_win)
 	else {
 		twm_win->ewmhWindowType = wt_Normal;
 	}
-	EwmhGetStrut(twm_win, False);
+	EwmhGetStrut(twm_win, false);
 	/* Only the 3 listed states are supported for now */
 	twm_win->ewmhFlags |= EwmhGet_NET_WM_STATE(twm_win) &
 	                      (EWMH_STATE_ABOVE | EWMH_STATE_BELOW | EWMH_STATE_SHADED);
@@ -1836,7 +1836,7 @@ static void EwmhRecalculateStrut(void)
  *
  * If update is true, this is called as an update for an existing window.
  */
-static void EwmhGetStrut(TwmWindow *twm_win, int update)
+static void EwmhGetStrut(TwmWindow *twm_win, bool update)
 {
 	unsigned long nitems;
 	unsigned long *prop;
