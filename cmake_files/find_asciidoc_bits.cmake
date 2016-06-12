@@ -302,7 +302,9 @@ function(xmlto_mk_manpage OUTFILE XMLFILE)
 	)
 
 	# Set various overrides.  Note that this leads to rather worse PDF
-	# output.
+	# output.  If we ever decide to make xmlto a more likely part of the
+	# process, we probably need to rework things so we generate a
+	# different XML for the manpage path vs. the PDF path...
 	set(OVERRIDE_DTYPE manpage PARENT_SCOPE)
 
 	# This does _very_ poorly [currently?] with DocBook 5 output.
