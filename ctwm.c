@@ -587,7 +587,7 @@ int main(int argc, char **argv)
 			MaskScreen(NULL);
 		}
 		if(Scr->ClickToFocus) {
-			Scr->FocusRoot  = FALSE;
+			Scr->FocusRoot  = false;
 			Scr->TitleFocus = false;
 		}
 
@@ -1004,11 +1004,11 @@ static void InitVariables(void)
 	Scr->WindowRingAll = false;
 	Scr->WarpRingAnyWhere = true;
 	Scr->ShortAllWindowsMenus = false;
-	Scr->use3Diconmanagers = FALSE;
-	Scr->use3Dmenus = FALSE;
-	Scr->use3Dtitles = FALSE;
-	Scr->use3Dborders = FALSE;
-	Scr->use3Dwmap = FALSE;
+	Scr->use3Diconmanagers = false;
+	Scr->use3Dmenus = false;
+	Scr->use3Dtitles = false;
+	Scr->use3Dborders = false;
+	Scr->use3Dwmap = false;
 	Scr->SunkFocusWindowTitle = false;
 	Scr->ClearShadowContrast = 50;
 	Scr->DarkShadowContrast  = 40;
