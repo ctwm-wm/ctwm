@@ -1140,7 +1140,7 @@ void MakeMenu(MenuRoot *mr)
 			XAllocColor(dpy, cmap, &b3);
 			cur->highlight.back = cur->normal.fore = f3.pixel;
 			cur->highlight.fore = cur->normal.back = b3.pixel;
-			cur->user_colors = True;
+			cur->user_colors = true;
 
 			f3 = save_fore;
 			b3 = save_back;
