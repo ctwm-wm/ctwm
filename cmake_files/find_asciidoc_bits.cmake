@@ -293,6 +293,14 @@ function(xmlto_mk_manpage OUTFILE XMLFILE)
 			man ${XMLFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
+
+	# This is really a poor fallback...  especially with docbook5 output.
+	# If you really need this, and you're using asciidoctor to generate
+	# the XML (I don't know how that comes about) you probably want to
+	# change the asciidoctor_mk_docbook below to output docbook45 instead
+	# of docbook5.
+	message(WARNING "Using xmlto manpage generation; this gives "
+	        "rather poor output...")
 endfunction(xmlto_mk_manpage)
 
 
