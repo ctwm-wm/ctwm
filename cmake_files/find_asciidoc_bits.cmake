@@ -285,8 +285,7 @@ function(xmlto_mk_manpage OUTFILE XMLFILE)
 	get_filename_component(basedir ${XMLFILE} DIRECTORY)
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${XMLFILE} ${dependancies}
-		COMMAND cp ${ADFILE} ${a2x_intmp}
-		COMMAND ${xmlto} --skip-validation -o ${basedir} man ${XMLFILE}
+		COMMAND ${XMLTO} --skip-validation -o ${basedir} man ${XMLFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(xmlto_mk_manpage)
