@@ -329,18 +329,18 @@ stmt		: error
 		  win_list
 		| ALWAYS_ON_TOP		{ curplist = OtpScrPriorityL(Scr, WinWin, 8); }
 		  win_list
-		| PRIORITY_SWITCHING	{ OtpScrSetSwitching(Scr, WinWin, False);
+		| PRIORITY_SWITCHING	{ OtpScrSetSwitching(Scr, WinWin, false);
 		                          curplist = OtpScrSwitchingL(Scr, WinWin); }
 		  win_list
-		| PRIORITY_NOT_SWITCHING { OtpScrSetSwitching(Scr, WinWin, True);
+		| PRIORITY_NOT_SWITCHING { OtpScrSetSwitching(Scr, WinWin, true);
 		                          curplist = OtpScrSwitchingL(Scr, WinWin); }
 		  win_list
 		| PRIORITY_SWITCHING ICONS
-                                        { OtpScrSetSwitching(Scr, IconWin, False);
+                                        { OtpScrSetSwitching(Scr, IconWin, false);
                                         curplist = OtpScrSwitchingL(Scr, IconWin); }
 		  win_list
 		| PRIORITY_NOT_SWITCHING ICONS
-                                        { OtpScrSetSwitching(Scr, IconWin, True);
+                                        { OtpScrSetSwitching(Scr, IconWin, true);
 		                          curplist = OtpScrSwitchingL(Scr, IconWin); }
 		  win_list
 

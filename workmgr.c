@@ -3170,7 +3170,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
 	             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor, CurrentTime);
 
-	alreadyvivible = False;
+	alreadyvivible = false;
 	cont = true;
 	while(cont) {
 		MapSubwindow *msw;
@@ -3260,7 +3260,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 							            win->frame_bw,
 							            win->title_height + win->frame_bw3D);
 						}
-						alreadyvivible = True;
+						alreadyvivible = true;
 						goto move;
 					}
 					if(!alreadyvivible) {
@@ -3275,7 +3275,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 						else {
 							MoveOutline(Scr->Root, 0, 0, 0, 0, 0, 0);
 						}
-						alreadyvivible = False;
+						alreadyvivible = false;
 						goto move;
 					}
 movewin:

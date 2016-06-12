@@ -113,7 +113,7 @@ static Box BoxOfOwl(OtpWinList *owl)
 			break;
 		}
 		default:
-			assert(False);
+			assert(false);
 	}
 	return b;
 }

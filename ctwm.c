@@ -1031,7 +1031,7 @@ static void InitVariables(void)
 	Scr->ShrinkIconTitles = false;
 	Scr->AutoRaiseIcons = false;
 	Scr->AutoFocusToTransients = false; /* kai */
-	Scr->use3Diconborders = False;
+	Scr->use3Diconborders = false;
 	Scr->OpenWindowTimeout = 0;
 	Scr->RaiseWhenAutoUnSqueeze = false;
 	Scr->RaiseOnClick = false;
