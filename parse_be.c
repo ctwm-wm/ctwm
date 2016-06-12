@@ -774,23 +774,23 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_Use3DBorders:
-			Scr->use3Dborders = TRUE;
+			Scr->use3Dborders = true;
 			return 1;
 
 		case kw0_Use3DIconManagers:
-			Scr->use3Diconmanagers = TRUE;
+			Scr->use3Diconmanagers = true;
 			return 1;
 
 		case kw0_Use3DMenus:
-			Scr->use3Dmenus = TRUE;
+			Scr->use3Dmenus = true;
 			return 1;
 
 		case kw0_Use3DTitles:
-			Scr->use3Dtitles = TRUE;
+			Scr->use3Dtitles = true;
 			return 1;
 
 		case kw0_Use3DWMap:
-			Scr->use3Dwmap = TRUE;
+			Scr->use3Dwmap = true;
 			return 1;
 
 		case kw0_SunkFocusWindowTitle:
@@ -875,7 +875,7 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_use3DIconBorders:
-			Scr->use3Diconborders = TRUE;
+			Scr->use3Diconborders = true;
 			return 1;
 
 		case kw0_ShortAllWindowsMenus:
