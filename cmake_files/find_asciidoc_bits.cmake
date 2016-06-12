@@ -48,6 +48,10 @@ if(ASCIIDOCTOR)
 		set(ASCIIDOCTOR_CAN_HTML 0)
 		set(ASCIIDOCTOR_CAN_DBXML 0)
 	endif()
+
+	# dblatex PDF output works fine with docbook5.  xmlto/docbook XSL
+	# manpage generation doesn't, so it has to override this.
+	set(ASCIIDOCTOR_DB_VER 5)
 endif(ASCIIDOCTOR)
 
 
@@ -86,6 +90,9 @@ if(ASCIIDOC)
 	if(NOT A2X)
 		set(ASCIIDOC_CAN_MAN 0)
 	endif()
+
+	# Only docbook version python asciidoc supports
+	set(ASCIIDOC_DB_VER 45)
 endif(ASCIIDOC)
 
 
@@ -294,13 +301,12 @@ function(xmlto_mk_manpage OUTFILE XMLFILE)
 		COMMENT ${_ARGS_COMMENT}
 	)
 
-	# This is really a poor fallback...  especially with docbook5 output.
-	# If you really need this, and you're using asciidoctor to generate
-	# the XML (I don't know how that comes about) you probably want to
-	# change the asciidoctor_mk_docbook below to output docbook45 instead
-	# of docbook5.
-	message(WARNING "Using xmlto manpage generation; this gives "
-	        "rather poor output...")
+	# This does _very_ poorly [currently?] with DocBook 5 output.
+	if(ASCIIDOCTOR_CAN_DBXML)
+		message(STATUS "Using xmlto manpage generation; downgrading "
+			"asciidoctor output to docbook45")
+		set(ASCIIDOCTOR_DB_VER 45 PARENT_SCOPE)
+	endif()
 endfunction(xmlto_mk_manpage)
 
 
@@ -352,8 +358,9 @@ function(asciidoctor_mk_docbook OUTFILE ADFILE DTYPE)
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOCTOR} -b docbook5 -d ${DTYPE} -o ${OUTFILE} ${ADFILE}
-		COMMENT "${_ARGS_COMMENT} (doctype=${DTYPE})"
+		COMMAND ${ASCIIDOCTOR} -b docbook${ASCIIDOCTOR_DB_VER}
+			-d ${DTYPE} -o ${OUTFILE} ${ADFILE}
+		COMMENT "${_ARGS_COMMENT} (docbook${ASCIIDOCTOR_DB_VER},${DTYPE})"
 	)
 endfunction(asciidoctor_mk_docbook)
 
@@ -367,8 +374,9 @@ function(asciidoc_mk_docbook OUTFILE ADFILE DTYPE)
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
-		COMMAND ${ASCIIDOC} -b docbook45 -o -d ${DTYPE} ${OUTFILE} ${ADFILE}
-		COMMENT "${_ARGS_COMMENT} (doctype=${DTYPE})"
+		COMMAND ${ASCIIDOC} -b docbook${ASCIIDOC_DB_VER}
+			-d ${DTYPE} -o ${OUTFILE} ${ADFILE}
+		COMMENT "${_ARGS_COMMENT} (docbook${ASCIIDOC_DB_VER},${DTYPE})"
 	)
 endfunction(asciidoc_mk_docbook)
 
