@@ -285,7 +285,12 @@ function(xmlto_mk_manpage OUTFILE XMLFILE)
 	get_filename_component(basedir ${XMLFILE} DIRECTORY)
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${XMLFILE} ${dependancies}
-		COMMAND ${XMLTO} --skip-validation -o ${basedir} man ${XMLFILE}
+		COMMAND ${XMLTO}
+			--skip-validation
+			-o ${basedir}
+			# This apparently doesn't work right...
+			--stringparam 'man.endnotes.list.enabled=0'
+			man ${XMLFILE}
 		COMMENT ${_ARGS_COMMENT}
 	)
 endfunction(xmlto_mk_manpage)

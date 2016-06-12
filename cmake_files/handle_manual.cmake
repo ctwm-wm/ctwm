@@ -77,6 +77,7 @@ if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_MAN)
 elseif(A2X AND ASCIIDOC_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE a2x)
 elseif(XMLTO AND XMLTO_CAN_STUFF)
+	# Should probably never happen in reality
 	set(MANUAL_BUILD_MANPAGE xmlto)
 endif()
 
