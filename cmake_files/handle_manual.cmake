@@ -95,8 +95,12 @@ if(DBLATEX AND DBLATEX_CAN_PDF AND MANUAL_BUILD_DBXML)
 endif()
 
 
-# If we can build stuff, prepare bits for it.
-if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
+# If we can build stuff, prepare bits for it.  Technically unnecessary if
+# we're not building stuff, but doesn't do anything bad to define it in
+# those cases, and it's easier than listing every MANUAL_BUILD_* in the
+# conditions.
+set(SETUP_MAN_REWRITE 1)
+if(SETUP_MAN_REWRITE)
 	# Setup a temp dir under the build for our processing
 	file(MAKE_DIRECTORY ${MAN_TMPDIR})
 
@@ -121,7 +125,7 @@ if(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
 	# ${ADOC_TMPSRC} in the DEPENDS for the targets building off it, or
 	# they don't notice when they go out of date.
 	add_custom_target(mk_adoc_tmpsrc DEPENDS ${ADOC_TMPSRC})
-endif(MANUAL_BUILD_MANPAGE OR MANUAL_BUILD_HTML)
+endif(SETUP_MAN_REWRITE)
 
 
 
