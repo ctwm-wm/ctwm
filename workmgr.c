@@ -104,7 +104,7 @@ static int CanChangeOccupation(TwmWindow **twm_winp);
 void safecopy(char *dest, char *src, int size);
 
 int fullOccupation = 0;
-static int useBackgroundInfo = False;
+static bool useBackgroundInfo = false;
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
 static bool DontRedirect(Window window);
@@ -794,7 +794,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.back), backback);
-		useBackgroundInfo = True;
+		useBackgroundInfo = true;
 	}
 
 	if(backfore == NULL) {
@@ -802,11 +802,11 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
-		useBackgroundInfo = True;
+		useBackgroundInfo = true;
 	}
 	if((image = GetImage(backpix, ws->backcp)) != None) {
 		ws->image = image;
-		useBackgroundInfo = True;
+		useBackgroundInfo = true;
 	}
 	else {
 		ws->image = None;

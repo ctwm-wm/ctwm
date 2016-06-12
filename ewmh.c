@@ -132,11 +132,11 @@ static void EwmhInitAtoms(void)
 	XInternAtoms(dpy, XEWMHAtomNames, NUM_EWMH_XATOMS, False, XEWMHAtom);
 }
 
-static int caughtError;
+static bool caughtError;
 
 static int CatchError(Display *display, XErrorEvent *event)
 {
-	caughtError = True;
+	caughtError = true;
 	return 0;
 }
 
@@ -219,7 +219,7 @@ static int EwmhReplaceWM(ScreenInfo *scr)
 		 * Check if that owner still exists, and if it does, we want
 		 * StructureNotify-kind events from it.
 		 */
-		caughtError = False;
+		caughtError = false;
 		oldHandler = XSetErrorHandler(CatchError);
 
 		XSelectInput(dpy, selectionOwner, StructureNotifyMask);

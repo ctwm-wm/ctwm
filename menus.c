@@ -2021,7 +2021,8 @@ void AutoSqueeze(TwmWindow *tmp_win)
 void Squeeze(TwmWindow *tmp_win)
 {
 	long fx, fy, savex, savey;
-	int  neww, newh, south;
+	int  neww, newh;
+	bool south;
 	int  grav = ((tmp_win->hints.flags & PWinGravity)
 	             ? tmp_win->hints.win_gravity : NorthWestGravity);
 	XWindowAttributes winattrs;
@@ -2049,14 +2050,14 @@ void Squeeze(TwmWindow *tmp_win)
 		case SouthWestGravity :
 		case SouthGravity :
 		case SouthEastGravity :
-			south = True;
+			south = true;
 			break;
 		default :
-			south = False;
+			south = false;
 			break;
 	}
 	if(tmp_win->title_height && !tmp_win->AlwaysSqueezeToGravity) {
-		south = False;
+		south = false;
 	}
 
 	tmp_win->squeezed = true;
