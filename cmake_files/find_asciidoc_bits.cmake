@@ -301,12 +301,18 @@ function(xmlto_mk_manpage OUTFILE XMLFILE)
 		COMMENT ${_ARGS_COMMENT}
 	)
 
+	# Set various overrides.  Note that this leads to rather worse PDF
+	# output.
+	set(OVERRIDE_DTYPE manpage PARENT_SCOPE)
+
 	# This does _very_ poorly [currently?] with DocBook 5 output.
 	if(ASCIIDOCTOR_CAN_DBXML)
-		message(STATUS "Using xmlto manpage generation; downgrading "
-			"asciidoctor output to docbook45")
+		set(_addg "; downgrading asciidoctor output to docbook45")
 		set(ASCIIDOCTOR_DB_VER 45 PARENT_SCOPE)
 	endif()
+
+	message(WARNING "Using xmlto manpage generation${_addg}.  This "
+		"will compromise the quality of PDF output.")
 endfunction(xmlto_mk_manpage)
 
 
@@ -348,13 +354,18 @@ endfunction(asciidoc_mk_html)
 
 
 # Building DocBook XML
-function(asciidoctor_mk_docbook OUTFILE ADFILE DTYPE)
+function(asciidoctor_mk_docbook OUTFILE ADFILE)
 	# Guard
 	if(NOT ASCIIDOCTOR_CAN_DBXML)
 		message(FATAL_ERROR "asciidoctor can't do DocBook")
 	endif()
 
 	_ad_mk_boilerplate(asciidoctor docbook ${ARGN})
+
+	set(DTYPE article)
+	if(OVERRIDE_DTYPE)
+		set(DTYPE ${OVERRIDE_DTYPE})
+	endif()
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
@@ -364,13 +375,18 @@ function(asciidoctor_mk_docbook OUTFILE ADFILE DTYPE)
 	)
 endfunction(asciidoctor_mk_docbook)
 
-function(asciidoc_mk_docbook OUTFILE ADFILE DTYPE)
+function(asciidoc_mk_docbook OUTFILE ADFILE)
 	# Guard
 	if(NOT ASCIIDOC_CAN_DBXML)
 		message(FATAL_ERROR "asciidoc can't do DocBook")
 	endif()
 
 	_ad_mk_boilerplate(asciidoc docbook ${ARGN})
+
+	set(DTYPE article)
+	if(OVERRIDE_DTYPE)
+		set(DTYPE ${OVERRIDE_DTYPE})
+	endif()
 
 	add_custom_command(OUTPUT ${OUTFILE}
 		DEPENDS ${dependancies}
