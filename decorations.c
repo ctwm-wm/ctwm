@@ -13,6 +13,7 @@
 
 #include "gram.tab.h"
 #include "image.h"
+#include "iconmgr.h"
 #include "screen.h"
 #include "util.h"  // Border drawing
 

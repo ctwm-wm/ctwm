@@ -30,8 +30,6 @@
 
 #ifdef EWMH
 
-#include "types.h"
-
 /*
  * Switch for experimental code to treat a Desktop window as a Root
  * window for the purposes of key and button bindings.

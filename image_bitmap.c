@@ -14,7 +14,6 @@
 #include <X11/Xmu/Drawing.h>
 
 #include "screen.h"
-#include "types.h"
 #include "util.h"
 
 #include "image.h"

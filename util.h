@@ -66,8 +66,6 @@
 
 #include <ctype.h>
 
-#include "types.h"
-
 #ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
 #endif

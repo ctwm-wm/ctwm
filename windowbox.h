@@ -38,8 +38,6 @@
 #ifndef _CTWM_WINDOWBOX_H
 #define _CTWM_WINDOWBOX_H
 
-#include "types.h"
-
 name_list **addWindowBox(char *boxname, char *geometry);
 void createWindowBoxes(void);
 WindowBox *findWindowBox(TwmWindow *twmwin);

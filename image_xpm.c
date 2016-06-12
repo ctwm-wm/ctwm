@@ -11,7 +11,6 @@
 #include <X11/xpm.h>
 
 #include "screen.h"
-#include "types.h"
 
 #include "image.h"
 #include "image_xpm.h"

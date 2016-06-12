@@ -10,7 +10,6 @@
 #include <X11/XWDFile.h>
 
 #include "screen.h"
-#include "types.h"
 #include "animate.h"
 
 #include "image.h"

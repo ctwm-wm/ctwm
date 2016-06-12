@@ -64,8 +64,6 @@
 #ifndef _CTWM_LIST_H
 #define _CTWM_LIST_H
 
-#include "types.h"
-
 struct name_list {
 	name_list *next;            /* pointer to the next name */
 	char      *name;            /* the name of the window */

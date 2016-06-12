@@ -26,8 +26,6 @@
 #ifndef _CTWM_VSCREEN_H
 #define _CTWM_VSCREEN_H
 
-#include "types.h"
-
 struct VirtualScreen {
 	int   x, y, w, h;             /* x,y relative to XineramaRoot */
 	Window window;

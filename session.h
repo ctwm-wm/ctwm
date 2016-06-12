@@ -27,9 +27,7 @@
 #ifndef _CTWM_SESSION_H
 #define _CTWM_SESSION_H
 
-#include <stdio.h>
 #include <X11/SM/SMlib.h>
-#include "types.h"
 
 /* XXX Only used in one place, should convert to a func? */
 extern SmcConn smcConn;

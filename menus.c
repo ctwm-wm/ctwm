@@ -88,6 +88,7 @@
 #include "otp.h"
 #include "image.h"
 #include "functions.h"
+#include "screen.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif

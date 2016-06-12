@@ -15,7 +15,7 @@
 #include "icons.h"
 #include "image.h"
 #include "screen.h"
-#include "types.h"
+#include "menus.h"
 
 #include "animate.h"
 

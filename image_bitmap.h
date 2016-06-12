@@ -8,10 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <X11/X.h>
-
-#include "types.h"
-
 Image *GetBitmapImage(const char *name, ColorPair cp);
 Pixmap GetBitmap(const char *name);
 

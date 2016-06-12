@@ -23,7 +23,6 @@
 #include "parse.h"
 #include "resize.h"
 #include "screen.h"
-#include "types.h"
 #include "util.h"
 #include "version.h"
 #include "windowbox.h"

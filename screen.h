@@ -59,7 +59,6 @@
 
 #include "list.h"
 #include "menus.h"
-#include "iconmgr.h"
 #include "vscreen.h"
 #include "workmgr.h"
 

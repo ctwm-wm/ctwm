@@ -17,7 +17,6 @@
 #include <string.h>
 
 #include "screen.h"
-#include "types.h"
 #include "image.h"
 #include "image_jpeg.h"
 

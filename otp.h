@@ -32,8 +32,6 @@
 #ifndef _CTWM_OTP_H
 #define _CTWM_OTP_H
 
-#include "types.h"
-
 /* kind of window */
 typedef enum WinType { WinWin, IconWin } WinType;
 
