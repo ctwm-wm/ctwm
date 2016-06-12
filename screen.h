@@ -256,7 +256,7 @@ struct ScreenInfo {
 	name_list     *VirtualScreens;
 	int         numVscreens;
 
-	name_list *OccupyAll;     /* window names occupying all workspaces at startup */
+	name_list *OccupyAll;  // window names occupying all workspaces at startup
 	name_list   *UnmapByMovingFarAway;
 	name_list   *DontSetInactive;
 	name_list   *AutoSqueeze;
@@ -418,7 +418,7 @@ struct ScreenInfo {
 	bool  OpaqueMove;           /* move the window rather than outline */
 	bool  DoOpaqueMove;         /* move the window rather than outline */
 	unsigned short OpaqueMoveThreshold;         /*  */
-	bool  DoOpaqueResize;               /* resize the window rather than outline */
+	bool  DoOpaqueResize;       /* resize the window rather than outline */
 	bool  OpaqueResize;         /* resize the window rather than outline */
 	unsigned short OpaqueResizeThreshold;       /*  */
 	bool  Highlight;            /* should we highlight the window borders */
