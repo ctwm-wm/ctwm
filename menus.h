@@ -90,7 +90,7 @@ struct MenuItem {
 	short item_num;             /* item number of this menu */
 	short x;                    /* x coordinate for text */
 	short func;                 /* twm built in function */
-	short state;                /* video state, 0 = normal, 1 = reversed */
+	bool  state;                /* in reversed video state (i.e., active) */
 	short strlen;               /* strlen(item) */
 	bool  user_colors;          /* colors were specified */
 	bool  separated;            /* separated from the next item */

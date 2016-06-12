@@ -595,7 +595,7 @@ void UpdateMenu(void)
 		if(x < 0 || y < 0 ||
 		                x >= ActiveMenu->width || y >= ActiveMenu->height) {
 			if(ActiveItem && ActiveItem->func != F_TITLE) {
-				ActiveItem->state = 0;
+				ActiveItem->state = false;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 			ActiveItem = NULL;
@@ -621,7 +621,7 @@ void UpdateMenu(void)
 			 * active one off
 			 */
 			if(!done && ActiveItem->func != F_TITLE) {
-				ActiveItem->state = 0;
+				ActiveItem->state = false;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 		}
@@ -632,7 +632,7 @@ void UpdateMenu(void)
 		if(!done) {
 			ActiveItem = mi;
 			if(ActiveItem && ActiveItem->func != F_TITLE && !ActiveItem->state) {
-				ActiveItem->state = 1;
+				ActiveItem->state = true;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 		}
@@ -662,7 +662,7 @@ void UpdateMenu(void)
 
 			/* if the menu did get popped up, unhighlight the active item */
 			if(save != ActiveMenu && ActiveItem->state) {
-				ActiveItem->state = 0;
+				ActiveItem->state = false;
 				PaintEntry(save, ActiveItem, false);
 				ActiveItem = NULL;
 			}
@@ -838,7 +838,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 	tmp->action = action;
 	tmp->next = NULL;
 	tmp->sub = NULL;
-	tmp->state = 0;
+	tmp->state = false;
 	tmp->func = func;
 	tmp->separated = false;
 
@@ -1558,7 +1558,7 @@ void PopDownMenu(void)
 	}
 
 	if(ActiveItem) {
-		ActiveItem->state = 0;
+		ActiveItem->state = false;
 		PaintEntry(ActiveMenu, ActiveItem, false);
 	}
 
