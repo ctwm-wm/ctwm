@@ -1,5 +1,5 @@
 # This just shortcuts stuff through to cmake
-all build ctwm man man-html install clean: build/Makefile
+all build ctwm man man-html man-all install clean: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 build/Makefile cmake: CMakeLists.txt
