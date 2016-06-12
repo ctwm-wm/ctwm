@@ -120,7 +120,7 @@ void AddToList(name_list **list_head, const char *name, void *ptr)
 
 	nptr->next = *list_head;
 	nptr->name = strdup(name);
-	nptr->ptr = (ptr == NULL) ? (char *)TRUE : ptr;
+	nptr->ptr = (ptr == NULL) ? (char *)1 : ptr;
 	*list_head = nptr;
 }
 
