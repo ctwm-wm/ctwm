@@ -28,8 +28,6 @@
 #ifndef _CTWM_EWMH_H
 #define _CTWM_EWMH_H
 
-#ifdef EWMH
-
 /*
  * Switch for experimental code to treat a Desktop window as a Root
  * window for the purposes of key and button bindings.
@@ -102,5 +100,4 @@ bool EwmhOnWindowRing(TwmWindow *twm_win);
 void EwmhSet_NET_SHOWING_DESKTOP(int state);
 void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes);
 
-#endif /* EWMH */
 #endif /* _CTWM_EWMH_H */
