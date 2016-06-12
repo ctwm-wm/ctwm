@@ -4,17 +4,10 @@
 
 #include "ctwm.h"
 
-/*
- * Need this for the fixed-size uint_*'s used below.  stdint.h would be
- * the more appropriate include, but there exist systems that don't have
- * it, but do have inttypes.h (FreeBSD 4, Solaris 7-9 I've heard of,
- * probably more).
- */
-#include <inttypes.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "screen.h"
 #include "image.h"

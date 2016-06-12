@@ -51,7 +51,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <assert.h>
 
 #include <X11/Xatom.h>
