@@ -29,12 +29,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <ctype.h>
 #include <assert.h>
-#include <X11/Xos.h>
+
 #include <X11/Xatom.h>
-#include <X11/Xresource.h>
 
 #include "ctwm_atoms.h"
 #include "util.h"
@@ -56,6 +54,8 @@
 #ifdef EWMH
 #  include "ewmh_atoms.h"
 #endif
+
+#include "gram.tab.h"
 
 /***********************************************************************
  *
@@ -104,10 +104,10 @@ static int CanChangeOccupation(TwmWindow **twm_winp);
 void safecopy(char *dest, char *src, int size);
 
 int fullOccupation = 0;
-static int useBackgroundInfo = False;
+static bool useBackgroundInfo = false;
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
-static Bool DontRedirect(Window window);
+static bool DontRedirect(Window window);
 static Atom XA_WM_CTWM_ROOT_our_name;
 
 void InitWorkSpaceManager(void)
@@ -119,14 +119,14 @@ void InitWorkSpaceManager(void)
 	Scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
 	Scr->workSpaceMgr.windowcp.back = Scr->White;
 	Scr->workSpaceMgr.windowcp.fore = Scr->Black;
-	Scr->workSpaceMgr.windowcpgiven = False;
+	Scr->workSpaceMgr.windowcpgiven = false;
 
 	Scr->workSpaceMgr.occupyWindow = calloc(1, sizeof(OccupyWindow));
 	Scr->workSpaceMgr.occupyWindow->name      = "Occupy Window";
 	Scr->workSpaceMgr.occupyWindow->icon_name = "Occupy Window Icon";
 	Scr->workSpaceMgr.occupyWindow->geometry  = NULL;
 	Scr->workSpaceMgr.occupyWindow->columns   = 0;
-	Scr->workSpaceMgr.occupyWindow->twm_win   = (TwmWindow *) 0;
+	Scr->workSpaceMgr.occupyWindow->twm_win   = NULL;
 	Scr->workSpaceMgr.occupyWindow->vspace    = Scr->WMgrVertButtonIndent;
 	Scr->workSpaceMgr.occupyWindow->hspace    = Scr->WMgrHorizButtonIndent;
 
@@ -135,7 +135,7 @@ void InitWorkSpaceManager(void)
 	Scr->workSpaceMgr.defColors.back  = Scr->White;
 	Scr->workSpaceMgr.defColors.fore  = Scr->Black;
 	Scr->workSpaceMgr.curImage        = None;
-	Scr->workSpaceMgr.curPaint        = False;
+	Scr->workSpaceMgr.curPaint        = false;
 	Scr->workSpaceMgr.defImage        = None;
 	Scr->workSpaceMgr.vspace          = Scr->WMgrVertButtonIndent;
 	Scr->workSpaceMgr.hspace          = Scr->WMgrHorizButtonIndent;
@@ -194,7 +194,7 @@ void CreateWorkSpaceManager(void)
 	NewFontCursor(&handCursor, "top_left_arrow");
 
 	vsmaplen = sizeof(vsmapbuf);
-	if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen) == True) {
+	if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen)) {
 		vsmap = strtok(vsmapbuf, ",");
 	}
 	else {
@@ -582,7 +582,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 			}
 			else if(twmWin->hasfocusvisible) {
 				focuswindow = twmWin;
-				SetFocusVisualAttributes(focuswindow, False);
+				SetFocusVisualAttributes(focuswindow, false);
 			}
 		}
 	}
@@ -614,7 +614,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 			twmWin->iconmanagerlist = wl;
 		}
 	}
-	wl = (WList *)0;
+	wl = NULL;
 	for(iconmgr = newws->iconmgr; iconmgr; iconmgr = iconmgr->next) {
 		if(iconmgr->first) {
 			wl = iconmgr->first;
@@ -623,7 +623,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	}
 	CurrentIconManagerEntry(wl);
 	if(focuswindow) {
-		SetFocusVisualAttributes(focuswindow, True);
+		SetFocusVisualAttributes(focuswindow, true);
 	}
 	vs->wsw->currentwspc = newws;
 	if(Scr->ReverseCurrentWorkspace && vs->wsw->state == MAPSTATE) {
@@ -710,7 +710,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		action = Scr->ChangeWorkspaceFunction.item ?
 		         Scr->ChangeWorkspaceFunction.item->action : NULL;
 		ExecuteFunction(Scr->ChangeWorkspaceFunction.func, action,
-		                (Window) 0, (TwmWindow *) 0, &event, C_ROOT, FALSE);
+		                (Window) 0, NULL, &event, C_ROOT, false);
 	}
 
 	/* If SaveWorkspaceFocus is on, try to restore the focus to the last
@@ -718,7 +718,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	if(Scr->SaveWorkspaceFocus && newws->save_focus) {
 		twmWin = newws->save_focus;
 		if(OCCUPY(twmWin, newws)) {     /* check should not even be needed anymore */
-			WarpToWindow(twmWin, 0);
+			WarpToWindow(twmWin, false);
 		}
 		else {
 			newws->save_focus = NULL;
@@ -732,7 +732,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	if(Scr->ClickToFocus || Scr->SloppyFocus) {
 		set_last_window(newws);
 	}
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 char *GetCurrentWorkSpaceName(VirtualScreen *vs)
@@ -794,7 +794,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.back), backback);
-		useBackgroundInfo = True;
+		useBackgroundInfo = true;
 	}
 
 	if(backfore == NULL) {
@@ -802,11 +802,11 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
-		useBackgroundInfo = True;
+		useBackgroundInfo = true;
 	}
 	if((image = GetImage(backpix, ws->backcp)) != None) {
 		ws->image = image;
-		useBackgroundInfo = True;
+		useBackgroundInfo = true;
 	}
 	else {
 		ws->image = None;
@@ -825,7 +825,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		}
 		wstmp->next = ws;
 	}
-	Scr->workSpaceManagerActive = 1;
+	Scr->workSpaceManagerActive = true;
 }
 
 static XrmOptionDescRec table [] = {
@@ -862,7 +862,7 @@ void SetupOccupation(TwmWindow *twm_win,
 		return;
 	}
 
-	if(twm_win->wspmgr) {
+	if(twm_win->iswspmgr) {
 		return;
 	}
 
@@ -908,12 +908,12 @@ void SetupOccupation(TwmWindow *twm_win,
 	}
 #endif /* EWMH */
 
-	if(twm_win->iconmgr) {
+	if(twm_win->isiconmgr) {
 		return;        /* someone tried to modify occupation of icon managers */
 	}
 
 	if(! Scr->TransientHasOccupation) {
-		if(twm_win->transient) {
+		if(twm_win->istransient) {
 			t = GetTwmWindow(twm_win->transientfor);
 			if(t != NULL) {
 				twm_win->occupation = t->occupation;
@@ -1007,7 +1007,8 @@ void safecopy(char *dest, char *src, int size)
 	dest[size - 1] = '\0';
 }
 
-Bool RedirectToCaptive(Window window)
+bool
+RedirectToCaptive(Window window)
 {
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
@@ -1017,26 +1018,26 @@ Bool RedirectToCaptive(Window window)
 	Bool                status;
 	char                *str_type;
 	XrmValue            value;
-	int                 ret;
+	bool                ret;
 	char                *atomname;
 	Window              newroot;
 	XWindowAttributes   wa;
 	XrmDatabase         db = NULL;
 
 	if(DontRedirect(window)) {
-		return (False);
+		return false;
 	}
 	if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
-		return (False);
+		return false;
 	}
 	XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
 	if(db == NULL) {
 		if(cliargv) {
 			XFreeStringList(cliargv);
 		}
-		return False;
+		return false;
 	}
-	ret = False;
+	ret = false;
 	status = XrmGetResource(db, "ctwm.redirect", "Ctwm.Redirect", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
@@ -1067,7 +1068,7 @@ Bool RedirectToCaptive(Window window)
 				if(XGetWindowAttributes(dpy, newroot, &wa)) {
 					XReparentWindow(dpy, window, newroot, 0, 0);
 					XMapWindow(dpy, window);
-					ret = True;
+					ret = true;
 				}
 			}
 			XFree((char *)prop);
@@ -1085,19 +1086,19 @@ Bool RedirectToCaptive(Window window)
 			if(XGetWindowAttributes(dpy, newroot, &wa)) {
 				XReparentWindow(dpy, window, newroot, 0, 0);
 				XMapWindow(dpy, window);
-				ret = True;
+				ret = true;
 			}
 		}
 	}
 	XrmDestroyDatabase(db);
 	XFreeStringList(cliargv);
-	return (ret);
+	return ret;
 }
 
 /*
  * The window whose occupation is being manipulated.
  */
-static TwmWindow *occupyWin = (TwmWindow *) 0;
+static TwmWindow *occupyWin = NULL;
 
 static int CanChangeOccupation(TwmWindow **twm_winp)
 {
@@ -1110,11 +1111,11 @@ static int CanChangeOccupation(TwmWindow **twm_winp)
 		return 0;
 	}
 	twm_win = *twm_winp;
-	if(twm_win->iconmgr) {
+	if(twm_win->isiconmgr) {
 		return 0;
 	}
 	if(!Scr->TransientHasOccupation) {
-		if(twm_win->transient) {
+		if(twm_win->istransient) {
 			return 0;
 		}
 		if(twm_win->group != (Window) 0 && twm_win->group != twm_win->w) {
@@ -1199,7 +1200,7 @@ void Occupy(TwmWindow *twm_win)
 	OtpSetPriority(occupy_twm, WinWin, 0, Above);
 
 	/* Mark it shown, and stash what window we're showing it for */
-	occupyWindow->twm_win->mapped = TRUE;
+	occupyWindow->twm_win->mapped = true;
 	occupyWin = twm_win;
 }
 
@@ -1212,7 +1213,7 @@ void OccupyHandleButtonEvent(XEvent *event)
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
-	if(occupyWin == (TwmWindow *) 0) {
+	if(occupyWin == NULL) {
 		return;
 	}
 
@@ -1250,16 +1251,16 @@ void OccupyHandleButtonEvent(XEvent *event)
 		}
 		ChangeOccupation(occupyWin, occupyW->tmpOccupation);
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
-		occupyW->twm_win->mapped = FALSE;
+		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
-		occupyWin = (TwmWindow *) 0;
+		occupyWin = NULL;
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->cancel) {
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
-		occupyW->twm_win->mapped = FALSE;
+		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
-		occupyWin = (TwmWindow *) 0;
+		occupyWin = NULL;
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->allworkspc) {
@@ -1737,7 +1738,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	if(! Scr->TransientHasOccupation) {
 		for(t = Scr->FirstWindow; t != NULL; t = t->next) {
 			if(t != tmp_win &&
-			                ((t->transient && t->transientfor == tmp_win->w) ||
+			                ((t->istransient && t->transientfor == tmp_win->w) ||
 			                 t->group == tmp_win->w)) {
 				ChangeOccupation(t, tmp_win->occupation);
 			}
@@ -2121,7 +2122,7 @@ static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 	width  = vs->wsw->width;
 	height = vs->wsw->height;
 	Draw3DBorder(vs->wsw->w, 0, 0, width, height, 2, Scr->workSpaceMgr.cp, off,
-	             True, False);
+	             true, false);
 }
 
 static ColorPair occupyButtoncp;
@@ -2325,7 +2326,7 @@ void PaintOccupyWindow(void)
 	width  = occwin->width;
 	height = occwin->height;
 
-	Draw3DBorder(occwin->w, 0, 0, width, height, 2, occwin->cp, off, True, False);
+	Draw3DBorder(occwin->w, 0, 0, width, height, 2, occwin->cp, off, true, false);
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window bw = occwin->obuttonw [ws->number];
@@ -2388,7 +2389,7 @@ static void PaintButton(int which,
 
 	if(Scr->Monochrome == COLOR) {
 		Draw3DBorder(w, 0, 0, bwidth, bheight, Scr->WMgrButtonShadowDepth,
-		             cp, state, True, False);
+		             cp, state, true, false);
 
 		switch(Scr->workSpaceMgr.buttonStyle) {
 			case STYLE_NORMAL :
@@ -2400,7 +2401,7 @@ static void PaintButton(int which,
 				             Scr->WMgrButtonShadowDepth - 1,
 				             bwidth  - 2 * Scr->WMgrButtonShadowDepth + 2,
 				             bheight - 2 * Scr->WMgrButtonShadowDepth + 2,
-				             1, cp, (state == on) ? off : on, True, False);
+				             1, cp, (state == on) ? off : on, true, false);
 				break;
 
 			case STYLE_STYLE2 :
@@ -2409,7 +2410,7 @@ static void PaintButton(int which,
 				             Scr->WMgrButtonShadowDepth / 2,
 				             bwidth  - Scr->WMgrButtonShadowDepth,
 				             bheight - Scr->WMgrButtonShadowDepth,
-				             1, cp, (state == on) ? off : on, True, False);
+				             1, cp, (state == on) ? off : on, true, false);
 				break;
 
 			case STYLE_STYLE3 :
@@ -2418,7 +2419,7 @@ static void PaintButton(int which,
 				             1,
 				             bwidth  - 2,
 				             bheight - 2,
-				             1, cp, (state == on) ? off : on, True, False);
+				             1, cp, (state == on) ? off : on, true, false);
 				break;
 		}
 		FB(cp.fore, cp.back);
@@ -2427,7 +2428,7 @@ static void PaintButton(int which,
 	}
 	else {
 		Draw3DBorder(w, 0, 0, bwidth, bheight, Scr->WMgrButtonShadowDepth,
-		             cp, state, True, False);
+		             cp, state, true, false);
 		if(state == on) {
 			FB(cp.fore, cp.back);
 			XmbDrawImageString(dpy, w, font.font_set, Scr->NormalGC, hspace, vspace,
@@ -2628,7 +2629,7 @@ void WMapSetMapState(VirtualScreen *vs)
 		XMapWindow(dpy, vs->wsw->mswl [ws->number]->w);
 	}
 	vs->wsw->state = MAPSTATE;
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 void WMapSetButtonsState(VirtualScreen *vs)
@@ -2655,13 +2656,13 @@ void WMapSetButtonsState(VirtualScreen *vs)
  */
 int WMapWindowMayBeAdded(TwmWindow *win)
 {
-	if(win->iconmgr) {
+	if(win->isiconmgr) {
 		return 0;
 	}
 	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
 		return 0;
 	}
-	if(win->wspmgr) {
+	if(win->iswspmgr) {
 		return 0;
 	}
 	if(Scr->workSpaceMgr.noshowoccupyall &&
@@ -2698,9 +2699,9 @@ void WMapDestroyWindow(TwmWindow *win)
 	if(win == occupyWin) {
 		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 		XUnmapWindow(dpy, occwin->twm_win->frame);
-		occwin->twm_win->mapped = FALSE;
+		occwin->twm_win->mapped = false;
 		occwin->twm_win->occupation = 0;
-		occupyWin = (TwmWindow *) 0;
+		occupyWin = NULL;
 	}
 }
 
@@ -2730,14 +2731,14 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 	WinList       wl;
 	float         wf, hf;
 
-	if(win->iconmgr) {
+	if(win->isiconmgr) {
 		return;
 	}
 	if(!win->vs) {
 		return;
 	}
 
-	if(win->wspmgr) {
+	if(win->iswspmgr) {
 		if(w == -1) {
 			return;
 		}
@@ -3025,7 +3026,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	TwmWindow           *win;
 	int                 occupation;
 	unsigned int        W0, H0, bw;
-	int                 cont;
+	bool                cont;
 	XEvent              ev;
 	Window              w = 0, sw, parent;
 	int                 X0, Y0, X1, Y1, XW, YW, XSW, YSW;
@@ -3036,7 +3037,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	unsigned int        modifier;
 	XSetWindowAttributes attrs;
 	float               wf, hf;
-	Boolean             alreadyvivible, realmovemode, startincurrent;
+	bool                alreadyvivible, realmovemode, startincurrent;
 	Time                etime;
 
 	parent   = event->xbutton.window;
@@ -3081,7 +3082,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		return;
 	}
 	win = wl->twm_win;
-	if((! Scr->TransientHasOccupation) && win->transient) {
+	if((! Scr->TransientHasOccupation) && win->istransient) {
 		return;
 	}
 
@@ -3097,14 +3098,14 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		sw2 = win->frame_width * win->frame_height;
 		ss = vs->w * vs->h;
 		if(sw2 > ((ss * Scr->OpaqueMoveThreshold) / 100)) {
-			Scr->OpaqueMove = FALSE;
+			Scr->OpaqueMove = false;
 		}
 		else {
-			Scr->OpaqueMove = TRUE;
+			Scr->OpaqueMove = true;
 		}
 	}
 	else {
-		Scr->OpaqueMove = FALSE;
+		Scr->OpaqueMove = false;
 	}
 	/*
 	 * Buttons inside the workspace manager, when clicking on the
@@ -3170,8 +3171,8 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
 	             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor, CurrentTime);
 
-	alreadyvivible = False;
-	cont = TRUE;
+	alreadyvivible = false;
+	cont = true;
 	while(cont) {
 		MapSubwindow *msw;
 		XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
@@ -3182,7 +3183,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 				if(ev.xbutton.button != button) {
 					break;
 				}
-				cont = FALSE;
+				cont = false;
 				newX = ev.xbutton.x;
 				newY = ev.xbutton.y;
 
@@ -3260,7 +3261,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 							            win->frame_bw,
 							            win->title_height + win->frame_bw3D);
 						}
-						alreadyvivible = True;
+						alreadyvivible = true;
 						goto move;
 					}
 					if(!alreadyvivible) {
@@ -3275,7 +3276,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 						else {
 							MoveOutline(Scr->Root, 0, 0, 0, 0, 0, 0);
 						}
-						alreadyvivible = False;
+						alreadyvivible = false;
 						goto move;
 					}
 movewin:
@@ -3464,7 +3465,7 @@ static void WMapRedrawWindow(Window window, int width, int height,
 	y = ((height + strhei) / 2) - descent;
 
 	if(Scr->use3Dwmap) {
-		Draw3DBorder(window, 0, 0, width, height, 1, cp, off, True, False);
+		Draw3DBorder(window, 0, 0, width, height, 1, cp, off, true, false);
 		FB(cp.fore, cp.back);
 	}
 	else {
@@ -3712,7 +3713,7 @@ void WMapCreateCurrentBackGround(char *border,
 	if(background == NULL) {
 		return;
 	}
-	ws->curPaint = True;
+	ws->curPaint = true;
 	GetColor(Scr->Monochrome, &ws->curColors.back, background);
 	if(foreground == NULL) {
 		return;
@@ -3762,16 +3763,17 @@ void WMapCreateDefaultBackGround(char *border,
 	ws->defImage = image;
 }
 
-Bool AnimateRoot(void)
+bool
+AnimateRoot(void)
 {
 	VirtualScreen *vs;
 	ScreenInfo *scr;
 	int        scrnum;
 	Image      *image;
 	WorkSpace  *ws;
-	Bool       maybeanimate;
+	bool       maybeanimate;
 
-	maybeanimate = False;
+	maybeanimate = false;
 	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
 		if((scr = ScreenList [scrnum]) == NULL) {
 			continue;
@@ -3795,7 +3797,7 @@ Bool AnimateRoot(void)
 			XSetWindowBackgroundPixmap(dpy, vs->window, image->pixmap);
 			XClearWindow(dpy, scr->Root);
 			vs->wsw->currentwspc->image = image->next;
-			maybeanimate = True;
+			maybeanimate = true;
 		}
 	}
 	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
@@ -3819,11 +3821,11 @@ Bool AnimateRoot(void)
 				XSetWindowBackgroundPixmap(dpy, vs->wsw->mswl [ws->number]->w, image->pixmap);
 				XClearWindow(dpy, vs->wsw->mswl [ws->number]->w);
 				ws->image = image->next;
-				maybeanimate = True;
+				maybeanimate = true;
 			}
 		}
 	}
-	return (maybeanimate);
+	return maybeanimate;
 }
 
 static char **GetCaptivesList(int scrnum)
@@ -3842,10 +3844,10 @@ static char **GetCaptivesList(int scrnum)
 	if(XGetWindowProperty(dpy, root, XA_WM_CTWMSLIST, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return ((char **) 0);
+		return NULL;
 	}
 	if(len == 0) {
-		return ((char **) 0);
+		return NULL;
 	}
 
 	count = 0;
@@ -3869,7 +3871,7 @@ static char **GetCaptivesList(int scrnum)
 	ret [i] = NULL;
 	XFree((char *)prop);
 
-	return (ret);
+	return ret;
 }
 
 static void SetCaptivesList(int scrnum, char **clist)
@@ -4130,7 +4132,8 @@ void SetNoRedirect(Window window)
 	                PropModeReplace, (unsigned char *) "Yes", 4);
 }
 
-static Bool DontRedirect(Window window)
+static bool
+DontRedirect(Window window)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;
@@ -4141,16 +4144,17 @@ static Bool DontRedirect(Window window)
 	if(XGetWindowProperty(dpy, window, XA_WM_NOREDIRECT, 0L, 1L,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return (False);
+		return false;
 	}
 	if(len == 0) {
-		return (False);
+		return false;
 	}
 	XFree((char *)prop);
-	return (True);
+	return true;
 }
 
-Bool visible(TwmWindow *tmp_win)
+bool
+visible(TwmWindow *tmp_win)
 {
 	return (tmp_win->vs != NULL);
 }

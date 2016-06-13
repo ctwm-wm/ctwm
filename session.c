@@ -101,33 +101,13 @@
 
 #include "ctwm.h"
 
-#include <X11/Xos.h>
-
-#ifndef X_NOT_POSIX
-#ifdef _POSIX_SOURCE
-#include <limits.h>
-#else
-#define _POSIX_SOURCE
-#include <limits.h>
-#undef _POSIX_SOURCE
-#endif
-#endif /* X_NOT_POSIX */
-#ifndef PATH_MAX
-#include <sys/param.h>
-#ifndef PATH_MAX
-#ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
-#else
-#define PATH_MAX 1024
-#endif
-#endif
-#endif /* PATH_MAX */
-
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>           /* For umask */
+#include <unistd.h>
+#include <sys/stat.h>  // For umask
+#include <limits.h>    // PATH_MAX
+
+#include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"
 #include "icons.h"
@@ -135,11 +115,14 @@
 #include "session.h"
 
 SmcConn smcConn = NULL;
-XtInputId iceInputId;
-char *twm_clientId;
-TWMWinConfigEntry *winConfigHead = NULL;
-Bool gotFirstSave = 0;
-Bool sent_save_done = 0;
+static XtInputId iceInputId;
+static char *twm_clientId;
+static TWMWinConfigEntry *winConfigHead = NULL;
+static bool sent_save_done = false;
+
+static void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
+                           int saveType, Bool shutdown, int interactStyle,
+                           Bool fast);
 
 #define SAVEFILE_VERSION 2
 
@@ -558,7 +541,7 @@ int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
 int ReadWinConfigEntry(FILE *configFile, unsigned short version,
                        TWMWinConfigEntry **pentry)
 /* this function reads the next window configuration entry from the given file
- * else it returns FALSE if none exists or there is a problem
+ * else it returns 0 if none exists or there is a problem
  */
 {
 	TWMWinConfigEntry *entry;
@@ -749,10 +732,10 @@ void ReadWinConfigFile(char *filename)
 
 int GetWindowConfig(TwmWindow *theWindow, short *x, short *y,
                     unsigned short *width, unsigned short *height,
-                    Bool *iconified, Bool *icon_info_present,
+                    bool *iconified, bool *icon_info_present,
                     short *icon_x, short *icon_y,
-                    Bool *width_ever_changed_by_user,
-                    Bool *height_ever_changed_by_user,
+                    bool *width_ever_changed_by_user,
+                    bool *height_ever_changed_by_user,
                     int *occupation) /* <== [ Matthew McNeill Feb 1997 ] == */
 /* This function attempts to extract all the relevant information from the
  * given window and return values via the rest of the parameters to the
@@ -1087,7 +1070,7 @@ void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData)
 
 bad:
 	SmcSaveYourselfDone(smcCon, success);
-	sent_save_done = 1;
+	sent_save_done = true;
 
 	if(configFile) {
 		fclose(configFile);
@@ -1100,18 +1083,19 @@ bad:
 
 /*===[ Save Yourself SM CallBack ]===========================================*/
 
-void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
-                    int saveType, Bool shutdown, int interactStyle, Bool fast)
+static void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
+                           int saveType, Bool shutdown, int interactStyle,
+                           Bool fast)
 /* this procedure is called by the session manager when requesting the
  * window manager to save its status, ie all the window configurations
  */
 {
 	if(!SmcRequestSaveYourselfPhase2(smcCon, SaveYourselfPhase2CB, NULL)) {
 		SmcSaveYourselfDone(smcCon, False);
-		sent_save_done = 1;
+		sent_save_done = true;
 	}
 	else {
-		sent_save_done = 0;
+		sent_save_done = false;
 	}
 }
 
@@ -1144,7 +1128,7 @@ void ShutdownCancelledCB(SmcConn smcCon, SmPointer clientData)
 {
 	if(!sent_save_done) {
 		SmcSaveYourselfDone(smcCon, False);
-		sent_save_done = 1;
+		sent_save_done = true;
 	}
 }
 

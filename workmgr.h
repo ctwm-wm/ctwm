@@ -27,10 +27,6 @@
 #ifndef _CTWM_WORKMGR_H
 #define _CTWM_WORKMGR_H
 
-#include <stdbool.h>
-
-#include "vscreen.h"
-
 #define MAXWORKSPACE 32
 #define MAPSTATE      0
 #define BUTTONSSTATE  1
@@ -58,12 +54,12 @@ struct WorkSpaceMgr {
 	MyFont          buttonFont;
 	MyFont          windowFont;
 	ColorPair       windowcp;
-	Bool            windowcpgiven;
+	bool            windowcpgiven;
 	ColorPair       cp;
 	long            count;
 	char            *geometry;
 	int             lines, columns;
-	int             noshowoccupyall;
+	bool            noshowoccupyall;
 	int             initialstate;
 	short           buttonStyle;
 	name_list       *windowBackgroundL;
@@ -72,7 +68,7 @@ struct WorkSpaceMgr {
 	ColorPair           curColors;
 	Image               *curImage;
 	unsigned long       curBorderColor;
-	Bool                curPaint;
+	bool                curPaint;
 
 	ColorPair           defColors;
 	Image              *defImage;
@@ -202,10 +198,10 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
-Bool AnimateRoot(void);
+bool AnimateRoot(void);
 char *AddToCaptiveList(const char *cptname);
 void RemoveFromCaptiveList(const char *cptname);
-Bool RedirectToCaptive(Window window);
+bool RedirectToCaptive(Window window);
 void SetPropsIfCaptiveCtwm(TwmWindow *win);
 Window CaptiveCtwmRootWindow(Window window);
 
@@ -217,9 +213,9 @@ void MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win);
 CaptiveCTWM GetCaptiveCTWMUnderPointer(void);
 void SetNoRedirect(Window window);
 
-extern void ShowBackground(VirtualScreen *vs, int state);
+void ShowBackground(VirtualScreen *vs, int state);
 
-Bool visible(TwmWindow *tmp_win);
+bool visible(TwmWindow *tmp_win);
 
 extern int fullOccupation;
 

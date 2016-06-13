@@ -178,7 +178,7 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
 		 * >= 1000 is "infinity" and don't bother calculating.
 		 */
 		if(Scr->OpaqueResizeThreshold >= 1000) {
-			Scr->OpaqueResize = TRUE;
+			Scr->OpaqueResize = true;
 		}
 		else {
 			/*
@@ -189,15 +189,15 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
 			winsz = tmp_win->frame_width * tmp_win->frame_height;
 			scrsz = Scr->rootw  * Scr->rooth;
 			if(winsz > (scrsz * (Scr->OpaqueResizeThreshold / 100.0))) {
-				Scr->OpaqueResize = FALSE;
+				Scr->OpaqueResize = false;
 			}
 			else {
-				Scr->OpaqueResize = TRUE;
+				Scr->OpaqueResize = true;
 			}
 		}
 	}
 	else {
-		Scr->OpaqueResize = FALSE;
+		Scr->OpaqueResize = false;
 	}
 }
 
@@ -658,7 +658,7 @@ static void DisplaySize(TwmWindow *tmp_win, int width, int height)
 	Draw3DBorder(Scr->SizeWindow, 0, 0,
 	             Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
 	             Scr->SizeFont.height + SIZE_VINDENT * 2,
-	             2, Scr->DefaultC, off, False, False);
+	             2, Scr->DefaultC, off, false, false);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
@@ -700,7 +700,7 @@ void EndResize(void)
 	SetupWindow(tmp_win, dragx - tmp_win->frame_bw, dragy - tmp_win->frame_bw,
 	            dragWidth, dragHeight, -1);
 
-	if(tmp_win->iconmgr) {
+	if(tmp_win->isiconmgr) {
 		int ncols = tmp_win->iconmgrp->cur_columns;
 		if(ncols == 0) {
 			ncols = 1;

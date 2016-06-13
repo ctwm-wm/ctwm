@@ -66,6 +66,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
 #include <X11/Xatom.h>
 
 #include "util.h"
@@ -211,17 +212,17 @@ void CreateIconManagers(void)
 			sizehints.win_gravity = gravity;
 			XSetWMSizeHints(dpy, p->w, &sizehints, XA_WM_NORMAL_HINTS);
 
-			p->twm_win->mapped = FALSE;
+			p->twm_win->mapped = false;
 			SetMapStateProp(p->twm_win, WithdrawnState);
 			if(p->twm_win && p->twm_win->wmhints &&
 			                (p->twm_win->wmhints->initial_state == IconicState)) {
-				p->twm_win->isicon = TRUE;
+				p->twm_win->isicon = true;
 			}
 			else if(!Scr->NoIconManagers && Scr->ShowIconManager) {
-				p->twm_win->isicon = FALSE;
+				p->twm_win->isicon = false;
 			}
 			else {
-				p->twm_win->isicon = TRUE;
+				p->twm_win->isicon = true;
 			}
 		}
 		if(ws != NULL) {
@@ -321,7 +322,7 @@ void MoveIconManager(int dir)
 	WList *tmp = NULL;
 	int cur_row, cur_col, new_row, new_col;
 	int row_inc, col_inc;
-	int got_it;
+	bool got_it;
 
 	if(!Current) {
 		return;
@@ -333,21 +334,21 @@ void MoveIconManager(int dir)
 
 	row_inc = 0;
 	col_inc = 0;
-	got_it = FALSE;
+	got_it = false;
 
 	switch(dir) {
 		case F_FORWICONMGR:
 			if((tmp = Current->next) == NULL) {
 				tmp = ip->first;
 			}
-			got_it = TRUE;
+			got_it = true;
 			break;
 
 		case F_BACKICONMGR:
 			if((tmp = Current->prev) == NULL) {
 				tmp = ip->last;
 			}
-			got_it = TRUE;
+			got_it = true;
 			break;
 
 		case F_UPICONMGR:
@@ -367,7 +368,7 @@ void MoveIconManager(int dir)
 			break;
 	}
 
-	/* If got_it is FALSE ast this point then we got a left, right,
+	/* If got_it is false ast this point then we got a left, right,
 	 * up, or down, command.  We will enter this loop until we find
 	 * a window to warp to.
 	 */
@@ -395,7 +396,7 @@ void MoveIconManager(int dir)
 		 */
 		for(tmp = ip->first; tmp != NULL; tmp = tmp->next) {
 			if(tmp->row == new_row && tmp->col == new_col) {
-				got_it = TRUE;
+				got_it = true;
 				break;
 			}
 		}
@@ -452,7 +453,7 @@ void MoveMappedIconManager(int dir)
 	IconMgr *ip;
 	WList *tmp = NULL;
 	WList *orig = NULL;
-	int got_it;
+	bool got_it;
 
 	if(!Current) {
 		Current = Active;
@@ -463,7 +464,7 @@ void MoveMappedIconManager(int dir)
 
 	ip = Current->iconmgr;
 
-	got_it = 0;
+	got_it = false;
 	tmp = Current;
 	orig = Current;
 
@@ -482,7 +483,7 @@ void MoveMappedIconManager(int dir)
 				break;
 		}
 		if(tmp->twm->mapped) {
-			got_it = 1;
+			got_it = true;
 			break;
 		}
 		if(tmp == orig) {
@@ -534,7 +535,7 @@ void MoveMappedIconManager(int dir)
 void JumpIconManager(int dir)
 {
 	IconMgr *ip, *tmp_ip = NULL;
-	int got_it = FALSE;
+	bool got_it = false;
 	ScreenInfo *sp;
 	int screen;
 
@@ -546,7 +547,7 @@ void JumpIconManager(int dir)
 #define ITER(i) (dir == F_NEXTICONMGR ? (i)->next : (i)->prev)
 #define IPOFSP(sp) (dir == F_NEXTICONMGR ? sp->iconmgr : sp->iconmgr->lasti)
 #define TEST(ip) if ((ip)->count != 0 && (ip)->twm_win->mapped) \
-                 { got_it = TRUE; break; }
+                 { got_it = true; break; }
 
 	ip = Current->iconmgr;
 	for(tmp_ip = ITER(ip); tmp_ip; tmp_ip = ITER(tmp_ip)) {
@@ -613,7 +614,7 @@ WList *AddIconManager(TwmWindow *tmp_win)
 	IconMgr *ip;
 
 	/* Some window types don't wind up in icon managers ever */
-	if(tmp_win->iconmgr || tmp_win->transient || tmp_win->wspmgr
+	if(tmp_win->isiconmgr || tmp_win->istransient || tmp_win->iswspmgr
 	                || tmp_win->w == Scr->workSpaceMgr.occupyWindow->w) {
 		return NULL;
 	}
@@ -753,7 +754,7 @@ WList *AddIconManager(TwmWindow *tmp_win)
 				XMapWindow(dpy, ip->w);
 				XMapWindow(dpy, ip->twm_win->frame);
 			}
-			ip->twm_win->mapped = TRUE;
+			ip->twm_win->mapped = true;
 		}
 
 
@@ -812,14 +813,14 @@ WList *AddIconManager(TwmWindow *tmp_win)
 void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win)
 {
 	WList *tmp1;
-	int added;
+	bool added;
 
-	added = FALSE;
+	added = false;
 	if(ip->first == NULL) {
 		ip->first = tmp;
 		tmp->prev = NULL;
 		ip->last = tmp;
-		added = TRUE;
+		added = true;
 	}
 	else if(Scr->SortIconMgr) {
 		for(tmp1 = ip->first; tmp1 != NULL; tmp1 = tmp1->next) {
@@ -840,7 +841,7 @@ void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win)
 				else {
 					tmp->prev->next = tmp;
 				}
-				added = TRUE;
+				added = true;
 				break;
 			}
 		}
@@ -920,7 +921,7 @@ void RemoveIconManager(TwmWindow *tmp_win)
 
 		if(ip->count == 0) {
 			XUnmapWindow(dpy, ip->twm_win->frame);
-			ip->twm_win->mapped = FALSE;
+			ip->twm_win->mapped = false;
 		}
 		if(tmp1 == NULL) {
 			tmp_win->iconmanagerlist = tmp_win->iconmanagerlist->nextv;
@@ -942,26 +943,26 @@ void CurrentIconManagerEntry(WList *current)
 
 void ActiveIconManager(WList *active)
 {
-	active->active = TRUE;
+	active->active = true;
 	Active = active;
 	Active->iconmgr->active = active;
 	Current = Active;
-	DrawIconManagerBorder(active, False);
+	DrawIconManagerBorder(active, false);
 }
 
 void NotActiveIconManager(WList *active)
 {
-	active->active = FALSE;
-	DrawIconManagerBorder(active, False);
+	active->active = false;
+	DrawIconManagerBorder(active, false);
 }
 
-void DrawIconManagerBorder(WList *tmp, int fill)
+void DrawIconManagerBorder(WList *tmp, bool fill)
 {
 	if(Scr->use3Diconmanagers) {
 		Draw3DBorder(tmp->w, 0, 0, tmp->width, tmp->height,
 		             Scr->IconManagerShadowDepth, tmp->cp,
 		             (tmp->active && Scr->Highlight ? on : off),
-		             fill, False);
+		             fill, false);
 	}
 	else {
 		XSetForeground(dpy, Scr->NormalGC, tmp->cp.fore);
@@ -999,12 +1000,12 @@ void SortIconManager(IconMgr *ip)
 		ip = Active->iconmgr;
 	}
 
-	done = FALSE;
+	done = false;
 	do {
 		for(tmp1 = ip->first; tmp1 != NULL; tmp1 = tmp1->next) {
 			int compresult;
 			if((tmp2 = tmp1->next) == NULL) {
-				done = TRUE;
+				done = true;
 				break;
 			}
 			if(Scr->CaseSensitive) {

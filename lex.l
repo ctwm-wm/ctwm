@@ -65,6 +65,8 @@
 #include "parse.h"
 #include "parse_be.h"
 
+#include "gram.tab.h"
+
 /*
  * flex uses a YY_INPUT macro internally rather than input.  It doesn't
  * need unput since it maintains state internally.
@@ -108,7 +110,7 @@ number				[0-9]+
 				      fprintf (stderr,
 				       "ignoring unknown keyword:  %s\n", 
 					       yytext);
-				      ParseError = 1;
+				      ParseError = true;
 				  } else 
 				    return token;
 				}
@@ -125,7 +127,7 @@ number				[0-9]+
 				  fprintf (stderr, 
 					   "ignoring character \"%s\"\n",
 					   yytext);
-				  ParseError = 1;
+				  ParseError = true;
 				}
 %%
 

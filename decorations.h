@@ -5,8 +5,6 @@
 #ifndef _CTWM_DECORATIONS_H
 #define _CTWM_DECORATIONS_H
 
-#include <stdbool.h>
-
 
 void SetupWindow(TwmWindow *tmp_win,
                  int x, int y, int w, int h, int bw);

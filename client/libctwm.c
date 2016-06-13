@@ -38,7 +38,7 @@ Atom _XA_WM_WORKSPACESLIST;
 /* Note that this doesn't assure that ctwm is really running,
    i should set up a communication via flipping a property */
 
-Bool CtwmIsRunning(Display *display, int scrnum)
+bool CtwmIsRunning(Display *display, int scrnum)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;
@@ -48,19 +48,19 @@ Bool CtwmIsRunning(Display *display, int scrnum)
 
 	_XA_WM_WORKSPACESLIST = XInternAtom(display, "WM_WORKSPACESLIST", True);
 	if(_XA_WM_WORKSPACESLIST == None) {
-		return (False);
+		return false;
 	}
 	if(XGetWindowProperty(display, RootWindow(display, scrnum),
 	                      _XA_WM_WORKSPACESLIST, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return (False);
+		return false;
 	}
 	if(len == 0) {
-		return (False);
+		return false;
 	}
 	XFree((char *)prop);
-	return (True);
+	return true;
 }
 
 char **CtwmListWorkspaces(Display *display, int scrnum)
@@ -121,17 +121,17 @@ char *CtwmCurrentWorkspace(Display *display, int scrnum)
 
 	_XA_WM_CURRENTWORKSPACE = XInternAtom(display, "WM_CURRENTWORKSPACE", True);
 	if(_XA_WM_CURRENTWORKSPACE == None) {
-		return ((char *) 0);
+		return NULL;
 	}
 
 	if(XGetWindowProperty(display, RootWindow(display, scrnum),
 	                      _XA_WM_CURRENTWORKSPACE, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return ((char *) 0);
+		return NULL;
 	}
 	if(len == 0) {
-		return ((char *) 0);
+		return NULL;
 	}
 	return ((char *) prop);
 }
@@ -164,16 +164,16 @@ char **CtwmCurrentOccupation(Display *display, Window window)
 
 	_XA_WM_OCCUPATION = XInternAtom(display, "WM_OCCUPATION", True);
 	if(_XA_WM_OCCUPATION == None) {
-		return ((char **) 0);
+		return NULL;
 	}
 
 	if(XGetWindowProperty(display, window, _XA_WM_OCCUPATION, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return 0;
+		return NULL;
 	}
 	if(len == 0) {
-		return 0;
+		return NULL;
 	}
 
 	count = 0;
@@ -196,7 +196,7 @@ char **CtwmCurrentOccupation(Display *display, Window window)
 	}
 	ret [i] = NULL;
 	XFree((char *)prop);
-	return (ret);
+	return ret;
 }
 
 int CtwmSetOccupation(Display *display, Window window, char **occupation)

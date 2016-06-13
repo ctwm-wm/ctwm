@@ -3,7 +3,7 @@
 #include "screen.h"
 #include "clicktofocus.h"
 
-TwmWindow *get_last_window(WorkSpace *current)
+static TwmWindow *get_last_window(WorkSpace *current)
 {
 	TwmWindow           *t;
 	TwmWindow  *first = NULL;
@@ -13,7 +13,7 @@ TwmWindow *get_last_window(WorkSpace *current)
 	}
 
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
-		if(!first && !t->iconmgr && OCCUPY(t, current) && t->mapped) {
+		if(!first && !t->isiconmgr && OCCUPY(t, current) && t->mapped) {
 			first = t;
 		}
 		if(t->hasfocusvisible && OCCUPY(t, current)) {

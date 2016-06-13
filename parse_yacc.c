@@ -18,6 +18,8 @@
 #include "parse_be.h"
 #include "parse_yacc.h"
 
+#include "gram.tab.h"
+
 char *Action = "";
 char *Name = "";
 MenuRoot *root, *pull = NULL;
@@ -31,7 +33,7 @@ void yyerror(char *s)
 {
 	twmrc_error_prefix();
 	fprintf(stderr, "error in input file:  %s\n", s ? s : "");
-	ParseError = 1;
+	ParseError = true;
 }
 
 void InitGramVariables(void)
@@ -139,10 +141,10 @@ MenuRoot *GetRoot(char *name, char *fore, char *back)
 	}
 
 	if(fore) {
-		int save;
+		bool save;
 
 		save = Scr->FirstTime;
-		Scr->FirstTime = TRUE;
+		Scr->FirstTime = true;
 		GetColor(COLOR, &tmp->highlight.fore, fore);
 		GetColor(COLOR, &tmp->highlight.back, back);
 		Scr->FirstTime = save;
@@ -163,12 +165,12 @@ void GotButton(int butt, int func)
 
 		if(func == F_MENU) {
 			pull->prev = NULL;
-			AddFuncButton(butt, i, mods, func, pull, (MenuItem *) 0);
+			AddFuncButton(butt, i, mods, func, pull, NULL);
 		}
 		else {
 			root = GetRoot(TWM_ROOT, NULL, NULL);
 			item = AddToMenu(root, "x", Action, NULL, func, NULL, NULL);
-			AddFuncButton(butt, i, mods, func, (MenuRoot *) 0, item);
+			AddFuncButton(butt, i, mods, func, NULL, item);
 		}
 	}
 
@@ -194,7 +196,7 @@ void GotKey(char *key, int func)
 				break;
 			}
 		}
-		else if(!AddFuncKey(key, i, mods, func, (MenuRoot *) 0, Name, Action)) {
+		else if(!AddFuncKey(key, i, mods, func, NULL, Name, Action)) {
 			break;
 		}
 	}
@@ -219,37 +221,40 @@ void GotTitleButton(char *bitmapname, int func, bool rightside)
 	pull = NULL;
 }
 
-Bool CheckWarpScreenArg(char *s)
+bool
+CheckWarpScreenArg(char *s)
 {
 	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_PREV) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_BACK) == 0) {
-		return True;
+		return true;
 	}
 
 	for(; *s && Isascii(*s) && Isdigit(*s); s++) ;  /* SUPPRESS 530 */
-	return (*s ? False : True);
+	return (*s ? false : true);
 }
 
 
-Bool CheckWarpRingArg(char *s)
+bool
+CheckWarpRingArg(char *s)
 {
 	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_PREV) == 0) {
-		return True;
+		return true;
 	}
 
-	return False;
+	return false;
 }
 
 
-Bool CheckColormapArg(char *s)
+bool
+CheckColormapArg(char *s)
 {
 	if(strcasecmp(s, COLORMAP_NEXT) == 0 ||
 	                strcasecmp(s, COLORMAP_PREV) == 0 ||
 	                strcasecmp(s, COLORMAP_DEFAULT) == 0) {
-		return True;
+		return true;
 	}
 
-	return False;
+	return false;
 }

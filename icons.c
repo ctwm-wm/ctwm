@@ -65,6 +65,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <X11/extensions/shape.h>
+
 #include "screen.h"
 #include "icons.h"
 #include "otp.h"
@@ -75,7 +77,7 @@
 #include "image.h"
 
 #define iconWidth(w)    (w->icon->border_width * 2 + \
-                        Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width)
+                        (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
 #define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
 
 static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
@@ -89,9 +91,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitEntry(ie, grav2, grav1, w, ie->h);
 			}
 			if(h != ie->h) {
-				new = malloc(sizeof(IconEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(IconEntry));
 				new->next = ie->next;
 				ie->next = new;
 				new->x = ie->x;
@@ -113,9 +113,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitEntry(ie, grav2, grav1, ie->w, h);
 			}
 			if(w != ie->w) {
-				new = malloc(sizeof(IconEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(IconEntry));
 				new->next = ie->next;
 				ie->next = new;
 				new->y = ie->y;
@@ -191,7 +189,7 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	oldir = tmp_win->icon->ir;
 	if(ie) {
 		splitEntry(ie, ir->grav1, ir->grav2, w, h);
-		ie->used = 1;
+		ie->used = true;
 		ie->twm_win = tmp_win;
 		switch(ir->Justification) {
 			case J_LEFT :
@@ -238,7 +236,7 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	else {
 		*final_x = def_x;
 		*final_y = def_y;
-		tmp_win->icon->ir = (IconRegion *)0;
+		tmp_win->icon->ir = NULL;
 		return;
 	}
 	if(Scr->ShrinkIconTitles && tmp_win->icon->has_title) {
@@ -309,9 +307,9 @@ int IconUp(TwmWindow *tmp_win)
 		XMoveWindow(dpy, tmp_win->icon->w, x, y);
 		tmp_win->icon->w_x = x;
 		tmp_win->icon->w_y = y;
-		tmp_win->icon_moved = FALSE;    /* since we've restored it */
+		tmp_win->icon_moved = false;    /* since we've restored it */
 	}
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 	return (0);
 }
 
@@ -354,12 +352,12 @@ void IconDown(TwmWindow *tmp_win)
 
 	ie = FindIconEntry(tmp_win, &ir);
 	if(ie) {
-		ie->twm_win = 0;
-		ie->used = 0;
+		ie->twm_win = NULL;
+		ie->used = false;
 		ip = prevIconEntry(ie, ir);
 		in = ie->next;
 		for(;;) {
-			if(ip && ip->used == 0 &&
+			if(ip && ip->used == false &&
 			                ((ip->x == ie->x && ip->w == ie->w) ||
 			                 (ip->y == ie->y && ip->h == ie->h))) {
 				ip->next = ie->next;
@@ -368,7 +366,7 @@ void IconDown(TwmWindow *tmp_win)
 				ie = ip;
 				ip = prevIconEntry(ip, ir);
 			}
-			else if(in && in->used == 0 &&
+			else if(in && in->used == false &&
 			                ((in->x == ie->x && in->w == ie->w) ||
 			                 (in->y == ie->y && in->h == ie->h))) {
 				ie->next = in->next;
@@ -426,14 +424,11 @@ name_list **AddIconRegion(char *geom,
 		ir->y += Scr->rooth - ir->h;
 	}
 
-	ir->entries = malloc(sizeof(IconEntry));
-	ir->entries->next = 0;
+	ir->entries = calloc(1, sizeof(IconEntry));
 	ir->entries->x = ir->x;
 	ir->entries->y = ir->y;
 	ir->entries->w = ir->w;
 	ir->entries->h = ir->h;
-	ir->entries->twm_win = 0;
-	ir->entries->used = 0;
 
 	tmp = ParseJustification(ijust);
 	if((tmp < 0) || (tmp == J_BORDER)) {
@@ -495,7 +490,7 @@ static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
 		icon->image  = image;
 		icon->width  = image->width;
 		icon->height = image->height;
-		tmp_win->forced = TRUE;
+		tmp_win->forced = true;
 	}
 	else {
 		icon->match = match_none;
@@ -522,7 +517,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	icon->border        = Scr->IconBorderColor;
 	icon->iconc.fore    = Scr->IconC.fore;
 	icon->iconc.back    = Scr->IconC.back;
-	icon->title_shrunk  = False;
+	icon->title_shrunk  = false;
 
 	GetColorFromList(Scr->IconBorderColorL, tmp_win->full_name, &tmp_win->class,
 	                 &icon->border);
@@ -538,10 +533,10 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 
 	icon->match   = match_none;
 	icon->image   = None;
-	icon->ir      = (IconRegion *) 0;
+	icon->ir      = NULL;
 
-	tmp_win->forced = FALSE;
-	icon->w_not_ours = FALSE;
+	tmp_win->forced = false;
+	icon->w_not_ours = false;
 
 	pattern = NULL;
 
@@ -648,7 +643,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->w_height = icon->height;
 		icon->x = 0;
 		icon->y = 0;
-		icon->has_title = False;
+		icon->has_title = false;
 	}
 	else {
 		XRectangle inc_rect;
@@ -674,7 +669,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->y = icon->height + Scr->IconFont.height + Scr->IconManagerShadowDepth;
 		icon->w_height = icon->height + Scr->IconFont.height +
 		                 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
-		icon->has_title = True;
+		icon->has_title = true;
 		if(icon->height) {
 			icon->border_width = 0;
 		}
@@ -692,11 +687,11 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		}
 		else {
 			image = None;
-			icon->w_not_ours = TRUE;
+			icon->w_not_ours = true;
 			icon->width  = icon->w_width;
 			icon->height = icon->w_height;
 			icon->image  = image;
-			icon->has_title = False;
+			icon->has_title = false;
 			event_mask = 0;
 		}
 	}
@@ -765,14 +760,14 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 				rect.y      = icon->height;
 				rect.width  = icon->width;
 				rect.height = icon->w_height - icon->height;
-				icon->title_shrunk = True;
+				icon->title_shrunk = true;
 			}
 			else {
 				rect.x      = 0;
 				rect.y      = icon->height;
 				rect.width  = icon->w_width;
 				rect.height = icon->w_height - icon->height;
-				icon->title_shrunk = False;
+				icon->title_shrunk = false;
 			}
 			XShapeCombineRectangles(dpy, icon->w, ShapeBounding,
 			                        0, 0, &rect, 1, ShapeUnion, 0);
@@ -825,14 +820,14 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->w_x = final_x;
 		icon->w_y = final_y;
 	}
-	tmp_win->iconified = TRUE;
+	tmp_win->iconified = true;
 	OtpAdd(tmp_win, IconWin);
 
 	XMapSubwindows(dpy, icon->w);
 	XSaveContext(dpy, icon->w, TwmContext, (XPointer)tmp_win);
 	XSaveContext(dpy, icon->w, ScreenContext, (XPointer)Scr);
 	XDefineCursor(dpy, icon->w, Scr->IconCursor);
-	MaybeAnimate = True;
+	MaybeAnimate = true;
 }
 
 void DeleteIcon(Icon *icon)
@@ -912,7 +907,7 @@ void ShrinkIconTitle(TwmWindow *tmp_win)
 	rect.height = icon->w_height;
 	XShapeCombineRectangles(dpy, icon->w, ShapeBounding, 0, 0, &rect, 1,
 	                        ShapeIntersect, 0);
-	icon->title_shrunk = True;
+	icon->title_shrunk = true;
 	XClearArea(dpy, icon->w, 0, icon->height, icon->w_width,
 	           icon->w_height - icon->height, True);
 }
@@ -942,7 +937,7 @@ void ExpandIconTitle(TwmWindow *tmp_win)
 	rect.height = icon->w_height - icon->height;
 	XShapeCombineRectangles(dpy, icon->w, ShapeBounding, 0, 0, &rect, 1, ShapeUnion,
 	                        0);
-	icon->title_shrunk = False;
+	icon->title_shrunk = false;
 	XClearArea(dpy, icon->w, 0, icon->height, icon->w_width,
 	           icon->w_height - icon->height, True);
 }

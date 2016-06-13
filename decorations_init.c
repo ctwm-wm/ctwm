@@ -12,7 +12,6 @@
 #include <stdlib.h>
 
 #include "add_window.h"
-#include "decorations.h"
 #include "image.h"
 #include "parse.h"
 #include "screen.h"
@@ -253,7 +252,7 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 	}
 
 	cur_tb->name = name;           /* note that we are not copying */
-	cur_tb->rightside = (rightside ? True : False);
+	cur_tb->rightside = rightside;
 	if(rightside) {
 		Scr->TBInfo.nright++;
 	}

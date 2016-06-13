@@ -75,20 +75,19 @@
 #include <dmalloc.h>
 #endif
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include <stdbool.h>
+
+/*
+ * Intrinsic.h is needed for at least the Pixel type, which we use in
+ * this file.  And Intrinsic.h (always?) implicitly brings in Xlib.h
+ * anyway.
+ */
+//#include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#include <X11/cursorfont.h>
-#include <X11/extensions/shape.h>
-#include <X11/Xfuncs.h>
 
 #include "types.h"
 #ifdef EWMH
 #include "ewmh.h"
-#endif
-
-#ifndef WithdrawnState
-#define WithdrawnState 0
 #endif
 
 /*
@@ -99,23 +98,11 @@
 #define  __attribute__(x)  /*NOTHING*/
 #endif
 
-#ifdef SIGNALRETURNSINT
-#define SIGNAL_T int
-#define SIGNAL_RETURN return 0
-#else
+/* signal(3) handlers have been void since c89 */
 #define SIGNAL_T void
-#define SIGNAL_RETURN return
-#endif
-
-typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
-
-#ifndef TRUE
-#define TRUE    1
-#define FALSE   0
-#endif
 
 #define MAX_BUTTONS     11      /* max mouse buttons supported */
 
@@ -156,10 +143,6 @@ typedef SIGNAL_T(*SigProc)(int);  /* type of function returned by signal() */
 /* modifiers for button presses */
 #define MOD_SIZE        ((ShiftMask | ControlMask | Mod1Mask \
                           | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask) + 1)
-
-#define TITLE_BAR_SPACE         1       /* 2 pixel space bordering chars */
-#define TITLE_BAR_FONT_HEIGHT   15      /* max of 15 pixel high chars */
-#define TITLE_BAR_HEIGHT        (TITLE_BAR_FONT_HEIGHT+(2*TITLE_BAR_SPACE))
 
 /* defines for zooming/unzooming */
 #define ZOOM_NONE 0
@@ -213,7 +196,7 @@ struct TitleButton {
 	int srcx, srcy;                     /* from where to start copying */
 	unsigned int width, height;         /* size of pixmap */
 	int dstx, dsty;                     /* to where to start copying */
-	Bool rightside;                     /* t: on right, f: on left */
+	bool rightside;                     /* t: on right, f: on left */
 	TitleButtonFunc *funs;              /* funcs assoc'd to each button */
 };
 
@@ -229,6 +212,7 @@ struct SqueezeInfo {
 	int denom;                          /* 0 for pix count or denominator */
 };
 
+/* Justifications */
 #define J_UNDEF                 0
 #define J_LEFT                  1
 #define J_CENTER                2
@@ -280,7 +264,7 @@ struct WindowEntry {
 	struct WindowEntry  *next;
 	int                 x, y, w, h;
 	struct TwmWindow    *twm_win;
-	short               used;
+	bool                used;
 };
 
 struct WindowBox {
@@ -345,31 +329,31 @@ struct TwmWindow {
 	ColorPair borderC;          /* border color */
 	ColorPair border_tile;
 	ColorPair title;
-	short iconified;            /* has the window ever been iconified? */
-	short isicon;               /* is the window an icon now ? */
-	short icon_on;              /* is the icon visible */
-	short mapped;               /* is the window mapped ? */
-	short squeezed;             /* is the window squeezed ? */
-	short auto_raise;           /* should we auto-raise this window ? */
-	short auto_lower;           /* should we auto-lower this window ? */
-	short forced;               /* has had an icon forced upon it */
-	short icon_moved;           /* user explicitly moved the icon */
-	short highlight;            /* should highlight this window */
-	short stackmode;            /* honor stackmode requests */
-	short iconify_by_unmapping; /* unmap window to iconify it */
-	short iconmgr;              /* this is an icon manager window */
-	short wspmgr;               /* this is a workspace manager manager window */
-	short transient;            /* this is a transient window */
+	bool iconified;             /* has the window ever been iconified? */
+	bool isicon;                /* is the window an icon now ? */
+	bool icon_on;               /* is the icon visible */
+	bool mapped;                /* is the window mapped ? */
+	bool squeezed;              /* is the window squeezed ? */
+	bool auto_raise;            /* should we auto-raise this window ? */
+	bool auto_lower;            /* should we auto-lower this window ? */
+	bool forced;                /* has had an icon forced upon it */
+	bool icon_moved;            /* user explicitly moved the icon */
+	bool highlight;             /* should highlight this window */
+	bool stackmode;             /* honor stackmode requests */
+	bool iconify_by_unmapping;  /* unmap window to iconify it */
+	bool isiconmgr;             /* this is an icon manager window */
+	bool iswspmgr;              /* this is a workspace manager manager window */
+	bool istransient;           /* this is a transient window */
 	Window transientfor;        /* window contained in XA_XM_TRANSIENT_FOR */
-	short titlehighlight;       /* should I highlight the title bar */
+	bool titlehighlight;        /* should I highlight the title bar */
 	struct IconMgr *iconmgrp;   /* pointer to it if this is an icon manager */
 	int save_frame_x;           /* x position of frame  (saved from zoom) */
 	int save_frame_y;           /* y position of frame  (saved from zoom)*/
 	unsigned int save_frame_width;  /* width of frame   (saved from zoom)*/
 	unsigned int save_frame_height; /* height of frame  (saved from zoom)*/
 	int save_otpri;             /* on top priority      (saved from zoom)*/
-	short zoomed;               /* is the window zoomed? */
-	short wShaped;              /* this window has a bounding shape */
+	int zoomed;                 /* ZOOM_NONE || function causing zoom */
+	bool wShaped;               /* this window has a bounding shape */
 	unsigned long protocols;    /* which protocols this window handles */
 	Colormaps cmaps;            /* colormaps for this application */
 	TBWindow *titlebuttons;
@@ -377,24 +361,24 @@ struct TwmWindow {
 	int squeeze_info_copied;    /* must above SqueezeInfo be freed? */
 	struct {
 		struct TwmWindow *next, *prev;
-		Bool cursor_valid;
+		bool cursor_valid;
 		int curs_x, curs_y;
 	} ring;
 
-	short OpaqueMove;
-	short OpaqueResize;
-	short UnmapByMovingFarAway;
-	short AutoSqueeze;
-	short StartSqueezed;
-	short AlwaysSqueezeToGravity;
-	short DontSetInactive;
-	short hasfocusvisible;      /* The window has visible focus*/
+	bool OpaqueMove;
+	bool OpaqueResize;
+	bool UnmapByMovingFarAway;
+	bool AutoSqueeze;
+	bool StartSqueezed;
+	bool AlwaysSqueezeToGravity;
+	bool DontSetInactive;
+	bool hasfocusvisible;      /* The window has visible focus*/
 	int  occupation;
 	Image *HiliteImage;         /* focus highlight window background */
 	Image *LoliteImage;         /* focus lowlight window background */
 	WindowRegion *wr;
 	WindowBox *winbox;
-	short iswinbox;
+	bool iswinbox;
 	struct {
 		int x, y;
 		unsigned int width, height;
@@ -407,16 +391,17 @@ struct TwmWindow {
 
 	struct VirtualScreen *savevs;       /* for ShowBackground only */
 
-	short nameChanged;  /* did WM_NAME ever change? */
-	/* did the user ever change the width/height? {yes, no, or unknown} */
-	short widthEverChangedByUser;
-	short heightEverChangedByUser;
+	bool nameChanged;  /* did WM_NAME ever change? */
+	/* did the user ever change the width/height? */
+	bool widthEverChangedByUser;
+	bool heightEverChangedByUser;
 #ifdef EWMH
 	EwmhWindowType ewmhWindowType;
 	int ewmhFlags;
 #endif /* EWMH */
 };
 
+/* Used in stashing session info */
 struct TWMWinConfigEntry {
 	struct TWMWinConfigEntry *next;
 	int tag;
@@ -429,10 +414,10 @@ struct TWMWinConfigEntry {
 	short x, y;
 	unsigned short width, height;
 	short icon_x, icon_y;
-	Bool iconified;
-	Bool icon_info_present;
-	Bool width_ever_changed_by_user;
-	Bool height_ever_changed_by_user;
+	bool iconified;
+	bool icon_info_present;
+	bool width_ever_changed_by_user;
+	bool height_ever_changed_by_user;
 	/* ===================[ Matthew McNeill Feb 1997 ]======================= *
 	 * Added this property to facilitate restoration of workspaces when
 	 * restarting a session.
@@ -447,8 +432,8 @@ struct TWMWinConfigEntry {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-extern void Reborder(Time tim);
-extern SIGNAL_T Done(int signum) __attribute__((noreturn));
+void Reborder(Time tim);
+SIGNAL_T Done(int signum) __attribute__((noreturn));
 void CreateFonts(void);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
@@ -456,7 +441,7 @@ extern char *ProgramName;
 extern Display *dpy;
 extern XtAppContext appContext;
 extern Window ResizeWindow;     /* the window we are resizing */
-extern int HasShape;            /* this server supports Shape extension */
+extern bool HasShape;           /* this server supports Shape extension */
 extern int ShapeEventBase, ShapeErrorBase;
 
 extern int PreviousScreen;
@@ -476,7 +461,7 @@ extern XContext ColormapContext;
 extern char *Home;
 extern int HomeLen;
 
-extern int HandlingEvents;
+extern bool HandlingEvents;
 extern Cursor TopCursor, TopLeftCursor, LeftCursor, BottomLeftCursor,
        BottomCursor, BottomRightCursor, RightCursor, TopRightCursor;
 
@@ -488,15 +473,11 @@ extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 extern XGCValues Gcv;
 extern int Argc;
 extern char **Argv;
-extern Bool ShowWelcomeWindow;
 
-extern Bool RestartPreviousState;
-extern Bool GetWMState(Window w, int *statep, Window *iwp);
+extern bool RestartPreviousState;
 
-extern Bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
-extern void DoRestart(Time t);  /* Function to perform a restart */
-
-extern Atom XA_WM_WORKSPACESLIST;
+extern bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
+void DoRestart(Time t);         /* Function to perform a restart */
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
 
@@ -505,27 +486,27 @@ extern Atom XA_WM_WORKSPACESLIST;
  * Command-line arg handling bits
  */
 typedef struct _ctwm_cl_args {
-	int    MultiScreen;        // ! --single, grab multiple screens
-	int    Monochrome;         // --mono, force monochrome
-	int    cfgchk;             // --cfgchk, check config and exit
+	bool   MultiScreen;        // ! --single, grab multiple screens
+	bool   Monochrome;         // --mono, force monochrome
+	bool   cfgchk;             // --cfgchk, check config and exit
 	char  *InitFile;           // --file, config filename
 	char  *display_name;       // --display, X server display
 
-	Bool   PrintErrorMessages; // --verbose, show more debug output
-	Bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
+	bool   PrintErrorMessages; // --verbose, show more debug output
+	bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
-	int    is_captive;         // --window (flag), running captive
+	bool   is_captive;         // --window (flag), running captive
 	Window capwin;             // --window (arg), existing window to capture
 	char  *captivename;        // --name, captive name
 
 #ifdef USEM4
-	int    KeepTmpFile;        // --keep-defs, keep generated m4 defs
+	bool   KeepTmpFile;        // --keep-defs, keep generated m4 defs
 	char  *keepM4_filename;    // --keep, keep m4 post-processed output
-	int    GoThroughM4;        // ! --nom4, do m4 processing
+	bool   GoThroughM4;        // ! --nom4, do m4 processing
 #endif
 
 #ifdef EWMH
-	int    ewmh_replace;       // --replace, replacing running WM
+	bool   ewmh_replace;       // --replace, replacing running WM
 #endif
 
 	char  *client_id;          // --clientId, session client id

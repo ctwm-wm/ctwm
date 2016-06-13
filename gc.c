@@ -160,6 +160,6 @@ void CreateGCs(void)
 		XSetDashes(dpy, Scr->BorderGC, 0, dashlist, 2);
 	}
 	else {
-		Scr->BorderGC = XCreateGC(dpy, Scr->Root, 0, (XGCValues *) 0);
+		Scr->BorderGC = XCreateGC(dpy, Scr->Root, 0, NULL);
 	}
 }

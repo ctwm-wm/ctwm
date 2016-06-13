@@ -91,7 +91,7 @@
 #error "No SYSTEM_INIT_FILE set"
 #endif
 
-static int ParseStringList(const char **sl);
+static bool ParseStringList(const char **sl);
 
 /*
  * With current bison, this is defined in the gram.tab.h, so this causes
@@ -131,7 +131,7 @@ static int overflowlen;
 #endif
 
 int ConstrainedMoveTime = 400;          /* milliseconds, event times */
-int ParseError;                         /* error parsing the .twmrc file */
+bool ParseError;                        /* error parsing the .twmrc file */
 int RaiseDelay = 0;                     /* msec, for AutoRaise */
 int (*twmInputFunc)(void);              /* used in lexer */
 
@@ -139,8 +139,8 @@ static int twmrc_lineno;
 
 
 /* lex plumbing funcs */
-static int doparse(int (*ifunc)(void), const char *srctypename,
-                   const char *srcname);
+static bool doparse(int (*ifunc)(void), const char *srctypename,
+                    const char *srcname);
 
 static int twmStringListInput(void);
 #ifndef USEM4
@@ -157,7 +157,8 @@ int yydebug = 1;
 /*
  * Principle entry point from top-level code to parse the config file
  */
-int ParseTwmrc(char *filename)
+bool
+ParseTwmrc(char *filename)
 {
 	int i;
 	char *home = NULL;
@@ -240,7 +241,7 @@ int ParseTwmrc(char *filename)
 	}
 
 	if(twmrc) {
-		int status;
+		bool status;
 #ifdef USEM4
 		FILE *raw = NULL;
 #endif
@@ -298,7 +299,8 @@ int ParseTwmrc(char *filename)
 	/* NOTREACHED */
 }
 
-static int ParseStringList(const char **sl)
+static bool
+ParseStringList(const char **sl)
 {
 	stringListSource = sl;
 	currentString = *sl;
@@ -325,13 +327,14 @@ void twmrc_error_prefix(void)
  * Backend func that takes an input-providing func and hooks it up to the
  * lex/yacc parser to do the work
  */
-static int doparse(int (*ifunc)(void), const char *srctypename,
-                   const char *srcname)
+static bool
+doparse(int (*ifunc)(void), const char *srctypename,
+        const char *srcname)
 {
 	ptr = 0;
 	len = 0;
 	twmrc_lineno = 0;
-	ParseError = FALSE;
+	ParseError = false;
 	twmInputFunc = ifunc;
 #ifdef NON_FLEX_LEX
 	overflowlen = 0;
@@ -347,7 +350,7 @@ static int doparse(int (*ifunc)(void), const char *srctypename,
 		}
 		fprintf(stderr, "\n");
 	}
-	return (ParseError ? 0 : 1);
+	return ParseError;
 }
 
 

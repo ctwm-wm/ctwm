@@ -38,15 +38,13 @@
 #ifndef _CTWM_WINDOWBOX_H
 #define _CTWM_WINDOWBOX_H
 
-#include "types.h"
+name_list **addWindowBox(char *boxname, char *geometry);
+void createWindowBoxes(void);
+WindowBox *findWindowBox(TwmWindow *twmwin);
 
-extern name_list **addWindowBox(char *boxname, char *geometry);
-extern void createWindowBoxes(void);
-extern WindowBox *findWindowBox(TwmWindow *twmwin);
-
-extern void ConstrainedToWinBox(TwmWindow *twmwin,
-                                int x, int y, int *nx, int *ny);
-extern void fittocontent(TwmWindow *twmwin);
+void ConstrainedToWinBox(TwmWindow *twmwin,
+                         int x, int y, int *nx, int *ny);
+void fittocontent(TwmWindow *twmwin);
 
 #endif /* _CTWM_WINDOWBOX_H */
 

@@ -66,7 +66,7 @@ struct OtpWinList {
 	OtpWinList *below;
 	TwmWindow  *twm_win;
 	WinType     type;
-	Bool        switching;
+	bool        switching;
 	int         priority;
 };
 
@@ -74,7 +74,7 @@ struct OtpPreferences {
 	name_list  *priorityL[OTP_MAX + 1];
 	int         priority;
 	name_list  *switchingL;
-	Bool        switching;
+	bool        switching;
 };
 
 typedef struct Box {
@@ -85,7 +85,7 @@ typedef struct Box {
 } Box;
 
 
-static Bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
+static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
 
 static OtpWinList *bottomOwl = NULL;
 
@@ -113,22 +113,22 @@ static Box BoxOfOwl(OtpWinList *owl)
 			break;
 		}
 		default:
-			assert(False);
+			assert(false);
 	}
 	return b;
 }
 
 
-static Bool BoxesIntersect(Box *b1, Box *b2)
+static bool BoxesIntersect(Box *b1, Box *b2)
 {
-	Bool interX = (b1->x + b1->width > b2->x) && (b2->x + b2->width > b1->x);
-	Bool interY = (b1->y + b1->height > b2->y) && (b2->y + b2->height > b1->y);
+	bool interX = (b1->x + b1->width > b2->x) && (b2->x + b2->width > b1->x);
+	bool interY = (b1->y + b1->height > b2->y) && (b2->y + b2->height > b1->y);
 
 	return (interX && interY);
 }
 
 
-static Bool isIntersectingWith(OtpWinList *owl1, OtpWinList *owl2)
+static bool isIntersectingWith(OtpWinList *owl1, OtpWinList *owl2)
 {
 	Box b1 = BoxOfOwl(owl1);
 	Box b2 = BoxOfOwl(owl2);
@@ -137,7 +137,7 @@ static Bool isIntersectingWith(OtpWinList *owl1, OtpWinList *owl2)
 }
 
 
-static Bool isOnScreen(OtpWinList *owl)
+static bool isOnScreen(OtpWinList *owl)
 {
 	TwmWindow *twm_win = owl->twm_win;
 
@@ -146,25 +146,25 @@ static Bool isOnScreen(OtpWinList *owl)
 }
 
 
-Bool isTransientOf(TwmWindow *trans, TwmWindow *main)
+bool isTransientOf(TwmWindow *trans, TwmWindow *main)
 {
-	return (trans->transient && trans->transientfor == main->w);
+	return (trans->istransient && trans->transientfor == main->w);
 }
 
-Bool isGroupLeader(TwmWindow *twm_win)
+bool isGroupLeader(TwmWindow *twm_win)
 {
 	return ((twm_win->group == 0)
 	        || (twm_win->group == twm_win->w));
 }
 
-Bool isGroupLeaderOf(TwmWindow *leader, TwmWindow *twm_win)
+bool isGroupLeaderOf(TwmWindow *leader, TwmWindow *twm_win)
 {
 	return (isGroupLeader(leader)
 	        && !isGroupLeader(twm_win)
 	        && (leader->group == twm_win->group));
 }
 
-Bool isSmallTransientOf(TwmWindow *trans, TwmWindow *main)
+bool isSmallTransientOf(TwmWindow *trans, TwmWindow *main)
 {
 	int trans_area, main_area;
 
@@ -176,7 +176,7 @@ Bool isSmallTransientOf(TwmWindow *trans, TwmWindow *main)
 		return (trans_area < ((main_area * Scr->TransientOnTop) / 100));
 	}
 	else {
-		return False;
+		return false;
 	}
 }
 
@@ -186,11 +186,11 @@ static Window WindowOfOwl(OtpWinList *owl)
 	       ? owl->twm_win->icon->w : owl->twm_win->frame;
 }
 
-Bool OtpCheckConsistency(void)
+bool OtpCheckConsistency(void)
 {
 #if DEBUG_OTP
 	VirtualScreen *tvs;
-	Bool result = TRUE;
+	bool result = true;
 
 	for(tvs = Scr->vScreenList; tvs != NULL; tvs = tvs->next) {
 		fprintf(stderr, "OtpCheckConsistencyVS: vs:(x,y)=(%d,%d)\n",
@@ -203,7 +203,7 @@ Bool OtpCheckConsistency(void)
 #endif
 }
 
-static Bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
+static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 {
 #if CHECK_OTP
 	OtpWinList *owl;
@@ -336,7 +336,7 @@ static Bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 	/* if we just removed a win, it might still be somewhere, hence the -1 */
 	assert((nwins <= 0) && (nwins >= -1));
 #endif
-	return True;
+	return true;
 }
 
 
@@ -483,7 +483,7 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 
 
 /* should owl stay above other_owl if other_owl was raised ? */
-static Bool shouldStayAbove(OtpWinList *owl, OtpWinList *other_owl)
+static bool shouldStayAbove(OtpWinList *owl, OtpWinList *other_owl)
 {
 	return ((owl->type == WinWin)
 	        && (other_owl->type == WinWin)
@@ -646,7 +646,7 @@ static void LowerOwl(OtpWinList *owl)
 	InsertOwl(owl, Below);
 }
 
-static Bool isHiddenBy(OtpWinList *owl, OtpWinList *other_owl)
+static bool isHiddenBy(OtpWinList *owl, OtpWinList *other_owl)
 {
 	/* doesn't check that owl is on screen */
 	return (isOnScreen(other_owl)
@@ -1016,7 +1016,7 @@ void OtpRemove(TwmWindow *twm_win, WinType wintype)
 
 static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
                                   WinType wintype,
-                                  Bool switching,
+                                  bool switching,
                                   int priority)
 {
 	OtpWinList *owl = malloc(sizeof(OtpWinList));
@@ -1048,7 +1048,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	}
 
 	/* now see if the preferences have something to say */
-	if(!(parent != NULL && twm_win->transient)) {
+	if(!(parent != NULL && twm_win->istransient)) {
 		ApplyPreferences(prefs, owl);
 	}
 
@@ -1070,10 +1070,11 @@ void OtpAdd(TwmWindow *twm_win, WinType wintype)
 	/* windows in boxes *must* inherit priority from the box */
 	if(twm_win->winbox) {
 		parent = twm_win->winbox->twmwin->otp;
-		parent->switching = False;
+		parent->switching = false;
 	}
 	/* in case it's a transient, find the parent */
-	else if(wintype == WinWin && (twm_win->transient || !isGroupLeader(twm_win))) {
+	else if(wintype == WinWin && (twm_win->istransient
+	                              || !isGroupLeader(twm_win))) {
 		other_win = Scr->FirstWindow;
 		while(other_win != NULL
 		                && !isTransientOf(twm_win, other_win)
@@ -1127,7 +1128,7 @@ name_list **OtpScrSwitchingL(ScreenInfo *scr, WinType wintype)
 }
 
 
-void OtpScrSetSwitching(ScreenInfo *scr, WinType wintype, Bool switching)
+void OtpScrSetSwitching(ScreenInfo *scr, WinType wintype, bool switching)
 {
 #ifndef NDEBUG
 	OtpPreferences *prefs = (wintype == IconWin) ? scr->IconOTP : scr->OTP;
@@ -1179,7 +1180,7 @@ static OtpPreferences *new_OtpPreferences(void)
 	}
 	pref->priority = OTP_ZERO;
 	pref->switchingL = NULL;
-	pref->switching = False;
+	pref->switching = false;
 
 	return pref;
 }

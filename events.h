@@ -66,55 +66,54 @@
 
 typedef void (*event_proc)(void);
 
-extern void InitEvents(void);
-extern Bool StashEventTime(XEvent *ev);
+void InitEvents(void);
 extern Time lastTimestamp;
-extern void SimulateMapRequest(Window w);
-extern void AutoRaiseWindow(TwmWindow *tmp);
-extern void SetRaiseWindow(TwmWindow *tmp);
-extern void AutoPopupMaybe(TwmWindow *tmp);
-extern void AutoLowerWindow(TwmWindow *tmp);
+void SimulateMapRequest(Window w);
+void AutoRaiseWindow(TwmWindow *tmp);
+void SetRaiseWindow(TwmWindow *tmp);
+void AutoPopupMaybe(TwmWindow *tmp);
+void AutoLowerWindow(TwmWindow *tmp);
 #define LastTimestamp() lastTimestamp
-extern Window WindowOfEvent(XEvent *e);
-extern void FixRootEvent(XEvent *e);
-extern Bool DispatchEvent(void);
-extern Bool DispatchEvent2(void);
-extern void HandleEvents(void) __attribute__((noreturn));
-extern void HandleExpose(void);
-extern void HandleDestroyNotify(void);
-extern void HandleMapRequest(void);
-extern void HandleMapNotify(void);
-extern void HandleUnmapNotify(void);
-extern void HandleMotionNotify(void);
-extern void HandleButtonRelease(void);
-extern void HandleButtonPress(void);
-extern void HandleEnterNotify(void);
-extern void HandleLeaveNotify(void);
-extern void HandleConfigureRequest(void);
-extern void HandleClientMessage(void);
-extern void HandlePropertyNotify(void);
-extern void HandleKeyPress(void);
-extern void HandleKeyRelease(void);
-extern void HandleColormapNotify(void);
-extern void HandleVisibilityNotify(void);
-extern void HandleUnknown(void);
-extern void HandleFocusIn(XFocusInEvent *event);
-extern void HandleFocusOut(XFocusOutEvent *event);
-extern void SynthesiseFocusOut(Window w);
-extern void SynthesiseFocusIn(Window w);
-extern void HandleCirculateNotify(void);
-extern int Transient(Window w, Window *propw);
-extern void RedoIconName(void);
+Window WindowOfEvent(XEvent *e);
+void FixRootEvent(XEvent *e);
+bool DispatchEvent(void);
+bool DispatchEvent2(void);
+void HandleEvents(void) __attribute__((noreturn));
+void HandleExpose(void);
+void HandleDestroyNotify(void);
+void HandleMapRequest(void);
+void HandleMapNotify(void);
+void HandleUnmapNotify(void);
+void HandleMotionNotify(void);
+void HandleButtonRelease(void);
+void HandleButtonPress(void);
+void HandleEnterNotify(void);
+void HandleLeaveNotify(void);
+void HandleConfigureRequest(void);
+void HandleClientMessage(void);
+void HandlePropertyNotify(void);
+void HandleKeyPress(void);
+void HandleKeyRelease(void);
+void HandleColormapNotify(void);
+void HandleVisibilityNotify(void);
+void HandleUnknown(void);
+void HandleFocusIn(XFocusInEvent *event);
+void HandleFocusOut(XFocusOutEvent *event);
+void SynthesiseFocusOut(Window w);
+void SynthesiseFocusIn(Window w);
+void HandleCirculateNotify(void);
+bool Transient(Window w, Window *propw);
+void RedoIconName(void);
 
-extern ScreenInfo *FindScreenInfo(Window w);
+ScreenInfo *FindScreenInfo(Window w);
 
-extern int InstallWindowColormaps(int type, TwmWindow *tmp);
-extern int InstallColormaps(int type, Colormaps *cmaps);
-extern void InstallRootColormap(void);
-extern void UninstallRootColormap(void);
-extern void ConfigureRootWindow(XEvent *ev);
+int InstallWindowColormaps(int type, TwmWindow *tmp);
+int InstallColormaps(int type, Colormaps *cmaps);
+void InstallRootColormap(void);
+void UninstallRootColormap(void);
+void ConfigureRootWindow(XEvent *ev);
 
-extern void free_cwins(TwmWindow *tmp);
+void free_cwins(TwmWindow *tmp);
 
 extern event_proc EventHandler[];
 extern Window DragWindow;
@@ -131,7 +130,7 @@ extern int Context;
 extern FILE *tracefile;
 
 extern int ButtonPressed;
-extern int Cancel;
+extern bool Cancel;
 
 extern XEvent Event;
 

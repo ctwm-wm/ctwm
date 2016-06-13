@@ -5,13 +5,11 @@
 #include "ctwm.h"
 
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
-#include <X11/X.h>
 #include <X11/Xmu/Drawing.h>
 
 #include "screen.h"
-#include "types.h"
 #include "util.h"
 
 #include "image.h"
@@ -345,8 +343,8 @@ static DEF_BI_SPM(Create3DCrossImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 
 #ifdef LEVITTE_TEST
 	FB(cp.shadc, cp.shadd);
@@ -441,8 +439,8 @@ static DEF_BI_SPM(Create3DIconifyImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	FB(cp.shadd, cp.shadc);
 	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point, h / 2, h - point);
 	XDrawLine(dpy, image->pixmap, Scr->NormalGC, point, point, h - point, point);
@@ -479,13 +477,13 @@ static DEF_BI_SPM(Create3DSunkenResizeImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
-	Draw3DBorder(image->pixmap, 3, 3, h - 6, h - 6, 1, cp, on, True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
+	Draw3DBorder(image->pixmap, 3, 3, h - 6, h - 6, 1, cp, on, true, false);
 	Draw3DBorder(image->pixmap, 3, ((h - 6) / 3) + 3, ((h - 6) * 2 / 3) + 1,
-	             ((h - 6) * 2 / 3) + 1, 1, cp, on, True, False);
+	             ((h - 6) * 2 / 3) + 1, 1, cp, on, true, false);
 	Draw3DBorder(image->pixmap, 3, ((h - 6) * 2 / 3) + 3, ((h - 6) / 3) + 1,
-	             ((h - 6) / 3) + 1, 1, cp, on, True, False);
+	             ((h - 6) / 3) + 1, 1, cp, on, true, false);
 
 	image->width  = h;
 	image->height = h;
@@ -513,10 +511,10 @@ static DEF_BI_SPM(Create3DBoxImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	Draw3DBorder(image->pixmap, (h / 2) - 4, (h / 2) - 4, 9, 9, 1, cp,
-	             off, True, False);
+	             off, true, false);
 
 	image->width  = h;
 	image->height = h;
@@ -545,13 +543,13 @@ static DEF_BI_SPM(Create3DDotImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	Draw3DBorder(image->pixmap, (h / 2) - idepth,
 	             (h / 2) - idepth,
 	             2 * idepth + 1,
 	             2 * idepth + 1,
-	             idepth, cp, off, True, False);
+	             idepth, cp, off, true, false);
 	image->width  = h;
 	image->height = h;
 	return (image);
@@ -578,14 +576,14 @@ static DEF_BI_SPM(Create3DBarImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	Draw3DBorder(image->pixmap,
 	             Scr->TitleButtonShadowDepth + 2,
 	             (h / 2) - idepth,
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             2 * idepth + 1,
-	             idepth, cp, off, True, False);
+	             idepth, cp, off, true, false);
 	image->width  = h;
 	image->height = h;
 	return (image);
@@ -612,14 +610,14 @@ static DEF_BI_SPM(Create3DVertBarImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	Draw3DBorder(image->pixmap,
 	             (h / 2) - idepth,
 	             Scr->TitleButtonShadowDepth + 2,
 	             2 * idepth + 1,
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
-	             idepth, cp, off, True, False);
+	             idepth, cp, off, true, false);
 	image->width  = h;
 	image->height = h;
 	return (image);
@@ -645,10 +643,10 @@ static DEF_BI_SPM(Create3DMenuImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	for(i = 4; i < h - 7; i += 5) {
-		Draw3DBorder(image->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
+		Draw3DBorder(image->pixmap, 4, i, h - 8, 4, 2, cp, off, true, false);
 	}
 	image->width  = h;
 	image->height = h;
@@ -675,12 +673,12 @@ static DEF_BI_SPM(Create3DResizeImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
-	Draw3DBorder(image->pixmap, 0, h / 4, ((3 * h) / 4) + 1, ((3 * h) / 4) + 1, 2,
-	             cp, off, True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
+	Draw3DBorder(image->pixmap, 0, h / 4, ((3 * h) / 4) + 1, ((3 * h) / 4) + 1,
+	             2, cp, off, true, false);
 	Draw3DBorder(image->pixmap, 0, h / 2, (h / 2) + 1, (h / 2) + 1, 2, cp, off,
-	             True, False);
+	             true, false);
 	image->width  = h;
 	image->height = h;
 	return (image);
@@ -707,13 +705,13 @@ static DEF_BI_SPM(Create3DZoomImage)
 		return (None);
 	}
 
-	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off,
-	             True, False);
+	Draw3DBorder(image->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+	             off, true, false);
 	Draw3DBorder(image->pixmap, Scr->TitleButtonShadowDepth + 2,
 	             Scr->TitleButtonShadowDepth + 2,
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
 	             h - 2 * (Scr->TitleButtonShadowDepth + 2),
-	             idepth, cp, off, True, False);
+	             idepth, cp, off, true, false);
 
 	image->width  = h;
 	image->height = h;
@@ -834,11 +832,11 @@ Create3DResizeAnimation(bool in, bool left, bool top,
 			free(im);
 			return (None);
 		}
-		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
-		             False);
+		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+		             off, true, false);
 		for(j = i; j <= h; j += (h / 4)) {
 			Draw3DBorder(im->pixmap, (left ? 0 : j), (top ? 0 : j),
-			             h - j, h - j, 2, cp, off, True, False);
+			             h - j, h - j, 2, cp, off, true, false);
 		}
 		im->mask   = None;
 		im->width  = h;
@@ -880,10 +878,10 @@ Create3DMenuAnimation(bool up, ColorPair cp)
 			free(im);
 			return (None);
 		}
-		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
-		             False);
+		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
+		             off, true, false);
 		for(i = j; i < h - 3; i += 5) {
-			Draw3DBorder(im->pixmap, 4, i, h - 8, 4, 2, cp, off, True, False);
+			Draw3DBorder(im->pixmap, 4, i, h - 8, 4, 2, cp, off, true, false);
 		}
 		im->mask   = None;
 		im->width  = h;
@@ -923,11 +921,11 @@ Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp)
 		for(k = (j > 0 ? 0 : n - 1) ; (k >= 0) && (k < n); k += j) {
 			im = AllocImage();
 			im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
-			Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp, off, True,
-			             False);
+			Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth,
+			             cp, off, true, false);
 			for(i = 2 + k; i < (h / 2); i += n) {
-				Draw3DBorder(im->pixmap, i, i, h - (2 * i), h - (2 * i), 2, cp, off, True,
-				             False);
+				Draw3DBorder(im->pixmap, i, i, h - (2 * i), h - (2 * i), 2, cp,
+				             off, true, false);
 			}
 			im->mask   = None;
 			im->width  = h;

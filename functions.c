@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include <X11/Xatom.h>
 
@@ -24,7 +23,6 @@
 #include "parse.h"
 #include "resize.h"
 #include "screen.h"
-#include "types.h"
 #include "util.h"
 #include "version.h"
 #include "windowbox.h"
@@ -48,7 +46,7 @@ char Info[INFO_LINES][INFO_SIZE];
  *
  * Gets used in event handling for ButtonRelease.
  */
-int ConstMove = FALSE;
+bool ConstMove = false;
 int ConstMoveDir;
 int ConstMoveX;
 int ConstMoveY;
@@ -107,7 +105,7 @@ static int FindConstraint(TwmWindow *tmp_win, int direction);
 
 bool
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
-                XEvent *eventp, int context, int pulldown)
+                XEvent *eventp, int context, bool pulldown)
 {
 	static Time last_time = 0;
 	Window rootw;
@@ -120,7 +118,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 	RootFunction = 0;
 	if(Cancel) {
-		return true;        /* XXX should this be FALSE? */
+		return true;        /* XXX should this be false? */
 	}
 
 	switch(func) {
@@ -281,7 +279,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				if(ActiveMenu->pmenu == NULL) {
 					menu  = malloc(sizeof(MenuRoot));
 					*menu = *ActiveMenu;
-					menu->pinned = True;
+					menu->pinned = true;
 					menu->mapped = NEVER_MAPPED;
 					menu->width -= 10;
 					if(menu->pull) {
@@ -390,12 +388,12 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				int save_sort;
 
 				save_sort = Scr->SortIconMgr;
-				Scr->SortIconMgr = TRUE;
+				Scr->SortIconMgr = true;
 
 				if(context == C_ICONMGR) {
 					SortIconManager((IconMgr *) NULL);
 				}
-				else if(tmp_win->iconmgr) {
+				else if(tmp_win->isiconmgr) {
 					SortIconManager(tmp_win->iconmgrp);
 				}
 				else {
@@ -428,7 +426,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		}
 
 		case F_ALTCONTEXT: {
-			AlternateContext = True;
+			AlternateContext = true;
 			XGrabPointer(dpy, Scr->Root, False, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
@@ -596,7 +594,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			if(Scr->WindowFunction.func != 0) {
 				ExecuteFunction(Scr->WindowFunction.func,
 				                Scr->WindowFunction.item->action,
-				                w, tmp_win, eventp, C_FRAME, FALSE);
+				                w, tmp_win, eventp, C_FRAME, false);
 			}
 			else {
 				DeIconify(tmp_win);
@@ -798,7 +796,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iswinbox || tmp_win->wspmgr) {
+			if(tmp_win->iswinbox || tmp_win->iswspmgr) {
 				XBell(dpy, 0);
 				break;
 			}
@@ -875,14 +873,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				ss = Scr->rootw  * Scr->rooth;
 				sf = Scr->OpaqueMoveThreshold / 100.0;
 				if(sw > (ss * sf)) {
-					Scr->OpaqueMove = FALSE;
+					Scr->OpaqueMove = false;
 				}
 				else {
-					Scr->OpaqueMove = TRUE;
+					Scr->OpaqueMove = true;
 				}
 			}
 			else {
-				Scr->OpaqueMove = FALSE;
+				Scr->OpaqueMove = false;
 			}
 
 			dragroot = Scr->XineramaRoot;
@@ -927,7 +925,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				DragY = eventp->xbutton.y;
 				moving_icon = true;
 				if(tmp_win->OpaqueMove) {
-					Scr->OpaqueMove = TRUE;
+					Scr->OpaqueMove = true;
 				}
 			}
 
@@ -965,7 +963,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			                (eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
 				int width, height;
 
-				ConstMove = TRUE;
+				ConstMove = true;
 				ConstMoveDir = MOVE_NONE;
 				ConstMoveX = eventp->xbutton.x_root - DragX - JunkBW;
 				ConstMoveY = eventp->xbutton.y_root - DragY - JunkBW;
@@ -1025,7 +1023,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 
 			DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
-			while(TRUE) {
+			while(1) {
 				long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
 				                    ButtonPress : ButtonRelease;
 				long movementMask = menuFromFrameOrWindowOrTitlebar ?
@@ -1104,14 +1102,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					if(!Scr->OpaqueMove) {
 						UninstallRootColormap();
 					}
-					return true;    /* XXX should this be FALSE? */
+					return true;    /* XXX should this be false? */
 				}
 				if(Event.type == releaseEvent) {
 					MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
 					if(moving_icon &&
 					                ((CurrentDragX != origDragX ||
 					                  CurrentDragY != origDragY))) {
-						tmp_win->icon_moved = TRUE;
+						tmp_win->icon_moved = true;
 					}
 					if(!Scr->OpaqueMove && menuFromFrameOrWindowOrTitlebar) {
 						int xl = Event.xbutton.x_root - (DragWidth  / 2),
@@ -1161,13 +1159,13 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					}
 					if(DragWindow == t->frame) {
 						if(moving_icon) {
-							fprintf(stderr, "moving_icon is TRUE incorrectly!\n");
+							fprintf(stderr, "moving_icon is true incorrectly!\n");
 						}
 						OtpRaise(t, WinWin);
 					}
 					else if(t->icon && DragWindow == t->icon->w) {
 						if(!moving_icon) {
-							fprintf(stderr, "moving_icon is FALSE incorrectly!\n");
+							fprintf(stderr, "moving_icon is false incorrectly!\n");
 						}
 						OtpRaise(t, IconWin);
 					}
@@ -1476,7 +1474,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XFlush(dpy);
 			}
 
-			while(TRUE) {
+			while(1) {
 				long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
 				                    ButtonPress : ButtonRelease;
 				long movementMask = menuFromFrameOrWindowOrTitlebar ?
@@ -1738,14 +1736,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->isicon == FALSE) {
+			if(!tmp_win->isicon) {
 				if(!Scr->FocusRoot && Scr->Focus == tmp_win) {
 					FocusOnRoot();
 				}
 				else {
 					InstallWindowColormaps(0, tmp_win);
 					SetFocus(tmp_win, eventp->xbutton.time);
-					Scr->FocusRoot = FALSE;
+					Scr->FocusRoot = false;
 				}
 			}
 			break;
@@ -1755,7 +1753,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iconmgr || tmp_win->iswinbox || tmp_win->wspmgr
+			if(tmp_win->isiconmgr || tmp_win->iswinbox || tmp_win->iswspmgr
 			                || (Scr->workSpaceMgr.occupyWindow
 			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 				XBell(dpy, 0);
@@ -1778,11 +1776,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iconmgr) {          /* don't send ourself a message */
+			if(tmp_win->isiconmgr) {     /* don't send ourself a message */
 				HideIconManager();
 				break;
 			}
-			if(tmp_win->iswinbox || tmp_win->wspmgr
+			if(tmp_win->iswinbox || tmp_win->iswspmgr
 			                || (Scr->workSpaceMgr.occupyWindow
 			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 				XBell(dpy, 0);
@@ -1809,11 +1807,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(tmp_win->iconmgr) {
+			if(tmp_win->isiconmgr) {
 				HideIconManager();
 				break;
 			}
-			if(tmp_win->iswinbox || tmp_win->wspmgr
+			if(tmp_win->iswinbox || tmp_win->iswspmgr
 			                || (Scr->workSpaceMgr.occupyWindow
 			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
 				XBell(dpy, 0);
@@ -1910,6 +1908,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			len = strlen(action);
 
 #ifdef WARPTO_FROM_ICONMGR
+			/* XXX should be iconmgrp? */
 			if(len == 0 && tmp_win && tmp_win->iconmgr) {
 				printf("curren iconmgr entry: %s", tmp_win->iconmgr->Current);
 			}
@@ -2039,16 +2038,16 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					tmp_win->ring.next = tmp_win->ring.prev = Scr->Ring = tmp_win;
 				}
 			}
-			/*tmp_win->ring.cursor_valid = False;*/
+			/*tmp_win->ring.cursor_valid = false;*/
 			break;
 
 		case F_WARPRING:
 			switch(((char *)action)[0]) {
 				case 'n':
-					WarpAlongRing(&eventp->xbutton, True);
+					WarpAlongRing(&eventp->xbutton, true);
 					break;
 				case 'p':
-					WarpAlongRing(&eventp->xbutton, False);
+					WarpAlongRing(&eventp->xbutton, false);
 					break;
 				default:
 					XBell(dpy, 0);
@@ -2306,8 +2305,8 @@ ShowIconManager(void)
 					XUnmapWindow(dpy, i->twm_win->icon->w);
 				}
 			}
-			i->twm_win->mapped = TRUE;
-			i->twm_win->isicon = FALSE;
+			i->twm_win->mapped = true;
+			i->twm_win->isicon = false;
 		}
 	}
 }
@@ -2329,8 +2328,8 @@ HideIconManager(void)
 			if(i->twm_win->icon && i->twm_win->icon->w) {
 				XUnmapWindow(dpy, i->twm_win->icon->w);
 			}
-			i->twm_win->mapped = FALSE;
-			i->twm_win->isicon = TRUE;
+			i->twm_win->mapped = false;
+			i->twm_win->isicon = true;
 		}
 	}
 }
@@ -2586,7 +2585,7 @@ draw_info_window(void)
 
 	Draw3DBorder(Scr->InfoWindow.win, 0, 0,
 	             Scr->InfoWindow.width, Scr->InfoWindow.height,
-	             2, Scr->DefaultC, off, True, False);
+	             2, Scr->DefaultC, off, true, false);
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 

@@ -64,8 +64,6 @@
 #ifndef _CTWM_MENUS_H
 #define _CTWM_MENUS_H
 
-#include "ctwm.h"
-
 #define TWM_ROOT        "bLoB_GoOp"     /* my private root menu */
 #define TWM_WINDOWS     "TwmWindows"    /* for f.menu "TwmWindows" */
 #define TWM_ICONS       "TwmIcons"      /* for f.menu "TwmIcons" */
@@ -92,10 +90,10 @@ struct MenuItem {
 	short item_num;             /* item number of this menu */
 	short x;                    /* x coordinate for text */
 	short func;                 /* twm built in function */
-	short state;                /* video state, 0 = normal, 1 = reversed */
+	bool  state;                /* in reversed video state (i.e., active) */
 	short strlen;               /* strlen(item) */
-	short user_colors;          /* colors were specified */
-	short separated;            /* separated from the next item */
+	bool  user_colors;          /* colors were specified */
+	bool  separated;            /* separated from the next item */
 };
 
 struct MenuRoot {
@@ -113,11 +111,11 @@ struct MenuRoot {
 	short height;               /* height of the menu */
 	short width;                /* width of the menu */
 	short items;                /* number of items in the menu */
-	short pull;                 /* is there a pull right entry ? */
-	short entered;              /* EnterNotify following pop up */
-	short real_menu;            /* this is a real menu */
+	bool  pull;                 /* is there a pull right entry ? */
+	bool  entered;              /* EnterNotify following pop up */
+	bool  real_menu;            /* this is a real menu */
 	short x, y;                 /* position (for pinned menus) */
-	short pinned;               /* is this a pinned menu*/
+	bool  pinned;               /* is this a pinned menu*/
 	struct MenuRoot *pmenu;     /* the associated pinned menu */
 };
 
@@ -159,11 +157,10 @@ struct FuncKey {
 extern MenuRoot *ActiveMenu;
 extern MenuItem *ActiveItem;
 
-extern int menuFromFrameOrWindowOrTitlebar;
+extern bool menuFromFrameOrWindowOrTitlebar;
 extern char *CurrentSelectedWorkspace;
-extern Bool AlternateContext;
+extern bool AlternateContext;
 extern int AlternateKeymap;
-extern Window Lowerontop;
 
 #define MAXMENUDEPTH    10      /* max number of nested menus */
 extern int MenuDepth;
@@ -180,54 +177,55 @@ extern int MenuDepth;
 #define COLORMAP_PREV "prev"
 #define COLORMAP_DEFAULT "default"
 
-extern void InitMenus(void);
-extern MenuRoot *NewMenuRoot(char *name);
-extern MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
-                           MenuRoot *sub, int func, char *fore, char *back);
-extern Bool PopUpMenu(MenuRoot *menu, int x, int y, Bool center);
-extern void MakeWorkspacesMenu(void);
-extern MenuRoot *FindMenuRoot(char *name);
-extern Bool AddFuncKey(char *name, int cont, int mods, int func,
-                       MenuRoot *menu, char *win_name, char *action);
+void InitMenus(void);
+MenuRoot *NewMenuRoot(char *name);
+MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
+                    MenuRoot *sub, int func, char *fore, char *back);
+bool PopUpMenu(MenuRoot *menu, int x, int y, bool center);
+void MakeWorkspacesMenu(void);
+MenuRoot *FindMenuRoot(char *name);
+bool AddFuncKey(char *name, int cont, int mods, int func,
+                MenuRoot *menu, char *win_name, char *action);
 void AddFuncButton(int num, int cont, int mods, int func,
                    MenuRoot *menu, MenuItem *item);
 void AddDefaultFuncButtons(void);
-extern void PopDownMenu(void);
-extern void HideMenu(MenuRoot *menu);
-extern void resizeFromCenter(Window w, TwmWindow *tmp_win);
-extern void ReGrab(void);
+void PopDownMenu(void);
+void HideMenu(MenuRoot *menu);
+void resizeFromCenter(Window w, TwmWindow *tmp_win);
+void ReGrab(void);
 void SetLastCursor(Cursor newcur);
-extern void PaintEntry(MenuRoot *mr, MenuItem *mi, int exposure);
-extern void PaintMenu(MenuRoot *mr, XEvent *e);
-Bool cur_fromMenu(void);
-extern void UpdateMenu(void);
-extern void MakeMenus(void);
+void PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
+void PaintMenu(MenuRoot *mr, XEvent *e);
+bool cur_fromMenu(void);
+void UpdateMenu(void);
+void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
-extern void MoveMenu(XEvent *eventp);
-extern void DeIconify(TwmWindow *tmp_win);
-extern void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
-extern void SetMapStateProp(TwmWindow *tmp_win, int state);
+void MoveMenu(XEvent *eventp);
+void DeIconify(TwmWindow *tmp_win);
+void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
+void SetMapStateProp(TwmWindow *tmp_win, int state);
+bool GetWMState(Window w, int *statep, Window *iwp);
 void send_clientmessage(Window w, Atom a, Time timestamp);
-extern void SendEndAnimationMessage(Window w, Time timestamp);
-extern void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
-extern void RaiseWindow(TwmWindow *tmp_win);
-extern void LowerWindow(TwmWindow *tmp_win);
-extern void RaiseLower(TwmWindow *tmp_win);
-extern void RaiseLowerFrame(Window frame, int ontop);
-extern void MapRaised(TwmWindow *tmp_win);
-extern void RaiseFrame(Window frame);
-extern void FocusOnRoot(void);
-extern void TryToPack(TwmWindow *tmp_win, int *x, int *y);
-extern void TryToPush(TwmWindow *tmp_win, int x, int y, int dir);
-extern void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
-extern void WarpCursorToDefaultEntry(MenuRoot *menu);
-extern void WarpToWindow(TwmWindow *t, int must_raise);
-extern void DisplayPosition(TwmWindow *tmp_win, int x, int y);
-extern void AutoSqueeze(TwmWindow *tmp_win);
-extern void Squeeze(TwmWindow *tmp_win);
+void SendEndAnimationMessage(Window w, Time timestamp);
+void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
+void RaiseWindow(TwmWindow *tmp_win);
+void LowerWindow(TwmWindow *tmp_win);
+void RaiseLower(TwmWindow *tmp_win);
+void RaiseLowerFrame(Window frame, int ontop);
+void MapRaised(TwmWindow *tmp_win);
+void RaiseFrame(Window frame);
+void FocusOnRoot(void);
+void TryToPack(TwmWindow *tmp_win, int *x, int *y);
+void TryToPush(TwmWindow *tmp_win, int x, int y, int dir);
+void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
+void WarpCursorToDefaultEntry(MenuRoot *menu);
+void WarpToWindow(TwmWindow *t, bool must_raise);
+void DisplayPosition(TwmWindow *tmp_win, int x, int y);
+void AutoSqueeze(TwmWindow *tmp_win);
+void Squeeze(TwmWindow *tmp_win);
 
 /* To move soonish? */
-void WarpAlongRing(XButtonEvent *ev, Bool forward);
+void WarpAlongRing(XButtonEvent *ev, bool forward);
 int WarpToScreen(int n, int inc);
 
 #endif /* _CTWM_MENUS_H */

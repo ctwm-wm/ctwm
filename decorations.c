@@ -7,11 +7,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
+
+#include <X11/extensions/shape.h>
 
 #include "gram.tab.h"
 #include "image.h"
+#include "iconmgr.h"
 #include "screen.h"
 #include "util.h"  // Border drawing
 
@@ -125,7 +127,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * overridden based on how tall the iconmgr itself thinks it should
 	 * be.
 	 */
-	if(tmp_win->iconmgr) {
+	if(tmp_win->isiconmgr) {
 		tmp_win->iconmgrp->width = w - (2 * tmp_win->frame_bw3D);
 		h = tmp_win->iconmgrp->height + tmp_win->title_height +
 		    (2 * tmp_win->frame_bw3D);
@@ -175,7 +177,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		 */
 		ComputeWindowTitleOffsets(tmp_win, title_width, true);
 
-		reShape = (tmp_win->wShaped ? true : false);
+		reShape = tmp_win->wShaped;
 
 		/*
 		 * If the window has SqueezeTitle, the width of the titlebar may
@@ -251,10 +253,10 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 */
 	/* width/height changed? */
 	if(tmp_win->attr.width != w) {
-		tmp_win->widthEverChangedByUser = True;
+		tmp_win->widthEverChangedByUser = true;
 	}
 	if(tmp_win->attr.height != (h - tmp_win->title_height)) {
-		tmp_win->heightEverChangedByUser = True;
+		tmp_win->heightEverChangedByUser = true;
 	}
 
 	/* Write in new values, if the window isn't squeezed away */
@@ -1157,7 +1159,7 @@ PaintTitle(TwmWindow *tmp_win)
 
 		Draw3DBorder(tmp_win->title_w, Scr->TBInfo.titlex, 0, wid,
 		             Scr->TitleHeight, Scr->TitleShadowDepth,
-		             tmp_win->title, state, True, False);
+		             tmp_win->title, state, true, false);
 	}
 
 	/* Setup the X graphics context for the drawing */
@@ -1272,16 +1274,16 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 
 	switch(type) {
 		case TopLeft:
-			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
+			Draw3DBorder(w, x, y, width, height, bw, cp, off, true, false);
 			Draw3DBorder(w, x + thick - bw, y + thick - bw,
 			             width - thick + 2 * bw, height - thick + 2 * bw,
-			             bw, cp, on, True, False);
+			             bw, cp, on, true, false);
 			break;
 		case TopRight:
-			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
+			Draw3DBorder(w, x, y, width, height, bw, cp, off, true, false);
 			Draw3DBorder(w, x, y + thick - bw,
 			             width - thick + bw, height - thick,
-			             bw, cp, on, True, False);
+			             bw, cp, on, true, false);
 			break;
 		case BottomRight:
 			rects [0].x      = x + width - thick;
@@ -1293,10 +1295,10 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 			rects [1].width  = width - thick;
 			rects [1].height = thick;
 			XSetClipRectangles(dpy, Scr->BorderGC, 0, 0, rects, 2, Unsorted);
-			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
+			Draw3DBorder(w, x, y, width, height, bw, cp, off, true, false);
 			Draw3DBorder(w, x, y,
 			             width - thick + bw, height - thick + bw,
-			             bw, cp, on, True, False);
+			             bw, cp, on, true, false);
 			XSetClipMask(dpy, Scr->BorderGC, None);
 			break;
 		case BottomLeft:
@@ -1309,10 +1311,10 @@ Draw3DCorner(Window w, int x, int y, int width, int height,
 			rects [1].width  = width - thick;
 			rects [1].height = thick;
 			XSetClipRectangles(dpy, Scr->BorderGC, 0, 0, rects, 2, Unsorted);
-			Draw3DBorder(w, x, y, width, height, bw, cp, off, True, False);
+			Draw3DBorder(w, x, y, width, height, bw, cp, off, true, false);
 			Draw3DBorder(w, x + thick - bw, y,
 			             width - thick, height - thick + bw,
-			             bw, cp, on, True, False);
+			             bw, cp, on, true, false);
 			XSetClipMask(dpy, Scr->BorderGC, None);
 			break;
 		default:
@@ -1347,13 +1349,13 @@ PaintBorders(TwmWindow *tmp_win, bool focus)
 	if(tmp_win->title_height == 0) {
 		Draw3DBorder(tmp_win->frame, 0, 0,
 		             tmp_win->frame_width, tmp_win->frame_height,
-		             Scr->BorderShadowDepth, cp, off, True, False);
+		             Scr->BorderShadowDepth, cp, off, true, false);
 		Draw3DBorder(tmp_win->frame,
 		             tmp_win->frame_bw3D - Scr->BorderShadowDepth,
 		             tmp_win->frame_bw3D - Scr->BorderShadowDepth,
 		             tmp_win->frame_width  - 2 * tmp_win->frame_bw3D + 2 * Scr->BorderShadowDepth,
 		             tmp_win->frame_height - 2 * tmp_win->frame_bw3D + 2 * Scr->BorderShadowDepth,
-		             Scr->BorderShadowDepth, cp, on, True, False);
+		             Scr->BorderShadowDepth, cp, on, true, false);
 		return;
 	}
 
@@ -1398,28 +1400,28 @@ PaintBorders(TwmWindow *tmp_win, bool focus)
 	             0,
 	             tmp_win->title_width - 2 * Scr->TitleHeight,
 	             tmp_win->frame_bw3D,
-	             Scr->BorderShadowDepth, cp, off, True, False);
+	             Scr->BorderShadowDepth, cp, off, true, false);
 	/* Bottom */
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->frame_bw3D + Scr->TitleHeight,
 	             tmp_win->frame_height - tmp_win->frame_bw3D,
 	             tmp_win->frame_width - 2 * CORNERLEN,
 	             tmp_win->frame_bw3D,
-	             Scr->BorderShadowDepth, cp, off, True, False);
+	             Scr->BorderShadowDepth, cp, off, true, false);
 	/* Left */
 	Draw3DBorder(tmp_win->frame,
 	             0,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             tmp_win->frame_bw3D,
 	             tmp_win->frame_height - 2 * CORNERLEN,
-	             Scr->BorderShadowDepth, cp, off, True, False);
+	             Scr->BorderShadowDepth, cp, off, true, false);
 	/* Right */
 	Draw3DBorder(tmp_win->frame,
 	             tmp_win->frame_width  - tmp_win->frame_bw3D,
 	             Scr->TitleHeight + tmp_win->frame_bw3D,
 	             tmp_win->frame_bw3D,
 	             tmp_win->frame_height - 2 * CORNERLEN,
-	             Scr->BorderShadowDepth, cp, off, True, False);
+	             Scr->BorderShadowDepth, cp, off, true, false);
 
 #undef CORNERLEN
 
@@ -1438,14 +1440,14 @@ PaintBorders(TwmWindow *tmp_win, bool focus)
 		             Scr->TitleHeight,
 		             tmp_win->title_x,
 		             tmp_win->frame_bw3D,
-		             Scr->BorderShadowDepth, cp, off, True, False);
+		             Scr->BorderShadowDepth, cp, off, true, false);
 		/* And the right */
 		Draw3DBorder(tmp_win->frame,
 		             tmp_win->title_x + tmp_win->title_width,
 		             Scr->TitleHeight,
 		             tmp_win->frame_width - tmp_win->title_x - tmp_win->title_width,
 		             tmp_win->frame_bw3D,
-		             Scr->BorderShadowDepth, cp, off, True, False);
+		             Scr->BorderShadowDepth, cp, off, true, false);
 	}
 }
 

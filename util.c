@@ -80,9 +80,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <stdbool.h>
 
-#include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/Xmu/WinUtil.h>
 
@@ -378,7 +376,7 @@ ExpandFilename(const char *name)
 
 
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       Bool replace)
+                       bool replace)
 {
 	StdCmap *sc = NULL;
 
@@ -468,7 +466,7 @@ void LocateStandardColormaps(void)
 
 		if(XGetRGBColormaps(dpy, Scr->Root, &maps, &nmaps, atoms[i])) {
 			/* if got one, then append to current list */
-			InsertRGBColormap(atoms[i], maps, nmaps, False);
+			InsertRGBColormap(atoms[i], maps, nmaps, false);
 		}
 	}
 	if(atoms) {
@@ -560,7 +558,7 @@ void GetShadeColors(ColorPair *cp)
 {
 	XColor      xcol;
 	Colormap    cmap = Scr->RootColormaps.cwins[0]->colormap->c;
-	int         save;
+	bool        save;
 	float       clearfactor;
 	float       darkfactor;
 	char        clearcol [32], darkcol [32];
@@ -580,13 +578,14 @@ void GetShadeColors(ColorPair *cp)
 	        (unsigned short)(xcol.blue  * darkfactor));
 
 	save = Scr->FirstTime;
-	Scr->FirstTime = True;
+	Scr->FirstTime = true;
 	GetColor(Scr->Monochrome, &cp->shadc, clearcol);
 	GetColor(Scr->Monochrome, &cp->shadd,  darkcol);
 	Scr->FirstTime = save;
 }
 
-Bool UpdateFont(MyFont *font, int height)
+bool
+UpdateFont(MyFont *font, int height)
 {
 	int prev = font->avg_height;
 	font->avg_fheight = (font->avg_fheight * font->avg_count + height)
@@ -660,7 +659,8 @@ void GetFont(MyFont *font)
 }
 
 
-void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
+void
+SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 {
 	if(! tmp_win) {
 		return;
@@ -671,7 +671,7 @@ void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
 	}
 	if(tmp_win->highlight) {
 		if(Scr->use3Dborders) {
-			PaintBorders(tmp_win, (focus == True));
+			PaintBorders(tmp_win, focus);
 		}
 		else {
 			if(focus) {
@@ -697,7 +697,7 @@ void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
 	}
 
 	if(focus) {
-		Bool hil = False;
+		bool hil = false;
 
 		if(tmp_win->lolite_wl) {
 			XUnmapWindow(dpy, tmp_win->lolite_wl);
@@ -707,14 +707,14 @@ void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
 		}
 		if(tmp_win->hilite_wl) {
 			XMapWindow(dpy, tmp_win->hilite_wl);
-			hil = True;
+			hil = true;
 		}
 		if(tmp_win->hilite_wr) {
 			XMapWindow(dpy, tmp_win->hilite_wr);
-			hil = True;
+			hil = true;
 		}
 		if(hil && tmp_win->HiliteImage && tmp_win->HiliteImage->next) {
-			MaybeAnimate = True;
+			MaybeAnimate = true;
 		}
 		if(tmp_win->iconmanagerlist) {
 			ActiveIconManager(tmp_win->iconmanagerlist);
@@ -745,7 +745,7 @@ void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus)
 		             tmp_win->title_width - Scr->TBInfo.titlex -
 		             Scr->TBInfo.rightoff - Scr->TitlePadding,
 		             Scr->TitleHeight, Scr->TitleShadowDepth,
-		             tmp_win->title, bs, False, False);
+		             tmp_win->title, bs, false, false);
 	}
 	tmp_win->hasfocusvisible = focus;
 }
@@ -823,7 +823,7 @@ void SetFocus(TwmWindow *tmp_win, Time tim)
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
 	int f_iconmgr = 0;
 
-	if(Scr->Focus && (Scr->Focus->iconmgr)) {
+	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
 		f_iconmgr = 1;
 	}
 	if(Scr->SloppyFocus && (w == PointerRoot) && (!f_iconmgr)) {
@@ -842,13 +842,13 @@ void SetFocus(TwmWindow *tmp_win, Time tim)
 		if(Scr->Focus->AutoSqueeze && !Scr->Focus->squeezed) {
 			AutoSqueeze(Scr->Focus);
 		}
-		SetFocusVisualAttributes(Scr->Focus, False);
+		SetFocusVisualAttributes(Scr->Focus, false);
 	}
 	if(tmp_win)    {
 		if(tmp_win->AutoSqueeze && tmp_win->squeezed) {
 			AutoSqueeze(tmp_win);
 		}
-		SetFocusVisualAttributes(tmp_win, True);
+		SetFocusVisualAttributes(tmp_win, true);
 	}
 	Scr->Focus = tmp_win;
 }
@@ -895,9 +895,9 @@ Pixmap Create3DMenuIcon(unsigned int height,
 	col->next = colori;
 	colori = col;
 
-	Draw3DBorder(col->pix, 0, 0, w, h, 1, cp, off, True, False);
+	Draw3DBorder(col->pix, 0, 0, w, h, 1, cp, off, true, false);
 	for(i = 3; i + 5 < h; i += 5) {
-		Draw3DBorder(col->pix, 4, i, w - 8, 3, 1, Scr->MenuC, off, True, False);
+		Draw3DBorder(col->pix, 4, i, w - 8, 3, 1, Scr->MenuC, off, true, false);
 	}
 	return (colori->pix);
 }
@@ -922,7 +922,7 @@ Pixmap Create3DIconManagerIcon(ColorPair cp)
 	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
-	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, True, False);
+	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, true, false);
 	col->next = colori;
 	colori = col;
 
@@ -1011,8 +1011,9 @@ Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
     Gcv.background = fix_back;\
     XChangeGC(dpy, gc, GCForeground|GCBackground,&Gcv)
 
-void Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
-                  ColorPair cp, int state, int fill, int forcebw)
+void
+Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
+             ColorPair cp, int state, bool fill, bool forcebw)
 {
 	int           i;
 	XGCValues     gcv;
@@ -1154,7 +1155,7 @@ void PaintIcon(TwmWindow *tmp_win)
 		Draw3DBorder(icon->w, x, icon->height, width,
 		             Scr->IconFont.height +
 		             2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER),
-		             Scr->IconManagerShadowDepth, icon->iconc, off, False, False);
+		             Scr->IconManagerShadowDepth, icon->iconc, off, false, false);
 	}
 	while((len > 0) && (twidth > mwidth)) {
 		len--;
@@ -1184,7 +1185,7 @@ void AdoptWindow(void)
 	unsigned int        nchildren, key_buttons;
 	int                 root_x, root_y, win_x, win_y;
 	int                 ret;
-	int                 savedRestartPreviousState;
+	bool                savedRestartPreviousState;
 
 	localroot = w = RootWindow(dpy, Scr->screen);
 	XGrabPointer(dpy, localroot, False,
@@ -1260,7 +1261,7 @@ void AdoptWindow(void)
 	 * when it happens...
 	 */
 	savedRestartPreviousState = RestartPreviousState;
-	RestartPreviousState = False;
+	RestartPreviousState = false;
 	SimulateMapRequest(w);
 	RestartPreviousState = savedRestartPreviousState;
 	return;
@@ -1477,10 +1478,10 @@ unsigned char *GetWMPropertyString(Window w, Atom prop)
 			if(text_list_count == 0) {
 				stringptr = NULL;
 			}
-			else if(text_list == (char **)0) {
+			else if(text_list == NULL) {
 				stringptr = NULL;
 			}
-			else if(text_list [0] == (char *)0) {
+			else if(text_list [0] == NULL) {
 				stringptr = NULL;
 			}
 			else if(status < 0 || text_list_count < 0) {

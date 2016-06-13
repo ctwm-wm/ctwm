@@ -57,7 +57,7 @@ main(int argc, char *argv[])
 	/****************************************************************/
 
 	wlist = CtwmListWorkspaces(dpy, 0);
-	if(wlist == (char **) 0) {
+	if(wlist == NULL) {
 		fprintf(stderr, "cannot obtain workspaces list\n");
 		exit(1);
 	}
@@ -88,7 +88,7 @@ main(int argc, char *argv[])
 	/****************************************************************/
 
 	wlist = CtwmCurrentOccupation(dpy, awindow);
-	if(wlist == (char **) 0) {
+	if(wlist == NULL) {
 		fprintf(stderr, "cannot obtain occupation of window %lu\n", awindow);
 		exit(1);
 	}

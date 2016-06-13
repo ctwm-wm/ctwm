@@ -66,8 +66,6 @@
 
 #include <ctype.h>
 
-#include "types.h"
-
 #ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
 #endif
@@ -99,14 +97,14 @@ char     *ExpandFilename(const char *name);
 char     *ExpandFilePath(char *path);
 
 void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       Bool replace);
+                       bool replace);
 void RemoveRGBColormap(Atom a);
 void LocateStandardColormaps(void);
 void GetColor(int kind, Pixel *what, char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
-Bool UpdateFont(MyFont *font, int height);
-void SetFocusVisualAttributes(TwmWindow *tmp_win, Bool focus);
+bool UpdateFont(MyFont *font, int height);
+void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 void move_to_after(TwmWindow *t, TwmWindow *after);
 void SetFocus(TwmWindow *tmp_win, Time tim);
 Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp);
@@ -117,7 +115,7 @@ Pixmap Create3DIconManagerIcon(ColorPair cp);
 void Draw3DBorder(Window w,
                   int x, int y, int width, int height, int bw,
                   ColorPair cp,
-                  int state, int fill, int forcebw);
+                  int state, bool fill, bool forcebw);
 void PaintIcon(TwmWindow *tmp_win);
 void AdoptWindow(void);
 void RescueWindows(void);

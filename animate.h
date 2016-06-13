@@ -7,8 +7,8 @@
 
 /* Current code requires these to be leaked */
 extern int Animating;
-extern Bool AnimationActive;
-extern Bool MaybeAnimate;
+extern bool AnimationActive;
+extern bool MaybeAnimate;
 extern int AnimationSpeed;
 extern struct timeval AnimateTimeout;
 

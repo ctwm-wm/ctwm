@@ -4,10 +4,6 @@
 #ifndef _CTWM_IMAGE_H
 #define _CTWM_IMAGE_H
 
-#include <stdbool.h>
-
-#include "types.h"
-
 
 /* Widely used through the codebase */
 struct Image {

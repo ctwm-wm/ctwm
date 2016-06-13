@@ -4,9 +4,6 @@
 #ifndef _CTWM_IMAGE_XPM_H
 #define _CTWM_IMAGE_XPM_H
 
-#include "types.h"
-
 Image *GetXpmImage(const char *name, ColorPair cp);
-
 
 #endif /* _CTWM_IMAGE_XPM_H */

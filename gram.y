@@ -95,7 +95,7 @@ static MenuItem *lastmenuitem = NULL;
 static name_list **curplist = NULL;
 static int color = 0;
 
-extern int yylex(void);
+int yylex(void);
 %}
 
 %union
@@ -217,31 +217,31 @@ stmt		: error
 
 		| ZOOM number		{ if (Scr->FirstTime)
 					  {
-						Scr->DoZoom = TRUE;
+						Scr->DoZoom = true;
 						Scr->ZoomCount = $2;
 					  }
 					}
 		| ZOOM			{ if (Scr->FirstTime)
-						Scr->DoZoom = TRUE; }
+						Scr->DoZoom = true; }
 		| PIXMAPS pixmap_list	{}
 		| CURSORS cursor_list	{}
 		| ICONIFY_BY_UNMAPPING	{ curplist = &Scr->IconifyByUn; }
 		  win_list
 		| ICONIFY_BY_UNMAPPING	{ if (Scr->FirstTime)
-		    Scr->IconifyByUnmapping = TRUE; }
+		    Scr->IconifyByUnmapping = true; }
 
 		| OPAQUEMOVE	{ curplist = &Scr->OpaqueMoveList; }
 		  win_list
-		| OPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = TRUE; }
+		| OPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = true; }
 		| NOOPAQUEMOVE	{ curplist = &Scr->NoOpaqueMoveList; }
 		  win_list
-		| NOOPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = FALSE; }
+		| NOOPAQUEMOVE	{ if (Scr->FirstTime) Scr->DoOpaqueMove = false; }
 		| OPAQUERESIZE	{ curplist = &Scr->OpaqueMoveList; }
 		  win_list
-		| OPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = TRUE; }
+		| OPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = true; }
 		| NOOPAQUERESIZE	{ curplist = &Scr->NoOpaqueResizeList; }
 		  win_list
-		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = FALSE; }
+		| NOOPAQUERESIZE	{ if (Scr->FirstTime) Scr->DoOpaqueResize = false; }
 
 		| LEFT_TITLEBUTTON string EQUALS action {
 					  GotTitleButton ($2, $4, false);
@@ -255,12 +255,12 @@ stmt		: error
 		  binding_list
 		| button string		{
 		    root = GetRoot($2, NULL, NULL);
-		    AddFuncButton ($1, C_ROOT, 0, F_MENU, root, (MenuItem*) 0);
+		    AddFuncButton ($1, C_ROOT, 0, F_MENU, root, NULL);
 		}
 		| button action		{
 			if ($2 == F_MENU) {
 			    pull->prev = NULL;
-			    AddFuncButton ($1, C_ROOT, 0, $2, pull, (MenuItem*) 0);
+			    AddFuncButton ($1, C_ROOT, 0, $2, pull, NULL);
 			}
 			else {
 			    MenuItem *item;
@@ -268,7 +268,7 @@ stmt		: error
 			    root = GetRoot(TWM_ROOT,NULL,NULL);
 			    item = AddToMenu (root, "x", Action,
 					NULL, $2, NULL, NULL);
-			    AddFuncButton ($1, C_ROOT, 0, $2, (MenuRoot*) 0, item);
+			    AddFuncButton ($1, C_ROOT, 0, $2, NULL, item);
 			}
 			Action = "";
 			pull = NULL;
@@ -297,14 +297,14 @@ stmt		: error
 		  win_list
 		| STARTSQUEEZED		{ curplist = &Scr->StartSqueezed; }
 		  win_list
-		| ALWAYSSQUEEZETOGRAVITY	{ Scr->AlwaysSqueezeToGravity = TRUE; }
+		| ALWAYSSQUEEZETOGRAVITY	{ Scr->AlwaysSqueezeToGravity = true; }
 		| ALWAYSSQUEEZETOGRAVITY	{ curplist = &Scr->AlwaysSqueezeToGravityL; }
 		  win_list
 		| DONTSETINACTIVE	{ curplist = &Scr->DontSetInactive; }
 		  win_list
 		| ICONMGR_NOSHOW	{ curplist = &Scr->IconMgrNoShow; }
 		  win_list
-		| ICONMGR_NOSHOW	{ Scr->IconManagerDontShow = TRUE; }
+		| ICONMGR_NOSHOW	{ Scr->IconManagerDontShow = true; }
 		| ICONMGRS		{ curplist = &Scr->IconMgrs; }
 		  iconm_list
 		| ICONMGR_SHOW		{ curplist = &Scr->IconMgrShow; }
@@ -312,11 +312,11 @@ stmt		: error
 		| NO_TITLE_HILITE	{ curplist = &Scr->NoTitleHighlight; }
 		  win_list
 		| NO_TITLE_HILITE	{ if (Scr->FirstTime)
-						Scr->TitleHighlight = FALSE; }
+						Scr->TitleHighlight = false; }
 		| NO_HILITE		{ curplist = &Scr->NoHighlight; }
 		  win_list
 		| NO_HILITE		{ if (Scr->FirstTime)
-						Scr->Highlight = FALSE; }
+						Scr->Highlight = false; }
                 | ON_TOP_PRIORITY signed_number 
                                         { OtpScrSetZero(Scr, WinWin, $2); }
 		| ON_TOP_PRIORITY ICONS signed_number
@@ -329,18 +329,18 @@ stmt		: error
 		  win_list
 		| ALWAYS_ON_TOP		{ curplist = OtpScrPriorityL(Scr, WinWin, 8); }
 		  win_list
-		| PRIORITY_SWITCHING	{ OtpScrSetSwitching(Scr, WinWin, False);
+		| PRIORITY_SWITCHING	{ OtpScrSetSwitching(Scr, WinWin, false);
 		                          curplist = OtpScrSwitchingL(Scr, WinWin); }
 		  win_list
-		| PRIORITY_NOT_SWITCHING { OtpScrSetSwitching(Scr, WinWin, True);
+		| PRIORITY_NOT_SWITCHING { OtpScrSetSwitching(Scr, WinWin, true);
 		                          curplist = OtpScrSwitchingL(Scr, WinWin); }
 		  win_list
 		| PRIORITY_SWITCHING ICONS
-                                        { OtpScrSetSwitching(Scr, IconWin, False);
+                                        { OtpScrSetSwitching(Scr, IconWin, false);
                                         curplist = OtpScrSwitchingL(Scr, IconWin); }
 		  win_list
 		| PRIORITY_NOT_SWITCHING ICONS
-                                        { OtpScrSetSwitching(Scr, IconWin, True);
+                                        { OtpScrSetSwitching(Scr, IconWin, true);
 		                          curplist = OtpScrSwitchingL(Scr, IconWin); }
 		  win_list
 
@@ -348,10 +348,10 @@ stmt		: error
 		| NO_STACKMODE		{ curplist = &Scr->NoStackModeL; }
 		  win_list
 		| NO_STACKMODE		{ if (Scr->FirstTime)
-						Scr->StackMode = FALSE; }
+						Scr->StackMode = false; }
 		| NO_BORDER		{ curplist = &Scr->NoBorder; }
 		  win_list
-		| AUTO_POPUP		{ Scr->AutoPopup = TRUE; }
+		| AUTO_POPUP		{ Scr->AutoPopup = true; }
 		| AUTO_POPUP		{ curplist = &Scr->AutoPopupL; }
 		  win_list
 		| DONT_SAVE		{ curplist = &Scr->DontSave; }
@@ -359,11 +359,11 @@ stmt		: error
 		| NO_ICON_TITLE		{ curplist = &Scr->NoIconTitle; }
 		  win_list
 		| NO_ICON_TITLE		{ if (Scr->FirstTime)
-						Scr->NoIconTitlebar = TRUE; }
+						Scr->NoIconTitlebar = true; }
 		| NO_TITLE		{ curplist = &Scr->NoTitle; }
 		  win_list
 		| NO_TITLE		{ if (Scr->FirstTime)
-						Scr->NoTitlebar = TRUE; }
+						Scr->NoTitlebar = true; }
 		| IGNORE_TRANSIENT	{ curplist = &Scr->IgnoreTransientL; }
 		  win_list
 		| MAKE_TITLE		{ curplist = &Scr->MakeTitle; }
@@ -372,17 +372,17 @@ stmt		: error
 		  win_list
 		| AUTO_RAISE		{ curplist = &Scr->AutoRaise; }
 		  win_list
-		| AUTO_RAISE		{ Scr->AutoRaiseDefault = TRUE; }
+		| AUTO_RAISE		{ Scr->AutoRaiseDefault = true; }
 		| WARP_ON_DEICONIFY	{ curplist = &Scr->WarpOnDeIconify; }
 		  win_list
 		| AUTO_LOWER		{ curplist = &Scr->AutoLower; }
 		  win_list
-		| AUTO_LOWER		{ Scr->AutoLowerDefault = TRUE; }
+		| AUTO_LOWER		{ Scr->AutoLowerDefault = true; }
 		| MENU string LP string COLON string RP	{
 					root = GetRoot($2, $4, $6); }
-		  menu			{ root->real_menu = TRUE;}
+		  menu			{ root->real_menu = true;}
 		| MENU string		{ root = GetRoot($2, NULL, NULL); }
-		  menu			{ root->real_menu = TRUE; }
+		  menu			{ root->real_menu = true; }
 		| FUNCTION string	{ root = GetRoot($2, NULL, NULL); }
 		  function
 		| ICONS			{ curplist = &Scr->IconNames; }
@@ -444,12 +444,12 @@ stmt		: error
 		| WARP_CURSOR		{ curplist = &Scr->WarpCursorL; }
 		  win_list
 		| WARP_CURSOR		{ if (Scr->FirstTime)
-					    Scr->WarpCursor = TRUE; }
+					    Scr->WarpCursor = true; }
 		| WINDOW_RING		{ curplist = &Scr->WindowRingL; }
 		  win_list
-		| WINDOW_RING		{ Scr->WindowRingAll = TRUE; }
+		| WINDOW_RING		{ Scr->WindowRingAll = true; }
 		| WINDOW_RING_EXCLUDE	{ if (!Scr->WindowRingL)
-					    Scr->WindowRingAll = TRUE;
+					    Scr->WindowRingAll = true;
 					  curplist = &Scr->WindowRingExcludeL; }
 		  win_list
 		| WINDOW_GEOMETRIES	{  }
@@ -469,7 +469,7 @@ noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
 					    fprintf (stderr,
 					"unknown singleton keyword %d\n",
 						     $1);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -479,7 +479,7 @@ sarg		: SKEYWORD string	{ if (!do_string_keyword ($1, $2)) {
 					    fprintf (stderr,
 				"unknown string keyword %d (value \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| SKEYWORD		{ if (!do_string_keyword ($1, DEFSTRING)) {
@@ -487,7 +487,7 @@ sarg		: SKEYWORD string	{ if (!do_string_keyword ($1, $2)) {
 					    fprintf (stderr,
 				"unknown string keyword %d (no value)\n",
 						     $1);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -498,7 +498,7 @@ sarg		: SSKEYWORD string string
 					    fprintf (stderr,
 				"unknown strings keyword %d (value \"%s\" and \"%s\")\n",
 						     $1, $2, $3);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| SSKEYWORD string	{ if (!do_string_string_keyword ($1, $2, NULL)) {
@@ -506,7 +506,7 @@ sarg		: SSKEYWORD string string
 					    fprintf (stderr,
 				"unknown string keyword %d (value \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| SSKEYWORD		{ if (!do_string_string_keyword ($1, NULL, NULL)) {
@@ -514,7 +514,7 @@ sarg		: SSKEYWORD string string
 					    fprintf (stderr,
 				"unknown string keyword %d (no value)\n",
 						     $1);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -524,7 +524,7 @@ narg		: NKEYWORD number	{ if (!do_number_keyword ($1, $2)) {
 					    fprintf (stderr,
 				"unknown numeric keyword %d (value %d)\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -553,7 +553,7 @@ key		: META			{ mods |= Mod1Mask; }
 					     fprintf (stderr,
 				"bad altkeymap number (%d), must be 1-5\n",
 						      $2);
-					     ParseError = 1;
+					     ParseError = true;
 					  } else {
 					     mods |= (Alt1Mask << ($2 - 1));
 					  }
@@ -563,7 +563,7 @@ key		: META			{ mods |= Mod1Mask; }
 					     fprintf (stderr,
 				"bad modifier number (%d), must be 1-5\n",
 						      $2);
-					     ParseError = 1;
+					     ParseError = true;
 					  } else {
 					     mods |= (Mod1Mask << ($2 - 1));
 					  }
@@ -702,7 +702,7 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    fprintf (stderr,
 			"unhandled list color keyword %d (string \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		| CLKEYWORD string	{ curplist = do_colorlist_keyword($1,color,
@@ -712,7 +712,7 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    fprintf (stderr,
 			"unhandled color list keyword %d (string \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		  win_color_list
@@ -722,7 +722,7 @@ color_entry	: CLKEYWORD string	{ if (!do_colorlist_keyword ($1, color,
 					    fprintf (stderr,
 			"unhandled color keyword %d (string \"%s\")\n",
 						     $1, $2);
-					    ParseError = 1;
+					    ParseError = true;
 					  }
 					}
 		;
@@ -794,14 +794,15 @@ mwm_ignore_entry	: string { add_mwm_ignore($1); }
 
 
 squeeze		: SQUEEZE_TITLE {
-				    if (HasShape) Scr->SqueezeTitle = TRUE;
+				    if (HasShape) Scr->SqueezeTitle = true;
+				    Scr->SqueezeTitleSet = true;
 				}
 		| SQUEEZE_TITLE { curplist = &Scr->SqueezeTitleL;
-				  if (HasShape && Scr->SqueezeTitle == -1)
-				    Scr->SqueezeTitle = TRUE;
+				  if (HasShape && !Scr->SqueezeTitleSet)
+				    Scr->SqueezeTitle = true;
 				}
 		  LB win_sqz_entries RB
-		| DONT_SQUEEZE_TITLE { Scr->SqueezeTitle = FALSE; }
+		| DONT_SQUEEZE_TITLE { Scr->SqueezeTitle = false; }
 		| DONT_SQUEEZE_TITLE { curplist = &Scr->DontSqueezeTitleL; }
 		  win_list
 		;
@@ -1009,7 +1010,7 @@ function_entry	: action		{ AddToMenu(root, "", Action, NULL, $1,
 					}
 		;
 
-menu		: LB menu_entries RB {lastmenuitem = (MenuItem*) 0;}
+menu		: LB menu_entries RB {lastmenuitem = NULL;}
 		;
 
 menu_entries	: /* Empty */
@@ -1018,7 +1019,7 @@ menu_entries	: /* Empty */
 
 menu_entry	: string action		{
 			if ($2 == F_SEPARATOR) {
-			    if (lastmenuitem) lastmenuitem->separated = 1;
+			    if (lastmenuitem) lastmenuitem->separated = true;
 			}
 			else {
 			    lastmenuitem = AddToMenu(root, $1, Action, pull, $2, NULL, NULL);
@@ -1028,7 +1029,7 @@ menu_entry	: string action		{
 		}
 		| string LP string COLON string RP action {
 			if ($7 == F_SEPARATOR) {
-			    if (lastmenuitem) lastmenuitem->separated = 1;
+			    if (lastmenuitem) lastmenuitem->separated = true;
 			}
 			else {
 			    lastmenuitem = AddToMenu(root, $1, Action, pull, $7, $3, $5);

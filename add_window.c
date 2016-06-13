@@ -71,10 +71,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <sys/time.h>
+
 #include <X11/Xatom.h>
+#include <X11/extensions/shape.h>
 
 #include "ctwm_atoms.h"
 #include "add_window.h"
@@ -94,6 +95,8 @@
 #include "image.h"
 #include "functions.h"  // Only for RootFunction
 #include "decorations.h"
+
+#include "gram.tab.h"
 
 
 int AddingX;
@@ -117,7 +120,7 @@ static WindowEntry      *prevWindowEntry(WindowEntry   *we,
 static void             mergeWindowEntries(WindowEntry *old, WindowEntry *we);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
-int  resizeWhenAdd;
+bool resizeWhenAdd;
 
 /************************************************************************
  *
@@ -190,28 +193,27 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	int width, height;                  /* tmp variable */
-	int ask_user;               /* don't know where to put the window */
+	bool ask_user;               /* don't know where to put the window */
 	int gravx, gravy;                   /* gravity signs for positioning */
 	int namelen;
 	int bw2;
 	short saved_x, saved_y, restore_icon_x, restore_icon_y;
 	unsigned short saved_width, saved_height;
-	Bool restore_iconified = 0;
-	Bool restore_icon_info_present = 0;
+	bool restore_iconified = false;
+	bool restore_icon_info_present = false;
 	int restoredFromPrevSession;
-	Bool width_ever_changed_by_user;
-	Bool height_ever_changed_by_user;
+	bool width_ever_changed_by_user;
+	bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
-	Bool        random_placed = False;
-	int         found = 0;
+	bool random_placed = false;
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout;
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 	WindowBox *winbox;
-	int iswinbox = 0;
-	int iswman = 0;
+	bool iswinbox = false;
+	bool iswman = false;
 	Window vroot;
 
 #ifdef DEBUG
@@ -237,11 +239,11 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			/* iconm remains nonzero */
 			break;
 		case  ADD_WINDOW_WINDOWBOX:
-			iswinbox = 1;
+			iswinbox = true;
 			iconm  = 0;
 			break;
 		case ADD_WINDOW_WORKSPACE_MANAGER :
-			iswman = 1;
+			iswman = true;
 			iconm  = 0;
 			break;
 		default :
@@ -250,9 +252,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	}
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
-	tmp_win->iconmgr = iconm;
+	tmp_win->isiconmgr = iconm;
 	tmp_win->iconmgrp = iconp;
-	tmp_win->wspmgr = iswman;
+	tmp_win->iswspmgr = iswman;
 	tmp_win->iswinbox = iswinbox;
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
@@ -291,8 +293,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		restoredFromPrevSession = 1;
 	}
 	else {
-		tmp_win->widthEverChangedByUser = False;
-		tmp_win->heightEverChangedByUser = False;
+		tmp_win->widthEverChangedByUser = false;
+		tmp_win->heightEverChangedByUser = false;
 
 		restoredFromPrevSession = 0;
 	}
@@ -356,9 +358,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	 * fields in the WM_NORMAL_HINTS property.
 	 */
 
-	tmp_win->transient = Transient(tmp_win->w, &tmp_win->transientfor);
+	tmp_win->istransient = Transient(tmp_win->w, &tmp_win->transientfor);
 
-	tmp_win->nameChanged = 0;
+	tmp_win->nameChanged = false;
 	if(tmp_win->name == NULL) {
 		tmp_win->name = NoName;
 	}
@@ -384,7 +386,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	namelen = strlen(tmp_win->name);
 
 	if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->transient = 0;
+		tmp_win->istransient = false;
 	}
 
 	tmp_win->highlight = Scr->Highlight &&
@@ -415,7 +417,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
 	if(Scr->IconifyByUnmapping) {
-		tmp_win->iconify_by_unmapping = iconm ? FALSE :
+		tmp_win->iconify_by_unmapping = iconm ? false :
 		                                !LookInList(Scr->DontIconify, tmp_win->full_name,
 		                                                &tmp_win->class);
 	}
@@ -423,17 +425,17 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	                                LookInList(Scr->IconifyByUn, tmp_win->full_name, &tmp_win->class);
 
 	if(LookInList(Scr->UnmapByMovingFarAway, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->UnmapByMovingFarAway = True;
+		tmp_win->UnmapByMovingFarAway = true;
 	}
 	else {
-		tmp_win->UnmapByMovingFarAway = False;
+		tmp_win->UnmapByMovingFarAway = false;
 	}
 
 	if(LookInList(Scr->DontSetInactive, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->DontSetInactive = True;
+		tmp_win->DontSetInactive = true;
 	}
 	else {
-		tmp_win->DontSetInactive = False;
+		tmp_win->DontSetInactive = false;
 	}
 
 #ifdef EWMH
@@ -441,10 +443,10 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 #endif /* EWMH */
 
 	if(LookInList(Scr->AutoSqueeze, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->AutoSqueeze = True;
+		tmp_win->AutoSqueeze = true;
 	}
 	else {
-		tmp_win->AutoSqueeze = False;
+		tmp_win->AutoSqueeze = false;
 	}
 
 	if(
@@ -452,24 +454,24 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
 #endif /* EWMH */
 	        LookInList(Scr->StartSqueezed, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->StartSqueezed = True;
+		tmp_win->StartSqueezed = true;
 	}
 	else {
-		tmp_win->StartSqueezed = False;
+		tmp_win->StartSqueezed = false;
 	}
 
 	if(Scr->AlwaysSqueezeToGravity
 	                || LookInList(Scr->AlwaysSqueezeToGravityL, tmp_win->full_name,
 	                              &tmp_win->class)) {
-		tmp_win->AlwaysSqueezeToGravity = True;
+		tmp_win->AlwaysSqueezeToGravity = true;
 	}
 	else {
-		tmp_win->AlwaysSqueezeToGravity = False;
+		tmp_win->AlwaysSqueezeToGravity = false;
 	}
 
-	if(tmp_win->transient || tmp_win->group) {
+	if(tmp_win->istransient || tmp_win->group) {
 		TwmWindow *t = NULL;
-		if(tmp_win->transient) {
+		if(tmp_win->istransient) {
 			t = GetTwmWindow(tmp_win->transientfor);
 		}
 		if(!t && tmp_win->group) {
@@ -500,7 +502,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	else {
 		tmp_win->ring.next = tmp_win->ring.prev = NULL;
 	}
-	tmp_win->ring.cursor_valid = False;
+	tmp_win->ring.cursor_valid = false;
 
 	tmp_win->squeeze_info = NULL;
 	tmp_win->squeeze_info_copied = 0;
@@ -527,7 +529,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	{
 		MotifWmHints mwmHints;
-		Boolean have_title;
+		bool have_title;
 
 		GetMWMHints(tmp_win->w, &mwmHints);
 
@@ -553,7 +555,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		bw2 = tmp_win->frame_bw * 2;
 
 
-		have_title = True;
+		have_title = true;
 #ifdef EWMH
 		have_title = EwmhHasTitle(tmp_win);
 #endif /* EWMH */
@@ -561,13 +563,13 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			have_title = mwm_has_title(&mwmHints);
 		}
 		if(Scr->NoTitlebar) {
-			have_title = False;
+			have_title = false;
 		}
 		if(LookInList(Scr->MakeTitle, tmp_win->full_name, &tmp_win->class)) {
-			have_title = True;
+			have_title = true;
 		}
 		if(LookInList(Scr->NoTitle, tmp_win->full_name, &tmp_win->class)) {
-			have_title = False;
+			have_title = false;
 		}
 
 		if(have_title) {
@@ -580,24 +582,24 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->OpaqueMove = Scr->DoOpaqueMove;
 	if(LookInList(Scr->OpaqueMoveList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueMove = TRUE;
+		tmp_win->OpaqueMove = true;
 	}
 	else if(LookInList(Scr->NoOpaqueMoveList, tmp_win->full_name,
 	                   &tmp_win->class)) {
-		tmp_win->OpaqueMove = FALSE;
+		tmp_win->OpaqueMove = false;
 	}
 
 	tmp_win->OpaqueResize = Scr->DoOpaqueResize;
 	if(LookInList(Scr->OpaqueResizeList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueResize = TRUE;
+		tmp_win->OpaqueResize = true;
 	}
 	else if(LookInList(Scr->NoOpaqueResizeList, tmp_win->full_name,
 	                   &tmp_win->class)) {
-		tmp_win->OpaqueResize = FALSE;
+		tmp_win->OpaqueResize = false;
 	}
 
 	/* if it is a transient window, don't put a title on it */
-	if(tmp_win->transient && !Scr->DecorateTransients) {
+	if(tmp_win->istransient && !Scr->DecorateTransients) {
 		tmp_win->title_height = 0;
 	}
 
@@ -634,13 +636,13 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	 *     o  a PPosition was requested and UsePPosition is ON or
 	 *        NON_ZERO if the window is at other than (0,0)
 	 */
-	ask_user = TRUE;
-	if(tmp_win->transient ||
+	ask_user = true;
+	if(tmp_win->istransient ||
 	                (tmp_win->hints.flags & USPosition) ||
 	                ((tmp_win->hints.flags & PPosition) && Scr->UsePPosition &&
 	                 (Scr->UsePPosition == PPOS_ON ||
 	                  tmp_win->attr.x != 0 || tmp_win->attr.y != 0))) {
-		ask_user = FALSE;
+		ask_user = false;
 	}
 
 	/*===============[ Matthew McNeill 1997 ]==========================*
@@ -670,7 +672,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
 	winbox = findWindowBox(tmp_win);
 	if(PlaceWindowInRegion(tmp_win, &(tmp_win->attr.x), &(tmp_win->attr.y))) {
-		ask_user = False;
+		ask_user = false;
 	}
 	if(LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class)) {
 		char *geom;
@@ -686,7 +688,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		if(mask_ & YNegative) {
 			tmp_win->attr.y += Scr->rooth - tmp_win->attr.height;
 		}
-		ask_user = False;
+		ask_user = false;
 	}
 
 	vs = tmp_win->parent_vs;
@@ -875,17 +877,18 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 				PlaceY += Scr->RandomDisplacementY;
 			}
 
-			random_placed = True;
+			random_placed = true;
 		}
 		else {                            /* else prompt */
 			if(!(tmp_win->wmhints && tmp_win->wmhints->flags & StateHint &&
 			                tmp_win->wmhints->initial_state == IconicState)) {
-				Bool firsttime = True;
+				bool firsttime = true;
+				int found = 0;
 
 				/* better wait until all the mouse buttons have been
 				 * released.
 				 */
-				while(TRUE) {
+				while(1) {
 					XUngrabServer(dpy);
 					XSync(dpy, 0);
 					XGrabServer(dpy);
@@ -918,7 +921,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 						if(Scr->currentvs) {
 							vroot = Scr->currentvs->window;
 						}
-						firsttime = False;
+						firsttime = false;
 					}
 					if(winbox) {
 						vroot = winbox->window;
@@ -981,7 +984,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 				tmp_win->frame_width  = AddingW;
 				tmp_win->frame_height = AddingH;
 				/*SetFocus ((TwmWindow *) NULL, CurrentTime);*/
-				while(TRUE) {
+				while(1) {
 					if(Scr->OpenWindowTimeout) {
 						fd = ConnectionNumber(dpy);
 						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
@@ -1094,7 +1097,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 						lastx = -10000;
 						lasty = -10000;
-						while(TRUE) {
+						while(1) {
 							XMaskEvent(dpy,
 							           ButtonReleaseMask | ButtonMotionMask, &event);
 
@@ -1126,9 +1129,9 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 							              &JunkX, &JunkY, &AddingX, &AddingY, &JunkMask);
 
 							if(lastx != AddingX || lasty != AddingY) {
-								resizeWhenAdd = TRUE;
+								resizeWhenAdd = true;
 								DoResize(AddingX, AddingY, tmp_win);
-								resizeWhenAdd = FALSE;
+								resizeWhenAdd = false;
 
 								lastx = AddingX;
 								lasty = AddingY;
@@ -1218,10 +1221,10 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 	}
 
-	tmp_win->squeezed = FALSE;
-	tmp_win->iconified = FALSE;
-	tmp_win->isicon = FALSE;
-	tmp_win->icon_on = FALSE;
+	tmp_win->squeezed = false;
+	tmp_win->iconified = false;
+	tmp_win->isicon = false;
+	tmp_win->icon_on = false;
 
 	XGrabServer(dpy);
 
@@ -1382,8 +1385,8 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		                                    tmp_win->border_tile.fore,
 		                                    tmp_win->border_tile.back);
 
-		tmp_win->hasfocusvisible = True;
-		SetFocusVisualAttributes(tmp_win, False);
+		tmp_win->hasfocusvisible = true;
+		SetFocusVisualAttributes(tmp_win, false);
 	}
 	else {
 		tmp_win->gray = None;
@@ -1432,7 +1435,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wShaped = boundingShaped;
 	}
 
-	if(!tmp_win->iconmgr && ! iswman &&
+	if(!tmp_win->isiconmgr && ! iswman &&
 	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
@@ -1441,11 +1444,11 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	                tmp_win->title_height + tmp_win->frame_bw3D);
 	/*
 	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
-	 * Set the map state to FALSE to prevent a transition back to
+	 * Set the map state to false to prevent a transition back to
 	 * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
 	 * again in HandleMapNotify.
 	 */
-	tmp_win->mapped = FALSE;
+	tmp_win->mapped = false;
 
 	SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
 	           tmp_win->frame_width, tmp_win->frame_height, -1, true);
@@ -1453,10 +1456,10 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	/* wait until the window is iconified and the icon window is mapped
 	 * before creating the icon window
 	 */
-	tmp_win->icon = (Icon *) 0;
-	tmp_win->iconslist = (name_list *) 0;
+	tmp_win->icon = NULL;
+	tmp_win->iconslist = NULL;
 
-	if(!tmp_win->iconmgr) {
+	if(!tmp_win->isiconmgr) {
 		GrabButtons(tmp_win);
 		GrabKeys(tmp_win);
 	}
@@ -1554,8 +1557,8 @@ TwmWindow *GetTwmWindow(Window w)
  *              put a twm frame on the window
  *
  *  Returned Value:
- *      TRUE    - go ahead and frame the window
- *      FALSE   - don't frame the window
+ *      true    - go ahead and frame the window
+ *      false   - don't frame the window
  *
  *  Inputs:
  *      w       - the window to check
@@ -1563,7 +1566,8 @@ TwmWindow *GetTwmWindow(Window w)
  ***********************************************************************
  */
 
-int MappedNotOverride(Window w)
+bool
+MappedNotOverride(Window w)
 {
 	XWindowAttributes wa;
 
@@ -1826,9 +1830,8 @@ TwmColormap *CreateTwmColormap(Colormap c)
 	return (cmap);
 }
 
-ColormapWindow *CreateColormapWindow(Window w,
-                                     Bool creating_parent,
-                                     Bool property_window)
+ColormapWindow *
+CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 {
 	ColormapWindow *cwin;
 	TwmColormap *cmap;
@@ -1886,7 +1889,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 {
 	int i, j;
 	Window *cmap_windows = NULL;
-	Bool can_free_cmap_windows = False;
+	bool can_free_cmap_windows = false;
 	int number_cmap_windows = 0;
 	ColormapWindow **cwins = NULL;
 	int previously_installed;
@@ -1906,7 +1909,6 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 	                         &number_cmap_windows) &&
 	                number_cmap_windows > 0) {
 
-		can_free_cmap_windows = False;
 		/*
 		 * check if the top level is in the list, add to front if not
 		 */
@@ -1930,7 +1932,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 				new_cmap_windows[i + 1] = cmap_windows[i];
 			}
 			XFree((char *) cmap_windows);
-			can_free_cmap_windows = True;  /* do not use XFree any more */
+			can_free_cmap_windows = true;  /* do not use XFree any more */
 			cmap_windows = new_cmap_windows;
 			number_cmap_windows++;
 		}
@@ -1959,8 +1961,8 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 					if(XFindContext(dpy, cmap_windows[i], ColormapContext,
 					                (XPointer *)&cwins[i]) == XCNOENT) {
 						if((cwins[i] = CreateColormapWindow(cmap_windows[i],
-						                                    (Bool) tmp->cmaps.number_cwins == 0,
-						                                    True)) == NULL) {
+						                                    tmp->cmaps.number_cwins == 0,
+						                                    true)) == NULL) {
 							int k;
 							for(k = i + 1; k < number_cmap_windows; k++) {
 								cmap_windows[k - 1] = cmap_windows[k];
@@ -1987,7 +1989,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 		if(XFindContext(dpy, tmp->w, ColormapContext, (XPointer *)&cwins[0]) ==
 		                XCNOENT)
 			cwins[0] = CreateColormapWindow(tmp->w,
-			                                (Bool) tmp->cmaps.number_cwins == 0, False);
+			                                tmp->cmaps.number_cwins == 0, false);
 		else {
 			cwins[0]->refcnt++;
 		}
@@ -2122,14 +2124,11 @@ void CreateWindowRegions(void)
 		for(wr = Scr->FirstWindowRegion; wr != NULL; wr = wr->next) {
 			wr1  = malloc(sizeof(WindowRegion));
 			*wr1 = *wr;
-			wr1->entries = malloc(sizeof(WindowEntry));
-			wr1->entries->next = 0;
+			wr1->entries = calloc(1, sizeof(WindowEntry));
 			wr1->entries->x = wr1->x;
 			wr1->entries->y = wr1->y;
 			wr1->entries->w = wr1->w;
 			wr1->entries->h = wr1->h;
-			wr1->entries->twm_win = (TwmWindow *) 0;
-			wr1->entries->used = 0;
 			if(wr2) {
 				wr2->next = wr1;
 			}
@@ -2145,7 +2144,8 @@ void CreateWindowRegions(void)
 }
 
 
-Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
+bool
+PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 {
 	WindowRegion  *wr;
 	WindowEntry   *we;
@@ -2153,7 +2153,7 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	WorkSpace     *wl;
 
 	if(!Scr->FirstWindowRegion) {
-		return (False);
+		return false;
 	}
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		if(OCCUPY(tmp_win, wl)) {
@@ -2161,11 +2161,11 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 		}
 	}
 	if(!wl) {
-		return (False);
+		return false;
 	}
 	w = tmp_win->frame_width;
 	h = tmp_win->frame_height;
-	we = (WindowEntry *) 0;
+	we = NULL;
 	for(wr = wl->FirstWindowRegion; wr; wr = wr->next) {
 		if(LookInList(wr->clientlist, tmp_win->full_name, &tmp_win->class)) {
 			for(we = wr->entries; we; we = we->next) {
@@ -2181,18 +2181,18 @@ Bool PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 			}
 		}
 	}
-	tmp_win->wr = (WindowRegion *) 0;
+	tmp_win->wr = NULL;
 	if(!we) {
-		return (False);
+		return false;
 	}
 
 	splitWindowRegionEntry(we, wr->grav1, wr->grav2, w, h);
-	we->used = 1;
+	we->used = true;
 	we->twm_win = tmp_win;
 	*final_x = we->x;
 	*final_y = we->y;
 	tmp_win->wr = wr;
-	return (True);
+	return true;
 }
 
 static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
@@ -2207,9 +2207,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, w, we->h);
 			}
 			if(h != we->h) {
-				new = malloc(sizeof(WindowEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(WindowEntry));
 				new->next = we->next;
 				we->next  = new;
 				new->x    = we->x;
@@ -2231,9 +2229,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, we->w, h);
 			}
 			if(w != we->w) {
-				new = malloc(sizeof(WindowEntry));
-				new->twm_win = 0;
-				new->used = 0;
+				new = calloc(1, sizeof(WindowEntry));
 				new->next = we->next;
 				we->next  = new;
 				new->y    = we->y;
@@ -2268,7 +2264,7 @@ static WindowEntry *findWindowEntry(WorkSpace *wl, TwmWindow *tmp_win,
 			}
 		}
 	}
-	return (WindowEntry *) 0;
+	return NULL;
 }
 
 static WindowEntry *prevWindowEntry(WindowEntry *we, WindowRegion *wr)
@@ -2307,7 +2303,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 	if(!Scr->FirstWindowRegion) {
 		return;
 	}
-	we = (WindowEntry *) 0;
+	we = NULL;
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		we = findWindowEntry(wl, tmp_win, &wr);
 		if(we) {
@@ -2318,12 +2314,12 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 		return;
 	}
 
-	we->twm_win = 0;
-	we->used = 0;
+	we->twm_win = NULL;
+	we->used = false;
 	wp = prevWindowEntry(we, wr);
 	wn = we->next;
 	for(;;) {
-		if(wp && wp->used == 0 &&
+		if(wp && wp->used == false &&
 		                ((wp->x == we->x && wp->w == we->w) ||
 		                 (wp->y == we->y && wp->h == we->h))) {
 			wp->next = we->next;
@@ -2332,7 +2328,7 @@ void RemoveWindowFromRegion(TwmWindow *tmp_win)
 			we = wp;
 			wp = prevWindowEntry(wp, wr);
 		}
-		else if(wn && wn->used == 0 &&
+		else if(wn && wn->used == false &&
 		                ((wn->x == we->x && wn->w == we->w) ||
 		                 (wn->y == we->y && wn->h == we->h))) {
 			we->next = wn->next;

@@ -64,18 +64,15 @@
 #ifndef _CTWM_PARSE_H
 #define _CTWM_PARSE_H
 
-#include "types.h"
-#include "gram.tab.h"
-
 extern unsigned int mods_used;
 extern int ConstrainedMoveTime;
 extern int RaiseDelay;
-extern int ParseError;                  /* error parsing the .twmrc file */
+extern bool ParseError;    /* error parsing the .twmrc file */
 
 /* Needed in the lexer */
 extern int (*twmInputFunc)(void);
 
-int ParseTwmrc(char *filename);
+bool ParseTwmrc(char *filename);
 void twmrc_error_prefix(void);
 
 /*

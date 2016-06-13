@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <X11/Xatom.h>
 
 #include "screen.h"
@@ -106,7 +107,7 @@ void createWindowBoxes(void)
 			fprintf(stderr, "cannot create %s window box, exiting...\n", winbox->name);
 			exit(1);
 		}
-		winbox->twmwin->iswinbox = TRUE;
+		winbox->twmwin->iswinbox = true;
 		XMapWindow(dpy, win);
 	}
 }
@@ -115,20 +116,20 @@ WindowBox *findWindowBox(TwmWindow *twmwin)
 {
 	WindowBox *winbox;
 	if(twmwin->iswinbox) {
-		return ((WindowBox *)0);
+		return NULL;
 	}
 	if(!Scr->FirstWindowBox) {
-		return ((WindowBox *)0);
+		return NULL;
 	}
 	for(winbox = Scr->FirstWindowBox; winbox; winbox = winbox->next) {
 		if(LookInList(winbox->winlist, twmwin->full_name, &twmwin->class)) {
 			if(visible(winbox->twmwin)) {
 				twmwin->winbox = winbox;
-				return (winbox);
+				return winbox;
 			}
 		}
 	}
-	return ((WindowBox *)0);
+	return NULL;
 }
 
 void ConstrainedToWinBox(TwmWindow *twmwin, int x, int y, int *nx, int *ny)

@@ -73,6 +73,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <locale.h>
 
 #ifdef __WAIT_FOR_CHILDS
 #  include <sys/wait.h>
@@ -82,8 +83,7 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Xmu/Error.h>
-#include <X11/SM/SMlib.h>
-#include <X11/Xlocale.h>
+#include <X11/extensions/shape.h>
 
 
 #include "ctwm_atoms.h"
@@ -109,19 +109,21 @@
 #  include "sound.h"
 #endif
 
+#include "gram.tab.h"
+
 
 XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
 Window ResizeWindow;            /* the window we are resizing */
 
 int NumScreens;                 /* number of screens in ScreenList */
-int HasShape;                   /* server supports shape extension? */
+bool HasShape;                  /* server supports shape extension? */
 int ShapeEventBase, ShapeErrorBase;
 ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
-int FirstScreen;                /* TRUE ==> first screen of display */
-static int RedirectError;       /* TRUE ==> another window manager running */
+static bool FirstScreen;        /* true ==> first screen of display */
+static bool RedirectError;      /* true ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
@@ -157,7 +159,7 @@ XGCValues Gcv;
 char *Home;                     /* the HOME environment variable */
 int HomeLen;                    /* length of Home */
 
-int HandlingEvents = FALSE;     /* are we handling events yet? */
+bool HandlingEvents = false;    /* are we handling events yet? */
 
 Window JunkRoot;                /* junk window */
 Window JunkChild;               /* junk window */
@@ -169,9 +171,9 @@ char *ProgramName;
 int Argc;
 char **Argv;
 
-Bool RestartPreviousState = False;      /* try to restart in previous state */
+bool RestartPreviousState = false;      /* try to restart in previous state */
 
-Bool RestartFlag = 0;
+bool RestartFlag = false;
 SIGNAL_T Restart(int signum);
 SIGNAL_T Crash(int signum);
 #ifdef __WAIT_FOR_CHILDS
@@ -307,7 +309,7 @@ int main(int argc, char **argv)
 	}
 	numManaged = 0;
 	PreviousScreen = DefaultScreen(dpy);
-	FirstScreen = TRUE;
+	FirstScreen = true;
 #ifdef EWMH
 	EwmhInit();
 #endif /* EWMH */
@@ -359,7 +361,7 @@ int main(int argc, char **argv)
 #ifdef EWMH
 		EwmhInitScreenEarly(Scr);
 #endif /* EWMH */
-		RedirectError = FALSE;
+		RedirectError = false;
 		XSetErrorHandler(CatchRedirectError);
 		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		           SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
@@ -400,7 +402,7 @@ int main(int argc, char **argv)
 		Scr->IconForegroundL = NULL;
 		Scr->IconBackgroundL = NULL;
 		Scr->AutoPopupL = NULL;
-		Scr->AutoPopup = FALSE;
+		Scr->AutoPopup = false;
 		Scr->NoBorder = NULL;
 		Scr->NoIconTitle = NULL;
 		Scr->NoTitle = NULL;
@@ -439,7 +441,7 @@ int main(int argc, char **argv)
 		Scr->NoOpaqueResizeList = NULL;
 		Scr->ImageCache = NULL;
 		Scr->HighlightPixmapName = NULL;
-		Scr->Workspaces = (MenuRoot *) 0;
+		Scr->Workspaces = NULL;
 		Scr->IconMenuDontShow = NULL;
 		Scr->VirtualScreens = NULL;
 		Scr->IgnoreTransientL = NULL;
@@ -468,7 +470,7 @@ int main(int argc, char **argv)
 		}
 		Scr->RootColormaps.number_cwins = 1;
 		Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
-		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, True, False);
+		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, true, false);
 		Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 
 		Scr->cmapInfo.cmaps = NULL;
@@ -511,7 +513,7 @@ int main(int argc, char **argv)
 		}
 
 		/* setup default colors */
-		Scr->FirstTime = TRUE;
+		Scr->FirstTime = true;
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
@@ -585,13 +587,13 @@ int main(int argc, char **argv)
 			MaskScreen(NULL);
 		}
 		if(Scr->ClickToFocus) {
-			Scr->FocusRoot  = FALSE;
-			Scr->TitleFocus = FALSE;
+			Scr->FocusRoot  = false;
+			Scr->TitleFocus = false;
 		}
 
 
 		if(Scr->use3Dborders) {
-			Scr->ClientBorderWidth = FALSE;
+			Scr->ClientBorderWidth = false;
 		}
 
 		if(Scr->use3Dtitles) {
@@ -663,9 +665,6 @@ int main(int argc, char **argv)
 		}
 
 		assign_var_savecolor(); /* storeing pixels for twmrc "entities" */
-		if(Scr->SqueezeTitle == -1) {
-			Scr->SqueezeTitle = FALSE;
-		}
 		if(!Scr->HaveFonts) {
 			CreateFonts();
 		}
@@ -745,7 +744,7 @@ int main(int argc, char **argv)
 				else {
 					XMapWindow(dpy, vs->wsw->w);
 				}
-				vs->wsw->twm_win->mapped = TRUE;
+				vs->wsw->twm_win->mapped = true;
 			}
 		}
 
@@ -757,7 +756,7 @@ int main(int argc, char **argv)
 		attributes.event_mask = (ExposureMask | ButtonPressMask |
 		                         KeyPressMask | ButtonReleaseMask);
 		attributes.backing_store = NotUseful;
-		attributes.cursor = XCreateFontCursor(dpy, XC_hand2);
+		NewFontCursor(&attributes.cursor, "hand2");
 		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
 		             CWBackingStore | CWCursor);
 		Scr->InfoWindow.win =
@@ -804,8 +803,8 @@ int main(int argc, char **argv)
 			UnmaskScreen();
 		}
 
-		FirstScreen = FALSE;
-		Scr->FirstTime = FALSE;
+		FirstScreen = false;
+		Scr->FirstTime = false;
 	} /* for */
 
 	if(numManaged == 0) {
@@ -820,8 +819,8 @@ int main(int argc, char **argv)
 	play_startup_sound();
 #endif
 
-	RestartPreviousState = True;
-	HandlingEvents = TRUE;
+	RestartPreviousState = true;
+	HandlingEvents = true;
 	InitEvents();
 	StartAnimation();
 	HandleEvents();
@@ -899,7 +898,7 @@ static void InitVariables(void)
 	NewFontCursor(&Scr->DestroyCursor, "pirate");
 	NewFontCursor(&Scr->AlterCursor, "question_arrow");
 
-	Scr->workSpaceManagerActive = FALSE;
+	Scr->workSpaceManagerActive = false;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
 	Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
@@ -931,33 +930,33 @@ static void InitVariables(void)
 	Scr->NumAutoRaises = 0;
 	Scr->NumAutoLowers = 0;
 	Scr->TransientOnTop = 30;
-	Scr->NoDefaults = FALSE;
+	Scr->NoDefaults = false;
 	Scr->UsePPosition = PPOS_OFF;
-	Scr->UseSunkTitlePixmap = FALSE;
-	Scr->FocusRoot = TRUE;
+	Scr->UseSunkTitlePixmap = false;
+	Scr->FocusRoot = true;
 	Scr->Focus = NULL;
-	Scr->WarpCursor = FALSE;
-	Scr->ForceIcon = FALSE;
-	Scr->NoGrabServer = FALSE;
-	Scr->NoRaiseMove = FALSE;
-	Scr->NoRaiseResize = FALSE;
-	Scr->NoRaiseDeicon = FALSE;
-	Scr->RaiseOnWarp = TRUE;
-	Scr->DontMoveOff = FALSE;
-	Scr->DoZoom = FALSE;
-	Scr->TitleFocus = TRUE;
-	Scr->IconManagerFocus = TRUE;
-	Scr->StayUpMenus = FALSE;
-	Scr->WarpToDefaultMenuEntry = FALSE;
-	Scr->ClickToFocus = FALSE;
-	Scr->SloppyFocus = FALSE;
-	Scr->SaveWorkspaceFocus = FALSE;
-	Scr->NoIconTitlebar = FALSE;
-	Scr->NoTitlebar = FALSE;
-	Scr->DecorateTransients = FALSE;
-	Scr->IconifyByUnmapping = FALSE;
-	Scr->ShowIconManager = FALSE;
-	Scr->ShowWorkspaceManager = FALSE;
+	Scr->WarpCursor = false;
+	Scr->ForceIcon = false;
+	Scr->NoGrabServer = false;
+	Scr->NoRaiseMove = false;
+	Scr->NoRaiseResize = false;
+	Scr->NoRaiseDeicon = false;
+	Scr->RaiseOnWarp = true;
+	Scr->DontMoveOff = false;
+	Scr->DoZoom = false;
+	Scr->TitleFocus = true;
+	Scr->IconManagerFocus = true;
+	Scr->StayUpMenus = false;
+	Scr->WarpToDefaultMenuEntry = false;
+	Scr->ClickToFocus = false;
+	Scr->SloppyFocus = false;
+	Scr->SaveWorkspaceFocus = false;
+	Scr->NoIconTitlebar = false;
+	Scr->NoTitlebar = false;
+	Scr->DecorateTransients = false;
+	Scr->IconifyByUnmapping = false;
+	Scr->ShowIconManager = false;
+	Scr->ShowWorkspaceManager = false;
 	Scr->WMgrButtonShadowDepth = 2;
 	Scr->WMgrVertButtonIndent  = 5;
 	Scr->WMgrHorizButtonIndent = 5;
@@ -966,82 +965,83 @@ static void InitVariables(void)
 	Scr->TitleButtonShadowDepth = 2;
 	Scr->MenuShadowDepth = 2;
 	Scr->IconManagerShadowDepth = 2;
-	Scr->AutoOccupy = FALSE;
-	Scr->TransientHasOccupation = FALSE;
-	Scr->DontPaintRootWindow = FALSE;
-	Scr->IconManagerDontShow = FALSE;
-	Scr->BackingStore = TRUE;
-	Scr->SaveUnder = TRUE;
+	Scr->AutoOccupy = false;
+	Scr->TransientHasOccupation = false;
+	Scr->DontPaintRootWindow = false;
+	Scr->IconManagerDontShow = false;
+	Scr->BackingStore = true;
+	Scr->SaveUnder = true;
 	Scr->RandomPlacement = RP_OFF;
 	Scr->RandomDisplacementX = 30;
 	Scr->RandomDisplacementY = 30;
-	Scr->DoOpaqueMove = FALSE;
-	Scr->OpaqueMove = FALSE;
+	Scr->DoOpaqueMove = false;
+	Scr->OpaqueMove = false;
 	Scr->OpaqueMoveThreshold = 200;
-	Scr->OpaqueResize = FALSE;
-	Scr->DoOpaqueResize = FALSE;
+	Scr->OpaqueResize = false;
+	Scr->DoOpaqueResize = false;
 	Scr->OpaqueResizeThreshold = 1000;
-	Scr->Highlight = TRUE;
-	Scr->StackMode = TRUE;
-	Scr->TitleHighlight = TRUE;
+	Scr->Highlight = true;
+	Scr->StackMode = true;
+	Scr->TitleHighlight = true;
 	Scr->MoveDelta = 1;         /* so that f.deltastop will work */
 	Scr->MoveOffResistance = -1;
 	Scr->MovePackResistance = 20;
 	Scr->ZoomCount = 8;
-	Scr->SortIconMgr = FALSE;
-	Scr->Shadow = TRUE;
-	Scr->InterpolateMenuColors = FALSE;
-	Scr->NoIconManagers = FALSE;
-	Scr->ClientBorderWidth = FALSE;
-	Scr->SqueezeTitle = -1;
+	Scr->SortIconMgr = false;
+	Scr->Shadow = true;
+	Scr->InterpolateMenuColors = false;
+	Scr->NoIconManagers = false;
+	Scr->ClientBorderWidth = false;
+	Scr->SqueezeTitleSet = false;
+	Scr->SqueezeTitle = false;
 	Scr->FirstRegion = NULL;
 	Scr->LastRegion = NULL;
 	Scr->FirstWindowRegion = NULL;
-	Scr->FirstTime = TRUE;
-	Scr->HaveFonts = FALSE;             /* i.e. not loaded yet */
-	Scr->CaseSensitive = TRUE;
-	Scr->WarpUnmapped = FALSE;
-	Scr->WindowRingAll = FALSE;
-	Scr->WarpRingAnyWhere = TRUE;
-	Scr->ShortAllWindowsMenus = FALSE;
-	Scr->use3Diconmanagers = FALSE;
-	Scr->use3Dmenus = FALSE;
-	Scr->use3Dtitles = FALSE;
-	Scr->use3Dborders = FALSE;
-	Scr->use3Dwmap = FALSE;
-	Scr->SunkFocusWindowTitle = FALSE;
+	Scr->FirstTime = true;
+	Scr->HaveFonts = false;             /* i.e. not loaded yet */
+	Scr->CaseSensitive = true;
+	Scr->WarpUnmapped = false;
+	Scr->WindowRingAll = false;
+	Scr->WarpRingAnyWhere = true;
+	Scr->ShortAllWindowsMenus = false;
+	Scr->use3Diconmanagers = false;
+	Scr->use3Dmenus = false;
+	Scr->use3Dtitles = false;
+	Scr->use3Dborders = false;
+	Scr->use3Dwmap = false;
+	Scr->SunkFocusWindowTitle = false;
 	Scr->ClearShadowContrast = 50;
 	Scr->DarkShadowContrast  = 40;
-	Scr->BeNiceToColormap = FALSE;
-	Scr->BorderCursors = FALSE;
+	Scr->BeNiceToColormap = false;
+	Scr->BorderCursors = false;
 	Scr->IconJustification = J_CENTER;
 	Scr->IconRegionJustification = J_CENTER;
 	Scr->IconRegionAlignement = J_CENTER;
 	Scr->TitleJustification = J_LEFT;
 	Scr->IconifyStyle = ICONIFY_NORMAL;
 	Scr->MaxIconTitleWidth = Scr->rootw;
-	Scr->ReallyMoveInWorkspaceManager = FALSE;
-	Scr->ShowWinWhenMovingInWmgr = FALSE;
-	Scr->ReverseCurrentWorkspace = FALSE;
-	Scr->DontWarpCursorInWMap = FALSE;
+	Scr->ReallyMoveInWorkspaceManager = false;
+	Scr->ShowWinWhenMovingInWmgr = false;
+	Scr->ReverseCurrentWorkspace = false;
+	Scr->DontWarpCursorInWMap = false;
 	Scr->XMoveGrid = 1;
 	Scr->YMoveGrid = 1;
-	Scr->FastServer = True;
-	Scr->CenterFeedbackWindow = False;
-	Scr->ShrinkIconTitles = False;
-	Scr->AutoRaiseIcons = False;
-	Scr->AutoFocusToTransients = False; /* kai */
-	Scr->use3Diconborders = False;
+	Scr->FastServer = true;
+	Scr->CenterFeedbackWindow = false;
+	Scr->ShrinkIconTitles = false;
+	Scr->AutoRaiseIcons = false;
+	Scr->AutoFocusToTransients = false; /* kai */
+	Scr->use3Diconborders = false;
 	Scr->OpenWindowTimeout = 0;
-	Scr->RaiseWhenAutoUnSqueeze = False;
-	Scr->RaiseOnClick = False;
+	Scr->RaiseWhenAutoUnSqueeze = false;
+	Scr->RaiseOnClick = false;
 	Scr->RaiseOnClickButton = 1;
 	Scr->IgnoreModifier = 0;
-	Scr->IgnoreCaseInMenuSelection = False;
-	Scr->PackNewWindows = False;
-	Scr->AlwaysSqueezeToGravity = FALSE;
-	Scr->NoWarpToMenuTitle = FALSE;
-	Scr->DontToggleWorkspaceManagerState = False;
+	Scr->IgnoreCaseInMenuSelection = false;
+	Scr->PackNewWindows = false;
+	Scr->AlwaysSqueezeToGravity = false;
+	Scr->NoWarpToMenuTitle = false;
+	Scr->DontToggleWorkspaceManagerState = false;
 #ifdef EWMH
 	Scr->PreferredIconWidth = 48;
 	Scr->PreferredIconHeight = 48;
@@ -1085,7 +1085,7 @@ void CreateFonts(void)
 	GetFont(&Scr->IconManagerFont);
 	GetFont(&Scr->DefaultFont);
 	GetFont(&Scr->workSpaceMgr.windowFont);
-	Scr->HaveFonts = TRUE;
+	Scr->HaveFonts = true;
 }
 
 
@@ -1248,12 +1248,12 @@ SIGNAL_T Crash(int signum)
 SIGNAL_T Restart(int signum)
 {
 	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
-	RestartFlag = 1;
+	RestartFlag = true;
 }
 
 void DoRestart(Time t)
 {
-	RestartFlag = 0;
+	RestartFlag = false;
 
 	StopAnimation();
 	XSync(dpy, 0);
@@ -1293,13 +1293,11 @@ ChildExit(int signum)
  * manipulating the client's window.
  */
 
-static Bool ErrorOccurred = False;
 static XErrorEvent LastErrorEvent;
 
 static int TwmErrorHandler(Display *display, XErrorEvent *event)
 {
 	LastErrorEvent = *event;
-	ErrorOccurred = True;
 
 	if(CLarg.PrintErrorMessages &&                 /* don't be too obnoxious */
 	                event->error_code != BadWindow &&       /* watch for dead puppies */
@@ -1314,9 +1312,8 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event)
 /* ARGSUSED*/
 static int CatchRedirectError(Display *display, XErrorEvent *event)
 {
-	RedirectError = TRUE;
+	RedirectError = true;
 	LastErrorEvent = *event;
-	ErrorOccurred = True;
 	return 0;
 }
 
@@ -1325,14 +1322,11 @@ static int CatchRedirectError(Display *display, XErrorEvent *event)
  * XA_WM_END_OF_ANIMATION     Used to throttle animation.
  */
 
-Atom XA_WM_WORKSPACESLIST;
 Atom XCTWMAtom[NUM_CTWM_XATOMS];
 
 void InternUsefulAtoms(void)
 {
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
-
-	XA_WM_WORKSPACESLIST   = XInternAtom(dpy, "WM_WORKSPACESLIST", False);
 }
 
 static Window CreateRootWindow(int x, int y,

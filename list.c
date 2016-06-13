@@ -120,7 +120,7 @@ void AddToList(name_list **list_head, const char *name, void *ptr)
 
 	nptr->next = *list_head;
 	nptr->name = strdup(name);
-	nptr->ptr = (ptr == NULL) ? (char *)TRUE : ptr;
+	nptr->ptr = (ptr == NULL) ? (char *)1 : ptr;
 	*list_head = nptr;
 }
 
@@ -210,8 +210,8 @@ void *LookPatternInNameList(name_list *list_head, const char *name)
  *      GetColorFromList - look through a list for a window name, or class
  *
  *  Returned Value:
- *      TRUE if the name was found
- *      FALSE if the name was not found
+ *      true  if the name was found
+ *      false if the name was not found
  *
  *  Inputs:
  *      list    - a pointer to the head of a list
@@ -224,41 +224,41 @@ void *LookPatternInNameList(name_list *list_head, const char *name)
  ***********************************************************************
  */
 
-int GetColorFromList(name_list *list_head, char *name,
-                     XClassHint *class, Pixel *ptr)
+bool GetColorFromList(name_list *list_head, char *name,
+                      XClassHint *class, Pixel *ptr)
 {
-	int save;
+	bool save;
 	name_list *nptr;
 
 	for(nptr = list_head; nptr != NULL; nptr = nptr->next)
 		if(match(nptr->name, name)) {
 			save = Scr->FirstTime;
-			Scr->FirstTime = TRUE;
+			Scr->FirstTime = true;
 			GetColor(Scr->Monochrome, ptr, nptr->ptr);
 			Scr->FirstTime = save;
-			return (TRUE);
+			return true;
 		}
 
 	if(class) {
 		for(nptr = list_head; nptr != NULL; nptr = nptr->next)
 			if(match(nptr->name, class->res_name)) {
 				save = Scr->FirstTime;
-				Scr->FirstTime = TRUE;
+				Scr->FirstTime = true;
 				GetColor(Scr->Monochrome, ptr, nptr->ptr);
 				Scr->FirstTime = save;
-				return (TRUE);
+				return true;
 			}
 
 		for(nptr = list_head; nptr != NULL; nptr = nptr->next)
 			if(match(nptr->name, class->res_class)) {
 				save = Scr->FirstTime;
-				Scr->FirstTime = TRUE;
+				Scr->FirstTime = true;
 				GetColor(Scr->Monochrome, ptr, nptr->ptr);
 				Scr->FirstTime = save;
-				return (TRUE);
+				return true;
 			}
 	}
-	return (FALSE);
+	return false;
 }
 
 /***********************************************************************
@@ -285,27 +285,27 @@ void FreeList(name_list **list)
 
 #ifdef USE_SYS_REGEX
 
-int match(const char *pattern, const char *string)
+bool match(const char *pattern, const char *string)
 {
 	regex_t preg;
 	int error;
 
 	if((pattern == NULL) || (string == NULL)) {
-		return 0;
+		return false;
 	}
 	error = regcomp(&preg, pattern, REG_EXTENDED | REG_NOSUB);
 	if(error != 0) {
 		char buf [256];
 		(void) regerror(error, &preg, buf, sizeof buf);
 		fprintf(stderr, "%s : %s\n", buf, pattern);
-		return 0;
+		return false;
 	}
 	error = regexec(&preg, string, 5, 0, 0);
 	regfree(&preg);
 	if(error == 0) {
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 #else

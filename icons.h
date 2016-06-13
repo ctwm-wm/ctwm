@@ -54,8 +54,6 @@
  *
  **********************************************************************/
 
-#include "screen.h"
-
 #ifndef _CTWM_ICONS_H
 #define _CTWM_ICONS_H
 
@@ -86,20 +84,18 @@ struct Icon {
 	ColorPair   iconc;
 	int         border_width;
 	struct IconRegion   *ir;
-	short       has_title, title_shrunk;
-	short       w_not_ours;     /* Icon.w comes from IconWindowHint */
+	bool        has_title, title_shrunk;
+	bool        w_not_ours;     /* Icon.w comes from IconWindowHint */
 };
 
 struct IconRegion {
 	struct IconRegion   *next;
 	int                 x, y, w, h;
 	int                 grav1, grav2;
-	int                 stepx, stepy;           /* allocation granularity */
-	short               TitleJustification;     /* J_LEFT, J_CENTER or J_RIGHT */
-	short
-	Justification;          /* J_LEFT, J_CENTER J_RIGHT or J_BORDER */
-	short
-	Alignement;             /* J_TOP, J_CENTER, J_BOTTOM or J_BORDER */
+	int                 stepx, stepy;       // allocation granularity
+	short               TitleJustification; // J_LEFT, J_CENTER or J_RIGHT
+	short               Justification; // J_LEFT, J_CENTER J_RIGHT or J_BORDER
+	short               Alignement;   // J_TOP, J_CENTER, J_BOTTOM or J_BORDER
 	name_list           *clientlist;
 	struct IconEntry    *entries;
 };
@@ -108,21 +104,21 @@ struct IconEntry {
 	struct IconEntry    *next;
 	int                 x, y, w, h;
 	TwmWindow           *twm_win;
-	short               used;
+	bool                used;
 };
 
-extern int IconUp(TwmWindow *tmp_win);
-extern void IconDown(TwmWindow *tmp_win);
-extern name_list **AddIconRegion(char *geom, int grav1, int grav2,
-                                 int stepx, int stepy,
-                                 char *ijust, char *just, char *align);
-extern void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);
-extern void ReleaseImage(Icon *icon);
-extern void DeleteIcon(Icon *icon);
-extern void DeleteIconsList(TwmWindow *tmp_win);
-extern void ShrinkIconTitle(TwmWindow *tmp_win);
-extern void ExpandIconTitle(TwmWindow *tmp_win);
-extern void ReshapeIcon(Icon *icon);
-extern int GetIconOffset(Icon *icon);
+int IconUp(TwmWindow *tmp_win);
+void IconDown(TwmWindow *tmp_win);
+name_list **AddIconRegion(char *geom, int grav1, int grav2,
+                          int stepx, int stepy,
+                          char *ijust, char *just, char *align);
+void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);
+void ReleaseImage(Icon *icon);
+void DeleteIcon(Icon *icon);
+void DeleteIconsList(TwmWindow *tmp_win);
+void ShrinkIconTitle(TwmWindow *tmp_win);
+void ExpandIconTitle(TwmWindow *tmp_win);
+void ReshapeIcon(Icon *icon);
+int GetIconOffset(Icon *icon);
 
 #endif /* _CTWM_ICONS_H */

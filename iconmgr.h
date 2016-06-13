@@ -72,8 +72,8 @@ struct WList {
 	Pixel highlight;
 	Pixmap iconifypm;
 	unsigned top, bottom;
-	short active;
-	short down;
+	bool active;
+	bool down;
 };
 
 struct IconMgr {
@@ -101,24 +101,24 @@ extern const int siconify_height;
 extern int iconmgr_textx;
 extern WList *DownIconManager;
 
-extern void CreateIconManagers(void);
-extern IconMgr *AllocateIconManager(char *name, char *geom, char *icon_name,
-                                    int columns);
-extern void MoveIconManager(int dir);
-extern void MoveMappedIconManager(int dir);
-extern void JumpIconManager(int dir);
-extern WList *AddIconManager(TwmWindow *tmp_win);
-extern void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win);
-extern void RemoveFromIconManager(IconMgr *ip, WList *tmp);
-extern void RemoveIconManager(TwmWindow *tmp_win);
-extern void CurrentIconManagerEntry(WList *current);
-extern void ActiveIconManager(WList *active);
-extern void NotActiveIconManager(WList *active);
-extern void DrawIconManagerBorder(WList *tmp, int fill);
-extern void SortIconManager(IconMgr *ip);
-extern void PackIconManager(IconMgr *ip);
-extern void PackIconManagers(void);
-extern void dump_iconmanager(IconMgr *mgr, char *label);
+void CreateIconManagers(void);
+IconMgr *AllocateIconManager(char *name, char *geom, char *icon_name,
+                             int columns);
+void MoveIconManager(int dir);
+void MoveMappedIconManager(int dir);
+void JumpIconManager(int dir);
+WList *AddIconManager(TwmWindow *tmp_win);
+void InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win);
+void RemoveFromIconManager(IconMgr *ip, WList *tmp);
+void RemoveIconManager(TwmWindow *tmp_win);
+void CurrentIconManagerEntry(WList *current);
+void ActiveIconManager(WList *active);
+void NotActiveIconManager(WList *active);
+void DrawIconManagerBorder(WList *tmp, bool fill);
+void SortIconManager(IconMgr *ip);
+void PackIconManager(IconMgr *ip);
+void PackIconManagers(void);
+void dump_iconmanager(IconMgr *mgr, char *label);
 
 
 #endif /* _CTWM_ICONMGR_H */

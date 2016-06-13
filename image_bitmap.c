@@ -11,11 +11,10 @@
 
 #include "ctwm.h"
 
-#include <X11/X.h>
 #include <X11/Xmu/Drawing.h>
 
 #include "screen.h"
-#include "types.h"
+#include "util.h"
 
 #include "image.h"
 #include "image_bitmap.h"

@@ -23,8 +23,6 @@
  *
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
-#include "types.h"
-
 #ifndef _CTWM_VSCREEN_H
 #define _CTWM_VSCREEN_H
 
@@ -39,9 +37,9 @@ struct VirtualScreen {
 void InitVirtualScreens(ScreenInfo *scr);
 VirtualScreen *findIfVScreenOf(int x, int y);
 VirtualScreen *getVScreenOf(int x, int y);
-Bool CtwmGetVScreenMap(Display *display, Window rootw,
+bool CtwmGetVScreenMap(Display *display, Window rootw,
                        char *outbuf, int *outbuf_len);
-Bool CtwmSetVScreenMap(Display *display, Window rootw,
+bool CtwmSetVScreenMap(Display *display, Window rootw,
                        struct VirtualScreen *firstvs);
 
 #endif /* _CTWM_VSCREEN_H */
