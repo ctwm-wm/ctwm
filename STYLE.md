@@ -7,7 +7,11 @@ Most of these rules are meant to be general guidelines.  The overriding
 goal is for the code to *work*; if it doesn't do that, it's worthless.
 Given that it works, it should be *readable*.  These guidelines are aimed
 at achieving that goal; if you have to break a rule to be more readable,
-then do it.
+then do it.  If you have to bend a rule to match surrounding code, do it.
+
+ctwm is written in **C99**, to run in a generally **POSIX environment**,
+and is intimately related with **X11**.  Those worlds, in roughly that
+order, should be considered when making style choices.
 
 
 ## Automatic
@@ -44,11 +48,64 @@ rules, because it makes life simpler.
         to include.  That's fine.
 
 * Generally, local includes should avoid `#include`ing system includes
-    where possible.  `ctwm.h` is a broad exception, as it pulls in large
-    numbers of system includes that are widely used.  And special cases
-    break this with some regularity.  But if you seem to need to do so,
-    take a step back first and see whether it's better done in the
-    including `.c` file.
+    where possible, and avoid `#include`ing other local includes where
+    practical.  If the file itself needs something from another header
+    file (*e.g.*, a  prototype or var extern needs a type from
+    elsewhere), it should `#include` that; if however some `.c` file that
+    `#include`s the `.h` needs something from another header, generally
+    the `#include` should be put there.
+
+    Bear in mind that this is a *guideline*.  There are extant
+    exceptions, and may be more over time.  Make it readable and
+    maintainable.
+
+* Try to avoid including things already brought in elsewhere.  For
+  instance, `ctwm.h` already includes our `types.h`, and the system
+  `stdbool.h` and most of Xlib's includes, so no other file in our tree
+  need `#include` them.
+
+
+## Standards and Types
+
+ctwm is written in C, and currently against the **C99** standard.  Types,
+headers, functions, types, etc. defined there are assumed available, and
+should be the initial goto choice for such.
+
+It is also written to run in a **POSIX** environment, using **X11**, so
+the headers, functions, and types related to them are also considered
+available, and should be used when appropriate.
+
+### Boolean
+
+The case of boolean types gives a useful example.  C99 defines the `bool`
+type for booleans, with the boolean values `true` and `false` (defined to
+be numerically `1` and `0`).  The type and constants should be used in
+code in ctwm itself needing boolean variables or values.
+
+Xlib defined a `Bool` type, and the boolean values `True` and `False`
+(which are also numerically `1` and `0`).  They should be used in
+interactions with Xlib.  There are also some odder fringe cases we might
+hit; libjpeg has a `boolean` type, and `TRUE`/`FALSE` values.  Xt
+("Intrinsics") has a `Boolean` type, with `TRUE`/`FALSE` values.  When
+dealing with an external lib, use its types and values.
+
+Because of C's conversion rules, assigning values from one type to the
+other, via boolean conditional expressions, or via literal or numeric
+1/0, should always work as expected.  However, the type representations
+aren't the same, so e.g.  passing a `bool *` to a function expecting a
+`Bool *` will go *very badly*.
+
+
+## Comments
+
+There is no part of the codebase with too many comments.  I dream of the
+day when we'll have to edit that line; please help hasten it!
+
+C99 allows both `/* enclosed */` and `// to EOL` comment styles.  We
+generally lean toward `/* enclosed */`, but `// EOL` are acceptable as
+well.  In particular comments at the end of the line (like documentation
+of structure elements) are excellent candidates with `//` comments,
+particularly when they would otherwise wrap.
 
 
 
