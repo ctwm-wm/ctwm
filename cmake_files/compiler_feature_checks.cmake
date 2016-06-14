@@ -37,6 +37,16 @@ else()
 endif(C99_FLAG)
 
 
+# Some compilers (like Sun's) don't take -W flags for warnings.  Do a
+# quick check with -Wall.  They're mostly for devs, so we don't care THAT
+# much, I guess...
+check_c_compiler_flag("-Wall" COMPILER_TAKES_WALL)
+if(NOT COMPILER_TAKES_WALL)
+	message(STATUS "Compiler doesn't like -Wall, disabling warnings.")
+	set(NO_WARNS 1)
+endif(NOT COMPILER_TAKES_WALL)
+
+
 # With -std=c99, GNU libc's includes get strict about what they export.
 # Particularly, a lot of POSIX stuff doesn't get defined unless we
 # explicitly ask for it.  Do our best at checking for what's there...
