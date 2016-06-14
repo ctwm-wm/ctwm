@@ -10,16 +10,31 @@
 # calls, so that's good enough.  Lacking it is not (yet) a fatal error,
 # but is a sign that it's a compiler or platform we're moving further
 # away from.
+#
+# Known alternate spellings:
+#   -xc99  (Sun C 5.10 SunOS_i386, sunstudio12.1, OpenIndiana)
 include(CheckCCompilerFlag)
-set(C99_FLAG -std=c99)
-check_c_compiler_flag(${C99_FLAG} COMPILER_HAS_STD_C99)
-if(COMPILER_HAS_STD_C99)
-	message(STATUS "Enabling ${C99_FLAG}")
+set(c99_flag_options -std=c99 -xc99)
+foreach(_C99_FLAG ${c99_flag_options})
+	# CheckCCompilerFlag calls into CheckCSourceCompiles, which won't do
+	# anything if the result var is already set in the cache, so we have
+	# to unset it.  Otherwise, the second and later invocations don't
+	# actually do anything, and it'll never check any flag after the
+	# first.
+	unset(COMPILER_C99_FLAG CACHE)
+	check_c_compiler_flag(${_C99_FLAG} COMPILER_C99_FLAG)
+	if(COMPILER_C99_FLAG)
+		set(C99_FLAG ${_C99_FLAG})
+		break()
+	endif(COMPILER_C99_FLAG)
+endforeach(_C99_FLAG)
+if(C99_FLAG)
+	message(STATUS "Enabling C99 flag: ${C99_FLAG}")
 	add_definitions(${C99_FLAG})
 else()
-	message(WARNING "Compiler doesn't support ${C99_FLAG}, "
+	message(WARNING "Compiler doesn't support known C99 flag, "
 			"building without it.")
-endif(COMPILER_HAS_STD_C99)
+endif(C99_FLAG)
 
 
 # With -std=c99, GNU libc's includes get strict about what they export.
