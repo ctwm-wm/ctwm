@@ -1823,24 +1823,18 @@ ParseUsePPosition(char *s)
 static ButtonStyle
 ParseButtonStyle(char *s)
 {
-	if(strlen(s) == 0) {
+	if(s == NULL || strlen(s) == 0) {
 		return STYLE_UNKNOWN;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return STYLE_NORMAL;
-	}
-	if(strcasecmp(s, "normal") == 0) {
-		return STYLE_NORMAL;
-	}
-	if(strcasecmp(s, "style1") == 0) {
-		return STYLE_STYLE1;
-	}
-	if(strcasecmp(s, "style2") == 0) {
-		return STYLE_STYLE2;
-	}
-	if(strcasecmp(s, "style3") == 0) {
-		return STYLE_STYLE3;
-	}
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return STYLE_##ret; }
+	CHK(DEFSTRING, NORMAL);
+	CHK("normal",  NORMAL);
+	CHK("style1",  STYLE1);
+	CHK("style2",  STYLE2);
+	CHK("style3",  STYLE3);
+#undef CHK
+
 	return STYLE_UNKNOWN;
 }
 
