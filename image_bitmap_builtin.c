@@ -1021,16 +1021,16 @@ Pixmap
 mk_blackgray_pixmap(const char *which, Drawable dw,
                     unsigned long fg, unsigned long bg)
 {
-	char gray_bits[]  = { 0x02, 0x01 };
-	char black_bits[] = { 0xFF, 0xFF };
+	unsigned char gray_bits[]  = { 0x02, 0x01 };
+	unsigned char black_bits[] = { 0xFF, 0xFF };
 	char *bits;
 
 	/* Which are we asking for? */
 	if(strcmp(which, "black") == 0) {
-		bits = black_bits;
+		bits = (char *)black_bits;
 	}
 	else if(strcmp(which, "gray") == 0) {
-		bits = gray_bits;
+		bits = (char *)gray_bits;
 	}
 	else {
 		fprintf(stderr, "%s(): Invalid which arg '%s'\n", __func__, which);
