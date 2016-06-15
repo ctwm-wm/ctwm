@@ -121,6 +121,7 @@ static void ZoomOutWindow(TwmWindow *tmp_win, Window blanket);
 static void FadeWindow(TwmWindow *tmp_win, Window blanket);
 static void SweepWindow(TwmWindow *tmp_win, Window blanket);
 static void waitamoment(float timeout);
+static void TryToPush_be(TwmWindow *tmp_win, int x, int y, int dir);
 
 
 #define SHADOWWIDTH 5                   /* in pixels */
@@ -2803,7 +2804,15 @@ void TryToPack(TwmWindow *tmp_win, int *x, int *y)
 	*y = newy;
 }
 
-void TryToPush(TwmWindow *tmp_win, int x, int y, int dir)
+
+void
+TryToPush(TwmWindow *tmp_win, int x, int y)
+{
+	TryToPush_be(tmp_win, x, y, 0);
+}
+
+static void
+TryToPush_be(TwmWindow *tmp_win, int x, int y, int dir)
 {
 	TwmWindow   *t;
 	int         newx, newy, ndir;
@@ -2871,7 +2880,7 @@ void TryToPush(TwmWindow *tmp_win, int x, int y, int dir)
 			move = true;
 		}
 		if(move) {
-			TryToPush(t, newx, newy, ndir);
+			TryToPush_be(t, newx, newy, ndir);
 			TryToPack(t, &newx, &newy);
 			ConstrainByBorders(tmp_win,
 			                   &newx, t->frame_width  + 2 * t->frame_bw,
@@ -2880,6 +2889,7 @@ void TryToPush(TwmWindow *tmp_win, int x, int y, int dir)
 		}
 	}
 }
+
 
 void TryToGrid(TwmWindow *tmp_win, int *x, int *y)
 {

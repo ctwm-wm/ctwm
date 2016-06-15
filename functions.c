@@ -1225,7 +1225,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 							TryToGrid(tmp_win, &xl, &yt);
 						}
 						if(!moving_icon && MoveFunction == F_MOVEPUSH && Scr->OpaqueMove) {
-							TryToPush(tmp_win, xl, yt, 0);
+							TryToPush(tmp_win, xl, yt);
 						}
 
 						if(!moving_icon &&
@@ -1289,7 +1289,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						TryToGrid(tmp_win, &xl, &yt);
 					}
 					if(!moving_icon && MoveFunction == F_MOVEPUSH && Scr->OpaqueMove) {
-						TryToPush(tmp_win, xl, yt, 0);
+						TryToPush(tmp_win, xl, yt);
 					}
 
 					if(!moving_icon &&
