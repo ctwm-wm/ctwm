@@ -224,12 +224,12 @@ struct ScreenInfo {
 	Pixel IconManagerHighlight; /* icon manager highlight */
 	short ClearShadowContrast;  /* The contrast of the clear shadow */
 	short DarkShadowContrast;   /* The contrast of the dark shadow */
-	// Icon bits
-	// Screen.IconJustification -> IconRegion.TitleJustification
+	/* Icon bits */
+	/* Screen.IconJustification -> IconRegion.TitleJustification */
 	short IconJustification;    /* J_LEFT, J_CENTER or J_RIGHT */
 	short IconRegionJustification;      /* J_LEFT, J_CENTER J_RIGHT or J_BORDER */
 	short IconRegionAlignement; /* J_TOP, J_CENTER, J_BOTTOM or J_BORDER */
-	// Window titlebars (notably NOT IconRegion.TitleJustification)
+	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
 	short TitleJustification;   /* J_LEFT, J_CENTER or J_RIGHT */
 	short IconifyStyle;         /* ICONIFY_* */
 	int   MaxIconTitleWidth;    /* */
