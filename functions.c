@@ -3086,7 +3086,6 @@ static int
 FindConstraint(TwmWindow *tmp_win, int direction)
 {
 	TwmWindow  *t;
-	int w, h;
 	int winx = tmp_win->frame_x;
 	int winy = tmp_win->frame_y;
 	int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
@@ -3122,6 +3121,8 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 			return -1;
 	}
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
+		int w, h;
+
 		if(t == tmp_win) {
 			continue;
 		}
