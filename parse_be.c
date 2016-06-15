@@ -1775,24 +1775,16 @@ ParseAlignement(char *s)
 	if(strlen(s) == 0) {
 		return (-1);
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "undef") == 0) {
-		return J_UNDEF;
-	}
-	if(strcasecmp(s, "top") == 0) {
-		return J_TOP;
-	}
-	if(strcasecmp(s, "center") == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "bottom") == 0) {
-		return J_BOTTOM;
-	}
-	if(strcasecmp(s, "border") == 0) {
-		return J_BORDER;
-	}
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return J_##ret; }
+	CHK(DEFSTRING, CENTER);
+	CHK("center",  CENTER);
+	CHK("top",     TOP);
+	CHK("bottom",  BOTTOM);
+	CHK("border",  BORDER);
+	CHK("undef",   UNDEF);
+#undef CHK
+
 	return (-1);
 }
 
