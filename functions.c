@@ -65,9 +65,20 @@ int ResizeOrigX;
 int ResizeOrigY;
 
 
+/*
+ * Directional specifiers, used in jump/pack/fill
+ */
+typedef enum {
+	DIR_BOTTOM,
+	DIR_LEFT,
+	DIR_RIGHT,
+	DIR_TOP,
+} Direction;
 
 
-static void jump(TwmWindow *tmp_win, int direction, const char *action);
+
+
+static void jump(TwmWindow *tmp_win, Direction direction, const char *action);
 static void ShowIconManager(void);
 static void HideIconManager(void);
 static bool DeferExecution(int context, int func, Cursor cursor);
@@ -80,7 +91,7 @@ static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
 static void BumpWindowColormap(TwmWindow *tmp, int inc);
-static int FindConstraint(TwmWindow *tmp_win, int direction);
+static int FindConstraint(TwmWindow *tmp_win, Direction direction);
 
 
 /***********************************************************************
@@ -739,7 +750,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XBell(dpy, 0);
 				break;
 			}
-			jump(tmp_win, J_LEFT, action);
+			jump(tmp_win, DIR_LEFT, action);
 			break;
 		case F_JUMPRIGHT:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
@@ -749,7 +760,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XBell(dpy, 0);
 				break;
 			}
-			jump(tmp_win, J_RIGHT, action);
+			jump(tmp_win, DIR_RIGHT, action);
 			break;
 		case F_JUMPDOWN:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
@@ -759,7 +770,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XBell(dpy, 0);
 				break;
 			}
-			jump(tmp_win, J_BOTTOM, action);
+			jump(tmp_win, DIR_BOTTOM, action);
 			break;
 		case F_JUMPUP:
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
@@ -769,7 +780,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XBell(dpy, 0);
 				break;
 			}
-			jump(tmp_win, J_TOP, action);
+			jump(tmp_win, DIR_TOP, action);
 			break;
 
 		case F_SAVEGEOMETRY:
@@ -2201,7 +2212,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
  */
 /* f.jump{down,left,right,up} */
 static void
-jump(TwmWindow *tmp_win, int  direction, const char *action)
+jump(TwmWindow *tmp_win, Direction direction, const char *action)
 {
 	int          fx, fy, px, py, step, status, cons;
 	int          fwidth, fheight;
@@ -2229,8 +2240,8 @@ jump(TwmWindow *tmp_win, int  direction, const char *action)
 	fwidth  = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
 	fheight = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 	switch(direction) {
-		case J_LEFT:
-			cons  = FindConstraint(tmp_win, J_LEFT);
+		case DIR_LEFT:
+			cons  = FindConstraint(tmp_win, DIR_LEFT);
 			if(cons == -1) {
 				return;
 			}
@@ -2239,8 +2250,8 @@ jump(TwmWindow *tmp_win, int  direction, const char *action)
 				fx = cons;
 			}
 			break;
-		case J_RIGHT:
-			cons  = FindConstraint(tmp_win, J_RIGHT);
+		case DIR_RIGHT:
+			cons  = FindConstraint(tmp_win, DIR_RIGHT);
 			if(cons == -1) {
 				return;
 			}
@@ -2249,8 +2260,8 @@ jump(TwmWindow *tmp_win, int  direction, const char *action)
 				fx = cons - fwidth;
 			}
 			break;
-		case J_TOP:
-			cons  = FindConstraint(tmp_win, J_TOP);
+		case DIR_TOP:
+			cons  = FindConstraint(tmp_win, DIR_TOP);
 			if(cons == -1) {
 				return;
 			}
@@ -2259,8 +2270,8 @@ jump(TwmWindow *tmp_win, int  direction, const char *action)
 				fy = cons;
 			}
 			break;
-		case J_BOTTOM:
-			cons  = FindConstraint(tmp_win, J_BOTTOM);
+		case DIR_BOTTOM:
+			cons  = FindConstraint(tmp_win, DIR_BOTTOM);
 			if(cons == -1) {
 				return;
 			}
@@ -2635,7 +2646,7 @@ packwindow(TwmWindow *tmp_win, const char *direction)
 	Window       junkW;
 
 	if(!strcmp(direction,   "left")) {
-		cons  = FindConstraint(tmp_win, J_LEFT);
+		cons  = FindConstraint(tmp_win, DIR_LEFT);
 		if(cons == -1) {
 			return;
 		}
@@ -2643,7 +2654,7 @@ packwindow(TwmWindow *tmp_win, const char *direction)
 		newy  = tmp_win->frame_y;
 	}
 	else if(!strcmp(direction,  "right")) {
-		cons  = FindConstraint(tmp_win, J_RIGHT);
+		cons  = FindConstraint(tmp_win, DIR_RIGHT);
 		if(cons == -1) {
 			return;
 		}
@@ -2652,7 +2663,7 @@ packwindow(TwmWindow *tmp_win, const char *direction)
 		newy  = tmp_win->frame_y;
 	}
 	else if(!strcmp(direction,    "top")) {
-		cons  = FindConstraint(tmp_win, J_TOP);
+		cons  = FindConstraint(tmp_win, DIR_TOP);
 		if(cons == -1) {
 			return;
 		}
@@ -2660,7 +2671,7 @@ packwindow(TwmWindow *tmp_win, const char *direction)
 		newy  = cons;
 	}
 	else if(!strcmp(direction, "bottom")) {
-		cons  = FindConstraint(tmp_win, J_BOTTOM);
+		cons  = FindConstraint(tmp_win, DIR_BOTTOM);
 		if(cons == -1) {
 			return;
 		}
@@ -2696,7 +2707,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 	int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
 	if(!strcmp(direction, "left")) {
-		cons = FindConstraint(tmp_win, J_LEFT);
+		cons = FindConstraint(tmp_win, DIR_LEFT);
 		if(cons == -1) {
 			return;
 		}
@@ -2710,7 +2721,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 	}
 	else if(!strcmp(direction, "right")) {
 		for(i = 0; i < 2; i++) {
-			cons = FindConstraint(tmp_win, J_RIGHT);
+			cons = FindConstraint(tmp_win, DIR_RIGHT);
 			if(cons == -1) {
 				return;
 			}
@@ -2731,7 +2742,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 		}
 	}
 	else if(!strcmp(direction, "top")) {
-		cons = FindConstraint(tmp_win, J_TOP);
+		cons = FindConstraint(tmp_win, DIR_TOP);
 		if(cons == -1) {
 			return;
 		}
@@ -2745,7 +2756,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 	}
 	else if(!strcmp(direction, "bottom")) {
 		for(i = 0; i < 2; i++) {
-			cons = FindConstraint(tmp_win, J_BOTTOM);
+			cons = FindConstraint(tmp_win, DIR_BOTTOM);
 			if(cons == -1) {
 				return;
 			}
@@ -2774,9 +2785,9 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 			tmp_win->save_otpri = OtpGetPriority(tmp_win);
 
 			tmp_win->frame_y++;
-			newy = FindConstraint(tmp_win, J_TOP);
+			newy = FindConstraint(tmp_win, DIR_TOP);
 			tmp_win->frame_y--;
-			newh = FindConstraint(tmp_win, J_BOTTOM) - newy;
+			newh = FindConstraint(tmp_win, DIR_BOTTOM) - newy;
 			newh -= 2 * tmp_win->frame_bw;
 
 			newx = tmp_win->frame_x;
@@ -3086,7 +3097,7 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 
 
 static int
-FindConstraint(TwmWindow *tmp_win, int direction)
+FindConstraint(TwmWindow *tmp_win, Direction direction)
 {
 	TwmWindow  *t;
 	int winx = tmp_win->frame_x;
@@ -3096,25 +3107,25 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 	int ret;
 
 	switch(direction) {
-		case J_LEFT:
+		case DIR_LEFT:
 			if(winx < Scr->BorderLeft) {
 				return -1;
 			}
 			ret = Scr->BorderLeft;
 			break;
-		case J_RIGHT:
+		case DIR_RIGHT:
 			if(winx + winw > Scr->rootw - Scr->BorderRight) {
 				return -1;
 			}
 			ret = Scr->rootw - Scr->BorderRight;
 			break;
-		case J_TOP:
+		case DIR_TOP:
 			if(winy < Scr->BorderTop) {
 				return -1;
 			}
 			ret = Scr->BorderTop;
 			break;
-		case J_BOTTOM:
+		case DIR_BOTTOM:
 			if(winy + winh > Scr->rooth - Scr->BorderBottom) {
 				return -1;
 			}
@@ -3139,7 +3150,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 		h = t->frame_height + 2 * t->frame_bw;
 
 		switch(direction) {
-			case J_LEFT:
+			case DIR_LEFT:
 				if(winx        <= t->frame_x + w) {
 					continue;
 				}
@@ -3151,7 +3162,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 				}
 				ret = MAX(ret, t->frame_x + w);
 				break;
-			case J_RIGHT:
+			case DIR_RIGHT:
 				if(winx + winw >= t->frame_x) {
 					continue;
 				}
@@ -3163,7 +3174,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 				}
 				ret = MIN(ret, t->frame_x);
 				break;
-			case J_TOP:
+			case DIR_TOP:
 				if(winy        <= t->frame_y + h) {
 					continue;
 				}
@@ -3175,7 +3186,7 @@ FindConstraint(TwmWindow *tmp_win, int direction)
 				}
 				ret = MAX(ret, t->frame_y + h);
 				break;
-			case J_BOTTOM:
+			case DIR_BOTTOM:
 				if(winy + winh >= t->frame_y) {
 					continue;
 				}
