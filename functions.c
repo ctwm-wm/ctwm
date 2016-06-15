@@ -2199,6 +2199,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 /*
  * Utils
  */
+/* f.jump{down,left,right,up} */
 static void
 jump(TwmWindow *tmp_win, int  direction, const char *action)
 {
@@ -2624,6 +2625,7 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 }
 
 
+/* f.pack */
 static void
 packwindow(TwmWindow *tmp_win, const char *direction)
 {
@@ -2681,6 +2683,7 @@ packwindow(TwmWindow *tmp_win, const char *direction)
 }
 
 
+/* f.fill */
 static void
 fillwindow(TwmWindow *tmp_win, const char *direction)
 {
