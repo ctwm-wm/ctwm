@@ -112,6 +112,19 @@ static struct {
 static Cursor LastCursor;
 static bool addingdefaults = false;
 
+/*
+ * Directionals for TryToPush_be().  These differ from the specs for
+ * jump/pack/fill in functions. because there's an indeterminate option.
+ */
+typedef enum {
+	PD_ANY,
+	PD_BOTTOM,
+	PD_LEFT,
+	PD_RIGHT,
+	PD_TOP,
+} PushDirection;
+
+
 static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 static void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 static void MosaicFade(TwmWindow *tmp_win, Window blanket);
@@ -121,7 +134,7 @@ static void ZoomOutWindow(TwmWindow *tmp_win, Window blanket);
 static void FadeWindow(TwmWindow *tmp_win, Window blanket);
 static void SweepWindow(TwmWindow *tmp_win, Window blanket);
 static void waitamoment(float timeout);
-static void TryToPush_be(TwmWindow *tmp_win, int x, int y, int dir);
+static void TryToPush_be(TwmWindow *tmp_win, int x, int y, PushDirection dir);
 
 
 #define SHADOWWIDTH 5                   /* in pixels */
@@ -2808,11 +2821,11 @@ void TryToPack(TwmWindow *tmp_win, int *x, int *y)
 void
 TryToPush(TwmWindow *tmp_win, int x, int y)
 {
-	TryToPush_be(tmp_win, x, y, 0);
+	TryToPush_be(tmp_win, x, y, PD_ANY);
 }
 
 static void
-TryToPush_be(TwmWindow *tmp_win, int x, int y, int dir)
+TryToPush_be(TwmWindow *tmp_win, int x, int y, PushDirection dir)
 {
 	TwmWindow   *t;
 	int         newx, newy, ndir;
@@ -2851,32 +2864,32 @@ TryToPush_be(TwmWindow *tmp_win, int x, int y, int dir)
 		}
 
 		move = false;
-		if((dir == 0 || dir == J_LEFT) &&
+		if((dir == PD_ANY || dir == PD_LEFT) &&
 		                (x + Scr->MovePackResistance > t->frame_x + w)) {
 			newx = x - w;
 			newy = t->frame_y;
-			ndir = J_LEFT;
+			ndir = PD_LEFT;
 			move = true;
 		}
-		else if((dir == 0 || dir == J_RIGHT) &&
+		else if((dir == PD_ANY || dir == PD_RIGHT) &&
 		                (x + winw < t->frame_x + Scr->MovePackResistance)) {
 			newx = x + winw;
 			newy = t->frame_y;
-			ndir = J_RIGHT;
+			ndir = PD_RIGHT;
 			move = true;
 		}
-		else if((dir == 0 || dir == J_TOP) &&
+		else if((dir == PD_ANY || dir == PD_TOP) &&
 		                (y + Scr->MovePackResistance > t->frame_y + h)) {
 			newx = t->frame_x;
 			newy = y - h;
-			ndir = J_TOP;
+			ndir = PD_TOP;
 			move = true;
 		}
-		else if((dir == 0 || dir == J_BOTTOM) &&
+		else if((dir == PD_ANY || dir == PD_BOTTOM) &&
 		                (y + winh < t->frame_y + Scr->MovePackResistance)) {
 			newx = t->frame_x;
 			newy = y + winh;
-			ndir = J_BOTTOM;
+			ndir = PD_BOTTOM;
 			move = true;
 		}
 		if(move) {
