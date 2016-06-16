@@ -818,10 +818,9 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 */
 	switch(Scr->TitleJustification) {
 		case TJ_UNDEF:
-			/* Can't happen */
+			/* Can't happen; fallthru to TJ_LEFT */
 			fprintf(stderr, "%s(): Unexpected Scr->TitleJustification %d, "
 			        "treating as left\n", __func__, Scr->TitleJustification);
-			/* FALLTHRU */
 		case TJ_LEFT:
 			tmp_win->name_x = Scr->TBInfo.titlex;
 			if(Scr->use3Dtitles) {
