@@ -238,6 +238,17 @@ typedef enum {
 	TJ_RIGHT,
 } TitleJust;
 
+/*
+ * And IconRegion Justification's.
+ */
+typedef enum {
+	IRJ_UNDEF,
+	IRJ_LEFT,
+	IRJ_CENTER,
+	IRJ_RIGHT,
+	IRJ_BORDER,
+} IRJust;
+
 /* Justifications */
 #define J_UNDEF                 0
 #define J_LEFT                  1

@@ -192,17 +192,17 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 		ie->used = true;
 		ie->twm_win = tmp_win;
 		switch(ir->Justification) {
-			case J_LEFT :
+			case IRJ_LEFT:
 				*final_x = ie->x;
 				break;
-			case J_UNDEF :
-			case J_CENTER :
+			case IRJ_UNDEF:
+			case IRJ_CENTER:
 				*final_x = ie->x + (ie->w - iconWidth(tmp_win)) / 2;
 				break;
-			case J_RIGHT :
+			case IRJ_RIGHT:
 				*final_x = ie->x + ie->w - iconWidth(tmp_win);
 				break;
-			case J_BORDER :
+			case IRJ_BORDER:
 				if(ir->grav2 == D_EAST) {
 					*final_x = ie->x + ie->w - iconWidth(tmp_win);
 				}
@@ -437,10 +437,10 @@ name_list **AddIconRegion(char *geom,
 	}
 	ir->TitleJustification = tmp;
 
-	if((tmp = ParseJustification(just)) < 0) {
+	if((tmp = ParseIRJustification(just)) < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", just);
-		tmp = J_UNDEF;
+		tmp = IRJ_UNDEF;
 	}
 	ir->Justification = tmp;
 

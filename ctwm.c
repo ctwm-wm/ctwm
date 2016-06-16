@@ -656,7 +656,7 @@ int main(int argc, char **argv)
 			if(ir->TitleJustification == TJ_UNDEF) {
 				ir->TitleJustification = Scr->IconJustification;
 			}
-			if(ir->Justification == J_UNDEF) {
+			if(ir->Justification == IRJ_UNDEF) {
 				ir->Justification = Scr->IconRegionJustification;
 			}
 			if(ir->Alignement == IRA_UNDEF) {
@@ -1015,7 +1015,7 @@ static void InitVariables(void)
 	Scr->BeNiceToColormap = false;
 	Scr->BorderCursors = false;
 	Scr->IconJustification = J_CENTER;
-	Scr->IconRegionJustification = J_CENTER;
+	Scr->IconRegionJustification = IRJ_CENTER;
 	Scr->IconRegionAlignement = IRA_CENTER;
 	Scr->TitleJustification = TJ_LEFT;
 	Scr->IconifyStyle = ICONIFY_NORMAL;

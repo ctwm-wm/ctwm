@@ -1075,9 +1075,9 @@ do_string_keyword(int keyword, char *s)
 			return 1;
 		}
 		case kws_IconRegionJustification: {
-			int just = ParseJustification(s);
+			int just = ParseIRJustification(s);
 
-			if(just < 0) {
+			if(just < 0 || (just == IRJ_UNDEF)) {
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid IconRegionJustification argument \"%s\"\n", s);
@@ -1742,31 +1742,29 @@ ParseRandomPlacement(char *s)
 	return (-1);
 }
 
+
+/*
+ * Parse out IconRegionJustification string.
+ *
+ * X-ref comment on ParseAlignement about return value.
+ */
 int
-ParseJustification(char *s)
+ParseIRJustification(char *s)
 {
 	if(strlen(s) == 0) {
-		return (-1);
+		return -1;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "undef") == 0) {
-		return J_UNDEF;
-	}
-	if(strcasecmp(s, "left") == 0) {
-		return J_LEFT;
-	}
-	if(strcasecmp(s, "center") == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "right") == 0) {
-		return J_RIGHT;
-	}
-	if(strcasecmp(s, "border") == 0) {
-		return J_BORDER;
-	}
-	return (-1);
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return IRJ_##ret; }
+	CHK(DEFSTRING, CENTER);
+	CHK("undef",   UNDEF);
+	CHK("left",    LEFT);
+	CHK("center",  CENTER);
+	CHK("right",   RIGHT);
+	CHK("border",  BORDER);
+#undef CHK
+
+	return -1;
 }
 
 

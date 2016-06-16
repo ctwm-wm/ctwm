@@ -227,7 +227,7 @@ struct ScreenInfo {
 	/* Icon bits */
 	/* Screen.IconJustification -> IconRegion.TitleJustification */
 	TitleJust IconJustification;
-	short IconRegionJustification;      /* J_LEFT, J_CENTER J_RIGHT or J_BORDER */
+	IRJust IconRegionJustification;
 	IRAlignement IconRegionAlignement;
 	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
 	TitleJust TitleJustification;
