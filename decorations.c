@@ -817,6 +817,11 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * parts of the drawing will still cause Bad Side Effects.
 	 */
 	switch(Scr->TitleJustification) {
+		case TJ_UNDEF:
+			/* Can't happen */
+			fprintf(stderr, "%s(): Unexpected Scr->TitleJustification %d, "
+			        "treating as left\n", __func__, Scr->TitleJustification);
+			/* FALLTHRU */
 		case TJ_LEFT:
 			tmp_win->name_x = Scr->TBInfo.titlex;
 			if(Scr->use3Dtitles) {
@@ -839,11 +844,6 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 				tmp_win->name_x -= Scr->TitleShadowDepth - 2;
 			}
 			break;
-		default:
-			/* Can't happen */
-			fprintf(stderr, "Unexpected Scr->TitleJustification %d\n",
-			        Scr->TitleJustification);
-			exit(1);
 	}
 
 	/*
