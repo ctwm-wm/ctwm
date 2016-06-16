@@ -1769,6 +1769,16 @@ ParseJustification(char *s)
 	return (-1);
 }
 
+
+/*
+ * Parse out the string specifier for IconRegion Alignement[sic].
+ * Strictly speaking, this [almost always] returns an IRAlignement enum
+ * value.  However, it's specified as int to allow the -1 return for
+ * invalid values.  enum's start numbering from 0 (unless specific values
+ * are given), so that's a safe out-of-bounds value.  And making an
+ * IRA_INVALID value would just add unnecessary complication, since
+ * during parsing is the only time it makes sense.
+ */
 int
 ParseAlignement(char *s)
 {
