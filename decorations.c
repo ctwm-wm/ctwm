@@ -815,16 +815,16 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * parts of the drawing will still cause Bad Side Effects.
 	 */
 	switch(Scr->TitleJustification) {
-		case J_LEFT :
+		case TJ_LEFT:
 			tmp_win->name_x = Scr->TBInfo.titlex;
 			if(Scr->use3Dtitles) {
 				tmp_win->name_x += Scr->TitleShadowDepth + 2;
 			}
 			break;
-		case J_CENTER :
+		case TJ_CENTER:
 			tmp_win->name_x = Scr->TBInfo.titlex + (titlew - tmp_win->name_width) / 2;
 			break;
-		case J_RIGHT :
+		case TJ_RIGHT:
 			/*
 			 * XXX Since this pushes the end of the name way over to the
 			 * right, there's no room for the right highlight window.
@@ -837,6 +837,11 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 				tmp_win->name_x -= Scr->TitleShadowDepth - 2;
 			}
 			break;
+		default:
+			/* Can't happen */
+			fprintf(stderr, "Unexpected Scr->TitleJustification %d\n",
+			        Scr->TitleJustification);
+			exit(1);
 	}
 
 	/*
@@ -1005,11 +1010,11 @@ CreateHighlightWindows(TwmWindow *tmp_win)
                               Scr->TBInfo.width, h, \
                               0, Scr->d_depth, CopyFromParent, \
                               Scr->d_visual, valuemask, &attributes)
-	if(Scr->TitleJustification != J_LEFT) {
+	if(Scr->TitleJustification != TJ_LEFT) {
 		tmp_win->hilite_wl = MKWIN();
 		XStoreName(dpy, tmp_win->hilite_wl, "hilite_wl");
 	}
-	if(Scr->TitleJustification != J_RIGHT) {
+	if(Scr->TitleJustification != TJ_RIGHT) {
 		tmp_win->hilite_wr = MKWIN();
 		XStoreName(dpy, tmp_win->hilite_wr, "hilite_wr");
 	}
@@ -1102,11 +1107,11 @@ CreateLowlightWindows(TwmWindow *tmp_win)
                               Scr->TBInfo.width, h, \
                               0, Scr->d_depth, CopyFromParent, \
                               Scr->d_visual, valuemask, &attributes)
-	if(Scr->TitleJustification != J_LEFT) {
+	if(Scr->TitleJustification != TJ_LEFT) {
 		tmp_win->lolite_wl = MKWIN();
 		XStoreName(dpy, tmp_win->lolite_wl, "lolite_wl");
 	}
-	if(Scr->TitleJustification != J_RIGHT) {
+	if(Scr->TitleJustification != TJ_RIGHT) {
 		tmp_win->lolite_wr = MKWIN();
 		XStoreName(dpy, tmp_win->lolite_wr, "lolite_wr");
 	}

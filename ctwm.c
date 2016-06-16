@@ -653,7 +653,7 @@ int main(int argc, char **argv)
 		}
 
 		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
-			if(ir->TitleJustification == J_UNDEF) {
+			if(ir->TitleJustification == TJ_UNDEF) {
 				ir->TitleJustification = Scr->IconJustification;
 			}
 			if(ir->Justification == J_UNDEF) {
@@ -1017,7 +1017,7 @@ static void InitVariables(void)
 	Scr->IconJustification = J_CENTER;
 	Scr->IconRegionJustification = J_CENTER;
 	Scr->IconRegionAlignement = IRA_CENTER;
-	Scr->TitleJustification = J_LEFT;
+	Scr->TitleJustification = TJ_LEFT;
 	Scr->IconifyStyle = ICONIFY_NORMAL;
 	Scr->MaxIconTitleWidth = Scr->rootw;
 	Scr->ReallyMoveInWorkspaceManager = false;

@@ -1062,9 +1062,9 @@ do_string_keyword(int keyword, char *s)
 			return 1;
 
 		case kws_IconJustification: {
-			int just = ParseJustification(s);
+			int just = ParseTitleJustification(s);
 
-			if((just < 0) || (just == J_BORDER)) {
+			if((just < 0) || (just == TJ_UNDEF)) {
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid IconJustification argument \"%s\"\n", s);
@@ -1102,9 +1102,9 @@ do_string_keyword(int keyword, char *s)
 		}
 
 		case kws_TitleJustification: {
-			int just = ParseJustification(s);
+			int just = ParseTitleJustification(s);
 
-			if((just < 0) || (just == J_BORDER)) {
+			if((just < 0) || (just == TJ_UNDEF)) {
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid TitleJustification argument \"%s\"\n", s);
@@ -1767,6 +1767,32 @@ ParseJustification(char *s)
 		return J_BORDER;
 	}
 	return (-1);
+}
+
+
+/*
+ * Parse out string for title justification.  From TitleJustification,
+ * IconJustification, iconjust arg to IconRegion.
+ *
+ * X-ref comment on ParseAlignement about return value.
+ */
+int
+ParseTitleJustification(char *s)
+{
+	if(strlen(s) == 0) {
+		return -1;
+	}
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return TJ_##ret; }
+	/* XXX Different uses really have different defaults... */
+	CHK(DEFSTRING, CENTER);
+	CHK("undef",   UNDEF);
+	CHK("left",    LEFT);
+	CHK("center",  CENTER);
+	CHK("right",   RIGHT);
+#undef CHK
+
+	return -1;
 }
 
 

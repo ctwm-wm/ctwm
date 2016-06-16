@@ -430,11 +430,10 @@ name_list **AddIconRegion(char *geom,
 	ir->entries->w = ir->w;
 	ir->entries->h = ir->h;
 
-	tmp = ParseJustification(ijust);
-	if((tmp < 0) || (tmp == J_BORDER)) {
+	if((tmp = ParseTitleJustification(ijust)) < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", ijust);
-		tmp = J_UNDEF;
+		tmp = TJ_UNDEF;
 	}
 	ir->TitleJustification = tmp;
 
@@ -975,7 +974,7 @@ void ReshapeIcon(Icon *icon)
 
 int GetIconOffset(Icon *icon)
 {
-	short justif;
+	TitleJust justif;
 
 	if(!icon) {
 		return (0);
@@ -983,16 +982,19 @@ int GetIconOffset(Icon *icon)
 
 	justif = icon->ir ? icon->ir->TitleJustification : Scr->IconJustification;
 	switch(justif) {
-		case J_LEFT :
-			return (0);
+		case TJ_LEFT:
+			return 0;
 
-		case J_CENTER :
+		case TJ_CENTER:
 			return ((icon->w_width - icon->width) / 2);
 
-		case J_RIGHT :
+		case TJ_RIGHT:
 			return (icon->w_width - icon->width);
 
-		default :
-			return (0);
+		default:
+			/* Can't happen? */
+			fprintf(stderr, "%s(): Invalid TitleJustification %d\n",
+			        __func__, justif);
+			return 0;
 	}
 }

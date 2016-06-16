@@ -226,6 +226,18 @@ typedef enum {
 	IRA_BORDER,
 }IRAlignement;
 
+/*
+ * Justification for title stuff.  Window titles (TitleJustification),
+ * icon titles (IconJustification).  _Not_ the same as for
+ * IconRegionJustification.
+ */
+typedef enum {
+	TJ_UNDEF,
+	TJ_LEFT,
+	TJ_CENTER,
+	TJ_RIGHT,
+} TitleJust;
+
 /* Justifications */
 #define J_UNDEF                 0
 #define J_LEFT                  1

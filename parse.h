@@ -82,6 +82,7 @@ void twmrc_error_prefix(void);
  * itself anyway.
  */
 int ParseJustification(char *s);
+int ParseTitleJustification(char *s);
 int ParseAlignement(char *s);
 void assign_var_savecolor(void);
 

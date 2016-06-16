@@ -226,11 +226,11 @@ struct ScreenInfo {
 	short DarkShadowContrast;   /* The contrast of the dark shadow */
 	/* Icon bits */
 	/* Screen.IconJustification -> IconRegion.TitleJustification */
-	short IconJustification;    /* J_LEFT, J_CENTER or J_RIGHT */
+	TitleJust IconJustification;
 	short IconRegionJustification;      /* J_LEFT, J_CENTER J_RIGHT or J_BORDER */
 	IRAlignement IconRegionAlignement;
 	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
-	short TitleJustification;   /* J_LEFT, J_CENTER or J_RIGHT */
+	TitleJust TitleJustification;
 	short IconifyStyle;         /* ICONIFY_* */
 	int   MaxIconTitleWidth;    /* */
 #ifdef EWMH
