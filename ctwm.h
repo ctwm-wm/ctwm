@@ -206,8 +206,15 @@ struct TBWindow {
 	TitleButton *info;                  /* description of this window */
 };
 
+
+typedef enum {
+	SIJ_LEFT,
+	SIJ_CENTER,
+	SIJ_RIGHT,
+} SIJust;
+
 struct SqueezeInfo {
-	int justify;                        /* left, center, right */
+	SIJust justify;
 	int num;                            /* signed pixel count or numerator */
 	int denom;                          /* 0 for pix count or denominator */
 };

@@ -599,10 +599,12 @@ ComputeTitleLocation(TwmWindow *tmp)
 
 		/* adjust for left (nop), center, right justify */
 		switch(si->justify) {
-			case J_CENTER:
+			case SIJ_LEFT:
+				break;  // nop
+			case SIJ_CENTER:
 				basex -= tw / 2;
 				break;
-			case J_RIGHT:
+			case SIJ_RIGHT:
 				basex -= tw - 1;
 				break;
 		}

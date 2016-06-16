@@ -238,7 +238,7 @@ static TwmKeyword keytable[] = {
 	{ "button",                 BUTTON, 0 },
 	{ "buttonindent",           NKEYWORD, kwn_ButtonIndent },
 	{ "c",                      CONTROL, 0 },
-	{ "center",                 JKEYWORD, J_CENTER },
+	{ "center",                 JKEYWORD, SIJ_CENTER },
 	{ "centerfeedbackwindow",   KEYWORD, kw0_CenterFeedbackWindow },
 	{ "changeworkspacefunction", CHANGE_WORKSPACE_FUNCTION, 0 },
 	{ "clearshadowcontrast",    NKEYWORD, kwn_ClearShadowContrast },
@@ -438,7 +438,7 @@ static TwmKeyword keytable[] = {
 	{ "ignoretransient",        IGNORE_TRANSIENT, 0 },
 	{ "interpolatemenucolors",  KEYWORD, kw0_InterpolateMenuColors },
 	{ "l",                      LOCK, 0 },
-	{ "left",                   JKEYWORD, J_LEFT },
+	{ "left",                   JKEYWORD, SIJ_LEFT },
 	{ "lefttitlebutton",        LEFT_TITLEBUTTON, 0 },
 	{ "lock",                   LOCK, 0 },
 	{ "m",                      META, 0 },
@@ -515,7 +515,7 @@ static TwmKeyword keytable[] = {
 	{ "resizefont",             SKEYWORD, kws_ResizeFont },
 	{ "restartpreviousstate",   KEYWORD, kw0_RestartPreviousState },
 	{ "reversecurrentworkspace", KEYWORD, kw0_ReverseCurrentWorkspace },
-	{ "right",                  JKEYWORD, J_RIGHT },
+	{ "right",                  JKEYWORD, SIJ_RIGHT },
 	{ "righttitlebutton",       RIGHT_TITLEBUTTON, 0 },
 	{ "root",                   ROOT, 0 },
 	{ "rplaysoundhost",         SKEYWORD, kws_RplaySoundHost },
@@ -1867,7 +1867,7 @@ ParseButtonStyle(char *s)
 int
 do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
                  char *name,       /* window name */
-                 int justify,      /* left, center, right */
+                 SIJust justify,   /* left, center, right */
                  int num,          /* signed num */
                  int denom)        /* 0 or indicates fraction denom */
 {
@@ -1892,11 +1892,11 @@ do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
 	 * By using a non-zero denominator the position will be relative.
 	 */
 	if(denom == 0 && num == 0) {
-		if(justify == J_CENTER) {
+		if(justify == SIJ_CENTER) {
 			num = 1;
 			denom = 2;
 		}
-		else if(justify == J_RIGHT) {
+		else if(justify == SIJ_RIGHT) {
 			num = 2;
 			denom = 2;
 		}
