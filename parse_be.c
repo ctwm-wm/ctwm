@@ -1773,10 +1773,10 @@ int
 ParseAlignement(char *s)
 {
 	if(strlen(s) == 0) {
-		return (-1);
+		return -1;
 	}
 
-#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return J_##ret; }
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return IRA_##ret; }
 	CHK(DEFSTRING, CENTER);
 	CHK("center",  CENTER);
 	CHK("top",     TOP);
@@ -1785,7 +1785,7 @@ ParseAlignement(char *s)
 	CHK("undef",   UNDEF);
 #undef CHK
 
-	return (-1);
+	return -1;
 }
 
 static int

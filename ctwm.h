@@ -212,6 +212,20 @@ struct SqueezeInfo {
 	int denom;                          /* 0 for pix count or denominator */
 };
 
+
+/*
+ * Type for IconRegion alignment and config entries relating
+ *
+ * Misspeelt for hysterical raisins
+ */
+typedef enum {
+	IRA_UNDEF,
+	IRA_TOP,
+	IRA_CENTER,
+	IRA_BOTTOM,
+	IRA_BORDER,
+}IRAlignement;
+
 /* Justifications */
 #define J_UNDEF                 0
 #define J_LEFT                  1

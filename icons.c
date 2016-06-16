@@ -212,17 +212,17 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				break;
 		}
 		switch(ir->Alignement) {
-			case J_TOP :
+			case IRA_TOP :
 				*final_y = ie->y;
 				break;
-			case J_UNDEF :
-			case J_CENTER :
+			case IRA_UNDEF :
+			case IRA_CENTER :
 				*final_y = ie->y + (ie->h - iconHeight(tmp_win)) / 2;
 				break;
-			case J_BOTTOM :
+			case IRA_BOTTOM :
 				*final_y = ie->y + ie->h - iconHeight(tmp_win);
 				break;
-			case J_BORDER :
+			case IRA_BORDER :
 				if(ir->grav1 == D_SOUTH) {
 					*final_y = ie->y + ie->h - iconHeight(tmp_win);
 				}
@@ -448,7 +448,7 @@ name_list **AddIconRegion(char *geom,
 	if((tmp = ParseAlignement(align)) < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", align);
-		tmp = J_UNDEF;
+		tmp = IRA_UNDEF;
 	}
 	ir->Alignement = tmp;
 
