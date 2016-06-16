@@ -831,7 +831,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 			 * XXX Since this pushes the end of the name way over to the
 			 * right, there's no room for the right highlight window.
 			 * But shrinking down the size of that is how the titlebar
-			 * gets squeezed for SqueezeTitle.  So if J_RIGHT, the
+			 * gets squeezed for SqueezeTitle.  So if TJ_RIGHT, the
 			 * titlebar will never get squeezed.
 			 */
 			tmp_win->name_x = Scr->TBInfo.titlex + titlew - tmp_win->name_width;
@@ -848,7 +848,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 
 	/*
 	 * Adjust for sanity.  Make sure it's always no earlier than the
-	 * start of the titlebar (possible especially in the J_CENTER case,
+	 * start of the titlebar (possible especially in the TJ_CENTER case,
 	 * but also theoretically if you set a negative ShadowDepth, which
 	 * would be stupid and might break other stuff).  In the 3d case,
 	 * allow twice the ShadowDepth (once for the shadow itself, the
