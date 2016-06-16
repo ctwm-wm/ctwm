@@ -231,7 +231,7 @@ typedef enum {
 	IRA_CENTER,
 	IRA_BOTTOM,
 	IRA_BORDER,
-}IRAlignement;
+} IRAlignement;
 
 /*
  * Justification for title stuff.  Window titles (TitleJustification),
