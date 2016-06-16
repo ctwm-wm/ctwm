@@ -1014,7 +1014,7 @@ static void InitVariables(void)
 	Scr->DarkShadowContrast  = 40;
 	Scr->BeNiceToColormap = false;
 	Scr->BorderCursors = false;
-	Scr->IconJustification = J_CENTER;
+	Scr->IconJustification = TJ_CENTER;
 	Scr->IconRegionJustification = IRJ_CENTER;
 	Scr->IconRegionAlignement = IRA_CENTER;
 	Scr->TitleJustification = TJ_LEFT;
