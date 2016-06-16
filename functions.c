@@ -66,7 +66,7 @@ int ResizeOrigY;
 
 
 /*
- * MoveFillDiral specifiers, used in jump/pack/fill
+ * MoveFillDir-ectional specifiers, used in jump/pack/fill
  */
 typedef enum {
 	MFD_BOTTOM,
