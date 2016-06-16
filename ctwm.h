@@ -256,14 +256,6 @@ typedef enum {
 	IRJ_BORDER,
 } IRJust;
 
-/* Justifications */
-//#define J_UNDEF                 0
-#define J_LEFT                  1
-#define J_CENTER                2
-#define J_RIGHT                 3
-//#define J_BORDER                4
-//#define J_TOP                   5
-//#define J_BOTTOM                6
 
 /* Colormap window entry for each window in WM_COLORMAP_WINDOWS
  * ICCCM property.
