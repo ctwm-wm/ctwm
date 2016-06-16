@@ -33,7 +33,7 @@
 
 
 static int ParseRandomPlacement(char *s);
-static ButtonStyle ParseButtonStyle(char *s);
+static int ParseButtonStyle(char *s);
 static int ParseUsePPosition(char *s);
 
 
@@ -1846,11 +1846,11 @@ ParseUsePPosition(char *s)
 	return (-1);
 }
 
-static ButtonStyle
+static int
 ParseButtonStyle(char *s)
 {
 	if(s == NULL || strlen(s) == 0) {
-		return STYLE_UNKNOWN;
+		return -1;
 	}
 
 #define CHK(str, ret) if(strcasecmp(s, str) == 0) { return STYLE_##ret; }
@@ -1861,7 +1861,7 @@ ParseButtonStyle(char *s)
 	CHK("style3",  STYLE3);
 #undef CHK
 
-	return STYLE_UNKNOWN;
+	return -1;
 }
 
 int

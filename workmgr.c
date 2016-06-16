@@ -2393,7 +2393,6 @@ static void PaintButton(int which,
 
 		switch(Scr->workSpaceMgr.buttonStyle) {
 			case STYLE_NORMAL:
-			case STYLE_UNKNOWN:
 				break;
 
 			case STYLE_STYLE1:
