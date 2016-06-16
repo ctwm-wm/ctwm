@@ -1749,7 +1749,7 @@ ParseRandomPlacement(char *s)
  * X-ref comment on ParseAlignement about return value.
  */
 int
-ParseIRJustification(char *s)
+ParseIRJustification(const char *s)
 {
 	if(strlen(s) == 0) {
 		return -1;
@@ -1775,7 +1775,7 @@ ParseIRJustification(char *s)
  * X-ref comment on ParseAlignement about return value.
  */
 int
-ParseTitleJustification(char *s)
+ParseTitleJustification(const char *s)
 {
 	if(strlen(s) == 0) {
 		return -1;
@@ -1804,7 +1804,7 @@ ParseTitleJustification(char *s)
  * during parsing is the only time it makes sense.
  */
 int
-ParseAlignement(char *s)
+ParseAlignement(const char *s)
 {
 	if(strlen(s) == 0) {
 		return -1;
