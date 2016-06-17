@@ -192,17 +192,17 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 		ie->used = true;
 		ie->twm_win = tmp_win;
 		switch(ir->Justification) {
-			case J_LEFT :
+			case IRJ_LEFT:
 				*final_x = ie->x;
 				break;
-			case J_UNDEF :
-			case J_CENTER :
+			case IRJ_UNDEF:
+			case IRJ_CENTER:
 				*final_x = ie->x + (ie->w - iconWidth(tmp_win)) / 2;
 				break;
-			case J_RIGHT :
+			case IRJ_RIGHT:
 				*final_x = ie->x + ie->w - iconWidth(tmp_win);
 				break;
-			case J_BORDER :
+			case IRJ_BORDER:
 				if(ir->grav2 == D_EAST) {
 					*final_x = ie->x + ie->w - iconWidth(tmp_win);
 				}
@@ -212,17 +212,17 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				break;
 		}
 		switch(ir->Alignement) {
-			case J_TOP :
+			case IRA_TOP :
 				*final_y = ie->y;
 				break;
-			case J_UNDEF :
-			case J_CENTER :
+			case IRA_UNDEF :
+			case IRA_CENTER :
 				*final_y = ie->y + (ie->h - iconHeight(tmp_win)) / 2;
 				break;
-			case J_BOTTOM :
+			case IRA_BOTTOM :
 				*final_y = ie->y + ie->h - iconHeight(tmp_win);
 				break;
-			case J_BORDER :
+			case IRA_BORDER :
 				if(ir->grav1 == D_SOUTH) {
 					*final_y = ie->y + ie->h - iconHeight(tmp_win);
 				}
@@ -430,25 +430,24 @@ name_list **AddIconRegion(char *geom,
 	ir->entries->w = ir->w;
 	ir->entries->h = ir->h;
 
-	tmp = ParseJustification(ijust);
-	if((tmp < 0) || (tmp == J_BORDER)) {
+	if((tmp = ParseTitleJustification(ijust)) < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", ijust);
-		tmp = J_UNDEF;
+		tmp = TJ_UNDEF;
 	}
 	ir->TitleJustification = tmp;
 
-	if((tmp = ParseJustification(just)) < 0) {
+	if((tmp = ParseIRJustification(just)) < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", just);
-		tmp = J_UNDEF;
+		tmp = IRJ_UNDEF;
 	}
 	ir->Justification = tmp;
 
 	if((tmp = ParseAlignement(align)) < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", align);
-		tmp = J_UNDEF;
+		tmp = IRA_UNDEF;
 	}
 	ir->Alignement = tmp;
 
@@ -975,7 +974,7 @@ void ReshapeIcon(Icon *icon)
 
 int GetIconOffset(Icon *icon)
 {
-	short justif;
+	TitleJust justif;
 
 	if(!icon) {
 		return (0);
@@ -983,16 +982,19 @@ int GetIconOffset(Icon *icon)
 
 	justif = icon->ir ? icon->ir->TitleJustification : Scr->IconJustification;
 	switch(justif) {
-		case J_LEFT :
-			return (0);
+		case TJ_LEFT:
+			return 0;
 
-		case J_CENTER :
+		case TJ_CENTER:
 			return ((icon->w_width - icon->width) / 2);
 
-		case J_RIGHT :
+		case TJ_RIGHT:
 			return (icon->w_width - icon->width);
 
-		default :
-			return (0);
+		default:
+			/* Can't happen? */
+			fprintf(stderr, "%s(): Invalid TitleJustification %d\n",
+			        __func__, justif);
+			return 0;
 	}
 }

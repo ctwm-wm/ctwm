@@ -93,9 +93,9 @@ struct IconRegion {
 	int                 x, y, w, h;
 	int                 grav1, grav2;
 	int                 stepx, stepy;       // allocation granularity
-	short               TitleJustification; // J_LEFT, J_CENTER or J_RIGHT
-	short               Justification; // J_LEFT, J_CENTER J_RIGHT or J_BORDER
-	short               Alignement;   // J_TOP, J_CENTER, J_BOTTOM or J_BORDER
+	TitleJust           TitleJustification;
+	IRJust              Justification;
+	IRAlignement        Alignement;
 	name_list           *clientlist;
 	struct IconEntry    *entries;
 };

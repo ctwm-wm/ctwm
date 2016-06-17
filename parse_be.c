@@ -238,7 +238,7 @@ static TwmKeyword keytable[] = {
 	{ "button",                 BUTTON, 0 },
 	{ "buttonindent",           NKEYWORD, kwn_ButtonIndent },
 	{ "c",                      CONTROL, 0 },
-	{ "center",                 JKEYWORD, J_CENTER },
+	{ "center",                 SIJENUM, SIJ_CENTER },
 	{ "centerfeedbackwindow",   KEYWORD, kw0_CenterFeedbackWindow },
 	{ "changeworkspacefunction", CHANGE_WORKSPACE_FUNCTION, 0 },
 	{ "clearshadowcontrast",    NKEYWORD, kwn_ClearShadowContrast },
@@ -438,7 +438,7 @@ static TwmKeyword keytable[] = {
 	{ "ignoretransient",        IGNORE_TRANSIENT, 0 },
 	{ "interpolatemenucolors",  KEYWORD, kw0_InterpolateMenuColors },
 	{ "l",                      LOCK, 0 },
-	{ "left",                   JKEYWORD, J_LEFT },
+	{ "left",                   SIJENUM, SIJ_LEFT },
 	{ "lefttitlebutton",        LEFT_TITLEBUTTON, 0 },
 	{ "lock",                   LOCK, 0 },
 	{ "m",                      META, 0 },
@@ -515,7 +515,7 @@ static TwmKeyword keytable[] = {
 	{ "resizefont",             SKEYWORD, kws_ResizeFont },
 	{ "restartpreviousstate",   KEYWORD, kw0_RestartPreviousState },
 	{ "reversecurrentworkspace", KEYWORD, kw0_ReverseCurrentWorkspace },
-	{ "right",                  JKEYWORD, J_RIGHT },
+	{ "right",                  SIJENUM, SIJ_RIGHT },
 	{ "righttitlebutton",       RIGHT_TITLEBUTTON, 0 },
 	{ "root",                   ROOT, 0 },
 	{ "rplaysoundhost",         SKEYWORD, kws_RplaySoundHost },
@@ -1062,9 +1062,9 @@ do_string_keyword(int keyword, char *s)
 			return 1;
 
 		case kws_IconJustification: {
-			int just = ParseJustification(s);
+			int just = ParseTitleJustification(s);
 
-			if((just < 0) || (just == J_BORDER)) {
+			if((just < 0) || (just == TJ_UNDEF)) {
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid IconJustification argument \"%s\"\n", s);
@@ -1075,9 +1075,9 @@ do_string_keyword(int keyword, char *s)
 			return 1;
 		}
 		case kws_IconRegionJustification: {
-			int just = ParseJustification(s);
+			int just = ParseIRJustification(s);
 
-			if(just < 0) {
+			if(just < 0 || (just == IRJ_UNDEF)) {
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid IconRegionJustification argument \"%s\"\n", s);
@@ -1102,9 +1102,9 @@ do_string_keyword(int keyword, char *s)
 		}
 
 		case kws_TitleJustification: {
-			int just = ParseJustification(s);
+			int just = ParseTitleJustification(s);
 
-			if((just < 0) || (just == J_BORDER)) {
+			if((just < 0) || (just == TJ_UNDEF)) {
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid TitleJustification argument \"%s\"\n", s);
@@ -1742,58 +1742,84 @@ ParseRandomPlacement(char *s)
 	return (-1);
 }
 
+
+/*
+ * Parse out IconRegionJustification string.
+ *
+ * X-ref comment on ParseAlignement about return value.
+ */
 int
-ParseJustification(char *s)
+ParseIRJustification(const char *s)
 {
 	if(strlen(s) == 0) {
-		return (-1);
+		return -1;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "undef") == 0) {
-		return J_UNDEF;
-	}
-	if(strcasecmp(s, "left") == 0) {
-		return J_LEFT;
-	}
-	if(strcasecmp(s, "center") == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "right") == 0) {
-		return J_RIGHT;
-	}
-	if(strcasecmp(s, "border") == 0) {
-		return J_BORDER;
-	}
-	return (-1);
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return IRJ_##ret; }
+	CHK(DEFSTRING, CENTER);
+	CHK("undef",   UNDEF);
+	CHK("left",    LEFT);
+	CHK("center",  CENTER);
+	CHK("right",   RIGHT);
+	CHK("border",  BORDER);
+#undef CHK
+
+	return -1;
 }
 
+
+/*
+ * Parse out string for title justification.  From TitleJustification,
+ * IconJustification, iconjust arg to IconRegion.
+ *
+ * X-ref comment on ParseAlignement about return value.
+ */
 int
-ParseAlignement(char *s)
+ParseTitleJustification(const char *s)
 {
 	if(strlen(s) == 0) {
-		return (-1);
+		return -1;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return J_CENTER;
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return TJ_##ret; }
+	/* XXX Different uses really have different defaults... */
+	CHK(DEFSTRING, CENTER);
+	CHK("undef",   UNDEF);
+	CHK("left",    LEFT);
+	CHK("center",  CENTER);
+	CHK("right",   RIGHT);
+#undef CHK
+
+	return -1;
+}
+
+
+/*
+ * Parse out the string specifier for IconRegion Alignement[sic].
+ * Strictly speaking, this [almost always] returns an IRAlignement enum
+ * value.  However, it's specified as int to allow the -1 return for
+ * invalid values.  enum's start numbering from 0 (unless specific values
+ * are given), so that's a safe out-of-bounds value.  And making an
+ * IRA_INVALID value would just add unnecessary complication, since
+ * during parsing is the only time it makes sense.
+ */
+int
+ParseAlignement(const char *s)
+{
+	if(strlen(s) == 0) {
+		return -1;
 	}
-	if(strcasecmp(s, "undef") == 0) {
-		return J_UNDEF;
-	}
-	if(strcasecmp(s, "top") == 0) {
-		return J_TOP;
-	}
-	if(strcasecmp(s, "center") == 0) {
-		return J_CENTER;
-	}
-	if(strcasecmp(s, "bottom") == 0) {
-		return J_BOTTOM;
-	}
-	if(strcasecmp(s, "border") == 0) {
-		return J_BORDER;
-	}
-	return (-1);
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return IRA_##ret; }
+	CHK(DEFSTRING, CENTER);
+	CHK("center",  CENTER);
+	CHK("top",     TOP);
+	CHK("bottom",  BOTTOM);
+	CHK("border",  BORDER);
+	CHK("undef",   UNDEF);
+#undef CHK
+
+	return -1;
 }
 
 static int
@@ -1823,31 +1849,25 @@ ParseUsePPosition(char *s)
 static int
 ParseButtonStyle(char *s)
 {
-	if(strlen(s) == 0) {
-		return (-1);
+	if(s == NULL || strlen(s) == 0) {
+		return -1;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return STYLE_NORMAL;
-	}
-	if(strcasecmp(s, "normal") == 0) {
-		return STYLE_NORMAL;
-	}
-	if(strcasecmp(s, "style1") == 0) {
-		return STYLE_STYLE1;
-	}
-	if(strcasecmp(s, "style2") == 0) {
-		return STYLE_STYLE2;
-	}
-	if(strcasecmp(s, "style3") == 0) {
-		return STYLE_STYLE3;
-	}
-	return (-1);
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return STYLE_##ret; }
+	CHK(DEFSTRING, NORMAL);
+	CHK("normal",  NORMAL);
+	CHK("style1",  STYLE1);
+	CHK("style2",  STYLE2);
+	CHK("style3",  STYLE3);
+#undef CHK
+
+	return -1;
 }
 
 int
 do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
                  char *name,       /* window name */
-                 int justify,      /* left, center, right */
+                 SIJust justify,   /* left, center, right */
                  int num,          /* signed num */
                  int denom)        /* 0 or indicates fraction denom */
 {
@@ -1872,11 +1892,11 @@ do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
 	 * By using a non-zero denominator the position will be relative.
 	 */
 	if(denom == 0 && num == 0) {
-		if(justify == J_CENTER) {
+		if(justify == SIJ_CENTER) {
 			num = 1;
 			denom = 2;
 		}
-		else if(justify == J_RIGHT) {
+		else if(justify == SIJ_RIGHT) {
 			num = 2;
 			denom = 2;
 		}

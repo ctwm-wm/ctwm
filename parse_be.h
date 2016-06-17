@@ -17,7 +17,7 @@ int do_string_savecolor(int colormode, char *s);
 int do_var_savecolor(int key);
 int do_squeeze_entry(name_list **list,  /* squeeze or dont-squeeze list */
                      char *name,        /* window name */
-                     int justify,       /* left, center, right */
+                     SIJust justify,    /* left, center, right */
                      int num,           /* signed num */
                      int denom          /* 0 or indicates fraction denom */
                     );

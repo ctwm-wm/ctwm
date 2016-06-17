@@ -517,7 +517,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			                        LookInList(Scr->SqueezeTitleL, tmp_win->full_name,
 			                                   &tmp_win->class);
 			if(!tmp_win->squeeze_info) {
-				static SqueezeInfo default_squeeze = { J_LEFT, 0, 0 };
+				static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
 				if(Scr->SqueezeTitle) {
 					tmp_win->squeeze_info = &default_squeeze;
 				}

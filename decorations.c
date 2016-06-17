@@ -599,10 +599,12 @@ ComputeTitleLocation(TwmWindow *tmp)
 
 		/* adjust for left (nop), center, right justify */
 		switch(si->justify) {
-			case J_CENTER:
+			case SIJ_LEFT:
+				break;  // nop
+			case SIJ_CENTER:
 				basex -= tw / 2;
 				break;
-			case J_RIGHT:
+			case SIJ_RIGHT:
 				basex -= tw - 1;
 				break;
 		}
@@ -815,21 +817,25 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * parts of the drawing will still cause Bad Side Effects.
 	 */
 	switch(Scr->TitleJustification) {
-		case J_LEFT :
+		case TJ_UNDEF:
+			/* Can't happen; fallthru to TJ_LEFT */
+			fprintf(stderr, "%s(): Unexpected Scr->TitleJustification %d, "
+			        "treating as left\n", __func__, Scr->TitleJustification);
+		case TJ_LEFT:
 			tmp_win->name_x = Scr->TBInfo.titlex;
 			if(Scr->use3Dtitles) {
 				tmp_win->name_x += Scr->TitleShadowDepth + 2;
 			}
 			break;
-		case J_CENTER :
+		case TJ_CENTER:
 			tmp_win->name_x = Scr->TBInfo.titlex + (titlew - tmp_win->name_width) / 2;
 			break;
-		case J_RIGHT :
+		case TJ_RIGHT:
 			/*
 			 * XXX Since this pushes the end of the name way over to the
 			 * right, there's no room for the right highlight window.
 			 * But shrinking down the size of that is how the titlebar
-			 * gets squeezed for SqueezeTitle.  So if J_RIGHT, the
+			 * gets squeezed for SqueezeTitle.  So if TJ_RIGHT, the
 			 * titlebar will never get squeezed.
 			 */
 			tmp_win->name_x = Scr->TBInfo.titlex + titlew - tmp_win->name_width;
@@ -841,7 +847,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 
 	/*
 	 * Adjust for sanity.  Make sure it's always no earlier than the
-	 * start of the titlebar (possible especially in the J_CENTER case,
+	 * start of the titlebar (possible especially in the TJ_CENTER case,
 	 * but also theoretically if you set a negative ShadowDepth, which
 	 * would be stupid and might break other stuff).  In the 3d case,
 	 * allow twice the ShadowDepth (once for the shadow itself, the
@@ -1005,11 +1011,11 @@ CreateHighlightWindows(TwmWindow *tmp_win)
                               Scr->TBInfo.width, h, \
                               0, Scr->d_depth, CopyFromParent, \
                               Scr->d_visual, valuemask, &attributes)
-	if(Scr->TitleJustification != J_LEFT) {
+	if(Scr->TitleJustification != TJ_LEFT) {
 		tmp_win->hilite_wl = MKWIN();
 		XStoreName(dpy, tmp_win->hilite_wl, "hilite_wl");
 	}
-	if(Scr->TitleJustification != J_RIGHT) {
+	if(Scr->TitleJustification != TJ_RIGHT) {
 		tmp_win->hilite_wr = MKWIN();
 		XStoreName(dpy, tmp_win->hilite_wr, "hilite_wr");
 	}
@@ -1102,11 +1108,11 @@ CreateLowlightWindows(TwmWindow *tmp_win)
                               Scr->TBInfo.width, h, \
                               0, Scr->d_depth, CopyFromParent, \
                               Scr->d_visual, valuemask, &attributes)
-	if(Scr->TitleJustification != J_LEFT) {
+	if(Scr->TitleJustification != TJ_LEFT) {
 		tmp_win->lolite_wl = MKWIN();
 		XStoreName(dpy, tmp_win->lolite_wl, "lolite_wl");
 	}
-	if(Scr->TitleJustification != J_RIGHT) {
+	if(Scr->TitleJustification != TJ_RIGHT) {
 		tmp_win->lolite_wr = MKWIN();
 		XStoreName(dpy, tmp_win->lolite_wr, "lolite_wr");
 	}

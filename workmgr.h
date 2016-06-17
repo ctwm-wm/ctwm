@@ -31,10 +31,12 @@
 #define MAPSTATE      0
 #define BUTTONSSTATE  1
 
-#define STYLE_NORMAL    0
-#define STYLE_STYLE1    1
-#define STYLE_STYLE2    2
-#define STYLE_STYLE3    3
+typedef enum {
+	STYLE_NORMAL,
+	STYLE_STYLE1,
+	STYLE_STYLE2,
+	STYLE_STYLE3,
+} ButtonStyle;
 
 struct winList {
 	struct WorkSpace    *wlist;
@@ -61,7 +63,7 @@ struct WorkSpaceMgr {
 	int             lines, columns;
 	bool            noshowoccupyall;
 	int             initialstate;
-	short           buttonStyle;
+	ButtonStyle     buttonStyle;
 	name_list       *windowBackgroundL;
 	name_list       *windowForegroundL;
 	/* The fields below have been moved from WorkSpaceWindow */

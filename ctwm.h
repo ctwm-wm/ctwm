@@ -206,20 +206,56 @@ struct TBWindow {
 	TitleButton *info;                  /* description of this window */
 };
 
+
+typedef enum {
+	SIJ_LEFT,
+	SIJ_CENTER,
+	SIJ_RIGHT,
+} SIJust;
+
 struct SqueezeInfo {
-	int justify;                        /* left, center, right */
+	SIJust justify;
 	int num;                            /* signed pixel count or numerator */
 	int denom;                          /* 0 for pix count or denominator */
 };
 
-/* Justifications */
-#define J_UNDEF                 0
-#define J_LEFT                  1
-#define J_CENTER                2
-#define J_RIGHT                 3
-#define J_BORDER                4
-#define J_TOP                   5
-#define J_BOTTOM                6
+
+/*
+ * Type for IconRegion alignment and config entries relating
+ *
+ * Misspeelt for hysterical raisins
+ */
+typedef enum {
+	IRA_UNDEF,
+	IRA_TOP,
+	IRA_CENTER,
+	IRA_BOTTOM,
+	IRA_BORDER,
+} IRAlignement;
+
+/*
+ * Justification for title stuff.  Window titles (TitleJustification),
+ * icon titles (IconJustification).  _Not_ the same as for
+ * IconRegionJustification.
+ */
+typedef enum {
+	TJ_UNDEF,
+	TJ_LEFT,
+	TJ_CENTER,
+	TJ_RIGHT,
+} TitleJust;
+
+/*
+ * And IconRegion Justification's.
+ */
+typedef enum {
+	IRJ_UNDEF,
+	IRJ_LEFT,
+	IRJ_CENTER,
+	IRJ_RIGHT,
+	IRJ_BORDER,
+} IRJust;
+
 
 /* Colormap window entry for each window in WM_COLORMAP_WINDOWS
  * ICCCM property.

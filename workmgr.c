@@ -2392,10 +2392,10 @@ static void PaintButton(int which,
 		             cp, state, true, false);
 
 		switch(Scr->workSpaceMgr.buttonStyle) {
-			case STYLE_NORMAL :
+			case STYLE_NORMAL:
 				break;
 
-			case STYLE_STYLE1 :
+			case STYLE_STYLE1:
 				Draw3DBorder(w,
 				             Scr->WMgrButtonShadowDepth - 1,
 				             Scr->WMgrButtonShadowDepth - 1,
@@ -2404,7 +2404,7 @@ static void PaintButton(int which,
 				             1, cp, (state == on) ? off : on, true, false);
 				break;
 
-			case STYLE_STYLE2 :
+			case STYLE_STYLE2:
 				Draw3DBorder(w,
 				             Scr->WMgrButtonShadowDepth / 2,
 				             Scr->WMgrButtonShadowDepth / 2,
@@ -2413,7 +2413,7 @@ static void PaintButton(int which,
 				             1, cp, (state == on) ? off : on, true, false);
 				break;
 
-			case STYLE_STYLE3 :
+			case STYLE_STYLE3:
 				Draw3DBorder(w,
 				             1,
 				             1,

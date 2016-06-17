@@ -216,7 +216,7 @@ void MapRaised(TwmWindow *tmp_win);
 void RaiseFrame(Window frame);
 void FocusOnRoot(void);
 void TryToPack(TwmWindow *tmp_win, int *x, int *y);
-void TryToPush(TwmWindow *tmp_win, int x, int y, int dir);
+void TryToPush(TwmWindow *tmp_win, int x, int y);
 void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);

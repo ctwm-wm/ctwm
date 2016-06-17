@@ -45,13 +45,15 @@ static uint32_t *buffer_32bpp;
 Image *
 GetJpegImage(const char *name)
 {
+	ColorPair dummy = {0};
+
 	/* Non-animated */
 	if(! strchr(name, '%')) {
 		return (LoadJpegImage(name));
 	}
 
 	/* Animated */
-	return get_image_anim_cp(name, (ColorPair) {0}, LoadJpegImageCp);
+	return get_image_anim_cp(name, dummy, LoadJpegImageCp);
 }
 
 

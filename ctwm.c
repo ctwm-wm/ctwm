@@ -653,13 +653,13 @@ int main(int argc, char **argv)
 		}
 
 		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
-			if(ir->TitleJustification == J_UNDEF) {
+			if(ir->TitleJustification == TJ_UNDEF) {
 				ir->TitleJustification = Scr->IconJustification;
 			}
-			if(ir->Justification == J_UNDEF) {
+			if(ir->Justification == IRJ_UNDEF) {
 				ir->Justification = Scr->IconRegionJustification;
 			}
-			if(ir->Alignement == J_UNDEF) {
+			if(ir->Alignement == IRA_UNDEF) {
 				ir->Alignement = Scr->IconRegionAlignement;
 			}
 		}
@@ -1014,10 +1014,10 @@ static void InitVariables(void)
 	Scr->DarkShadowContrast  = 40;
 	Scr->BeNiceToColormap = false;
 	Scr->BorderCursors = false;
-	Scr->IconJustification = J_CENTER;
-	Scr->IconRegionJustification = J_CENTER;
-	Scr->IconRegionAlignement = J_CENTER;
-	Scr->TitleJustification = J_LEFT;
+	Scr->IconJustification = TJ_CENTER;
+	Scr->IconRegionJustification = IRJ_CENTER;
+	Scr->IconRegionAlignement = IRA_CENTER;
+	Scr->TitleJustification = TJ_LEFT;
 	Scr->IconifyStyle = ICONIFY_NORMAL;
 	Scr->MaxIconTitleWidth = Scr->rootw;
 	Scr->ReallyMoveInWorkspaceManager = false;

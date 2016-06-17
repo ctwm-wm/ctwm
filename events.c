@@ -2935,7 +2935,7 @@ void HandleButtonRelease(void)
 		if(MoveFunction == F_MOVEPUSH &&
 		                Scr->OpaqueMove &&
 		                DragWindow == Tmp_win->frame) {
-			TryToPush(Tmp_win,  xl,  yt, 0);
+			TryToPush(Tmp_win, xl, yt);
 		}
 		if(MoveFunction == F_MOVEPACK ||
 		                (MoveFunction == F_MOVEPUSH &&
