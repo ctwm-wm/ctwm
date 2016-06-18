@@ -415,7 +415,7 @@ struct ScreenInfo {
 	bool  DontPaintRootWindow;  /* don't paint anything on the root window */
 	bool  BackingStore;         /* use backing store for menus */
 	bool  SaveUnder;            /* use save under's for menus */
-	short RandomPlacement;      /* randomly place windows that no give hints */
+	RandPlac RandomPlacement;   /* randomly place windows that no give hints */
 	short RandomDisplacementX;  /* randomly displace by this much horizontally */
 	short RandomDisplacementY;  /* randomly displace by this much vertically */
 	bool  OpaqueMove;           /* move the window rather than outline */
@@ -484,10 +484,6 @@ extern ScreenInfo *Scr;
 #define PPOS_NON_ZERO 2
 /* may eventually want an option for having the PPosition be the initial
    location for the drag lines */
-
-#define RP_OFF 0
-#define RP_ALL 1
-#define RP_UNMAPPED 2
 
 
 /* XXX should be in iconmgr.h? */

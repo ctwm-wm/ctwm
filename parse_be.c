@@ -32,7 +32,7 @@
 #include "gram.tab.h"
 
 
-static int ParseRandomPlacement(char *s);
+static int ParseRandomPlacement(const char *s);
 static int ParseButtonStyle(char *s);
 static int ParseUsePPosition(char *s);
 
@@ -1715,30 +1715,29 @@ assign_var_savecolor(void)
 	}
 }
 
+
+/*
+ * RandomPlacement [...] parse
+ */
 static int
-ParseRandomPlacement(char *s)
+ParseRandomPlacement(const char *s)
 {
+	/* No first arg -> 'all' */
 	if(s == NULL) {
 		return RP_ALL;
 	}
 	if(strlen(s) == 0) {
 		return RP_ALL;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return RP_ALL;
-	}
-	if(strcasecmp(s, "off") == 0) {
-		return RP_OFF;
-	}
-	if(strcasecmp(s, "on") == 0) {
-		return RP_ALL;
-	}
-	if(strcasecmp(s, "all") == 0) {
-		return RP_ALL;
-	}
-	if(strcasecmp(s, "unmapped") == 0) {
-		return RP_UNMAPPED;
-	}
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return RP_##ret; }
+	CHK(DEFSTRING,  ALL);
+	CHK("on",       ALL);
+	CHK("all",      ALL);
+	CHK("off",      OFF);
+	CHK("unmapped", UNMAPPED);
+#undef CHK
+
 	return (-1);
 }
 

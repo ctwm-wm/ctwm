@@ -257,6 +257,14 @@ typedef enum {
 } IRJust;
 
 
+/* RandomPlacement bits */
+typedef enum {
+	RP_OFF,
+	RP_ALL,
+	RP_UNMAPPED,
+} RandPlac;
+
+
 /* Colormap window entry for each window in WM_COLORMAP_WINDOWS
  * ICCCM property.
  */
