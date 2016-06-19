@@ -34,7 +34,7 @@
 
 static int ParseRandomPlacement(const char *s);
 static int ParseButtonStyle(char *s);
-static int ParseUsePPosition(char *s);
+static int ParseUsePPosition(const char *s);
 
 
 
@@ -1822,27 +1822,21 @@ ParseAlignement(const char *s)
 }
 
 static int
-ParseUsePPosition(char *s)
+ParseUsePPosition(const char *s)
 {
 	if(strlen(s) == 0) {
-		return (-1);
+		return -1;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return PPOS_OFF;
-	}
-	if(strcasecmp(s, "off") == 0) {
-		return PPOS_OFF;
-	}
-	if(strcasecmp(s, "on") == 0) {
-		return PPOS_ON;
-	}
-	if(strcasecmp(s, "non-zero") == 0) {
-		return PPOS_NON_ZERO;
-	}
-	if(strcasecmp(s, "nonzero") == 0) {
-		return PPOS_NON_ZERO;
-	}
-	return (-1);
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return PPOS_##ret; }
+	CHK(DEFSTRING,  OFF);
+	CHK("off",      OFF);
+	CHK("on",       ON);
+	CHK("non-zero", NON_ZERO);
+	CHK("nonzero",  NON_ZERO);
+#undef CHK
+
+	return -1;
 }
 
 static int

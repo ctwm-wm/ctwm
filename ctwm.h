@@ -264,6 +264,17 @@ typedef enum {
 	RP_UNMAPPED,
 } RandPlac;
 
+/* UsePPosition */
+typedef enum {
+	PPOS_OFF,
+	PPOS_ON,
+	PPOS_NON_ZERO,
+	/*
+	 * may eventually want an option for having the PPosition be the
+	 * initial location for the drag lines.
+	 */
+} UsePPoss;
+
 
 /* Colormap window entry for each window in WM_COLORMAP_WINDOWS
  * ICCCM property.

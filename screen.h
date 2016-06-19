@@ -385,7 +385,7 @@ struct ScreenInfo {
 	bool  AutoRaiseDefault;     /* AutoRaise all windows if true */
 	bool  AutoLowerDefault;     /* AutoLower all windows if true */
 	bool  NoDefaults;           /* do not add in default UI stuff */
-	short UsePPosition;         /* what do with PPosition, see values below */
+	UsePPoss UsePPosition;      /* what do with PPosition, see values below */
 	bool  UseSunkTitlePixmap;
 	bool  AutoRelativeResize;   /* start resize relative to position in quad */
 	bool  FocusRoot;            /* is the input focus on the root ? */
@@ -479,11 +479,6 @@ extern int NumScreens;
 extern ScreenInfo **ScreenList;
 extern ScreenInfo *Scr;
 
-#define PPOS_OFF 0
-#define PPOS_ON 1
-#define PPOS_NON_ZERO 2
-/* may eventually want an option for having the PPosition be the initial
-   location for the drag lines */
 
 
 /* XXX should be in iconmgr.h? */
