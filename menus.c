@@ -2004,6 +2004,9 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 			case ICONIFY_SWEEP:
 				SweepWindow(tmp_win, blanket);
 				break;
+			case ICONIFY_NORMAL:
+				/* Placate insufficiently smart clang warning */
+				break;
 		}
 		XDestroyWindow(dpy, blanket);
 	}

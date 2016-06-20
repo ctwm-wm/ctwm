@@ -62,12 +62,14 @@
 #include "vscreen.h"
 #include "workmgr.h"
 
-#define ICONIFY_NORMAL  0
-#define ICONIFY_MOSAIC  1
-#define ICONIFY_ZOOMIN  2
-#define ICONIFY_ZOOMOUT 3
-#define ICONIFY_FADE    4
-#define ICONIFY_SWEEP   5
+typedef enum {
+	ICONIFY_NORMAL,
+	ICONIFY_MOSAIC,
+	ICONIFY_ZOOMIN,
+	ICONIFY_ZOOMOUT,
+	ICONIFY_FADE,
+	ICONIFY_SWEEP,
+} IcStyle;
 
 struct StdCmap {
 	struct StdCmap *next;               /* next link in chain */
@@ -231,7 +233,7 @@ struct ScreenInfo {
 	IRAlignement IconRegionAlignement;
 	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
 	TitleJust TitleJustification;
-	short IconifyStyle;         /* ICONIFY_* */
+	IcStyle IconifyStyle;       /* ICONIFY_* */
 	int   MaxIconTitleWidth;    /* */
 #ifdef EWMH
 	int PreferredIconWidth;     /* Desired icon size: width */
