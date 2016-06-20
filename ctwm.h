@@ -144,7 +144,12 @@
 #define MOD_SIZE        ((ShiftMask | ControlMask | Mod1Mask \
                           | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask) + 1)
 
-/* defines for zooming/unzooming */
+/*
+ * Used for TwmWindow.zoomed.  Var holds the number of the function that
+ * caused zooming, if one has, else ZOOM_NONE.  This mirror F_NOP
+ * currently, but that's OK, because f.nop doesn't do anything, so it
+ * can't be a real cause of zooming.
+ */
 #define ZOOM_NONE 0
 
 #define FBF(fix_fore, fix_back, fix_font)\
