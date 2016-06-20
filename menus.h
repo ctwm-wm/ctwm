@@ -165,10 +165,6 @@ extern int AlternateKeymap;
 #define MAXMENUDEPTH    10      /* max number of nested menus */
 extern int MenuDepth;
 
-#define MOVE_NONE       0       /* modes of constrained move */
-#define MOVE_VERT       1
-#define MOVE_HORIZ      2
-
 #define WARPSCREEN_NEXT "next"
 #define WARPSCREEN_PREV "prev"
 #define WARPSCREEN_BACK "back"

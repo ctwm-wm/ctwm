@@ -47,7 +47,7 @@ char Info[INFO_LINES][INFO_SIZE];
  * Gets used in event handling for ButtonRelease.
  */
 bool ConstMove = false;
-int ConstMoveDir;
+CMoveDir ConstMoveDir;
 int ConstMoveX;
 int ConstMoveY;
 int ConstMoveXL;
