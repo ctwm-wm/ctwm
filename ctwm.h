@@ -287,9 +287,11 @@ struct TwmColormap {
 	int refcnt;
 };
 
+/* TwmColormap.state bit definitions */
 #define CM_INSTALLABLE          1
 #define CM_INSTALLED            2
 #define CM_INSTALL              4
+
 
 struct ColormapWindow {
 	Window w;                   /* Window id */
