@@ -230,20 +230,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		return NULL;
 	}
 
-	switch(iconm) {
-		case ADD_WINDOW_NORMAL:
-			break;
-		case ADD_WINDOW_ICON_MANAGER:
-			break;
-		case  ADD_WINDOW_WINDOWBOX:
-			break;
-		case ADD_WINDOW_WORKSPACE_MANAGER :
-			break;
-		default :
-			/* XXX Unreached? */
-			iconm = ADD_WINDOW_ICON_MANAGER;
-			break;
-	}
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
 	tmp_win->isiconmgr = (iconm == ADD_WINDOW_ICON_MANAGER);
