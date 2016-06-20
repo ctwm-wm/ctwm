@@ -213,7 +213,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	XRectangle logical_rect;
 	WindowBox *winbox;
 	bool isiconm = false;
-	bool iswman = false;
 	Window vroot;
 
 #ifdef DEBUG
@@ -241,7 +240,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		case  ADD_WINDOW_WINDOWBOX:
 			break;
 		case ADD_WINDOW_WORKSPACE_MANAGER :
-			iswman = true;
 			break;
 		default :
 			/* XXX Unreached? */
@@ -252,7 +250,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->zoomed = ZOOM_NONE;
 	tmp_win->isiconmgr = isiconm;
 	tmp_win->iconmgrp = iconp;
-	tmp_win->iswspmgr = iswman;
+	tmp_win->iswspmgr = (iconm == ADD_WINDOW_WORKSPACE_MANAGER);
 	tmp_win->iswinbox = (iconm == ADD_WINDOW_WINDOWBOX);
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
@@ -479,7 +477,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->UnmapByMovingFarAway = t->UnmapByMovingFarAway;
 		}
 	}
-	if((Scr->WindowRingAll && !iswman && !isiconm &&
+	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !isiconm &&
 #ifdef EWMH
 	                EwmhOnWindowRing(tmp_win) &&
 #endif /* EWMH */
@@ -1433,7 +1431,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wShaped = boundingShaped;
 	}
 
-	if(!tmp_win->isiconmgr && ! iswman &&
+	if(!tmp_win->isiconmgr && ! tmp_win->iswspmgr &&
 	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
@@ -1507,7 +1505,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	if(RootFunction) {
 		ReGrab();
 	}
-	if(!iswman) {
+	if(!tmp_win->iswspmgr) {
 		WMapAddWindow(tmp_win);
 	}
 	SetPropsIfCaptiveCtwm(tmp_win);
