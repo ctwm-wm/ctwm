@@ -402,7 +402,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				Scr->SortIconMgr = true;
 
 				if(context == C_ICONMGR) {
-					SortIconManager((IconMgr *) NULL);
+					SortIconManager(NULL);
 				}
 				else if(tmp_win->isiconmgr) {
 					SortIconManager(tmp_win->iconmgrp);
@@ -562,7 +562,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		}
 
 		case F_VERSION:
-			Identify((TwmWindow *) NULL);
+			Identify(NULL);
 			break;
 
 		case F_AUTORAISE:
@@ -2027,7 +2027,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					next->ring.prev = prev;
 				}
 				if(Scr->Ring == tmp_win) {
-					Scr->Ring = (next != tmp_win ? next : (TwmWindow *) NULL);
+					Scr->Ring = (next != tmp_win ? next : NULL);
 				}
 
 				if(!Scr->Ring || Scr->RingLeader == tmp_win) {

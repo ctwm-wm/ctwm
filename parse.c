@@ -304,7 +304,7 @@ ParseStringList(const char **sl)
 {
 	stringListSource = sl;
 	currentString = *sl;
-	return doparse(twmStringListInput, "string list", (char *)NULL);
+	return doparse(twmStringListInput, "string list", NULL);
 }
 
 

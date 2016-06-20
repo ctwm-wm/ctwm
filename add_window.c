@@ -964,7 +964,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 				tmp_win->frame_width  = AddingW;
 				tmp_win->frame_height = AddingH;
-				/*SetFocus ((TwmWindow *) NULL, CurrentTime);*/
+				/*SetFocus (NULL, CurrentTime);*/
 				while(1) {
 					if(Scr->OpenWindowTimeout) {
 						fd = ConnectionNumber(dpy);
@@ -1227,7 +1227,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			next->ring.prev = prev;
 		}
 		if(Scr->Ring == tmp_win) {
-			Scr->Ring = (next != tmp_win ? next : (TwmWindow *) NULL);
+			Scr->Ring = (next != tmp_win ? next : NULL);
 		}
 		if(!Scr->Ring || Scr->RingLeader == tmp_win) {
 			Scr->RingLeader = Scr->Ring;

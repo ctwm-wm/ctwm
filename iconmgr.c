@@ -164,7 +164,7 @@ void CreateIconManagers(void)
 			}
 
 			background = Scr->IconManagerC.back;
-			GetColorFromList(Scr->IconManagerBL, p->name, (XClassHint *)NULL,
+			GetColorFromList(Scr->IconManagerBL, p->name, NULL,
 			                 &background);
 
 			if(p->width  < 1) {

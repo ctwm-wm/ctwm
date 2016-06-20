@@ -526,7 +526,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		oldws->save_focus = Scr->Focus;
 	}
 
-	focuswindow = (TwmWindow *)NULL;
+	focuswindow = NULL;
 	/* For better visual effect, the order or map/unmap is important:
 	   - map from top to bottom.
 	   - unmap from bottom to top.

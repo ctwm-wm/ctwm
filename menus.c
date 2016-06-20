@@ -1753,7 +1753,7 @@ SetLastCursor(Cursor newcur)
 
 void FocusOnRoot(void)
 {
-	SetFocus((TwmWindow *) NULL, LastTimestamp());
+	SetFocus(NULL, LastTimestamp());
 	InstallColormaps(0, &Scr->RootColormaps);
 	if(! Scr->ClickToFocus) {
 		Scr->FocusRoot = true;
@@ -1893,7 +1893,7 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify,
 			}
 			SetMapStateProp(t, IconicState);
 			if(t == Scr->Focus) {
-				SetFocus((TwmWindow *) NULL, LastTimestamp());
+				SetFocus(NULL, LastTimestamp());
 				if(! Scr->ClickToFocus) {
 					Scr->FocusRoot = true;
 				}
@@ -2011,7 +2011,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		XDestroyWindow(dpy, blanket);
 	}
 	if(tmp_win == Scr->Focus) {
-		SetFocus((TwmWindow *) NULL, LastTimestamp());
+		SetFocus(NULL, LastTimestamp());
 		if(! Scr->ClickToFocus) {
 			Scr->FocusRoot = true;
 		}
