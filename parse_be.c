@@ -747,7 +747,7 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_StartInMapState:
-			Scr->workSpaceMgr.initialstate = MAPSTATE;
+			Scr->workSpaceMgr.initialstate = WMS_map;
 			return 1;
 
 		case kw0_NoShowOccupyAll:

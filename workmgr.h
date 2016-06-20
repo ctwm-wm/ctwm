@@ -28,8 +28,11 @@
 #define _CTWM_WORKMGR_H
 
 #define MAXWORKSPACE 32
-#define MAPSTATE      0
-#define BUTTONSSTATE  1
+
+typedef enum {
+	WMS_map,
+	WMS_buttons,
+} WMgrState;
 
 typedef enum {
 	STYLE_NORMAL,
