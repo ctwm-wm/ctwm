@@ -2015,7 +2015,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	wmhints.input         = True;
 	wmhints.initial_state = NormalState;
 	XSetWMHints(dpy, vs->wsw->w, &wmhints);
-	tmp_win = AddWindow(vs->wsw->w, ADD_WINDOW_WORKSPACE_MANAGER,
+	tmp_win = AddWindow(vs->wsw->w, AWT_WORKSPACE_MANAGER,
 	                    Scr->iconmgr, vs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create workspace manager window, exiting...\n");
@@ -2271,7 +2271,7 @@ static void CreateOccupyWindow(void)
 	wmhints.input         = True;
 	wmhints.initial_state = NormalState;
 	XSetWMHints(dpy, w, &wmhints);
-	tmp_win = AddWindow(w, ADD_WINDOW_NORMAL, Scr->iconmgr, Scr->currentvs);
+	tmp_win = AddWindow(w, AWT_NORMAL, Scr->iconmgr, Scr->currentvs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
 		exit(1);

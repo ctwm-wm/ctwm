@@ -2569,7 +2569,7 @@ void HandleMapRequest(void)
 		VirtualScreen *vs = Scr->currentvs;
 
 		Tmp_win = AddWindow(Event.xany.window,
-		                    ADD_WINDOW_NORMAL,
+		                    AWT_NORMAL,
 		                    (IconMgr *) NULL,
 		                    vs);
 		if(Tmp_win == NULL) {

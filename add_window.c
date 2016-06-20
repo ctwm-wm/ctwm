@@ -185,7 +185,8 @@ void GetGravityOffsets(TwmWindow *tmp,  /* window from which to get gravity */
  ***********************************************************************
  */
 
-TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
+TwmWindow *
+AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 {
 	TwmWindow *tmp_win;                 /* new twm window structure */
 	int stat;
@@ -232,10 +233,10 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
-	tmp_win->isiconmgr = (iconm == ADD_WINDOW_ICON_MANAGER);
+	tmp_win->isiconmgr = (wtype == AWT_ICON_MANAGER);
 	tmp_win->iconmgrp = iconp;
-	tmp_win->iswspmgr = (iconm == ADD_WINDOW_WORKSPACE_MANAGER);
-	tmp_win->iswinbox = (iconm == ADD_WINDOW_WINDOWBOX);
+	tmp_win->iswspmgr = (wtype == AWT_WORKSPACE_MANAGER);
+	tmp_win->iswinbox = (wtype == AWT_WINDOWBOX);
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
 	tmp_win->savevs = NULL;
