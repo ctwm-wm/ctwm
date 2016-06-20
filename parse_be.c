@@ -33,7 +33,7 @@
 
 
 static int ParseRandomPlacement(const char *s);
-static int ParseButtonStyle(char *s);
+static int ParseButtonStyle(const char *s);
 static int ParseUsePPosition(const char *s);
 static int ParseIconifyStyle(const char *s);
 
@@ -1825,7 +1825,7 @@ ParseUsePPosition(const char *s)
 }
 
 static int
-ParseButtonStyle(char *s)
+ParseButtonStyle(const char *s)
 {
 	if(s == NULL || strlen(s) == 0) {
 		return -1;
