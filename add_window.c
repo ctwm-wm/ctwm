@@ -212,7 +212,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 	WindowBox *winbox;
-	bool isiconm = false;
 	Window vroot;
 
 #ifdef DEBUG
@@ -235,7 +234,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		case ADD_WINDOW_NORMAL:
 			break;
 		case ADD_WINDOW_ICON_MANAGER:
-			isiconm = true;
 			break;
 		case  ADD_WINDOW_WINDOWBOX:
 			break;
@@ -248,7 +246,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	}
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
-	tmp_win->isiconmgr = isiconm;
+	tmp_win->isiconmgr = (iconm == ADD_WINDOW_ICON_MANAGER);
 	tmp_win->iconmgrp = iconp;
 	tmp_win->iswspmgr = (iconm == ADD_WINDOW_WORKSPACE_MANAGER);
 	tmp_win->iswinbox = (iconm == ADD_WINDOW_WINDOWBOX);
@@ -413,7 +411,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
 	if(Scr->IconifyByUnmapping) {
-		tmp_win->iconify_by_unmapping = isiconm ? false :
+		tmp_win->iconify_by_unmapping = tmp_win->isiconmgr ? false :
 		                                !LookInList(Scr->DontIconify, tmp_win->full_name,
 		                                                &tmp_win->class);
 	}
@@ -477,7 +475,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->UnmapByMovingFarAway = t->UnmapByMovingFarAway;
 		}
 	}
-	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !isiconm &&
+	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !tmp_win->isiconmgr &&
 #ifdef EWMH
 	                EwmhOnWindowRing(tmp_win) &&
 #endif /* EWMH */
