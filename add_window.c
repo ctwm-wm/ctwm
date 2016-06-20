@@ -213,7 +213,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	XRectangle logical_rect;
 	WindowBox *winbox;
 	bool isiconm = false;
-	bool iswinbox = false;
 	bool iswman = false;
 	Window vroot;
 
@@ -240,7 +239,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			isiconm = true;
 			break;
 		case  ADD_WINDOW_WINDOWBOX:
-			iswinbox = true;
 			break;
 		case ADD_WINDOW_WORKSPACE_MANAGER :
 			iswman = true;
@@ -255,7 +253,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->isiconmgr = isiconm;
 	tmp_win->iconmgrp = iconp;
 	tmp_win->iswspmgr = iswman;
-	tmp_win->iswinbox = iswinbox;
+	tmp_win->iswinbox = (iconm == ADD_WINDOW_WINDOWBOX);
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
 	tmp_win->savevs = NULL;
