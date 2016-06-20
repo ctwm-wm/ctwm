@@ -281,7 +281,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			if(ActiveMenu->pinned) {
 				XUnmapWindow(dpy, ActiveMenu->w);
-				ActiveMenu->mapped = UNMAPPED;
+				ActiveMenu->mapped = MRM_UNMAPPED;
 			}
 			else {
 				XWindowAttributes attr;
@@ -291,7 +291,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					menu  = malloc(sizeof(MenuRoot));
 					*menu = *ActiveMenu;
 					menu->pinned = true;
-					menu->mapped = NEVER_MAPPED;
+					menu->mapped = MRM_NEVER;
 					menu->width -= 10;
 					if(menu->pull) {
 						menu->width -= 16 + 10;
@@ -302,7 +302,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				else {
 					menu = ActiveMenu->pmenu;
 				}
-				if(menu->mapped == MAPPED) {
+				if(menu->mapped == MRM_MAPPED) {
 					break;
 				}
 				XGetWindowAttributes(dpy, ActiveMenu->w, &attr);
@@ -310,7 +310,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				menu->y = attr.y;
 				XMoveWindow(dpy, menu->w, menu->x, menu->y);
 				XMapRaised(dpy, menu->w);
-				menu->mapped = MAPPED;
+				menu->mapped = MRM_MAPPED;
 			}
 			PopDownMenu();
 			break;
