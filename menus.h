@@ -83,7 +83,7 @@
  * MenuRoot.mapped - current/past state.
  *
  * XXX Perhaps the NEVER_MAPPED stuff should be pulled out and tracked
- * some other way, and mapped just made into an enum.
+ * some other way, and mapped just made into an bool.
  */
 typedef enum {
 	MRM_NEVER,
