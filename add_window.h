@@ -69,12 +69,15 @@
 extern char NoName[];
 extern bool resizeWhenAdd;
 
+typedef enum {
+	AWT_NORMAL,
+	AWT_ICON_MANAGER,
+	AWT_WINDOWBOX,
+	AWT_WORKSPACE_MANAGER,
+} AWType;
+
 void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
-#define ADD_WINDOW_NORMAL               0
-#define ADD_WINDOW_ICON_MANAGER         1
-#define ADD_WINDOW_WINDOWBOX            2
-#define ADD_WINDOW_WORKSPACE_MANAGER    3
-TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp,
+TwmWindow *AddWindow(Window w, AWType wtype, IconMgr *iconp,
                      VirtualScreen *vs);
 TwmWindow *GetTwmWindow(Window w);
 bool MappedNotOverride(Window w);

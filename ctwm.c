@@ -518,7 +518,7 @@ int main(int argc, char **argv)
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
 		if(FirstScreen) {
-			SetFocus((TwmWindow *)NULL, CurrentTime);
+			SetFocus(NULL, CurrentTime);
 
 			/* define cursors */
 
@@ -1204,7 +1204,7 @@ void Reborder(Time mytime)
 	}
 	Scr = savedScreen;
 	XUngrabServer(dpy);
-	SetFocus((TwmWindow *)NULL, mytime);
+	SetFocus(NULL, mytime);
 }
 
 SIGNAL_T Done(int signum)

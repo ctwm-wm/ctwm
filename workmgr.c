@@ -114,7 +114,7 @@ void InitWorkSpaceManager(void)
 {
 	Scr->workSpaceMgr.count         = 0;
 	Scr->workSpaceMgr.workSpaceList = NULL;
-	Scr->workSpaceMgr.initialstate  = BUTTONSSTATE;
+	Scr->workSpaceMgr.initialstate  = WMS_buttons;
 	Scr->workSpaceMgr.geometry      = NULL;
 	Scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
 	Scr->workSpaceMgr.windowcp.back = Scr->White;
@@ -165,7 +165,7 @@ void ConfigureWorkSpaceManager(void)
 		 * e.g.  f.menu "TwmWindows".)
 		 */
 		WorkSpaceWindow *wsw = calloc(1, sizeof(WorkSpaceWindow));
-		wsw->state = Scr->workSpaceMgr.initialstate; /* BUTTONSSTATE */
+		wsw->state = Scr->workSpaceMgr.initialstate;
 		vs->wsw = wsw;
 	}
 }
@@ -526,7 +526,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		oldws->save_focus = Scr->Focus;
 	}
 
-	focuswindow = (TwmWindow *)NULL;
+	focuswindow = NULL;
 	/* For better visual effect, the order or map/unmap is important:
 	   - map from top to bottom.
 	   - unmap from bottom to top.
@@ -626,7 +626,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		SetFocusVisualAttributes(focuswindow, true);
 	}
 	vs->wsw->currentwspc = newws;
-	if(Scr->ReverseCurrentWorkspace && vs->wsw->state == MAPSTATE) {
+	if(Scr->ReverseCurrentWorkspace && vs->wsw->state == WMS_map) {
 		MapSubwindow *msw = vs->wsw->mswl [oldws->number];
 		for(winl = msw->wl; winl != NULL; winl = winl->next) {
 			WMapRedrawName(vs, winl);
@@ -636,7 +636,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 			WMapRedrawName(vs, winl);
 		}
 	}
-	else if(vs->wsw->state == BUTTONSSTATE) {
+	else if(vs->wsw->state == WMS_buttons) {
 		ButtonSubwindow *bsw = vs->wsw->bswl [oldws->number];
 		PaintButton(WSPCWINDOW, vs, bsw->w, oldws->label, oldws->cp, off);
 		bsw = vs->wsw->bswl [newws->number];
@@ -1963,7 +1963,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 		                                    Dummy /* width */, Dummy /* height */,
 		                                    1, border, ws->cp.back);
 
-		if(vs->wsw->state == BUTTONSSTATE) {
+		if(vs->wsw->state == WMS_buttons) {
 			XMapWindow(dpy, butsw);
 		}
 		else {
@@ -2015,7 +2015,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	wmhints.input         = True;
 	wmhints.initial_state = NormalState;
 	XSetWMHints(dpy, vs->wsw->w, &wmhints);
-	tmp_win = AddWindow(vs->wsw->w, ADD_WINDOW_WORKSPACE_MANAGER,
+	tmp_win = AddWindow(vs->wsw->w, AWT_WORKSPACE_MANAGER,
 	                    Scr->iconmgr, vs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create workspace manager window, exiting...\n");
@@ -2069,7 +2069,7 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 	WorkSpace *ws;
 	Window buttonw;
 
-	if(vs->wsw->state == BUTTONSSTATE) {
+	if(vs->wsw->state == WMS_buttons) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			buttonw = vs->wsw->bswl [ws->number]->w;
 			if(event->xexpose.window == buttonw) {
@@ -2271,7 +2271,7 @@ static void CreateOccupyWindow(void)
 	wmhints.input         = True;
 	wmhints.initial_state = NormalState;
 	XSetWMHints(dpy, w, &wmhints);
-	tmp_win = AddWindow(w, ADD_WINDOW_NORMAL, Scr->iconmgr, Scr->currentvs);
+	tmp_win = AddWindow(w, AWT_NORMAL, Scr->iconmgr, Scr->currentvs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
 		exit(1);
@@ -2609,7 +2609,7 @@ AddToClientsList(char *workspace, char *client)
 
 void WMapToggleState(VirtualScreen *vs)
 {
-	if(vs->wsw->state == BUTTONSSTATE) {
+	if(vs->wsw->state == WMS_buttons) {
 		WMapSetMapState(vs);
 	}
 	else {
@@ -2621,14 +2621,14 @@ void WMapSetMapState(VirtualScreen *vs)
 {
 	WorkSpace     *ws;
 
-	if(vs->wsw->state == MAPSTATE) {
+	if(vs->wsw->state == WMS_map) {
 		return;
 	}
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		XUnmapWindow(dpy, vs->wsw->bswl [ws->number]->w);
 		XMapWindow(dpy, vs->wsw->mswl [ws->number]->w);
 	}
-	vs->wsw->state = MAPSTATE;
+	vs->wsw->state = WMS_map;
 	MaybeAnimate = true;
 }
 
@@ -2636,14 +2636,14 @@ void WMapSetButtonsState(VirtualScreen *vs)
 {
 	WorkSpace     *ws;
 
-	if(vs->wsw->state == BUTTONSSTATE) {
+	if(vs->wsw->state == WMS_buttons) {
 		return;
 	}
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		XUnmapWindow(dpy, vs->wsw->mswl [ws->number]->w);
 		XMapWindow(dpy, vs->wsw->bswl [ws->number]->w);
 	}
-	vs->wsw->state = BUTTONSSTATE;
+	vs->wsw->state = WMS_buttons;
 }
 
 /*
@@ -2975,7 +2975,7 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 		}
 		return;
 	}
-	if(vs->wsw->state == MAPSTATE) {
+	if(vs->wsw->state == WMS_map) {
 		return;
 	}
 
@@ -3047,7 +3047,7 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	modifier = event->xbutton.state;
 	etime    = event->xbutton.time;
 
-	if(vs->wsw->state == BUTTONSSTATE) {
+	if(vs->wsw->state == WMS_buttons) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			if(vs->wsw->bswl [ws->number]->w == parent) {
 				break;
@@ -3806,7 +3806,7 @@ AnimateRoot(void)
 		}
 
 		for(vs = scr->vScreenList; vs != NULL; vs = vs->next) {
-			if(vs->wsw->state == BUTTONSSTATE) {
+			if(vs->wsw->state == WMS_buttons) {
 				continue;
 			}
 			for(ws = scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {

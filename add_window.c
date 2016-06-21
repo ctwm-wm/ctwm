@@ -185,7 +185,8 @@ void GetGravityOffsets(TwmWindow *tmp,  /* window from which to get gravity */
  ***********************************************************************
  */
 
-TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
+TwmWindow *
+AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 {
 	TwmWindow *tmp_win;                 /* new twm window structure */
 	int stat;
@@ -212,8 +213,6 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 	WindowBox *winbox;
-	bool iswinbox = false;
-	bool iswman = false;
 	Window vroot;
 
 #ifdef DEBUG
@@ -232,30 +231,12 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		return NULL;
 	}
 
-	switch(iconm) {
-		case ADD_WINDOW_NORMAL:
-			break;
-		case ADD_WINDOW_ICON_MANAGER:
-			/* iconm remains nonzero */
-			break;
-		case  ADD_WINDOW_WINDOWBOX:
-			iswinbox = true;
-			iconm  = 0;
-			break;
-		case ADD_WINDOW_WORKSPACE_MANAGER :
-			iswman = true;
-			iconm  = 0;
-			break;
-		default :
-			iconm = ADD_WINDOW_ICON_MANAGER;
-			break;
-	}
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
-	tmp_win->isiconmgr = iconm;
+	tmp_win->isiconmgr = (wtype == AWT_ICON_MANAGER);
 	tmp_win->iconmgrp = iconp;
-	tmp_win->iswspmgr = iswman;
-	tmp_win->iswinbox = iswinbox;
+	tmp_win->iswspmgr = (wtype == AWT_WORKSPACE_MANAGER);
+	tmp_win->iswinbox = (wtype == AWT_WINDOWBOX);
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
 	tmp_win->savevs = NULL;
@@ -417,7 +398,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
 	if(Scr->IconifyByUnmapping) {
-		tmp_win->iconify_by_unmapping = iconm ? false :
+		tmp_win->iconify_by_unmapping = tmp_win->isiconmgr ? false :
 		                                !LookInList(Scr->DontIconify, tmp_win->full_name,
 		                                                &tmp_win->class);
 	}
@@ -481,7 +462,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->UnmapByMovingFarAway = t->UnmapByMovingFarAway;
 		}
 	}
-	if((Scr->WindowRingAll && !iswman && !iconm &&
+	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !tmp_win->isiconmgr &&
 #ifdef EWMH
 	                EwmhOnWindowRing(tmp_win) &&
 #endif /* EWMH */
@@ -983,7 +964,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 
 				tmp_win->frame_width  = AddingW;
 				tmp_win->frame_height = AddingH;
-				/*SetFocus ((TwmWindow *) NULL, CurrentTime);*/
+				/*SetFocus (NULL, CurrentTime);*/
 				while(1) {
 					if(Scr->OpenWindowTimeout) {
 						fd = ConnectionNumber(dpy);
@@ -1246,7 +1227,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 			next->ring.prev = prev;
 		}
 		if(Scr->Ring == tmp_win) {
-			Scr->Ring = (next != tmp_win ? next : (TwmWindow *) NULL);
+			Scr->Ring = (next != tmp_win ? next : NULL);
 		}
 		if(!Scr->Ring || Scr->RingLeader == tmp_win) {
 			Scr->RingLeader = Scr->Ring;
@@ -1435,7 +1416,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wShaped = boundingShaped;
 	}
 
-	if(!tmp_win->isiconmgr && ! iswman &&
+	if(!tmp_win->isiconmgr && ! tmp_win->iswspmgr &&
 	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
@@ -1509,7 +1490,7 @@ TwmWindow *AddWindow(Window w, int iconm, IconMgr *iconp, VirtualScreen *vs)
 	if(RootFunction) {
 		ReGrab();
 	}
-	if(!iswman) {
+	if(!tmp_win->iswspmgr) {
 		WMapAddWindow(tmp_win);
 	}
 	SetPropsIfCaptiveCtwm(tmp_win);

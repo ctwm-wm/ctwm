@@ -721,7 +721,7 @@ MenuRoot *NewMenuRoot(char *name)
 	tmp->defaultitem = NULL;
 	tmp->items = 0;
 	tmp->width = 0;
-	tmp->mapped = NEVER_MAPPED;
+	tmp->mapped = MRM_NEVER;
 	tmp->pull = false;
 	tmp->w = None;
 	tmp->shadow = None;
@@ -932,7 +932,7 @@ void MakeMenu(MenuRoot *mr)
 	Scr->EntryHeight = Scr->MenuFont.height + 4;
 
 	/* lets first size the window accordingly */
-	if(mr->mapped == NEVER_MAPPED) {
+	if(mr->mapped == MRM_NEVER) {
 		int max_entry_height = 0;
 
 		if(mr->pull == true) {
@@ -1016,7 +1016,7 @@ void MakeMenu(MenuRoot *mr)
 		XSaveContext(dpy, mr->w, MenuContext, (XPointer)mr);
 		XSaveContext(dpy, mr->w, ScreenContext, (XPointer)Scr);
 
-		mr->mapped = UNMAPPED;
+		mr->mapped = MRM_UNMAPPED;
 	}
 
 	if(Scr->use3Dmenus && (Scr->Monochrome == COLOR)
@@ -1229,7 +1229,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		menu->last = NULL;
 		menu->items = 0;
 		menu->width = 0;
-		menu->mapped = NEVER_MAPPED;
+		menu->mapped = MRM_NEVER;
 		menu->highlight.fore = UNUSED_PIXEL;
 		menu->highlight.back = UNUSED_PIXEL;
 		if(menu == Scr->Windows) {
@@ -1416,7 +1416,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		menu->last = NULL;
 		menu->items = 0;
 		menu->width = 0;
-		menu->mapped = NEVER_MAPPED;
+		menu->mapped = MRM_NEVER;
 		menu->highlight.fore = UNUSED_PIXEL;
 		menu->highlight.back = UNUSED_PIXEL;
 
@@ -1466,7 +1466,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	}
 
 	/* Prevent recursively bringing up menus. */
-	if((!menu->pinned) && (menu->mapped == MAPPED)) {
+	if((!menu->pinned) && (menu->mapped == MRM_MAPPED)) {
 		return false;
 	}
 
@@ -1478,7 +1478,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 	if(menu->pinned) {
 		ActiveMenu    = menu;
-		menu->mapped  = MAPPED;
+		menu->mapped  = MRM_MAPPED;
 		menu->entered = true;
 		MenuOrigins [MenuDepth].x = menu->x;
 		MenuOrigins [MenuDepth].y = menu->y;
@@ -1498,7 +1498,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
 
 	ActiveMenu = menu;
-	menu->mapped = MAPPED;
+	menu->mapped = MRM_MAPPED;
 	menu->entered = false;
 
 	if(center) {
@@ -1609,7 +1609,7 @@ void HideMenu(MenuRoot *menu)
 		XUnmapWindow(dpy, menu->shadow);
 	}
 	XUnmapWindow(dpy, menu->w);
-	menu->mapped = UNMAPPED;
+	menu->mapped = MRM_UNMAPPED;
 }
 
 /***********************************************************************
@@ -1753,7 +1753,7 @@ SetLastCursor(Cursor newcur)
 
 void FocusOnRoot(void)
 {
-	SetFocus((TwmWindow *) NULL, LastTimestamp());
+	SetFocus(NULL, LastTimestamp());
 	InstallColormaps(0, &Scr->RootColormaps);
 	if(! Scr->ClickToFocus) {
 		Scr->FocusRoot = true;
@@ -1893,7 +1893,7 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify,
 			}
 			SetMapStateProp(t, IconicState);
 			if(t == Scr->Focus) {
-				SetFocus((TwmWindow *) NULL, LastTimestamp());
+				SetFocus(NULL, LastTimestamp());
 				if(! Scr->ClickToFocus) {
 					Scr->FocusRoot = true;
 				}
@@ -2004,11 +2004,14 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 			case ICONIFY_SWEEP:
 				SweepWindow(tmp_win, blanket);
 				break;
+			case ICONIFY_NORMAL:
+				/* Placate insufficiently smart clang warning */
+				break;
 		}
 		XDestroyWindow(dpy, blanket);
 	}
 	if(tmp_win == Scr->Focus) {
-		SetFocus((TwmWindow *) NULL, LastTimestamp());
+		SetFocus(NULL, LastTimestamp());
 		if(! Scr->ClickToFocus) {
 			Scr->FocusRoot = true;
 		}

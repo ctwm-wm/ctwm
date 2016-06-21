@@ -62,12 +62,14 @@
 #include "vscreen.h"
 #include "workmgr.h"
 
-#define ICONIFY_NORMAL  0
-#define ICONIFY_MOSAIC  1
-#define ICONIFY_ZOOMIN  2
-#define ICONIFY_ZOOMOUT 3
-#define ICONIFY_FADE    4
-#define ICONIFY_SWEEP   5
+typedef enum {
+	ICONIFY_NORMAL,
+	ICONIFY_MOSAIC,
+	ICONIFY_ZOOMIN,
+	ICONIFY_ZOOMOUT,
+	ICONIFY_FADE,
+	ICONIFY_SWEEP,
+} IcStyle;
 
 struct StdCmap {
 	struct StdCmap *next;               /* next link in chain */
@@ -231,7 +233,7 @@ struct ScreenInfo {
 	IRAlignement IconRegionAlignement;
 	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
 	TitleJust TitleJustification;
-	short IconifyStyle;         /* ICONIFY_* */
+	IcStyle IconifyStyle;       /* ICONIFY_* */
 	int   MaxIconTitleWidth;    /* */
 #ifdef EWMH
 	int PreferredIconWidth;     /* Desired icon size: width */
@@ -385,7 +387,7 @@ struct ScreenInfo {
 	bool  AutoRaiseDefault;     /* AutoRaise all windows if true */
 	bool  AutoLowerDefault;     /* AutoLower all windows if true */
 	bool  NoDefaults;           /* do not add in default UI stuff */
-	short UsePPosition;         /* what do with PPosition, see values below */
+	UsePPoss UsePPosition;      /* what do with PPosition, see values below */
 	bool  UseSunkTitlePixmap;
 	bool  AutoRelativeResize;   /* start resize relative to position in quad */
 	bool  FocusRoot;            /* is the input focus on the root ? */
@@ -415,7 +417,7 @@ struct ScreenInfo {
 	bool  DontPaintRootWindow;  /* don't paint anything on the root window */
 	bool  BackingStore;         /* use backing store for menus */
 	bool  SaveUnder;            /* use save under's for menus */
-	short RandomPlacement;      /* randomly place windows that no give hints */
+	RandPlac RandomPlacement;   /* randomly place windows that no give hints */
 	short RandomDisplacementX;  /* randomly displace by this much horizontally */
 	short RandomDisplacementY;  /* randomly displace by this much vertically */
 	bool  OpaqueMove;           /* move the window rather than outline */
@@ -479,15 +481,6 @@ extern int NumScreens;
 extern ScreenInfo **ScreenList;
 extern ScreenInfo *Scr;
 
-#define PPOS_OFF 0
-#define PPOS_ON 1
-#define PPOS_NON_ZERO 2
-/* may eventually want an option for having the PPosition be the initial
-   location for the drag lines */
-
-#define RP_OFF 0
-#define RP_ALL 1
-#define RP_UNMAPPED 2
 
 
 /* XXX should be in iconmgr.h? */

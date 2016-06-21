@@ -164,7 +164,7 @@ void CreateIconManagers(void)
 			}
 
 			background = Scr->IconManagerC.back;
-			GetColorFromList(Scr->IconManagerBL, p->name, (XClassHint *)NULL,
+			GetColorFromList(Scr->IconManagerBL, p->name, NULL,
 			                 &background);
 
 			if(p->width  < 1) {
@@ -184,7 +184,7 @@ void CreateIconManagers(void)
 			wmhints.input         = True;
 			wmhints.flags         = InputHint | StateHint;
 			XSetWMHints(dpy, p->w, &wmhints);
-			p->twm_win = AddWindow(p->w, ADD_WINDOW_ICON_MANAGER, p, Scr->currentvs);
+			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
 			 * SetupOccupation() called from AddWindow() doesn't setup
 			 * occupation for icon managers, nor clear vs if occupation lacks.

@@ -1027,7 +1027,7 @@ void HandleVisibilityNotify(void)
 	                 cwin->visibility == VisibilityFullyObscured) &&
 	                cmap->w == cwin->w) {
 		cwin->visibility = vevent->state;
-		InstallWindowColormaps(VisibilityNotify, (TwmWindow *) NULL);
+		InstallWindowColormaps(VisibilityNotify, NULL);
 	}
 	else {
 		cwin->visibility = vevent->state;
@@ -2345,7 +2345,7 @@ static void remove_window_from_ring(TwmWindow *tmp)
 		next->ring.prev = prev;
 	}
 	if(Scr->Ring == tmp) {
-		Scr->Ring = (next != tmp ? next : (TwmWindow *) NULL);
+		Scr->Ring = (next != tmp ? next : NULL);
 	}
 
 	if(!Scr->Ring || Scr->RingLeader == tmp) {
@@ -2387,7 +2387,7 @@ void HandleDestroyNotify(void)
 	EwmhSet_NET_CLIENT_LIST_STACKING();
 #endif /* EWMH */
 	if(Tmp_win == Scr->Focus) {
-		Scr->Focus = (TwmWindow *) NULL;
+		Scr->Focus = NULL;
 		FocusOnRoot();
 	}
 	if(Scr->SaveWorkspaceFocus) {
@@ -2569,8 +2569,8 @@ void HandleMapRequest(void)
 		VirtualScreen *vs = Scr->currentvs;
 
 		Tmp_win = AddWindow(Event.xany.window,
-		                    ADD_WINDOW_NORMAL,
-		                    (IconMgr *) NULL,
+		                    AWT_NORMAL,
+		                    NULL,
 		                    vs);
 		if(Tmp_win == NULL) {
 			return;
@@ -3701,7 +3701,7 @@ void HandleEnterNotify(void)
 			}
 			XGetInputFocus(dpy, &forus_ret, &focus_rev);
 			if((forus_ret != PointerRoot) && (forus_ret != None)) {
-				SetFocus((TwmWindow *) NULL, Event.xcrossing.time);
+				SetFocus(NULL, Event.xcrossing.time);
 			}
 			return;
 		}
@@ -3732,7 +3732,7 @@ void HandleEnterNotify(void)
 
 				if(XFindContext(dpy, Tmp_win->w, ColormapContext,
 				                (XPointer *)&cwin) == XCNOENT) {
-					cwin = (ColormapWindow *)NULL;
+					cwin = NULL;
 				}
 
 				if((ewp->detail != NotifyInferior
@@ -4139,7 +4139,7 @@ void HandleLeaveNotify(void)
 #endif
 				}
 			}
-			Scr->RingLeader = (TwmWindow *) NULL;
+			Scr->RingLeader = NULL;
 		}
 		if(Scr->FocusRoot) {
 
@@ -4157,7 +4157,7 @@ void HandleLeaveNotify(void)
 				if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
 					if(Scr->TitleFocus ||
 					                Tmp_win->protocols & DoesWmTakeFocus) {
-						SetFocus((TwmWindow *) NULL, Event.xcrossing.time);
+						SetFocus(NULL, Event.xcrossing.time);
 					}
 					/* pretend there was a focus out as sometimes
 					   * we don't get one. */
@@ -4172,7 +4172,7 @@ void HandleLeaveNotify(void)
 						return;
 					}
 					if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
-						SetFocus((TwmWindow *) NULL, Event.xcrossing.time);
+						SetFocus(NULL, Event.xcrossing.time);
 					}
 					if(Event.xcrossing.focus) {
 						SynthesiseFocusOut(Tmp_win->w);

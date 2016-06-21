@@ -32,9 +32,10 @@
 #include "gram.tab.h"
 
 
-static int ParseRandomPlacement(char *s);
-static int ParseButtonStyle(char *s);
-static int ParseUsePPosition(char *s);
+static int ParseRandomPlacement(const char *s);
+static int ParseButtonStyle(const char *s);
+static int ParseUsePPosition(const char *s);
+static int ParseIconifyStyle(const char *s);
 
 
 
@@ -746,7 +747,7 @@ do_single_keyword(int keyword)
 			return 1;
 
 		case kw0_StartInMapState:
-			Scr->workSpaceMgr.initialstate = MAPSTATE;
+			Scr->workSpaceMgr.initialstate = WMS_map;
 			return 1;
 
 		case kw0_NoShowOccupyAll:
@@ -1148,30 +1149,14 @@ do_string_keyword(int keyword, char *s)
 		}
 
 		case kws_IconifyStyle: {
-			if(strlen(s) == 0) {
+			int style = ParseIconifyStyle(s);
+
+			if(style < 0) {
 				twmrc_error_prefix();
 				fprintf(stderr, "ignoring invalid IconifyStyle argument \"%s\"\n", s);
 			}
-			if(strcasecmp(s, DEFSTRING) == 0) {
-				Scr->IconifyStyle = ICONIFY_NORMAL;
-			}
-			if(strcasecmp(s, "normal") == 0) {
-				Scr->IconifyStyle = ICONIFY_NORMAL;
-			}
-			if(strcasecmp(s, "mosaic") == 0) {
-				Scr->IconifyStyle = ICONIFY_MOSAIC;
-			}
-			if(strcasecmp(s, "zoomin") == 0) {
-				Scr->IconifyStyle = ICONIFY_ZOOMIN;
-			}
-			if(strcasecmp(s, "zoomout") == 0) {
-				Scr->IconifyStyle = ICONIFY_ZOOMOUT;
-			}
-			if(strcasecmp(s, "fade") == 0) {
-				Scr->IconifyStyle = ICONIFY_FADE;
-			}
-			if(strcasecmp(s, "sweep") == 0) {
-				Scr->IconifyStyle = ICONIFY_SWEEP;
+			else {
+				Scr->IconifyStyle = style;
 			}
 			return 1;
 		}
@@ -1715,30 +1700,29 @@ assign_var_savecolor(void)
 	}
 }
 
+
+/*
+ * RandomPlacement [...] parse
+ */
 static int
-ParseRandomPlacement(char *s)
+ParseRandomPlacement(const char *s)
 {
+	/* No first arg -> 'all' */
 	if(s == NULL) {
 		return RP_ALL;
 	}
 	if(strlen(s) == 0) {
 		return RP_ALL;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return RP_ALL;
-	}
-	if(strcasecmp(s, "off") == 0) {
-		return RP_OFF;
-	}
-	if(strcasecmp(s, "on") == 0) {
-		return RP_ALL;
-	}
-	if(strcasecmp(s, "all") == 0) {
-		return RP_ALL;
-	}
-	if(strcasecmp(s, "unmapped") == 0) {
-		return RP_UNMAPPED;
-	}
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return RP_##ret; }
+	CHK(DEFSTRING,  ALL);
+	CHK("on",       ALL);
+	CHK("all",      ALL);
+	CHK("off",      OFF);
+	CHK("unmapped", UNMAPPED);
+#undef CHK
+
 	return (-1);
 }
 
@@ -1823,31 +1807,25 @@ ParseAlignement(const char *s)
 }
 
 static int
-ParseUsePPosition(char *s)
+ParseUsePPosition(const char *s)
 {
 	if(strlen(s) == 0) {
-		return (-1);
+		return -1;
 	}
-	if(strcasecmp(s, DEFSTRING) == 0) {
-		return PPOS_OFF;
-	}
-	if(strcasecmp(s, "off") == 0) {
-		return PPOS_OFF;
-	}
-	if(strcasecmp(s, "on") == 0) {
-		return PPOS_ON;
-	}
-	if(strcasecmp(s, "non-zero") == 0) {
-		return PPOS_NON_ZERO;
-	}
-	if(strcasecmp(s, "nonzero") == 0) {
-		return PPOS_NON_ZERO;
-	}
-	return (-1);
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return PPOS_##ret; }
+	CHK(DEFSTRING,  OFF);
+	CHK("off",      OFF);
+	CHK("on",       ON);
+	CHK("non-zero", NON_ZERO);
+	CHK("nonzero",  NON_ZERO);
+#undef CHK
+
+	return -1;
 }
 
 static int
-ParseButtonStyle(char *s)
+ParseButtonStyle(const char *s)
 {
 	if(s == NULL || strlen(s) == 0) {
 		return -1;
@@ -1859,6 +1837,26 @@ ParseButtonStyle(char *s)
 	CHK("style1",  STYLE1);
 	CHK("style2",  STYLE2);
 	CHK("style3",  STYLE3);
+#undef CHK
+
+	return -1;
+}
+
+static int
+ParseIconifyStyle(const char *s)
+{
+	if(s == NULL || strlen(s) == 0) {
+		return -1;
+	}
+
+#define CHK(str, ret) if(strcasecmp(s, str) == 0) { return ICONIFY_##ret; }
+	CHK(DEFSTRING, NORMAL);
+	CHK("normal",  NORMAL);
+	CHK("mosaic",  MOSAIC);
+	CHK("zoomin",  ZOOMIN);
+	CHK("zoomout", ZOOMOUT);
+	CHK("fade",    FADE);
+	CHK("sweet",   SWEEP);
 #undef CHK
 
 	return -1;

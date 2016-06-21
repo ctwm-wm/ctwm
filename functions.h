@@ -9,9 +9,16 @@
 bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                      XEvent *eventp, int context, bool pulldown);
 
+
+typedef enum {
+	MOVE_NONE,
+	MOVE_VERT,
+	MOVE_HORIZ,
+} CMoveDir;
+
 /* Needed in events.c */
 extern bool ConstMove;
-extern int ConstMoveDir;
+extern CMoveDir ConstMoveDir;
 extern int ConstMoveX;
 extern int ConstMoveY;
 

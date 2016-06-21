@@ -78,6 +78,20 @@
 #define TWM_KEYS        "TwmKeys"       /* for f.menu "TwmKeys"    */
 #define TWM_VISIBLE     "TwmVisible"    /* for f.menu "TwmVisible" */
 
+
+/*
+ * MenuRoot.mapped - current/past state.
+ *
+ * XXX Perhaps the NEVER_MAPPED stuff should be pulled out and tracked
+ * some other way, and mapped just made into an bool.
+ */
+typedef enum {
+	MRM_NEVER,
+	MRM_UNMAPPED,
+	MRM_MAPPED,
+} MRMapState;
+
+
 struct MenuItem {
 	struct MenuItem *next;      /* next menu item */
 	struct MenuItem *prev;      /* prev menu item */
@@ -107,7 +121,7 @@ struct MenuRoot {
 	Window w;                   /* the window of the menu */
 	Window shadow;              /* the shadow window */
 	ColorPair highlight;        /* highlight colors */
-	short mapped;               /* NEVER_MAPPED, UNMAPPED, or MAPPED */
+	MRMapState mapped;          /* whether ever/currently mapped */
 	short height;               /* height of the menu */
 	short width;                /* width of the menu */
 	short items;                /* number of items in the menu */
@@ -118,10 +132,6 @@ struct MenuRoot {
 	bool  pinned;               /* is this a pinned menu*/
 	struct MenuRoot *pmenu;     /* the associated pinned menu */
 };
-
-#define NEVER_MAPPED    0       /* constants for mapped field of MenuRoot */
-#define UNMAPPED        1
-#define MAPPED          2
 
 
 struct MouseButton {
@@ -164,10 +174,6 @@ extern int AlternateKeymap;
 
 #define MAXMENUDEPTH    10      /* max number of nested menus */
 extern int MenuDepth;
-
-#define MOVE_NONE       0       /* modes of constrained move */
-#define MOVE_VERT       1
-#define MOVE_HORIZ      2
 
 #define WARPSCREEN_NEXT "next"
 #define WARPSCREEN_PREV "prev"

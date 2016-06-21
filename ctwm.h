@@ -144,7 +144,12 @@
 #define MOD_SIZE        ((ShiftMask | ControlMask | Mod1Mask \
                           | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask) + 1)
 
-/* defines for zooming/unzooming */
+/*
+ * Used for TwmWindow.zoomed.  Var holds the number of the function that
+ * caused zooming, if one has, else ZOOM_NONE.  This mirror F_NOP
+ * currently, but that's OK, because f.nop doesn't do anything, so it
+ * can't be a real cause of zooming.
+ */
 #define ZOOM_NONE 0
 
 #define FBF(fix_fore, fix_back, fix_font)\
@@ -257,6 +262,25 @@ typedef enum {
 } IRJust;
 
 
+/* RandomPlacement bits */
+typedef enum {
+	RP_OFF,
+	RP_ALL,
+	RP_UNMAPPED,
+} RandPlac;
+
+/* UsePPosition */
+typedef enum {
+	PPOS_OFF,
+	PPOS_ON,
+	PPOS_NON_ZERO,
+	/*
+	 * may eventually want an option for having the PPosition be the
+	 * initial location for the drag lines.
+	 */
+} UsePPoss;
+
+
 /* Colormap window entry for each window in WM_COLORMAP_WINDOWS
  * ICCCM property.
  */
@@ -268,9 +292,11 @@ struct TwmColormap {
 	int refcnt;
 };
 
+/* TwmColormap.state bit definitions */
 #define CM_INSTALLABLE          1
 #define CM_INSTALLED            2
 #define CM_INSTALL              4
+
 
 struct ColormapWindow {
 	Window w;                   /* Window id */
