@@ -147,7 +147,7 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	/*
 	 * First, check to see if the window is in a region's client list
 	 */
-	ie = 0;
+	ie = NULL;
 	for(ir = Scr->FirstRegion; ir; ir = ir->next) {
 		if(LookInList(ir->clientlist, tmp_win->full_name, &tmp_win->class)) {
 			w = roundUp(iconWidth(tmp_win), ir->stepx);
