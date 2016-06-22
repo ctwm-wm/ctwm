@@ -80,7 +80,8 @@
                         (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
 #define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
 
-static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
+static void
+splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 {
 	IconEntry   *new;
 
@@ -88,7 +89,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 		case D_NORTH:
 		case D_SOUTH:
 			if(w != ie->w) {
-				splitEntry(ie, grav2, grav1, w, ie->h);
+				splitIconRegionEntry(ie, grav2, grav1, w, ie->h);
 			}
 			if(h != ie->h) {
 				new = calloc(1, sizeof(IconEntry));
@@ -110,7 +111,7 @@ static void splitEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 		case D_EAST:
 		case D_WEST:
 			if(h != ie->h) {
-				splitEntry(ie, grav2, grav1, ie->w, h);
+				splitIconRegionEntry(ie, grav2, grav1, ie->w, h);
 			}
 			if(w != ie->w) {
 				new = calloc(1, sizeof(IconEntry));
@@ -188,7 +189,7 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	}
 	oldir = tmp_win->icon->ir;
 	if(ie) {
-		splitEntry(ie, ir->grav1, ir->grav2, w, h);
+		splitIconRegionEntry(ie, ir->grav1, ir->grav2, w, h);
 		ie->used = true;
 		ie->twm_win = tmp_win;
 		switch(ir->Justification) {
