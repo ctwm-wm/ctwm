@@ -276,7 +276,6 @@ IconUp(TwmWindow *tmp_win)
 {
 	int         x, y;
 	int         defx, defy;
-	struct IconRegion *ir;
 
 	/*
 	 * If the client specified a particular location, let's use it (this might
@@ -288,13 +287,16 @@ IconUp(TwmWindow *tmp_win)
 	}
 
 	if(tmp_win->icon_moved) {
+		struct IconRegion *ir;
+		unsigned int iww, iwh;
+
 		if(!XGetGeometry(dpy, tmp_win->icon->w, &JunkRoot, &defx, &defy,
-		                 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth)) {
+		                 &iww, &iwh, &JunkBW, &JunkDepth)) {
 			return;
 		}
 
-		x = defx + ((int) JunkWidth) / 2;
-		y = defy + ((int) JunkHeight) / 2;
+		x = defx + ((int) iww) / 2;
+		y = defy + ((int) iwh) / 2;
 
 		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
 			if(x >= ir->x && x < (ir->x + ir->w) &&
