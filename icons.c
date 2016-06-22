@@ -268,7 +268,7 @@ static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 				return ie;
 			}
 	}
-	return 0;
+	return NULL;
 }
 
 void
@@ -325,7 +325,7 @@ static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir)
 	IconEntry   *ip;
 
 	if(ie == ir->entries) {
-		return 0;
+		return NULL;
 	}
 	for(ip = ir->entries; ip->next != ie; ip = ip->next)
 		;
