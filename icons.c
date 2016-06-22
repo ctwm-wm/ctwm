@@ -984,7 +984,7 @@ int GetIconOffset(Icon *icon)
 	TitleJust justif;
 
 	if(!icon) {
-		return (0);
+		return 0;
 	}
 
 	justif = icon->ir ? icon->ir->TitleJustification : Scr->IconJustification;
