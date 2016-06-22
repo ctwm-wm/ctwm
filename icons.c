@@ -76,9 +76,6 @@
 #include "animate.h"
 #include "image.h"
 
-#define iconWidth(w)    (w->icon->border_width * 2 + \
-                        (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
-#define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
 
 static void
 splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
@@ -137,6 +134,11 @@ static int roundUp(int v, int multiple)
 {
 	return ((v + multiple - 1) / multiple) * multiple;
 }
+
+
+#define iconWidth(w)    (w->icon->border_width * 2 + \
+                        (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
+#define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
 
 static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
                       int *final_x, int *final_y)
@@ -248,6 +250,9 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	}
 	return;
 }
+
+#undef iconWidth
+#undef iconHeight
 
 static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 {
