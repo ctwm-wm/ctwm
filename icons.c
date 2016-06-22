@@ -271,7 +271,8 @@ static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 	return 0;
 }
 
-int IconUp(TwmWindow *tmp_win)
+void
+IconUp(TwmWindow *tmp_win)
 {
 	int         x, y;
 	int         defx, defy;
@@ -283,13 +284,13 @@ int IconUp(TwmWindow *tmp_win)
 	 * icon region.
 	 */
 	if(tmp_win->wmhints && (tmp_win->wmhints->flags & IconPositionHint)) {
-		return (0);
+		return;
 	}
 
 	if(tmp_win->icon_moved) {
 		if(!XGetGeometry(dpy, tmp_win->icon->w, &JunkRoot, &defx, &defy,
 		                 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth)) {
-			return (1);
+			return;
 		}
 
 		x = defx + ((int) JunkWidth) / 2;
@@ -302,7 +303,7 @@ int IconUp(TwmWindow *tmp_win)
 			}
 		}
 		if(!ir) {
-			return (0);        /* outside icon regions, leave alone */
+			return;        /* outside icon regions, leave alone */
 		}
 	}
 
@@ -316,7 +317,7 @@ int IconUp(TwmWindow *tmp_win)
 		tmp_win->icon_moved = false;    /* since we've restored it */
 	}
 	MaybeAnimate = true;
-	return (0);
+	return;
 }
 
 static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir)

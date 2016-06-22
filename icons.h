@@ -107,7 +107,7 @@ struct IconEntry {
 	bool                used;
 };
 
-int IconUp(TwmWindow *tmp_win);
+void IconUp(TwmWindow *tmp_win);
 void IconDown(TwmWindow *tmp_win);
 name_list **AddIconRegion(char *geom, int grav1, int grav2,
                           int stepx, int stepy,
