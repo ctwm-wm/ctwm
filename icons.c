@@ -153,7 +153,7 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 {
 	IconRegion  *ir, *oldir;
 	IconEntry   *ie;
-	int         w = 0, h = 0;
+	int         w, h;
 
 	/*
 	 * First, check to see if the window is in a region's client list
