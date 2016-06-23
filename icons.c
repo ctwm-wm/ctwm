@@ -76,6 +76,8 @@
 #include "animate.h"
 #include "image.h"
 
+static void ReshapeIcon(Icon *icon);
+
 
 static void
 splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
@@ -984,7 +986,8 @@ void ExpandIconTitle(TwmWindow *tmp_win)
 	           icon->w_height - icon->height, True);
 }
 
-void ReshapeIcon(Icon *icon)
+static void
+ReshapeIcon(Icon *icon)
 {
 	int x;
 	XRectangle  rect;
