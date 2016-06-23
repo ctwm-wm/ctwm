@@ -986,6 +986,12 @@ void ExpandIconTitle(TwmWindow *tmp_win)
 	           icon->w_height - icon->height, True);
 }
 
+/*
+ * Setup X Shape'ing around icons and their titles.
+ *
+ * XXX should this be checking HasShape?  It seems to be called
+ * unconditionally...
+ */
 static void
 ReshapeIcon(Icon *icon)
 {
