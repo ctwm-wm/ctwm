@@ -140,8 +140,16 @@ static int roundUp(int v, int multiple)
                         (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
 #define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
 
-static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
-                      int *final_x, int *final_y)
+/*
+ * Figure out where to put a window's icon based on the IconRegion
+ * specifications given in config.  Passed def_[xy] which are used
+ * if we don't find a better location ourselves.  Returns the chosen
+ * location in final_[xy], and also sets the IconRegion in tmp_win->icon
+ * if we chose one.
+ */
+static void
+PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
+          int *final_x, int *final_y)
 {
 	IconRegion  *ir, *oldir;
 	IconEntry   *ie;
@@ -149,28 +157,41 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 
 	/*
 	 * First, check to see if the window is in a region's client list
+	 * (i.e., the win-list on an IconRegion specifier in the config).
 	 */
 	ie = NULL;
 	for(ir = Scr->FirstRegion; ir; ir = ir->next) {
 		if(LookInList(ir->clientlist, tmp_win->full_name, &tmp_win->class)) {
+			/*
+			 * Found one that claims it.  Figure the necessary local
+			 * size, based on the icon's side itself and the grid for
+			 * this IR.
+			 */
 			w = roundUp(iconWidth(tmp_win), ir->stepx);
 			h = roundUp(iconHeight(tmp_win), ir->stepy);
+
+			/* Find a currently-unused region that's big enough */
 			for(ie = ir->entries; ie; ie = ie->next) {
 				if(ie->used) {
 					continue;
 				}
 				if(ie->w >= w && ie->h >= h) {
+					/* Bingo */
 					break;
 				}
 			}
+
+			/* If we found one, we're done here */
 			if(ie) {
 				break;
 			}
 		}
 	}
 
+
 	/*
-	 * If not found in any region's client list, place anywhere
+	 * If we found a slot in a region claiming it, ie is set to the
+	 * IconEntry.  If not, start over and find the first available berth.
 	 */
 	if(!ie) {
 		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
@@ -181,6 +202,7 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 					continue;
 				}
 				if(ie->w >= w && ie->h >= h) {
+					/* Bingo */
 					break;
 				}
 			}
@@ -189,7 +211,15 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 			}
 		}
 	}
+
+	/* Stash for comparison */
 	oldir = tmp_win->icon->ir;
+
+	/*
+	 * If we found an appropriate region, use it.  Else, we have no
+	 * better idea, so use the x/y coords the caller passed us as our
+	 * basis.
+	 */
 	if(ie) {
 		splitIconRegionEntry(ie, ir->grav1, ir->grav2, w, h);
 		ie->used = true;
@@ -237,17 +267,21 @@ static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 		tmp_win->icon->ir = ir;
 	}
 	else {
+		/* No better idea, tell caller to use theirs */
 		*final_x = def_x;
 		*final_y = def_y;
 		tmp_win->icon->ir = NULL;
 		return;
 	}
+
+	/* Alterations if ShrinkIconTitles is set */
 	if(Scr->ShrinkIconTitles && tmp_win->icon->has_title) {
 		*final_x -= GetIconOffset(tmp_win->icon);
 		if(tmp_win->icon->ir != oldir) {
 			ReshapeIcon(tmp_win->icon);
 		}
 	}
+
 	return;
 }
 
