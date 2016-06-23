@@ -274,6 +274,7 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 		*final_y = def_y;
 		tmp_win->icon->ir = NULL;
 		return;
+		/* XXX Should we be doing the below in this case too? */
 	}
 
 	/* Alterations if ShrinkIconTitles is set */
