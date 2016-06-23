@@ -223,9 +223,10 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	 * basis.
 	 */
 	if(ie) {
+		/* XXX whatever sIRE() does */
 		splitIconRegionEntry(ie, ir->grav1, ir->grav2, w, h);
-		ie->used = true;
-		ie->twm_win = tmp_win;
+
+		/* Adjust horizontal positioning based on IconRegionJustification */
 		switch(ir->Justification) {
 			case IRJ_LEFT:
 				*final_x = ie->x;
@@ -246,6 +247,8 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				}
 				break;
 		}
+
+		/* And vertical based on IconRegionAlignement */
 		switch(ir->Alignement) {
 			case IRA_TOP :
 				*final_y = ie->y;
@@ -266,7 +269,11 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				}
 				break;
 		}
+
+		/* Tell the win/icon what region it's in, and the entry what's in it */
 		tmp_win->icon->ir = ir;
+		ie->used = true;
+		ie->twm_win = tmp_win;
 	}
 	else {
 		/* No better idea, tell caller to use theirs */
