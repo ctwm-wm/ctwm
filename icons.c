@@ -82,8 +82,6 @@ static void ReshapeIcon(Icon *icon);
 static void
 splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 {
-	IconEntry   *new;
-
 	switch(grav1) {
 		case D_NORTH:
 		case D_SOUTH:
@@ -91,7 +89,7 @@ splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitIconRegionEntry(ie, grav2, grav1, w, ie->h);
 			}
 			if(h != ie->h) {
-				new = calloc(1, sizeof(IconEntry));
+				IconEntry *new = calloc(1, sizeof(IconEntry));
 				new->next = ie->next;
 				ie->next = new;
 				new->x = ie->x;
@@ -113,7 +111,7 @@ splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				splitIconRegionEntry(ie, grav2, grav1, ie->w, h);
 			}
 			if(w != ie->w) {
-				new = calloc(1, sizeof(IconEntry));
+				IconEntry *new = calloc(1, sizeof(IconEntry));
 				new->next = ie->next;
 				ie->next = new;
 				new->y = ie->y;
