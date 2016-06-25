@@ -2179,8 +2179,6 @@ PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
                                    int w, int h)
 {
-	WindowEntry *new;
-
 	switch(grav1) {
 		case D_NORTH:
 		case D_SOUTH:
@@ -2188,7 +2186,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, w, we->h);
 			}
 			if(h != we->h) {
-				new = calloc(1, sizeof(WindowEntry));
+				WindowEntry *new = calloc(1, sizeof(WindowEntry));
 				new->next = we->next;
 				we->next  = new;
 				new->x    = we->x;
@@ -2210,7 +2208,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				splitWindowRegionEntry(we, grav2, grav1, we->w, h);
 			}
 			if(w != we->w) {
-				new = calloc(1, sizeof(WindowEntry));
+				WindowEntry *new = calloc(1, sizeof(WindowEntry));
 				new->next = we->next;
 				we->next  = new;
 				new->y    = we->y;
