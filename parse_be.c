@@ -1602,13 +1602,13 @@ put_pixel_on_root(Pixel pixel)
 /*
  * do_string_savecolor() save a color from a string in the twmrc file.
  */
-int
+void
 do_string_savecolor(int colormode, char *s)
 {
 	Pixel p;
 	GetColor(colormode, &p, s);
 	put_pixel_on_root(p);
-	return 0;
+	return;
 }
 
 /*
@@ -1620,7 +1620,7 @@ typedef struct _cnode {
 } Cnode, *Cptr;
 static Cptr chead = NULL;
 
-int
+void
 do_var_savecolor(int key)
 {
 	Cptr cptrav, cpnew;
@@ -1639,7 +1639,7 @@ do_var_savecolor(int key)
 		cpnew->next = NULL;
 		cptrav->next = cpnew;
 	}
-	return 0;
+	return;
 }
 
 /*
