@@ -1927,6 +1927,12 @@ WindowRingExclude [{ `win-list` }]::
 WMgrButtonShadowDepth `depth`::
   Control the depth of the shadow of the workspace manager buttons.
 
+WMgrButtonStyle `string`::
+  Sets the style of the workspace manager buttons (when in button rather
+  than map state).  Available options are `normal` (the default 3d look),
+  `style1`, `style2`, and `style3` (which are slightly different 2d
+  looks).
+
 WMgrHorizButtonIndent `nb_pixels`::
   Specifies the horizontal space, in pixel, between the buttons of the workspace
   manager (in button mode).
