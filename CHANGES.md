@@ -110,6 +110,12 @@ remnants of special-case VMS support have been removed.
 1. Added MWMIgnore {} config option to allow selectively disabling
     honoring of some Motif WM hints.
 
+1. Warping to a window now explicitly sets focus on that window.  This
+    would generally (but not always, in the presence of odd X server
+    behavior) have already happened for users with focus following mouse,
+    but now occurs for ClickToFocus users as well.
+    [Alexander Klein]
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted

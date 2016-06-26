@@ -2369,7 +2369,10 @@ WarpToWindow(TwmWindow *t, bool must_raise)
 			GotoWorkSpace(Scr->currentvs, wlist);
 		}
 	}
+
 	XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0, x + t->frame_x, y + t->frame_y);
+	SetFocus(t, LastTimestamp());
+
 #ifdef DEBUG
 	{
 		Window root_return;
