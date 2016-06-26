@@ -1723,7 +1723,7 @@ ParseRandomPlacement(const char *s)
 	CHK("unmapped", UNMAPPED);
 #undef CHK
 
-	return (-1);
+	return -1;
 }
 
 
