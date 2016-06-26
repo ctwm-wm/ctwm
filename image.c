@@ -171,6 +171,7 @@ FreeImage(Image *image)
 
 		/* Cleanup self */
 		im2 = im->next;
+		im->next = NULL;
 		free(im);
 
 		/*
