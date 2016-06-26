@@ -41,9 +41,9 @@ GetImage(const char *name, ColorPair cp)
 	Image *image;
 
 	if(name == NULL) {
-		return (None);
+		return NULL;
 	}
-	image = None;
+	image = NULL;
 
 	list = &Scr->ImageCache;
 	if(0)
@@ -52,55 +52,55 @@ GetImage(const char *name, ColorPair cp)
 #ifdef XPM
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 
-		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
+		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
 			int startn = (name [0] == '@') ? 1 : 4;
-			if((image = GetXpmImage(name + startn, cp)) != None) {
+			if((image = GetXpmImage(name + startn, cp)) != NULL) {
 				AddToList(list, fullname, image);
 			}
 		}
 #else
 		fprintf(stderr, "XPM support disabled, ignoring image %s\n", name);
-		return None;
+		return NULL;
 #endif
 	}
 	else if(strncmp(name, "jpeg:", 5) == 0) {
 #ifdef JPEG
-		if((image = (Image *) LookInNameList(*list, name)) == None) {
-			if((image = GetJpegImage(&name [5])) != None) {
+		if((image = (Image *) LookInNameList(*list, name)) == NULL) {
+			if((image = GetJpegImage(&name [5])) != NULL) {
 				AddToList(list, name, image);
 			}
 		}
 #else
 		fprintf(stderr, "JPEG support disabled, ignoring image %s\n", name);
-		return None;
+		return NULL;
 #endif
 	}
 	else if((strncmp(name, "xwd:", 4) == 0) || (name [0] == '|')) {
 		int startn = (name [0] == '|') ? 0 : 4;
-		if((image = (Image *) LookInNameList(*list, name)) == None) {
-			if((image = GetXwdImage(&name [startn], cp)) != None) {
+		if((image = (Image *) LookInNameList(*list, name)) == NULL) {
+			if((image = GetXwdImage(&name [startn], cp)) != NULL) {
 				AddToList(list, name, image);
 			}
 		}
 	}
 	else if(strncmp(name, ":xpm:", 5) == 0) {
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
+		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
 			image = get_builtin_scalable_pixmap(name, cp);
-			if(image == None) {
+			if(image == NULL) {
 				/* g_b_s_p() already warned */
-				return (None);
+				return NULL;
 			}
 			AddToList(list, fullname, image);
 		}
 	}
 	else if(strncmp(name, "%xpm:", 5) == 0) {
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
+		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
 			image = get_builtin_animated_pixmap(name, cp);
-			if(image == None) {
+			if(image == NULL) {
 				/* g_b_a_p() already warned */
-				return (None);
+				return NULL;
 			}
 			AddToList(list, fullname, image);
 		}
@@ -111,11 +111,11 @@ GetImage(const char *name, ColorPair cp)
 		XGCValues       gcvalues;
 
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
+		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
 			pm = get_builtin_plain_pixmap(name, &width, &height);
 			if(pm == None) {
 				/* g_b_p_p() already warned */
-				return (None);
+				return NULL;
 			}
 			image = AllocImage();
 			image->pixmap = XCreatePixmap(dpy, Scr->Root, width, height, Scr->d_depth);
@@ -134,13 +134,13 @@ GetImage(const char *name, ColorPair cp)
 	}
 	else {
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == None) {
-			if((image = GetBitmapImage(name, cp)) != None) {
+		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
+			if((image = GetBitmapImage(name, cp)) != NULL) {
 				AddToList(list, fullname, image);
 			}
 		}
 	}
-	return (image);
+	return image;
 #undef GIFNLEN
 }
 
@@ -160,7 +160,7 @@ FreeImage(Image *image)
 	Image *im, *im2;
 
 	im = image;
-	while(im != None) {
+	while(im != NULL) {
 		/* Cleanup sub-bits */
 		if(im->pixmap) {
 			XFreePixmap(dpy, im->pixmap);
@@ -277,11 +277,11 @@ get_image_anim_cp(const char *name,
 	/* This shouldn't get called for non-animations */
 	if((stmp = strchr(name, '%')) == NULL) {
 		fprintf(stderr, "%s() called for non-animation '%s'\n", __func__, name);
-		return None;
+		return NULL;
 	}
 	if(stmp[1] == '\0') {
 		fprintf(stderr, "%s(): nothing after %% in '%s'\n", __func__, name);
-		return None;
+		return NULL;
 	}
 	stmp = NULL;
 
@@ -289,7 +289,7 @@ get_image_anim_cp(const char *name,
 	 * For animated requests, we load a series of files, replacing the %
 	 * with numbers in series.
 	 */
-	tail = head = None;
+	tail = head = NULL;
 
 	/* Working copy of the filename split to before/after the % */
 	pref = strdup(name);
@@ -308,7 +308,7 @@ get_image_anim_cp(const char *name,
 			        __func__, name, i, ANIM_PATHLEN);
 			FreeImage(head);
 			free(pref);
-			return None;
+			return NULL;
 		}
 #undef ANIM_PATHLEN
 
@@ -317,16 +317,16 @@ get_image_anim_cp(const char *name,
 		 * [current] tail of the list.
 		 */
 		tmp = imgloader(path, cp);
-		if(tmp == None) {
+		if(tmp == NULL) {
 			break;
 		}
-		tmp->next = None;
+		tmp->next = NULL;
 
 		/*
 		 * If it's the first, it's the head (image) we return, as well as
 		 * our current tail marker (s).  Else, append to that tail.
 		 */
-		if(head == None) {
+		if(head == NULL) {
 			tail = head = tmp;
 		}
 		else {
@@ -337,12 +337,12 @@ get_image_anim_cp(const char *name,
 	free(pref);
 
 	/* Set the tail to loop back to the head */
-	if(tail != None) {
+	if(tail != NULL) {
 		tail->next = head;
 	}
 
 	/* Warn if we got nothing */
-	if(head == None) {
+	if(head == NULL) {
 		fprintf(stderr, "Cannot find any image frames for '%s'\n", name);
 	}
 
