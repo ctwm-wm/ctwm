@@ -1862,7 +1862,7 @@ ParseIconifyStyle(const char *s)
 	return -1;
 }
 
-int
+void
 do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
                  char *name,       /* window name */
                  SIJust justify,   /* left, center, right */
@@ -1874,13 +1874,15 @@ do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
 	if(denom < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "negative SqueezeTitle denominator %d\n", denom);
-		return (1);
+		ParseError = true;
+		return;
 	}
 	if(absnum > denom && denom != 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "SqueezeTitle fraction %d/%d outside window\n",
 		        num, denom);
-		return (1);
+		ParseError = true;
+		return;
 	}
 	/* Process the special cases from the manual here rather than
 	 * each time we calculate the position of the title bar
@@ -1911,14 +1913,15 @@ do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
 			twmrc_error_prefix();
 			fprintf(stderr, "unable to allocate %lu bytes for squeeze info\n",
 			        (unsigned long) sizeof(SqueezeInfo));
-			return (1);
+			ParseError = true;
+			return;
 		}
 		sinfo->justify = justify;
 		sinfo->num = num;
 		sinfo->denom = denom;
 		AddToList(slist, name, sinfo);
 	}
-	return (0);
+	return;
 }
 
 
