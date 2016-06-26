@@ -1204,8 +1204,8 @@ do_number_keyword(int keyword, int num)
 			return 1;
 
 		case kwn_XMoveGrid:
-			if(num <   1) {
-				num =   1;
+			if(num < 1) {
+				num = 1;
 			}
 			if(num > 100) {
 				num = 100;
@@ -1214,8 +1214,8 @@ do_number_keyword(int keyword, int num)
 			return 1;
 
 		case kwn_YMoveGrid:
-			if(num <   1) {
-				num =   1;
+			if(num < 1) {
+				num = 1;
 			}
 			if(num > 100) {
 				num = 100;
@@ -1334,8 +1334,8 @@ do_number_keyword(int keyword, int num)
 			if(Scr->FirstTime) {
 				Scr->ClearShadowContrast = num;
 			}
-			if(Scr->ClearShadowContrast <   0) {
-				Scr->ClearShadowContrast =   0;
+			if(Scr->ClearShadowContrast < 0) {
+				Scr->ClearShadowContrast = 0;
 			}
 			if(Scr->ClearShadowContrast > 100) {
 				Scr->ClearShadowContrast = 100;
@@ -1346,8 +1346,8 @@ do_number_keyword(int keyword, int num)
 			if(Scr->FirstTime) {
 				Scr->DarkShadowContrast = num;
 			}
-			if(Scr->DarkShadowContrast <   0) {
-				Scr->DarkShadowContrast =   0;
+			if(Scr->DarkShadowContrast < 0) {
+				Scr->DarkShadowContrast = 0;
 			}
 			if(Scr->DarkShadowContrast > 100) {
 				Scr->DarkShadowContrast = 100;
