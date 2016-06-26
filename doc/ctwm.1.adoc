@@ -642,6 +642,10 @@ ClearShadowContrast `contrast`::
 [normal]
   Has no effect if `BeNiceToColormap` is active.
 
+ClickToFocus::
+  Focus windows by clicking on them, rather than merely mousing over
+  them.
+
 ClientBorderWidth::
   This variable indicates that border width of a window's frame should be set to
   the initial border width of the window, rather than to the value of
