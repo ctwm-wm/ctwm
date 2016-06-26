@@ -646,293 +646,293 @@ chk_keytable_order(void)
  * action routines called by grammar
  */
 
-int
+bool
 do_single_keyword(int keyword)
 {
 	switch(keyword) {
 		case kw0_NoDefaults:
 			Scr->NoDefaults = true;
-			return 1;
+			return true;
 
 		case kw0_AutoRelativeResize:
 			Scr->AutoRelativeResize = true;
-			return 1;
+			return true;
 
 		case kw0_ForceIcons:
 			if(Scr->FirstTime) {
 				Scr->ForceIcon = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoIconManagers:
 			Scr->NoIconManagers = true;
-			return 1;
+			return true;
 
 		case kw0_InterpolateMenuColors:
 			if(Scr->FirstTime) {
 				Scr->InterpolateMenuColors = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_SortIconManager:
 			if(Scr->FirstTime) {
 				Scr->SortIconMgr = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoGrabServer:
 			Scr->NoGrabServer = true;
-			return 1;
+			return true;
 
 		case kw0_NoMenuShadows:
 			if(Scr->FirstTime) {
 				Scr->Shadow = false;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnMove:
 			if(Scr->FirstTime) {
 				Scr->NoRaiseMove = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnResize:
 			if(Scr->FirstTime) {
 				Scr->NoRaiseResize = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnDeiconify:
 			if(Scr->FirstTime) {
 				Scr->NoRaiseDeicon = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_DontMoveOff:
 			Scr->DontMoveOff = true;
-			return 1;
+			return true;
 
 		case kw0_NoBackingStore:
 			Scr->BackingStore = false;
-			return 1;
+			return true;
 
 		case kw0_NoSaveUnders:
 			Scr->SaveUnder = false;
-			return 1;
+			return true;
 
 		case kw0_RestartPreviousState:
 			RestartPreviousState = true;
-			return 1;
+			return true;
 
 		case kw0_ClientBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->ClientBorderWidth = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoTitleFocus:
 			Scr->TitleFocus = false;
-			return 1;
+			return true;
 
 		case kw0_DecorateTransients:
 			Scr->DecorateTransients = true;
-			return 1;
+			return true;
 
 		case kw0_ShowIconManager:
 			Scr->ShowIconManager = true;
-			return 1;
+			return true;
 
 		case kw0_ShowWorkspaceManager:
 			Scr->ShowWorkspaceManager = true;
-			return 1;
+			return true;
 
 		case kw0_StartInMapState:
 			Scr->workSpaceMgr.initialstate = WMS_map;
-			return 1;
+			return true;
 
 		case kw0_NoShowOccupyAll:
 			Scr->workSpaceMgr.noshowoccupyall = true;
-			return 1;
+			return true;
 
 		case kw0_AutoOccupy:
 			Scr->AutoOccupy = true;
-			return 1;
+			return true;
 
 		case kw0_AutoPriority:
 			Scr->AutoPriority = true;
-			return 1;
+			return true;
 
 		case kw0_TransientHasOccupation:
 			Scr->TransientHasOccupation = true;
-			return 1;
+			return true;
 
 		case kw0_DontPaintRootWindow:
 			Scr->DontPaintRootWindow = true;
-			return 1;
+			return true;
 
 		case kw0_UseSunkTitlePixmap:
 			Scr->UseSunkTitlePixmap = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DBorders:
 			Scr->use3Dborders = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DIconManagers:
 			Scr->use3Diconmanagers = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DMenus:
 			Scr->use3Dmenus = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DTitles:
 			Scr->use3Dtitles = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DWMap:
 			Scr->use3Dwmap = true;
-			return 1;
+			return true;
 
 		case kw0_SunkFocusWindowTitle:
 			Scr->SunkFocusWindowTitle = true;
-			return 1;
+			return true;
 
 		case kw0_BeNiceToColormap:
 			Scr->BeNiceToColormap = true;
-			return 1;
+			return true;
 
 		case kw0_BorderResizeCursors:
 			Scr->BorderCursors = true;
-			return 1;
+			return true;
 
 		case kw0_NoCaseSensitive:
 			Scr->CaseSensitive = false;
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnWarp:
 			Scr->RaiseOnWarp = false;
-			return 1;
+			return true;
 
 		case kw0_RaiseOnWarp:
 			Scr->RaiseOnWarp = true;
-			return 1;
+			return true;
 
 		case kw0_WarpUnmapped:
 			Scr->WarpUnmapped = true;
-			return 1;
+			return true;
 
 		case kw0_WarpRingOnScreen:
 			Scr->WarpRingAnyWhere = false;
-			return 1;
+			return true;
 
 		case kw0_NoIconManagerFocus:
 			Scr->IconManagerFocus = false;
-			return 1;
+			return true;
 
 		case kw0_StayUpMenus:
 			Scr->StayUpMenus = true;
-			return 1;
+			return true;
 
 		case kw0_ClickToFocus:
 			Scr->ClickToFocus = true;
-			return 1;
+			return true;
 
 		case kw0_ReallyMoveInWorkspaceManager:
 			Scr->ReallyMoveInWorkspaceManager = true;
-			return 1;
+			return true;
 
 		case kw0_ShowWinWhenMovingInWmgr:
 			Scr->ShowWinWhenMovingInWmgr = true;
-			return 1;
+			return true;
 
 		case kw0_ReverseCurrentWorkspace:
 			Scr->ReverseCurrentWorkspace = true;
-			return 1;
+			return true;
 
 		case kw0_DontWarpCursorInWMap:
 			Scr->DontWarpCursorInWMap = true;
-			return 1;
+			return true;
 
 		case kw0_CenterFeedbackWindow:
 			Scr->CenterFeedbackWindow = true;
-			return 1;
+			return true;
 
 		case kw0_WarpToDefaultMenuEntry:
 			Scr->WarpToDefaultMenuEntry = true;
-			return 1;
+			return true;
 
 		case kw0_ShrinkIconTitles:
 			Scr->ShrinkIconTitles = true;
-			return 1;
+			return true;
 
 		case kw0_AutoRaiseIcons:
 			Scr->AutoRaiseIcons = true;
-			return 1;
+			return true;
 
 		/* kai */
 		case kw0_AutoFocusToTransients:
 			Scr->AutoFocusToTransients = true;
-			return 1;
+			return true;
 
 		case kw0_use3DIconBorders:
 			Scr->use3Diconborders = true;
-			return 1;
+			return true;
 
 		case kw0_ShortAllWindowsMenus:
 			Scr->ShortAllWindowsMenus = true;
-			return 1;
+			return true;
 
 		case kw0_RaiseWhenAutoUnSqueeze:
 			Scr->RaiseWhenAutoUnSqueeze = true;
-			return 1;
+			return true;
 
 		case kw0_RaiseOnClick:
 			Scr->RaiseOnClick = true;
-			return 1;
+			return true;
 
 		case kw0_IgnoreLockModifier:
 			Scr->IgnoreModifier |= LockMask;
-			return 1;
+			return true;
 
 		case kw0_PackNewWindows:
 			Scr->PackNewWindows = true;
-			return 1;
+			return true;
 
 		case kw0_IgnoreCaseInMenuSelection:
 			Scr->IgnoreCaseInMenuSelection = true;
-			return 1;
+			return true;
 
 		case kw0_SloppyFocus:
 			Scr->SloppyFocus = true;
-			return 1;
+			return true;
 
 		case kw0_SaveWorkspaceFocus:
 			Scr->SaveWorkspaceFocus = true;
-			return 1;
+			return true;
 
 		case kw0_NoImagesInWorkSpaceManager:
 			Scr->NoImagesInWorkSpaceManager = true;
-			return 1;
+			return true;
 
 		case kw0_NoWarpToMenuTitle:
 			Scr->NoWarpToMenuTitle = true;
-			return 1;
+			return true;
 
 		case kw0_DontShowWelcomeWindow:
 			Scr->ShowWelcomeWindow = false;
-			return 1;
+			return true;
 
 		case kw0_DontToggleWorkspacemanagerState:
 			Scr->DontToggleWorkspaceManagerState = true;
-			return 1;
+			return true;
 
 	}
-	return 0;
+	return false;
 }
 
 
-int
+bool
 do_string_string_keyword(int keyword, char *s1, char *s2)
 {
 	switch(keyword) {
@@ -949,7 +949,7 @@ do_string_string_keyword(int keyword, char *s1, char *s2)
 		}
 		{
 			if(s2 == NULL) {
-				return 1;
+				return true;
 			}
 			JunkMask = XParseGeometry(s2, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
 #ifdef DEBUG
@@ -967,14 +967,14 @@ do_string_string_keyword(int keyword, char *s1, char *s2)
 				Scr->RandomDisplacementX = JunkX;
 				Scr->RandomDisplacementY = JunkY;
 			}
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 
-int
+bool
 do_string_keyword(int keyword, char *s)
 {
 	switch(keyword) {
@@ -988,62 +988,62 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->UsePPosition = ppos;
 			}
-			return 1;
+			return true;
 		}
 
 		case kws_IconFont:
 			if(!Scr->HaveFonts) {
 				Scr->IconFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_ResizeFont:
 			if(!Scr->HaveFonts) {
 				Scr->SizeFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_MenuFont:
 			if(!Scr->HaveFonts) {
 				Scr->MenuFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_WorkSpaceFont:
 			if(!Scr->HaveFonts) {
 				Scr->workSpaceMgr.windowFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_TitleFont:
 			if(!Scr->HaveFonts) {
 				Scr->TitleBarFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_IconManagerFont:
 			if(!Scr->HaveFonts) {
 				Scr->IconManagerFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_UnknownIcon:
 			if(Scr->FirstTime) {
 				Scr->UnknownImage = GetImage(s, Scr->IconC);
 			}
-			return 1;
+			return true;
 
 		case kws_IconDirectory:
 			if(Scr->FirstTime) {
 				Scr->IconDirectory = ExpandFilePath(s);
 			}
-			return 1;
+			return true;
 
 		case kws_PixmapDirectory:
 			if(Scr->FirstTime) {
 				Scr->PixmapDirectory = ExpandFilePath(s);
 			}
-			return 1;
+			return true;
 
 		case kws_MaxWindowSize:
 			JunkMask = XParseGeometry(s, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
@@ -1051,16 +1051,16 @@ do_string_keyword(int keyword, char *s)
 			                (WidthValue | HeightValue)) {
 				twmrc_error_prefix();
 				fprintf(stderr, "bad MaxWindowSize \"%s\"\n", s);
-				return 0;
+				return false;
 			}
 			if(JunkWidth == 0 || JunkHeight == 0) {
 				twmrc_error_prefix();
 				fprintf(stderr, "MaxWindowSize \"%s\" must be non-zero\n", s);
-				return 0;
+				return false;
 			}
 			Scr->MaxWindowWidth = JunkWidth;
 			Scr->MaxWindowHeight = JunkHeight;
-			return 1;
+			return true;
 
 		case kws_IconJustification: {
 			int just = ParseTitleJustification(s);
@@ -1073,7 +1073,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconJustification = just;
 			}
-			return 1;
+			return true;
 		}
 		case kws_IconRegionJustification: {
 			int just = ParseIRJustification(s);
@@ -1086,7 +1086,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconRegionJustification = just;
 			}
-			return 1;
+			return true;
 		}
 		case kws_IconRegionAlignement: {
 			int just = ParseAlignement(s);
@@ -1099,7 +1099,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconRegionAlignement = just;
 			}
-			return 1;
+			return true;
 		}
 
 		case kws_TitleJustification: {
@@ -1113,7 +1113,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->TitleJustification = just;
 			}
-			return 1;
+			return true;
 		}
 		case kws_RplaySoundHost:
 		case kws_SoundHost:
@@ -1132,7 +1132,7 @@ do_string_keyword(int keyword, char *s)
 				        (keyword == kws_RplaySoundHost ? "Rplay" : ""));
 #endif
 			}
-			return 1;
+			return true;
 
 		case kws_WMgrButtonStyle: {
 			int style = ParseButtonStyle(s);
@@ -1145,7 +1145,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->workSpaceMgr.buttonStyle = style;
 			}
-			return 1;
+			return true;
 		}
 
 		case kws_IconifyStyle: {
@@ -1158,7 +1158,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconifyStyle = style;
 			}
-			return 1;
+			return true;
 		}
 
 #ifdef EWMH
@@ -1173,35 +1173,35 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->PreferredIconHeight = Scr->PreferredIconWidth = 48;
 			}
-			return 1;
+			return true;
 #endif
 	}
-	return 0;
+	return false;
 }
 
 
-int
+bool
 do_number_keyword(int keyword, int num)
 {
 	switch(keyword) {
 		case kwn_ConstrainedMoveTime:
 			ConstrainedMoveTime = num;
-			return 1;
+			return true;
 
 		case kwn_MoveDelta:
 			Scr->MoveDelta = num;
-			return 1;
+			return true;
 
 		case kwn_MoveOffResistance:
 			Scr->MoveOffResistance = num;
-			return 1;
+			return true;
 
 		case kwn_MovePackResistance:
 			if(num < 0) {
 				num = 20;
 			}
 			Scr->MovePackResistance = num;
-			return 1;
+			return true;
 
 		case kwn_XMoveGrid:
 			if(num < 1) {
@@ -1211,7 +1211,7 @@ do_number_keyword(int keyword, int num)
 				num = 100;
 			}
 			Scr->XMoveGrid = num;
-			return 1;
+			return true;
 
 		case kwn_YMoveGrid:
 			if(num < 1) {
@@ -1221,77 +1221,77 @@ do_number_keyword(int keyword, int num)
 				num = 100;
 			}
 			Scr->YMoveGrid = num;
-			return 1;
+			return true;
 
 		case kwn_XorValue:
 			if(Scr->FirstTime) {
 				Scr->XORvalue = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_FramePadding:
 			if(Scr->FirstTime) {
 				Scr->FramePadding = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitlePadding:
 			if(Scr->FirstTime) {
 				Scr->TitlePadding = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_ButtonIndent:
 			if(Scr->FirstTime) {
 				Scr->ButtonIndent = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_ThreeDBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->ThreeDBorderWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderWidth:
 			if(Scr->FirstTime) {
 				Scr->BorderWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_IconBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->IconBorderWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitleButtonBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->TBInfo.border = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_RaiseDelay:
 			RaiseDelay = num;
-			return 1;
+			return true;
 
 		case kwn_TransientOnTop:
 			if(Scr->FirstTime) {
 				Scr->TransientOnTop = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_OpaqueMoveThreshold:
 			if(Scr->FirstTime) {
 				Scr->OpaqueMoveThreshold = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_OpaqueResizeThreshold:
 			if(Scr->FirstTime) {
 				Scr->OpaqueResizeThreshold = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_WMgrVertButtonIndent:
 			if(Scr->FirstTime) {
@@ -1302,7 +1302,7 @@ do_number_keyword(int keyword, int num)
 			}
 			Scr->workSpaceMgr.vspace = Scr->WMgrVertButtonIndent;
 			Scr->workSpaceMgr.occupyWindow->vspace = Scr->WMgrVertButtonIndent;
-			return 1;
+			return true;
 
 		case kwn_WMgrHorizButtonIndent:
 			if(Scr->FirstTime) {
@@ -1313,7 +1313,7 @@ do_number_keyword(int keyword, int num)
 			}
 			Scr->workSpaceMgr.hspace = Scr->WMgrHorizButtonIndent;
 			Scr->workSpaceMgr.occupyWindow->hspace = Scr->WMgrHorizButtonIndent;
-			return 1;
+			return true;
 
 		case kwn_WMgrButtonShadowDepth:
 			if(Scr->FirstTime) {
@@ -1322,13 +1322,13 @@ do_number_keyword(int keyword, int num)
 			if(Scr->WMgrButtonShadowDepth < 1) {
 				Scr->WMgrButtonShadowDepth = 1;
 			}
-			return 1;
+			return true;
 
 		case kwn_MaxIconTitleWidth:
 			if(Scr->FirstTime) {
 				Scr->MaxIconTitleWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_ClearShadowContrast:
 			if(Scr->FirstTime) {
@@ -1340,7 +1340,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->ClearShadowContrast > 100) {
 				Scr->ClearShadowContrast = 100;
 			}
-			return 1;
+			return true;
 
 		case kwn_DarkShadowContrast:
 			if(Scr->FirstTime) {
@@ -1352,14 +1352,14 @@ do_number_keyword(int keyword, int num)
 			if(Scr->DarkShadowContrast > 100) {
 				Scr->DarkShadowContrast = 100;
 			}
-			return 1;
+			return true;
 
 		case kwn_AnimationSpeed:
 			if(num < 0) {
 				num = 0;
 			}
 			SetAnimationSpeed(num);
-			return 1;
+			return true;
 
 		case kwn_BorderShadowDepth:
 			if(Scr->FirstTime) {
@@ -1368,7 +1368,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderShadowDepth < 0) {
 				Scr->BorderShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderLeft:
 			if(Scr->FirstTime) {
@@ -1377,7 +1377,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderLeft < 0) {
 				Scr->BorderLeft = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderRight:
 			if(Scr->FirstTime) {
@@ -1386,7 +1386,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderRight < 0) {
 				Scr->BorderRight = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderTop:
 			if(Scr->FirstTime) {
@@ -1395,7 +1395,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderTop < 0) {
 				Scr->BorderTop = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderBottom:
 			if(Scr->FirstTime) {
@@ -1404,7 +1404,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderBottom < 0) {
 				Scr->BorderBottom = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitleButtonShadowDepth:
 			if(Scr->FirstTime) {
@@ -1413,7 +1413,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->TitleButtonShadowDepth < 0) {
 				Scr->TitleButtonShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitleShadowDepth:
 			if(Scr->FirstTime) {
@@ -1422,7 +1422,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->TitleShadowDepth < 0) {
 				Scr->TitleShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_IconManagerShadowDepth:
 			if(Scr->FirstTime) {
@@ -1431,7 +1431,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->IconManagerShadowDepth < 0) {
 				Scr->IconManagerShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_MenuShadowDepth:
 			if(Scr->FirstTime) {
@@ -1440,7 +1440,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->MenuShadowDepth < 0) {
 				Scr->MenuShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_OpenWindowTimeout:
 			if(Scr->FirstTime) {
@@ -1449,7 +1449,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->OpenWindowTimeout < 0) {
 				Scr->OpenWindowTimeout = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_RaiseOnClickButton:
 			if(Scr->FirstTime) {
@@ -1461,12 +1461,12 @@ do_number_keyword(int keyword, int num)
 			if(Scr->RaiseOnClickButton > MAX_BUTTONS) {
 				Scr->RaiseOnClickButton = MAX_BUTTONS;
 			}
-			return 1;
+			return true;
 
 
 	}
 
-	return 0;
+	return false;
 }
 
 name_list **
@@ -1530,41 +1530,41 @@ do_colorlist_keyword(int keyword, int colormode, char *s)
 	return NULL;
 }
 
-int
+bool
 do_color_keyword(int keyword, int colormode, char *s)
 {
 	switch(keyword) {
 		case kwc_DefaultForeground:
 			GetColor(colormode, &Scr->DefaultC.fore, s);
-			return 1;
+			return true;
 
 		case kwc_DefaultBackground:
 			GetColor(colormode, &Scr->DefaultC.back, s);
-			return 1;
+			return true;
 
 		case kwc_MenuForeground:
 			GetColor(colormode, &Scr->MenuC.fore, s);
-			return 1;
+			return true;
 
 		case kwc_MenuBackground:
 			GetColor(colormode, &Scr->MenuC.back, s);
-			return 1;
+			return true;
 
 		case kwc_MenuTitleForeground:
 			GetColor(colormode, &Scr->MenuTitleC.fore, s);
-			return 1;
+			return true;
 
 		case kwc_MenuTitleBackground:
 			GetColor(colormode, &Scr->MenuTitleC.back, s);
-			return 1;
+			return true;
 
 		case kwc_MenuShadowColor:
 			GetColor(colormode, &Scr->MenuShadowColor, s);
-			return 1;
+			return true;
 
 	}
 
-	return 0;
+	return false;
 }
 
 /*
