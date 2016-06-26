@@ -599,7 +599,7 @@ static TwmKeyword keytable[] = {
 static int numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
 
 int
-parse_keyword(char *s, int *nump)
+parse_keyword(const char *s, int *nump)
 {
 	int lower = 0, upper = numkeywords - 1;
 
@@ -933,7 +933,7 @@ do_single_keyword(int keyword)
 
 
 bool
-do_string_string_keyword(int keyword, char *s1, char *s2)
+do_string_string_keyword(int keyword, const char *s1, const char *s2)
 {
 	switch(keyword) {
 		case kwss_RandomPlacement: {
@@ -1864,7 +1864,7 @@ ParseIconifyStyle(const char *s)
 
 void
 do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
-                 char *name,       /* window name */
+                 const char *name,       /* window name */
                  SIJust justify,   /* left, center, right */
                  int num,          /* signed num */
                  int denom)        /* 0 or indicates fraction denom */
