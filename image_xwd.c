@@ -72,7 +72,7 @@ LoadXwdImage(const char *filename, ColorPair cp)
 	if(filename [0] == '|') {
 		file = (FILE *) popen(filename + 1, "r");
 		if(file == NULL) {
-			return (None);
+			return NULL;
 		}
 		ispipe = 1;
 		if(AnimationActive) {
@@ -82,7 +82,7 @@ LoadXwdImage(const char *filename, ColorPair cp)
 	}
 	fullname = ExpandPixmapPath(filename);
 	if(! fullname) {
-		return (None);
+		return NULL;
 	}
 	file = fopen(fullname, "r");
 	free(fullname);
@@ -90,31 +90,31 @@ LoadXwdImage(const char *filename, ColorPair cp)
 		if(reportfilenotfound) {
 			fprintf(stderr, "unable to locate %s\n", filename);
 		}
-		return (None);
+		return NULL;
 	}
 file_opened:
 	len = fread((char *) &header, sizeof(header), 1, file);
 	if(len != 1) {
 		fprintf(stderr, "ctwm: cannot read %s\n", filename);
-		return (None);
+		return NULL;
 	}
 	if(*(char *) &swaptest) {
 		swaplong((char *) &header, sizeof(header));
 	}
 	if(header.file_version != XWD_FILE_VERSION) {
 		fprintf(stderr, "ctwm: XWD file format version mismatch : %s\n", filename);
-		return (None);
+		return NULL;
 	}
 	win_name_size = header.header_size - sizeof(header);
 	len = fread(win_name, win_name_size, 1, file);
 	if(len != 1) {
 		fprintf(stderr, "file %s has not the correct format\n", filename);
-		return (None);
+		return NULL;
 	}
 
 	if(header.pixmap_format == XYPixmap) {
 		fprintf(stderr, "ctwm: XYPixmap XWD file not supported : %s\n", filename);
-		return (None);
+		return NULL;
 	}
 	w       = header.pixmap_width;
 	h       = header.pixmap_height;
@@ -123,7 +123,7 @@ file_opened:
 	len = fread((char *) xwdcolors, sizeof(XWDColor), ncolors, file);
 	if(len != ncolors) {
 		fprintf(stderr, "file %s has not the correct format\n", filename);
-		return (None);
+		return NULL;
 	}
 	if(*(char *) &swaptest) {
 		for(i = 0; i < ncolors; i++) {
@@ -149,13 +149,13 @@ file_opened:
 	imagedata = malloc(buffer_size);
 	if(! imagedata) {
 		fprintf(stderr, "cannot allocate memory for image %s\n", filename);
-		return (None);
+		return NULL;
 	}
 	len = fread(imagedata, (int) buffer_size, 1, file);
 	if(len != 1) {
 		free(imagedata);
 		fprintf(stderr, "file %s has not the correct format\n", filename);
-		return (None);
+		return NULL;
 	}
 	if(ispipe) {
 		pclose(file);
@@ -167,10 +167,10 @@ file_opened:
 	image = XCreateImage(dpy, visual,  depth, header.pixmap_format,
 	                     0, (char *) imagedata, w, h,
 	                     header.bitmap_pad, header.bytes_per_line);
-	if(image == None) {
+	if(image == NULL) {
 		free(imagedata);
 		fprintf(stderr, "cannot create image for %s\n", filename);
-		return (None);
+		return NULL;
 	}
 	if(header.pixmap_format == ZPixmap) {
 		compress(image, colors, &ncolors);
@@ -198,7 +198,7 @@ file_opened:
 		for(i = 0; i < ncolors; i++) {
 			XFreeColors(dpy, cmap, &(colors [i].pixel), 1, 0L);
 		}
-		return (None);
+		return NULL;
 	}
 	if(header.pixmap_format == XYBitmap) {
 		gcvalues.foreground = cp.fore;
@@ -227,8 +227,8 @@ file_opened:
 
 	ret->pixmap = pixret;
 	ret->mask   = None;
-	ret->next   = None;
-	return (ret);
+	ret->next   = NULL;
+	return ret;
 }
 
 

@@ -89,13 +89,13 @@ LoadJpegImage(const char *name)
 
 	fullname = ExpandPixmapPath(name);
 	if(! fullname) {
-		return (None);
+		return NULL;
 	}
 
 	image = AllocImage();
-	if(image == None) {
+	if(image == NULL) {
 		free(fullname);
-		return (None);
+		return NULL;
 	}
 
 	if((infile = fopen(fullname, "rb")) == NULL) {
@@ -105,7 +105,7 @@ LoadJpegImage(const char *name)
 		fflush(stdout);
 		free(image);
 		free(fullname);
-		return None;
+		return NULL;
 	}
 	free(fullname);
 	cinfo.err = jpeg_std_error(&jerr.pub);
@@ -115,7 +115,7 @@ LoadJpegImage(const char *name)
 		jpeg_destroy_decompress(&cinfo);
 		free(image);
 		fclose(infile);
-		return None;
+		return NULL;
 	}
 	jpeg_create_decompress(&cinfo);
 	jpeg_stdio_src(&cinfo, infile);
@@ -142,13 +142,13 @@ LoadJpegImage(const char *name)
 		fprintf(stderr, "Image %s unsupported depth : %d\n", name, Scr->d_depth);
 		free(image);
 		fclose(infile);
-		return None;
+		return NULL;
 	}
-	if(ximage == None) {
+	if(ximage == NULL) {
 		fprintf(stderr, "cannot create image for %s\n", name);
 		free(image);
 		fclose(infile);
-		return None;
+		return NULL;
 	}
 	g = 0;
 	row_stride = cinfo.output_width * cinfo.output_components;
