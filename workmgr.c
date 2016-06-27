@@ -134,9 +134,9 @@ void InitWorkSpaceManager(void)
 	Scr->workSpaceMgr.curColors.fore  = Scr->White;
 	Scr->workSpaceMgr.defColors.back  = Scr->White;
 	Scr->workSpaceMgr.defColors.fore  = Scr->Black;
-	Scr->workSpaceMgr.curImage        = None;
+	Scr->workSpaceMgr.curImage        = NULL;
 	Scr->workSpaceMgr.curPaint        = false;
-	Scr->workSpaceMgr.defImage        = None;
+	Scr->workSpaceMgr.defImage        = NULL;
 	Scr->workSpaceMgr.vspace          = Scr->WMgrVertButtonIndent;
 	Scr->workSpaceMgr.hspace          = Scr->WMgrHorizButtonIndent;
 	Scr->workSpaceMgr.name            = "WorkSpaceManager";
@@ -232,7 +232,7 @@ void CreateWorkSpaceManager(void)
 		WorkSpaceWindow *wsw = vs->wsw;
 		WorkSpace *ws2 = wsw->currentwspc;
 		MapSubwindow *msw = wsw->mswl [ws2->number];
-		if(Scr->workSpaceMgr.curImage == None) {
+		if(Scr->workSpaceMgr.curImage == NULL) {
 			if(Scr->workSpaceMgr.curPaint) {
 				XSetWindowBackground(dpy, msw->w, Scr->workSpaceMgr.curColors.back);
 			}
@@ -244,7 +244,7 @@ void CreateWorkSpaceManager(void)
 		XClearWindow(dpy, msw->w);
 
 		if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
-			if(ws2->image == None) {
+			if(ws2->image == NULL) {
 				XSetWindowBackground(dpy, vs->window, ws2->backcp.back);
 			}
 			else {
@@ -512,7 +512,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	attr.save_under    = False;
 
 	if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
-		if(newws->image == None) {
+		if(newws->image == NULL) {
 			XSetWindowBackground(dpy, vs->window, newws->backcp.back);
 		}
 		else {
@@ -648,7 +648,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	oldw = vs->wsw->mswl [oldws->number]->w;
 	neww = vs->wsw->mswl [newws->number]->w;
 	if(useBackgroundInfo) {
-		if(oldws->image == None || Scr->NoImagesInWorkSpaceManager) {
+		if(oldws->image == NULL || Scr->NoImagesInWorkSpaceManager) {
 			XSetWindowBackground(dpy, oldw, oldws->backcp.back);
 		}
 		else {
@@ -656,7 +656,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		}
 	}
 	else {
-		if(Scr->workSpaceMgr.defImage == None || Scr->NoImagesInWorkSpaceManager) {
+		if(Scr->workSpaceMgr.defImage == NULL || Scr->NoImagesInWorkSpaceManager) {
 			XSetWindowBackground(dpy, oldw, Scr->workSpaceMgr.defColors.back);
 		}
 		else {
@@ -666,7 +666,7 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	attr.border_pixel = Scr->workSpaceMgr.defBorderColor;
 	XChangeWindowAttributes(dpy, oldw, CWBorderPixel, &attr);
 
-	if(Scr->workSpaceMgr.curImage == None) {
+	if(Scr->workSpaceMgr.curImage == NULL) {
 		if(Scr->workSpaceMgr.curPaint) {
 			XSetWindowBackground(dpy, neww, Scr->workSpaceMgr.curColors.back);
 		}
@@ -804,12 +804,12 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
 		useBackgroundInfo = true;
 	}
-	if((image = GetImage(backpix, ws->backcp)) != None) {
+	if((image = GetImage(backpix, ws->backcp)) != NULL) {
 		ws->image = image;
 		useBackgroundInfo = true;
 	}
 	else {
-		ws->image = None;
+		ws->image = NULL;
 	}
 	ws->next   = NULL;
 	ws->number = wsnum;
@@ -1972,7 +1972,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 
 		vs->wsw->mswl [ws->number]->wl = NULL;
 		if(useBackgroundInfo) {
-			if(ws->image == None || Scr->NoImagesInWorkSpaceManager) {
+			if(ws->image == NULL || Scr->NoImagesInWorkSpaceManager) {
 				XSetWindowBackground(dpy, mapsw, ws->backcp.back);
 			}
 			else {
@@ -1980,7 +1980,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 			}
 		}
 		else {
-			if(Scr->workSpaceMgr.defImage == None || Scr->NoImagesInWorkSpaceManager) {
+			if(Scr->workSpaceMgr.defImage == NULL || Scr->NoImagesInWorkSpaceManager) {
 				XSetWindowBackground(dpy, mapsw, Scr->workSpaceMgr.defColors.back);
 			}
 			else {
@@ -2053,7 +2053,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 
 	ws = Scr->workSpaceMgr.workSpaceList;
 	if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
-		if(ws->image == None) {
+		if(ws->image == NULL) {
 			XSetWindowBackground(dpy, Scr->Root, ws->backcp.back);
 		}
 		else {
@@ -2276,7 +2276,7 @@ static void CreateOccupyWindow(void)
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
 		exit(1);
 	}
-	tmp_win->vs = None;
+	tmp_win->vs = NULL;
 	tmp_win->occupation = 0;
 
 	attrmask = 0;
@@ -3704,7 +3704,7 @@ void WMapCreateCurrentBackGround(char *border,
 	ws->curBorderColor = Scr->Black;
 	ws->curColors.back = Scr->White;
 	ws->curColors.fore = Scr->Black;
-	ws->curImage       = None;
+	ws->curImage       = NULL;
 
 	if(border == NULL) {
 		return;
@@ -3723,7 +3723,7 @@ void WMapCreateCurrentBackGround(char *border,
 	if(pixmap == NULL) {
 		return;
 	}
-	if((image = GetImage(pixmap, Scr->workSpaceMgr.curColors)) == None) {
+	if((image = GetImage(pixmap, Scr->workSpaceMgr.curColors)) == NULL) {
 		fprintf(stderr, "Can't find pixmap %s\n", pixmap);
 		return;
 	}
@@ -3740,7 +3740,7 @@ void WMapCreateDefaultBackGround(char *border,
 	ws->defBorderColor = Scr->Black;
 	ws->defColors.back = Scr->White;
 	ws->defColors.fore = Scr->Black;
-	ws->defImage       = None;
+	ws->defImage       = NULL;
 
 	if(border == NULL) {
 		return;
@@ -3757,7 +3757,7 @@ void WMapCreateDefaultBackGround(char *border,
 	if(pixmap == NULL) {
 		return;
 	}
-	if((image = GetImage(pixmap, ws->defColors)) == None) {
+	if((image = GetImage(pixmap, ws->defColors)) == NULL) {
 		return;
 	}
 	ws->defImage = image;
@@ -3787,7 +3787,7 @@ AnimateRoot(void)
 				continue;
 			}
 			image = vs->wsw->currentwspc->image;
-			if((image == None) || (image->next == None)) {
+			if((image == NULL) || (image->next == NULL)) {
 				continue;
 			}
 			if(scr->DontPaintRootWindow) {
@@ -3812,7 +3812,7 @@ AnimateRoot(void)
 			for(ws = scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 				image = ws->image;
 
-				if((image == None) || (image->next == None)) {
+				if((image == NULL) || (image->next == NULL)) {
 					continue;
 				}
 				if(ws == vs->wsw->currentwspc) {

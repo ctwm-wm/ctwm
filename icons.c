@@ -535,7 +535,7 @@ static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
 		}
 	}
 
-	if((image  = GetImage(icon_name, icon->iconc)) != None) {
+	if((image  = GetImage(icon_name, icon->iconc)) != NULL) {
 		icon->match  = matched;
 		icon->image  = image;
 		icon->width  = image->width;
@@ -558,7 +558,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	int final_x, final_y;
 	int x;
 	Icon        *icon;
-	Image       *image = None;
+	Image       *image = NULL;
 	char        *pattern;
 
 	icon = malloc(sizeof(struct Icon));
@@ -582,7 +582,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	FB(icon->iconc.fore, icon->iconc.back);
 
 	icon->match   = match_none;
-	icon->image   = None;
+	icon->image   = NULL;
 	icon->ir      = NULL;
 
 	tmp_win->forced = false;
@@ -602,9 +602,9 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	/*
 	 * Look to see if there is a _NET_WM_ICON property to provide an icon.
 	 */
-	if(image == None) {
+	if(image == NULL) {
 		image = EwhmGetIcon(Scr, tmp_win);
-		if(image != None) {
+		if(image != NULL) {
 			icon->match   = match_net_wm_icon;
 			icon->width   = image->width;
 			icon->height  = image->height;
@@ -617,7 +617,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	 * that could mean that ForceIcon was not set, or that the window
 	 * was not in the Icons list, now check the WM hints for an icon
 	 */
-	if(image == None && tmp_win->wmhints &&
+	if(image == NULL && tmp_win->wmhints &&
 	                tmp_win->wmhints->flags & IconPixmapHint) {
 		unsigned int IconDepth, IconWidth, IconHeight;
 
@@ -662,12 +662,12 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	/* if we still haven't got an icon, let's look in the Icon list
 	 * if ForceIcon is not set
 	 */
-	if(image == None && !Scr->ForceIcon) {
+	if(image == NULL && !Scr->ForceIcon) {
 		image = LookupIconNameOrClass(tmp_win, icon, &pattern);
 	}
 
 	/* if we still don't have an icon, assign the UnknownIcon */
-	if(image == None && Scr->UnknownImage != None) {
+	if(image == NULL && Scr->UnknownImage != NULL) {
 		image = Scr->UnknownImage;
 		icon->match   = match_unknown_default;
 		icon->width   = image->width;
@@ -675,7 +675,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->image   = image;
 	}
 
-	if(image == None) {
+	if(image == NULL) {
 		icon->height = 0;
 		icon->width  = 0;
 		valuemask    = 0;
@@ -736,7 +736,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 			tmp_win->wmhints->flags &= ~IconWindowHint;
 		}
 		else {
-			image = None;
+			image = NULL;
 			icon->w_not_ours = true;
 			icon->width  = icon->w_width;
 			icon->height = icon->w_height;
@@ -749,7 +749,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->w = None;
 	}
 
-	if((image != None) &&
+	if((image != NULL) &&
 	                image->mask != None &&
 	                (!(tmp_win->wmhints && tmp_win->wmhints->flags & IconWindowHint))) {
 		icon->border_width = 0;
