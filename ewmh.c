@@ -633,7 +633,7 @@ bool EwmhClientMessage(XClientMessageEvent *msg)
  *
  * First scan all sizes. Keep a record of the closest smaller and larger
  * size. At the end, choose from one of those.
- * FInally, go and fetch the pixel data.
+ * Finally, go and fetch the pixel data.
  */
 
 Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
