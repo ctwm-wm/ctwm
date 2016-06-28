@@ -603,7 +603,7 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	 * Look to see if there is a _NET_WM_ICON property to provide an icon.
 	 */
 	if(image == NULL) {
-		image = EwhmGetIcon(Scr, tmp_win);
+		image = EwmhGetIcon(Scr, tmp_win);
 		if(image != NULL) {
 			icon->match   = match_net_wm_icon;
 			icon->width   = image->width;

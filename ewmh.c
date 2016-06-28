@@ -550,7 +550,7 @@ void EwmhTerminate(void)
  * (that's the only selection we have).
  */
 
-void EwhmSelectionClear(XSelectionClearEvent *sev)
+void EwmhSelectionClear(XSelectionClearEvent *sev)
 {
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "sev->window = %x\n", (unsigned)sev->window);
@@ -636,7 +636,7 @@ bool EwmhClientMessage(XClientMessageEvent *msg)
  * FInally, go and fetch the pixel data.
  */
 
-Image *EwhmGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
+Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 {
 	int fetch_offset;
 	Atom actual_type;
@@ -968,7 +968,7 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 		return;
 	}
 
-	Image *image = EwhmGetIcon(Scr, twm_win);
+	Image *image = EwmhGetIcon(Scr, twm_win);
 
 	/* TODO: de-duplicate with handling of XA_WM_HINTS */
 	{
