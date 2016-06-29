@@ -1863,11 +1863,11 @@ ParseIconifyStyle(const char *s)
 }
 
 void
-do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
-                 const char *name,       /* window name */
-                 SIJust justify,   /* left, center, right */
-                 int num,          /* signed num */
-                 int denom)        /* 0 or indicates fraction denom */
+do_squeeze_entry(name_list **slist, // squeeze or dont-squeeze list
+                 const char *name,  // window name
+                 SIJust justify,    // left, center, right
+                 int num,           // signed num
+                 int denom)         // 0 or indicates fraction denom
 {
 	int absnum = (num < 0 ? -num : num);
 
