@@ -4414,7 +4414,7 @@ void HandleSelectionClear(void)
 	XSelectionClearEvent    *sev = (XSelectionClearEvent *) &Event;
 
 	if(sev->window == Scr->icccm_Window) {
-		EwhmSelectionClear(sev);
+		EwmhSelectionClear(sev);
 	}
 }
 #endif

@@ -29,7 +29,7 @@ GetXpmImage(const char *name, ColorPair cp)
 {
 	/* For non-animated requests, just load the file */
 	if(! strchr(name, '%')) {
-		return (LoadXpmImage(name, cp));
+		return LoadXpmImage(name, cp);
 	}
 
 	/* Else it's animated, so load/return the series */
@@ -58,13 +58,13 @@ LoadXpmImage(const char *name, ColorPair cp)
 
 	fullname = ExpandPixmapPath(name);
 	if(! fullname) {
-		return (None);
+		return NULL;
 	}
 
 	image = AllocImage();
-	if(image == None) {
+	if(image == NULL) {
 		free(fullname);
-		return (None);
+		return NULL;
 	}
 
 	attributes.valuemask  = 0;
@@ -94,12 +94,12 @@ LoadXpmImage(const char *name, ColorPair cp)
 		xpmErrorMessage(status, name, fullname);
 		free(fullname);
 		free(image);
-		return (None);
+		return NULL;
 	}
 	free(fullname);
 	image->width  = attributes.width;
 	image->height = attributes.height;
-	return (image);
+	return image;
 }
 
 static void

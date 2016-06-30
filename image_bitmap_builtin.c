@@ -297,23 +297,23 @@ get_builtin_scalable_pixmap(const char *name, ColorPair cp)
 
 	/* Seatbelts */
 	if(!name || (strncmp(name, ":xpm:", 5) != 0)) {
-		return None;
+		return NULL;
 	}
 
 	for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
 		if(strcasecmp(pmtab[i].name, name) == 0) {
 			Image *image = (*pmtab[i].proc)(cp);
-			if(image == None) {
+			if(image == NULL) {
 				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
 				        ProgramName, name);
-				return (None);
+				return NULL;
 			}
 			return image;
 		}
 	}
 
 	fprintf(stderr, "%s:  no such built-in pixmap \"%s\"\n", ProgramName, name);
-	return (None);
+	return NULL;
 }
 
 
@@ -786,16 +786,16 @@ get_builtin_animated_pixmap(const char *name, ColorPair cp)
 
 	/* Seatbelts */
 	if(!name || (strncmp(name, "%xpm:", 5) != 0)) {
-		return None;
+		return NULL;
 	}
 
 	for(i = 0; i < (sizeof pmtab) / (sizeof pmtab[0]); i++) {
 		if(strcasecmp(pmtab[i].name, name) == 0) {
 			Image *image = (*pmtab[i].proc)(cp);
-			if(image == None) {
+			if(image == NULL) {
 				fprintf(stderr, "%s:  unable to build pixmap \"%s\"\n",
 				        ProgramName, name);
-				return (None);
+				return NULL;
 			}
 			return image;
 		}
@@ -821,16 +821,16 @@ Create3DResizeAnimation(bool in, bool left, bool top,
 		h--;
 	}
 
-	image = im1 = None;
+	image = im1 = NULL;
 	for(i = (in ? 0 : (h / 4) - 1); (i < h / 4) && (i >= 0); i += (in ? 1 : -1)) {
 		im = AllocImage();
 		if(! im) {
-			return (None);
+			return NULL;
 		}
 		im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
 		if(im->pixmap == None) {
 			free(im);
-			return (None);
+			return NULL;
 		}
 		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
 		             off, true, false);
@@ -841,8 +841,8 @@ Create3DResizeAnimation(bool in, bool left, bool top,
 		im->mask   = None;
 		im->width  = h;
 		im->height = h;
-		im->next   = None;
-		if(image == None) {
+		im->next   = NULL;
+		if(image == NULL) {
 			image = im1 = im;
 		}
 		else {
@@ -853,7 +853,7 @@ Create3DResizeAnimation(bool in, bool left, bool top,
 	if(im1 != None) {
 		im1->next = image;
 	}
-	return (image);
+	return image;
 }
 
 static Image *
@@ -867,16 +867,16 @@ Create3DMenuAnimation(bool up, ColorPair cp)
 		h--;
 	}
 
-	image = im1 = None;
+	image = im1 = NULL;
 	for(j = (up ? 4 : 0); j != (up ? -1 : 5); j += (up ? -1 : 1)) {
 		im = AllocImage();
 		if(! im) {
-			return (None);
+			return NULL;
 		}
 		im->pixmap = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
 		if(im->pixmap == None) {
 			free(im);
-			return (None);
+			return NULL;
 		}
 		Draw3DBorder(im->pixmap, 0, 0, h, h, Scr->TitleButtonShadowDepth, cp,
 		             off, true, false);
@@ -886,8 +886,8 @@ Create3DMenuAnimation(bool up, ColorPair cp)
 		im->mask   = None;
 		im->width  = h;
 		im->height = h;
-		im->next   = None;
-		if(image == None) {
+		im->next   = NULL;
+		if(image == NULL) {
 			image = im1 = im;
 		}
 		else {
@@ -898,7 +898,7 @@ Create3DMenuAnimation(bool up, ColorPair cp)
 	if(im1 != None) {
 		im1->next = image;
 	}
-	return (image);
+	return image;
 }
 
 static Image *
@@ -916,7 +916,7 @@ Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp)
 		n = (h / 2) - 2;
 	}
 
-	image = im1 = None;
+	image = im1 = NULL;
 	for(j = (out ? -1 : 1) ; j < (in ? 2 : 0); j += 2) {
 		for(k = (j > 0 ? 0 : n - 1) ; (k >= 0) && (k < n); k += j) {
 			im = AllocImage();
@@ -930,8 +930,8 @@ Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp)
 			im->mask   = None;
 			im->width  = h;
 			im->height = h;
-			im->next   = None;
-			if(image == None) {
+			im->next   = NULL;
+			if(image == NULL) {
 				image = im1 = im;
 			}
 			else {
@@ -943,7 +943,7 @@ Create3DZoomAnimation(bool in, bool out, int n, ColorPair cp)
 	if(im1 != None) {
 		im1->next = image;
 	}
-	return (image);
+	return image;
 }
 
 
