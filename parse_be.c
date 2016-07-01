@@ -937,20 +937,29 @@ do_string_string_keyword(int keyword, const char *s1, const char *s2)
 {
 	switch(keyword) {
 		case kwss_RandomPlacement: {
+			/* RandomPlacement {on,off,all,unmapped} [displacement geom] */
 			int rp = ParseRandomPlacement(s1);
+
 			if(rp < 0) {
 				twmrc_error_prefix();
 				fprintf(stderr,
-				        "ignoring invalid RandomPlacement argument 1 \"%s\"\n", s1);
+				        "ignoring invalid RandomPlacement argument 1 \"%s\"\n",
+				        s1);
 			}
 			else {
 				Scr->RandomPlacement = rp;
 			}
-		}
-		{
+
+			/* If no geom, we're done */
 			if(s2 == NULL) {
 				return true;
 			}
+
+			/*
+			 * Figure what the geom means.  We actually don't care about
+			 * the size (it won't even be provided), so the width/height
+			 * are junk.  The X/Y offsets are what we need.
+			 */
 			JunkMask = XParseGeometry(s2, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
 #ifdef DEBUG
 			fprintf(stderr, "DEBUG:: JunkMask = %x, WidthValue = %x, HeightValue = %x\n",
@@ -967,6 +976,8 @@ do_string_string_keyword(int keyword, const char *s1, const char *s2)
 				Scr->RandomDisplacementX = JunkX;
 				Scr->RandomDisplacementY = JunkY;
 			}
+
+			/* Done */
 			return true;
 		}
 	}
