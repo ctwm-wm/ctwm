@@ -938,8 +938,12 @@ do_string_string_keyword(int keyword, const char *s1, const char *s2)
 	switch(keyword) {
 		case kwss_RandomPlacement: {
 			/* RandomPlacement {on,off,all,unmapped} [displacement geom] */
-			int rp = ParseRandomPlacement(s1);
+			int rp;
+			int gmask, gx, gy;     // Geometry mask/x/y values
+			unsigned int gjw, gjh; // width/height (ignored)
+			int exmask = (XValue | YValue); // Bits we need in the mask
 
+			rp = ParseRandomPlacement(s1);
 			if(rp < 0) {
 				twmrc_error_prefix();
 				fprintf(stderr,
@@ -957,24 +961,25 @@ do_string_string_keyword(int keyword, const char *s1, const char *s2)
 
 			/*
 			 * Figure what the geom means.  We actually don't care about
-			 * the size (it won't even be provided), so the width/height
-			 * are junk.  The X/Y offsets are what we need.
+			 * the size (it probably won't even be provided), so the
+			 * width/height are junk.  The X/Y offsets are what we need.
+			 * But we do need them.
 			 */
-			JunkMask = XParseGeometry(s2, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
+			gmask = XParseGeometry(s2, &gx, &gy, &gjw, &gjh);
 #ifdef DEBUG
-			fprintf(stderr, "DEBUG:: JunkMask = %x, WidthValue = %x, HeightValue = %x\n",
-			        JunkMask, WidthValue, HeightValue);
-			fprintf(stderr, "DEBUG:: JunkX = %d, JunkY = %d\n", JunkX, JunkY);
+			fprintf(stderr, "DEBUG:: Mask = %x, Width = %d, Height = %d\n",
+			        gmask, gjw, gjh);
+			fprintf(stderr, "DEBUG:: X = %d, Y = %d\n", gx, gy);
 #endif
-			if((JunkMask & (XValue | YValue)) !=
-			                (XValue | YValue)) {
+			if((gmask & exmask) != exmask) {
+				/* Didn't get X and Y */
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid RandomPlacement displacement \"%s\"\n", s2);
 			}
 			else {
-				Scr->RandomDisplacementX = JunkX;
-				Scr->RandomDisplacementY = JunkY;
+				Scr->RandomDisplacementX = gx;
+				Scr->RandomDisplacementY = gy;
 			}
 
 			/* Done */
