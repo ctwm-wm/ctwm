@@ -1061,22 +1061,27 @@ do_string_keyword(int keyword, char *s)
 			}
 			return true;
 
-		case kws_MaxWindowSize:
-			JunkMask = XParseGeometry(s, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
-			if((JunkMask & (WidthValue | HeightValue)) !=
-			                (WidthValue | HeightValue)) {
+		case kws_MaxWindowSize: {
+			int gmask;
+			int exmask = (WidthValue | HeightValue);
+			unsigned int gw, gh; // Stuff we care about
+			int gjx, gjy;        // Stuff we don't
+
+			gmask = XParseGeometry(s, &gjx, &gjy, &gw, &gh);
+			if((gmask & exmask) != exmask) {
 				twmrc_error_prefix();
 				fprintf(stderr, "bad MaxWindowSize \"%s\"\n", s);
 				return false;
 			}
-			if(JunkWidth == 0 || JunkHeight == 0) {
+			if(gw == 0 || gh == 0) {
 				twmrc_error_prefix();
 				fprintf(stderr, "MaxWindowSize \"%s\" must be non-zero\n", s);
 				return false;
 			}
-			Scr->MaxWindowWidth = JunkWidth;
-			Scr->MaxWindowHeight = JunkHeight;
+			Scr->MaxWindowWidth = gw;
+			Scr->MaxWindowHeight = gh;
 			return true;
+		}
 
 		case kws_IconJustification: {
 			int just = ParseTitleJustification(s);
