@@ -686,9 +686,6 @@ int main(int argc, char **argv)
 		XGrabServer(dpy);
 		XSync(dpy, 0);
 
-		JunkX = 0;
-		JunkY = 0;
-
 		CreateWindowRegions();
 		AllocateOtherIconManagers();
 		CreateIconManagers();
