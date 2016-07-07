@@ -871,13 +871,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				 */
 				while(1) {
 					unsigned int qpmask;
+					Window qproot;
 
 					XUngrabServer(dpy);
 					XSync(dpy, 0);
 					XGrabServer(dpy);
 
 					qpmask = 0;
-					if(!XQueryPointer(dpy, Scr->Root, &JunkRoot,
+					if(!XQueryPointer(dpy, Scr->Root, &qproot,
 					                  &JunkChild, &JunkX, &JunkY,
 					                  &AddingX, &AddingY, &qpmask)) {
 						qpmask = 0;
@@ -891,10 +892,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					 * watch out for changing screens
 					 */
 					if(firsttime) {
-						if(JunkRoot != Scr->Root) {
+						if(qproot != Scr->Root) {
 							int scrnum;
 							for(scrnum = 0; scrnum < NumScreens; scrnum++) {
-								if(JunkRoot == RootWindow(dpy, scrnum)) {
+								if(qproot == RootWindow(dpy, scrnum)) {
 									break;
 								}
 							}
