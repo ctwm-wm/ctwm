@@ -870,19 +870,22 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				 * released.
 				 */
 				while(1) {
+					unsigned int qpmask;
+
 					XUngrabServer(dpy);
 					XSync(dpy, 0);
 					XGrabServer(dpy);
 
-					JunkMask = 0;
+					qpmask = 0;
 					if(!XQueryPointer(dpy, Scr->Root, &JunkRoot,
 					                  &JunkChild, &JunkX, &JunkY,
-					                  &AddingX, &AddingY, &JunkMask)) {
-						JunkMask = 0;
+					                  &AddingX, &AddingY, &qpmask)) {
+						qpmask= 0;
 					}
 
-					JunkMask &= (Button1Mask | Button2Mask | Button3Mask |
-					             Button4Mask | Button5Mask);
+					/* Clear out any but the Button bits */
+					qpmask &= (Button1Mask | Button2Mask | Button3Mask |
+					           Button4Mask | Button5Mask);
 
 					/*
 					 * watch out for changing screens
@@ -911,7 +914,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					/*
 					 * wait for buttons to come up; yuck
 					 */
-					if(JunkMask != 0) {
+					if(qpmask != 0) {
 						continue;
 					}
 
