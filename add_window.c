@@ -880,7 +880,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					if(!XQueryPointer(dpy, Scr->Root, &JunkRoot,
 					                  &JunkChild, &JunkX, &JunkY,
 					                  &AddingX, &AddingY, &qpmask)) {
-						qpmask= 0;
+						qpmask = 0;
 					}
 
 					/* Clear out any but the Button bits */
@@ -1110,7 +1110,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 							 * grab the server.
 							 */
 							XQueryPointer(dpy, vroot, &JunkRoot, &JunkChild,
-							              &JunkX, &JunkY, &AddingX, &AddingY, &JunkMask);
+							              &JunkX, &JunkY, &AddingX, &AddingY,
+							              &JunkMask);
 
 							if(lastx != AddingX || lasty != AddingY) {
 								resizeWhenAdd = true;
