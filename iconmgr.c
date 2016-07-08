@@ -1059,7 +1059,6 @@ void PackIconManager(IconMgr *ip)
 	int savewidth;
 	WList *tmp;
 	int mask;
-	unsigned int JunkW, JunkH;
 
 	wheight = Scr->IconManagerFont.avg_height
 	          + 2 * (ICON_MGR_OBORDER + ICON_MGR_IBORDER);
@@ -1119,7 +1118,8 @@ void PackIconManager(IconMgr *ip)
 
 	XResizeWindow(dpy, ip->w, newwidth, ip->height);
 
-	mask = XParseGeometry(ip->geometry, &JunkX, &JunkY, &JunkW, &JunkH);
+	mask = XParseGeometry(ip->geometry, &JunkX, &JunkY,
+	                      &JunkWidth, &JunkHeight);
 	if(mask & XNegative) {
 		ip->twm_win->frame_x += ip->twm_win->frame_width - newwidth -
 		                        2 * ip->twm_win->frame_bw3D;
