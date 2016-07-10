@@ -2493,12 +2493,14 @@ Identify(TwmWindow *t)
 		CHKN;
 
 		if(t->icon != NULL) {
-			XGetGeometry(dpy, t->icon->w, &JunkRoot, &JunkX, &JunkY,
+			int iwx, iwy;
+
+			XGetGeometry(dpy, t->icon->w, &JunkRoot, &iwx, &iwy,
 			             &wwidth, &wheight, &bw, &depth);
 			Info[n++][0] = '\0';
 			CHKN;
 			snprintf(Info[n++], INFO_SIZE, "IconGeom/root     = %dx%d+%d+%d",
-			         wwidth, wheight, JunkX, JunkY);
+			         wwidth, wheight, iwx, iwy);
 			CHKN;
 			snprintf(Info[n++], INFO_SIZE, "IconGeom/intern   = %dx%d+%d+%d",
 			         t->icon->w_width, t->icon->w_height,
