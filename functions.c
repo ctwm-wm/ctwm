@@ -65,6 +65,10 @@ int ResizeOrigX;
 int ResizeOrigY;
 
 
+/* Time of various actions */
+static Time last_time = 0;
+
+
 /*
  * MoveFillDir-ectional specifiers, used in jump/pack/fill
  */
@@ -86,6 +90,8 @@ static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
 static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
+static bool movewindow(int func, Window w, TwmWindow *tmp_win,
+                       XEvent *eventp, int context, bool pulldown);
 static bool NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
@@ -118,11 +124,8 @@ bool
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                 XEvent *eventp, int context, bool pulldown)
 {
-	static Time last_time = 0;
 	Window rootw;
-	int origX, origY;
 	bool do_next_action = true;
-	bool moving_icon = false;
 	bool fromtitlebar = false;
 	bool from3dborder = false;
 	TwmWindow *t;
@@ -869,470 +872,13 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_FORCEMOVE:
 		case F_MOVEPACK:
 		case F_MOVEPUSH: {
-			/* XXX Move to external func? */
-			Window grabwin, dragroot;
-			unsigned int brdw;
-
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
 			}
 
-			PopDownMenu();
-			if(tmp_win->OpaqueMove) {
-				int sw, ss;
-				float sf;
-
-				sw = tmp_win->frame_width * tmp_win->frame_height;
-				ss = Scr->rootw  * Scr->rooth;
-				sf = Scr->OpaqueMoveThreshold / 100.0;
-				if(sw > (ss * sf)) {
-					Scr->OpaqueMove = false;
-				}
-				else {
-					Scr->OpaqueMove = true;
-				}
-			}
-			else {
-				Scr->OpaqueMove = false;
-			}
-
-			dragroot = Scr->XineramaRoot;
-
-			if(tmp_win->winbox) {
-				XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
-				                      eventp->xbutton.x_root, eventp->xbutton.y_root,
-				                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
-			}
-			rootw = eventp->xbutton.root;
-			MoveFunction = func;
-
-			if(pulldown)
-				XWarpPointer(dpy, None, Scr->Root,
-				             0, 0, 0, 0, eventp->xbutton.x_root, eventp->xbutton.y_root);
-
-			EventHandler[EnterNotify] = HandleUnknown;
-			EventHandler[LeaveNotify] = HandleUnknown;
-
-			if(!Scr->NoGrabServer || !Scr->OpaqueMove) {
-				XGrabServer(dpy);
-			}
-
-			Scr->SizeStringOffset = SIZE_HINDENT;
-			XResizeWindow(dpy, Scr->SizeWindow,
-			              Scr->SizeStringWidth + SIZE_HINDENT * 2,
-			              Scr->SizeFont.height + SIZE_VINDENT * 2);
-			XMapRaised(dpy, Scr->SizeWindow);
-
-			grabwin = Scr->XineramaRoot;
-			if(tmp_win->winbox) {
-				grabwin = tmp_win->winbox->window;
-			}
-			XGrabPointer(dpy, grabwin, True,
-			             ButtonPressMask | ButtonReleaseMask |
-			             ButtonMotionMask | PointerMotionMask, /* PointerMotionHintMask */
-			             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor, CurrentTime);
-
-			if(context == C_ICON && tmp_win->icon && tmp_win->icon->w) {
-				w = tmp_win->icon->w;
-				DragX = eventp->xbutton.x;
-				DragY = eventp->xbutton.y;
-				moving_icon = true;
-				if(tmp_win->OpaqueMove) {
-					Scr->OpaqueMove = true;
-				}
-			}
-
-			else if(! tmp_win->icon || w != tmp_win->icon->w) {
-				XTranslateCoordinates(dpy, w, tmp_win->frame,
-				                      eventp->xbutton.x,
-				                      eventp->xbutton.y,
-				                      &DragX, &DragY, &JunkChild);
-
-				w = tmp_win->frame;
-			}
-
-			DragWindow = None;
-
-			/* Get x/y relative to parent window, i.e. the virtual screen, Root.
-			 * XMoveWindow() moves are relative to this.
-			 * MoveOutline()s however are drawn from the XineramaRoot since they
-			 * may cross virtual screens.
-			 */
-			XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
-			             &DragWidth, &DragHeight, &brdw,
-			             &JunkDepth);
-
-			origX = eventp->xbutton.x_root;
-			origY = eventp->xbutton.y_root;
-			CurrentDragX = origDragX;
-			CurrentDragY = origDragY;
-
-			/*
-			 * only do the constrained move if timer is set; need to check it
-			 * in case of stupid or wicked fast servers
-			 */
-			if(ConstrainedMoveTime &&
-			                (eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
-				int width, height;
-
-				ConstMove = true;
-				ConstMoveDir = MOVE_NONE;
-				ConstMoveX = eventp->xbutton.x_root - DragX - brdw;
-				ConstMoveY = eventp->xbutton.y_root - DragY - brdw;
-				width = DragWidth + 2 * brdw;
-				height = DragHeight + 2 * brdw;
-				ConstMoveXL = ConstMoveX + width / 3;
-				ConstMoveXR = ConstMoveX + 2 * (width / 3);
-				ConstMoveYT = ConstMoveY + height / 3;
-				ConstMoveYB = ConstMoveY + 2 * (height / 3);
-
-				XWarpPointer(dpy, None, w,
-				             0, 0, 0, 0, DragWidth / 2, DragHeight / 2);
-
-				XQueryPointer(dpy, w, &JunkRoot, &JunkChild,
-				              &JunkX, &JunkY, &DragX, &DragY, &JunkMask);
-			}
-			last_time = eventp->xbutton.time;
-
-			if(!Scr->OpaqueMove) {
-				InstallRootColormap();
-				if(!Scr->MoveDelta) {
-					/*
-					 * Draw initial outline.  This was previously done the
-					 * first time though the outer loop by dropping out of
-					 * the XCheckMaskEvent inner loop down to one of the
-					 * MoveOutline's below.
-					 */
-					MoveOutline(dragroot,
-					            origDragX - brdw + Scr->currentvs->x,
-					            origDragY - brdw + Scr->currentvs->y,
-					            DragWidth + 2 * brdw, DragHeight + 2 * brdw,
-					            tmp_win->frame_bw,
-					            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
-					/*
-					 * This next line causes HandleReleaseNotify to call
-					 * XRaiseWindow().  This is solely to preserve the
-					 * previous behaviour that raises a window being moved
-					 * on button release even if you never actually moved
-					 * any distance (unless you move less than MoveDelta or
-					 * NoRaiseMove is set or OpaqueMove is set).
-					 */
-					DragWindow = w;
-				}
-			}
-
-			/*
-			 * see if this is being done from the titlebar
-			 */
-			fromtitlebar = belongs_to_twm_window(tmp_win, eventp->xbutton.window);
-
-			if(menuFromFrameOrWindowOrTitlebar) {
-				/* warp the pointer to the middle of the window */
-				XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0,
-				             origDragX + DragWidth / 2,
-				             origDragY + DragHeight / 2);
-				XFlush(dpy);
-			}
-
-			DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
-			while(1) {
-				long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
-				                    ButtonPress : ButtonRelease;
-				long movementMask = menuFromFrameOrWindowOrTitlebar ?
-				                    PointerMotionMask : ButtonMotionMask;
-
-				/* block until there is an interesting event */
-				XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-				           EnterWindowMask | LeaveWindowMask |
-				           ExposureMask | movementMask |
-				           VisibilityChangeMask, &Event);
-
-				/* throw away enter and leave events until release */
-				if(Event.xany.type == EnterNotify ||
-				                Event.xany.type == LeaveNotify) {
-					continue;
-				}
-
-				if(Event.type == MotionNotify) {
-					/* discard any extra motion events before a logical release */
-					while(XCheckMaskEvent(dpy,
-					                      movementMask | releaseEvent, &Event))
-						if(Event.type == releaseEvent) {
-							break;
-						}
-				}
-
-				/* test to see if we have a second button press to abort move */
-				if(!menuFromFrameOrWindowOrTitlebar) {
-					if(Event.type == ButtonPress && DragWindow != None) {
-						Cursor cur;
-						if(Scr->OpaqueMove) {
-							XMoveWindow(dpy, DragWindow, origDragX, origDragY);
-							if(moving_icon) {
-								tmp_win->icon->w_x = origDragX;
-								tmp_win->icon->w_y = origDragY;
-							}
-						}
-						else {
-							MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
-						}
-						DragWindow = None;
-
-						XUnmapWindow(dpy, Scr->SizeWindow);
-						cur = LeftButt;
-						if(Event.xbutton.button == Button2) {
-							cur = MiddleButt;
-						}
-						else if(Event.xbutton.button >= Button3) {
-							cur = RightButt;
-						}
-
-						XGrabPointer(dpy, Scr->Root, True,
-						             ButtonReleaseMask | ButtonPressMask,
-						             GrabModeAsync, GrabModeAsync,
-						             Scr->Root, cur, CurrentTime);
-						return true;
-					}
-				}
-
-				if(fromtitlebar && Event.type == ButtonPress) {
-					fromtitlebar = false;
-					CurrentDragX = origX = Event.xbutton.x_root;
-					CurrentDragY = origY = Event.xbutton.y_root;
-					XTranslateCoordinates(dpy, rootw, tmp_win->frame,
-					                      origX, origY,
-					                      &DragX, &DragY, &JunkChild);
-					continue;
-				}
-
-				if(!DispatchEvent2()) {
-					continue;
-				}
-
-				if(Cancel) {
-					WindowMoved = false;
-					if(!Scr->OpaqueMove) {
-						UninstallRootColormap();
-					}
-					return true;    /* XXX should this be false? */
-				}
-				if(Event.type == releaseEvent) {
-					MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
-					if(moving_icon &&
-					                ((CurrentDragX != origDragX ||
-					                  CurrentDragY != origDragY))) {
-						tmp_win->icon_moved = true;
-					}
-					if(!Scr->OpaqueMove && menuFromFrameOrWindowOrTitlebar) {
-						int xl = Event.xbutton.x_root - (DragWidth  / 2),
-						    yt = Event.xbutton.y_root - (DragHeight / 2);
-						if(!moving_icon &&
-						                (MoveFunction == F_MOVEPACK || MoveFunction == F_MOVEPUSH)) {
-							TryToPack(tmp_win, &xl, &yt);
-						}
-						XMoveWindow(dpy, DragWindow, xl, yt);
-					}
-					if(menuFromFrameOrWindowOrTitlebar) {
-						DragWindow = None;
-					}
-					break;
-				}
-
-				/* something left to do only if the pointer moved */
-				if(Event.type != MotionNotify) {
-					continue;
-				}
-
-				XQueryPointer(dpy, rootw, &(eventp->xmotion.root), &JunkChild,
-				              &(eventp->xmotion.x_root), &(eventp->xmotion.y_root),
-				              &JunkX, &JunkY, &JunkMask);
-
-				FixRootEvent(eventp);
-				if(tmp_win->winbox) {
-					XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
-					                      eventp->xmotion.x_root, eventp->xmotion.y_root,
-					                      &(eventp->xmotion.x_root), &(eventp->xmotion.y_root), &JunkChild);
-				}
-				if(DragWindow == None &&
-				                abs(eventp->xmotion.x_root - origX) < Scr->MoveDelta &&
-				                abs(eventp->xmotion.y_root - origY) < Scr->MoveDelta) {
-					continue;
-				}
-
-				DragWindow = w;
-
-				if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
-					if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
-						fprintf(stderr, "ERROR: menus.c:2822\n");
-					}
-
-					if(t != tmp_win) {
-						fprintf(stderr, "DragWindow isn't tmp_win!\n");
-					}
-					if(DragWindow == t->frame) {
-						if(moving_icon) {
-							fprintf(stderr, "moving_icon is true incorrectly!\n");
-						}
-						OtpRaise(t, WinWin);
-					}
-					else if(t->icon && DragWindow == t->icon->w) {
-						if(!moving_icon) {
-							fprintf(stderr, "moving_icon is false incorrectly!\n");
-						}
-						OtpRaise(t, IconWin);
-					}
-					else {
-						fprintf(stderr, "ERROR: menus.c:2838\n");
-					}
-				}
-
-				WindowMoved = true;
-
-				if(ConstMove) {
-					switch(ConstMoveDir) {
-						case MOVE_NONE:
-							if(eventp->xmotion.x_root < ConstMoveXL ||
-							                eventp->xmotion.x_root > ConstMoveXR) {
-								ConstMoveDir = MOVE_HORIZ;
-							}
-
-							if(eventp->xmotion.y_root < ConstMoveYT ||
-							                eventp->xmotion.y_root > ConstMoveYB) {
-								ConstMoveDir = MOVE_VERT;
-							}
-
-							XQueryPointer(dpy, DragWindow, &JunkRoot, &JunkChild,
-							              &JunkX, &JunkY, &DragX, &DragY, &JunkMask);
-							break;
-
-						case MOVE_VERT:
-							ConstMoveY = eventp->xmotion.y_root - DragY - brdw;
-							break;
-
-						case MOVE_HORIZ:
-							ConstMoveX = eventp->xmotion.x_root - DragX - brdw;
-							break;
-					}
-
-					if(ConstMoveDir != MOVE_NONE) {
-						int xl, yt, width, height;
-
-						xl = ConstMoveX;
-						yt = ConstMoveY;
-						width = DragWidth + 2 * brdw;
-						height = DragHeight + 2 * brdw;
-
-						if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
-							TryToGrid(tmp_win, &xl, &yt);
-						}
-						if(!moving_icon && MoveFunction == F_MOVEPUSH && Scr->OpaqueMove) {
-							TryToPush(tmp_win, xl, yt);
-						}
-
-						if(!moving_icon &&
-						                (MoveFunction == F_MOVEPACK || MoveFunction == F_MOVEPUSH)) {
-							TryToPack(tmp_win, &xl, &yt);
-						}
-
-						if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
-							ConstrainByBorders(tmp_win, &xl, width, &yt, height);
-						}
-						CurrentDragX = xl;
-						CurrentDragY = yt;
-						if(Scr->OpaqueMove) {
-							if(MoveFunction == F_MOVEPUSH && !moving_icon) {
-								SetupWindow(tmp_win, xl, yt,
-								            tmp_win->frame_width, tmp_win->frame_height, -1);
-							}
-							else {
-								XMoveWindow(dpy, DragWindow, xl, yt);
-								if(moving_icon) {
-									tmp_win->icon->w_x = xl;
-									tmp_win->icon->w_y = yt;
-								}
-							}
-							WMapSetupWindow(tmp_win, xl, yt, -1, -1);
-						}
-						else {
-							MoveOutline(dragroot, xl + Scr->currentvs->x,
-							            yt + Scr->currentvs->y, width, height,
-							            tmp_win->frame_bw,
-							            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
-						}
-					}
-				}
-				else if(DragWindow != None) {
-					int xroot, yroot;
-					int xl, yt, width, height;
-
-
-					/*
-					 * this is split out for virtual screens.  In that case, it's
-					 * possible to drag windows from one workspace to another, and
-					 * as such, these need to be adjusted to the root, rather
-					 * than this virtual screen...
-					 */
-					xroot = eventp->xmotion.x_root;
-					yroot = eventp->xmotion.y_root;
-
-					if(!menuFromFrameOrWindowOrTitlebar) {
-						xl = xroot - DragX - brdw;
-						yt = yroot - DragY - brdw;
-					}
-					else {
-						xl = xroot - (DragWidth / 2);
-						yt = yroot - (DragHeight / 2);
-					}
-					width = DragWidth + 2 * brdw;
-					height = DragHeight + 2 * brdw;
-
-					if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
-						TryToGrid(tmp_win, &xl, &yt);
-					}
-					if(!moving_icon && MoveFunction == F_MOVEPUSH && Scr->OpaqueMove) {
-						TryToPush(tmp_win, xl, yt);
-					}
-
-					if(!moving_icon &&
-					                (MoveFunction == F_MOVEPACK || MoveFunction == F_MOVEPUSH)) {
-						TryToPack(tmp_win, &xl, &yt);
-					}
-
-					if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
-						ConstrainByBorders(tmp_win, &xl, width, &yt, height);
-					}
-
-					CurrentDragX = xl;
-					CurrentDragY = yt;
-					if(Scr->OpaqueMove) {
-						if(MoveFunction == F_MOVEPUSH && !moving_icon) {
-							SetupWindow(tmp_win, xl, yt,
-							            tmp_win->frame_width, tmp_win->frame_height, -1);
-						}
-						else {
-							XMoveWindow(dpy, DragWindow, xl, yt);
-							if(moving_icon) {
-								tmp_win->icon->w_x = xl;
-								tmp_win->icon->w_y = yt;
-							}
-						}
-						if(! moving_icon) {
-							WMapSetupWindow(tmp_win, xl, yt, -1, -1);
-						}
-					}
-					else {
-						MoveOutline(dragroot, xl + Scr->currentvs->x,
-						            yt + Scr->currentvs->y, width, height,
-						            tmp_win->frame_bw,
-						            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
-					}
-				}
-				DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
-			}
-			XUnmapWindow(dpy, Scr->SizeWindow);
-
-			if(!Scr->OpaqueMove && DragWindow == None) {
-				UninstallRootColormap();
+			/* All in external func */
+			if(movewindow(func, w, tmp_win, eventp, context, pulldown)) {
+				return true;
 			}
 			break;
 		}
@@ -1385,6 +931,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVETITLEBAR: {
 			Window grabwin;
 			int deltax = 0, newx = 0;
+			int origX;
 			int origNum;
 			SqueezeInfo *si;
 
@@ -2816,6 +2363,492 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 		return;
 	}
 	SetupWindow(tmp_win, newx, newy, neww, newh, -1);
+}
+
+
+/*
+ * f.move and friends
+ *
+ * This code previously sometimes returned early out of the midst of the
+ * switch() in ExecuteFunction(), but only ever true (whether meaninfully
+ * or not).  So we take that and turn it into a bool function that, when
+ * it returns true, the above also return's true right from
+ * ExecuteFunction(); otherwise breaks out and falls through like
+ * previously.  If we ever revisit the meaning of the return, we'll have
+ * to get smarter about that too.
+ */
+static bool
+movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
+           XEvent *eventp, int context, bool pulldown)
+{
+	Window grabwin, dragroot;
+	Window rootw;
+	unsigned int brdw;
+	int origX, origY;
+	bool moving_icon = false;
+	bool fromtitlebar = false;
+	TwmWindow *t;
+
+	PopDownMenu();
+	if(tmp_win->OpaqueMove) {
+		int sw, ss;
+		float sf;
+
+		sw = tmp_win->frame_width * tmp_win->frame_height;
+		ss = Scr->rootw  * Scr->rooth;
+		sf = Scr->OpaqueMoveThreshold / 100.0;
+		if(sw > (ss * sf)) {
+			Scr->OpaqueMove = false;
+		}
+		else {
+			Scr->OpaqueMove = true;
+		}
+	}
+	else {
+		Scr->OpaqueMove = false;
+	}
+
+	dragroot = Scr->XineramaRoot;
+
+	if(tmp_win->winbox) {
+		XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
+		                      eventp->xbutton.x_root, eventp->xbutton.y_root,
+		                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
+	}
+	rootw = eventp->xbutton.root;
+	MoveFunction = func;
+
+	if(pulldown)
+		XWarpPointer(dpy, None, Scr->Root,
+		             0, 0, 0, 0, eventp->xbutton.x_root, eventp->xbutton.y_root);
+
+	EventHandler[EnterNotify] = HandleUnknown;
+	EventHandler[LeaveNotify] = HandleUnknown;
+
+	if(!Scr->NoGrabServer || !Scr->OpaqueMove) {
+		XGrabServer(dpy);
+	}
+
+	Scr->SizeStringOffset = SIZE_HINDENT;
+	XResizeWindow(dpy, Scr->SizeWindow,
+	              Scr->SizeStringWidth + SIZE_HINDENT * 2,
+	              Scr->SizeFont.height + SIZE_VINDENT * 2);
+	XMapRaised(dpy, Scr->SizeWindow);
+
+	grabwin = Scr->XineramaRoot;
+	if(tmp_win->winbox) {
+		grabwin = tmp_win->winbox->window;
+	}
+	XGrabPointer(dpy, grabwin, True,
+	             ButtonPressMask | ButtonReleaseMask |
+	             ButtonMotionMask | PointerMotionMask, /* PointerMotionHintMask */
+	             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor, CurrentTime);
+
+	if(context == C_ICON && tmp_win->icon && tmp_win->icon->w) {
+		w = tmp_win->icon->w;
+		DragX = eventp->xbutton.x;
+		DragY = eventp->xbutton.y;
+		moving_icon = true;
+		if(tmp_win->OpaqueMove) {
+			Scr->OpaqueMove = true;
+		}
+	}
+
+	else if(! tmp_win->icon || w != tmp_win->icon->w) {
+		XTranslateCoordinates(dpy, w, tmp_win->frame,
+		                      eventp->xbutton.x,
+		                      eventp->xbutton.y,
+		                      &DragX, &DragY, &JunkChild);
+
+		w = tmp_win->frame;
+	}
+
+	DragWindow = None;
+
+	/* Get x/y relative to parent window, i.e. the virtual screen, Root.
+	 * XMoveWindow() moves are relative to this.
+	 * MoveOutline()s however are drawn from the XineramaRoot since they
+	 * may cross virtual screens.
+	 */
+	XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
+	             &DragWidth, &DragHeight, &DragBW,
+	             &JunkDepth);
+
+	brdw = DragBW;
+	origX = eventp->xbutton.x_root;
+	origY = eventp->xbutton.y_root;
+	CurrentDragX = origDragX;
+	CurrentDragY = origDragY;
+
+	/*
+	 * only do the constrained move if timer is set; need to check it
+	 * in case of stupid or wicked fast servers
+	 */
+	if(ConstrainedMoveTime &&
+	                (eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
+		int width, height;
+
+		ConstMove = true;
+		ConstMoveDir = MOVE_NONE;
+		ConstMoveX = eventp->xbutton.x_root - DragX - brdw;
+		ConstMoveY = eventp->xbutton.y_root - DragY - brdw;
+		width = DragWidth + 2 * brdw;
+		height = DragHeight + 2 * brdw;
+		ConstMoveXL = ConstMoveX + width / 3;
+		ConstMoveXR = ConstMoveX + 2 * (width / 3);
+		ConstMoveYT = ConstMoveY + height / 3;
+		ConstMoveYB = ConstMoveY + 2 * (height / 3);
+
+		XWarpPointer(dpy, None, w,
+		             0, 0, 0, 0, DragWidth / 2, DragHeight / 2);
+
+		XQueryPointer(dpy, w, &JunkRoot, &JunkChild,
+		              &JunkX, &JunkY, &DragX, &DragY, &JunkMask);
+	}
+	last_time = eventp->xbutton.time;
+
+	if(!Scr->OpaqueMove) {
+		InstallRootColormap();
+		if(!Scr->MoveDelta) {
+			/*
+			 * Draw initial outline.  This was previously done the
+			 * first time though the outer loop by dropping out of
+			 * the XCheckMaskEvent inner loop down to one of the
+			 * MoveOutline's below.
+			 */
+			MoveOutline(dragroot,
+			            origDragX - brdw + Scr->currentvs->x,
+			            origDragY - brdw + Scr->currentvs->y,
+			            DragWidth + 2 * brdw, DragHeight + 2 * brdw,
+			            tmp_win->frame_bw,
+			            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
+			/*
+			 * This next line causes HandleReleaseNotify to call
+			 * XRaiseWindow().  This is solely to preserve the
+			 * previous behaviour that raises a window being moved
+			 * on button release even if you never actually moved
+			 * any distance (unless you move less than MoveDelta or
+			 * NoRaiseMove is set or OpaqueMove is set).
+			 */
+			DragWindow = w;
+		}
+	}
+
+	/*
+	 * see if this is being done from the titlebar
+	 */
+	fromtitlebar = belongs_to_twm_window(tmp_win, eventp->xbutton.window);
+
+	if(menuFromFrameOrWindowOrTitlebar) {
+		/* warp the pointer to the middle of the window */
+		XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0,
+		             origDragX + DragWidth / 2,
+		             origDragY + DragHeight / 2);
+		XFlush(dpy);
+	}
+
+	DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
+	while(1) {
+		long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
+		                    ButtonPress : ButtonRelease;
+		long movementMask = menuFromFrameOrWindowOrTitlebar ?
+		                    PointerMotionMask : ButtonMotionMask;
+
+		/* block until there is an interesting event */
+		XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+		           EnterWindowMask | LeaveWindowMask |
+		           ExposureMask | movementMask |
+		           VisibilityChangeMask, &Event);
+
+		/* throw away enter and leave events until release */
+		if(Event.xany.type == EnterNotify ||
+		                Event.xany.type == LeaveNotify) {
+			continue;
+		}
+
+		if(Event.type == MotionNotify) {
+			/* discard any extra motion events before a logical release */
+			while(XCheckMaskEvent(dpy,
+			                      movementMask | releaseEvent, &Event))
+				if(Event.type == releaseEvent) {
+					break;
+				}
+		}
+
+		/* test to see if we have a second button press to abort move */
+		if(!menuFromFrameOrWindowOrTitlebar) {
+			if(Event.type == ButtonPress && DragWindow != None) {
+				Cursor cur;
+				if(Scr->OpaqueMove) {
+					XMoveWindow(dpy, DragWindow, origDragX, origDragY);
+					if(moving_icon) {
+						tmp_win->icon->w_x = origDragX;
+						tmp_win->icon->w_y = origDragY;
+					}
+				}
+				else {
+					MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
+				}
+				DragWindow = None;
+
+				XUnmapWindow(dpy, Scr->SizeWindow);
+				cur = LeftButt;
+				if(Event.xbutton.button == Button2) {
+					cur = MiddleButt;
+				}
+				else if(Event.xbutton.button >= Button3) {
+					cur = RightButt;
+				}
+
+				XGrabPointer(dpy, Scr->Root, True,
+				             ButtonReleaseMask | ButtonPressMask,
+				             GrabModeAsync, GrabModeAsync,
+				             Scr->Root, cur, CurrentTime);
+				return true;
+			}
+		}
+
+		if(fromtitlebar && Event.type == ButtonPress) {
+			fromtitlebar = false;
+			CurrentDragX = origX = Event.xbutton.x_root;
+			CurrentDragY = origY = Event.xbutton.y_root;
+			XTranslateCoordinates(dpy, rootw, tmp_win->frame,
+			                      origX, origY,
+			                      &DragX, &DragY, &JunkChild);
+			continue;
+		}
+
+		if(!DispatchEvent2()) {
+			continue;
+		}
+
+		if(Cancel) {
+			WindowMoved = false;
+			if(!Scr->OpaqueMove) {
+				UninstallRootColormap();
+			}
+			return true;    /* XXX should this be false? */
+		}
+		if(Event.type == releaseEvent) {
+			MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
+			if(moving_icon &&
+			                ((CurrentDragX != origDragX ||
+			                  CurrentDragY != origDragY))) {
+				tmp_win->icon_moved = true;
+			}
+			if(!Scr->OpaqueMove && menuFromFrameOrWindowOrTitlebar) {
+				int xl = Event.xbutton.x_root - (DragWidth  / 2),
+				    yt = Event.xbutton.y_root - (DragHeight / 2);
+				if(!moving_icon &&
+				                (MoveFunction == F_MOVEPACK || MoveFunction == F_MOVEPUSH)) {
+					TryToPack(tmp_win, &xl, &yt);
+				}
+				XMoveWindow(dpy, DragWindow, xl, yt);
+			}
+			if(menuFromFrameOrWindowOrTitlebar) {
+				DragWindow = None;
+			}
+			break;
+		}
+
+		/* something left to do only if the pointer moved */
+		if(Event.type != MotionNotify) {
+			continue;
+		}
+
+		XQueryPointer(dpy, rootw, &(eventp->xmotion.root), &JunkChild,
+		              &(eventp->xmotion.x_root), &(eventp->xmotion.y_root),
+		              &JunkX, &JunkY, &JunkMask);
+
+		FixRootEvent(eventp);
+		if(tmp_win->winbox) {
+			XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
+			                      eventp->xmotion.x_root, eventp->xmotion.y_root,
+			                      &(eventp->xmotion.x_root), &(eventp->xmotion.y_root), &JunkChild);
+		}
+		if(DragWindow == None &&
+		                abs(eventp->xmotion.x_root - origX) < Scr->MoveDelta &&
+		                abs(eventp->xmotion.y_root - origY) < Scr->MoveDelta) {
+			continue;
+		}
+
+		DragWindow = w;
+
+		if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
+			if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
+				fprintf(stderr, "ERROR: menus.c:2822\n");
+			}
+
+			if(t != tmp_win) {
+				fprintf(stderr, "DragWindow isn't tmp_win!\n");
+			}
+			if(DragWindow == t->frame) {
+				if(moving_icon) {
+					fprintf(stderr, "moving_icon is true incorrectly!\n");
+				}
+				OtpRaise(t, WinWin);
+			}
+			else if(t->icon && DragWindow == t->icon->w) {
+				if(!moving_icon) {
+					fprintf(stderr, "moving_icon is false incorrectly!\n");
+				}
+				OtpRaise(t, IconWin);
+			}
+			else {
+				fprintf(stderr, "ERROR: menus.c:2838\n");
+			}
+		}
+
+		WindowMoved = true;
+
+		if(ConstMove) {
+			switch(ConstMoveDir) {
+				case MOVE_NONE:
+					if(eventp->xmotion.x_root < ConstMoveXL ||
+					                eventp->xmotion.x_root > ConstMoveXR) {
+						ConstMoveDir = MOVE_HORIZ;
+					}
+
+					if(eventp->xmotion.y_root < ConstMoveYT ||
+					                eventp->xmotion.y_root > ConstMoveYB) {
+						ConstMoveDir = MOVE_VERT;
+					}
+
+					XQueryPointer(dpy, DragWindow, &JunkRoot, &JunkChild,
+					              &JunkX, &JunkY, &DragX, &DragY, &JunkMask);
+					break;
+
+				case MOVE_VERT:
+					ConstMoveY = eventp->xmotion.y_root - DragY - brdw;
+					break;
+
+				case MOVE_HORIZ:
+					ConstMoveX = eventp->xmotion.x_root - DragX - brdw;
+					break;
+			}
+
+			if(ConstMoveDir != MOVE_NONE) {
+				int xl, yt, width, height;
+
+				xl = ConstMoveX;
+				yt = ConstMoveY;
+				width = DragWidth + 2 * brdw;
+				height = DragHeight + 2 * brdw;
+
+				if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
+					TryToGrid(tmp_win, &xl, &yt);
+				}
+				if(!moving_icon && MoveFunction == F_MOVEPUSH && Scr->OpaqueMove) {
+					TryToPush(tmp_win, xl, yt);
+				}
+
+				if(!moving_icon &&
+				                (MoveFunction == F_MOVEPACK || MoveFunction == F_MOVEPUSH)) {
+					TryToPack(tmp_win, &xl, &yt);
+				}
+
+				if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
+					ConstrainByBorders(tmp_win, &xl, width, &yt, height);
+				}
+				CurrentDragX = xl;
+				CurrentDragY = yt;
+				if(Scr->OpaqueMove) {
+					if(MoveFunction == F_MOVEPUSH && !moving_icon) {
+						SetupWindow(tmp_win, xl, yt,
+						            tmp_win->frame_width, tmp_win->frame_height, -1);
+					}
+					else {
+						XMoveWindow(dpy, DragWindow, xl, yt);
+						if(moving_icon) {
+							tmp_win->icon->w_x = xl;
+							tmp_win->icon->w_y = yt;
+						}
+					}
+					WMapSetupWindow(tmp_win, xl, yt, -1, -1);
+				}
+				else {
+					MoveOutline(dragroot, xl + Scr->currentvs->x,
+					            yt + Scr->currentvs->y, width, height,
+					            tmp_win->frame_bw,
+					            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
+				}
+			}
+		}
+		else if(DragWindow != None) {
+			int xroot, yroot;
+			int xl, yt, width, height;
+
+
+			/*
+			 * this is split out for virtual screens.  In that case, it's
+			 * possible to drag windows from one workspace to another, and
+			 * as such, these need to be adjusted to the root, rather
+			 * than this virtual screen...
+			 */
+			xroot = eventp->xmotion.x_root;
+			yroot = eventp->xmotion.y_root;
+
+			if(!menuFromFrameOrWindowOrTitlebar) {
+				xl = xroot - DragX - brdw;
+				yt = yroot - DragY - brdw;
+			}
+			else {
+				xl = xroot - (DragWidth / 2);
+				yt = yroot - (DragHeight / 2);
+			}
+			width = DragWidth + 2 * brdw;
+			height = DragHeight + 2 * brdw;
+
+			if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
+				TryToGrid(tmp_win, &xl, &yt);
+			}
+			if(!moving_icon && MoveFunction == F_MOVEPUSH && Scr->OpaqueMove) {
+				TryToPush(tmp_win, xl, yt);
+			}
+
+			if(!moving_icon &&
+			                (MoveFunction == F_MOVEPACK || MoveFunction == F_MOVEPUSH)) {
+				TryToPack(tmp_win, &xl, &yt);
+			}
+
+			if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
+				ConstrainByBorders(tmp_win, &xl, width, &yt, height);
+			}
+
+			CurrentDragX = xl;
+			CurrentDragY = yt;
+			if(Scr->OpaqueMove) {
+				if(MoveFunction == F_MOVEPUSH && !moving_icon) {
+					SetupWindow(tmp_win, xl, yt,
+					            tmp_win->frame_width, tmp_win->frame_height, -1);
+				}
+				else {
+					XMoveWindow(dpy, DragWindow, xl, yt);
+					if(moving_icon) {
+						tmp_win->icon->w_x = xl;
+						tmp_win->icon->w_y = yt;
+					}
+				}
+				if(! moving_icon) {
+					WMapSetupWindow(tmp_win, xl, yt, -1, -1);
+				}
+			}
+			else {
+				MoveOutline(dragroot, xl + Scr->currentvs->x,
+				            yt + Scr->currentvs->y, width, height,
+				            tmp_win->frame_bw,
+				            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
+			}
+		}
+		DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
+	}
+	XUnmapWindow(dpy, Scr->SizeWindow);
+
+	if(!Scr->OpaqueMove && DragWindow == None) {
+		UninstallRootColormap();
+	}
+
+	return false;
 }
 
 
