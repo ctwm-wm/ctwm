@@ -869,6 +869,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_FORCEMOVE:
 		case F_MOVEPACK:
 		case F_MOVEPUSH: {
+			/* XXX Move to external func? */
 			Window grabwin, dragroot;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
