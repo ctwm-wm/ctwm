@@ -871,6 +871,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVEPUSH: {
 			/* XXX Move to external func? */
 			Window grabwin, dragroot;
+			unsigned int brdw;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
@@ -958,10 +959,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			 * may cross virtual screens.
 			 */
 			XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
-			             &DragWidth, &DragHeight, &DragBW,
+			             &DragWidth, &DragHeight, &brdw,
 			             &JunkDepth);
 
-			JunkBW = DragBW;
 			origX = eventp->xbutton.x_root;
 			origY = eventp->xbutton.y_root;
 			CurrentDragX = origDragX;
@@ -977,10 +977,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 				ConstMove = true;
 				ConstMoveDir = MOVE_NONE;
-				ConstMoveX = eventp->xbutton.x_root - DragX - JunkBW;
-				ConstMoveY = eventp->xbutton.y_root - DragY - JunkBW;
-				width = DragWidth + 2 * JunkBW;
-				height = DragHeight + 2 * JunkBW;
+				ConstMoveX = eventp->xbutton.x_root - DragX - brdw;
+				ConstMoveY = eventp->xbutton.y_root - DragY - brdw;
+				width = DragWidth + 2 * brdw;
+				height = DragHeight + 2 * brdw;
 				ConstMoveXL = ConstMoveX + width / 3;
 				ConstMoveXR = ConstMoveX + 2 * (width / 3);
 				ConstMoveYT = ConstMoveY + height / 3;
@@ -1004,9 +1004,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					 * MoveOutline's below.
 					 */
 					MoveOutline(dragroot,
-					            origDragX - JunkBW + Scr->currentvs->x,
-					            origDragY - JunkBW + Scr->currentvs->y,
-					            DragWidth + 2 * JunkBW, DragHeight + 2 * JunkBW,
+					            origDragX - brdw + Scr->currentvs->x,
+					            origDragY - brdw + Scr->currentvs->y,
+					            DragWidth + 2 * brdw, DragHeight + 2 * brdw,
 					            tmp_win->frame_bw,
 					            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
 					/*
@@ -1206,11 +1206,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 							break;
 
 						case MOVE_VERT:
-							ConstMoveY = eventp->xmotion.y_root - DragY - JunkBW;
+							ConstMoveY = eventp->xmotion.y_root - DragY - brdw;
 							break;
 
 						case MOVE_HORIZ:
-							ConstMoveX = eventp->xmotion.x_root - DragX - JunkBW;
+							ConstMoveX = eventp->xmotion.x_root - DragX - brdw;
 							break;
 					}
 
@@ -1219,8 +1219,8 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 						xl = ConstMoveX;
 						yt = ConstMoveY;
-						width = DragWidth + 2 * JunkBW;
-						height = DragHeight + 2 * JunkBW;
+						width = DragWidth + 2 * brdw;
+						height = DragHeight + 2 * brdw;
 
 						if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 							TryToGrid(tmp_win, &xl, &yt);
@@ -1276,15 +1276,15 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					yroot = eventp->xmotion.y_root;
 
 					if(!menuFromFrameOrWindowOrTitlebar) {
-						xl = xroot - DragX - JunkBW;
-						yt = yroot - DragY - JunkBW;
+						xl = xroot - DragX - brdw;
+						yt = yroot - DragY - brdw;
 					}
 					else {
 						xl = xroot - (DragWidth / 2);
 						yt = yroot - (DragHeight / 2);
 					}
-					width = DragWidth + 2 * JunkBW;
-					height = DragHeight + 2 * JunkBW;
+					width = DragWidth + 2 * brdw;
+					height = DragHeight + 2 * brdw;
 
 					if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 						TryToGrid(tmp_win, &xl, &yt);
