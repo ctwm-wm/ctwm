@@ -2370,12 +2370,12 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
  * f.move and friends
  *
  * This code previously sometimes returned early out of the midst of the
- * switch() in ExecuteFunction(), but only ever true (whether meaningfully
- * or not).  So we take that and turn it into a bool function that, when
- * it returns true, the above also return's true right from
- * ExecuteFunction(); otherwise breaks out and falls through like
- * previously.  If we ever revisit the meaning of the return, we'll have
- * to get smarter about that too.
+ * switch() in ExecuteFunction(), but only ever true (whether
+ * meaningfully or not).  So we take that and turn it into a bool
+ * function that, when it returns true, the above also return's true
+ * right from ExecuteFunction(); otherwise breaks out and falls through
+ * like previously.  If we ever revisit the meaning of the return, we'll
+ * have to get smarter about that too.
  */
 static bool
 movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
