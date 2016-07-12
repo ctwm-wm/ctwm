@@ -161,10 +161,17 @@ int HomeLen;                    /* length of Home */
 
 bool HandlingEvents = false;    /* are we handling events yet? */
 
-Window JunkRoot;                /* junk window */
-Window JunkChild;               /* junk window */
-int JunkX;                      /* junk variable */
-int JunkY;                      /* junk variable */
+/*
+ * Various junk vars for xlib calls.  Many calls have to get passed these
+ * pointers to return values into, but in a lot of cases we don't care
+ * about some/all of them, and since xlib blindly derefs and stores into
+ * them, we can't just pass NULL for the ones we don't care about.  So we
+ * make this set of globals to use as standin.  These should never be
+ * used or read in our own code; use real vars for the values we DO use
+ * from the calls.
+ */
+Window JunkRoot, JunkChild;
+int JunkX, JunkY;
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 char *ProgramName;
@@ -685,9 +692,6 @@ int main(int argc, char **argv)
 
 		XGrabServer(dpy);
 		XSync(dpy, 0);
-
-		JunkX = 0;
-		JunkY = 0;
 
 		CreateWindowRegions();
 		AllocateOtherIconManagers();

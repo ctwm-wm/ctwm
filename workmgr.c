@@ -4104,12 +4104,11 @@ Window CaptiveCtwmRootWindow(Window window)
 
 CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
 {
-	int         scrnum = Scr->screen;
 	Window      root;
 	Window      child, croot;
 	CaptiveCTWM cctwm;
 
-	root = RootWindow(dpy, scrnum);
+	root = RootWindow(dpy, Scr->screen);
 	while(1) {
 		XQueryPointer(dpy, root, &JunkRoot, &child,
 		              &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);

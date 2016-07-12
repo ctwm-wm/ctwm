@@ -3371,13 +3371,15 @@ void HandleButtonPress(void)
 		if(Tmp_win->iconmanagerlist && (RootFunction != 0) &&
 		                ((Event.xany.window == Tmp_win->iconmanagerlist->icon) ||
 		                 (Event.xany.window == Tmp_win->iconmanagerlist->w))) {
+			int x, y;
+
 			Tmp_win = Tmp_win->iconmanagerlist->iconmgr->twm_win;
 			XTranslateCoordinates(dpy, Event.xany.window, Tmp_win->w,
 			                      Event.xbutton.x, Event.xbutton.y,
-			                      &JunkX, &JunkY, &JunkChild);
+			                      &x, &y, &JunkChild);
 
-			Event.xbutton.x = JunkX - Tmp_win->frame_bw3D;
-			Event.xbutton.y = JunkY - Tmp_win->title_height - Tmp_win->frame_bw3D;
+			Event.xbutton.x = x - Tmp_win->frame_bw3D;
+			Event.xbutton.y = y - Tmp_win->title_height - Tmp_win->frame_bw3D;
 			Event.xany.window = Tmp_win->w;
 			Context = C_WINDOW;
 		}
@@ -3421,6 +3423,8 @@ void HandleButtonPress(void)
 			Context = C_ICON;
 		}
 		else if(Event.xany.window == Tmp_win->frame) {
+			Window chwin;
+
 			/* since we now place a button grab on the frame instead
 			 * of the window, (see GrabButtons() in add_window.c), we
 			 * need to figure out where the pointer exactly is before
@@ -3431,17 +3435,19 @@ void HandleButtonPress(void)
 			if(Event.xbutton.subwindow == Tmp_win->w) {
 				XTranslateCoordinates(dpy, Event.xany.window, Tmp_win->w,
 				                      Event.xbutton.x, Event.xbutton.y,
-				                      &Event.xbutton.x, &Event.xbutton.y, &JunkChild);
+				                      &Event.xbutton.x, &Event.xbutton.y,
+				                      &chwin);
 				Event.xbutton.window = Tmp_win->w;
 
-				if(Tmp_win->iswinbox && JunkChild) {
-					XTranslateCoordinates(dpy, Tmp_win->w, JunkChild,
+				if(Tmp_win->iswinbox && chwin) {
+					int x, y;
+					XTranslateCoordinates(dpy, Tmp_win->w, chwin,
 					                      Event.xbutton.x, Event.xbutton.y,
-					                      &JunkX, &JunkY, &JunkChild);
-					if(JunkChild && (Tmp_win = GetTwmWindow(JunkChild))) {
-						Event.xany.window = JunkChild;
-						Event.xbutton.x   = JunkX;
-						Event.xbutton.y   = JunkY;
+					                      &x, &y, &chwin);
+					if(chwin && (Tmp_win = GetTwmWindow(chwin))) {
+						Event.xany.window = chwin;
+						Event.xbutton.x   = x;
+						Event.xbutton.y   = y;
 					}
 				}
 				Context = C_WINDOW;
@@ -3483,6 +3489,8 @@ void HandleButtonPress(void)
 	if(RootFunction != 0) {
 		if(Event.xany.window == Scr->Root) {
 			Window win;
+			int x, y;
+
 			/* if the window was the Root, we don't know for sure it
 			 * it was the root.  We must check to see if it happened to be
 			 * inside of a client that was getting button press events.
@@ -3490,15 +3498,15 @@ void HandleButtonPress(void)
 			XTranslateCoordinates(dpy, Scr->Root, Scr->Root,
 			                      Event.xbutton.x,
 			                      Event.xbutton.y,
-			                      &JunkX, &JunkY, &Event.xany.window);
+			                      &x, &y, &Event.xany.window);
 
 			if(Event.xany.window != 0 &&
 			                (Tmp_win = GetTwmWindow(Event.xany.window))) {
 				if(Tmp_win->iswinbox) {
 					XTranslateCoordinates(dpy, Scr->Root, Event.xany.window,
-					                      JunkX, JunkY,  &JunkX, &JunkY, &win);
+					                      x, y, &x, &y, &win);
 					XTranslateCoordinates(dpy, Event.xany.window, win,
-					                      JunkX, JunkY,  &JunkX, &JunkY, &win);
+					                      x, y, &x, &y, &win);
 					if(win != 0) {
 						Event.xany.window = win;
 					}
@@ -3513,10 +3521,10 @@ void HandleButtonPress(void)
 			XTranslateCoordinates(dpy, Scr->Root, Event.xany.window,
 			                      Event.xbutton.x,
 			                      Event.xbutton.y,
-			                      &JunkX, &JunkY, &JunkChild);
+			                      &x, &y, &JunkChild);
 
-			Event.xbutton.x = JunkX;
-			Event.xbutton.y = JunkY;
+			Event.xbutton.x = x;
+			Event.xbutton.y = y;
 			Context = C_WINDOW;
 		}
 		else if(mr != NULL) {

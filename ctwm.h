@@ -527,11 +527,11 @@ extern bool HandlingEvents;
 extern Cursor TopCursor, TopLeftCursor, LeftCursor, BottomLeftCursor,
        BottomCursor, BottomRightCursor, RightCursor, TopRightCursor;
 
-extern Window JunkRoot;
-extern Window JunkChild;
-extern int JunkX;
-extern int JunkY;
+/* Junk vars; see comment in ctwm.c about usage */
+extern Window JunkRoot, JunkChild;
+extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
+
 extern XGCValues Gcv;
 extern int Argc;
 extern char **Argv;
