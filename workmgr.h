@@ -142,7 +142,7 @@ struct OccupyWindow {
 
 struct CaptiveCTWM {
 	Window        root;
-	String        name;
+	char          *name;
 };
 
 void InitWorkSpaceManager(void);

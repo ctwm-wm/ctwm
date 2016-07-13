@@ -4109,6 +4109,7 @@ CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
 	Window      root;
 	Window      child, croot;
 	CaptiveCTWM cctwm;
+	char        *rname;
 
 	root = RootWindow(dpy, Scr->screen);
 	while(1) {
@@ -4119,10 +4120,25 @@ CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
 			continue;
 		}
 		cctwm.root = root;
-		XFetchName(dpy, root, &cctwm.name);
-		if(!cctwm.name) {
+
+		/*
+		 * We indirect through the extra var here for probably
+		 * unnecessary reasons; X resources (like that from XFetchName)
+		 * are specified to be freed via XFree(), not via free().  And we
+		 * don't want our callers to have to know that (or worse, know to
+		 * do it SOMEtimes, since we also might create it ourselves with
+		 * strdup()).  So eat the extra allocation/copy and insulate
+		 * callers.
+		 */
+		XFetchName(dpy, root, &rname);
+		if(rname) {
+			cctwm.name = strdup(rname);
+			XFree(rname);
+		}
+		else {
 			cctwm.name = strdup("Root");
 		}
+
 		return (cctwm);
 	}
 }
