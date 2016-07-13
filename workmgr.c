@@ -4104,7 +4104,8 @@ CaptiveCtwmRootWindow(Window window)
 	return w;
 }
 
-CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
+CaptiveCTWM
+GetCaptiveCTWMUnderPointer(void)
 {
 	Window      root;
 	Window      child, croot;
