@@ -208,7 +208,6 @@ char *AddToCaptiveList(const char *cptname);
 void RemoveFromCaptiveList(const char *cptname);
 bool RedirectToCaptive(Window window);
 void SetPropsIfCaptiveCtwm(TwmWindow *win);
-Window CaptiveCtwmRootWindow(Window window);
 
 void MoveToNextWorkSpace(VirtualScreen *vs, TwmWindow *twm_win);
 void MoveToPrevWorkSpace(VirtualScreen *vs, TwmWindow *twm_win);

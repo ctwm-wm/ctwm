@@ -101,6 +101,7 @@ static WorkSpace *GetWorkspace(char *wname);
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label);
 static int CanChangeOccupation(TwmWindow **twm_winp);
+static Window CaptiveCtwmRootWindow(Window window);
 void safecopy(char *dest, char *src, int size);
 
 int fullOccupation = 0;
@@ -4080,7 +4081,8 @@ void SetPropsIfCaptiveCtwm(TwmWindow *win)
 	                PropModeReplace, (unsigned char *) &window, 1);
 }
 
-Window CaptiveCtwmRootWindow(Window window)
+static Window
+CaptiveCtwmRootWindow(Window window)
 {
 	Window             *prop;
 	Window              w;
