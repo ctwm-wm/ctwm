@@ -804,7 +804,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			bool    cont = true;
 			Window  root = RootWindow(dpy, Scr->screen);
 			Cursor  cursor;
-			CaptiveCTWM cctwm0, cctwm;
+			CaptiveCTWM cctwm0;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
@@ -832,9 +832,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						cont = false;
 						break;
 
-					case ButtonRelease:
+					case ButtonRelease: {
+						CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
 						cont = false;
-						cctwm = GetCaptiveCTWMUnderPointer();
 						free(cctwm.name);
 						if(cctwm.root == Scr->Root) {
 							break;
@@ -847,9 +847,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						XReparentWindow(dpy, tmp_win->w, cctwm.root, 0, 0);
 						XMapWindow(dpy, tmp_win->w);
 						break;
+					}
 
-					case MotionNotify:
-						cctwm = GetCaptiveCTWMUnderPointer();
+					case MotionNotify: {
+						CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
 						if(cctwm.root != cctwm0.root) {
 							XFreeCursor(dpy, cursor);
 							cursor = MakeStringCursor(cctwm.name);
@@ -860,6 +861,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						}
 						free(cctwm.name);
 						break;
+					}
 				}
 			}
 			ButtonPressed = -1;
