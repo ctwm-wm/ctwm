@@ -857,11 +857,15 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					case MotionNotify: {
 						CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
 						if(cctwm.root != captive_root) {
+							unsigned int chmask;
+
 							XFreeCursor(dpy, cursor);
 							cursor = MakeStringCursor(cctwm.name);
 							captive_root = cctwm.root;
-							XChangeActivePointerGrab(dpy,
-							                         ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
+
+							chmask = (ButtonPressMask | ButtonMotionMask
+							          | ButtonReleaseMask);
+							XChangeActivePointerGrab(dpy, chmask,
 							                         cursor, CurrentTime);
 						}
 						free(cctwm.name);
