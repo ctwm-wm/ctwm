@@ -804,7 +804,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			bool    cont = true;
 			Window  root = RootWindow(dpy, Scr->screen);
 			Cursor  cursor;
-			CaptiveCTWM cctwm0;
+			Window captive_root;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
@@ -814,9 +814,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XBell(dpy, 0);
 				break;
 			}
-			cctwm0 = GetCaptiveCTWMUnderPointer();
-			cursor = MakeStringCursor(cctwm0.name);
-			free(cctwm0.name);
+
+			{
+				CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
+				cursor = MakeStringCursor(cctwm.name);
+				free(cctwm.name);
+				captive_root = cctwm.root;
+			}
+
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
 			}
@@ -851,10 +856,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 					case MotionNotify: {
 						CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
-						if(cctwm.root != cctwm0.root) {
+						if(cctwm.root != captive_root) {
 							XFreeCursor(dpy, cursor);
 							cursor = MakeStringCursor(cctwm.name);
-							cctwm0 = cctwm;
+							captive_root = cctwm.root;
 							XChangeActivePointerGrab(dpy,
 							                         ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
 							                         cursor, CurrentTime);
