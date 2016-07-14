@@ -203,7 +203,6 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
-bool AnimateRoot(void);
 char *AddToCaptiveList(const char *cptname);
 void RemoveFromCaptiveList(const char *cptname);
 bool RedirectToCaptive(Window window);
