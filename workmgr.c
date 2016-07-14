@@ -98,6 +98,7 @@ static void WMapAddToList(TwmWindow *win, WorkSpace *ws);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
 static void ResizeOccupyWindow(TwmWindow *win);
 static WorkSpace *GetWorkspace(char *wname);
+static void InvertColorPair(ColorPair *cp);
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label);
 static int CanChangeOccupation(TwmWindow **twm_winp);
@@ -3399,7 +3400,13 @@ move:
 	XDestroyWindow(dpy, w);
 }
 
-void InvertColorPair(ColorPair *cp)
+/*
+ * This is really more util.c fodder, but leaving it here for now because
+ * it's only used once in the below func.  If we start finding external
+ * uses for it, it should be moved.
+ */
+static void
+InvertColorPair(ColorPair *cp)
 {
 	Pixel save;
 

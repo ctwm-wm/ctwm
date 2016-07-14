@@ -194,7 +194,6 @@ void WMapUpdateIconName(TwmWindow *win);
 void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event);
 void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event);
 void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event);
-void InvertColorPair(ColorPair *cp);
 void WMapRedrawName(VirtualScreen *vs, WinList   wl);
 void WMapCreateCurrentBackGround(char *border,
                                  char *background, char *foreground,
