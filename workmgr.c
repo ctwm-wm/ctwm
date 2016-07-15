@@ -1043,12 +1043,10 @@ RedirectToCaptive(Window window)
 	status = XrmGetResource(db, "ctwm.redirect", "Ctwm.Redirect", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
-		char             cctwm [64];
 		Window          *prop;
 		Atom             XA_WM_CTWM_ROOT_name;
 
-		safecopy(cctwm, value.addr, sizeof(cctwm));
-		asprintf(&atomname, "WM_CTWM_ROOT_%s", cctwm);
+		asprintf(&atomname, "WM_CTWM_ROOT_%s", value.addr);
 		/*
 		 * Set only_if_exists to True: the atom for the requested
 		 * captive ctwm won't exist if the captive ctwm itself does not exist.
