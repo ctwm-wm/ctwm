@@ -85,8 +85,7 @@ static void DisplayWinUnchecked(VirtualScreen *vs,
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void CreateOccupyWindow(void);
 static unsigned int GetMaskFromResource(TwmWindow *win, char *res);
-static int GetPropertyFromMask(unsigned int mask, char *prop,
-                               long *gwkspc);
+static int GetPropertyFromMask(unsigned int mask, char *prop);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void PaintButton(int which,
                         VirtualScreen *vs, Window w,
@@ -179,7 +178,6 @@ void CreateWorkSpaceManager(void)
 	VirtualScreen    *vs;
 	WorkSpace        *ws, *fws;
 	int len, vsmaplen;
-	long junk;
 
 	if(! Scr->workSpaceManagerActive) {
 		return;
@@ -255,7 +253,7 @@ void CreateWorkSpaceManager(void)
 			XClearWindow(dpy, vs->window);
 		}
 	}
-	len = GetPropertyFromMask(0xFFFFFFFFu, wrkSpcList, &junk);
+	len = GetPropertyFromMask(0xFFFFFFFFu, wrkSpcList);
 	XChangeProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) wrkSpcList, len);
 }
@@ -855,7 +853,6 @@ void SetupOccupation(TwmWindow *twm_win,
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
 	XrmDatabase       db = NULL;
-	long gwkspc = 0; /* for GNOME - which workspace we occupy */
 
 	if(! Scr->workSpaceManagerActive) {
 		twm_win->occupation = 1 << 0;   /* occupy workspace #0 */
@@ -968,7 +965,7 @@ void SetupOccupation(TwmWindow *twm_win,
 		}
 	}
 
-	len = GetPropertyFromMask(twm_win->occupation, wrkSpcList, &gwkspc);
+	len = GetPropertyFromMask(twm_win->occupation, wrkSpcList);
 
 	if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
 		return;
@@ -1638,13 +1635,12 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	int       final_x, final_y;
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
-	long      gwkspc = 0; /* for gnome - the workspace of this window */
 	int changedoccupation;
 
 	if((newoccupation == 0)
 	                ||  /* in case the property has been broken by another client */
 	                (newoccupation == tmp_win->occupation)) {
-		len = GetPropertyFromMask(tmp_win->occupation, namelist, &gwkspc);
+		len = GetPropertyFromMask(tmp_win->occupation, namelist);
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
@@ -1693,7 +1689,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
-	len = GetPropertyFromMask(newoccupation, namelist, &gwkspc);
+	len = GetPropertyFromMask(newoccupation, namelist);
 	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
@@ -2547,7 +2543,8 @@ unsigned int GetMaskFromProperty(unsigned char *prop, unsigned long len)
 	return (mask);
 }
 
-static int GetPropertyFromMask(unsigned int mask, char *prop, long *gwkspc)
+static int
+GetPropertyFromMask(unsigned int mask, char *prop)
 {
 	WorkSpace *ws;
 	int       len;
@@ -2564,7 +2561,6 @@ static int GetPropertyFromMask(unsigned int mask, char *prop, long *gwkspc)
 			strcpy(p, ws->label);
 			p   += strlen(ws->label) + 1;
 			len += strlen(ws->label) + 1;
-			*gwkspc = ws->number;
 		}
 	}
 	return (len);
