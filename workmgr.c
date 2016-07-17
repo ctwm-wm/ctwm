@@ -2509,7 +2509,13 @@ static unsigned int GetMaskFromResource(TwmWindow *win, char *res)
                                    in case... */
 }
 
-unsigned int GetMaskFromProperty(unsigned char *prop, unsigned long len)
+
+/*
+ * Turns a NULL-separated buffer of workspace names into an occupation
+ * bitmask.
+ */
+unsigned int
+GetMaskFromProperty(unsigned char *prop, unsigned long len)
 {
 	char         wrkSpcName [256];
 	WorkSpace    *ws;
@@ -2543,6 +2549,11 @@ unsigned int GetMaskFromProperty(unsigned char *prop, unsigned long len)
 	return (mask);
 }
 
+
+/*
+ * Turns an occupation mask into a NULL-separated buffer (not really a
+ * string) of the workspace names.
+ */
 static int
 GetPropertyFromMask(unsigned int mask, char *prop)
 {
