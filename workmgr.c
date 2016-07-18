@@ -2559,22 +2559,40 @@ GetPropertyFromMask(unsigned int mask, char *prop)
 {
 	WorkSpace *ws;
 	int       len;
-	char      *p;
+	char      *wss[MAXWORKSPACE];
+	int       i;
 
+	/* If it's everything, just say 'all' */
 	if(mask == fullOccupation) {
 		strcpy(prop, "all");
 		return (3);
 	}
-	len = 0;
-	p = prop;
+
+	/* Stash up pointers to all the labels for WSen it's in */
+	memset(wss, 0, sizeof(wss));
+	i = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(mask & (1 << ws->number)) {
-			strcpy(p, ws->label);
-			p   += strlen(ws->label) + 1;
-			len += strlen(ws->label) + 1;
+			wss[i++] = ws->label;
 		}
 	}
-	return (len);
+
+	/* Assemble them into \0-separated string */
+	*prop = '\0'; // Just in case
+	len = 0;
+	for(i = 0 ; wss[i] != NULL ; i++) {
+		strcpy((prop + len), wss[i]);
+		len += strlen(wss[i]) + 1; // Skip past \0
+	}
+
+#if 0
+	fprintf(stderr, "%d -> (%d)  ", mask, len);
+	for(i = 0 ; i < len ; i++)
+		fprintf(stderr, " %d:'%c'", (int)prop[i], prop[i]);
+	fprintf(stderr, "\n");
+#endif
+
+	return len;
 }
 
 
