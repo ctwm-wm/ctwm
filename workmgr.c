@@ -967,14 +967,13 @@ void SetupOccupation(TwmWindow *twm_win,
 		}
 	}
 
-	len = GetPropertyFromMask(twm_win->occupation, &wsstr);
-
 	if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
 		return;
 	}
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
 
+	len = GetPropertyFromMask(twm_win->occupation, &wsstr);
 	XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) wsstr, len);
 	free(wsstr);
@@ -1643,11 +1642,11 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	if((newoccupation == 0)
 	                ||  /* in case the property has been broken by another client */
 	                (newoccupation == tmp_win->occupation)) {
-		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
+		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
 		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 		                PropModeReplace, (unsigned char *) namelist, len);
 		free(namelist);
@@ -1693,11 +1692,11 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
-	len = GetPropertyFromMask(newoccupation, &namelist);
 	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
+	len = GetPropertyFromMask(newoccupation, &namelist);
 	XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) namelist, len);
 	free(namelist);
