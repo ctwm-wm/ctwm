@@ -2567,7 +2567,7 @@ GetPropertyFromMask(unsigned int mask, char **prop)
 	/* If it's everything, just say 'all' */
 	if(mask == fullOccupation) {
 		*prop = strdup("all");
-		return (3);
+		return 3;
 	}
 
 	/* Stash up pointers to all the labels for WSen it's in */
