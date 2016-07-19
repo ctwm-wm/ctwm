@@ -85,7 +85,7 @@ static void DisplayWinUnchecked(VirtualScreen *vs,
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void CreateOccupyWindow(void);
 static unsigned int GetMaskFromResource(TwmWindow *win, char *res);
-static int GetPropertyFromMask(unsigned int mask, char *prop);
+static int GetPropertyFromMask(unsigned int mask, char **prop);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void PaintButton(int which,
                         VirtualScreen *vs, Window w,
@@ -173,7 +173,7 @@ void ConfigureWorkSpaceManager(void)
 
 void CreateWorkSpaceManager(void)
 {
-	char wrkSpcList [512];
+	char *wrkSpcList;
 	char vsmapbuf    [1024], *vsmap;
 	VirtualScreen    *vs;
 	WorkSpace        *ws, *fws;
@@ -253,9 +253,10 @@ void CreateWorkSpaceManager(void)
 			XClearWindow(dpy, vs->window);
 		}
 	}
-	len = GetPropertyFromMask(0xFFFFFFFFu, wrkSpcList);
+	len = GetPropertyFromMask(0xFFFFFFFFu, &wrkSpcList);
 	XChangeProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) wrkSpcList, len);
+	free(wrkSpcList);
 }
 
 void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
@@ -848,6 +849,7 @@ void SetupOccupation(TwmWindow *twm_win,
 	char                *str_type;
 	XrmValue            value;
 	char                wrkSpcList [512];
+	char                *wsstr;
 	int                 len;
 	WorkSpace           *ws;
 	XWindowAttributes winattrs;
@@ -965,7 +967,7 @@ void SetupOccupation(TwmWindow *twm_win,
 		}
 	}
 
-	len = GetPropertyFromMask(twm_win->occupation, wrkSpcList);
+	len = GetPropertyFromMask(twm_win->occupation, &wsstr);
 
 	if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
 		return;
@@ -974,7 +976,8 @@ void SetupOccupation(TwmWindow *twm_win,
 	XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
 
 	XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) wrkSpcList, len);
+	                PropModeReplace, (unsigned char *) wsstr, len);
+	free(wsstr);
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(twm_win);
 #endif
@@ -1630,7 +1633,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	VirtualScreen *vs;
 	WorkSpace *ws;
 	int       oldoccupation;
-	char      namelist [512];
+	char      *namelist;
 	int       len;
 	int       final_x, final_y;
 	XWindowAttributes winattrs;
@@ -1640,13 +1643,14 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	if((newoccupation == 0)
 	                ||  /* in case the property has been broken by another client */
 	                (newoccupation == tmp_win->occupation)) {
-		len = GetPropertyFromMask(tmp_win->occupation, namelist);
+		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
 		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 		                PropModeReplace, (unsigned char *) namelist, len);
+		free(namelist);
 #ifdef EWMH
 		EwmhSet_NET_WM_DESKTOP(tmp_win);
 #endif
@@ -1689,13 +1693,14 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
-	len = GetPropertyFromMask(newoccupation, namelist);
+	len = GetPropertyFromMask(newoccupation, &namelist);
 	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
 	XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) namelist, len);
+	free(namelist);
 
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(tmp_win);
@@ -2555,7 +2560,7 @@ GetMaskFromProperty(unsigned char *prop, unsigned long len)
  * string) of the workspace names.
  */
 static int
-GetPropertyFromMask(unsigned int mask, char *prop)
+GetPropertyFromMask(unsigned int mask, char **prop)
 {
 	WorkSpace *ws;
 	int       len;
@@ -2564,31 +2569,33 @@ GetPropertyFromMask(unsigned int mask, char *prop)
 
 	/* If it's everything, just say 'all' */
 	if(mask == fullOccupation) {
-		strcpy(prop, "all");
+		*prop = strdup("all");
 		return (3);
 	}
 
 	/* Stash up pointers to all the labels for WSen it's in */
 	memset(wss, 0, sizeof(wss));
 	i = 0;
+	len = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(mask & (1 << ws->number)) {
 			wss[i++] = ws->label;
+			len += strlen(ws->label) + 1;
 		}
 	}
 
 	/* Assemble them into \0-separated string */
-	*prop = '\0'; // Just in case
+	*prop = malloc(len);
 	len = 0;
 	for(i = 0 ; wss[i] != NULL ; i++) {
-		strcpy((prop + len), wss[i]);
+		strcpy((*prop + len), wss[i]);
 		len += strlen(wss[i]) + 1; // Skip past \0
 	}
 
 #if 0
 	fprintf(stderr, "%d -> (%d)  ", mask, len);
 	for(i = 0 ; i < len ; i++)
-		fprintf(stderr, " %d:'%c'", (int)prop[i], prop[i]);
+		fprintf(stderr, " %d:'%c'", (int)(*prop)[i], (*prop)[i]);
 	fprintf(stderr, "\n");
 #endif
 
