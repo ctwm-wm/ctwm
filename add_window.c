@@ -1792,7 +1792,7 @@ void FetchWmProtocols(TwmWindow *tmp)
 			}
 		}
 		if(protocols) {
-			XFree((char *) protocols);
+			XFree(protocols);
 		}
 	}
 	tmp->protocols = flags;
@@ -1917,7 +1917,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 			for(i = 0; i < number_cmap_windows; i++) {   /* append rest */
 				new_cmap_windows[i + 1] = cmap_windows[i];
 			}
-			XFree((char *) cmap_windows);
+			XFree(cmap_windows);
 			can_free_cmap_windows = true;  /* do not use XFree any more */
 			cmap_windows = new_cmap_windows;
 			number_cmap_windows++;
@@ -2001,7 +2001,7 @@ done:
 			free(cmap_windows);
 		}
 		else {
-			XFree((char *) cmap_windows);
+			XFree(cmap_windows);
 		}
 	}
 }

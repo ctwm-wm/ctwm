@@ -896,7 +896,7 @@ void SetupOccupation(TwmWindow *twm_win,
 		                      &bytesafter, &prop) == Success) {
 			if(nitems != 0) {
 				twm_win->occupation = GetMaskFromProperty(prop, nitems);
-				XFree((char *) prop);
+				XFree(prop);
 			}
 		}
 	}
@@ -1068,7 +1068,7 @@ RedirectToCaptive(Window window)
 					ret = true;
 				}
 			}
-			XFree((char *)prop);
+			XFree(prop);
 		}
 	}
 	status = XrmGetResource(db, "ctwm.rootWindow", "Ctwm.RootWindow", &str_type,
@@ -2944,7 +2944,7 @@ void WMapRestack(WorkSpace *ws)
 		}
 		XRestackWindows(dpy, smallws, j);
 	}
-	XFree((char *) children);
+	XFree(children);
 	free(smallws);
 	return;
 }
@@ -3840,7 +3840,7 @@ static char **GetCaptivesList(int scrnum)
 		p += strlen((char *)p) + 1;
 	}
 	ret [i] = NULL;
-	XFree((char *)prop);
+	XFree(prop);
 
 	return ret;
 }
@@ -4070,7 +4070,7 @@ CaptiveCtwmRootWindow(Window window)
 		return ((Window)0);
 	}
 	w = *prop;
-	XFree((char *)prop);
+	XFree(prop);
 	return w;
 }
 
@@ -4137,7 +4137,7 @@ DontRedirect(Window window)
 	if(len == 0) {
 		return false;
 	}
-	XFree((char *)prop);
+	XFree(prop);
 	return true;
 }
 

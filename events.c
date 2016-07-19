@@ -1551,7 +1551,7 @@ void HandlePropertyNotify(void)
 							return;
 						}
 						GotoWorkSpaceByName(Scr->vScreenList, (char *)prop);
-						XFree((char *) prop);
+						XFree(prop);
 					}
 					return;
 
@@ -1696,7 +1696,7 @@ void HandlePropertyNotify(void)
 
 		case XA_WM_HINTS:
 			if(Tmp_win->wmhints) {
-				XFree((char *) Tmp_win->wmhints);
+				XFree(Tmp_win->wmhints);
 			}
 			Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
 
@@ -1919,7 +1919,7 @@ void HandlePropertyNotify(void)
 					return;
 				}
 				ChangeOccupation(Tmp_win, GetMaskFromProperty(prop, nitems));
-				XFree((char *)prop);
+				XFree(prop);
 			}
 #ifdef EWMH
 			else if(EwmhHandlePropertyNotify(&Event.xproperty, Tmp_win)) {
@@ -2506,13 +2506,13 @@ void HandleDestroyNotify(void)
 
 	free_window_names(Tmp_win, true, true, true);               /* 1, 2, 3 */
 	if(Tmp_win->wmhints) {                                      /* 4 */
-		XFree((char *)Tmp_win->wmhints);
+		XFree(Tmp_win->wmhints);
 	}
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */
-		XFree((char *)Tmp_win->class.res_name);
+		XFree(Tmp_win->class.res_name);
 	}
 	if(Tmp_win->class.res_class && Tmp_win->class.res_class != NoName) { /* 6 */
-		XFree((char *)Tmp_win->class.res_class);
+		XFree(Tmp_win->class.res_class);
 	}
 	free_cwins(Tmp_win);                                        /* 9 */
 	if(Tmp_win->titlebuttons) {                                 /* 10 */

@@ -2157,7 +2157,7 @@ GetWMState(Window w, int *statep, Window *iwp)
 		retval = true;
 	}
 
-	XFree((char *) datap);
+	XFree(datap);
 	return retval;
 }
 
