@@ -2606,8 +2606,9 @@ GetPropertyFromMask(unsigned int mask, char **prop)
 
 #if 0
 	fprintf(stderr, "%d -> (%d)  ", mask, len);
-	for(i = 0 ; i < len ; i++)
+	for(i = 0 ; i < len ; i++) {
 		fprintf(stderr, " %d:'%c'", (int)(*prop)[i], (*prop)[i]);
+	}
 	fprintf(stderr, "\n");
 #endif
 
