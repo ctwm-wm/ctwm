@@ -171,11 +171,10 @@ void ConfigureWorkSpaceManager(void)
 
 void CreateWorkSpaceManager(void)
 {
-	char *wrkSpcList;
 	char vsmapbuf    [1024], *vsmap;
 	VirtualScreen    *vs;
 	WorkSpace        *ws, *fws;
-	int len, vsmaplen;
+	int              vsmaplen;
 
 	if(! Scr->workSpaceManagerActive) {
 		return;
@@ -251,10 +250,16 @@ void CreateWorkSpaceManager(void)
 			XClearWindow(dpy, vs->window);
 		}
 	}
-	len = GetPropertyFromMask(0xFFFFFFFFu, &wrkSpcList);
-	XChangeProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) wrkSpcList, len);
-	free(wrkSpcList);
+
+	{
+		char *wrkSpcList;
+		int  len;
+
+		len = GetPropertyFromMask(0xFFFFFFFFu, &wrkSpcList);
+		XChangeProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) wrkSpcList, len);
+		free(wrkSpcList);
+	}
 }
 
 void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
@@ -835,7 +840,6 @@ void SetupOccupation(TwmWindow *twm_win,
                      int occupation_hint) /* <== [ Matthew McNeill Feb 1997 ] == */
 {
 	TwmWindow           *t;
-	unsigned char       *prop;
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
 	int                 actual_format;
@@ -847,8 +851,6 @@ void SetupOccupation(TwmWindow *twm_win,
 	char                *str_type;
 	XrmValue            value;
 	char                wrkSpcList [512];
-	char                *wsstr;
-	int                 len;
 	WorkSpace           *ws;
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
@@ -891,6 +893,7 @@ void SetupOccupation(TwmWindow *twm_win,
 	}
 
 	if(RestartPreviousState) {
+		unsigned char *prop;
 		if(XGetWindowProperty(dpy, twm_win->w, XA_WM_OCCUPATION, 0L, 2500, False,
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
@@ -971,10 +974,17 @@ void SetupOccupation(TwmWindow *twm_win,
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
 
-	len = GetPropertyFromMask(twm_win->occupation, &wsstr);
-	XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) wsstr, len);
-	free(wsstr);
+	/* Set the property for the occupation */
+	{
+		char *wsstr;
+		int  len;
+
+		len = GetPropertyFromMask(twm_win->occupation, &wsstr);
+		XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) wsstr, len);
+		free(wsstr);
+	}
+
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(twm_win);
 #endif
@@ -1630,8 +1640,6 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	VirtualScreen *vs;
 	WorkSpace *ws;
 	int       oldoccupation;
-	char      *namelist;
-	int       len;
 	int       final_x, final_y;
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
@@ -1640,6 +1648,9 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	if((newoccupation == 0)
 	                ||  /* in case the property has been broken by another client */
 	                (newoccupation == tmp_win->occupation)) {
+		char *namelist;
+		int  len;
+
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
@@ -1694,10 +1705,14 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
-	len = GetPropertyFromMask(newoccupation, &namelist);
-	XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) namelist, len);
-	free(namelist);
+	{
+		char *namelist;
+		int  len;
+		len = GetPropertyFromMask(newoccupation, &namelist);
+		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) namelist, len);
+		free(namelist);
+	}
 
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(tmp_win);
