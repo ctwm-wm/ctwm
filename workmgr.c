@@ -2532,21 +2532,21 @@ static unsigned int GetMaskFromResource(TwmWindow *win, char *res)
  * bitmask.
  */
 unsigned int
-GetMaskFromProperty(unsigned char *prop, unsigned long len)
+GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 {
 	char         wrkSpcName [256];
 	WorkSpace    *ws;
 	unsigned int mask;
 	int          num, l;
-	char         *psrc;
+	char         *prop;
 
 	mask = 0;
 	l = 0;
-	psrc = (char *) prop;
+	prop = (char *) _prop;
 	while(l < len) {
-		strcpy(wrkSpcName, psrc);
-		l    += strlen(psrc) + 1;
-		psrc += strlen(psrc) + 1;
+		strcpy(wrkSpcName, prop);
+		l    += strlen(prop) + 1;
+		prop += strlen(prop) + 1;
 		if(strcmp(wrkSpcName, "all") == 0) {
 			mask = fullOccupation;
 			break;
@@ -2577,10 +2577,11 @@ GetMaskFromProperty(unsigned char *prop, unsigned long len)
 		 */
 		dbs = malloc(len * 2);
 		i = j = 0;
+		prop = (char *) _prop;
 		while(i < len) {
-			size_t slen = strlen((char *)prop + i);
+			size_t slen = strlen(prop + i);
 
-			strcpy(dbs + j, ((char *)prop + i));
+			strcpy(dbs + j, (prop + i));
 			i += slen + 1;
 			strcpy(dbs + j + slen, "\\0");
 			j += slen + 2;
