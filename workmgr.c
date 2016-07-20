@@ -2578,7 +2578,7 @@ GetMaskFromProperty(unsigned char *prop, unsigned long len)
 		dbs = malloc(len * 2);
 		i = j = 0;
 		while(i < len) {
-			size_t slen = strlen((char *)prop);
+			size_t slen = strlen((char *)prop + i);
 
 			strcpy(dbs + j, ((char *)prop + i));
 			i += slen + 1;
