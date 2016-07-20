@@ -2538,13 +2538,15 @@ GetMaskFromProperty(unsigned char *prop, unsigned long len)
 	WorkSpace    *ws;
 	unsigned int mask;
 	int          num, l;
+	char         *psrc;
 
 	mask = 0;
 	l = 0;
+	psrc = (char *) prop;
 	while(l < len) {
-		strcpy(wrkSpcName, (char *)prop);
-		l    += strlen((char *)prop) + 1;
-		prop += strlen((char *)prop) + 1;
+		strcpy(wrkSpcName, psrc);
+		l    += strlen(psrc) + 1;
+		psrc += strlen(psrc) + 1;
 		if(strcmp(wrkSpcName, "all") == 0) {
 			mask = fullOccupation;
 			break;
@@ -2563,6 +2565,32 @@ GetMaskFromProperty(unsigned char *prop, unsigned long len)
 			mask |= (1 << num);
 		}
 	}
+
+#if 0
+	{
+		char *dbs;
+		int i, j;
+
+		/*
+		 * '\0' => "\\0" means we need longer than input; *2 is overkill,
+		 * but always sufficient, and it's cheap.
+		 */
+		dbs = malloc(len * 2);
+		i = j = 0;
+		while(i < len) {
+			size_t slen = strlen((char *)prop);
+
+			strcpy(dbs + j, ((char *)prop + i));
+			i += slen + 1;
+			strcpy(dbs + j + slen, "\\0");
+			j += slen + 2;
+		}
+
+		fprintf(stderr, "'%s' -> 0x%x\n", dbs, mask);
+		free(dbs);
+	}
+#endif
+
 	return (mask);
 }
 
