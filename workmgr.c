@@ -2537,7 +2537,7 @@ GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 	char         wrkSpcName [256];
 	WorkSpace    *ws;
 	unsigned int mask;
-	int          num, l;
+	int          l;
 	char         *prop;
 
 	mask = 0;
@@ -2551,18 +2551,14 @@ GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 			mask = fullOccupation;
 			break;
 		}
-		num = 0;
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			if(strcmp(wrkSpcName, ws->label) == 0) {
+				mask |= (1 << ws->number);
 				break;
 			}
-			num++;
 		}
 		if(ws == NULL) {
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
-		}
-		else {
-			mask |= (1 << num);
 		}
 	}
 
