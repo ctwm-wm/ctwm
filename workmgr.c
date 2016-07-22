@@ -84,6 +84,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void CreateOccupyWindow(void);
 static unsigned int GetMaskFromResource(TwmWindow *win, char *res);
 static int GetPropertyFromMask(unsigned int mask, char **prop);
+static char *mk_nullsep_string(const char *prop, int len);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void PaintButton(int which,
                         VirtualScreen *vs, Window w,
@@ -2564,26 +2565,8 @@ GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 
 #if 0
 	{
-		char *dbs;
-		int i, j;
-
-		/*
-		 * '\0' => "\\0" means we need longer than input; *2 is overkill,
-		 * but always sufficient, and it's cheap.
-		 */
-		dbs = malloc(len * 2);
-		i = j = 0;
-		prop = (char *) _prop;
-		while(i < len) {
-			size_t slen = strlen(prop + i);
-
-			strcpy(dbs + j, (prop + i));
-			i += slen + 1;
-			strcpy(dbs + j + slen, "\\0");
-			j += slen + 2;
-		}
-
-		fprintf(stderr, "'%s' -> 0x%x\n", dbs, mask);
+		char *dbs = mk_nullsep_string((char *)_prop, len);
+		fprintf(stderr, "%s('%s') -> 0x%x\n", __func__, dbs, mask);
 		free(dbs);
 	}
 #endif
@@ -2630,15 +2613,52 @@ GetPropertyFromMask(unsigned int mask, char **prop)
 	}
 
 #if 0
-	fprintf(stderr, "%d -> (%d)  ", mask, len);
-	for(i = 0 ; i < len ; i++) {
-		fprintf(stderr, " %d:'%c'", (int)(*prop)[i], (*prop)[i]);
+	{
+		char *dbs = mk_nullsep_string(*prop, len);
+		fprintf(stderr, "%s(0x%x) -> %d:'%s'\n", __func__, mask, len, dbs);
+		free(dbs);
 	}
-	fprintf(stderr, "\n");
 #endif
 
 	return len;
 }
+
+
+/*
+ * Generate a printable variant of the null-separated strings we use for
+ * stashing in XA_WM_OCCUPATION.  Used for debugging
+ * Get{Property,Mask}From{Mask,Property}().
+ */
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+static char *
+mk_nullsep_string(const char *prop, int len)
+{
+	char *dbs;
+	int i, j;
+
+	/*
+	 * '\0' => "\\0" means we need longer than input; *2 is overkill,
+	 * but always sufficient, and it's cheap.
+	 */
+	dbs = malloc(len * 2);
+	i = j = 0;
+	while(i < len) {
+		size_t slen = strlen(prop + i);
+
+		strcpy(dbs + j, (prop + i));
+		i += slen + 1;
+		strcpy(dbs + j + slen, "\\0");
+		j += slen + 2;
+	}
+
+	return dbs;
+}
+#ifdef __GNUC__
+# pragma GCC diagnostic pop
+#endif
 
 
 /*
