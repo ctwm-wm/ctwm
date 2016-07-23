@@ -3772,10 +3772,3 @@ void WMapCreateDefaultBackGround(char *border,
 	}
 	ws->defImage = image;
 }
-
-
-bool
-visible(TwmWindow *tmp_win)
-{
-	return (tmp_win->vs != NULL);
-}

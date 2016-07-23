@@ -1605,3 +1605,12 @@ safe_strncpy(char *dest, const char *src, size_t size)
 	dest[size - 1] = '\0';
 }
 
+
+/*
+ * Window mapped on some virtual screen?
+ */
+bool
+visible(const TwmWindow *tmp_win)
+{
+	return (tmp_win->vs != NULL);
+}

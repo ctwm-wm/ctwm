@@ -206,8 +206,6 @@ void MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win);
 
 void ShowBackground(VirtualScreen *vs, int state);
 
-bool visible(TwmWindow *tmp_win);
-
 extern int fullOccupation;
 
 #endif /* _CTWM_WORKMGR_H */

@@ -130,5 +130,6 @@ void ConstrainByBorders(TwmWindow *twmwin,
                         int *left, int width,
                         int *top, int height);
 void safe_strncpy(char *dest, const char *src, size_t size);
+bool visible(const TwmWindow *tmp_win);
 
 #endif /* _CTWM_UTIL_H */
