@@ -82,7 +82,7 @@ static void DisplayWinUnchecked(VirtualScreen *vs,
                                 TwmWindow *tmp_win);
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void CreateOccupyWindow(void);
-static unsigned int GetMaskFromResource(TwmWindow *win, char *res);
+static int GetMaskFromResource(TwmWindow *win, char *res);
 static int GetPropertyFromMask(unsigned int mask, char **prop);
 static char *mk_nullsep_string(const char *prop, int len);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
@@ -2456,7 +2456,7 @@ static void PaintButton(int which,
 	}
 }
 
-static unsigned int GetMaskFromResource(TwmWindow *win, char *res)
+static int GetMaskFromResource(TwmWindow *win, char *res)
 {
 	char      *name;
 	char      wrkSpcName [64];
