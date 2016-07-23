@@ -1033,8 +1033,6 @@ RedirectToCaptive(Window window)
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
 	int                 actual_format;
-	char                **cliargv = NULL;
-	int                 cliargc;
 	Bool                status;
 	char                *str_type;
 	XrmValue            value;
@@ -1047,19 +1045,25 @@ RedirectToCaptive(Window window)
 		return false;
 	}
 
-	/* Figure out its command-line */
-	if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
-		/* Can't tell, bail */
-		return false;
-	}
-
 	/* Figure out what sort of -xrm stuff it might have */
-	XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
-	if(db == NULL) {
-		/* Parse failed somehow, bail */
+	{
+		char **cliargv = NULL;
+		int  cliargc;
+
+		/* Get its command-line */
+		if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
+			/* Can't tell, bail */
+			return false;
+		}
+
+		XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
 		if(cliargv) {
 			XFreeStringList(cliargv);
 		}
+	}
+
+	/* Bail if we didn't get any info */
+	if(db == NULL) {
 		return false;
 	}
 
@@ -1152,7 +1156,6 @@ RedirectToCaptive(Window window)
 
 	/* Cleanup xrm bits */
 	XrmDestroyDatabase(db);
-	XFreeStringList(cliargv);
 
 	/* Whatever we found */
 	return ret;
