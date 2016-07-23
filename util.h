@@ -129,5 +129,6 @@ void ConstrainByBorders1(int *left, int width, int *top, int height);
 void ConstrainByBorders(TwmWindow *twmwin,
                         int *left, int width,
                         int *top, int height);
+void safe_strncpy(char *dest, const char *src, size_t size);
 
 #endif /* _CTWM_UTIL_H */

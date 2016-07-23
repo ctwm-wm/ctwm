@@ -90,7 +90,6 @@ static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label);
 static int CanChangeOccupation(TwmWindow **twm_winp);
 static Window CaptiveCtwmRootWindow(Window window);
-void safecopy(char *dest, char *src, int size);
 
 int fullOccupation = 0;
 static bool useBackgroundInfo = false;
@@ -1017,12 +1016,6 @@ void SetupOccupation(TwmWindow *twm_win,
 	}
 }
 
-void safecopy(char *dest, char *src, int size)
-{
-	strncpy(dest, src, size - 1);
-	dest[size - 1] = '\0';
-}
-
 
 /*
  * Reparent a window over to a captive ctwm, if we should.
@@ -1141,7 +1134,7 @@ RedirectToCaptive(Window window)
 		char rootw [32];
 		unsigned long int scanned;
 
-		safecopy(rootw, value.addr, sizeof(rootw));
+		safe_strncpy(rootw, value.addr, sizeof(rootw));
 		if(sscanf(rootw, "%lx", &scanned) == 1) {
 			Window newroot = scanned;
 			XWindowAttributes dummy_wa;

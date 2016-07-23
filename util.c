@@ -1589,3 +1589,19 @@ void ConstrainByBorders(TwmWindow *twmwin,
 		ConstrainByBorders1(left, width, top, height);
 	}
 }
+
+
+/*
+ * A safe strncpy(), which always ensures NUL-termination.
+ *
+ * XXX This is really just a slightly pessimized implementation of
+ * strlcpy().  Maybe we should use that instead, with a local
+ * implementation for systems like glibc-users that lack it?
+ */
+void
+safe_strncpy(char *dest, const char *src, size_t size)
+{
+	strncpy(dest, src, size - 1);
+	dest[size - 1] = '\0';
+}
+
