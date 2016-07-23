@@ -2487,9 +2487,6 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		}
 		name = wrkSpcName;
 		while((*res != '\0') && (*res != ' ')) {
-			if(*res == '\\') {
-				res++;
-			}
 			*name = *res;
 			name++;
 			res++;
