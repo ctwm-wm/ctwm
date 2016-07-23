@@ -2495,7 +2495,7 @@ GetMaskFromResource(TwmWindow *win, char *res)
 	 */
 	mask = 0;
 	for(wrkSpcName = strtok_r(res, " ", &tokst) ; wrkSpcName
-	    ; wrkSpcName = strtok_r(NULL, " ", &tokst)) {
+	                ; wrkSpcName = strtok_r(NULL, " ", &tokst)) {
 		if(strcmp(wrkSpcName, "all") == 0) {
 			mask = fullOccupation;
 			break;
