@@ -2468,7 +2468,7 @@ static int
 GetMaskFromResource(TwmWindow *win, char *res)
 {
 	WorkSpace *ws;
-	int       mask, num;
+	int       mask;
 	enum { O_SET, O_ADD, O_REM } mode;
 	char *wrkSpcName, *tokst;
 
@@ -2507,15 +2507,13 @@ GetMaskFromResource(TwmWindow *win, char *res)
 			}
 			continue;
 		}
-		num  = 0;
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			if(strcmp(wrkSpcName, ws->label) == 0) {
 				break;
 			}
-			num++;
 		}
 		if(ws != NULL) {
-			mask |= (1 << num);
+			mask |= (1 << ws->number);
 		}
 		else {
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
