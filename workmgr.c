@@ -1023,6 +1023,10 @@ void safecopy(char *dest, char *src, int size)
 	dest[size - 1] = '\0';
 }
 
+
+/*
+ * Reparent a window over to a captive ctwm, if we should.
+ */
 bool
 RedirectToCaptive(Window window)
 {
@@ -1036,29 +1040,43 @@ RedirectToCaptive(Window window)
 	XrmValue            value;
 	bool                ret;
 	char                *atomname;
-	Window              newroot;
-	XWindowAttributes   wa;
 	XrmDatabase         db = NULL;
 
+	/* NOREDIRECT property set?  Leave it alone. */
 	if(DontRedirect(window)) {
 		return false;
 	}
+
+	/* Figure out its command-line */
 	if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
+		/* Can't tell, bail */
 		return false;
 	}
+
+	/* Figure out what sort of -xrm stuff it might have */
 	XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
 	if(db == NULL) {
+		/* Parse failed somehow, bail */
 		if(cliargv) {
 			XFreeStringList(cliargv);
 		}
 		return false;
 	}
+
 	ret = false;
+
+	/*
+	 * Check "-xrm ctwm.redirect" to see if that says what to do.  It
+	 * should contain a captive name.  e.g., what ctwm was started with
+	 * via --name, or an autogen'd name if no --name was given.
+	 * */
 	status = XrmGetResource(db, "ctwm.redirect", "Ctwm.Redirect", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
-		Window          *prop;
-		Atom             XA_WM_CTWM_ROOT_name;
+		/* Yep, we're asked for one.  Find it. */
+		Window  *prop;
+		Atom    XA_WM_CTWM_ROOT_name;
+		int     gpret;
 
 		asprintf(&atomname, "WM_CTWM_ROOT_%s", value.addr);
 		/*
@@ -1070,24 +1088,49 @@ RedirectToCaptive(Window window)
 		XA_WM_CTWM_ROOT_name = XInternAtom(dpy, atomname, True);
 		free(atomname);
 
-		if(XA_WM_CTWM_ROOT_name != None &&
-		                XGetWindowProperty(dpy, Scr->Root, XA_WM_CTWM_ROOT_name,
-		                                   0L, 1L, False, AnyPropertyType,
-		                                   &actual_type, &actual_format,
-		                                   &nitems, &bytesafter,
-		                                   (unsigned char **)&prop) == Success) {
-			if(actual_type == XA_WINDOW && actual_format == 32 &&
-			                nitems == 1 /*&& bytesafter == 0*/) {
-				newroot = *prop;
-				if(XGetWindowAttributes(dpy, newroot, &wa)) {
-					XReparentWindow(dpy, window, newroot, 0, 0);
-					XMapWindow(dpy, window);
-					ret = true;
-				}
+		/*
+		 * Got the atom?  Lookup the property it keys for, which holds a
+		 * Window identifier.
+		 * */
+		gpret = !Success;
+		prop = NULL;
+		if(XA_WM_CTWM_ROOT_name != None) {
+			gpret = XGetWindowProperty(dpy, Scr->Root, XA_WM_CTWM_ROOT_name,
+			                           0L, 1L, False, AnyPropertyType,
+			                           &actual_type, &actual_format,
+			                           &nitems, &bytesafter,
+			                           (unsigned char **)&prop);
+		}
+
+		/*
+		 * Got the property?  Make sure it's the right type.  If so, make
+		 * sure the window it points at exists.
+		 */
+		if(gpret == Success
+		                && actual_type == XA_WINDOW && actual_format == 32 &&
+		                nitems == 1 /*&& bytesafter == 0*/) {
+			Window newroot = *prop;
+			XWindowAttributes dummy_wa;
+
+			if(XGetWindowAttributes(dpy, newroot, &dummy_wa)) {
+				/* Well, it must be where we should redirect to, so do it */
+				XReparentWindow(dpy, window, newroot, 0, 0);
+				XMapWindow(dpy, window);
+				ret = true;
 			}
+		}
+		if(prop != NULL) {
 			XFree(prop);
 		}
+
+		/* XXX Should we return here if we did the Reparent? */
 	}
+
+
+	/*
+	 * Check ctwm.rootWindow; it may contain a (hex) X window identifier,
+	 * which we should parent into.
+	 * */
 	status = XrmGetResource(db, "ctwm.rootWindow", "Ctwm.RootWindow", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
@@ -1096,18 +1139,25 @@ RedirectToCaptive(Window window)
 
 		safecopy(rootw, value.addr, sizeof(rootw));
 		if(sscanf(rootw, "%lx", &scanned) == 1) {
-			newroot = scanned;
-			if(XGetWindowAttributes(dpy, newroot, &wa)) {
+			Window newroot = scanned;
+			XWindowAttributes dummy_wa;
+
+			if(XGetWindowAttributes(dpy, newroot, &dummy_wa)) {
 				XReparentWindow(dpy, window, newroot, 0, 0);
 				XMapWindow(dpy, window);
 				ret = true;
 			}
 		}
 	}
+
+	/* Cleanup xrm bits */
 	XrmDestroyDatabase(db);
 	XFreeStringList(cliargv);
+
+	/* Whatever we found */
 	return ret;
 }
+
 
 /*
  * The window whose occupation is being manipulated.
