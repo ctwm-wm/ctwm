@@ -2456,7 +2456,8 @@ static void PaintButton(int which,
 	}
 }
 
-static int GetMaskFromResource(TwmWindow *win, char *res)
+static int
+GetMaskFromResource(TwmWindow *win, char *res)
 {
 	char      *name;
 	char      wrkSpcName [64];
