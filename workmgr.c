@@ -2509,13 +2509,11 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		}
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			if(strcmp(wrkSpcName, ws->label) == 0) {
+				mask |= (1 << ws->number);
 				break;
 			}
 		}
-		if(ws != NULL) {
-			mask |= (1 << ws->number);
-		}
-		else {
+		if(ws == NULL) {
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}
