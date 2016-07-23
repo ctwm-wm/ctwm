@@ -2462,11 +2462,10 @@ static void PaintButton(int which,
 static int
 GetMaskFromResource(TwmWindow *win, char *res)
 {
-	char      *name;
-	char      wrkSpcName [64];
 	WorkSpace *ws;
 	int       mask, num;
 	enum { O_SET, O_ADD, O_REM } mode;
+	char *wrkSpcName, *tokst;
 
 	mode = O_SET;
 	if(*res == '+') {
@@ -2478,20 +2477,9 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		res++;
 	}
 	mask = 0;
-	while(*res != '\0') {
-		while(*res == ' ') {
-			res++;
-		}
-		if(*res == '\0') {
-			break;
-		}
-		name = wrkSpcName;
-		while((*res != '\0') && (*res != ' ')) {
-			*name = *res;
-			name++;
-			res++;
-		}
-		*name = '\0';
+
+	for(wrkSpcName = strtok_r(res, " ", &tokst) ; wrkSpcName
+	    ; wrkSpcName = strtok_r(NULL, " ", &tokst)) {
 		if(strcmp(wrkSpcName, "all") == 0) {
 			mask = fullOccupation;
 			break;
@@ -2517,6 +2505,7 @@ GetMaskFromResource(TwmWindow *win, char *res)
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}
+
 	switch(mode) {
 		case O_SET:
 			return (mask);
