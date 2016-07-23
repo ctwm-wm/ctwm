@@ -55,23 +55,11 @@
 
 #include "gram.tab.h"
 
-/***********************************************************************
- *
- *  Procedure:
- *      CreateWorkSpaceManager - create the workspace manager window
- *              for this screen.
- *
- *  Returned Value:
- *      none
- *
- *  Inputs:
- *      none
- *
- ***********************************************************************
- */
+
 #define WSPCWINDOW    0
 #define OCCUPYWINDOW  1
 #define OCCUPYBUTTON  2
+
 
 static void ReparentFrameAndIcon(TwmWindow *tmp_win);
 static void Vanish(VirtualScreen *vs,
@@ -170,6 +158,20 @@ void ConfigureWorkSpaceManager(void)
 	}
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *      CreateWorkSpaceManager - create the workspace manager window
+ *              for this screen.
+ *
+ *  Returned Value:
+ *      none
+ *
+ *  Inputs:
+ *      none
+ *
+ ***********************************************************************
+ */
 void CreateWorkSpaceManager(void)
 {
 	char vsmapbuf    [1024], *vsmap;
