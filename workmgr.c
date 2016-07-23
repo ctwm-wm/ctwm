@@ -4237,6 +4237,16 @@ GetCaptiveCTWMUnderPointer(void)
 	}
 }
 
+
+/*
+ * We set a NOREDIRECT property on windows in certain situations as a
+ * result of a f.hypermove.  That gets checked during
+ * RedirectToCaptive(), causing it to to not mess with the window.
+ *
+ * XXX I'm not sure this actually makes any sense; RTC() only gets called
+ * at the beginning of AddWindow(), which only happens when we first add
+ * a window, which is too early for it to have been hypermoved?
+ */
 void SetNoRedirect(Window window)
 {
 	XChangeProperty(dpy, window, XA_WM_NOREDIRECT, XA_STRING, 8,
