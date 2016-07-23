@@ -105,6 +105,7 @@
 #include "otp.h"
 #include "cursor.h"
 #include "windowbox.h"
+#include "captive.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif

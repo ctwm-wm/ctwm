@@ -26,6 +26,7 @@
 #include "util.h"
 #include "version.h"
 #include "windowbox.h"
+#include "captive.h"
 
 #include "ext/repl_str.h"
 

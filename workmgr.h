@@ -140,10 +140,6 @@ struct OccupyWindow {
 	int           tmpOccupation;
 };
 
-struct CaptiveCTWM {
-	Window        root;
-	char          *name;
-};
 
 void InitWorkSpaceManager(void);
 void ConfigureWorkSpaceManager(void);
@@ -202,18 +198,11 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
-char *AddToCaptiveList(const char *cptname);
-void RemoveFromCaptiveList(const char *cptname);
-bool RedirectToCaptive(Window window);
-void SetPropsIfCaptiveCtwm(TwmWindow *win);
 
 void MoveToNextWorkSpace(VirtualScreen *vs, TwmWindow *twm_win);
 void MoveToPrevWorkSpace(VirtualScreen *vs, TwmWindow *twm_win);
 void MoveToNextWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win);
 void MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win);
-
-CaptiveCTWM GetCaptiveCTWMUnderPointer(void);
-void SetNoRedirect(Window window);
 
 void ShowBackground(VirtualScreen *vs, int state);
 

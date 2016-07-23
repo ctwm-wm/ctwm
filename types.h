@@ -81,7 +81,6 @@ typedef struct MapSubwindow MapSubwindow;
 typedef struct ButtonSubwindow ButtonSubwindow;
 typedef struct WorkSpaceWindow WorkSpaceWindow;
 typedef struct OccupyWindow OccupyWindow;
-typedef struct CaptiveCTWM CaptiveCTWM;
 
 /* from otp */
 typedef struct OtpWinList OtpWinList;
