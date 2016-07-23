@@ -2459,6 +2459,11 @@ static void PaintButton(int which,
 	}
 }
 
+
+/*
+ * Turn a ctwm.workspace resource string into an occupation mask.  n.b.;
+ * this changes the 'res' arg in-place.
+ */
 static int
 GetMaskFromResource(TwmWindow *win, char *res)
 {
@@ -2467,6 +2472,13 @@ GetMaskFromResource(TwmWindow *win, char *res)
 	enum { O_SET, O_ADD, O_REM } mode;
 	char *wrkSpcName, *tokst;
 
+	/*
+	 * This can set the occupation to a specific set of workspaces ("ws1
+	 * ws3"), add to the set it woudl have otherwise ("+ws1 ws3"), or
+	 * remove from the set it would otherwise ("-ws1 ws3").  The +/-
+	 * apply to the whole expression, not to the individual entries in
+	 * it.  So first, figure out what we're doing.
+	 */
 	mode = O_SET;
 	if(*res == '+') {
 		mode = O_ADD;
@@ -2476,8 +2488,12 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		mode = O_REM;
 		res++;
 	}
-	mask = 0;
 
+	/*
+	 * Walk through the string adding the workspaces specified into the
+	 * mask of what we're doing.
+	 */
+	mask = 0;
 	for(wrkSpcName = strtok_r(res, " ", &tokst) ; wrkSpcName
 	    ; wrkSpcName = strtok_r(NULL, " ", &tokst)) {
 		if(strcmp(wrkSpcName, "all") == 0) {
@@ -2506,6 +2522,10 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		}
 	}
 
+	/*
+	 * And return that mask, with necessary alterations depending on +/-
+	 * specified.
+	 */
 	switch(mode) {
 		case O_SET:
 			return (mask);
@@ -2514,8 +2534,10 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		case O_REM:
 			return (win->occupation & ~mask);
 	}
-	return (0);                 /* Never supposed to reach here, but just
-                                   in case... */
+
+	/* Can't get here */
+	fprintf(stderr, "%s(): Unreachable.\n", __func__);
+	return 0;
 }
 
 
