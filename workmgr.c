@@ -2507,13 +2507,12 @@ GetMaskFromResource(TwmWindow *win, char *res)
 			}
 			continue;
 		}
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(strcmp(wrkSpcName, ws->label) == 0) {
-				mask |= (1 << ws->number);
-				break;
-			}
+
+		ws = GetWorkspace(wrkSpcName);
+		if(ws != NULL) {
+			mask |= (1 << ws->number);
 		}
-		if(ws == NULL) {
+		else {
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}
@@ -2561,13 +2560,12 @@ GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 			mask = fullOccupation;
 			break;
 		}
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(strcmp(wrkSpcName, ws->label) == 0) {
-				mask |= (1 << ws->number);
-				break;
-			}
+
+		ws = GetWorkspace(wrkSpcName);
+		if(ws != NULL) {
+			mask |= (1 << ws->number);
 		}
-		if(ws == NULL) {
+		else {
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}
