@@ -2462,15 +2462,16 @@ GetMaskFromResource(TwmWindow *win, char *res)
 	char      *name;
 	char      wrkSpcName [64];
 	WorkSpace *ws;
-	int       mask, num, mode;
+	int       mask, num;
+	enum { O_SET, O_ADD, O_REM } mode;
 
-	mode = 0;
+	mode = O_SET;
 	if(*res == '+') {
-		mode = 1;
+		mode = O_ADD;
 		res++;
 	}
 	else if(*res == '-') {
-		mode = 2;
+		mode = O_REM;
 		res++;
 	}
 	mask = 0;
@@ -2517,11 +2518,11 @@ GetMaskFromResource(TwmWindow *win, char *res)
 		}
 	}
 	switch(mode) {
-		case 0 :
+		case O_SET:
 			return (mask);
-		case 1 :
+		case O_ADD:
 			return (mask | win->occupation);
-		case 2 :
+		case O_REM:
 			return (win->occupation & ~mask);
 	}
 	return (0);                 /* Never supposed to reach here, but just
