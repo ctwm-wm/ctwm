@@ -56,9 +56,12 @@
 #include "gram.tab.h"
 
 
-#define WSPCWINDOW    0
-#define OCCUPYWINDOW  1
-#define OCCUPYBUTTON  2
+/* Type of button for PaintButton() */
+typedef enum {
+	WSPCWINDOW,
+	OCCUPYWINDOW,
+	OCCUPYBUTTON,
+} PBType;
 
 
 static void ReparentFrameAndIcon(TwmWindow *tmp_win);
@@ -74,10 +77,8 @@ static int GetMaskFromResource(TwmWindow *win, char *res);
 static int GetPropertyFromMask(unsigned int mask, char **prop);
 static char *mk_nullsep_string(const char *prop, int len);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
-static void PaintButton(int which,
-                        VirtualScreen *vs, Window w,
-                        char *label,
-                        ColorPair cp, int state);
+static void PaintButton(PBType which, VirtualScreen *vs, Window w,
+                        char *label, ColorPair cp, int state);
 static void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
 static int WMapWindowMayBeAdded(TwmWindow *win);
 static void WMapAddToList(TwmWindow *win, WorkSpace *ws);
@@ -2364,10 +2365,9 @@ void PaintOccupyWindow(void)
 	            occupyButtoncp, off);
 }
 
-static void PaintButton(int which,
-                        VirtualScreen *vs, Window w,
-                        char *label,
-                        ColorPair cp, int state)
+static void
+PaintButton(PBType which, VirtualScreen *vs, Window w,
+            char *label, ColorPair cp, int state)
 {
 	OccupyWindow *occwin;
 	int        bwidth, bheight;
