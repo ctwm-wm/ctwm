@@ -851,7 +851,6 @@ void SetupOccupation(TwmWindow *twm_win,
 	Bool                status;
 	char                *str_type;
 	XrmValue            value;
-	char                wrkSpcList [512];
 	WorkSpace           *ws;
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
@@ -886,8 +885,12 @@ void SetupOccupation(TwmWindow *twm_win,
 		status = XrmGetResource(db, "ctwm.workspace", "Ctwm.Workspace", &str_type,
 		                        &value);
 		if((status == True) && (value.size != 0)) {
-			strncpy(wrkSpcList, value.addr, value.size);
-			twm_win->occupation = GetMaskFromResource(twm_win, wrkSpcList);
+			/* Copy the value.addr because it's in XRM memory not ours */
+			char wrkSpcList[512];
+			strncpy(wrkSpcList, value.addr, MIN(value.size, 511));
+			wrkSpcList[511] = '\0';  // Just in case
+
+			twm_win->occupation = GetMaskFromResource(twm_win, value.addr);
 		}
 		XrmDestroyDatabase(db);
 		XFreeStringList(cliargv);
