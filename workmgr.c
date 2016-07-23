@@ -4244,8 +4244,17 @@ GetCaptiveCTWMUnderPointer(void)
  * RedirectToCaptive(), causing it to to not mess with the window.
  *
  * XXX I'm not sure this actually makes any sense; RTC() only gets called
- * at the beginning of AddWindow(), which only happens when we first add
- * a window, which is too early for it to have been hypermoved?
+ * at the beginning of AddWindow(), only if ctwm isn't running captive.
+ * So the upshot is that this causes AddWindow() to do nothing and return
+ * NULL, in the case that a window was hypermoved from a captive ctwm
+ * into a non-captive ctwm.
+ *
+ * That's OK I think, because all the AddWindow() stuff would have
+ * already been done for it, so there's nothing to do?  But this suggests
+ * that there's leakage happening; we keep a TwmWindow struct around in
+ * the "old" ctwm when it's moved into a new one, and since AddWindow()
+ * only does the condition if we're a non-captive ctwm, it means the
+ * _captive_ ctwm recreates a new one every time it's hypermoved in?
  */
 void SetNoRedirect(Window window)
 {

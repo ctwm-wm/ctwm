@@ -220,6 +220,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 #endif
 
 	if(!CLarg.is_captive && RedirectToCaptive(w)) {
+		/* XXX x-ref comment by SetNoRedirect() */
 		return (NULL);
 	}
 
