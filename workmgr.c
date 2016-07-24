@@ -88,7 +88,7 @@ static WorkSpace *GetWorkspace(char *wname);
 static void InvertColorPair(ColorPair *cp);
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label);
-static int CanChangeOccupation(TwmWindow **twm_winp);
+static bool CanChangeOccupation(TwmWindow **twm_winp);
 
 int fullOccupation = 0;
 static bool useBackgroundInfo = false;
@@ -1019,23 +1019,24 @@ void SetupOccupation(TwmWindow *twm_win,
  */
 static TwmWindow *occupyWin = NULL;
 
-static int CanChangeOccupation(TwmWindow **twm_winp)
+static bool
+CanChangeOccupation(TwmWindow **twm_winp)
 {
 	TwmWindow *twm_win;
 
 	if(!Scr->workSpaceManagerActive) {
-		return 0;
+		return false;
 	}
 	if(occupyWin != NULL) {
-		return 0;
+		return false;
 	}
 	twm_win = *twm_winp;
 	if(twm_win->isiconmgr) {
-		return 0;
+		return false;
 	}
 	if(!Scr->TransientHasOccupation) {
 		if(twm_win->istransient) {
-			return 0;
+			return false;
 		}
 		if(twm_win->group != (Window) 0 && twm_win->group != twm_win->w) {
 			/*
@@ -1046,12 +1047,12 @@ static int CanChangeOccupation(TwmWindow **twm_winp)
 			 */
 			twm_win = GetTwmWindow(twm_win->group);
 			if(!twm_win) {
-				return 1;
+				return true;
 			}
 			*twm_winp = twm_win;
 		}
 	}
-	return 1;
+	return true;
 }
 
 void Occupy(TwmWindow *twm_win)
@@ -2759,6 +2760,7 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 		WorkSpaceWindow *wsw = vs->wsw;
 		float wf = (float)(wsw->wwidth  - 2) / (float) vs->w;
 		float hf = (float)(wsw->wheight - 2) / (float) vs->h;
+
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			for(wl = wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
 				if(win == wl->twm_win) {
