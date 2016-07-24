@@ -29,8 +29,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include <assert.h>
 
 #include <X11/Xatom.h>
 
@@ -57,23 +55,14 @@
 
 #include "gram.tab.h"
 
-/***********************************************************************
- *
- *  Procedure:
- *      CreateWorkSpaceManager - create the workspace manager window
- *              for this screen.
- *
- *  Returned Value:
- *      none
- *
- *  Inputs:
- *      none
- *
- ***********************************************************************
- */
-#define WSPCWINDOW    0
-#define OCCUPYWINDOW  1
-#define OCCUPYBUTTON  2
+
+/* Type of button for PaintButton() */
+typedef enum {
+	WSPCWINDOW,
+	OCCUPYWINDOW,
+	OCCUPYBUTTON,
+} PBType;
+
 
 static void ReparentFrameAndIcon(TwmWindow *tmp_win);
 static void Vanish(VirtualScreen *vs,
@@ -84,23 +73,23 @@ static void DisplayWinUnchecked(VirtualScreen *vs,
                                 TwmWindow *tmp_win);
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void CreateOccupyWindow(void);
-static unsigned int GetMaskFromResource(TwmWindow *win, char *res);
-static int GetPropertyFromMask(unsigned int mask, char *prop,
-                               long *gwkspc);
+static int GetMaskFromResource(TwmWindow *win, char *res);
+static int GetPropertyFromMask(unsigned int mask, char **prop);
+static char *mk_nullsep_string(const char *prop, int len);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
-static void PaintButton(int which,
-                        VirtualScreen *vs, Window w,
-                        char *label,
-                        ColorPair cp, int state);
+static void PaintButton(PBType which, VirtualScreen *vs, Window w,
+                        char *label, ColorPair cp, int state);
 static void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
 static int WMapWindowMayBeAdded(TwmWindow *win);
 static void WMapAddToList(TwmWindow *win, WorkSpace *ws);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
 static void ResizeOccupyWindow(TwmWindow *win);
 static WorkSpace *GetWorkspace(char *wname);
+static void InvertColorPair(ColorPair *cp);
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label);
 static int CanChangeOccupation(TwmWindow **twm_winp);
+static Window CaptiveCtwmRootWindow(Window window);
 void safecopy(char *dest, char *src, int size);
 
 int fullOccupation = 0;
@@ -170,14 +159,26 @@ void ConfigureWorkSpaceManager(void)
 	}
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *      CreateWorkSpaceManager - create the workspace manager window
+ *              for this screen.
+ *
+ *  Returned Value:
+ *      none
+ *
+ *  Inputs:
+ *      none
+ *
+ ***********************************************************************
+ */
 void CreateWorkSpaceManager(void)
 {
-	char wrkSpcList [512];
 	char vsmapbuf    [1024], *vsmap;
 	VirtualScreen    *vs;
 	WorkSpace        *ws, *fws;
-	int len, vsmaplen;
-	long junk;
+	int              vsmaplen;
 
 	if(! Scr->workSpaceManagerActive) {
 		return;
@@ -253,9 +254,16 @@ void CreateWorkSpaceManager(void)
 			XClearWindow(dpy, vs->window);
 		}
 	}
-	len = GetPropertyFromMask(0xFFFFFFFFu, wrkSpcList, &junk);
-	XChangeProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) wrkSpcList, len);
+
+	{
+		char *wrkSpcList;
+		int  len;
+
+		len = GetPropertyFromMask(0xFFFFFFFFu, &wrkSpcList);
+		XChangeProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) wrkSpcList, len);
+		free(wrkSpcList);
+	}
 }
 
 void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
@@ -836,7 +844,6 @@ void SetupOccupation(TwmWindow *twm_win,
                      int occupation_hint) /* <== [ Matthew McNeill Feb 1997 ] == */
 {
 	TwmWindow           *t;
-	unsigned char       *prop;
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
 	int                 actual_format;
@@ -847,13 +854,10 @@ void SetupOccupation(TwmWindow *twm_win,
 	Bool                status;
 	char                *str_type;
 	XrmValue            value;
-	char                wrkSpcList [512];
-	int                 len;
 	WorkSpace           *ws;
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
 	XrmDatabase       db = NULL;
-	long gwkspc = 0; /* for GNOME - which workspace we occupy */
 
 	if(! Scr->workSpaceManagerActive) {
 		twm_win->occupation = 1 << 0;   /* occupy workspace #0 */
@@ -884,20 +888,25 @@ void SetupOccupation(TwmWindow *twm_win,
 		status = XrmGetResource(db, "ctwm.workspace", "Ctwm.Workspace", &str_type,
 		                        &value);
 		if((status == True) && (value.size != 0)) {
-			strncpy(wrkSpcList, value.addr, value.size);
-			twm_win->occupation = GetMaskFromResource(twm_win, wrkSpcList);
+			/* Copy the value.addr because it's in XRM memory not ours */
+			char wrkSpcList[512];
+			strncpy(wrkSpcList, value.addr, MIN(value.size, 511));
+			wrkSpcList[511] = '\0';  // Just in case
+
+			twm_win->occupation = GetMaskFromResource(twm_win, value.addr);
 		}
 		XrmDestroyDatabase(db);
 		XFreeStringList(cliargv);
 	}
 
 	if(RestartPreviousState) {
+		unsigned char *prop;
 		if(XGetWindowProperty(dpy, twm_win->w, XA_WM_OCCUPATION, 0L, 2500, False,
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
 			if(nitems != 0) {
 				twm_win->occupation = GetMaskFromProperty(prop, nitems);
-				XFree((char *) prop);
+				XFree(prop);
 			}
 		}
 	}
@@ -966,16 +975,23 @@ void SetupOccupation(TwmWindow *twm_win,
 		}
 	}
 
-	len = GetPropertyFromMask(twm_win->occupation, wrkSpcList, &gwkspc);
-
 	if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
 		return;
 	}
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
 
-	XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) wrkSpcList, len);
+	/* Set the property for the occupation */
+	{
+		char *wsstr;
+		int  len;
+
+		len = GetPropertyFromMask(twm_win->occupation, &wsstr);
+		XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) wsstr, len);
+		free(wsstr);
+	}
+
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(twm_win);
 #endif
@@ -1007,46 +1023,66 @@ void safecopy(char *dest, char *src, int size)
 	dest[size - 1] = '\0';
 }
 
+
+/*
+ * Reparent a window over to a captive ctwm, if we should.
+ */
 bool
 RedirectToCaptive(Window window)
 {
 	unsigned long       nitems, bytesafter;
 	Atom                actual_type;
 	int                 actual_format;
-	char                **cliargv = NULL;
-	int                 cliargc;
 	Bool                status;
 	char                *str_type;
 	XrmValue            value;
 	bool                ret;
 	char                *atomname;
-	Window              newroot;
-	XWindowAttributes   wa;
 	XrmDatabase         db = NULL;
 
+	/* NOREDIRECT property set?  Leave it alone. */
 	if(DontRedirect(window)) {
 		return false;
 	}
-	if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
-		return false;
-	}
-	XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
-	if(db == NULL) {
+
+	/* Figure out what sort of -xrm stuff it might have */
+	{
+		char **cliargv = NULL;
+		int  cliargc;
+
+		/* Get its command-line */
+		if(!XGetCommand(dpy, window, &cliargv, &cliargc)) {
+			/* Can't tell, bail */
+			return false;
+		}
+
+		XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
 		if(cliargv) {
 			XFreeStringList(cliargv);
 		}
+	}
+
+	/* Bail if we didn't get any info */
+	if(db == NULL) {
 		return false;
 	}
+
 	ret = false;
+
+	/*
+	 * Check "-xrm ctwm.redirect" to see if that says what to do.  It
+	 * should contain a captive name.  e.g., what ctwm was started with
+	 * via --name, or an autogen'd name if no --name was given.
+	 * */
 	status = XrmGetResource(db, "ctwm.redirect", "Ctwm.Redirect", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
-		char             cctwm [64];
-		Window          *prop;
-		Atom             XA_WM_CTWM_ROOT_name;
+		/* Yep, we're asked for one.  Find it. */
+		Window  *prop;
+		Atom    XA_WM_CTWM_ROOT_name;
+		int     gpret;
 
-		safecopy(cctwm, value.addr, sizeof(cctwm));
-		asprintf(&atomname, "WM_CTWM_ROOT_%s", cctwm);
+		asprintf(&atomname, "WM_CTWM_ROOT_%s", value.addr);
 		/*
 		 * Set only_if_exists to True: the atom for the requested
 		 * captive ctwm won't exist if the captive ctwm itself does not exist.
@@ -1056,24 +1092,49 @@ RedirectToCaptive(Window window)
 		XA_WM_CTWM_ROOT_name = XInternAtom(dpy, atomname, True);
 		free(atomname);
 
-		if(XA_WM_CTWM_ROOT_name != None &&
-		                XGetWindowProperty(dpy, Scr->Root, XA_WM_CTWM_ROOT_name,
-		                                   0L, 1L, False, AnyPropertyType,
-		                                   &actual_type, &actual_format,
-		                                   &nitems, &bytesafter,
-		                                   (unsigned char **)&prop) == Success) {
-			if(actual_type == XA_WINDOW && actual_format == 32 &&
-			                nitems == 1 /*&& bytesafter == 0*/) {
-				newroot = *prop;
-				if(XGetWindowAttributes(dpy, newroot, &wa)) {
-					XReparentWindow(dpy, window, newroot, 0, 0);
-					XMapWindow(dpy, window);
-					ret = true;
-				}
-			}
-			XFree((char *)prop);
+		/*
+		 * Got the atom?  Lookup the property it keys for, which holds a
+		 * Window identifier.
+		 * */
+		gpret = !Success;
+		prop = NULL;
+		if(XA_WM_CTWM_ROOT_name != None) {
+			gpret = XGetWindowProperty(dpy, Scr->Root, XA_WM_CTWM_ROOT_name,
+			                           0L, 1L, False, AnyPropertyType,
+			                           &actual_type, &actual_format,
+			                           &nitems, &bytesafter,
+			                           (unsigned char **)&prop);
 		}
+
+		/*
+		 * Got the property?  Make sure it's the right type.  If so, make
+		 * sure the window it points at exists.
+		 */
+		if(gpret == Success
+		                && actual_type == XA_WINDOW && actual_format == 32 &&
+		                nitems == 1 /*&& bytesafter == 0*/) {
+			Window newroot = *prop;
+			XWindowAttributes dummy_wa;
+
+			if(XGetWindowAttributes(dpy, newroot, &dummy_wa)) {
+				/* Well, it must be where we should redirect to, so do it */
+				XReparentWindow(dpy, window, newroot, 0, 0);
+				XMapWindow(dpy, window);
+				ret = true;
+			}
+		}
+		if(prop != NULL) {
+			XFree(prop);
+		}
+
+		/* XXX Should we return here if we did the Reparent? */
 	}
+
+
+	/*
+	 * Check ctwm.rootWindow; it may contain a (hex) X window identifier,
+	 * which we should parent into.
+	 * */
 	status = XrmGetResource(db, "ctwm.rootWindow", "Ctwm.RootWindow", &str_type,
 	                        &value);
 	if((status == True) && (value.size != 0)) {
@@ -1082,18 +1143,24 @@ RedirectToCaptive(Window window)
 
 		safecopy(rootw, value.addr, sizeof(rootw));
 		if(sscanf(rootw, "%lx", &scanned) == 1) {
-			newroot = scanned;
-			if(XGetWindowAttributes(dpy, newroot, &wa)) {
+			Window newroot = scanned;
+			XWindowAttributes dummy_wa;
+
+			if(XGetWindowAttributes(dpy, newroot, &dummy_wa)) {
 				XReparentWindow(dpy, window, newroot, 0, 0);
 				XMapWindow(dpy, window);
 				ret = true;
 			}
 		}
 	}
+
+	/* Cleanup xrm bits */
 	XrmDestroyDatabase(db);
-	XFreeStringList(cliargv);
+
+	/* Whatever we found */
 	return ret;
 }
+
 
 /*
  * The window whose occupation is being manipulated.
@@ -1633,24 +1700,25 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	VirtualScreen *vs;
 	WorkSpace *ws;
 	int       oldoccupation;
-	char      namelist [512];
-	int       len;
 	int       final_x, final_y;
 	XWindowAttributes winattrs;
 	unsigned long     eventMask;
-	long      gwkspc = 0; /* for gnome - the workspace of this window */
 	int changedoccupation;
 
 	if((newoccupation == 0)
 	                ||  /* in case the property has been broken by another client */
 	                (newoccupation == tmp_win->occupation)) {
-		len = GetPropertyFromMask(tmp_win->occupation, namelist, &gwkspc);
+		char *namelist;
+		int  len;
+
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
+		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
 		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 		                PropModeReplace, (unsigned char *) namelist, len);
+		free(namelist);
 #ifdef EWMH
 		EwmhSet_NET_WM_DESKTOP(tmp_win);
 #endif
@@ -1693,13 +1761,18 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
-	len = GetPropertyFromMask(newoccupation, namelist, &gwkspc);
 	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 	eventMask = winattrs.your_event_mask;
 	XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
 
-	XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-	                PropModeReplace, (unsigned char *) namelist, len);
+	{
+		char *namelist;
+		int  len;
+		len = GetPropertyFromMask(newoccupation, &namelist);
+		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) namelist, len);
+		free(namelist);
+	}
 
 #ifdef EWMH
 	EwmhSet_NET_WM_DESKTOP(tmp_win);
@@ -2345,10 +2418,9 @@ void PaintOccupyWindow(void)
 	            occupyButtoncp, off);
 }
 
-static void PaintButton(int which,
-                        VirtualScreen *vs, Window w,
-                        char *label,
-                        ColorPair cp, int state)
+static void
+PaintButton(PBType which, VirtualScreen *vs, Window w,
+            char *label, ColorPair cp, int state)
 {
 	OccupyWindow *occwin;
 	int        bwidth, bheight;
@@ -2442,40 +2514,43 @@ static void PaintButton(int which,
 	}
 }
 
-static unsigned int GetMaskFromResource(TwmWindow *win, char *res)
-{
-	char      *name;
-	char      wrkSpcName [64];
-	WorkSpace *ws;
-	int       mask, num, mode;
 
-	mode = 0;
+/*
+ * Turn a ctwm.workspace resource string into an occupation mask.  n.b.;
+ * this changes the 'res' arg in-place.
+ */
+static int
+GetMaskFromResource(TwmWindow *win, char *res)
+{
+	WorkSpace *ws;
+	int       mask;
+	enum { O_SET, O_ADD, O_REM } mode;
+	char *wrkSpcName, *tokst;
+
+	/*
+	 * This can set the occupation to a specific set of workspaces ("ws1
+	 * ws3"), add to the set it woudl have otherwise ("+ws1 ws3"), or
+	 * remove from the set it would otherwise ("-ws1 ws3").  The +/-
+	 * apply to the whole expression, not to the individual entries in
+	 * it.  So first, figure out what we're doing.
+	 */
+	mode = O_SET;
 	if(*res == '+') {
-		mode = 1;
+		mode = O_ADD;
 		res++;
 	}
 	else if(*res == '-') {
-		mode = 2;
+		mode = O_REM;
 		res++;
 	}
+
+	/*
+	 * Walk through the string adding the workspaces specified into the
+	 * mask of what we're doing.
+	 */
 	mask = 0;
-	while(*res != '\0') {
-		while(*res == ' ') {
-			res++;
-		}
-		if(*res == '\0') {
-			break;
-		}
-		name = wrkSpcName;
-		while((*res != '\0') && (*res != ' ')) {
-			if(*res == '\\') {
-				res++;
-			}
-			*name = *res;
-			name++;
-			res++;
-		}
-		*name = '\0';
+	for(wrkSpcName = strtok_r(res, " ", &tokst) ; wrkSpcName
+	                ; wrkSpcName = strtok_r(NULL, " ", &tokst)) {
 		if(strcmp(wrkSpcName, "all") == 0) {
 			mask = fullOccupation;
 			break;
@@ -2487,88 +2562,165 @@ static unsigned int GetMaskFromResource(TwmWindow *win, char *res)
 			}
 			continue;
 		}
-		num  = 0;
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(strcmp(wrkSpcName, ws->label) == 0) {
-				break;
-			}
-			num++;
-		}
+
+		ws = GetWorkspace(wrkSpcName);
 		if(ws != NULL) {
-			mask |= (1 << num);
+			mask |= (1 << ws->number);
 		}
 		else {
 			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}
+
+	/*
+	 * And return that mask, with necessary alterations depending on +/-
+	 * specified.
+	 */
 	switch(mode) {
-		case 0 :
+		case O_SET:
 			return (mask);
-		case 1 :
+		case O_ADD:
 			return (mask | win->occupation);
-		case 2 :
+		case O_REM:
 			return (win->occupation & ~mask);
 	}
-	return (0);                 /* Never supposed to reach here, but just
-                                   in case... */
+
+	/* Can't get here */
+	fprintf(stderr, "%s(): Unreachable.\n", __func__);
+	return 0;
 }
 
-unsigned int GetMaskFromProperty(unsigned char *prop, unsigned long len)
+
+/*
+ * Turns a \0-separated buffer of workspace names into an occupation
+ * bitmask.
+ */
+unsigned int
+GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 {
 	char         wrkSpcName [256];
 	WorkSpace    *ws;
 	unsigned int mask;
-	int          num, l;
+	int          l;
+	char         *prop;
 
 	mask = 0;
 	l = 0;
+	prop = (char *) _prop;
 	while(l < len) {
-		strcpy(wrkSpcName, (char *)prop);
-		l    += strlen((char *)prop) + 1;
-		prop += strlen((char *)prop) + 1;
+		strcpy(wrkSpcName, prop);
+		l    += strlen(prop) + 1;
+		prop += strlen(prop) + 1;
 		if(strcmp(wrkSpcName, "all") == 0) {
 			mask = fullOccupation;
 			break;
 		}
-		num = 0;
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(strcmp(wrkSpcName, ws->label) == 0) {
-				break;
-			}
-			num++;
-		}
-		if(ws == NULL) {
-			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
+
+		ws = GetWorkspace(wrkSpcName);
+		if(ws != NULL) {
+			mask |= (1 << ws->number);
 		}
 		else {
-			mask |= (1 << num);
+			fprintf(stderr, "unknown workspace : %s\n", wrkSpcName);
 		}
 	}
+
+#if 0
+	{
+		char *dbs = mk_nullsep_string((char *)_prop, len);
+		fprintf(stderr, "%s('%s') -> 0x%x\n", __func__, dbs, mask);
+		free(dbs);
+	}
+#endif
+
 	return (mask);
 }
 
-static int GetPropertyFromMask(unsigned int mask, char *prop, long *gwkspc)
+
+/*
+ * Turns an occupation mask into a \0-separated buffer (not really a
+ * string) of the workspace names.
+ */
+static int
+GetPropertyFromMask(unsigned int mask, char **prop)
 {
 	WorkSpace *ws;
 	int       len;
-	char      *p;
+	char      *wss[MAXWORKSPACE];
+	int       i;
 
+	/* If it's everything, just say 'all' */
 	if(mask == fullOccupation) {
-		strcpy(prop, "all");
-		return (3);
+		*prop = strdup("all");
+		return 3;
 	}
+
+	/* Stash up pointers to all the labels for WSen it's in */
+	memset(wss, 0, sizeof(wss));
+	i = 0;
 	len = 0;
-	p = prop;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(mask & (1 << ws->number)) {
-			strcpy(p, ws->label);
-			p   += strlen(ws->label) + 1;
+			wss[i++] = ws->label;
 			len += strlen(ws->label) + 1;
-			*gwkspc = ws->number;
 		}
 	}
-	return (len);
+
+	/* Assemble them into \0-separated string */
+	*prop = malloc(len);
+	len = 0;
+	for(i = 0 ; wss[i] != NULL ; i++) {
+		strcpy((*prop + len), wss[i]);
+		len += strlen(wss[i]) + 1; // Skip past \0
+	}
+
+#if 0
+	{
+		char *dbs = mk_nullsep_string(*prop, len);
+		fprintf(stderr, "%s(0x%x) -> %d:'%s'\n", __func__, mask, len, dbs);
+		free(dbs);
+	}
+#endif
+
+	return len;
 }
+
+
+/*
+ * Generate a printable variant of the null-separated strings we use for
+ * stashing in XA_WM_OCCUPATION.  Used for debugging
+ * Get{Property,Mask}From{Mask,Property}().
+ */
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+static char *
+mk_nullsep_string(const char *prop, int len)
+{
+	char *dbs;
+	int i, j;
+
+	/*
+	 * '\0' => "\\0" means we need longer than input; *2 is overkill,
+	 * but always sufficient, and it's cheap.
+	 */
+	dbs = malloc(len * 2);
+	i = j = 0;
+	while(i < len) {
+		size_t slen = strlen(prop + i);
+
+		strcpy(dbs + j, (prop + i));
+		i += slen + 1;
+		strcpy(dbs + j + slen, "\\0");
+		j += slen + 2;
+	}
+
+	return dbs;
+}
+#ifdef __GNUC__
+# pragma GCC diagnostic pop
+#endif
 
 
 /*
@@ -2915,7 +3067,7 @@ void WMapRestack(WorkSpace *ws)
 		}
 		XRestackWindows(dpy, smallws, j);
 	}
-	XFree((char *) children);
+	XFree(children);
 	free(smallws);
 	return;
 }
@@ -3398,7 +3550,13 @@ move:
 	XDestroyWindow(dpy, w);
 }
 
-void InvertColorPair(ColorPair *cp)
+/*
+ * This is really more util.c fodder, but leaving it here for now because
+ * it's only used once in the below func.  If we start finding external
+ * uses for it, it should be moved.
+ */
+static void
+InvertColorPair(ColorPair *cp)
 {
 	Pixel save;
 
@@ -3763,70 +3921,6 @@ void WMapCreateDefaultBackGround(char *border,
 	ws->defImage = image;
 }
 
-bool
-AnimateRoot(void)
-{
-	VirtualScreen *vs;
-	ScreenInfo *scr;
-	int        scrnum;
-	Image      *image;
-	WorkSpace  *ws;
-	bool       maybeanimate;
-
-	maybeanimate = false;
-	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
-		if((scr = ScreenList [scrnum]) == NULL) {
-			continue;
-		}
-		if(! scr->workSpaceManagerActive) {
-			continue;
-		}
-
-		for(vs = scr->vScreenList; vs != NULL; vs = vs->next) {
-			if(! vs->wsw->currentwspc) {
-				continue;
-			}
-			image = vs->wsw->currentwspc->image;
-			if((image == NULL) || (image->next == NULL)) {
-				continue;
-			}
-			if(scr->DontPaintRootWindow) {
-				continue;
-			}
-
-			XSetWindowBackgroundPixmap(dpy, vs->window, image->pixmap);
-			XClearWindow(dpy, scr->Root);
-			vs->wsw->currentwspc->image = image->next;
-			maybeanimate = true;
-		}
-	}
-	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
-		if((scr = ScreenList [scrnum]) == NULL) {
-			continue;
-		}
-
-		for(vs = scr->vScreenList; vs != NULL; vs = vs->next) {
-			if(vs->wsw->state == WMS_buttons) {
-				continue;
-			}
-			for(ws = scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-				image = ws->image;
-
-				if((image == NULL) || (image->next == NULL)) {
-					continue;
-				}
-				if(ws == vs->wsw->currentwspc) {
-					continue;
-				}
-				XSetWindowBackgroundPixmap(dpy, vs->wsw->mswl [ws->number]->w, image->pixmap);
-				XClearWindow(dpy, vs->wsw->mswl [ws->number]->w);
-				ws->image = image->next;
-				maybeanimate = true;
-			}
-		}
-	}
-	return maybeanimate;
-}
 
 static char **GetCaptivesList(int scrnum)
 {
@@ -3869,7 +3963,7 @@ static char **GetCaptivesList(int scrnum)
 		p += strlen((char *)p) + 1;
 	}
 	ret [i] = NULL;
-	XFree((char *)prop);
+	XFree(prop);
 
 	return ret;
 }
@@ -4080,7 +4174,8 @@ void SetPropsIfCaptiveCtwm(TwmWindow *win)
 	                PropModeReplace, (unsigned char *) &window, 1);
 }
 
-Window CaptiveCtwmRootWindow(Window window)
+static Window
+CaptiveCtwmRootWindow(Window window)
 {
 	Window             *prop;
 	Window              w;
@@ -4098,15 +4193,17 @@ Window CaptiveCtwmRootWindow(Window window)
 		return ((Window)0);
 	}
 	w = *prop;
-	XFree((char *)prop);
+	XFree(prop);
 	return w;
 }
 
-CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
+CaptiveCTWM
+GetCaptiveCTWMUnderPointer(void)
 {
 	Window      root;
 	Window      child, croot;
 	CaptiveCTWM cctwm;
+	char        *rname;
 
 	root = RootWindow(dpy, Scr->screen);
 	while(1) {
@@ -4117,14 +4214,48 @@ CaptiveCTWM GetCaptiveCTWMUnderPointer(void)
 			continue;
 		}
 		cctwm.root = root;
-		XFetchName(dpy, root, &cctwm.name);
-		if(!cctwm.name) {
+
+		/*
+		 * We indirect through the extra var here for probably
+		 * unnecessary reasons; X resources (like that from XFetchName)
+		 * are specified to be freed via XFree(), not via free().  And we
+		 * don't want our callers to have to know that (or worse, know to
+		 * do it SOMEtimes, since we also might create it ourselves with
+		 * strdup()).  So eat the extra allocation/copy and insulate
+		 * callers.
+		 */
+		XFetchName(dpy, root, &rname);
+		if(rname) {
+			cctwm.name = strdup(rname);
+			XFree(rname);
+		}
+		else {
 			cctwm.name = strdup("Root");
 		}
+
 		return (cctwm);
 	}
 }
 
+
+/*
+ * We set a NOREDIRECT property on windows in certain situations as a
+ * result of a f.hypermove.  That gets checked during
+ * RedirectToCaptive(), causing it to to not mess with the window.
+ *
+ * XXX I'm not sure this actually makes any sense; RTC() only gets called
+ * at the beginning of AddWindow(), only if ctwm isn't running captive.
+ * So the upshot is that this causes AddWindow() to do nothing and return
+ * NULL, in the case that a window was hypermoved from a captive ctwm
+ * into a non-captive ctwm.
+ *
+ * That's OK I think, because all the AddWindow() stuff would have
+ * already been done for it, so there's nothing to do?  But this suggests
+ * that there's leakage happening; we keep a TwmWindow struct around in
+ * the "old" ctwm when it's moved into a new one, and since AddWindow()
+ * only does the condition if we're a non-captive ctwm, it means the
+ * _captive_ ctwm recreates a new one every time it's hypermoved in?
+ */
 void SetNoRedirect(Window window)
 {
 	XChangeProperty(dpy, window, XA_WM_NOREDIRECT, XA_STRING, 8,
@@ -4148,7 +4279,7 @@ DontRedirect(Window window)
 	if(len == 0) {
 		return false;
 	}
-	XFree((char *)prop);
+	XFree(prop);
 	return true;
 }
 

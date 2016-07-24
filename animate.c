@@ -34,6 +34,7 @@ static void Animate(void);
 static void AnimateButton(TBWindow *tbw);
 static void AnimateHighlight(TwmWindow *t);
 static void AnimateIcons(ScreenInfo *scr, Icon *icon);
+static bool AnimateRoot(void);
 
 
 /*
@@ -297,4 +298,71 @@ AnimateIcons(ScreenInfo *scr, Icon *icon)
 	XClearWindow(dpy, icon->bm_w);
 	icon->image  = image->next;
 	return;
+}
+
+
+/* Original in workmgr.c */
+static bool
+AnimateRoot(void)
+{
+	VirtualScreen *vs;
+	ScreenInfo *scr;
+	int        scrnum;
+	Image      *image;
+	WorkSpace  *ws;
+	bool       maybeanimate;
+
+	maybeanimate = false;
+	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
+		if((scr = ScreenList [scrnum]) == NULL) {
+			continue;
+		}
+		if(! scr->workSpaceManagerActive) {
+			continue;
+		}
+
+		for(vs = scr->vScreenList; vs != NULL; vs = vs->next) {
+			if(! vs->wsw->currentwspc) {
+				continue;
+			}
+			image = vs->wsw->currentwspc->image;
+			if((image == NULL) || (image->next == NULL)) {
+				continue;
+			}
+			if(scr->DontPaintRootWindow) {
+				continue;
+			}
+
+			XSetWindowBackgroundPixmap(dpy, vs->window, image->pixmap);
+			XClearWindow(dpy, scr->Root);
+			vs->wsw->currentwspc->image = image->next;
+			maybeanimate = true;
+		}
+	}
+	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
+		if((scr = ScreenList [scrnum]) == NULL) {
+			continue;
+		}
+
+		for(vs = scr->vScreenList; vs != NULL; vs = vs->next) {
+			if(vs->wsw->state == WMS_buttons) {
+				continue;
+			}
+			for(ws = scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+				image = ws->image;
+
+				if((image == NULL) || (image->next == NULL)) {
+					continue;
+				}
+				if(ws == vs->wsw->currentwspc) {
+					continue;
+				}
+				XSetWindowBackgroundPixmap(dpy, vs->wsw->mswl [ws->number]->w, image->pixmap);
+				XClearWindow(dpy, vs->wsw->mswl [ws->number]->w);
+				ws->image = image->next;
+				maybeanimate = true;
+			}
+		}
+	}
+	return maybeanimate;
 }

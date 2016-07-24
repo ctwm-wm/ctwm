@@ -1612,7 +1612,7 @@ put_pixel_on_root(Pixel pixel)
 			addPixel = 0;
 		}
 
-	XFree((char *)retProp);
+	XFree(retProp);
 
 	if(addPixel)
 		XChangeProperty(dpy, Scr->Root, XA__MIT_PRIORITY_COLORS,

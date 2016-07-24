@@ -399,7 +399,7 @@ void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
 
 	if(replace) {                       /* just update contents */
 		if(sc->maps) {
-			XFree((char *) maps);
+			XFree(maps);
 		}
 		if(sc == Scr->StdCmapInfo.mru) {
 			Scr->StdCmapInfo.mru = NULL;
@@ -435,7 +435,7 @@ void RemoveRGBColormap(Atom a)
 	}
 	if(sc) {                            /* found one */
 		if(sc->maps) {
-			XFree((char *) sc->maps);
+			XFree(sc->maps);
 		}
 		if(prev) {
 			prev->next = sc->next;
@@ -470,7 +470,7 @@ void LocateStandardColormaps(void)
 		}
 	}
 	if(atoms) {
-		XFree((char *) atoms);
+		XFree(atoms);
 	}
 	return;
 }
@@ -1204,7 +1204,7 @@ void AdoptWindow(void)
 		ret = XGetWindowProperty(dpy, w, XA_WM_WORKSPACESLIST, 0L, 512,
 		                         False, XA_STRING, &actual_type, &actual_format, &len,
 		                         &bytesafter, &prop);
-		XFree((char *)prop);  /* Don't ever do anything with it */
+		XFree(prop);  /* Don't ever do anything with it */
 		if(ret != Success) {
 			break;
 		}
@@ -1224,13 +1224,13 @@ void AdoptWindow(void)
 	if(w == localroot) {   /* try to not adopt an ancestor */
 		XQueryTree(dpy, Scr->Root, &root, &parent, &children, &nchildren);
 		while(parent != (Window) 0) {
-			XFree((char *) children);
+			XFree(children);
 			if(w == parent) {
 				return;
 			}
 			XQueryTree(dpy, parent, &root, &parent, &children, &nchildren);
 		}
-		XFree((char *) children);
+		XFree(children);
 		if(w == root) {
 			return;
 		}

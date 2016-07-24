@@ -804,7 +804,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			bool    cont = true;
 			Window  root = RootWindow(dpy, Scr->screen);
 			Cursor  cursor;
-			CaptiveCTWM cctwm0, cctwm;
+			Window captive_root;
 
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
@@ -814,9 +814,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				XBell(dpy, 0);
 				break;
 			}
-			cctwm0 = GetCaptiveCTWMUnderPointer();
-			cursor = MakeStringCursor(cctwm0.name);
-			free(cctwm0.name);
+
+			{
+				CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
+				cursor = MakeStringCursor(cctwm.name);
+				free(cctwm.name);
+				captive_root = cctwm.root;
+			}
+
 			if(DeferExecution(context, func, Scr->MoveCursor)) {
 				return true;
 			}
@@ -832,9 +837,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						cont = false;
 						break;
 
-					case ButtonRelease:
+					case ButtonRelease: {
+						CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
 						cont = false;
-						cctwm = GetCaptiveCTWMUnderPointer();
 						free(cctwm.name);
 						if(cctwm.root == Scr->Root) {
 							break;
@@ -847,19 +852,25 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 						XReparentWindow(dpy, tmp_win->w, cctwm.root, 0, 0);
 						XMapWindow(dpy, tmp_win->w);
 						break;
+					}
 
-					case MotionNotify:
-						cctwm = GetCaptiveCTWMUnderPointer();
-						if(cctwm.root != cctwm0.root) {
+					case MotionNotify: {
+						CaptiveCTWM cctwm = GetCaptiveCTWMUnderPointer();
+						if(cctwm.root != captive_root) {
+							unsigned int chmask;
+
 							XFreeCursor(dpy, cursor);
 							cursor = MakeStringCursor(cctwm.name);
-							cctwm0 = cctwm;
-							XChangeActivePointerGrab(dpy,
-							                         ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
+							captive_root = cctwm.root;
+
+							chmask = (ButtonPressMask | ButtonMotionMask
+							          | ButtonReleaseMask);
+							XChangeActivePointerGrab(dpy, chmask,
 							                         cursor, CurrentTime);
 						}
 						free(cctwm.name);
 						break;
+					}
 				}
 			}
 			ButtonPressed = -1;

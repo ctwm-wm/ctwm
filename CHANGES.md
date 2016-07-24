@@ -61,6 +61,13 @@ remnants of special-case VMS support have been removed.
    in the future.  If you have to mess with this, please bring it up on
    the mailing list so we can figure out a long-term solution.
 
+1. Parsing of the `ctwm.workspaces` X resource (i.e., setting `-xrm
+   "ctwm.workspaces: something"` on program command-lines) since 3.0 has
+   collapsed doubled backslashes (`\\`) into a single (`\`).  However,
+   there were no other escapes, so this didn't gain anything.  Using a
+   single will work with both variants, unless you need multiple
+   backslashes in a row in your workspace names.
+
 ### User Visible Changes
 
 1. The default install locations have been changed.  See the README for
