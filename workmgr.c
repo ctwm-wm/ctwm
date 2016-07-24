@@ -1057,12 +1057,10 @@ CanChangeOccupation(TwmWindow **twm_winp)
 
 void Occupy(TwmWindow *twm_win)
 {
-	int          x, y, junkX, junkY;
-	unsigned int junkB, junkD;
+	int          x, y;
 	unsigned int width, height;
 	int          xoffset, yoffset;
-	Window       junkW, w;
-	unsigned int junkK;
+	Window       w;
 	struct OccupyWindow    *occupyWindow;
 	TwmWindow *occupy_twm;
 
@@ -1076,8 +1074,10 @@ void Occupy(TwmWindow *twm_win)
 	w = occupyWindow->w;
 
 	/* Figure where to put it so it's centered on the cursor */
-	XGetGeometry(dpy, w, &junkW, &junkX, &junkY, &width, &height, &junkB, &junkD);
-	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &x, &y, &junkK);
+	XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY, &width, &height,
+			&JunkBW, &JunkDepth);
+	XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkRoot, &JunkX, &JunkY,
+			&x, &y, &JunkMask);
 	x -= (width  / 2);
 	y -= (height / 2);
 	if(x < 0) {
