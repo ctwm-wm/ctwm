@@ -2733,7 +2733,6 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 	VirtualScreen *vs;
 	WorkSpace     *ws;
 	WinList       wl;
-	float         wf, hf;
 
 	if(win->isiconmgr) {
 		return;
@@ -2758,8 +2757,8 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 	}
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		WorkSpaceWindow *wsw = vs->wsw;
-		wf = (float)(wsw->wwidth  - 2) / (float) vs->w;
-		hf = (float)(wsw->wheight - 2) / (float) vs->h;
+		float wf = (float)(wsw->wwidth  - 2) / (float) vs->w;
+		float hf = (float)(wsw->wheight - 2) / (float) vs->h;
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			for(wl = wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
 				if(win == wl->twm_win) {
