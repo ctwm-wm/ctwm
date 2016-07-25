@@ -24,7 +24,7 @@ static bool DontRedirect(Window window);
 
 static Atom XA_WM_CTWM_ROOT_our_name;
 
-/* XXX Share with workmgr.c? */
+/* XXX Share with occupation.c? */
 static XrmOptionDescRec table [] = {
 	{"-xrm",            NULL,           XrmoptionResArg, (XPointer) NULL},
 };
