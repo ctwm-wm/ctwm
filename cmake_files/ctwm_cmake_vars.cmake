@@ -41,6 +41,7 @@ set(CTWMSRC
 	mask_screen.c
 	menus.c
 	mwmhints.c
+	occupation.c
 	otp.c
 	parse.c
 	parse_be.c

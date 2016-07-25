@@ -122,24 +122,6 @@ struct WorkSpaceWindow {                /* There is one per virtual screen */
 	int           wwidth, wheight;
 };
 
-struct OccupyWindow {
-	Window        w;
-	TwmWindow     *twm_win;
-	char          *geometry;
-	Window        *obuttonw;
-	Window        OK, cancel, allworkspc;
-	int           width, height;
-	char          *name;
-	char          *icon_name;
-	int           lines, columns;
-	int           hspace, vspace;         /* space between workspaces */
-	int           bwidth, bheight;
-	int           owidth;                 /* oheight == bheight */
-	ColorPair     cp;
-	MyFont        font;
-	int           tmpOccupation;
-};
-
 
 void InitWorkSpaceManager(void);
 void ConfigureWorkSpaceManager(void);
@@ -156,27 +138,15 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws);
 void AddWorkSpace(char *name,
                   char *background, char *foreground,
                   char *backback, char *backfore, char *backpix);
-void SetupOccupation(TwmWindow *twm_win, int occupation_hint);
-void Occupy(TwmWindow *twm_win);
-void OccupyHandleButtonEvent(XEvent *event);
-void OccupyAll(TwmWindow *twm_win);
-void AddToWorkSpace(char *wname, TwmWindow *twm_win);
-void RemoveFromWorkSpace(char *wname, TwmWindow *twm_win);
-void ToggleOccupation(char *wname, TwmWindow *twm_win);
 void AllocateOtherIconManagers(void);
 void Vanish(VirtualScreen *vs, TwmWindow *tmp_win);
-void ChangeOccupation(TwmWindow *tmp_win, int newoccupation);
-void WmgrRedoOccupation(TwmWindow *win);
-void WMgrRemoveFromCurrentWorkSpace(VirtualScreen *vs, TwmWindow *win);
-void WMgrAddToCurrentWorkSpaceAndWarp(VirtualScreen *vs, char *winname);
+void DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win);
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
 void PaintWorkSpaceManager(VirtualScreen *vs);
-void PaintOccupyWindow(void);
-unsigned int GetMaskFromProperty(unsigned char *prop, unsigned long len);
-bool AddToClientsList(char *workspace, char *client);
 void WMapToggleState(VirtualScreen *vs);
 void WMapSetMapState(VirtualScreen *vs);
 void WMapSetButtonsState(VirtualScreen *vs);
+int WMapWindowMayBeAdded(TwmWindow *win);
 void WMapAddWindow(TwmWindow *win);
 void WMapDestroyWindow(TwmWindow *win);
 void WMapMapWindow(TwmWindow *win);
@@ -192,6 +162,8 @@ void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event);
 void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event);
 void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event);
 void WMapRedrawName(VirtualScreen *vs, WinList   wl);
+void WMapAddToList(TwmWindow *win, WorkSpace *ws);
+void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
 void WMapCreateCurrentBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap);
@@ -199,14 +171,9 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
-
-void MoveToNextWorkSpace(VirtualScreen *vs, TwmWindow *twm_win);
-void MoveToPrevWorkSpace(VirtualScreen *vs, TwmWindow *twm_win);
-void MoveToNextWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win);
-void MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win);
+WorkSpace * GetWorkspace(char *wname);
+void ReparentFrameAndIcon(TwmWindow *tmp_win);
 
 void ShowBackground(VirtualScreen *vs, int state);
-
-extern int fullOccupation;
 
 #endif /* _CTWM_WORKMGR_H */

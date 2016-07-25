@@ -96,6 +96,7 @@
 #include "functions.h"  // Only for RootFunction
 #include "decorations.h"
 #include "captive.h"
+#include "occupation.h"
 
 #include "gram.tab.h"
 
