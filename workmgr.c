@@ -2279,25 +2279,23 @@ static void
 PaintButton(PBType which, VirtualScreen *vs, Window w,
             char *label, ColorPair cp, int state)
 {
-	OccupyWindow *occwin;
-	int        bwidth, bheight;
-	MyFont     font;
-	int        strWid, strHei, hspace, vspace;
-	XRectangle inc_rect;
-	XRectangle logical_rect;
+	int    bwidth, bheight;
+	MyFont font;
+	int    hspace, vspace;
 
-	occwin = Scr->workSpaceMgr.occupyWindow;
 	if(which == WSPCWINDOW) {
 		bwidth  = vs->wsw->bwidth;
 		bheight = vs->wsw->bheight;
 		font    = Scr->workSpaceMgr.buttonFont;
 	}
 	else if(which == OCCUPYWINDOW) {
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 		bwidth  = occwin->bwidth;
 		bheight = occwin->bheight;
 		font    = occwin->font;
 	}
 	else if(which == OCCUPYBUTTON) {
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 		bwidth  = occwin->owidth;
 		bheight = occwin->bheight;
 		font    = occwin->font;
@@ -2306,11 +2304,19 @@ PaintButton(PBType which, VirtualScreen *vs, Window w,
 		return;
 	}
 
-	XmbTextExtents(font.font_set, label, strlen(label), &inc_rect, &logical_rect);
-	strHei = logical_rect.height;
-	vspace = ((bheight + strHei - font.descent) / 2);
-	strWid = logical_rect.width;
-	hspace = (bwidth - strWid) / 2;
+	{
+		int        strWid, strHei;
+		XRectangle inc_rect;
+		XRectangle logical_rect;
+
+		XmbTextExtents(font.font_set, label, strlen(label), &inc_rect,
+		               &logical_rect);
+		strHei = logical_rect.height;
+		vspace = ((bheight + strHei - font.descent) / 2);
+		strWid = logical_rect.width;
+		hspace = (bwidth - strWid) / 2;
+	}
+
 	if(hspace < (Scr->WMgrButtonShadowDepth + 1)) {
 		hspace = Scr->WMgrButtonShadowDepth + 1;
 	}
