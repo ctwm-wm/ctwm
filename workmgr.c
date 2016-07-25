@@ -56,7 +56,7 @@
 #include "gram.tab.h"
 
 
-/* Type of button for PaintButton() */
+/* Type of button for PaintWsButton() */
 typedef enum {
 	WSPCWINDOW,
 	OCCUPYWINDOW,
@@ -77,8 +77,8 @@ static int GetMaskFromResource(TwmWindow *win, char *res);
 static int GetPropertyFromMask(unsigned int mask, char **prop);
 static char *mk_nullsep_string(const char *prop, int len);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
-static void PaintButton(PBType which, VirtualScreen *vs, Window w,
-                        char *label, ColorPair cp, int state);
+static void PaintWsButton(PBType which, VirtualScreen *vs, Window w,
+                          char *label, ColorPair cp, int state);
 static void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
 static int WMapWindowMayBeAdded(TwmWindow *win);
 static void WMapAddToList(TwmWindow *win, WorkSpace *ws);
@@ -642,9 +642,9 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	}
 	else if(vs->wsw->state == WMS_buttons) {
 		ButtonSubwindow *bsw = vs->wsw->bswl [oldws->number];
-		PaintButton(WSPCWINDOW, vs, bsw->w, oldws->label, oldws->cp, off);
+		PaintWsButton(WSPCWINDOW, vs, bsw->w, oldws->label, oldws->cp, off);
 		bsw = vs->wsw->bswl [newws->number];
-		PaintButton(WSPCWINDOW, vs, bsw->w, newws->label, newws->cp,  on);
+		PaintWsButton(WSPCWINDOW, vs, bsw->w, newws->label, newws->cp,  on);
 	}
 	oldws->iconmgr = Scr->iconmgr;
 	Scr->iconmgr = newws->iconmgr;
@@ -1156,12 +1156,12 @@ void OccupyHandleButtonEvent(XEvent *event)
 	if(ws != NULL) {
 		int mask = 1 << ws->number;
 		if((occupyW->tmpOccupation & mask) == 0) {
-			PaintButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-			            ws->label, ws->cp, on);
+			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
+			              ws->label, ws->cp, on);
 		}
 		else {
-			PaintButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-			            ws->label, ws->cp, off);
+			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
+			              ws->label, ws->cp, off);
 		}
 		occupyW->tmpOccupation ^= mask;
 	}
@@ -1185,8 +1185,8 @@ void OccupyHandleButtonEvent(XEvent *event)
 	}
 	else if(buttonW == occupyW->allworkspc) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			PaintButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-			            ws->label, ws->cp, on);
+			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
+			              ws->label, ws->cp, on);
 		}
 		occupyW->tmpOccupation = fullOccupation;
 	}
@@ -2010,10 +2010,10 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 			PaintWorkSpaceManagerBorder(vs);
 		}
 		else if(ws == vs->wsw->currentwspc) {
-			PaintButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
 		}
 		else {
-			PaintButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
 		}
 	}
 	else {
@@ -2037,10 +2037,10 @@ void PaintWorkSpaceManager(VirtualScreen *vs)
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window buttonw = vs->wsw->bswl [ws->number]->w;
 		if(ws == vs->wsw->currentwspc) {
-			PaintButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
 		}
 		else {
-			PaintButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
 		}
 	}
 }
@@ -2261,23 +2261,29 @@ void PaintOccupyWindow(void)
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window bw = occwin->obuttonw [ws->number];
 		if(occwin->tmpOccupation & (1 << ws->number)) {
-			PaintButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, on);
+			PaintWsButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, on);
 		}
 		else {
-			PaintButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, off);
+			PaintWsButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, off);
 		}
 	}
-	PaintButton(OCCUPYBUTTON, NULL, occwin->OK,         ok_string,
-	            occupyButtoncp, off);
-	PaintButton(OCCUPYBUTTON, NULL, occwin->cancel,     cancel_string,
-	            occupyButtoncp, off);
-	PaintButton(OCCUPYBUTTON, NULL, occwin->allworkspc, everywhere_string,
-	            occupyButtoncp, off);
+	PaintWsButton(OCCUPYBUTTON, NULL, occwin->OK,         ok_string,
+	              occupyButtoncp, off);
+	PaintWsButton(OCCUPYBUTTON, NULL, occwin->cancel,     cancel_string,
+	              occupyButtoncp, off);
+	PaintWsButton(OCCUPYBUTTON, NULL, occwin->allworkspc, everywhere_string,
+	              occupyButtoncp, off);
 }
 
+
+/*
+ * Paint a button representing a workspace.  This is used in the
+ * workspace manager window when it button mode, as well as in the
+ * f.occupy window.
+ */
 static void
-PaintButton(PBType which, VirtualScreen *vs, Window w,
-            char *label, ColorPair cp, int state)
+PaintWsButton(PBType which, VirtualScreen *vs, Window w,
+              char *label, ColorPair cp, int state)
 {
 	int    bwidth, bheight;
 	MyFont font;
@@ -3025,12 +3031,12 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 	ws->label = realloc(ws->label, (strlen(name) + 1));
 	strcpy(ws->label, name);
 	if(ws == vs->wsw->currentwspc) {
-		PaintButton(WSPCWINDOW, vs, vs->wsw->bswl [ws->number]->w, ws->label, ws->cp,
-		            on);
+		PaintWsButton(WSPCWINDOW, vs, vs->wsw->bswl [ws->number]->w, ws->label, ws->cp,
+		              on);
 	}
 	else {
-		PaintButton(WSPCWINDOW, vs, vs->wsw->bswl [ws->number]->w, ws->label, ws->cp,
-		            off);
+		PaintWsButton(WSPCWINDOW, vs, vs->wsw->bswl [ws->number]->w, ws->label, ws->cp,
+		              off);
 	}
 }
 
