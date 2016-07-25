@@ -1122,7 +1122,7 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 /*
  * There is no DeleteLowlightWindows() as a counterpart to the
  * HighlightWindows variant.  That func doesn't delete the [sub-]window;
- * that happens semi-automattically when the frame window is destroyed.
+ * that happens semi-automatically when the frame window is destroyed.
  * It only cleans up the Pixmap if there is one.  And the only way the
  * Lowlight window can wind up with a pixmap is as a copy of the
  * highlight window one, in which case when THAT delete gets called all
