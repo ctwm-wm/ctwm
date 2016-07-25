@@ -2701,6 +2701,7 @@ void WMapDestroyWindow(TwmWindow *win)
 			WMapRemoveFromList(win, ws);
 		}
 	}
+	/* XXX Better belongs inline in caller or separate func? */
 	if(win == occupyWin) {
 		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 		XUnmapWindow(dpy, occwin->twm_win->frame);
