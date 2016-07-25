@@ -171,7 +171,7 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
-WorkSpace * GetWorkspace(char *wname);
+WorkSpace *GetWorkspace(char *wname);
 void ReparentFrameAndIcon(TwmWindow *tmp_win);
 
 void ShowBackground(VirtualScreen *vs, int state);
