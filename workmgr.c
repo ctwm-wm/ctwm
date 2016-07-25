@@ -1550,11 +1550,8 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 {
 	TwmWindow *t;
-	VirtualScreen *vs;
 	WorkSpace *ws;
 	int       oldoccupation;
-	int       final_x, final_y;
-	XWindowAttributes winattrs;
 	unsigned long     eventMask;
 	int changedoccupation;
 
@@ -1563,6 +1560,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	                (newoccupation == tmp_win->occupation)) {
 		char *namelist;
 		int  len;
+		XWindowAttributes winattrs;
 
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
@@ -1593,6 +1591,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	 * there now.
 	 */
 	if(!tmp_win->vs) {
+		VirtualScreen *vs;
 		for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 			if(OCCUPY(tmp_win, vs->wsw->currentwspc)) {
 				DisplayWin(vs, tmp_win);
@@ -1605,6 +1604,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		int mask = 1 << ws->number;
 		if(oldoccupation & mask) {
 			if(!(newoccupation & mask)) {
+				int final_x, final_y;
 				RemoveWindowFromRegion(tmp_win);
 				if(PlaceWindowInRegion(tmp_win, &final_x, &final_y)) {
 					XMoveWindow(dpy, tmp_win->frame, final_x, final_y);
@@ -1614,9 +1614,13 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
-	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-	eventMask = winattrs.your_event_mask;
-	XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
+	{
+		XWindowAttributes winattrs;
+
+		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
+		eventMask = winattrs.your_event_mask;
+		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
+	}
 
 	{
 		char *namelist;
