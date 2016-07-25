@@ -61,7 +61,7 @@ typedef enum {
 	WSPCWINDOW,
 	OCCUPYWINDOW,
 	OCCUPYBUTTON,
-} PBType;
+} PWBType;
 
 
 static void ReparentFrameAndIcon(TwmWindow *tmp_win);
@@ -77,7 +77,7 @@ static int GetMaskFromResource(TwmWindow *win, char *res);
 static int GetPropertyFromMask(unsigned int mask, char **prop);
 static char *mk_nullsep_string(const char *prop, int len);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
-static void PaintWsButton(PBType which, VirtualScreen *vs, Window w,
+static void PaintWsButton(PWBType which, VirtualScreen *vs, Window w,
                           char *label, ColorPair cp, int state);
 static void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
 static int WMapWindowMayBeAdded(TwmWindow *win);
@@ -2282,7 +2282,7 @@ void PaintOccupyWindow(void)
  * f.occupy window.
  */
 static void
-PaintWsButton(PBType which, VirtualScreen *vs, Window w,
+PaintWsButton(PWBType which, VirtualScreen *vs, Window w,
               char *label, ColorPair cp, int state)
 {
 	int    bwidth, bheight;
