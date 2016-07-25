@@ -1075,9 +1075,9 @@ void Occupy(TwmWindow *twm_win)
 
 	/* Figure where to put it so it's centered on the cursor */
 	XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY, &width, &height,
-			&JunkBW, &JunkDepth);
+	             &JunkBW, &JunkDepth);
 	XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkRoot, &JunkX, &JunkY,
-			&x, &y, &JunkMask);
+	              &x, &y, &JunkMask);
 	x -= (width  / 2);
 	y -= (height / 2);
 	if(x < 0) {
@@ -1551,7 +1551,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 {
 	TwmWindow *t;
 	WorkSpace *ws;
-	int       oldoccupation;
+	int oldoccupation;
 	long eventMask;
 	int changedoccupation;
 
