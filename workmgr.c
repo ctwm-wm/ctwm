@@ -1416,9 +1416,6 @@ static void ReparentFrameAndIcon(TwmWindow *tmp_win)
 
 static void Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 {
-	XWindowAttributes winattrs;
-	unsigned long     eventMask;
-
 	if(vs && tmp_win->vs && tmp_win->vs != vs) {
 		return;
 	}
@@ -1426,6 +1423,9 @@ static void Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 		XMoveWindow(dpy, tmp_win->frame, Scr->rootw + 1, Scr->rooth + 1);
 	}
 	else if(tmp_win->mapped) {
+		XWindowAttributes winattrs;
+		unsigned long     eventMask;
+
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
