@@ -107,11 +107,6 @@ bool UpdateFont(MyFont *font, int height);
 void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 void move_to_after(TwmWindow *t, TwmWindow *after);
 void SetFocus(TwmWindow *tmp_win, Time tim);
-Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp);
-Pixmap Create3DMenuIcon(unsigned int height,
-                        unsigned int *widthp, unsigned int *heightp,
-                        ColorPair cp);
-Pixmap Create3DIconManagerIcon(ColorPair cp);
 void Draw3DBorder(Window w,
                   int x, int y, int width, int height, int bw,
                   ColorPair cp,

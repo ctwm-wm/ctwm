@@ -70,6 +70,7 @@
 #include <X11/Xatom.h>
 
 #include "util.h"
+#include "icons_builtin.h"
 #include "parse.h"
 #include "screen.h"
 #include "decorations.h"

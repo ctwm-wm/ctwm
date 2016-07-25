@@ -30,6 +30,7 @@ set(CTWMSRC
 	gram.tab.c
 	iconmgr.c
 	icons.c
+	icons_builtin.c
 	image.c
 	image_bitmap.c
 	image_bitmap_builtin.c

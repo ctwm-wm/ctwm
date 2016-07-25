@@ -11,6 +11,7 @@
 
 #include "screen.h"
 #include "util.h"
+#include "icons_builtin.h"
 
 #include "image.h"
 #include "image_bitmap_builtin.h"
