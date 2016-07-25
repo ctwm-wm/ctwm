@@ -99,7 +99,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 			char wrkSpcList[512];
 			safe_strncpy(wrkSpcList, value.addr, MIN(value.size, 512));
 
-			twm_win->occupation = GetMaskFromResource(twm_win, value.addr);
+			twm_win->occupation = GetMaskFromResource(twm_win, wrkSpcList);
 		}
 		XrmDestroyDatabase(db);
 		XFreeStringList(cliargv);
