@@ -44,25 +44,19 @@ static XrmOptionDescRec table [] = {
 };
 
 
+
+/*
+ * Setup the occupation of a TwmWindow.  Called as part of the
+ * AddWindow() process.
+ */
 void
 SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 {
-	TwmWindow           *t;
-	unsigned long       nitems, bytesafter;
-	Atom                actual_type;
-	int                 actual_format;
-	int                 state;
-	Window              icon;
-	char                **cliargv = NULL;
-	int                 cliargc;
-	Bool                status;
-	char                *str_type;
-	XrmValue            value;
-	WorkSpace           *ws;
-	XWindowAttributes winattrs;
-	unsigned long     eventMask;
-	XrmDatabase       db = NULL;
+	char      **cliargv = NULL;
+	int       cliargc;
+	WorkSpace *ws;
 
+	/* If there aren't any config'd workspaces, there's only 0 */
 	if(! Scr->workSpaceManagerActive) {
 		twm_win->occupation = 1 << 0;   /* occupy workspace #0 */
 		/* more?... */
@@ -70,6 +64,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		return;
 	}
 
+	/* Workspace manager window doesn't get futzed with */
 	if(twm_win->iswspmgr) {
 		return;
 	}
@@ -77,20 +72,28 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 	/*twm_win->occupation = twm_win->iswinbox ? fullOccupation : 0;*/
 	twm_win->occupation = 0;
 
+	/* Specified in any Occupy{} config params? */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(LookInList(ws->clientlist, twm_win->full_name, &twm_win->class)) {
 			twm_win->occupation |= 1 << ws->number;
 		}
 	}
 
+	/* OccupyAll{} */
 	if(LookInList(Scr->OccupyAll, twm_win->full_name, &twm_win->class)) {
 		twm_win->occupation = fullOccupation;
 	}
 
+	/* See if it specified in -xrm stuff */
 	if(XGetCommand(dpy, twm_win->w, &cliargv, &cliargc)) {
+		Bool status;
+		char *str_type;
+		XrmValue value;
+		XrmDatabase db;
+
 		XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
-		status = XrmGetResource(db, "ctwm.workspace", "Ctwm.Workspace", &str_type,
-		                        &value);
+		status = XrmGetResource(db, "ctwm.workspace", "Ctwm.Workspace",
+		                        &str_type, &value);
 		if((status == True) && (value.size != 0)) {
 			/* Copy the value.addr because it's in XRM memory not ours */
 			char wrkSpcList[512];
@@ -103,8 +106,13 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		XFreeStringList(cliargv);
 	}
 
+	/* Does it have a property telling us */
 	if(RestartPreviousState) {
+		Atom actual_type;
+		int actual_format;
+		unsigned long nitems, bytesafter;
 		unsigned char *prop;
+
 		if(XGetWindowProperty(dpy, twm_win->w, XA_WM_OCCUPATION, 0L, 2500, False,
 		                      XA_STRING, &actual_type, &actual_format, &nitems,
 		                      &bytesafter, &prop) == Success) {
@@ -116,16 +124,26 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 	}
 
 #ifdef EWMH
+	/* Maybe EWMH has something to tell us? */
 	if(twm_win->occupation == 0) {
 		twm_win->occupation = EwmhGetOccupation(twm_win);
 	}
 #endif /* EWMH */
 
+	/* Icon Managers shouldn't get altered */
+	/* XXX Should this be up near the top? */
 	if(twm_win->isiconmgr) {
 		return;        /* someone tried to modify occupation of icon managers */
 	}
 
+
+	/*
+	 * Transient-ish things go with their parents unless
+	 * TransientHasOccupation set in the config.
+	 */
 	if(! Scr->TransientHasOccupation) {
+		TwmWindow *t;
+
 		if(twm_win->istransient) {
 			t = GetTwmWindow(twm_win->transientfor);
 			if(t != NULL) {
@@ -140,23 +158,17 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		}
 	}
 
-	/*============[ Matthew McNeill Feb 1997 ]========================*
-	 * added in functionality of specific occupation state. The value
-	 * should be a valid occupation bit-field or 0 for the default action
-	 */
 
+	/* If we were told something specific, go with that */
 	if(occupation_hint != 0) {
 		twm_win->occupation = occupation_hint;
 	}
 
-	/*================================================================*/
-
-
+	/* If it's apparently-nonsensical, put it in its vs's workspace */
 	if((twm_win->occupation & fullOccupation) == 0) {
-		VirtualScreen *vs = twm_win->vs;
-
-		twm_win->occupation = 1 << vs->wsw->currentwspc->number;
+		twm_win->occupation = 1 << twm_win->vs->wsw->currentwspc->number;
 	}
+
 	/*
 	 * If the occupation would not show it in the current vscreen,
 	 * make it vanish.
@@ -179,44 +191,63 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		}
 	}
 
-	if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
-		return;
-	}
-	eventMask = winattrs.your_event_mask;
-	XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
 
-	/* Set the property for the occupation */
+	/*
+	 * Set the property for the occupation.  Mask off getting
+	 * PropertyChange events around that; we're changing it, we don't
+	 * need X telling us it's changing!
+	 *
+	 * XXX should probably make a util func for that process...
+	 */
 	{
+		XWindowAttributes winattrs;
+		long eventMask;
 		char *wsstr;
 		int  len;
 
+		if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
+			/* Window is horked, not much we can do */
+			return;
+		}
+		eventMask = winattrs.your_event_mask;
+		XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
+
+		/* Set the property for the occupation */
 		len = GetPropertyFromMask(twm_win->occupation, &wsstr);
 		XChangeProperty(dpy, twm_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 		                PropModeReplace, (unsigned char *) wsstr, len);
 		free(wsstr);
-	}
 
 #ifdef EWMH
-	EwmhSet_NET_WM_DESKTOP(twm_win);
+		EwmhSet_NET_WM_DESKTOP(twm_win);
 #endif
-	XSelectInput(dpy, twm_win->w, eventMask);
 
-	/* kludge */
-	state = NormalState;
-	if(!(RestartPreviousState && GetWMState(twm_win->w, &state, &icon) &&
-	                (state == NormalState || state == IconicState || state == InactiveState))) {
-		if(twm_win->wmhints && (twm_win->wmhints->flags & StateHint)) {
-			state = twm_win->wmhints->initial_state;
-		}
+		/* Restore event mask */
+		XSelectInput(dpy, twm_win->w, eventMask);
 	}
-	if(visible(twm_win)) {
-		if(state == InactiveState) {
-			SetMapStateProp(twm_win, NormalState);
+
+	/* Set WM_STATE prop */
+	{
+		int state = NormalState;
+		Window icon;
+
+		if(!(RestartPreviousState
+		                && GetWMState(twm_win->w, &state, &icon)
+		                && (state == NormalState || state == IconicState
+		                    || state == InactiveState))) {
+			if(twm_win->wmhints && (twm_win->wmhints->flags & StateHint)) {
+				state = twm_win->wmhints->initial_state;
+			}
 		}
-	}
-	else {
-		if(state ==   NormalState) {
-			SetMapStateProp(twm_win, InactiveState);
+		if(visible(twm_win)) {
+			if(state == InactiveState) {
+				SetMapStateProp(twm_win, NormalState);
+			}
+		}
+		else {
+			if(state == NormalState) {
+				SetMapStateProp(twm_win, InactiveState);
+			}
 		}
 	}
 }
