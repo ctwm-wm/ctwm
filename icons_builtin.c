@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#include "util.h"
+#include "drawing.h"
 #include "screen.h"
 #include "iconmgr.h"
 

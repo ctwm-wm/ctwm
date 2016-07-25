@@ -107,10 +107,6 @@ bool UpdateFont(MyFont *font, int height);
 void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 void move_to_after(TwmWindow *t, TwmWindow *after);
 void SetFocus(TwmWindow *tmp_win, Time tim);
-void Draw3DBorder(Window w,
-                  int x, int y, int width, int height, int bw,
-                  ColorPair cp,
-                  int state, bool fill, bool forcebw);
 void PaintIcon(TwmWindow *tmp_win);
 void AdoptWindow(void);
 void RescueWindows(void);

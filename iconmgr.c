@@ -74,6 +74,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "decorations.h"
+#include "drawing.h"
 #include "resize.h"
 #include "otp.h"
 #include "add_window.h"

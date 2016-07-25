@@ -15,7 +15,8 @@
 #include "image.h"
 #include "iconmgr.h"
 #include "screen.h"
-#include "util.h"  // Border drawing
+#include "util.h"
+#include "drawing.h"
 
 #include "decorations.h"
 

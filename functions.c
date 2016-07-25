@@ -24,6 +24,7 @@
 #include "resize.h"
 #include "screen.h"
 #include "util.h"
+#include "drawing.h"
 #include "version.h"
 #include "windowbox.h"
 #include "captive.h"

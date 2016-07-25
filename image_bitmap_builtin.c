@@ -10,7 +10,7 @@
 #include <X11/Xmu/Drawing.h>
 
 #include "screen.h"
-#include "util.h"
+#include "drawing.h"
 #include "icons_builtin.h"
 
 #include "image.h"

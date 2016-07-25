@@ -49,6 +49,7 @@
 #include "workmgr.h"
 #include "image.h"
 #include "functions.h"
+#include "drawing.h"
 #ifdef EWMH
 #  include "ewmh_atoms.h"
 #endif
