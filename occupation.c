@@ -92,6 +92,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		XrmDatabase db = NULL;
 
 		XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
+		XFreeStringList(cliargv);
 		status = XrmGetResource(db, "ctwm.workspace", "Ctwm.Workspace",
 		                        &str_type, &value);
 		if((status == True) && (value.size != 0)) {
@@ -102,7 +103,6 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 			twm_win->occupation = GetMaskFromResource(twm_win, wrkSpcList);
 		}
 		XrmDestroyDatabase(db);
-		XFreeStringList(cliargv);
 	}
 
 	/* Does it have a property telling us */
