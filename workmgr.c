@@ -1552,7 +1552,7 @@ void ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 	TwmWindow *t;
 	WorkSpace *ws;
 	int       oldoccupation;
-	unsigned long     eventMask;
+	long eventMask;
 	int changedoccupation;
 
 	if((newoccupation == 0)
