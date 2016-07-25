@@ -252,21 +252,45 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 }
 
 
+/*
+ * There are various reasons you might not be able to change the
+ * occupation of a window (either due to attributes of it, or the state
+ * of your session/WM), so provide a function to check them all when we
+ * try a change.
+ *
+ * Note that this is _not_ called from ChangeOccupation(); only from
+ * other things that wrap it.  Since CO() gets called from states where
+ * this would [falsely] fail, it would be a bad idea to put it there.
+ */
 static bool
 CanChangeOccupation(TwmWindow **twm_winp)
 {
 	TwmWindow *twm_win;
 
+	/* No workspaces config'd?  Changing is nonsensical. */
 	if(!Scr->workSpaceManagerActive) {
 		return false;
 	}
+
+	/* f.occupy window up?  Can't change in the middle of changing. */
 	if(occupyWin != NULL) {
 		return false;
 	}
+
+	/* XXX Can we jut do this in the init?  Check all callers. */
 	twm_win = *twm_winp;
+
+	/* Don't change occupation of icon managers */
 	if(twm_win->isiconmgr) {
 		return false;
 	}
+
+	/* XXX Should check iswspmgr here too? */
+
+	/*
+	 * If transients don't have their own occupation, check
+	 * transient/group bits.
+	 */
 	if(!Scr->TransientHasOccupation) {
 		if(twm_win->istransient) {
 			return false;
@@ -285,6 +309,8 @@ CanChangeOccupation(TwmWindow **twm_winp)
 			*twm_winp = twm_win;
 		}
 	}
+
+	/* Sure, go ahead, change it */
 	return true;
 }
 
