@@ -19,7 +19,8 @@
 #include "otp.h"
 #include "util.h"
 
-#include "occupation.h"
+// Gotten via screen.h
+//#include "occupation.h"
 
 
 static int GetMaskFromResource(TwmWindow *win, char *res);

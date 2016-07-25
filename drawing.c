@@ -13,7 +13,6 @@
 
 
 #include "screen.h"
-#include "occupation.h"
 #include "gram.tab.h"
 
 #include "drawing.h"

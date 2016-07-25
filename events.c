@@ -95,7 +95,6 @@
 #include "version.h"
 #include "image.h"
 #include "functions.h"
-#include "occupation.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif

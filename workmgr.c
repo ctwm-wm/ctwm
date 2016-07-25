@@ -46,8 +46,6 @@
 #include "clicktofocus.h"
 #include "cursor.h"
 #include "list.h"
-#include "workmgr.h"
-#include "occupation.h"
 #include "image.h"
 #include "functions.h"
 #include "drawing.h"
@@ -56,6 +54,9 @@
 #endif
 
 #include "gram.tab.h"
+
+// Gotten via screen.h
+//#include "workmgr.h"
 
 
 static void DisplayWinUnchecked(VirtualScreen *vs,
