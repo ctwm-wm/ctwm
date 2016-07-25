@@ -58,8 +58,6 @@
 
 
 static void ReparentFrameAndIcon(TwmWindow *tmp_win);
-static void Vanish(VirtualScreen *vs,
-                   TwmWindow *tmp_win);
 static void DisplayWin(VirtualScreen *vs,
                        TwmWindow *tmp_win);
 static void DisplayWinUnchecked(VirtualScreen *vs,
@@ -1414,7 +1412,8 @@ static void ReparentFrameAndIcon(TwmWindow *tmp_win)
 	}
 }
 
-static void Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
+void
+Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 {
 	if(vs && tmp_win->vs && tmp_win->vs != vs) {
 		return;
