@@ -139,3 +139,112 @@ Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
 }
 
 #undef FBGC
+
+
+
+/*
+ * Paint a button representing a workspace.  This is used in the
+ * workspace manager window when it button mode, as well as in the
+ * f.occupy window.
+ */
+void
+PaintWsButton(PWBType which, VirtualScreen *vs, Window w,
+              char *label, ColorPair cp, int state)
+{
+	int    bwidth, bheight;
+	MyFont font;
+	int    hspace, vspace;
+
+	if(which == WSPCWINDOW) {
+		bwidth  = vs->wsw->bwidth;
+		bheight = vs->wsw->bheight;
+		font    = Scr->workSpaceMgr.buttonFont;
+	}
+	else if(which == OCCUPYWINDOW) {
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
+		bwidth  = occwin->bwidth;
+		bheight = occwin->bheight;
+		font    = occwin->font;
+	}
+	else if(which == OCCUPYBUTTON) {
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
+		bwidth  = occwin->owidth;
+		bheight = occwin->bheight;
+		font    = occwin->font;
+	}
+	else {
+		return;
+	}
+
+	{
+		int        strWid, strHei;
+		XRectangle inc_rect;
+		XRectangle logical_rect;
+
+		XmbTextExtents(font.font_set, label, strlen(label), &inc_rect,
+		               &logical_rect);
+		strHei = logical_rect.height;
+		vspace = ((bheight + strHei - font.descent) / 2);
+		strWid = logical_rect.width;
+		hspace = (bwidth - strWid) / 2;
+	}
+
+	if(hspace < (Scr->WMgrButtonShadowDepth + 1)) {
+		hspace = Scr->WMgrButtonShadowDepth + 1;
+	}
+	XClearWindow(dpy, w);
+
+	if(Scr->Monochrome == COLOR) {
+		Draw3DBorder(w, 0, 0, bwidth, bheight, Scr->WMgrButtonShadowDepth,
+		             cp, state, true, false);
+
+		switch(Scr->workSpaceMgr.buttonStyle) {
+			case STYLE_NORMAL:
+				break;
+
+			case STYLE_STYLE1:
+				Draw3DBorder(w,
+				             Scr->WMgrButtonShadowDepth - 1,
+				             Scr->WMgrButtonShadowDepth - 1,
+				             bwidth  - 2 * Scr->WMgrButtonShadowDepth + 2,
+				             bheight - 2 * Scr->WMgrButtonShadowDepth + 2,
+				             1, cp, (state == on) ? off : on, true, false);
+				break;
+
+			case STYLE_STYLE2:
+				Draw3DBorder(w,
+				             Scr->WMgrButtonShadowDepth / 2,
+				             Scr->WMgrButtonShadowDepth / 2,
+				             bwidth  - Scr->WMgrButtonShadowDepth,
+				             bheight - Scr->WMgrButtonShadowDepth,
+				             1, cp, (state == on) ? off : on, true, false);
+				break;
+
+			case STYLE_STYLE3:
+				Draw3DBorder(w,
+				             1,
+				             1,
+				             bwidth  - 2,
+				             bheight - 2,
+				             1, cp, (state == on) ? off : on, true, false);
+				break;
+		}
+		FB(cp.fore, cp.back);
+		XmbDrawString(dpy, w, font.font_set, Scr->NormalGC, hspace, vspace,
+		              label, strlen(label));
+	}
+	else {
+		Draw3DBorder(w, 0, 0, bwidth, bheight, Scr->WMgrButtonShadowDepth,
+		             cp, state, true, false);
+		if(state == on) {
+			FB(cp.fore, cp.back);
+			XmbDrawImageString(dpy, w, font.font_set, Scr->NormalGC, hspace, vspace,
+			                   label, strlen(label));
+		}
+		else {
+			FB(cp.back, cp.fore);
+			XmbDrawImageString(dpy, w, font.font_set, Scr->NormalGC, hspace, vspace,
+			                   label, strlen(label));
+		}
+	}
+}
