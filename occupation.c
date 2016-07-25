@@ -89,7 +89,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		Bool status;
 		char *str_type;
 		XrmValue value;
-		XrmDatabase db;
+		XrmDatabase db = NULL;
 
 		XrmParseCommand(&db, table, 1, "ctwm", &cliargc, cliargv);
 		status = XrmGetResource(db, "ctwm.workspace", "Ctwm.Workspace",
