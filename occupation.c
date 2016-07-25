@@ -97,8 +97,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		if((status == True) && (value.size != 0)) {
 			/* Copy the value.addr because it's in XRM memory not ours */
 			char wrkSpcList[512];
-			strncpy(wrkSpcList, value.addr, MIN(value.size, 511));
-			wrkSpcList[511] = '\0';  // Just in case
+			safe_strncpy(wrkSpcList, value.addr, MIN(value.size, 512));
 
 			twm_win->occupation = GetMaskFromResource(twm_win, value.addr);
 		}
