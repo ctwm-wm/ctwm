@@ -315,6 +315,9 @@ CanChangeOccupation(TwmWindow **twm_winp)
 }
 
 
+/*
+ * f.occupy backend - pop up Occupy control for some window
+ */
 void
 Occupy(TwmWindow *twm_win)
 {
@@ -325,6 +328,7 @@ Occupy(TwmWindow *twm_win)
 	struct OccupyWindow    *occupyWindow;
 	TwmWindow *occupy_twm;
 
+	/* Don't pop up on stuff we can't change */
 	if(!CanChangeOccupation(&twm_win)) {
 		return;
 	}
@@ -386,6 +390,7 @@ Occupy(TwmWindow *twm_win)
 }
 
 
+/* Somebody clicked in the Occupy window */
 void
 OccupyHandleButtonEvent(XEvent *event)
 {
@@ -393,30 +398,41 @@ OccupyHandleButtonEvent(XEvent *event)
 	OccupyWindow *occupyW;
 	Window       buttonW;
 
+	/*
+	 * Doesn't make sense that this can even happen if there are no
+	 * workspaces...
+	 */
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
+
+	/* ... or if there's no Occupy window up for anything */
 	if(occupyWin == NULL) {
 		return;
 	}
 
+	/* Which sub-window (button) was clicked */
 	buttonW = event->xbutton.window;
 	if(buttonW == 0) {
 		return;        /* icon */
 	}
 
+	/* Grab onto the pointer for the duration of our action */
 	XGrabPointer(dpy, Scr->Root, True,
 	             ButtonPressMask | ButtonReleaseMask,
 	             GrabModeAsync, GrabModeAsync,
 	             Scr->Root, None, CurrentTime);
 
+	/* Find the workspace button that was clicked */
 	occupyW = Scr->workSpaceMgr.occupyWindow;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(occupyW->obuttonw [ws->number] == buttonW) {
 			break;
 		}
 	}
+
 	if(ws != NULL) {
+		/* If one was, toggle it */
 		int mask = 1 << ws->number;
 		if((occupyW->tmpOccupation & mask) == 0) {
 			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
@@ -429,6 +445,7 @@ OccupyHandleButtonEvent(XEvent *event)
 		occupyW->tmpOccupation ^= mask;
 	}
 	else if(buttonW == occupyW->OK) {
+		/* Else if we clicked OK, set things and close the window */
 		if(occupyW->tmpOccupation == 0) {
 			return;
 		}
@@ -440,6 +457,7 @@ OccupyHandleButtonEvent(XEvent *event)
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->cancel) {
+		/* Or cancel, do nothing and close the window */
 		XUnmapWindow(dpy, occupyW->twm_win->frame);
 		occupyW->twm_win->mapped = false;
 		occupyW->twm_win->occupation = 0;
@@ -447,18 +465,22 @@ OccupyHandleButtonEvent(XEvent *event)
 		XSync(dpy, 0);
 	}
 	else if(buttonW == occupyW->allworkspc) {
+		/* Or All, set 'em all */
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
 			              ws->label, ws->cp, on);
 		}
 		occupyW->tmpOccupation = fullOccupation;
 	}
+
+	/* Release the pointer, if ??? */
 	if(ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
 	}
 }
 
 
+/* f.occupyall backend */
 void
 OccupyAll(TwmWindow *twm_win)
 {
@@ -467,6 +489,12 @@ OccupyAll(TwmWindow *twm_win)
 	if(!CanChangeOccupation(&twm_win)) {
 		return;
 	}
+
+	/*
+	 * Temporarily alter Scr->iconmgr because stuff down in
+	 * ChangeOccupation winds up adding/removing bits, and that doesn't
+	 * work right when we're setting all?  XXX Investigate further.
+	 */
 	save = Scr->iconmgr;
 	Scr->iconmgr = Scr->workSpaceMgr.workSpaceList->iconmgr;
 	ChangeOccupation(twm_win, fullOccupation);
@@ -474,6 +502,11 @@ OccupyAll(TwmWindow *twm_win)
 }
 
 
+/*
+ * Make sure a window is marked in a given workspace.  This gets called
+ * as part of the process of mapping a window; if we're mapping it here,
+ * it should know that it's here.
+ */
 void
 AddToWorkSpace(char *wname, TwmWindow *twm_win)
 {
@@ -496,6 +529,7 @@ AddToWorkSpace(char *wname, TwmWindow *twm_win)
 }
 
 
+/* Converse of the above */
 void
 RemoveFromWorkSpace(char *wname, TwmWindow *twm_win)
 {
