@@ -1448,7 +1448,9 @@ AddToClientsList(char *workspace, char *client)
 
 /*
  * Slightly misleading name: layout the internals of the Occupy window
- * based on its current size.
+ * based on its current size.  That does happen when it's resized, but
+ * also when it's initially created.  I guess you could call "creation" a
+ * resize of a sort...
  */
 void
 ResizeOccupyWindow(TwmWindow *win)
