@@ -979,9 +979,11 @@ static char *ok_string         = "OK",
               *everywhere_string = "All";
 
 /*
- * Create the Occupy window. Do not do the layout of the parts, only
- * calculate the initial total size. For the layout, call
- * ResizeOccupyWindow() at the end.
+ * Create the Occupy window.  Part of startup process.
+ *
+ * Do not do the layout of the parts, only calculate the initial total
+ * size. For the layout, call ResizeOccupyWindow() at the end.
+ *
  * There is only one Occupy window (per Screen), it is reparented to each
  * virtual screen as needed.
  */
@@ -1166,6 +1168,9 @@ CreateOccupyWindow(void)
 }
 
 
+/*
+ * Draw the window when we need to (e.g., on expose)
+ */
 void
 PaintOccupyWindow(void)
 {
@@ -1441,7 +1446,10 @@ AddToClientsList(char *workspace, char *client)
 }
 
 
-
+/*
+ * Slightly misleading name: layout the internals of the Occupy window
+ * based on its current size.
+ */
 void
 ResizeOccupyWindow(TwmWindow *win)
 {
