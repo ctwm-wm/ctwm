@@ -552,6 +552,7 @@ RemoveFromWorkSpace(char *wname, TwmWindow *twm_win)
 }
 
 
+/* f.toggleoccupation - flip setting for [current] workspace */
 void
 ToggleOccupation(char *wname, TwmWindow *twm_win)
 {
@@ -568,12 +569,14 @@ ToggleOccupation(char *wname, TwmWindow *twm_win)
 
 	newoccupation = twm_win->occupation ^ (1 << ws->number);
 	if(!newoccupation) {
+		/* Don't allow de-occupying _every_ ws */
 		return;
 	}
 	ChangeOccupation(twm_win, newoccupation);
 }
 
 
+/* f.movetonextworkspace */
 void
 MoveToNextWorkSpace(VirtualScreen *vs, TwmWindow *twm_win)
 {
@@ -588,12 +591,14 @@ MoveToNextWorkSpace(VirtualScreen *vs, TwmWindow *twm_win)
 	wlist2 = wlist1->next;
 	wlist2 = wlist2 ? wlist2 : Scr->workSpaceMgr.workSpaceList;
 
+	/* Out of (here), into (here+1) */
 	newoccupation = (twm_win->occupation ^ (1 << wlist1->number))
 	                | (1 << wlist2->number);
 	ChangeOccupation(twm_win, newoccupation);
 }
 
 
+/* f.movetonextworkspaceandfollow */
 void
 MoveToNextWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 {
@@ -609,6 +614,7 @@ MoveToNextWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 }
 
 
+/* f.movetoprevworkspaceand */
 void
 MoveToPrevWorkSpace(VirtualScreen *vs, TwmWindow *twm_win)
 {
@@ -629,12 +635,14 @@ MoveToPrevWorkSpace(VirtualScreen *vs, TwmWindow *twm_win)
 		wlist1 = wlist1->next;
 	}
 
+	/* Out of (here), into (here-1) */
 	newoccupation = (twm_win->occupation ^ (1 << wlist2->number))
 	                | (1 << wlist1->number);
 	ChangeOccupation(twm_win, newoccupation);
 }
 
 
+/* f.movetoprevworkspaceandfollow */
 void
 MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 {
@@ -650,22 +658,31 @@ MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 }
 
 
+/*
+ * The actual meat of occupation-changing; [re-]set the occupation for
+ * the window.
+ */
 void
 ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 {
 	TwmWindow *t;
 	WorkSpace *ws;
 	int oldoccupation;
-	long eventMask;
 	int changedoccupation;
 
 	if((newoccupation == 0)
-	                ||  /* in case the property has been broken by another client */
-	                (newoccupation == tmp_win->occupation)) {
+	                || (newoccupation == tmp_win->occupation)) {
+		/*
+		 * occupation=0 we interpret as "leave it alone".  == current,
+		 * ditto.  Go ahead and re-set the WM_OCCUPATION property though,
+		 * in case it's been broken by another client.
+		 */
 		char *namelist;
 		int  len;
 		XWindowAttributes winattrs;
+		long eventMask;
 
+		/* Mask out the PropertyChange events while we change the prop */
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
@@ -677,18 +694,36 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 #ifdef EWMH
 		EwmhSet_NET_WM_DESKTOP(tmp_win);
 #endif
+
+		/* Reset event mask */
 		XSelectInput(dpy, tmp_win->w, eventMask);
 		return;
 	}
+
+	/*
+	 * OK, there's something to change.  Stash the current state.
+	 */
 	oldoccupation = tmp_win->occupation;
+
+	/*
+	 * Add it to IconManager in the new WS[en], remove from old.  We have
+	 * to do the rather odd dance because AddIconManager() loops through
+	 * workspaces, and will add it to any workspaces it occupies (even if
+	 * it's already there).  RemoveIconManager() goes over the window's
+	 * list of what icon managers it's on and removes it from any that
+	 * don't match the current occupation, so it can just be told "here's
+	 * where I should be".
+	 */
 	tmp_win->occupation = newoccupation & ~oldoccupation;
 	AddIconManager(tmp_win);
 	tmp_win->occupation = newoccupation;
 	RemoveIconManager(tmp_win);
 
+	/* If it shouldn't be "here", vanish it */
 	if(tmp_win->vs && !OCCUPY(tmp_win, tmp_win->vs->wsw->currentwspc)) {
 		Vanish(tmp_win->vs, tmp_win);
 	}
+
 	/*
 	 * Try to find an(other) virtual screen which shows a workspace
 	 * where the window has occupation, so that the window can be shown
@@ -704,6 +739,15 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
+	/*
+	 * Loop over workspaces.  Find the first one that it used to be in.
+	 * If it's not there anymore, take it out of the WindowRegion there
+	 * (RWFR() silently returns if we're not using WindowRegion's), and
+	 * add it the WindowRegion in the first WS it now occupies.
+	 *
+	 * XXX I'm not sure this is entirely sensible; it seems like just
+	 * unconditionally Remove/Place'ing would have the same effect?
+	 */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		int mask = 1 << ws->number;
 		if(oldoccupation & mask) {
@@ -718,49 +762,76 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
+	/*
+	 * Now set the WM_OCCUPATION property.  As up at the beginning in the
+	 * no-change branch, mask out the PropertyChange events while we do
+	 * it.
+	 *
+	 * XXX I should abstract that out into a function...
+	 */
 	{
+		char *namelist;
+		int  len;
 		XWindowAttributes winattrs;
+		long eventMask;
 
 		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 		eventMask = winattrs.your_event_mask;
 		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
-	}
 
-	{
-		char *namelist;
-		int  len;
 		len = GetPropertyFromMask(newoccupation, &namelist);
 		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
 		                PropModeReplace, (unsigned char *) namelist, len);
 		free(namelist);
+#ifdef EWMH
+		EwmhSet_NET_WM_DESKTOP(tmp_win);
+#endif
+
+		XSelectInput(dpy, tmp_win->w, eventMask);
 	}
 
-#ifdef EWMH
-	EwmhSet_NET_WM_DESKTOP(tmp_win);
-#endif
-	XSelectInput(dpy, tmp_win->w, eventMask);
 
+	/*
+	 * Handle showing it up in the workspace map in the appropriate
+	 * places.
+	 *
+	 * Note that this whole block messes with the {new,old}occupation
+	 * vars.  That's "safe" because they're no longer used for their
+	 * original purposes, only for the WSmap changes, but it's still
+	 * kinda fugly.  Change to local vars at the drop of a hat with later
+	 * changes...
+	 */
 	if(!WMapWindowMayBeAdded(tmp_win)) {
+		/* Not showing in the map, so pretend it's nowhere */
 		newoccupation = 0;
 	}
 	if(Scr->workSpaceMgr.noshowoccupyall) {
-		/* We can safely change new/oldoccupation here, it's only used
-		 * for WMapAddToList()/WMapRemoveFromList() from here on.
+		/*
+		 * Don't show OccupyAll.  Note that this means both OccupyAll
+		 * window, AND windows manually set to occupy everything.  We
+		 * don't have to adjust newoccupation, because the above
+		 * conditional would have caught it, so we only need to edit old.
 		 */
-		/* if (newoccupation == fullOccupation)
-		    newoccupation = 0; */
 		if(oldoccupation == fullOccupation) {
 			oldoccupation = 0;
 		}
 	}
+
+	/* Flip the ones that need flipping */
 	changedoccupation = oldoccupation ^ newoccupation;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		int mask = 1 << ws->number;
 		if(changedoccupation & mask) {
 			if(newoccupation & mask) {
+				/* Add to WS */
 				WMapAddToList(tmp_win, ws);
 			}
 			else {
+				/*
+				 * Remove from WS.  We have to take it out of saved focus
+				 * if it were there.  Maybe there are other places we
+				 * might need to remove it from (warpring?)?
+				 */
 				WMapRemoveFromList(tmp_win, ws);
 				if(Scr->SaveWorkspaceFocus && ws->save_focus == tmp_win) {
 					ws->save_focus = NULL;
@@ -769,6 +840,11 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
+
+	/*
+	 * If transients don't have their own occupation, find any transients
+	 * of this window and move them with it.
+	 */
 	if(! Scr->TransientHasOccupation) {
 		for(t = Scr->FirstWindow; t != NULL; t = t->next) {
 			if(t != tmp_win &&
@@ -778,9 +854,17 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 			}
 		}
 	}
+
+	/* All done */
+	return;
 }
 
 
+/*
+ * Set the occupation based on the window name.  This is called if
+ * AutoOccupy is set, when we get a notification about a window name
+ * change.
+ */
 void
 WmgrRedoOccupation(TwmWindow *win)
 {
@@ -804,6 +888,7 @@ WmgrRedoOccupation(TwmWindow *win)
 }
 
 
+/* f.vanish */
 void
 WMgrRemoveFromCurrentWorkSpace(VirtualScreen *vs, TwmWindow *win)
 {
@@ -828,47 +913,60 @@ WMgrRemoveFromCurrentWorkSpace(VirtualScreen *vs, TwmWindow *win)
 }
 
 
+/* f.warphere */
 void
 WMgrAddToCurrentWorkSpaceAndWarp(VirtualScreen *vs, char *winname)
 {
 	TwmWindow *tw;
 	int       newoccupation;
 
+	/* Find named window on this screen */
 	for(tw = Scr->FirstWindow; tw != NULL; tw = tw->next) {
 		if(match(winname, tw->full_name)) {
 			break;
 		}
 	}
+
+	/* Didn't find it by name?  Try by class */
 	if(!tw) {
 		for(tw = Scr->FirstWindow; tw != NULL; tw = tw->next) {
 			if(match(winname, tw->class.res_name)) {
 				break;
 			}
 		}
-		if(!tw) {
-			for(tw = Scr->FirstWindow; tw != NULL; tw = tw->next) {
-				if(match(winname, tw->class.res_class)) {
-					break;
-				}
+	}
+	if(!tw) {
+		for(tw = Scr->FirstWindow; tw != NULL; tw = tw->next) {
+			if(match(winname, tw->class.res_class)) {
+				break;
 			}
 		}
 	}
+
+	/* Still didn't find?  Beep at the user and bail. */
 	if(!tw) {
 		XBell(dpy, 0);
 		return;
 	}
+
+	/* If WarpUnmapped isn't set and this isn't mapped, beep and bail */
 	if((! Scr->WarpUnmapped) && (! tw->mapped)) {
 		XBell(dpy, 0);
 		return;
 	}
+
+	/* Move it here if it's not */
 	if(! OCCUPY(tw, vs->wsw->currentwspc)) {
 		newoccupation = tw->occupation | (1 << vs->wsw->currentwspc->number);
 		ChangeOccupation(tw, newoccupation);
 	}
 
+	/* If we get here, WarpUnmapped is set, so map it if we need to */
 	if(! tw->mapped) {
 		DeIconify(tw);
 	}
+
+	/* And go */
 	WarpToWindow(tw, Scr->RaiseOnWarp);
 }
 
