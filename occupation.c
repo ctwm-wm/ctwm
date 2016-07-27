@@ -1469,15 +1469,26 @@ ResizeOccupyWindow(TwmWindow *win)
 		return;
 	}
 
+	/* Space between WS buttons.  From WMgr{Horiz,Vert}ButtonIndent. */
 	hspace  = occwin->hspace;
 	vspace  = occwin->vspace;
+
+	/* Lines/cols in the layout.  Same as WorkspaceManager's */
 	lines   = Scr->workSpaceMgr.lines;
 	columns = Scr->workSpaceMgr.columns;
+
+	/* Width/height of each button, based on the above and window size */
 	bwidth  = (neww -  columns    * hspace) / columns;
 	bheight = (newh - (lines + 2) * vspace) / (lines + 1);
+
+	/* Width/height of the OK/Cancel/All buttons */
 	owidth  = occwin->owidth;
 	oheight = bheight;
 
+
+	/*
+	 * Lay out the workspace buttons
+	 */
 	i = 0;
 	j = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -1491,7 +1502,12 @@ ResizeOccupyWindow(TwmWindow *win)
 			j++;
 		}
 	}
-	hspace = (neww - 3 * owidth) / 4;
+
+
+	/*
+	 * Now the action buttons
+	 */
+	hspace = (neww - 3 * owidth) / 4;  // Padding between
 	x = hspace;
 	y = ((bheight + vspace) * lines) + ((3 * vspace) / 2);
 	XMoveResizeWindow(dpy, occwin->OK, x, y, owidth, oheight);
@@ -1500,10 +1516,14 @@ ResizeOccupyWindow(TwmWindow *win)
 	x += owidth + hspace;
 	XMoveResizeWindow(dpy, occwin->allworkspc, x, y, owidth, oheight);
 
+
+	/* Save all those dimensions we figured */
 	occwin->width   = neww;
 	occwin->height  = newh;
 	occwin->bwidth  = bwidth;
 	occwin->bheight = bheight;
 	occwin->owidth  = owidth;
+
+	/* And blat it out */
 	PaintOccupyWindow();
 }
