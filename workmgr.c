@@ -896,6 +896,11 @@ ReparentFrameAndIcon(TwmWindow *tmp_win)
 	}
 }
 
+
+/*
+ * Get this window outta here.  Note that despite naming, this is
+ * unrelated to f.vanish.
+ */
 void
 Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 {
