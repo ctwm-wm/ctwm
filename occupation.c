@@ -1186,6 +1186,12 @@ CreateOccupyWindow(void)
 		XSetWMHints(dpy, w, &wmhints);
 	}
 
+
+	/*
+	 * Create the TwmWindow wrapping around it, with decorations etc.  We
+	 * do this so early in startup that we're not listening for window
+	 * creation events yet.
+	 */
 	tmp_win = AddWindow(w, AWT_NORMAL, Scr->iconmgr, Scr->currentvs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
@@ -1194,6 +1200,14 @@ CreateOccupyWindow(void)
 	tmp_win->vs = NULL;
 	tmp_win->occupation = 0;
 
+	/* tmp_win is more convenient the rest of the func, but put in place */
+	occwin->twm_win = tmp_win;
+
+
+	/*
+	 * Setup the window to have a button-pushing cursor and listen for
+	 * clicks.
+	 */
 	{
 		unsigned long attrmask;
 		XSetWindowAttributes attr;
@@ -1216,6 +1230,7 @@ CreateOccupyWindow(void)
 		XSaveContext(dpy, bw, TwmContext, (XPointer) tmp_win);
 		XSaveContext(dpy, bw, ScreenContext, (XPointer) Scr);
 	}
+
 	XSelectInput(dpy, occwin->OK,
 	             ButtonPressMask | ButtonReleaseMask | ExposureMask);
 	XSaveContext(dpy, occwin->OK, TwmContext, (XPointer) tmp_win);
@@ -1230,7 +1245,6 @@ CreateOccupyWindow(void)
 	XSaveContext(dpy, occwin->allworkspc, ScreenContext, (XPointer) Scr);
 
 	SetMapStateProp(tmp_win, WithdrawnState);
-	occwin->twm_win = tmp_win;
 	Scr->workSpaceMgr.occupyWindow = occwin;
 
 	tmp_win->attr.width = width;
