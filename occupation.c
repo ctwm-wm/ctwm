@@ -1105,11 +1105,11 @@ CreateOccupyWindow(void)
 			 * We just make 'em.
 			 */
 			occwin->obuttonw[idx] = XCreateSimpleWindow(dpy, w,
-			                                        Dummy /* x */,
-			                                        Dummy /* y */,
-			                                        Dummy /* width */,
-			                                        Dummy /* height */,
-			                                        0, Scr->Black, ws->cp.back);
+			                        Dummy /* x */,
+			                        Dummy /* y */,
+			                        Dummy /* width */,
+			                        Dummy /* height */,
+			                        0, Scr->Black, ws->cp.back);
 			XMapWindow(dpy, occwin->obuttonw[idx]);
 
 			/* Inc around to the next location */
