@@ -997,7 +997,6 @@ CreateOccupyWindow(void)
 	Window        w;        // Shorthand for occwin->w
 	char          *name, *icon_name;
 	TwmWindow     *tmp_win;
-	WorkSpace     *ws;
 	int Dummy = 1;
 
 	occwin = Scr->workSpaceMgr.occupyWindow;
@@ -1070,6 +1069,8 @@ CreateOccupyWindow(void)
 	occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
 	{
 		int i = 0, j = 0;
+		WorkSpace *ws;
+
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			Window bw =
 			        occwin->obuttonw [j * columns + i] =
@@ -1157,7 +1158,8 @@ CreateOccupyWindow(void)
 		XSelectInput(dpy, w, attrmask);
 	}
 
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+	for(WorkSpace *ws = Scr->workSpaceMgr.workSpaceList
+	                    ; ws != NULL ; ws = ws->next) {
 		Window bw = occwin->obuttonw [ws->number];
 		XSelectInput(dpy, bw, ButtonPressMask | ButtonReleaseMask | ExposureMask);
 		XSaveContext(dpy, bw, TwmContext, (XPointer) tmp_win);
