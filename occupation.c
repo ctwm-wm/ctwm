@@ -996,7 +996,6 @@ CreateOccupyWindow(void)
 	OccupyWindow  *occwin;  // Shorthand for Scr->workSpaceMgr.occupyWindow
 	Window        w;        // Shorthand for occwin->w
 	char          *name, *icon_name;
-	ColorPair     cp;
 	TwmWindow     *tmp_win;
 	WorkSpace     *ws;
 	VirtualScreen *vs;
@@ -1023,7 +1022,6 @@ CreateOccupyWindow(void)
 	oheight   = bheight;
 	vspace    = occwin->vspace;
 	hspace    = occwin->hspace;
-	cp        = occwin->cp;
 	height    = ((bheight + vspace) * lines) + oheight + (2 * vspace);
 
 	{
@@ -1070,7 +1068,7 @@ CreateOccupyWindow(void)
 	occwin->owidth  = owidth;
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
-	                                    1, Scr->Black, cp.back);
+	                                    1, Scr->Black, occwin->cp.back);
 	occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
 	{
 		int i = 0, j = 0;
