@@ -1,5 +1,12 @@
 /*
  * Occupation handling bits
+ *
+ * This is in fact pretty tightly tied and extremely similar to the
+ * handling of the WorkSpaceManager in workmgr.c, and used to be there.
+ * It makes sense to consider them together (and indeed, many of the
+ * configs that affect how this works are really WorkSpaceManager* or
+ * WMgr* commands.  But having them crammed together in one field is
+ * unwieldy.
  */
 
 #include "ctwm.h"
