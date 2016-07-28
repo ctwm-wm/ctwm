@@ -993,22 +993,13 @@ CreateOccupyWindow(void)
 	int           width, height, lines, columns;
 	int           bwidth, bheight, owidth, oheight, hspace, vspace;
 	int           min_bwidth, min_width;
-	int           i, j;
-	Window        w, OK, cancel, allworkspc;
+	OccupyWindow  *occwin;  // Shorthand for Scr->workSpaceMgr.occupyWindow
+	Window        w;        // Shorthand for occwin->w
 	char          *name, *icon_name;
 	ColorPair     cp;
 	TwmWindow     *tmp_win;
 	WorkSpace     *ws;
-	XSizeHints    sizehints;
-	XWMHints      wmhints;
-	MyFont        font;
-	XSetWindowAttributes attr;
-	XWindowAttributes    wattr;
-	unsigned long attrmask;
-	OccupyWindow  *occwin;
 	VirtualScreen *vs;
-	XRectangle inc_rect;
-	XRectangle logical_rect;
 	int Dummy = 1;
 
 	occwin = Scr->workSpaceMgr.occupyWindow;
@@ -1034,22 +1025,32 @@ CreateOccupyWindow(void)
 	hspace    = occwin->hspace;
 	cp        = occwin->cp;
 	height    = ((bheight + vspace) * lines) + oheight + (2 * vspace);
-	font      = occwin->font;
-	XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
-	               &inc_rect, &logical_rect);
-	min_bwidth = logical_rect.width;
-	XmbTextExtents(font.font_set, cancel_string, strlen(cancel_string),
-	               &inc_rect, &logical_rect);
-	i = logical_rect.width;
-	if(i > min_bwidth) {
-		min_bwidth = i;
+
+	{
+		XRectangle inc_rect;
+		XRectangle logical_rect;
+		MyFont font;
+		int i;
+
+		font = occwin->font;
+		XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
+		               &inc_rect, &logical_rect);
+		min_bwidth = logical_rect.width;
+		XmbTextExtents(font.font_set, cancel_string, strlen(cancel_string),
+		               &inc_rect, &logical_rect);
+		i = logical_rect.width;
+		if(i > min_bwidth) {
+			min_bwidth = i;
+		}
+		XmbTextExtents(font.font_set, everywhere_string,
+		               strlen(everywhere_string),
+		               &inc_rect, &logical_rect);
+		i = logical_rect.width;
+		if(i > min_bwidth) {
+			min_bwidth = i;
+		}
 	}
-	XmbTextExtents(font.font_set, everywhere_string, strlen(everywhere_string),
-	               &inc_rect, &logical_rect);
-	i = logical_rect.width;
-	if(i > min_bwidth) {
-		min_bwidth = i;
-	}
+
 	min_bwidth = (min_bwidth + hspace); /* normal width calculation */
 	width = columns * (bwidth  + hspace);
 	min_width = 3 * (min_bwidth + hspace); /* width by text width */
@@ -1071,57 +1072,72 @@ CreateOccupyWindow(void)
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, cp.back);
 	occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
-	i = 0;
-	j = 0;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		Window bw =
-		        occwin->obuttonw [j * columns + i] =
-		                XCreateSimpleWindow(dpy, w,
-		                                    Dummy /* x */,
-		                                    Dummy /* y */,
-		                                    Dummy /* width */,
-		                                    Dummy /* height */,
-		                                    0, Scr->Black, ws->cp.back);
-		XMapWindow(dpy, bw);
-		i++;
-		if(i == columns) {
-			i = 0;
-			j++;
+	{
+		int i = 0, j = 0;
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			Window bw =
+			        occwin->obuttonw [j * columns + i] =
+			                XCreateSimpleWindow(dpy, w,
+			                                    Dummy /* x */,
+			                                    Dummy /* y */,
+			                                    Dummy /* width */,
+			                                    Dummy /* height */,
+			                                    0, Scr->Black, ws->cp.back);
+			XMapWindow(dpy, bw);
+			i++;
+			if(i == columns) {
+				i = 0;
+				j++;
+			}
 		}
 	}
+
 	GetColor(Scr->Monochrome, &(occupyButtoncp.back), "gray50");
 	occupyButtoncp.fore = Scr->White;
 	if(!Scr->BeNiceToColormap) {
 		GetShadeColors(&occupyButtoncp);
 	}
 
-	OK = XCreateSimpleWindow(dpy, w, Dummy, Dummy, Dummy, Dummy, 0,
-	                         Scr->Black, occupyButtoncp.back);
-	XMapWindow(dpy, OK);
-	cancel = XCreateSimpleWindow(dpy, w, Dummy, Dummy, Dummy, Dummy, 0,
-	                             Scr->Black, occupyButtoncp.back);
-	XMapWindow(dpy, cancel);
-	allworkspc = XCreateSimpleWindow(dpy, w, Dummy, Dummy, Dummy, Dummy, 0,
-	                                 Scr->Black, occupyButtoncp.back);
-	XMapWindow(dpy, allworkspc);
+	{
+		Window tw;
 
-	occwin->OK         = OK;
-	occwin->cancel     = cancel;
-	occwin->allworkspc = allworkspc;
+		tw = XCreateSimpleWindow(dpy, w, Dummy, Dummy, Dummy, Dummy, 0,
+		                         Scr->Black, occupyButtoncp.back);
+		XMapWindow(dpy, tw);
+		occwin->OK = tw;
 
-	sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
-	sizehints.base_width  = columns;
-	sizehints.base_height = lines;
-	sizehints.width_inc   = columns;
-	sizehints.height_inc  = lines;
-	sizehints.min_width   = 2 * columns;
-	sizehints.min_height  = 2 * lines;
-	XSetStandardProperties(dpy, w, name, icon_name, None, NULL, 0, &sizehints);
+		tw = XCreateSimpleWindow(dpy, w, Dummy, Dummy, Dummy, Dummy, 0,
+		                         Scr->Black, occupyButtoncp.back);
+		XMapWindow(dpy, tw);
+		occwin->cancel = tw;
 
-	wmhints.flags         = InputHint | StateHint;
-	wmhints.input         = True;
-	wmhints.initial_state = NormalState;
-	XSetWMHints(dpy, w, &wmhints);
+		tw = XCreateSimpleWindow(dpy, w, Dummy, Dummy, Dummy, Dummy, 0,
+		                         Scr->Black, occupyButtoncp.back);
+		XMapWindow(dpy, tw);
+		occwin->allworkspc = tw;
+	}
+
+	{
+		XSizeHints sizehints;
+		sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
+		sizehints.base_width  = columns;
+		sizehints.base_height = lines;
+		sizehints.width_inc   = columns;
+		sizehints.height_inc  = lines;
+		sizehints.min_width   = 2 * columns;
+		sizehints.min_height  = 2 * lines;
+		XSetStandardProperties(dpy, w, name, icon_name, None, NULL, 0,
+		                       &sizehints);
+	}
+
+	{
+		XWMHints wmhints;
+		wmhints.flags         = InputHint | StateHint;
+		wmhints.input         = True;
+		wmhints.initial_state = NormalState;
+		XSetWMHints(dpy, w, &wmhints);
+	}
+
 	tmp_win = AddWindow(w, AWT_NORMAL, Scr->iconmgr, Scr->currentvs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
@@ -1130,14 +1146,20 @@ CreateOccupyWindow(void)
 	tmp_win->vs = NULL;
 	tmp_win->occupation = 0;
 
-	attrmask = 0;
-	attr.cursor = Scr->ButtonCursor;
-	attrmask |= CWCursor;
-	XChangeWindowAttributes(dpy, w, attrmask, &attr);
+	{
+		unsigned long attrmask;
+		XSetWindowAttributes attr;
+		XWindowAttributes wattr;
 
-	XGetWindowAttributes(dpy, w, &wattr);
-	attrmask = wattr.your_event_mask | KeyPressMask | KeyReleaseMask | ExposureMask;
-	XSelectInput(dpy, w, attrmask);
+		attr.cursor = Scr->ButtonCursor;
+		attrmask = CWCursor;
+		XChangeWindowAttributes(dpy, w, attrmask, &attr);
+
+		XGetWindowAttributes(dpy, w, &wattr);
+		attrmask = wattr.your_event_mask | KeyPressMask | KeyReleaseMask
+		           | ExposureMask;
+		XSelectInput(dpy, w, attrmask);
+	}
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window bw = occwin->obuttonw [ws->number];
