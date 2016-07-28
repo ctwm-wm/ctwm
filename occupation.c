@@ -1252,8 +1252,6 @@ CreateOccupyWindow(void)
 	/* Mark that we're not mapped */
 	SetMapStateProp(tmp_win, WithdrawnState);
 
-	Scr->workSpaceMgr.occupyWindow = occwin;
-
 	tmp_win->attr.width = width;
 	tmp_win->attr.height = height;
 
