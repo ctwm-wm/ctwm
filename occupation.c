@@ -1248,12 +1248,17 @@ CreateOccupyWindow(void)
 #undef BTN_IPT_CTX
 #undef EVT
 
+
+	/* Mark that we're not mapped */
 	SetMapStateProp(tmp_win, WithdrawnState);
+
 	Scr->workSpaceMgr.occupyWindow = occwin;
 
 	tmp_win->attr.width = width;
 	tmp_win->attr.height = height;
-	ResizeOccupyWindow(tmp_win);        /* place all parts in the right place */
+
+	/* Now call that func that sizes all the buttons */
+	ResizeOccupyWindow(tmp_win);
 }
 
 
