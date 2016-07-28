@@ -1020,34 +1020,48 @@ CreateOccupyWindow(void)
 #endif
 
 
+	/*
+	 * Work out the necessary size of the OK/Cancel/All buttons at the
+	 * bottom.
+	 */
 	{
 		XRectangle inc_rect;
 		XRectangle logical_rect;
-		MyFont font;
-		int i;
+		MyFont font = occwin->font;
 		int min_bwidth, min_width;
 
-		font = occwin->font;
+		/* Buttons gotta be as wide as the biggest of the three strings */
 		XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
 		               &inc_rect, &logical_rect);
 		min_bwidth = logical_rect.width;
+
 		XmbTextExtents(font.font_set, cancel_string, strlen(cancel_string),
 		               &inc_rect, &logical_rect);
-		i = logical_rect.width;
-		if(i > min_bwidth) {
-			min_bwidth = i;
-		}
+		min_bwidth = MAX(min_bwidth, logical_rect.width);
+
 		XmbTextExtents(font.font_set, everywhere_string,
 		               strlen(everywhere_string),
 		               &inc_rect, &logical_rect);
-		i = logical_rect.width;
-		if(i > min_bwidth) {
-			min_bwidth = i;
-		}
+		min_bwidth = MAX(min_bwidth, logical_rect.width);
 
-		min_bwidth = (min_bwidth + hspace); /* normal width calculation */
-		width = columns * (bwidth  + hspace);
+		/* Plus the padding width */
+		min_bwidth += hspace;
+
+		/*
+		 * So the min width of the whole thing is triple that.
+		 *
+		 * XXX Do we need an extra hspace here for the other outside
+		 * edge?
+		 * */
 		min_width = 3 * (min_bwidth + hspace); /* width by text width */
+
+		/*
+		 * Width of the Occupy window starts out as the number of columns
+		 * times the width of the WS buttons plus their padding.
+		 *
+		 * XXX More hspace here, like above?
+		 */
+		width = columns * (bwidth + hspace);
 
 		if(columns < 3) {
 			occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
