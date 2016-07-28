@@ -1252,9 +1252,6 @@ CreateOccupyWindow(void)
 	/* Mark that we're not mapped */
 	SetMapStateProp(tmp_win, WithdrawnState);
 
-	tmp_win->attr.width = width;
-	tmp_win->attr.height = height;
-
 	/* Now call that func that sizes all the buttons */
 	ResizeOccupyWindow(tmp_win);
 }
