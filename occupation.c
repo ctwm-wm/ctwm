@@ -1019,6 +1019,10 @@ CreateOccupyWindow(void)
 	}
 #endif
 
+	/* We already know that these should be too */
+	occwin->lines   = lines;
+	occwin->columns = columns;
+
 
 	/*
 	 * Work out the necessary size of the OK/Cancel/All buttons at the
@@ -1073,8 +1077,6 @@ CreateOccupyWindow(void)
 			occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
 			width  = columns * (bwidth  + hspace);
 		}
-		occwin->lines   = lines;
-		occwin->columns = columns;
 	}
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
