@@ -990,15 +990,25 @@ static char *ok_string         = "OK",
 void
 CreateOccupyWindow(void)
 {
-	int           width, height, lines, columns;
-	int           bwidth, bheight, owidth, oheight, hspace, vspace;
+	int           width; // Caculated and altered, unlike most others
 	int           min_bwidth, min_width;
 	int           Dummy = 1;
 	TwmWindow     *tmp_win;
-	OccupyWindow  *occwin;    // Shorthand for Scr->workSpaceMgr.occupyWindow
-	Window        w;          // Shorthand for occwin->w
+	/* Shorthands for the Occupy window */
+	OccupyWindow  *occwin = Scr->workSpaceMgr.occupyWindow;
+	Window        w; // occwin->w
+	/* Misc other shorthands */
+	const int lines   = Scr->workSpaceMgr.lines;
+	const int columns = Scr->workSpaceMgr.columns;
+	const int bwidth  = Scr->vScreenList->wsw->bwidth;
+	const int bheight = Scr->vScreenList->wsw->bheight;
+	const int vspace = occwin->vspace;
+	const int hspace = occwin->hspace;
+	const int height = ((bheight + vspace) * lines) + bheight + (2 * vspace);
 
-	occwin = Scr->workSpaceMgr.occupyWindow;
+	/* Struct embedded in [struct embedded in] Scr, so memory's waiting */
+
+	/* Initialize font and colorpair bits */
 	occwin->font     = Scr->IconManagerFont;
 	occwin->cp       = Scr->IconManagerC;
 #ifdef COLOR_BLIND_USER
@@ -1010,14 +1020,6 @@ CreateOccupyWindow(void)
 	}
 #endif
 
-	lines     = Scr->workSpaceMgr.lines;
-	columns   = Scr->workSpaceMgr.columns;
-	bwidth    = Scr->vScreenList->wsw->bwidth;
-	bheight   = Scr->vScreenList->wsw->bheight;
-	oheight   = bheight;
-	vspace    = occwin->vspace;
-	hspace    = occwin->hspace;
-	height    = ((bheight + vspace) * lines) + oheight + (2 * vspace);
 
 	{
 		XRectangle inc_rect;
@@ -1049,18 +1051,17 @@ CreateOccupyWindow(void)
 	min_width = 3 * (min_bwidth + hspace); /* width by text width */
 
 	if(columns < 3) {
-		owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
 		if(width < min_width) {
 			width = min_width;
 		}
 	}
 	else {
-		owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
 		width  = columns * (bwidth  + hspace);
 	}
 	occwin->lines   = lines;
 	occwin->columns = columns;
-	occwin->owidth  = owidth;
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, occwin->cp.back);
