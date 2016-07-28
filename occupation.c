@@ -1223,26 +1223,30 @@ CreateOccupyWindow(void)
 		XSelectInput(dpy, w, attrmask);
 	}
 
+
+	/*
+	 * Now for each of the buttons (workspaces + OK/Cancel/All), we mark
+	 * them as listening to click and exposure events.  We also stash
+	 * away the screen and wrapping TwmWindow in contexts so other code
+	 * can dredge them up.
+	 */
+#define EVT (ButtonPressMask | ButtonReleaseMask | ExposureMask)
+#define BTN_IPT_CTX(win) \
+        XSelectInput(dpy, (win), EVT); \
+        XSaveContext(dpy, (win), TwmContext, (XPointer) tmp_win); \
+        XSaveContext(dpy, (win), ScreenContext, (XPointer) Scr);
+
 	for(WorkSpace *ws = Scr->workSpaceMgr.workSpaceList
 	                    ; ws != NULL ; ws = ws->next) {
-		Window bw = occwin->obuttonw [ws->number];
-		XSelectInput(dpy, bw, ButtonPressMask | ButtonReleaseMask | ExposureMask);
-		XSaveContext(dpy, bw, TwmContext, (XPointer) tmp_win);
-		XSaveContext(dpy, bw, ScreenContext, (XPointer) Scr);
+		BTN_IPT_CTX(occwin->obuttonw[ws->number]);
 	}
 
-	XSelectInput(dpy, occwin->OK,
-	             ButtonPressMask | ButtonReleaseMask | ExposureMask);
-	XSaveContext(dpy, occwin->OK, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, occwin->OK, ScreenContext, (XPointer) Scr);
-	XSelectInput(dpy, occwin->cancel,
-	             ButtonPressMask | ButtonReleaseMask | ExposureMask);
-	XSaveContext(dpy, occwin->cancel, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, occwin->cancel, ScreenContext, (XPointer) Scr);
-	XSelectInput(dpy, occwin->allworkspc,
-	             ButtonPressMask | ButtonReleaseMask | ExposureMask);
-	XSaveContext(dpy, occwin->allworkspc, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, occwin->allworkspc, ScreenContext, (XPointer) Scr);
+	BTN_IPT_CTX(occwin->OK);
+	BTN_IPT_CTX(occwin->cancel);
+	BTN_IPT_CTX(occwin->allworkspc);
+
+#undef BTN_IPT_CTX
+#undef EVT
 
 	SetMapStateProp(tmp_win, WithdrawnState);
 	Scr->workSpaceMgr.occupyWindow = occwin;
