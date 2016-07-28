@@ -997,8 +997,6 @@ CreateOccupyWindow(void)
 	TwmWindow     *tmp_win;
 	OccupyWindow  *occwin;    // Shorthand for Scr->workSpaceMgr.occupyWindow
 	Window        w;          // Shorthand for occwin->w
-	char          *name;      // occwin->name
-	char          *icon_name; // occwin->icon_name
 
 	occwin = Scr->workSpaceMgr.occupyWindow;
 	occwin->font     = Scr->IconManagerFont;
@@ -1011,8 +1009,7 @@ CreateOccupyWindow(void)
 		GetShadeColors(&occwin->cp);
 	}
 #endif
-	name      = occwin->name;
-	icon_name = occwin->icon_name;
+
 	lines     = Scr->workSpaceMgr.lines;
 	columns   = Scr->workSpaceMgr.columns;
 	bwidth    = Scr->vScreenList->wsw->bwidth;
@@ -1124,8 +1121,8 @@ CreateOccupyWindow(void)
 		sizehints.height_inc  = lines;
 		sizehints.min_width   = 2 * columns;
 		sizehints.min_height  = 2 * lines;
-		XSetStandardProperties(dpy, w, name, icon_name, None, NULL, 0,
-		                       &sizehints);
+		XSetStandardProperties(dpy, w, occwin->name, occwin->icon_name,
+		                       None, NULL, 0, &sizehints);
 	}
 
 	{
