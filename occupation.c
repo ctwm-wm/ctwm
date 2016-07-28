@@ -993,11 +993,12 @@ CreateOccupyWindow(void)
 	int           width, height, lines, columns;
 	int           bwidth, bheight, owidth, oheight, hspace, vspace;
 	int           min_bwidth, min_width;
-	OccupyWindow  *occwin;  // Shorthand for Scr->workSpaceMgr.occupyWindow
-	Window        w;        // Shorthand for occwin->w
-	char          *name, *icon_name;
+	int           Dummy = 1;
 	TwmWindow     *tmp_win;
-	int Dummy = 1;
+	OccupyWindow  *occwin;    // Shorthand for Scr->workSpaceMgr.occupyWindow
+	Window        w;          // Shorthand for occwin->w
+	char          *name;      // occwin->name
+	char          *icon_name; // occwin->icon_name
 
 	occwin = Scr->workSpaceMgr.occupyWindow;
 	occwin->font     = Scr->IconManagerFont;
