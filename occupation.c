@@ -998,7 +998,6 @@ CreateOccupyWindow(void)
 	char          *name, *icon_name;
 	TwmWindow     *tmp_win;
 	WorkSpace     *ws;
-	VirtualScreen *vs;
 	int Dummy = 1;
 
 	occwin = Scr->workSpaceMgr.occupyWindow;
@@ -1012,13 +1011,12 @@ CreateOccupyWindow(void)
 		GetShadeColors(&occwin->cp);
 	}
 #endif
-	vs        = Scr->vScreenList;
 	name      = occwin->name;
 	icon_name = occwin->icon_name;
 	lines     = Scr->workSpaceMgr.lines;
 	columns   = Scr->workSpaceMgr.columns;
-	bwidth    = vs->wsw->bwidth;
-	bheight   = vs->wsw->bheight;
+	bwidth    = Scr->vScreenList->wsw->bwidth;
+	bheight   = Scr->vScreenList->wsw->bheight;
 	oheight   = bheight;
 	vspace    = occwin->vspace;
 	hspace    = occwin->hspace;
