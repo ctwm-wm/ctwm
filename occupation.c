@@ -1080,23 +1080,39 @@ CreateOccupyWindow(void)
 		width = MAX(width, min_width);
 	}
 
+
+	/* Now we know the size, so make the window */
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, occwin->cp.back);
-	occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
+
+
+	/*
+	 * Make subwindows as buttons for the workspaces.  They're laid out
+	 * in a grid mirroring the workspace manager's.
+	 */
 	{
 		int i = 0, j = 0;
 		WorkSpace *ws;
 
+		occwin->obuttonw = calloc(Scr->workSpaceMgr.count, sizeof(Window));
+
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			Window bw =
-			        occwin->obuttonw [j * columns + i] =
-			                XCreateSimpleWindow(dpy, w,
-			                                    Dummy /* x */,
-			                                    Dummy /* y */,
-			                                    Dummy /* width */,
-			                                    Dummy /* height */,
-			                                    0, Scr->Black, ws->cp.back);
-			XMapWindow(dpy, bw);
+			int idx = (j * columns) + i;
+
+			/*
+			 * Make and map.  Note that we're not setting the size or
+			 * location at all here; ResizeOccupyWindow() does all that.
+			 * We just make 'em.
+			 */
+			occwin->obuttonw[idx] = XCreateSimpleWindow(dpy, w,
+			                                        Dummy /* x */,
+			                                        Dummy /* y */,
+			                                        Dummy /* width */,
+			                                        Dummy /* height */,
+			                                        0, Scr->Black, ws->cp.back);
+			XMapWindow(dpy, occwin->obuttonw[idx]);
+
+			/* Inc around to the next location */
 			i++;
 			if(i == columns) {
 				i = 0;
