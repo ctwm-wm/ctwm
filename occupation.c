@@ -1121,12 +1121,23 @@ CreateOccupyWindow(void)
 		}
 	}
 
+
+	/*
+	 * Now start putting together the OK/Cancel/All buttons
+	 */
+
+	/* Background for them is hardcoded */
 	GetColor(Scr->Monochrome, &(occupyButtoncp.back), "gray50");
+
+	/* Foreground (not used here) is too */
 	occupyButtoncp.fore = Scr->White;
+
+	/* Override (probably historical */
 	if(!Scr->BeNiceToColormap) {
 		GetShadeColors(&occupyButtoncp);
 	}
 
+	/* Make 'em */
 	{
 		Window tw;
 
@@ -1146,8 +1157,12 @@ CreateOccupyWindow(void)
 		occwin->allworkspc = tw;
 	}
 
+
+	/* Setup the window properties; name, size, etc */
 	{
 		XSizeHints sizehints;
+
+		/* These sizes mostly pretty questionable... */
 		sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
 		sizehints.base_width  = columns;
 		sizehints.base_height = lines;
@@ -1155,10 +1170,14 @@ CreateOccupyWindow(void)
 		sizehints.height_inc  = lines;
 		sizehints.min_width   = 2 * columns;
 		sizehints.min_height  = 2 * lines;
+
+		/* XXX Docs say "superseded by XSetWMProperties()" */
 		XSetStandardProperties(dpy, w, occwin->name, occwin->icon_name,
 		                       None, NULL, 0, &sizehints);
 	}
 
+
+	/* Set WM_HINTS; tell ourselves that this window does input stuff */
 	{
 		XWMHints wmhints;
 		wmhints.flags         = InputHint | StateHint;
