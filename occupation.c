@@ -991,7 +991,6 @@ void
 CreateOccupyWindow(void)
 {
 	int           width; // Caculated and altered, unlike most others
-	int           min_bwidth, min_width;
 	int           Dummy = 1;
 	TwmWindow     *tmp_win;
 	/* Shorthands for the Occupy window */
@@ -1026,6 +1025,7 @@ CreateOccupyWindow(void)
 		XRectangle logical_rect;
 		MyFont font;
 		int i;
+		int min_bwidth, min_width;
 
 		font = occwin->font;
 		XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
@@ -1044,24 +1044,24 @@ CreateOccupyWindow(void)
 		if(i > min_bwidth) {
 			min_bwidth = i;
 		}
-	}
 
-	min_bwidth = (min_bwidth + hspace); /* normal width calculation */
-	width = columns * (bwidth  + hspace);
-	min_width = 3 * (min_bwidth + hspace); /* width by text width */
+		min_bwidth = (min_bwidth + hspace); /* normal width calculation */
+		width = columns * (bwidth  + hspace);
+		min_width = 3 * (min_bwidth + hspace); /* width by text width */
 
-	if(columns < 3) {
-		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
-		if(width < min_width) {
-			width = min_width;
+		if(columns < 3) {
+			occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+			if(width < min_width) {
+				width = min_width;
+			}
 		}
+		else {
+			occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+			width  = columns * (bwidth  + hspace);
+		}
+		occwin->lines   = lines;
+		occwin->columns = columns;
 	}
-	else {
-		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
-		width  = columns * (bwidth  + hspace);
-	}
-	occwin->lines   = lines;
-	occwin->columns = columns;
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, occwin->cp.back);
