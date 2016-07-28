@@ -1052,31 +1052,32 @@ CreateOccupyWindow(void)
 		min_bwidth += hspace;
 
 		/*
-		 * So the min width of the whole thing is triple that.
-		 *
-		 * XXX Do we need an extra hspace here for the other outside
-		 * edge?
+		 * So, the final width of those bottom buttons is that, plus the
+		 * 3d button look extra on both sides, plus a little extra.  I
+		 * guess that extra + 2 is similar to TitlePadding or
+		 * ButtonIndent on titlebars, but we don't have a config param
+		 * for it on the workspace manager (which is the config used for
+		 * the occupy window), so leave it as a magic constant for now.
+		 */
+		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+
+		/*
+		 * The whole thing has to be at least triple the min width of
+		 * those bottom buttons, since there are three of them.  We add
+		 * an extra hspace to each here because ???
 		 * */
-		min_width = 3 * (min_bwidth + hspace); /* width by text width */
+		min_width = 3 * (min_bwidth + hspace);
 
 		/*
 		 * Width of the Occupy window starts out as the number of columns
 		 * times the width of the WS buttons plus their padding.
 		 *
-		 * XXX More hspace here, like above?
+		 * XXX extra hspace here to handle the other outside?
 		 */
 		width = columns * (bwidth + hspace);
 
-		if(columns < 3) {
-			occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
-			if(width < min_width) {
-				width = min_width;
-			}
-		}
-		else {
-			occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
-			width  = columns * (bwidth  + hspace);
-		}
+		/* But shift up as necessary */
+		width = MAX(width, min_width);
 	}
 
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
