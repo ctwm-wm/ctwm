@@ -250,6 +250,7 @@ freeCaptiveList(char **clist)
 	while(clist && *clist) {
 		free(*clist++);
 	}
+	free(clist);
 }
 
 
@@ -391,8 +392,6 @@ AddToCaptiveList(const char *cptname)
 	SetCaptivesList(scrnum, newclist);
 	freeCaptiveList(clist);
 	freeCaptiveList(newclist);
-	free(clist);
-	free(newclist);
 
 	/* Stash property/atom of our captivename */
 	root = RootWindow(dpy, scrnum);
@@ -452,7 +451,6 @@ RemoveFromCaptiveList(const char *cptname)
 		free(newclist);
 	}
 	freeCaptiveList(clist);
-	free(clist);
 
 	/* And delete our CTWM_ROOT_x property */
 	XDeleteProperty(dpy, root, XA_WM_CTWM_ROOT_our_name);
