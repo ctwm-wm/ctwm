@@ -19,6 +19,11 @@ struct Colori {
 	struct Colori *next;
 };
 
+
+/*
+ * The icons on menu items for submenus, in UseThreeDMenus and non
+ * variants.
+ */
 Pixmap
 Create3DMenuIcon(unsigned int height,
                  unsigned int *widthp, unsigned int *heightp,
@@ -60,7 +65,6 @@ Create3DMenuIcon(unsigned int height,
 	}
 	return (colori->pix);
 }
-
 
 Pixmap
 CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
@@ -140,7 +144,14 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
 }
 
 
-
+/*
+ * 3d variant of the "iconified" image in icon manager.
+ *
+ * XXX The usage of this is very strange.  It's made once per icon
+ * manager line item, instead of once per screen like the 2d variant is.
+ * Also, the 2d variant is made inline in CreateIconManagers(); it should
+ * probably be moved here too...
+ */
 Pixmap
 Create3DIconManagerIcon(ColorPair cp)
 {
