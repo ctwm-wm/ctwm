@@ -53,6 +53,16 @@ static XrmOptionDescRec table [] = {
 
 
 
+
+/*
+ ****************************************************************
+ *
+ * First, funcs related to setting and changing a window's occupation.
+ *
+ ****************************************************************
+ */
+
+
 /*
  * Setup the occupation of a TwmWindow.  Called as part of the
  * AddWindow() process.
@@ -261,252 +271,6 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 
 
 /*
- * There are various reasons you might not be able to change the
- * occupation of a window (either due to attributes of it, or the state
- * of your session/WM), so provide a function to check them all when we
- * try a change.
- *
- * Note that this is _not_ called from ChangeOccupation(); only from
- * other things that wrap it.  Since CO() gets called from states where
- * this would [falsely] fail, it would be a bad idea to put it there.
- */
-static bool
-CanChangeOccupation(TwmWindow **twm_winp)
-{
-	TwmWindow *twm_win;
-
-	/* No workspaces config'd?  Changing is nonsensical. */
-	if(!Scr->workSpaceManagerActive) {
-		return false;
-	}
-
-	/* f.occupy window up?  Can't change in the middle of changing. */
-	if(occupyWin != NULL) {
-		return false;
-	}
-
-	/* XXX Can we jut do this in the init?  Check all callers. */
-	twm_win = *twm_winp;
-
-	/* Don't change occupation of icon managers */
-	if(twm_win->isiconmgr) {
-		return false;
-	}
-
-	/* XXX Should check iswspmgr here too? */
-
-	/*
-	 * If transients don't have their own occupation, check
-	 * transient/group bits.
-	 */
-	if(!Scr->TransientHasOccupation) {
-		if(twm_win->istransient) {
-			return false;
-		}
-		if(twm_win->group != (Window) 0 && twm_win->group != twm_win->w) {
-			/*
-			 * When trying to modify a group member window,
-			 * operate on the group leader instead
-			 * (and thereby on all group member windows as well).
-			 * If we can't find the group leader, pretend it isn't set.
-			 */
-			twm_win = GetTwmWindow(twm_win->group);
-			if(!twm_win) {
-				return true;
-			}
-			*twm_winp = twm_win;
-		}
-	}
-
-	/* Sure, go ahead, change it */
-	return true;
-}
-
-
-/*
- * f.occupy backend - pop up Occupy control for some window
- */
-void
-Occupy(TwmWindow *twm_win)
-{
-	int          x, y;
-	unsigned int width, height;
-	int          xoffset, yoffset;
-	Window       w;
-	struct OccupyWindow    *occupyWindow;
-	TwmWindow *occupy_twm;
-
-	/* Don't pop up on stuff we can't change */
-	if(!CanChangeOccupation(&twm_win)) {
-		return;
-	}
-
-	/* Grab our one screen-wide f.occupy window */
-	occupyWindow = Scr->workSpaceMgr.occupyWindow;
-	occupyWindow->tmpOccupation = twm_win->occupation;
-	w = occupyWindow->w;
-
-	/* Figure where to put it so it's centered on the cursor */
-	XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY, &width, &height,
-	             &JunkBW, &JunkDepth);
-	XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkRoot, &JunkX, &JunkY,
-	              &x, &y, &JunkMask);
-	x -= (width  / 2);
-	y -= (height / 2);
-	if(x < 0) {
-		x = 0;
-	}
-	if(y < 0) {
-		y = 0;
-	}
-	xoffset = width  + 2 * Scr->BorderWidth;
-	yoffset = height + 2 * Scr->BorderWidth + Scr->TitleHeight;
-
-	/* ... (but not off the screen!) */
-	if((x + xoffset) > Scr->rootw) {
-		x = Scr->rootw - xoffset;
-	}
-	if((y + yoffset) > Scr->rooth) {
-		y = Scr->rooth - yoffset;
-	}
-
-	occupy_twm = occupyWindow->twm_win;
-	occupy_twm->occupation = twm_win->occupation;
-
-	/* Move the occupy window to where it should be */
-	if(occupy_twm->parent_vs != twm_win->parent_vs) {
-		occupy_twm->vs = twm_win->parent_vs;
-		occupy_twm->frame_x = x;
-		occupy_twm->frame_y = y;
-		ReparentFrameAndIcon(occupy_twm);
-	}
-	else {
-		XMoveWindow(dpy, occupyWindow->twm_win->frame, x, y);
-	}
-
-	/* And show it */
-	SetMapStateProp(occupy_twm, NormalState);
-	XMapWindow(dpy, occupyWindow->w);
-	XMapWindow(dpy, occupy_twm->frame);
-
-	/* XXX Must be a better way to express "all the way on top" */
-	OtpSetPriority(occupy_twm, WinWin, 0, Above);
-
-	/* Mark it shown, and stash what window we're showing it for */
-	occupyWindow->twm_win->mapped = true;
-	occupyWin = twm_win;
-}
-
-
-/* Somebody clicked in the Occupy window */
-void
-OccupyHandleButtonEvent(XEvent *event)
-{
-	WorkSpace    *ws;
-	OccupyWindow *occupyW;
-	Window       buttonW;
-
-	/*
-	 * Doesn't make sense that this can even happen if there are no
-	 * workspaces...
-	 */
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-
-	/* ... or if there's no Occupy window up for anything */
-	if(occupyWin == NULL) {
-		return;
-	}
-
-	/* Which sub-window (button) was clicked */
-	buttonW = event->xbutton.window;
-	if(buttonW == 0) {
-		return;        /* icon */
-	}
-
-	/* Grab onto the pointer for the duration of our action */
-	XGrabPointer(dpy, Scr->Root, True,
-	             ButtonPressMask | ButtonReleaseMask,
-	             GrabModeAsync, GrabModeAsync,
-	             Scr->Root, None, CurrentTime);
-
-	/* Find the workspace button that was clicked */
-	occupyW = Scr->workSpaceMgr.occupyWindow;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(occupyW->obuttonw [ws->number] == buttonW) {
-			break;
-		}
-	}
-
-	if(ws != NULL) {
-		/* If one was, toggle it */
-		int mask = 1 << ws->number;
-		ButtonState bs = (occupyW->tmpOccupation & mask) ? off : on;
-
-		PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-		              ws->label, ws->cp, bs);
-		occupyW->tmpOccupation ^= mask;
-	}
-	else if(buttonW == occupyW->OK) {
-		/* Else if we clicked OK, set things and close the window */
-		if(occupyW->tmpOccupation == 0) {
-			return;
-		}
-		ChangeOccupation(occupyWin, occupyW->tmpOccupation);
-		XUnmapWindow(dpy, occupyW->twm_win->frame);
-		occupyW->twm_win->mapped = false;
-		occupyW->twm_win->occupation = 0;
-		occupyWin = NULL;
-		XSync(dpy, 0);
-	}
-	else if(buttonW == occupyW->cancel) {
-		/* Or cancel, do nothing and close the window */
-		XUnmapWindow(dpy, occupyW->twm_win->frame);
-		occupyW->twm_win->mapped = false;
-		occupyW->twm_win->occupation = 0;
-		occupyWin = NULL;
-		XSync(dpy, 0);
-	}
-	else if(buttonW == occupyW->allworkspc) {
-		/* Or All, set 'em all */
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-			              ws->label, ws->cp, on);
-		}
-		occupyW->tmpOccupation = fullOccupation;
-	}
-
-	/* Release the pointer, if ??? */
-	if(ButtonPressed == -1) {
-		XUngrabPointer(dpy, CurrentTime);
-	}
-}
-
-
-/* f.occupyall backend */
-void
-OccupyAll(TwmWindow *twm_win)
-{
-	IconMgr *save;
-
-	if(!CanChangeOccupation(&twm_win)) {
-		return;
-	}
-
-	/*
-	 * Temporarily alter Scr->iconmgr because stuff down in
-	 * ChangeOccupation winds up adding/removing bits, and that doesn't
-	 * work right when we're setting all?  XXX Investigate further.
-	 */
-	save = Scr->iconmgr;
-	Scr->iconmgr = Scr->workSpaceMgr.workSpaceList->iconmgr;
-	ChangeOccupation(twm_win, fullOccupation);
-	Scr->iconmgr = save;
-}
-
-
-/*
  * Make sure a window is marked in a given workspace.  f.addtoworkspace.
  * Also gets called as part of the process of mapping a window; if we're
  * mapping it here, it should know that it's here.  And Xinerama magic
@@ -667,208 +431,6 @@ MoveToPrevWorkSpaceAndFollow(VirtualScreen *vs, TwmWindow *twm_win)
 
 
 /*
- * The actual meat of occupation-changing; [re-]set the occupation for
- * the window.
- */
-void
-ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
-{
-	TwmWindow *t;
-	WorkSpace *ws;
-	int oldoccupation;
-	int changedoccupation;
-
-	if((newoccupation == 0)
-	                || (newoccupation == tmp_win->occupation)) {
-		/*
-		 * occupation=0 we interpret as "leave it alone".  == current,
-		 * ditto.  Go ahead and re-set the WM_OCCUPATION property though,
-		 * in case it's been broken by another client.
-		 */
-		char *namelist;
-		int  len;
-		XWindowAttributes winattrs;
-		long eventMask;
-
-		/* Mask out the PropertyChange events while we change the prop */
-		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-		eventMask = winattrs.your_event_mask;
-		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
-
-		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
-		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-		                PropModeReplace, (unsigned char *) namelist, len);
-		free(namelist);
-#ifdef EWMH
-		EwmhSet_NET_WM_DESKTOP(tmp_win);
-#endif
-
-		/* Reset event mask */
-		XSelectInput(dpy, tmp_win->w, eventMask);
-		return;
-	}
-
-	/*
-	 * OK, there's something to change.  Stash the current state.
-	 */
-	oldoccupation = tmp_win->occupation;
-
-	/*
-	 * Add it to IconManager in the new WS[en], remove from old.  We have
-	 * to do the rather odd dance because AddIconManager() loops through
-	 * workspaces, and will add it to any workspaces it occupies (even if
-	 * it's already there).  RemoveIconManager() goes over the window's
-	 * list of what icon managers it's on and removes it from any that
-	 * don't match the current occupation, so it can just be told "here's
-	 * where I should be".
-	 */
-	tmp_win->occupation = newoccupation & ~oldoccupation;
-	AddIconManager(tmp_win);
-	tmp_win->occupation = newoccupation;
-	RemoveIconManager(tmp_win);
-
-	/* If it shouldn't be "here", vanish it */
-	if(tmp_win->vs && !OCCUPY(tmp_win, tmp_win->vs->wsw->currentwspc)) {
-		Vanish(tmp_win->vs, tmp_win);
-	}
-
-	/*
-	 * Try to find an(other) virtual screen which shows a workspace
-	 * where the window has occupation, so that the window can be shown
-	 * there now.
-	 */
-	if(!tmp_win->vs) {
-		VirtualScreen *vs;
-		for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-			if(OCCUPY(tmp_win, vs->wsw->currentwspc)) {
-				DisplayWin(vs, tmp_win);
-				break;
-			}
-		}
-	}
-
-	/*
-	 * Loop over workspaces.  Find the first one that it used to be in.
-	 * If it's not there anymore, take it out of the WindowRegion there
-	 * (RWFR() silently returns if we're not using WindowRegion's), and
-	 * add it the WindowRegion in the first WS it now occupies.
-	 *
-	 * XXX I'm not sure this is entirely sensible; it seems like just
-	 * unconditionally Remove/Place'ing would have the same effect?
-	 */
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		int mask = 1 << ws->number;
-		if(oldoccupation & mask) {
-			if(!(newoccupation & mask)) {
-				int final_x, final_y;
-				RemoveWindowFromRegion(tmp_win);
-				if(PlaceWindowInRegion(tmp_win, &final_x, &final_y)) {
-					XMoveWindow(dpy, tmp_win->frame, final_x, final_y);
-				}
-			}
-			break;
-		}
-	}
-
-	/*
-	 * Now set the WM_OCCUPATION property.  As up at the beginning in the
-	 * no-change branch, mask out the PropertyChange events while we do
-	 * it.
-	 *
-	 * XXX I should abstract that out into a function...
-	 */
-	{
-		char *namelist;
-		int  len;
-		XWindowAttributes winattrs;
-		long eventMask;
-
-		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-		eventMask = winattrs.your_event_mask;
-		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
-
-		len = GetPropertyFromMask(newoccupation, &namelist);
-		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
-		                PropModeReplace, (unsigned char *) namelist, len);
-		free(namelist);
-#ifdef EWMH
-		EwmhSet_NET_WM_DESKTOP(tmp_win);
-#endif
-
-		XSelectInput(dpy, tmp_win->w, eventMask);
-	}
-
-
-	/*
-	 * Handle showing it up in the workspace map in the appropriate
-	 * places.
-	 *
-	 * Note that this whole block messes with the {new,old}occupation
-	 * vars.  That's "safe" because they're no longer used for their
-	 * original purposes, only for the WSmap changes, but it's still
-	 * kinda fugly.  Change to local vars at the drop of a hat with later
-	 * changes...
-	 */
-	if(!WMapWindowMayBeAdded(tmp_win)) {
-		/* Not showing in the map, so pretend it's nowhere */
-		newoccupation = 0;
-	}
-	if(Scr->workSpaceMgr.noshowoccupyall) {
-		/*
-		 * Don't show OccupyAll.  Note that this means both OccupyAll
-		 * window, AND windows manually set to occupy everything.  We
-		 * don't have to adjust newoccupation, because the above
-		 * conditional would have caught it, so we only need to edit old.
-		 */
-		if(oldoccupation == fullOccupation) {
-			oldoccupation = 0;
-		}
-	}
-
-	/* Flip the ones that need flipping */
-	changedoccupation = oldoccupation ^ newoccupation;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		int mask = 1 << ws->number;
-		if(changedoccupation & mask) {
-			if(newoccupation & mask) {
-				/* Add to WS */
-				WMapAddToList(tmp_win, ws);
-			}
-			else {
-				/*
-				 * Remove from WS.  We have to take it out of saved focus
-				 * if it were there.  Maybe there are other places we
-				 * might need to remove it from (warpring?)?
-				 */
-				WMapRemoveFromList(tmp_win, ws);
-				if(Scr->SaveWorkspaceFocus && ws->save_focus == tmp_win) {
-					ws->save_focus = NULL;
-				}
-			}
-		}
-	}
-
-
-	/*
-	 * If transients don't have their own occupation, find any transients
-	 * of this window and move them with it.
-	 */
-	if(! Scr->TransientHasOccupation) {
-		for(t = Scr->FirstWindow; t != NULL; t = t->next) {
-			if(t != tmp_win &&
-			                ((t->istransient && t->transientfor == tmp_win->w) ||
-			                 t->group == tmp_win->w)) {
-				ChangeOccupation(t, tmp_win->occupation);
-			}
-		}
-	}
-
-	/* All done */
-	return;
-}
-
-
-/*
  * Set the occupation based on the window name.  This is called if
  * AutoOccupy is set, when we get a notification about a window name
  * change.
@@ -979,6 +541,36 @@ WMgrAddToCurrentWorkSpaceAndWarp(VirtualScreen *vs, char *winname)
 }
 
 
+/* f.occupyall backend */
+void
+OccupyAll(TwmWindow *twm_win)
+{
+	IconMgr *save;
+
+	if(!CanChangeOccupation(&twm_win)) {
+		return;
+	}
+
+	/*
+	 * Temporarily alter Scr->iconmgr because stuff down in
+	 * ChangeOccupation winds up adding/removing bits, and that doesn't
+	 * work right when we're setting all?  XXX Investigate further.
+	 */
+	save = Scr->iconmgr;
+	Scr->iconmgr = Scr->workSpaceMgr.workSpaceList->iconmgr;
+	ChangeOccupation(twm_win, fullOccupation);
+	Scr->iconmgr = save;
+}
+
+
+
+/*
+ ****************************************************************
+ *
+ * Pieces related to the Occupy window
+ *
+ ****************************************************************
+ */
 
 static ColorPair occupyButtoncp;
 
@@ -1266,6 +858,89 @@ CreateOccupyWindow(void)
 
 
 /*
+ * Slightly misleading name: layout the internals of the Occupy window
+ * based on its current size.  That does happen when it's resized, but
+ * also when it's initially created.  I guess you could call "creation" a
+ * resize of a sort...
+ */
+void
+ResizeOccupyWindow(TwmWindow *win)
+{
+	int        bwidth, bheight, owidth, oheight;
+	int        hspace, vspace;
+	int        lines, columns;
+	int        neww, newh;
+	WorkSpace  *ws;
+	int        i, j, x, y;
+	OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
+
+	neww = win->attr.width;
+	newh = win->attr.height;
+	if(occwin->width == neww && occwin->height == newh) {
+		return;
+	}
+
+	/* Space between WS buttons.  From WMgr{Horiz,Vert}ButtonIndent. */
+	hspace  = occwin->hspace;
+	vspace  = occwin->vspace;
+
+	/* Lines/cols in the layout.  Same as WorkspaceManager's */
+	lines   = Scr->workSpaceMgr.lines;
+	columns = Scr->workSpaceMgr.columns;
+
+	/* Width/height of each button, based on the above and window size */
+	bwidth  = (neww -  columns    * hspace) / columns;
+	bheight = (newh - (lines + 2) * vspace) / (lines + 1);
+
+	/* Width/height of the OK/Cancel/All buttons */
+	owidth  = occwin->owidth;
+	oheight = bheight;
+
+
+	/*
+	 * Lay out the workspace buttons
+	 */
+	i = 0;
+	j = 0;
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		XMoveResizeWindow(dpy, occwin->obuttonw [j * columns + i],
+		                  i * (bwidth  + hspace) + (hspace / 2),
+		                  j * (bheight + vspace) + (vspace / 2),
+		                  bwidth, bheight);
+		i++;
+		if(i == columns) {
+			i = 0;
+			j++;
+		}
+	}
+
+
+	/*
+	 * Now the action buttons
+	 */
+	hspace = (neww - 3 * owidth) / 4;  // Padding between
+	x = hspace;
+	y = ((bheight + vspace) * lines) + ((3 * vspace) / 2);
+	XMoveResizeWindow(dpy, occwin->OK, x, y, owidth, oheight);
+	x += owidth + hspace;
+	XMoveResizeWindow(dpy, occwin->cancel, x, y, owidth, oheight);
+	x += owidth + hspace;
+	XMoveResizeWindow(dpy, occwin->allworkspc, x, y, owidth, oheight);
+
+
+	/* Save all those dimensions we figured */
+	occwin->width   = neww;
+	occwin->height  = newh;
+	occwin->bwidth  = bwidth;
+	occwin->bheight = bheight;
+	occwin->owidth  = owidth;
+
+	/* And blat it out */
+	PaintOccupyWindow();
+}
+
+
+/*
  * Draw the window when we need to (e.g., on expose)
  */
 void
@@ -1293,6 +968,483 @@ PaintOccupyWindow(void)
 	              occupyButtoncp, off);
 	PaintWsButton(OCCUPYBUTTON, NULL, occwin->allworkspc, everywhere_string,
 	              occupyButtoncp, off);
+}
+
+
+/*
+ * Somebody clicked in the Occupy window
+ */
+void
+OccupyHandleButtonEvent(XEvent *event)
+{
+	WorkSpace    *ws;
+	OccupyWindow *occupyW;
+	Window       buttonW;
+
+	/*
+	 * Doesn't make sense that this can even happen if there are no
+	 * workspaces...
+	 */
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+
+	/* ... or if there's no Occupy window up for anything */
+	if(occupyWin == NULL) {
+		return;
+	}
+
+	/* Which sub-window (button) was clicked */
+	buttonW = event->xbutton.window;
+	if(buttonW == 0) {
+		return;        /* icon */
+	}
+
+	/* Grab onto the pointer for the duration of our action */
+	XGrabPointer(dpy, Scr->Root, True,
+	             ButtonPressMask | ButtonReleaseMask,
+	             GrabModeAsync, GrabModeAsync,
+	             Scr->Root, None, CurrentTime);
+
+	/* Find the workspace button that was clicked */
+	occupyW = Scr->workSpaceMgr.occupyWindow;
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(occupyW->obuttonw [ws->number] == buttonW) {
+			break;
+		}
+	}
+
+	if(ws != NULL) {
+		/* If one was, toggle it */
+		int mask = 1 << ws->number;
+		ButtonState bs = (occupyW->tmpOccupation & mask) ? off : on;
+
+		PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
+		              ws->label, ws->cp, bs);
+		occupyW->tmpOccupation ^= mask;
+	}
+	else if(buttonW == occupyW->OK) {
+		/* Else if we clicked OK, set things and close the window */
+		if(occupyW->tmpOccupation == 0) {
+			return;
+		}
+		ChangeOccupation(occupyWin, occupyW->tmpOccupation);
+		XUnmapWindow(dpy, occupyW->twm_win->frame);
+		occupyW->twm_win->mapped = false;
+		occupyW->twm_win->occupation = 0;
+		occupyWin = NULL;
+		XSync(dpy, 0);
+	}
+	else if(buttonW == occupyW->cancel) {
+		/* Or cancel, do nothing and close the window */
+		XUnmapWindow(dpy, occupyW->twm_win->frame);
+		occupyW->twm_win->mapped = false;
+		occupyW->twm_win->occupation = 0;
+		occupyWin = NULL;
+		XSync(dpy, 0);
+	}
+	else if(buttonW == occupyW->allworkspc) {
+		/* Or All, set 'em all */
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
+			              ws->label, ws->cp, on);
+		}
+		occupyW->tmpOccupation = fullOccupation;
+	}
+
+	/* Release the pointer, if ??? */
+	if(ButtonPressed == -1) {
+		XUngrabPointer(dpy, CurrentTime);
+	}
+}
+
+
+/*
+ * f.occupy backend - pop up Occupy control for some window
+ */
+void
+Occupy(TwmWindow *twm_win)
+{
+	int          x, y;
+	unsigned int width, height;
+	int          xoffset, yoffset;
+	Window       w;
+	struct OccupyWindow    *occupyWindow;
+	TwmWindow *occupy_twm;
+
+	/* Don't pop up on stuff we can't change */
+	if(!CanChangeOccupation(&twm_win)) {
+		return;
+	}
+
+	/* Grab our one screen-wide f.occupy window */
+	occupyWindow = Scr->workSpaceMgr.occupyWindow;
+	occupyWindow->tmpOccupation = twm_win->occupation;
+	w = occupyWindow->w;
+
+	/* Figure where to put it so it's centered on the cursor */
+	XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY, &width, &height,
+	             &JunkBW, &JunkDepth);
+	XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkRoot, &JunkX, &JunkY,
+	              &x, &y, &JunkMask);
+	x -= (width  / 2);
+	y -= (height / 2);
+	if(x < 0) {
+		x = 0;
+	}
+	if(y < 0) {
+		y = 0;
+	}
+	xoffset = width  + 2 * Scr->BorderWidth;
+	yoffset = height + 2 * Scr->BorderWidth + Scr->TitleHeight;
+
+	/* ... (but not off the screen!) */
+	if((x + xoffset) > Scr->rootw) {
+		x = Scr->rootw - xoffset;
+	}
+	if((y + yoffset) > Scr->rooth) {
+		y = Scr->rooth - yoffset;
+	}
+
+	occupy_twm = occupyWindow->twm_win;
+	occupy_twm->occupation = twm_win->occupation;
+
+	/* Move the occupy window to where it should be */
+	if(occupy_twm->parent_vs != twm_win->parent_vs) {
+		occupy_twm->vs = twm_win->parent_vs;
+		occupy_twm->frame_x = x;
+		occupy_twm->frame_y = y;
+		ReparentFrameAndIcon(occupy_twm);
+	}
+	else {
+		XMoveWindow(dpy, occupyWindow->twm_win->frame, x, y);
+	}
+
+	/* And show it */
+	SetMapStateProp(occupy_twm, NormalState);
+	XMapWindow(dpy, occupyWindow->w);
+	XMapWindow(dpy, occupy_twm->frame);
+
+	/* XXX Must be a better way to express "all the way on top" */
+	OtpSetPriority(occupy_twm, WinWin, 0, Above);
+
+	/* Mark it shown, and stash what window we're showing it for */
+	occupyWindow->twm_win->mapped = true;
+	occupyWin = twm_win;
+}
+
+
+
+
+/*
+ ****************************************************************
+ *
+ * Backend and misc
+ *
+ ****************************************************************
+ */
+
+
+/*
+ * The actual meat of occupation-changing; [re-]set the occupation for
+ * the window.  This is the func that actually sets and saves the new
+ * occupation, moves the window where it should be, etc.  Should maybe be
+ * called something more like "SetOccupation()".
+ */
+void
+ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
+{
+	TwmWindow *t;
+	WorkSpace *ws;
+	int oldoccupation;
+	int changedoccupation;
+
+	if((newoccupation == 0)
+	                || (newoccupation == tmp_win->occupation)) {
+		/*
+		 * occupation=0 we interpret as "leave it alone".  == current,
+		 * ditto.  Go ahead and re-set the WM_OCCUPATION property though,
+		 * in case it's been broken by another client.
+		 */
+		char *namelist;
+		int  len;
+		XWindowAttributes winattrs;
+		long eventMask;
+
+		/* Mask out the PropertyChange events while we change the prop */
+		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
+		eventMask = winattrs.your_event_mask;
+		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
+
+		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
+		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) namelist, len);
+		free(namelist);
+#ifdef EWMH
+		EwmhSet_NET_WM_DESKTOP(tmp_win);
+#endif
+
+		/* Reset event mask */
+		XSelectInput(dpy, tmp_win->w, eventMask);
+		return;
+	}
+
+	/*
+	 * OK, there's something to change.  Stash the current state.
+	 */
+	oldoccupation = tmp_win->occupation;
+
+	/*
+	 * Add it to IconManager in the new WS[en], remove from old.  We have
+	 * to do the rather odd dance because AddIconManager() loops through
+	 * workspaces, and will add it to any workspaces it occupies (even if
+	 * it's already there).  RemoveIconManager() goes over the window's
+	 * list of what icon managers it's on and removes it from any that
+	 * don't match the current occupation, so it can just be told "here's
+	 * where I should be".
+	 */
+	tmp_win->occupation = newoccupation & ~oldoccupation;
+	AddIconManager(tmp_win);
+	tmp_win->occupation = newoccupation;
+	RemoveIconManager(tmp_win);
+
+	/* If it shouldn't be "here", vanish it */
+	if(tmp_win->vs && !OCCUPY(tmp_win, tmp_win->vs->wsw->currentwspc)) {
+		Vanish(tmp_win->vs, tmp_win);
+	}
+
+	/*
+	 * Try to find an(other) virtual screen which shows a workspace
+	 * where the window has occupation, so that the window can be shown
+	 * there now.
+	 */
+	if(!tmp_win->vs) {
+		VirtualScreen *vs;
+		for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+			if(OCCUPY(tmp_win, vs->wsw->currentwspc)) {
+				DisplayWin(vs, tmp_win);
+				break;
+			}
+		}
+	}
+
+	/*
+	 * Loop over workspaces.  Find the first one that it used to be in.
+	 * If it's not there anymore, take it out of the WindowRegion there
+	 * (RWFR() silently returns if we're not using WindowRegion's), and
+	 * add it the WindowRegion in the first WS it now occupies.
+	 *
+	 * XXX I'm not sure this is entirely sensible; it seems like just
+	 * unconditionally Remove/Place'ing would have the same effect?
+	 */
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		int mask = 1 << ws->number;
+		if(oldoccupation & mask) {
+			if(!(newoccupation & mask)) {
+				int final_x, final_y;
+				RemoveWindowFromRegion(tmp_win);
+				if(PlaceWindowInRegion(tmp_win, &final_x, &final_y)) {
+					XMoveWindow(dpy, tmp_win->frame, final_x, final_y);
+				}
+			}
+			break;
+		}
+	}
+
+	/*
+	 * Now set the WM_OCCUPATION property.  As up at the beginning in the
+	 * no-change branch, mask out the PropertyChange events while we do
+	 * it.
+	 *
+	 * XXX I should abstract that out into a function...
+	 */
+	{
+		char *namelist;
+		int  len;
+		XWindowAttributes winattrs;
+		long eventMask;
+
+		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
+		eventMask = winattrs.your_event_mask;
+		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
+
+		len = GetPropertyFromMask(newoccupation, &namelist);
+		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
+		                PropModeReplace, (unsigned char *) namelist, len);
+		free(namelist);
+#ifdef EWMH
+		EwmhSet_NET_WM_DESKTOP(tmp_win);
+#endif
+
+		XSelectInput(dpy, tmp_win->w, eventMask);
+	}
+
+
+	/*
+	 * Handle showing it up in the workspace map in the appropriate
+	 * places.
+	 *
+	 * Note that this whole block messes with the {new,old}occupation
+	 * vars.  That's "safe" because they're no longer used for their
+	 * original purposes, only for the WSmap changes, but it's still
+	 * kinda fugly.  Change to local vars at the drop of a hat with later
+	 * changes...
+	 */
+	if(!WMapWindowMayBeAdded(tmp_win)) {
+		/* Not showing in the map, so pretend it's nowhere */
+		newoccupation = 0;
+	}
+	if(Scr->workSpaceMgr.noshowoccupyall) {
+		/*
+		 * Don't show OccupyAll.  Note that this means both OccupyAll
+		 * window, AND windows manually set to occupy everything.  We
+		 * don't have to adjust newoccupation, because the above
+		 * conditional would have caught it, so we only need to edit old.
+		 */
+		if(oldoccupation == fullOccupation) {
+			oldoccupation = 0;
+		}
+	}
+
+	/* Flip the ones that need flipping */
+	changedoccupation = oldoccupation ^ newoccupation;
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		int mask = 1 << ws->number;
+		if(changedoccupation & mask) {
+			if(newoccupation & mask) {
+				/* Add to WS */
+				WMapAddToList(tmp_win, ws);
+			}
+			else {
+				/*
+				 * Remove from WS.  We have to take it out of saved focus
+				 * if it were there.  Maybe there are other places we
+				 * might need to remove it from (warpring?)?
+				 */
+				WMapRemoveFromList(tmp_win, ws);
+				if(Scr->SaveWorkspaceFocus && ws->save_focus == tmp_win) {
+					ws->save_focus = NULL;
+				}
+			}
+		}
+	}
+
+
+	/*
+	 * If transients don't have their own occupation, find any transients
+	 * of this window and move them with it.
+	 */
+	if(! Scr->TransientHasOccupation) {
+		for(t = Scr->FirstWindow; t != NULL; t = t->next) {
+			if(t != tmp_win &&
+			                ((t->istransient && t->transientfor == tmp_win->w) ||
+			                 t->group == tmp_win->w)) {
+				ChangeOccupation(t, tmp_win->occupation);
+			}
+		}
+	}
+
+	/* All done */
+	return;
+}
+
+
+/*
+ * There are various reasons you might not be able to change the
+ * occupation of a window (either due to attributes of it, or the state
+ * of your session/WM), so provide a function to check them all when we
+ * try a change.
+ *
+ * Note that this is _not_ called from ChangeOccupation(); only from
+ * other things that wrap it.  Since CO() gets called from states where
+ * this would [falsely] fail, it would be a bad idea to put it there.
+ */
+static bool
+CanChangeOccupation(TwmWindow **twm_winp)
+{
+	TwmWindow *twm_win;
+
+	/* No workspaces config'd?  Changing is nonsensical. */
+	if(!Scr->workSpaceManagerActive) {
+		return false;
+	}
+
+	/* f.occupy window up?  Can't change in the middle of changing. */
+	if(occupyWin != NULL) {
+		return false;
+	}
+
+	/* XXX Can we jut do this in the init?  Check all callers. */
+	twm_win = *twm_winp;
+
+	/* Don't change occupation of icon managers */
+	if(twm_win->isiconmgr) {
+		return false;
+	}
+
+	/* XXX Should check iswspmgr here too? */
+
+	/*
+	 * If transients don't have their own occupation, check
+	 * transient/group bits.
+	 */
+	if(!Scr->TransientHasOccupation) {
+		if(twm_win->istransient) {
+			return false;
+		}
+		if(twm_win->group != (Window) 0 && twm_win->group != twm_win->w) {
+			/*
+			 * When trying to modify a group member window,
+			 * operate on the group leader instead
+			 * (and thereby on all group member windows as well).
+			 * If we can't find the group leader, pretend it isn't set.
+			 */
+			twm_win = GetTwmWindow(twm_win->group);
+			if(!twm_win) {
+				return true;
+			}
+			*twm_winp = twm_win;
+		}
+	}
+
+	/* Sure, go ahead, change it */
+	return true;
+}
+
+
+/*
+ * Add a client name to a list determining which workspaces it will
+ * occupy.  Used in handling the Occupy { } block in config file.
+ */
+bool
+AddToClientsList(char *workspace, char *client)
+{
+	WorkSpace *ws;
+
+	/* "all" is a magic workspace value which makes it occupy anywhere */
+	if(strcmp(workspace, "all") == 0) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			AddToList(&ws->clientlist, client, "");
+		}
+		return true;
+	}
+
+	/* If prefixed with "ws:", strip the prefix and lookup by WS name */
+	if(strncmp(workspace, "ws:", 3) == 0) {
+		if((ws = GetWorkspace(workspace + 3)) != NULL) {
+			AddToList(&ws->clientlist, client, "");
+			return true;
+		}
+	}
+
+	/* Else find that named workspace and all this to it */
+	if((ws = GetWorkspace(workspace)) != NULL) {
+		AddToList(&ws->clientlist, client, "");
+		return true;
+	}
+
+	/* Couldn't figure where to put it */
+	return false;
 }
 
 
@@ -1502,122 +1654,3 @@ mk_nullsep_string(const char *prop, int len)
 #ifdef __GNUC__
 # pragma GCC diagnostic pop
 #endif
-
-
-/*
- * Add a client name to a list determining which workspaces it will
- * occupy.  Used in handling the Occupy { } block in config file.
- */
-bool
-AddToClientsList(char *workspace, char *client)
-{
-	WorkSpace *ws;
-
-	/* "all" is a magic workspace value which makes it occupy anywhere */
-	if(strcmp(workspace, "all") == 0) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			AddToList(&ws->clientlist, client, "");
-		}
-		return true;
-	}
-
-	/* If prefixed with "ws:", strip the prefix and lookup by WS name */
-	if(strncmp(workspace, "ws:", 3) == 0) {
-		if((ws = GetWorkspace(workspace + 3)) != NULL) {
-			AddToList(&ws->clientlist, client, "");
-			return true;
-		}
-	}
-
-	/* Else find that named workspace and all this to it */
-	if((ws = GetWorkspace(workspace)) != NULL) {
-		AddToList(&ws->clientlist, client, "");
-		return true;
-	}
-
-	/* Couldn't figure where to put it */
-	return false;
-}
-
-
-/*
- * Slightly misleading name: layout the internals of the Occupy window
- * based on its current size.  That does happen when it's resized, but
- * also when it's initially created.  I guess you could call "creation" a
- * resize of a sort...
- */
-void
-ResizeOccupyWindow(TwmWindow *win)
-{
-	int        bwidth, bheight, owidth, oheight;
-	int        hspace, vspace;
-	int        lines, columns;
-	int        neww, newh;
-	WorkSpace  *ws;
-	int        i, j, x, y;
-	OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
-
-	neww = win->attr.width;
-	newh = win->attr.height;
-	if(occwin->width == neww && occwin->height == newh) {
-		return;
-	}
-
-	/* Space between WS buttons.  From WMgr{Horiz,Vert}ButtonIndent. */
-	hspace  = occwin->hspace;
-	vspace  = occwin->vspace;
-
-	/* Lines/cols in the layout.  Same as WorkspaceManager's */
-	lines   = Scr->workSpaceMgr.lines;
-	columns = Scr->workSpaceMgr.columns;
-
-	/* Width/height of each button, based on the above and window size */
-	bwidth  = (neww -  columns    * hspace) / columns;
-	bheight = (newh - (lines + 2) * vspace) / (lines + 1);
-
-	/* Width/height of the OK/Cancel/All buttons */
-	owidth  = occwin->owidth;
-	oheight = bheight;
-
-
-	/*
-	 * Lay out the workspace buttons
-	 */
-	i = 0;
-	j = 0;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		XMoveResizeWindow(dpy, occwin->obuttonw [j * columns + i],
-		                  i * (bwidth  + hspace) + (hspace / 2),
-		                  j * (bheight + vspace) + (vspace / 2),
-		                  bwidth, bheight);
-		i++;
-		if(i == columns) {
-			i = 0;
-			j++;
-		}
-	}
-
-
-	/*
-	 * Now the action buttons
-	 */
-	hspace = (neww - 3 * owidth) / 4;  // Padding between
-	x = hspace;
-	y = ((bheight + vspace) * lines) + ((3 * vspace) / 2);
-	XMoveResizeWindow(dpy, occwin->OK, x, y, owidth, oheight);
-	x += owidth + hspace;
-	XMoveResizeWindow(dpy, occwin->cancel, x, y, owidth, oheight);
-	x += owidth + hspace;
-	XMoveResizeWindow(dpy, occwin->allworkspc, x, y, owidth, oheight);
-
-
-	/* Save all those dimensions we figured */
-	occwin->width   = neww;
-	occwin->height  = newh;
-	occwin->bwidth  = bwidth;
-	occwin->bheight = bheight;
-	occwin->owidth  = owidth;
-
-	/* And blat it out */
-	PaintOccupyWindow();
-}
