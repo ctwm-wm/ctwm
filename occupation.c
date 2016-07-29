@@ -507,9 +507,10 @@ OccupyAll(TwmWindow *twm_win)
 
 
 /*
- * Make sure a window is marked in a given workspace.  This gets called
- * as part of the process of mapping a window; if we're mapping it here,
- * it should know that it's here.
+ * Make sure a window is marked in a given workspace.  f.addtoworkspace.
+ * Also gets called as part of the process of mapping a window; if we're
+ * mapping it here, it should know that it's here.  And Xinerama magic
+ * moves.
  */
 void
 AddToWorkSpace(char *wname, TwmWindow *twm_win)
@@ -533,7 +534,10 @@ AddToWorkSpace(char *wname, TwmWindow *twm_win)
 }
 
 
-/* Converse of the above */
+/*
+ * Converse of the above.  f.removefromworkspace, also called from
+ * Xinerama-related magic.
+ */
 void
 RemoveFromWorkSpace(char *wname, TwmWindow *twm_win)
 {
