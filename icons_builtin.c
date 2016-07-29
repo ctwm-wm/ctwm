@@ -147,10 +147,17 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
 /*
  * 3d variant of the "iconified" image in icon manager.
  *
- * XXX The usage of this is very strange.  It's made once per icon
- * manager line item, instead of once per screen like the 2d variant is.
- * Also, the 2d variant is made inline in CreateIconManagers(); it should
- * probably be moved here too...
+ * For the 2d case, there's just one icon stored screen-wide, which is
+ * XCopyPlane()'d into the icon manager.  This works because it's just a
+ * 2-color thing represented as a bitmap, and we color it to match the
+ * FG/BG of the row at the time.
+ *
+ * The 3d variant is more complicated, and doesn't just use the row's
+ * FG/BG colors; it draws various shades from them.  So since each row in
+ * an icon manager may be a different FG/BG color, we have to make a new
+ * one for each row.
+ *
+ * XXX Should move creation of the 2d variant here for consistency.
  */
 Pixmap
 Create3DIconManagerIcon(ColorPair cp)

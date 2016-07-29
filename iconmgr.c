@@ -683,7 +683,12 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		GetColorFromList(Scr->IconManagerHighlightL, tmp_win->full_name,
 		                 &tmp_win->class, &tmp->highlight);
 
-		/* Pop! */
+		/*
+		 * If we're using 3d icon managers, each line item has its own
+		 * icon; see comment on creation function for details.  With 2d
+		 * icon managers, it's the same for all of them, so it's stored
+		 * screen-wide.
+		 */
 		if(Scr->use3Diconmanagers) {
 			if(!Scr->BeNiceToColormap) {
 				GetShadeColors(&tmp->cp);
