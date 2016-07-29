@@ -1,5 +1,23 @@
 /*
  * Captive ctwm handling bits.
+ *
+ * Captive support makes use of several X properties on the "outside"
+ * (i.e., the real ctwm we're setting up captives inside).
+ *
+ * The WM_CTWMSLIST property is set on the root window (of the
+ * appropriate Screen) containing a \0-separated list of the names of the
+ * captive windows.
+ *
+ * A WM_CTWM_ROOT_<captive_name> property is set on the root window for
+ * each of the captive ctwm's, holding the Window XID for that captive's
+ * internal root window.
+ *
+ * A WM_CTWM_ROOT is set by the captive ctwm on its created root window,
+ * holding the XID of itself.  The same property is also set by the
+ * 'outside' ctwm on the frame of that window.  These are used in the
+ * f.hypermove process, to find the window ID to move stuff into.  I'm
+ * not quite sure why we're setting it on both; perhaps so the border
+ * counts as part of the inner window.
  */
 
 #include "ctwm.h"
@@ -168,7 +186,11 @@ RedirectToCaptive(Window window)
 }
 
 
-
+/*
+ * Get the list of captive ctwm's we know about on a screen.
+ *
+ * Use freeCaptiveList() to clean up the return value.
+ */
 static char **
 GetCaptivesList(int scrnum)
 {
@@ -216,6 +238,23 @@ GetCaptivesList(int scrnum)
 	return ret;
 }
 
+
+/*
+ * Free GetCaptivesList() return.
+ */
+static void
+freeCaptiveList(char **clist)
+{
+	while(clist && *clist) {
+		free(*clist++);
+	}
+}
+
+
+/*
+ * Set the WM_CTWMSLIST property with a set of captive ctwm's, so it can
+ * be retrieved from there later (say, by a GetCaptivesList() call).
+ */
 static void
 SetCaptivesList(int scrnum, char **clist)
 {
@@ -247,14 +286,13 @@ SetCaptivesList(int scrnum, char **clist)
 	free(slist);
 }
 
-static void
-freeCaptiveList(char **clist)
-{
-	while(clist && *clist) {
-		free(*clist++);
-	}
-}
 
+/*
+ * Add ourselves to the list of captive ctwms.  Called during startup
+ * when --window is given.  Returns the captive name, because we may not
+ * have been given one explicitly (in cptname), and so it may have been
+ * autogen'd.
+ */
 char *
 AddToCaptiveList(const char *cptname)
 {
@@ -369,6 +407,11 @@ AddToCaptiveList(const char *cptname)
 	return rcname;
 }
 
+
+/*
+ * Take something (in practice, always ourselves) out of the list of
+ * running captives.  Called during shutdown.
+ */
 void
 RemoveFromCaptiveList(const char *cptname)
 {
@@ -377,12 +420,13 @@ RemoveFromCaptiveList(const char *cptname)
 	int scrnum = Scr->screen;
 	Window root = RootWindow(dpy, scrnum);
 
+	/* If we're not apparently captive, there's nothing to do */
 	if(!cptname || XA_WM_CTWM_ROOT_our_name == None) {
 		return;
 	}
-	clist = GetCaptivesList(scrnum);
 
-	/* Make sure there's something to do before trying to do it */
+	/* Take us out of the captives list in WM_CTWMSLIST */
+	clist = GetCaptivesList(scrnum);
 	if(clist && *clist) {
 		cl = clist;
 		count = 0;
@@ -408,9 +452,17 @@ RemoveFromCaptiveList(const char *cptname)
 	freeCaptiveList(clist);
 	free(clist);
 
+	/* And delete our CTWM_ROOT_x property */
 	XDeleteProperty(dpy, root, XA_WM_CTWM_ROOT_our_name);
 }
 
+
+/*
+ * Call from AddWindow() on the 'outside'; if this new window is a
+ * captive ctwm running inside us, copy its WM_CTWM_ROOT property to the
+ * frame window we're creating around it.  It's a little unclear why
+ * we're doing this; x-ref comment at top of file.
+ */
 void
 SetPropsIfCaptiveCtwm(TwmWindow *win)
 {
@@ -425,6 +477,12 @@ SetPropsIfCaptiveCtwm(TwmWindow *win)
 	                PropModeReplace, (unsigned char *) &window, 1);
 }
 
+
+/*
+ * Get the WM_CTWM_ROOT property of a window; that tells us whether it
+ * thinks it's a captive ctwm, and if so, what it thinks its root window
+ * is.
+ */
 static Window
 CaptiveCtwmRootWindow(Window window)
 {
@@ -448,6 +506,11 @@ CaptiveCtwmRootWindow(Window window)
 	return w;
 }
 
+
+/*
+ * Get info about the captive CTWM instance under the cursor.  Called
+ * during the f.hypermove process.
+ */
 CaptiveCTWM
 GetCaptiveCTWMUnderPointer(void)
 {
