@@ -16,7 +16,7 @@ typedef enum {
 } PWBType;
 
 void PaintWsButton(PWBType which, VirtualScreen *vs, Window w,
-                   char *label, ColorPair cp, int state);
+                   char *label, ColorPair cp, ButtonState state);
 
 
 #endif // _CTWM_DRAWING_H

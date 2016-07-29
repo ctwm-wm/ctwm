@@ -149,7 +149,7 @@ Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
  */
 void
 PaintWsButton(PWBType which, VirtualScreen *vs, Window w,
-              char *label, ColorPair cp, int state)
+              char *label, ColorPair cp, ButtonState state)
 {
 	int    bwidth, bheight;
 	MyFont font;
