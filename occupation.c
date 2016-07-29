@@ -442,14 +442,10 @@ OccupyHandleButtonEvent(XEvent *event)
 	if(ws != NULL) {
 		/* If one was, toggle it */
 		int mask = 1 << ws->number;
-		if((occupyW->tmpOccupation & mask) == 0) {
-			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-			              ws->label, ws->cp, on);
-		}
-		else {
-			PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
-			              ws->label, ws->cp, off);
-		}
+		ButtonState bs = (occupyW->tmpOccupation & mask) ? off : on;
+
+		PaintWsButton(OCCUPYWINDOW, NULL, occupyW->obuttonw [ws->number],
+		              ws->label, ws->cp, bs);
 		occupyW->tmpOccupation ^= mask;
 	}
 	else if(buttonW == occupyW->OK) {
@@ -1283,12 +1279,9 @@ PaintOccupyWindow(void)
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window bw = occwin->obuttonw [ws->number];
-		if(occwin->tmpOccupation & (1 << ws->number)) {
-			PaintWsButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, on);
-		}
-		else {
-			PaintWsButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, off);
-		}
+		ButtonState bs = (occwin->tmpOccupation & (1 << ws->number)) ? on : off;
+
+		PaintWsButton(OCCUPYWINDOW, NULL, bw, ws->label, ws->cp, bs);
 	}
 	PaintWsButton(OCCUPYBUTTON, NULL, occwin->OK,         ok_string,
 	              occupyButtoncp, off);
