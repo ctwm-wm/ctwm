@@ -1,5 +1,13 @@
 /*
  * Built-in icon building
+ *
+ * This conceptually overlaps pretty strongly with
+ * image_bitmap_builtin.c, since both are about drawing some built-in
+ * images used for internal stuff.  They're kept separate because i_b_b
+ * is backend bits for GetImage() calls for ":xpm:", "%xpm:", and ":"
+ * images, while these are called directly from the code.  Perhaps they
+ * should be subsumed under that, but they haven't been so far, so we're
+ * keeping them separate for now.
  */
 
 #include "ctwm.h"
