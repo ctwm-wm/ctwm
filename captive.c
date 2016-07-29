@@ -11,8 +11,8 @@
  * A WM_CTWM_ROOT_<captive_name> property is set on the root window (see
  * previous) for each of the captive ctwm's, holding the Window XID for
  * that captive's internal root window.  The combination of WM_CTWMSLIST
- * and WM_CTWM_ROOT_<name> can be used to find each of the captive ctwm's
- * windows.
+ * and WM_CTWM_ROOT_<name> can be used to find the windows each of the
+ * captive ctwms inside us.
  *
  * A WM_CTWM_ROOT is set by the captive ctwm on its created root window,
  * holding the XID of itself.  The same property is also set by the
