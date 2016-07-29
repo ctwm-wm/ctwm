@@ -1531,7 +1531,7 @@ GetMaskFromResource(TwmWindow *win, char *res)
 unsigned int
 GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 {
-	char         wrkSpcName [256];
+	char         wrkSpcName[256];
 	WorkSpace    *ws;
 	unsigned int mask;
 	int          l;
@@ -1541,7 +1541,8 @@ GetMaskFromProperty(unsigned char *_prop, unsigned long len)
 	l = 0;
 	prop = (char *) _prop;
 	while(l < len) {
-		strcpy(wrkSpcName, prop);
+		/* If you have WS names longer than 256 chars, that's just Too Bad */
+		safe_strncpy(wrkSpcName, prop, 256);
 		l    += strlen(prop) + 1;
 		prop += strlen(prop) + 1;
 		if(strcmp(wrkSpcName, "all") == 0) {
