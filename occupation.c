@@ -46,6 +46,7 @@ int fullOccupation = 0;
 TwmWindow *occupyWin = NULL;
 
 
+/* XXX Share with captive.c? */
 static XrmOptionDescRec table [] = {
 	{"-xrm",            NULL,           XrmoptionResArg, (XPointer) NULL},
 };
