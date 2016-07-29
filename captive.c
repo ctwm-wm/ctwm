@@ -1,16 +1,18 @@
 /*
  * Captive ctwm handling bits.
  *
- * Captive support makes use of several X properties on the "outside"
- * (i.e., the real ctwm we're setting up captives inside).
+ * Captive support makes use of several X properties on various windows.
  *
  * The WM_CTWMSLIST property is set on the root window (of the
  * appropriate Screen) containing a \0-separated list of the names of the
- * captive windows.
+ * captive windows inside that ctwm.  So this would show up in the root
+ * window of a captive ctwm as well, if it had more captives inside it.
  *
- * A WM_CTWM_ROOT_<captive_name> property is set on the root window for
- * each of the captive ctwm's, holding the Window XID for that captive's
- * internal root window.
+ * A WM_CTWM_ROOT_<captive_name> property is set on the root window (see
+ * previous) for each of the captive ctwm's, holding the Window XID for
+ * that captive's internal root window.  The combination of WM_CTWMSLIST
+ * and WM_CTWM_ROOT_<name> can be used to find each of the captive ctwm's
+ * windows.
  *
  * A WM_CTWM_ROOT is set by the captive ctwm on its created root window,
  * holding the XID of itself.  The same property is also set by the
