@@ -38,7 +38,7 @@
 
 static char **GetCaptivesList(int scrnum);
 static void SetCaptivesList(int scrnum, char **clist);
-static void freeCaptiveList(char **clist);
+static void freeCaptivesList(char **clist);
 static Window CaptiveCtwmRootWindow(Window window);
 static bool DontRedirect(Window window);
 
@@ -191,7 +191,7 @@ RedirectToCaptive(Window window)
 /*
  * Get the list of captive ctwm's we know about on a screen.
  *
- * Use freeCaptiveList() to clean up the return value.
+ * Use freeCaptivesList() to clean up the return value.
  */
 static char **
 GetCaptivesList(int scrnum)
@@ -245,7 +245,7 @@ GetCaptivesList(int scrnum)
  * Free GetCaptivesList() return.
  */
 static void
-freeCaptiveList(char **clist)
+freeCaptivesList(char **clist)
 {
 	while(clist && *clist) {
 		free(*clist++);
@@ -390,8 +390,8 @@ AddToCaptiveList(const char *cptname)
 	newclist[count] = strdup(rcname);
 	newclist[count + 1] = NULL;
 	SetCaptivesList(scrnum, newclist);
-	freeCaptiveList(clist);
-	freeCaptiveList(newclist);
+	freeCaptivesList(clist);
+	freeCaptivesList(newclist);
 
 	/* Stash property/atom of our captivename */
 	root = RootWindow(dpy, scrnum);
@@ -450,7 +450,7 @@ RemoveFromCaptiveList(const char *cptname)
 		SetCaptivesList(scrnum, newclist);
 		free(newclist);
 	}
-	freeCaptiveList(clist);
+	freeCaptivesList(clist);
 
 	/* And delete our CTWM_ROOT_x property */
 	XDeleteProperty(dpy, root, XA_WM_CTWM_ROOT_our_name);
