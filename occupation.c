@@ -5,7 +5,7 @@
  * handling of the WorkSpaceManager in workmgr.c, and used to be there.
  * It makes sense to consider them together (and indeed, many of the
  * configs that affect how this works are really WorkSpaceManager* or
- * WMgr* commands.  But having them crammed together in one field is
+ * WMgr* commands.  But having them crammed together in one file is
  * unwieldy.
  */
 
