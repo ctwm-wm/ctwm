@@ -13,6 +13,7 @@ set(SRCDOCDIR ${CMAKE_SOURCE_DIR}/doc)
 set(CTWMSRC
 	add_window.c
 	animate.c
+	captive.c
 	clargs.c
 	clicktofocus.c
 	ctopts.c
@@ -22,6 +23,7 @@ set(CTWMSRC
 	decorations.c
 	decorations_init.c
 	deftwmrc.c
+	drawing.c
 	event_names.c
 	events.c
 	functions.c
@@ -29,6 +31,7 @@ set(CTWMSRC
 	gram.tab.c
 	iconmgr.c
 	icons.c
+	icons_builtin.c
 	image.c
 	image_bitmap.c
 	image_bitmap_builtin.c
@@ -38,6 +41,7 @@ set(CTWMSRC
 	mask_screen.c
 	menus.c
 	mwmhints.c
+	occupation.c
 	otp.c
 	parse.c
 	parse_be.c

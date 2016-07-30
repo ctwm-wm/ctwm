@@ -61,6 +61,7 @@
 #include "menus.h"
 #include "vscreen.h"
 #include "workmgr.h"
+#include "occupation.h"
 
 typedef enum {
 	ICONIFY_NORMAL,

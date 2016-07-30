@@ -80,6 +80,7 @@
 #include "add_window.h"
 #include "decorations.h"
 #include "screen.h"
+#include "drawing.h"
 
 #define MINHEIGHT 0     /* had been 32 */
 #define MINWIDTH 0      /* had been 60 */

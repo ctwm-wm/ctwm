@@ -107,15 +107,6 @@ bool UpdateFont(MyFont *font, int height);
 void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 void move_to_after(TwmWindow *t, TwmWindow *after);
 void SetFocus(TwmWindow *tmp_win, Time tim);
-Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp);
-Pixmap Create3DMenuIcon(unsigned int height,
-                        unsigned int *widthp, unsigned int *heightp,
-                        ColorPair cp);
-Pixmap Create3DIconManagerIcon(ColorPair cp);
-void Draw3DBorder(Window w,
-                  int x, int y, int width, int height, int bw,
-                  ColorPair cp,
-                  int state, bool fill, bool forcebw);
 void PaintIcon(TwmWindow *tmp_win);
 void AdoptWindow(void);
 void RescueWindows(void);
@@ -129,5 +120,7 @@ void ConstrainByBorders1(int *left, int width, int *top, int height);
 void ConstrainByBorders(TwmWindow *twmwin,
                         int *left, int width,
                         int *top, int height);
+void safe_strncpy(char *dest, const char *src, size_t size);
+bool visible(const TwmWindow *tmp_win);
 
 #endif /* _CTWM_UTIL_H */

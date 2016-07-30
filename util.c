@@ -101,6 +101,7 @@
 #include "resize.h"
 #include "image.h"
 #include "decorations.h"
+#include "drawing.h"
 
 
 /***********************************************************************
@@ -855,275 +856,6 @@ void SetFocus(TwmWindow *tmp_win, Time tim)
 
 
 
-struct Colori {
-	Pixel color;
-	Pixmap pix;
-	struct Colori *next;
-};
-
-Pixmap Create3DMenuIcon(unsigned int height,
-                        unsigned int *widthp, unsigned int *heightp,
-                        ColorPair cp)
-{
-	unsigned int h, w;
-	int         i;
-	struct Colori *col;
-	static struct Colori *colori = NULL;
-
-	h = height;
-	w = h * 7 / 8;
-	if(h < 1) {
-		h = 1;
-	}
-	if(w < 1) {
-		w = 1;
-	}
-	*widthp  = w;
-	*heightp = h;
-
-	for(col = colori; col; col = col->next) {
-		if(col->color == cp.back) {
-			break;
-		}
-	}
-	if(col != NULL) {
-		return (col->pix);
-	}
-	col = malloc(sizeof(struct Colori));
-	col->color = cp.back;
-	col->pix   = XCreatePixmap(dpy, Scr->Root, h, h, Scr->d_depth);
-	col->next = colori;
-	colori = col;
-
-	Draw3DBorder(col->pix, 0, 0, w, h, 1, cp, off, true, false);
-	for(i = 3; i + 5 < h; i += 5) {
-		Draw3DBorder(col->pix, 4, i, w - 8, 3, 1, Scr->MenuC, off, true, false);
-	}
-	return (colori->pix);
-}
-
-Pixmap Create3DIconManagerIcon(ColorPair cp)
-{
-	unsigned int w, h;
-	struct Colori *col;
-	static struct Colori *colori = NULL;
-
-	w = siconify_width;
-	h = siconify_height;
-
-	for(col = colori; col; col = col->next) {
-		if(col->color == cp.back) {
-			break;
-		}
-	}
-	if(col != NULL) {
-		return (col->pix);
-	}
-	col = malloc(sizeof(struct Colori));
-	col->color = cp.back;
-	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
-	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, true, false);
-	col->next = colori;
-	colori = col;
-
-	return (colori->pix);
-}
-
-
-Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
-{
-	int h, w;
-	int ih, iw;
-	int ix, iy;
-	int mh, mw;
-	int tw, th;
-	int lw, lh;
-	int lx, ly;
-	int lines, dly;
-	int offset;
-	int bw;
-
-	h = height;
-	w = h * 7 / 8;
-	if(h < 1) {
-		h = 1;
-	}
-	if(w < 1) {
-		w = 1;
-	}
-	*widthp = w;
-	*heightp = h;
-	if(Scr->tbpm.menu == None) {
-		Pixmap  pix;
-		GC      gc;
-
-		pix = Scr->tbpm.menu = XCreatePixmap(dpy, Scr->Root, w, h, 1);
-		gc = XCreateGC(dpy, pix, 0L, NULL);
-		XSetForeground(dpy, gc, 0L);
-		XFillRectangle(dpy, pix, gc, 0, 0, w, h);
-		XSetForeground(dpy, gc, 1L);
-		ix = 1;
-		iy = 1;
-		ih = h - iy * 2;
-		iw = w - ix * 2;
-		offset = ih / 8;
-		mh = ih - offset;
-		mw = iw - offset;
-		bw = mh / 16;
-		if(bw == 0 && mw > 2) {
-			bw = 1;
-		}
-		tw = mw - bw * 2;
-		th = mh - bw * 2;
-		XFillRectangle(dpy, pix, gc, ix, iy, mw, mh);
-		XFillRectangle(dpy, pix, gc, ix + iw - mw, iy + ih - mh, mw, mh);
-		XSetForeground(dpy, gc, 0L);
-		XFillRectangle(dpy, pix, gc, ix + bw, iy + bw, tw, th);
-		XSetForeground(dpy, gc, 1L);
-		lw = tw / 2;
-		if((tw & 1) ^ (lw & 1)) {
-			lw++;
-		}
-		lx = ix + bw + (tw - lw) / 2;
-
-		lh = th / 2 - bw;
-		if((lh & 1) ^ ((th - bw) & 1)) {
-			lh++;
-		}
-		ly = iy + bw + (th - bw - lh) / 2;
-
-		lines = 3;
-		if((lh & 1) && lh < 6) {
-			lines--;
-		}
-		dly = lh / (lines - 1);
-		while(lines--) {
-			XFillRectangle(dpy, pix, gc, lx, ly, lw, bw);
-			ly += dly;
-		}
-		XFreeGC(dpy, gc);
-	}
-	return Scr->tbpm.menu;
-}
-
-#define FBGC(gc, fix_fore, fix_back)\
-    Gcv.foreground = fix_fore;\
-    Gcv.background = fix_back;\
-    XChangeGC(dpy, gc, GCForeground|GCBackground,&Gcv)
-
-void
-Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
-             ColorPair cp, int state, bool fill, bool forcebw)
-{
-	int           i;
-	XGCValues     gcv;
-	unsigned long gcm;
-
-	if((width < 1) || (height < 1)) {
-		return;
-	}
-	if(Scr->Monochrome != COLOR) {
-		if(fill) {
-			gcm = GCFillStyle;
-			gcv.fill_style = FillOpaqueStippled;
-			XChangeGC(dpy, Scr->BorderGC, gcm, &gcv);
-			XFillRectangle(dpy, w, Scr->BorderGC, x, y, width, height);
-		}
-		gcm  = 0;
-		gcm |= GCLineStyle;
-		gcv.line_style = (state == on) ? LineSolid : LineDoubleDash;
-		gcm |= GCFillStyle;
-		gcv.fill_style = FillSolid;
-		XChangeGC(dpy, Scr->BorderGC, gcm, &gcv);
-		for(i = 0; i < bw; i++) {
-			XDrawLine(dpy, w, Scr->BorderGC, x,                 y + i,
-			          x + width - i - 1, y + i);
-			XDrawLine(dpy, w, Scr->BorderGC, x + i,                  y,
-			          x + i, y + height - i - 1);
-		}
-
-		gcm  = 0;
-		gcm |= GCLineStyle;
-		gcv.line_style = (state == on) ? LineDoubleDash : LineSolid;
-		gcm |= GCFillStyle;
-		gcv.fill_style = FillSolid;
-		XChangeGC(dpy, Scr->BorderGC, gcm, &gcv);
-		for(i = 0; i < bw; i++) {
-			XDrawLine(dpy, w, Scr->BorderGC, x + width - i - 1,          y + i,
-			          x + width - i - 1, y + height - 1);
-			XDrawLine(dpy, w, Scr->BorderGC, x + i,         y + height - i - 1,
-			          x + width - 1, y + height - i - 1);
-		}
-		return;
-	}
-
-	if(fill) {
-		FBGC(Scr->BorderGC, cp.back, cp.fore);
-		XFillRectangle(dpy, w, Scr->BorderGC, x, y, width, height);
-	}
-	if(Scr->BeNiceToColormap) {
-		int dashoffset = 0;
-
-		gcm  = 0;
-		gcm |= GCLineStyle;
-		gcv.line_style = (forcebw) ? LineSolid : LineDoubleDash;
-		gcm |= GCBackground;
-		gcv.background = cp.back;
-		XChangeGC(dpy, Scr->BorderGC, gcm, &gcv);
-
-		if(state == on) {
-			XSetForeground(dpy, Scr->BorderGC, Scr->Black);
-		}
-		else {
-			XSetForeground(dpy, Scr->BorderGC, Scr->White);
-		}
-		for(i = 0; i < bw; i++) {
-			XDrawLine(dpy, w, Scr->BorderGC, x + i,     y + dashoffset,
-			          x + i, y + height - i - 1);
-			XDrawLine(dpy, w, Scr->BorderGC, x + dashoffset,    y + i,
-			          x + width - i - 1, y + i);
-			dashoffset = 1 - dashoffset;
-		}
-		XSetForeground(dpy, Scr->BorderGC, ((state == on) ? Scr->White : Scr->Black));
-		for(i = 0; i < bw; i++) {
-			XDrawLine(dpy, w, Scr->BorderGC, x + i,         y + height - i - 1,
-			          x + width - 1, y + height - i - 1);
-			XDrawLine(dpy, w, Scr->BorderGC, x + width - i - 1,          y + i,
-			          x + width - i - 1, y + height - 1);
-		}
-		return;
-	}
-	if(state == on) {
-		FBGC(Scr->BorderGC, cp.shadd, cp.shadc);
-	}
-	else             {
-		FBGC(Scr->BorderGC, cp.shadc, cp.shadd);
-	}
-	for(i = 0; i < bw; i++) {
-		XDrawLine(dpy, w, Scr->BorderGC, x,                 y + i,
-		          x + width - i - 1, y + i);
-		XDrawLine(dpy, w, Scr->BorderGC, x + i,                  y,
-		          x + i, y + height - i - 1);
-	}
-
-	if(state == on) {
-		FBGC(Scr->BorderGC, cp.shadc, cp.shadd);
-	}
-	else             {
-		FBGC(Scr->BorderGC, cp.shadd, cp.shadc);
-	}
-	for(i = 0; i < bw; i++) {
-		XDrawLine(dpy, w, Scr->BorderGC, x + width - i - 1,          y + i,
-		          x + width - i - 1, y + height - 1);
-		XDrawLine(dpy, w, Scr->BorderGC, x + i,         y + height - i - 1,
-		          x + width - 1, y + height - i - 1);
-	}
-	return;
-}
-
-#undef FBGC
-
-
 void PaintIcon(TwmWindow *tmp_win)
 {
 	int         width, twidth, mwidth, len, x;
@@ -1588,4 +1320,29 @@ void ConstrainByBorders(TwmWindow *twmwin,
 	else {
 		ConstrainByBorders1(left, width, top, height);
 	}
+}
+
+
+/*
+ * A safe strncpy(), which always ensures NUL-termination.
+ *
+ * XXX This is really just a slightly pessimized implementation of
+ * strlcpy().  Maybe we should use that instead, with a local
+ * implementation for systems like glibc-users that lack it?
+ */
+void
+safe_strncpy(char *dest, const char *src, size_t size)
+{
+	strncpy(dest, src, size - 1);
+	dest[size - 1] = '\0';
+}
+
+
+/*
+ * Window mapped on some virtual screen?
+ */
+bool
+visible(const TwmWindow *tmp_win)
+{
+	return (tmp_win->vs != NULL);
 }

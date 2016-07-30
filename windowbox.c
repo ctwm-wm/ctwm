@@ -37,6 +37,7 @@
 #include "decorations.h"
 #include "resize.h"
 #include "windowbox.h"
+#include "util.h"
 
 name_list **addWindowBox(char *boxname, char *geometry)
 {
