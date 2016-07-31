@@ -91,7 +91,7 @@ static unsigned char siconify_bits[] = {
  * Where we start drawing the name in the icon manager.  Have to move
  * past where the iconified icon would be.
  */
-static int iconmgr_textx = /*siconify_width*/11 + 11;
+static int iconmgr_textx;
 
 static WList *Active = NULL;
 static WList *Current = NULL;
@@ -130,9 +130,17 @@ void CreateIconManagers(void)
 		return;
 	}
 
+	/*
+	 * Move past the iconified icon to start the text.
+	 * XXX Semi-arbitrary magic add'l padding, to deal with various inner
+	 * positioning of the icon subwindow.  Be smarter (or at least
+	 * clearer) about this...
+	 */
+	iconmgr_textx = siconify_width + 11;
 	if(Scr->use3Diconmanagers) {
 		iconmgr_textx += Scr->IconManagerShadowDepth;
 	}
+
 	if(Scr->siconifyPm == None) {
 		Scr->siconifyPm = XCreatePixmapFromBitmapData(dpy, Scr->Root,
 		                  (char *)siconify_bits, siconify_width,
