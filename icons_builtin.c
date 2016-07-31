@@ -152,8 +152,9 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
 }
 
 
+
 /*
- * 3d variant of the "iconified" image in icon manager.
+ * Icon used in the icon manager for iconified windows.
  *
  * For the 2d case, there's just one icon stored screen-wide, which is
  * XCopyPlane()'d into the icon manager.  This works because it's just a
@@ -164,8 +165,6 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
  * FG/BG colors; it draws various shades from them.  So since each row in
  * an icon manager may be a different FG/BG color, we have to make a new
  * one for each row.
- *
- * XXX Should move creation of the 2d variant here for consistency.
  */
 
 const unsigned int im_iconified_icon_width = 11;
@@ -200,7 +199,6 @@ Create3DIconManagerIcon(ColorPair cp)
 
 	return (colori->pix);
 }
-
 
 Pixmap
 Create2DIconManagerIcon(void)
