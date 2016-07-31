@@ -184,12 +184,10 @@ Create3DIconManagerIcon(ColorPair cp)
 
 	for(col = colori; col; col = col->next) {
 		if(col->color == cp.back) {
-			break;
+			return col->pix;
 		}
 	}
-	if(col != NULL) {
-		return (col->pix);
-	}
+
 	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
