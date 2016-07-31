@@ -404,7 +404,7 @@ AddToCaptiveList(const char *cptname)
 	XA_WM_CTWM_ROOT_our_name = XInternAtom(dpy, atomname, False);
 	free(atomname);
 	XChangeProperty(dpy, root, XA_WM_CTWM_ROOT_our_name, XA_WINDOW, 32,
-	                PropModeReplace, (unsigned char *) &croot, 4);
+	                PropModeReplace, (unsigned char *) &croot, 1);
 
 	/*
 	 * Tell our caller the name we wound up with, in case they didn't
