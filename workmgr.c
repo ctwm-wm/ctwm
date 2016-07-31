@@ -1203,14 +1203,13 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	sizehints.min_height  = lines    * (vspace + 2);
 	sizehints.win_gravity = gravity;
 
-	XSetStandardProperties(dpy, vs->wsw->w,
-	                       name, icon_name, None, NULL, 0, NULL);
-	XSetWMSizeHints(dpy, vs->wsw->w, &sizehints, XA_WM_NORMAL_HINTS);
-
 	wmhints.flags         = InputHint | StateHint;
 	wmhints.input         = True;
 	wmhints.initial_state = NormalState;
-	XSetWMHints(dpy, vs->wsw->w, &wmhints);
+
+	XmbSetWMProperties(dpy, vs->wsw->w, name, icon_name, NULL, 0,
+			&sizehints, &wmhints, NULL);
+
 	tmp_win = AddWindow(vs->wsw->w, AWT_WORKSPACE_MANAGER,
 	                    Scr->iconmgr, vs);
 	if(! tmp_win) {
