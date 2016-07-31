@@ -10,8 +10,8 @@ Pixmap Create3DMenuIcon(unsigned int height,
                         unsigned int *widthp, unsigned int *heightp,
                         ColorPair cp);
 
-extern const int im_iconified_icon_width;
-extern const int im_iconified_icon_height;
+extern const unsigned int im_iconified_icon_width;
+extern const unsigned int im_iconified_icon_height;
 
 Pixmap Create3DIconManagerIcon(ColorPair cp);
 Pixmap Create2DIconManagerIcon(void);

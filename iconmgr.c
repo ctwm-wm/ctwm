@@ -742,8 +742,8 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		attributes.cursor = Scr->ButtonCursor;
 		/* The precise location will be set it in PackIconManager.  */
 		tmp->icon = XCreateWindow(dpy, tmp->w, 0, 0,
-		                          (unsigned int) im_iconified_icon_width,
-		                          (unsigned int) im_iconified_icon_height,
+		                          im_iconified_icon_width,
+		                          im_iconified_icon_height,
 		                          (unsigned int) 0, CopyFromParent,
 		                          (unsigned int) CopyFromParent,
 		                          (Visual *) CopyFromParent,
