@@ -182,20 +182,27 @@ Create3DIconManagerIcon(ColorPair cp)
 	const unsigned int w = im_iconified_icon_width;
 	const unsigned int h = im_iconified_icon_height;
 
+	/*
+	 * Keep a list of ones we've made, and if we've already made one this
+	 * color, just hand it back.
+	 */
 	for(col = colori; col; col = col->next) {
 		if(col->color == cp.back) {
 			return col->pix;
 		}
 	}
 
+	/* Don't have one this color yet, make it */
 	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
 	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, true, false);
+
+	/* Add to the cache list so we hit the above next time */
 	col->next = colori;
 	colori = col;
 
-	return (colori->pix);
+	return colori->pix;
 }
 
 Pixmap
