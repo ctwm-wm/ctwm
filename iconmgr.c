@@ -1168,8 +1168,10 @@ void dump_iconmanager(IconMgr *mgr, char *label)
  * fg/bg colors appropriate to the line.
  */
 void
-ShowIconifiedIcon(WList *iconmanagerlist)
+ShowIconifiedIcon(TwmWindow *tmp_win)
 {
+	WList *iconmanagerlist = tmp_win->iconmanagerlist;
+
 	if(Scr->use3Diconmanagers && iconmanagerlist->iconifypm) {
 		XCopyArea(dpy, iconmanagerlist->iconifypm,
 		          iconmanagerlist->icon,

@@ -2294,7 +2294,7 @@ void HandleExpose(void)
 				return;
 			}
 			else if(Event.xany.window == iconmanagerlist->icon) {
-				ShowIconifiedIcon(iconmanagerlist);
+				ShowIconifiedIcon(Tmp_win);
 				flush_expose(Event.xany.window);
 				return;
 			}

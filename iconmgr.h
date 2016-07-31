@@ -119,7 +119,7 @@ void SortIconManager(IconMgr *ip);
 void PackIconManager(IconMgr *ip);
 void PackIconManagers(void);
 void dump_iconmanager(IconMgr *mgr, char *label);
-void ShowIconifiedIcon(WList *iconmanagerlist);
+void ShowIconifiedIcon(TwmWindow *tmp_win);
 
 
 #endif /* _CTWM_ICONMGR_H */
