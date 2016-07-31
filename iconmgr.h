@@ -98,7 +98,6 @@ struct IconMgr {
 
 extern const int siconify_width;
 extern const int siconify_height;
-extern int iconmgr_textx;
 extern WList *DownIconManager;
 
 void CreateIconManagers(void);
