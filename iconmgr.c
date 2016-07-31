@@ -181,13 +181,15 @@ void CreateIconManagers(void)
 			                           gx, gy, p->width, p->height, 1,
 			                           Scr->Black, background);
 
-			XSetStandardProperties(dpy, p->w, str, icon_name, None, NULL, 0, NULL);
 
 			/* Scr->workSpaceMgr.activeWSPC = ws; */
 			wmhints.initial_state = NormalState;
 			wmhints.input         = True;
 			wmhints.flags         = InputHint | StateHint;
-			XSetWMHints(dpy, p->w, &wmhints);
+
+			XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
+					&wmhints, NULL);
+
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
 			 * SetupOccupation() called from AddWindow() doesn't setup

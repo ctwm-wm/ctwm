@@ -88,19 +88,20 @@ void createWindowBoxes(void)
 		       winbox->name, win, x, y, w, h);
 #endif
 		sprintf(title, "%s", winbox->name);
-		XSetStandardProperties(dpy, win, title, title, None, NULL, 0, NULL);
+
 		sizehints.flags  = USPosition | USSize | PWinGravity;
 		sizehints.x      = x;
 		sizehints.y      = y;
 		sizehints.width  = w;
 		sizehints.height = h;
 		sizehints.win_gravity = gravity;
-		XSetWMSizeHints(dpy, win, &sizehints, XA_WM_NORMAL_HINTS);
 
 		wmhints.initial_state = NormalState;
 		wmhints.input         = True;
 		wmhints.flags         = InputHint | StateHint;
-		XSetWMHints(dpy, win, &wmhints);
+
+		XmbSetWMProperties(dpy, win, title, title, NULL, 0,
+				&sizehints, &wmhints, NULL);
 
 		winbox->window = win;
 		winbox->twmwin = AddWindow(win, AWT_WINDOWBOX, NULL, Scr->currentvs);
