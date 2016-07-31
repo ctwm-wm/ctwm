@@ -758,9 +758,10 @@ CreateOccupyWindow(void)
 	}
 
 
-	/* Setup the window properties; name, size, etc */
+	/* Setup various window properties */
 	{
 		XSizeHints sizehints;
+		XWMHints wmhints;
 
 		/* These sizes mostly pretty questionable... */
 		sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
@@ -771,19 +772,13 @@ CreateOccupyWindow(void)
 		sizehints.min_width   = 2 * columns;
 		sizehints.min_height  = 2 * lines;
 
-		/* XXX Docs say "superseded by XSetWMProperties()" */
-		XSetStandardProperties(dpy, w, occwin->name, occwin->icon_name,
-		                       None, NULL, 0, &sizehints);
-	}
-
-
-	/* Set WM_HINTS; tell ourselves that this window does input stuff */
-	{
-		XWMHints wmhints;
 		wmhints.flags         = InputHint | StateHint;
 		wmhints.input         = True;
 		wmhints.initial_state = NormalState;
-		XSetWMHints(dpy, w, &wmhints);
+
+		/* XXX Docs say "superseded by XSetWMProperties()" */
+		XmbSetWMProperties(dpy, w, occwin->name, occwin->icon_name,
+				NULL, 0, &sizehints, &wmhints, NULL);
 	}
 
 
