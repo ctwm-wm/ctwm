@@ -80,12 +80,6 @@
 #include "add_window.h"
 #include "gram.tab.h"
 
-const int im_iconified_icon_width = 11;
-const int im_iconified_icon_height = 11;
-static unsigned char im_iconified_icon_bits[] = {
-	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
-	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
-};
 
 /* Where we start drawing the name in the icon manager */
 static int iconmgr_textx;
@@ -139,9 +133,7 @@ void CreateIconManagers(void)
 	}
 
 	if(Scr->siconifyPm == None) {
-		Scr->siconifyPm = XCreatePixmapFromBitmapData(dpy, Scr->Root,
-		                  (char *)im_iconified_icon_bits, im_iconified_icon_width,
-		                  im_iconified_icon_height, 1, 0, 1);
+		Scr->siconifyPm = Create2DIconManagerIcon();
 	}
 
 	ws = Scr->workSpaceMgr.workSpaceList;

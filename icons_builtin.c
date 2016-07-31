@@ -167,6 +167,14 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
  *
  * XXX Should move creation of the 2d variant here for consistency.
  */
+
+const int im_iconified_icon_width = 11;
+const int im_iconified_icon_height = 11;
+static unsigned char im_iconified_icon_bits[] = {
+	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
+	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
+};
+
 Pixmap
 Create3DIconManagerIcon(ColorPair cp)
 {
@@ -193,4 +201,15 @@ Create3DIconManagerIcon(ColorPair cp)
 	colori = col;
 
 	return (colori->pix);
+}
+
+
+Pixmap
+Create2DIconManagerIcon(void)
+{
+	char *bits = (char *)im_iconified_icon_bits;
+	const int w = im_iconified_icon_width;
+	const int h = im_iconified_icon_height;
+
+	return XCreatePixmapFromBitmapData(dpy, Scr->Root, bits, w, h, 1, 0, 1);
 }

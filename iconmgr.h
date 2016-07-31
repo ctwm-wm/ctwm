@@ -96,8 +96,6 @@ struct IconMgr {
 	int count;
 };
 
-extern const int im_iconified_icon_width;
-extern const int im_iconified_icon_height;
 extern WList *DownIconManager;
 
 void CreateIconManagers(void);
