@@ -459,6 +459,13 @@ RemoveFromCaptiveList(const char *cptname)
 		 * Make a new list without cptname in it.  A list with (count)
 		 * items needs (count+1) for the trailing NULL, but we know we're
 		 * in it and removing ourself, so we only need ((count-1)+1).
+		 *
+		 * Note that we're _not_ strdup()'ing into newclist, just
+		 * sticking a pointer to the existing string inside clist.  Then
+		 * we only have to free() newclist itself, because there's
+		 * nothing new inside it.  We explicitly do _NOT_ want to
+		 * freeCaptivesList() it, since that would free the internals,
+		 * and then when we fCL(clist) it would try to double-free them.
 		 */
 		newclist = calloc(count, sizeof(char *));
 		cl = clist;
