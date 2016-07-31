@@ -82,11 +82,16 @@
 
 const int siconify_width = 11;
 const int siconify_height = 11;
-static int iconmgr_textx = /*siconify_width*/11 + 11;
 static unsigned char siconify_bits[] = {
 	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
 	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
 };
+
+/*
+ * Where we start drawing the name in the icon manager.  Have to move
+ * past where the iconified icon would be.
+ */
+static int iconmgr_textx = /*siconify_width*/11 + 11;
 
 static WList *Active = NULL;
 static WList *Current = NULL;
