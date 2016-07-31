@@ -421,8 +421,7 @@ AddToCaptiveList(const char *cptname)
 void
 RemoveFromCaptiveList(const char *cptname)
 {
-	int  count;
-	char **clist, **cl, **newclist;
+	char **clist;
 	int scrnum = Scr->screen;
 	Window root = RootWindow(dpy, scrnum);
 
@@ -434,7 +433,10 @@ RemoveFromCaptiveList(const char *cptname)
 	/* Take us out of the captives list in WM_CTWMSLIST */
 	clist = GetCaptivesList(scrnum);
 	if(clist && *clist) {
-		cl = clist;
+		char **cl = clist;
+		char **newclist;
+		int  count;
+
 		count = 0;
 		while(*cl) {
 			count++;
