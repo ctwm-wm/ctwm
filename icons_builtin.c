@@ -174,8 +174,8 @@ Create3DIconManagerIcon(ColorPair cp)
 	struct Colori *col;
 	static struct Colori *colori = NULL;
 
-	w = siconify_width;
-	h = siconify_height;
+	w = im_iconified_icon_width;
+	h = im_iconified_icon_height;
 
 	for(col = colori; col; col = col->next) {
 		if(col->color == cp.back) {

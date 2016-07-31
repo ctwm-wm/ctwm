@@ -80,9 +80,9 @@
 #include "add_window.h"
 #include "gram.tab.h"
 
-const int siconify_width = 11;
-const int siconify_height = 11;
-static unsigned char siconify_bits[] = {
+const int im_iconified_icon_width = 11;
+const int im_iconified_icon_height = 11;
+static unsigned char im_iconified_icon_bits[] = {
 	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
 	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
 };
@@ -133,15 +133,15 @@ void CreateIconManagers(void)
 	 * positioning of the icon subwindow.  Be smarter (or at least
 	 * clearer) about this...
 	 */
-	iconmgr_textx = siconify_width + 11;
+	iconmgr_textx = im_iconified_icon_width + 11;
 	if(Scr->use3Diconmanagers) {
 		iconmgr_textx += Scr->IconManagerShadowDepth;
 	}
 
 	if(Scr->siconifyPm == None) {
 		Scr->siconifyPm = XCreatePixmapFromBitmapData(dpy, Scr->Root,
-		                  (char *)siconify_bits, siconify_width,
-		                  siconify_height, 1, 0, 1);
+		                  (char *)im_iconified_icon_bits, im_iconified_icon_width,
+		                  im_iconified_icon_height, 1, 0, 1);
 	}
 
 	ws = Scr->workSpaceMgr.workSpaceList;
@@ -712,8 +712,8 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		/* Refigure the height of the whole IM */
 		h = Scr->IconManagerFont.avg_height
 		    + 2 * (ICON_MGR_OBORDER + ICON_MGR_OBORDER);
-		if(h < (siconify_height + 4)) {
-			h = siconify_height + 4;
+		if(h < (im_iconified_icon_height + 4)) {
+			h = im_iconified_icon_height + 4;
 		}
 
 		ip->height = h * ip->count;
@@ -750,8 +750,8 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		attributes.cursor = Scr->ButtonCursor;
 		/* The precise location will be set it in PackIconManager.  */
 		tmp->icon = XCreateWindow(dpy, tmp->w, 0, 0,
-		                          (unsigned int) siconify_width,
-		                          (unsigned int) siconify_height,
+		                          (unsigned int) im_iconified_icon_width,
+		                          (unsigned int) im_iconified_icon_height,
 		                          (unsigned int) 0, CopyFromParent,
 		                          (unsigned int) CopyFromParent,
 		                          (Visual *) CopyFromParent,
@@ -1082,8 +1082,8 @@ void PackIconManager(IconMgr *ip)
 
 	wheight = Scr->IconManagerFont.avg_height
 	          + 2 * (ICON_MGR_OBORDER + ICON_MGR_IBORDER);
-	if(wheight < (siconify_height + 4)) {
-		wheight = siconify_height + 4;
+	if(wheight < (im_iconified_icon_height + 4)) {
+		wheight = im_iconified_icon_height + 4;
 	}
 
 	wwidth = ip->width / ip->columns;
@@ -1113,7 +1113,7 @@ void PackIconManager(IconMgr *ip)
 			XMoveResizeWindow(dpy, tmp->w, new_x, new_y, wwidth, wheight);
 			if(tmp->height != wheight)
 				XMoveWindow(dpy, tmp->icon, ICON_MGR_OBORDER + ICON_MGR_IBORDER,
-				            (wheight - siconify_height) / 2);
+				            (wheight - im_iconified_icon_height) / 2);
 
 			tmp->row = row - 1;
 			tmp->col = col;
@@ -1225,12 +1225,12 @@ ShowIconifiedIcon(TwmWindow *tmp_win)
 		XCopyArea(dpy, iconmanagerlist->iconifypm,
 		          iconmanagerlist->icon,
 		          Scr->NormalGC, 0, 0,
-		          siconify_width, siconify_height, 0, 0);
+		          im_iconified_icon_width, im_iconified_icon_height, 0, 0);
 	}
 	else {
 		FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
 		XCopyPlane(dpy, Scr->siconifyPm, iconmanagerlist->icon,
 		           Scr->NormalGC, 0, 0,
-		           siconify_width, siconify_height, 0, 0, 1);
+		           im_iconified_icon_width, im_iconified_icon_height, 0, 0, 1);
 	}
 }
