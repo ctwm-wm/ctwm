@@ -776,7 +776,6 @@ CreateOccupyWindow(void)
 		wmhints.input         = True;
 		wmhints.initial_state = NormalState;
 
-		/* XXX Docs say "superseded by XSetWMProperties()" */
 		XmbSetWMProperties(dpy, w, occwin->name, occwin->icon_name,
 				NULL, 0, &sizehints, &wmhints, NULL);
 	}
