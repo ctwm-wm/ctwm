@@ -247,9 +247,14 @@ GetCaptivesList(int scrnum)
 static void
 freeCaptivesList(char **clist)
 {
-	while(clist && *clist) {
-		free(*clist++);
+	if(clist == NULL) {
+		return;
 	}
+
+	for(char *tmp = *clist ; tmp != NULL ; tmp++) {
+		free(tmp);
+	}
+
 	free(clist);
 }
 
