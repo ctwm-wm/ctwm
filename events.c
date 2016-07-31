@@ -2265,31 +2265,7 @@ void HandleExpose(void)
 			WList *iconmanagerlist = Tmp_win->iconmanagerlist;
 
 			if(Event.xany.window == iconmanagerlist->w) {
-				XRectangle ink_rect, logical_rect;
-				XmbTextExtents(Scr->IconManagerFont.font_set,
-				               Tmp_win->icon_name, strlen(Tmp_win->icon_name),
-				               &ink_rect, &logical_rect);
-
-				if(UpdateFont(&Scr->IconManagerFont, logical_rect.height)) {
-					PackIconManagers();
-				}
-
-				DrawIconManagerBorder(iconmanagerlist, true);
-
-				FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
-				((Scr->use3Diconmanagers && (Scr->Monochrome != COLOR)) ?
-				 XmbDrawImageString : XmbDrawString)
-				(dpy,
-				 Event.xany.window,
-				 Scr->IconManagerFont.font_set,
-				 Scr->NormalGC,
-				 iconmgr_textx,
-				 (Scr->IconManagerFont.avg_height - logical_rect.height) / 2
-				 + (- logical_rect.y)
-				 + ICON_MGR_OBORDER
-				 + ICON_MGR_IBORDER,
-				 Tmp_win->icon_name,
-				 strlen(Tmp_win->icon_name));
+				DrawIconManagerIconName(Tmp_win);
 				flush_expose(Event.xany.window);
 				return;
 			}
