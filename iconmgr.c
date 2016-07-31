@@ -188,7 +188,7 @@ void CreateIconManagers(void)
 			wmhints.flags         = InputHint | StateHint;
 
 			XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
-					&wmhints, NULL);
+			                   &wmhints, NULL);
 
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*

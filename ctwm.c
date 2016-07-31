@@ -472,8 +472,8 @@ int main(int argc, char **argv)
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
 			if(Scr->captivename) {
 				XmbSetWMProperties(dpy, croot,
-						Scr->captivename, Scr->captivename,
-						NULL, 0, NULL, NULL, NULL);
+				                   Scr->captivename, Scr->captivename,
+				                   NULL, 0, NULL, NULL, NULL);
 			}
 		}
 		Scr->RootColormaps.number_cwins = 1;
@@ -1350,7 +1350,7 @@ static Window CreateRootWindow(int x, int y,
 	wmhints.flags         = InputHint | StateHint;
 
 	XmbSetWMProperties(dpy, ret, "Captive ctwm", NULL, NULL, 0, NULL,
-			&wmhints, NULL);
+	                   &wmhints, NULL);
 	XChangeProperty(dpy, ret, XA_WM_CTWM_ROOT, XA_WINDOW, 32,
 	                PropModeReplace, (unsigned char *) &ret, 1);
 	XSelectInput(dpy, ret, StructureNotifyMask);

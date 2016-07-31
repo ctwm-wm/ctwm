@@ -1208,7 +1208,7 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	wmhints.initial_state = NormalState;
 
 	XmbSetWMProperties(dpy, vs->wsw->w, name, icon_name, NULL, 0,
-			&sizehints, &wmhints, NULL);
+	                   &sizehints, &wmhints, NULL);
 
 	tmp_win = AddWindow(vs->wsw->w, AWT_WORKSPACE_MANAGER,
 	                    Scr->iconmgr, vs);

@@ -777,7 +777,7 @@ CreateOccupyWindow(void)
 		wmhints.initial_state = NormalState;
 
 		XmbSetWMProperties(dpy, w, occwin->name, occwin->icon_name,
-				NULL, 0, &sizehints, &wmhints, NULL);
+		                   NULL, 0, &sizehints, &wmhints, NULL);
 	}
 
 

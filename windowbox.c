@@ -101,7 +101,7 @@ void createWindowBoxes(void)
 		wmhints.flags         = InputHint | StateHint;
 
 		XmbSetWMProperties(dpy, win, title, title, NULL, 0,
-				&sizehints, &wmhints, NULL);
+		                   &sizehints, &wmhints, NULL);
 
 		winbox->window = win;
 		winbox->twmwin = AddWindow(win, AWT_WINDOWBOX, NULL, Scr->currentvs);
