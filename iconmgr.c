@@ -87,10 +87,7 @@ static unsigned char siconify_bits[] = {
 	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
 };
 
-/*
- * Where we start drawing the name in the icon manager.  Have to move
- * past where the iconified icon would be.
- */
+/* Where we start drawing the name in the icon manager */
 static int iconmgr_textx;
 
 static WList *Active = NULL;
