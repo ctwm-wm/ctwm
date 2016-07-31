@@ -119,6 +119,7 @@ void SortIconManager(IconMgr *ip);
 void PackIconManager(IconMgr *ip);
 void PackIconManagers(void);
 void dump_iconmanager(IconMgr *mgr, char *label);
+void DrawIconManagerIconName(TwmWindow *tmp_win);
 void ShowIconifiedIcon(TwmWindow *tmp_win);
 
 

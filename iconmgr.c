@@ -78,6 +78,7 @@
 #include "resize.h"
 #include "otp.h"
 #include "add_window.h"
+#include "gram.tab.h"
 
 const int siconify_width = 11;
 const int siconify_height = 11;
@@ -1158,6 +1159,44 @@ void dump_iconmanager(IconMgr *mgr, char *label)
 	        mgr->prev,
 	        mgr->lasti,
 	        mgr->nextv);
+}
+
+
+/*
+ * Draw the window name into the icon manager line
+ */
+void
+DrawIconManagerIconName(TwmWindow *tmp_win)
+{
+	WList *iconmanagerlist = tmp_win->iconmanagerlist;
+	XRectangle ink_rect, logical_rect;
+
+	XmbTextExtents(Scr->IconManagerFont.font_set,
+	               tmp_win->icon_name, strlen(tmp_win->icon_name),
+	               &ink_rect, &logical_rect);
+
+	if(UpdateFont(&Scr->IconManagerFont, logical_rect.height)) {
+		PackIconManagers();
+	}
+
+	DrawIconManagerBorder(iconmanagerlist, true);
+
+	FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
+
+	/* XXX This is a completely absurd way of writing this */
+	((Scr->use3Diconmanagers && (Scr->Monochrome != COLOR)) ?
+	 XmbDrawImageString : XmbDrawString)
+	(dpy,
+	 iconmanagerlist->w,
+	 Scr->IconManagerFont.font_set,
+	 Scr->NormalGC,
+	 iconmgr_textx,
+	 (Scr->IconManagerFont.avg_height - logical_rect.height) / 2
+	 + (- logical_rect.y)
+	 + ICON_MGR_OBORDER
+	 + ICON_MGR_IBORDER,
+	 tmp_win->icon_name,
+	 strlen(tmp_win->icon_name));
 }
 
 
