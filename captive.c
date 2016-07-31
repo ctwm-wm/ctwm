@@ -436,12 +436,30 @@ RemoveFromCaptiveList(const char *cptname)
 		char **cl = clist;
 		char **newclist;
 		int  count;
+		bool found;
 
+		/* How many are there? */
 		count = 0;
+		found = false;
 		while(*cl) {
+			if(strcmp(*cl, cptname) == 0) {
+				found = true;
+			}
 			count++;
 			cl++;
 		}
+
+		/* If we weren't there, there's nothing to do */
+		if(!found) {
+			freeCaptivesList(clist);
+			return;
+		}
+
+		/*
+		 * Make a new list without cptname in it.  A list with (count)
+		 * items needs (count+1) for the trailing NULL, but we know we're
+		 * in it and removing ourself, so we only need ((count-1)+1).
+		 */
 		newclist = calloc(count, sizeof(char *));
 		cl = clist;
 		count = 0;
