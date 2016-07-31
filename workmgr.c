@@ -1846,8 +1846,8 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 			/* Create a draggable mini-window */
 			w = XCreateWindow(dpy, mw->w, X1, Y1, W0, H0, bw,
 			                  CopyFromParent,
-			                  (unsigned int) CopyFromParent,
-			                  (Visual *) CopyFromParent,
+			                  CopyFromParent,
+			                  CopyFromParent,
 			                  CWEventMask | CWBackPixel | CWBorderPixel, &attrs);
 
 			XMapRaised(dpy, w);

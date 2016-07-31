@@ -726,10 +726,10 @@ WList *AddIconManager(TwmWindow *tmp_win)
 			attributes.event_mask |= (EnterWindowMask | LeaveWindowMask);
 		}
 		attributes.cursor = Scr->IconMgrCursor;
-		tmp->w = XCreateWindow(dpy, ip->w, 0, 0, (unsigned int) 1,
-		                       (unsigned int) h, (unsigned int) 0,
-		                       CopyFromParent, (unsigned int) CopyFromParent,
-		                       (Visual *) CopyFromParent,
+		tmp->w = XCreateWindow(dpy, ip->w, 0, 0, 1,
+		                       h, 0,
+		                       CopyFromParent, CopyFromParent,
+		                       CopyFromParent,
 		                       valuemask, &attributes);
 
 
@@ -744,9 +744,9 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		tmp->icon = XCreateWindow(dpy, tmp->w, 0, 0,
 		                          im_iconified_icon_width,
 		                          im_iconified_icon_height,
-		                          (unsigned int) 0, CopyFromParent,
-		                          (unsigned int) CopyFromParent,
-		                          (Visual *) CopyFromParent,
+		                          0, CopyFromParent,
+		                          CopyFromParent,
+		                          CopyFromParent,
 		                          valuemask, &attributes);
 
 

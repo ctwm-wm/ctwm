@@ -708,9 +708,9 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 					attributes.win_gravity = NorthWestGravity;
 				}
 				tbw->window = XCreateWindow(dpy, tmp_win->title_w, x, y, h, h,
-				                            (unsigned int) Scr->TBInfo.border,
-				                            0, (unsigned int) CopyFromParent,
-				                            (Visual *) CopyFromParent,
+				                            Scr->TBInfo.border,
+				                            0, CopyFromParent,
+				                            CopyFromParent,
 				                            valuemask, &attributes);
 				XStoreName(dpy, tbw->window, "TB button");
 

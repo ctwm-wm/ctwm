@@ -766,10 +766,9 @@ int main(int argc, char **argv)
 		             CWBackingStore | CWCursor);
 		Scr->InfoWindow.win =
 		        XCreateWindow(dpy, Scr->Root, 0, 0,
-		                      (unsigned int) 5, (unsigned int) 5,
-		                      (unsigned int) 0, 0,
-		                      (unsigned int) CopyFromParent,
-		                      (Visual *) CopyFromParent,
+		                      5, 5,
+		                      0, 0,
+		                      CopyFromParent, CopyFromParent,
 		                      valuemask, &attributes);
 
 		XmbTextExtents(Scr->SizeFont.font_set,
@@ -792,12 +791,12 @@ int main(int argc, char **argv)
 				sy = 0;
 			}
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
-			                                (unsigned int) Scr->SizeStringWidth,
-			                                (unsigned int)(Scr->SizeFont.height +
+			                                Scr->SizeStringWidth,
+			                                (Scr->SizeFont.height +
 			                                                SIZE_VINDENT * 2),
-			                                (unsigned int) 0, 0,
-			                                (unsigned int) CopyFromParent,
-			                                (Visual *) CopyFromParent,
+			                                0, 0,
+			                                CopyFromParent,
+			                                CopyFromParent,
 			                                valuemask, &attributes);
 		}
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
