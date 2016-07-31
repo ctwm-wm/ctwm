@@ -763,7 +763,7 @@ CreateOccupyWindow(void)
 		XSizeHints sizehints;
 		XWMHints wmhints;
 
-		/* These sizes mostly pretty questionable... */
+		/* These sizes seem pretty much bogus */
 		sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
 		sizehints.base_width  = columns;
 		sizehints.base_height = lines;
