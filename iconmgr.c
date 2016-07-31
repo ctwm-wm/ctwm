@@ -1159,3 +1159,27 @@ void dump_iconmanager(IconMgr *mgr, char *label)
 	        mgr->lasti,
 	        mgr->nextv);
 }
+
+
+/*
+ * Copy the icon into the icon manager for a window that's iconified.
+ * This is slightly different for the 3d vs 2d case, since the 3d is just
+ * copying a pixmap in, while the 2d is drawing a bitmap in with the
+ * fg/bg colors appropriate to the line.
+ */
+void
+ShowIconifiedIcon(WList *iconmanagerlist)
+{
+	if(Scr->use3Diconmanagers && iconmanagerlist->iconifypm) {
+		XCopyArea(dpy, iconmanagerlist->iconifypm,
+		          iconmanagerlist->icon,
+		          Scr->NormalGC, 0, 0,
+		          siconify_width, siconify_height, 0, 0);
+	}
+	else {
+		FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
+		XCopyPlane(dpy, Scr->siconifyPm, iconmanagerlist->icon,
+		           Scr->NormalGC, 0, 0,
+		           siconify_width, siconify_height, 0, 0, 1);
+	}
+}

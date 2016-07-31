@@ -2294,18 +2294,7 @@ void HandleExpose(void)
 				return;
 			}
 			if(Event.xany.window == iconmanagerlist->icon) {
-				if(Scr->use3Diconmanagers && iconmanagerlist->iconifypm) {
-					XCopyArea(dpy, iconmanagerlist->iconifypm,
-					          iconmanagerlist->icon,
-					          Scr->NormalGC, 0, 0,
-					          siconify_width, siconify_height, 0, 0);
-				}
-				else {
-					FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
-					XCopyPlane(dpy, Scr->siconifyPm, iconmanagerlist->icon,
-					           Scr->NormalGC, 0, 0,
-					           siconify_width, siconify_height, 0, 0, 1);
-				}
+				ShowIconifiedIcon(iconmanagerlist);
 				flush_expose(Event.xany.window);
 				return;
 			}
