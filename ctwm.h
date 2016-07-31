@@ -183,8 +183,6 @@ struct ColorPair {
 	Pixel fore, back, shadc, shadd;
 };
 
-typedef enum {on, off} ButtonState;
-
 struct TitleButtonFunc {
 	struct TitleButtonFunc *next;  /* next in the list of function buttons */
 	int num;                       /* button number */
