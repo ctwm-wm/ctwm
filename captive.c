@@ -247,9 +247,14 @@ GetCaptivesList(int scrnum)
 static void
 freeCaptivesList(char **clist)
 {
-	while(clist && *clist) {
-		free(*clist++);
+	if(clist == NULL) {
+		return;
 	}
+
+	for(char **tmp = clist ; *tmp != NULL ; tmp++) {
+		free(*tmp);
+	}
+
 	free(clist);
 }
 
@@ -399,7 +404,7 @@ AddToCaptiveList(const char *cptname)
 	XA_WM_CTWM_ROOT_our_name = XInternAtom(dpy, atomname, False);
 	free(atomname);
 	XChangeProperty(dpy, root, XA_WM_CTWM_ROOT_our_name, XA_WINDOW, 32,
-	                PropModeReplace, (unsigned char *) &croot, 4);
+	                PropModeReplace, (unsigned char *) &croot, 1);
 
 	/*
 	 * Tell our caller the name we wound up with, in case they didn't
@@ -416,8 +421,7 @@ AddToCaptiveList(const char *cptname)
 void
 RemoveFromCaptiveList(const char *cptname)
 {
-	int  count;
-	char **clist, **cl, **newclist;
+	char **clist;
 	int scrnum = Scr->screen;
 	Window root = RootWindow(dpy, scrnum);
 
@@ -429,12 +433,40 @@ RemoveFromCaptiveList(const char *cptname)
 	/* Take us out of the captives list in WM_CTWMSLIST */
 	clist = GetCaptivesList(scrnum);
 	if(clist && *clist) {
-		cl = clist;
+		char **cl = clist;
+		char **newclist;
+		int  count;
+		bool found;
+
+		/* How many are there? */
 		count = 0;
+		found = false;
 		while(*cl) {
+			if(strcmp(*cl, cptname) == 0) {
+				found = true;
+			}
 			count++;
 			cl++;
 		}
+
+		/* If we weren't there, there's nothing to do */
+		if(!found) {
+			freeCaptivesList(clist);
+			return;
+		}
+
+		/*
+		 * Make a new list without cptname in it.  A list with (count)
+		 * items needs (count+1) for the trailing NULL, but we know we're
+		 * in it and removing ourself, so we only need ((count-1)+1).
+		 *
+		 * Note that we're _not_ strdup()'ing into newclist, just
+		 * sticking a pointer to the existing string inside clist.  Then
+		 * we only have to free() newclist itself, because there's
+		 * nothing new inside it.  We explicitly do _NOT_ want to
+		 * freeCaptivesList() it, since that would free the internals,
+		 * and then when we fCL(clist) it would try to double-free them.
+		 */
 		newclist = calloc(count, sizeof(char *));
 		cl = clist;
 		count = 0;
