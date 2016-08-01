@@ -78,14 +78,11 @@
 #include "resize.h"
 #include "otp.h"
 #include "add_window.h"
+#include "gram.tab.h"
 
-const int siconify_width = 11;
-const int siconify_height = 11;
-int iconmgr_textx = /*siconify_width*/11 + 11;
-static unsigned char siconify_bits[] = {
-	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
-	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
-};
+
+/* Where we start drawing the name in the icon manager */
+static int iconmgr_textx;
 
 static WList *Active = NULL;
 static WList *Current = NULL;
@@ -124,13 +121,19 @@ void CreateIconManagers(void)
 		return;
 	}
 
+	/*
+	 * Move past the iconified icon to start the text.
+	 * XXX Semi-arbitrary magic add'l padding, to deal with various inner
+	 * positioning of the icon subwindow.  Be smarter (or at least
+	 * clearer) about this...
+	 */
+	iconmgr_textx = im_iconified_icon_width + 11;
 	if(Scr->use3Diconmanagers) {
 		iconmgr_textx += Scr->IconManagerShadowDepth;
 	}
+
 	if(Scr->siconifyPm == None) {
-		Scr->siconifyPm = XCreatePixmapFromBitmapData(dpy, Scr->Root,
-		                  (char *)siconify_bits, siconify_width,
-		                  siconify_height, 1, 0, 1);
+		Scr->siconifyPm = Create2DIconManagerIcon();
 	}
 
 	ws = Scr->workSpaceMgr.workSpaceList;
@@ -181,13 +184,15 @@ void CreateIconManagers(void)
 			                           gx, gy, p->width, p->height, 1,
 			                           Scr->Black, background);
 
-			XSetStandardProperties(dpy, p->w, str, icon_name, None, NULL, 0, NULL);
 
 			/* Scr->workSpaceMgr.activeWSPC = ws; */
 			wmhints.initial_state = NormalState;
 			wmhints.input         = True;
 			wmhints.flags         = InputHint | StateHint;
-			XSetWMHints(dpy, p->w, &wmhints);
+
+			XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
+			                   &wmhints, NULL);
+
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
 			 * SetupOccupation() called from AddWindow() doesn't setup
@@ -699,8 +704,8 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		/* Refigure the height of the whole IM */
 		h = Scr->IconManagerFont.avg_height
 		    + 2 * (ICON_MGR_OBORDER + ICON_MGR_OBORDER);
-		if(h < (siconify_height + 4)) {
-			h = siconify_height + 4;
+		if(h < (im_iconified_icon_height + 4)) {
+			h = im_iconified_icon_height + 4;
 		}
 
 		ip->height = h * ip->count;
@@ -721,10 +726,10 @@ WList *AddIconManager(TwmWindow *tmp_win)
 			attributes.event_mask |= (EnterWindowMask | LeaveWindowMask);
 		}
 		attributes.cursor = Scr->IconMgrCursor;
-		tmp->w = XCreateWindow(dpy, ip->w, 0, 0, (unsigned int) 1,
-		                       (unsigned int) h, (unsigned int) 0,
-		                       CopyFromParent, (unsigned int) CopyFromParent,
-		                       (Visual *) CopyFromParent,
+		tmp->w = XCreateWindow(dpy, ip->w, 0, 0, 1,
+		                       h, 0,
+		                       CopyFromParent, CopyFromParent,
+		                       CopyFromParent,
 		                       valuemask, &attributes);
 
 
@@ -737,11 +742,11 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		attributes.cursor = Scr->ButtonCursor;
 		/* The precise location will be set it in PackIconManager.  */
 		tmp->icon = XCreateWindow(dpy, tmp->w, 0, 0,
-		                          (unsigned int) siconify_width,
-		                          (unsigned int) siconify_height,
-		                          (unsigned int) 0, CopyFromParent,
-		                          (unsigned int) CopyFromParent,
-		                          (Visual *) CopyFromParent,
+		                          im_iconified_icon_width,
+		                          im_iconified_icon_height,
+		                          0, CopyFromParent,
+		                          CopyFromParent,
+		                          CopyFromParent,
 		                          valuemask, &attributes);
 
 
@@ -1069,8 +1074,8 @@ void PackIconManager(IconMgr *ip)
 
 	wheight = Scr->IconManagerFont.avg_height
 	          + 2 * (ICON_MGR_OBORDER + ICON_MGR_IBORDER);
-	if(wheight < (siconify_height + 4)) {
-		wheight = siconify_height + 4;
+	if(wheight < (im_iconified_icon_height + 4)) {
+		wheight = im_iconified_icon_height + 4;
 	}
 
 	wwidth = ip->width / ip->columns;
@@ -1100,7 +1105,7 @@ void PackIconManager(IconMgr *ip)
 			XMoveResizeWindow(dpy, tmp->w, new_x, new_y, wwidth, wheight);
 			if(tmp->height != wheight)
 				XMoveWindow(dpy, tmp->icon, ICON_MGR_OBORDER + ICON_MGR_IBORDER,
-				            (wheight - siconify_height) / 2);
+				            (wheight - im_iconified_icon_height) / 2);
 
 			tmp->row = row - 1;
 			tmp->col = col;
@@ -1156,4 +1161,68 @@ void dump_iconmanager(IconMgr *mgr, char *label)
 	        mgr->prev,
 	        mgr->lasti,
 	        mgr->nextv);
+}
+
+
+/*
+ * Draw the window name into the icon manager line
+ */
+void
+DrawIconManagerIconName(TwmWindow *tmp_win)
+{
+	WList *iconmanagerlist = tmp_win->iconmanagerlist;
+	XRectangle ink_rect, logical_rect;
+
+	XmbTextExtents(Scr->IconManagerFont.font_set,
+	               tmp_win->icon_name, strlen(tmp_win->icon_name),
+	               &ink_rect, &logical_rect);
+
+	if(UpdateFont(&Scr->IconManagerFont, logical_rect.height)) {
+		PackIconManagers();
+	}
+
+	DrawIconManagerBorder(iconmanagerlist, true);
+
+	FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
+
+	/* XXX This is a completely absurd way of writing this */
+	((Scr->use3Diconmanagers && (Scr->Monochrome != COLOR)) ?
+	 XmbDrawImageString : XmbDrawString)
+	(dpy,
+	 iconmanagerlist->w,
+	 Scr->IconManagerFont.font_set,
+	 Scr->NormalGC,
+	 iconmgr_textx,
+	 (Scr->IconManagerFont.avg_height - logical_rect.height) / 2
+	 + (- logical_rect.y)
+	 + ICON_MGR_OBORDER
+	 + ICON_MGR_IBORDER,
+	 tmp_win->icon_name,
+	 strlen(tmp_win->icon_name));
+}
+
+
+/*
+ * Copy the icon into the icon manager for a window that's iconified.
+ * This is slightly different for the 3d vs 2d case, since the 3d is just
+ * copying a pixmap in, while the 2d is drawing a bitmap in with the
+ * fg/bg colors appropriate to the line.
+ */
+void
+ShowIconifiedIcon(TwmWindow *tmp_win)
+{
+	WList *iconmanagerlist = tmp_win->iconmanagerlist;
+
+	if(Scr->use3Diconmanagers && iconmanagerlist->iconifypm) {
+		XCopyArea(dpy, iconmanagerlist->iconifypm,
+		          iconmanagerlist->icon,
+		          Scr->NormalGC, 0, 0,
+		          im_iconified_icon_width, im_iconified_icon_height, 0, 0);
+	}
+	else {
+		FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
+		XCopyPlane(dpy, Scr->siconifyPm, iconmanagerlist->icon,
+		           Scr->NormalGC, 0, 0,
+		           im_iconified_icon_width, im_iconified_icon_height, 0, 0, 1);
+	}
 }

@@ -1828,10 +1828,10 @@ void HandlePropertyNotify(void)
 				x = GetIconOffset(icon);
 				icon->bm_w =
 				        XCreateWindow(dpy, icon->w, x, 0,
-				                      (unsigned int) icon->width,
-				                      (unsigned int) icon->height,
-				                      (unsigned int) 0, Scr->d_depth,
-				                      (unsigned int) CopyFromParent, Scr->d_visual,
+				                      icon->width,
+				                      icon->height,
+				                      0, Scr->d_depth,
+				                      CopyFromParent, Scr->d_visual,
 				                      valuemask, &attributes);
 
 				if(!(Tmp_win->wmhints->flags & IconMaskHint)) {
@@ -2265,47 +2265,12 @@ void HandleExpose(void)
 			WList *iconmanagerlist = Tmp_win->iconmanagerlist;
 
 			if(Event.xany.window == iconmanagerlist->w) {
-				XRectangle ink_rect, logical_rect;
-				XmbTextExtents(Scr->IconManagerFont.font_set,
-				               Tmp_win->icon_name, strlen(Tmp_win->icon_name),
-				               &ink_rect, &logical_rect);
-
-				if(UpdateFont(&Scr->IconManagerFont, logical_rect.height)) {
-					PackIconManagers();
-				}
-
-				DrawIconManagerBorder(iconmanagerlist, true);
-
-				FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
-				((Scr->use3Diconmanagers && (Scr->Monochrome != COLOR)) ?
-				 XmbDrawImageString : XmbDrawString)
-				(dpy,
-				 Event.xany.window,
-				 Scr->IconManagerFont.font_set,
-				 Scr->NormalGC,
-				 iconmgr_textx,
-				 (Scr->IconManagerFont.avg_height - logical_rect.height) / 2
-				 + (- logical_rect.y)
-				 + ICON_MGR_OBORDER
-				 + ICON_MGR_IBORDER,
-				 Tmp_win->icon_name,
-				 strlen(Tmp_win->icon_name));
+				DrawIconManagerIconName(Tmp_win);
 				flush_expose(Event.xany.window);
 				return;
 			}
-			if(Event.xany.window == iconmanagerlist->icon) {
-				if(Scr->use3Diconmanagers && iconmanagerlist->iconifypm) {
-					XCopyArea(dpy, iconmanagerlist->iconifypm,
-					          iconmanagerlist->icon,
-					          Scr->NormalGC, 0, 0,
-					          siconify_width, siconify_height, 0, 0);
-				}
-				else {
-					FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
-					XCopyPlane(dpy, Scr->siconifyPm, iconmanagerlist->icon,
-					           Scr->NormalGC, 0, 0,
-					           siconify_width, siconify_height, 0, 0, 1);
-				}
+			else if(Event.xany.window == iconmanagerlist->icon) {
+				ShowIconifiedIcon(Tmp_win);
 				flush_expose(Event.xany.window);
 				return;
 			}

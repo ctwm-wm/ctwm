@@ -48,11 +48,11 @@ MaskScreen(char *file)
 	attributes.cursor            = waitcursor;
 	attributes.background_pixel  = Scr->Black;
 	Scr->WindowMask = XCreateWindow(dpy, Scr->Root, 0, 0,
-	                                (unsigned int) Scr->rootw,
-	                                (unsigned int) Scr->rooth,
-	                                (unsigned int) 0,
-	                                CopyFromParent, (unsigned int) CopyFromParent,
-	                                (Visual *) CopyFromParent, valuemask,
+	                                Scr->rootw,
+	                                Scr->rooth,
+	                                0,
+	                                CopyFromParent, CopyFromParent,
+	                                CopyFromParent, valuemask,
 	                                &attributes);
 	XMapWindow(dpy, Scr->WindowMask);
 	XMaskEvent(dpy, ExposureMask, &event);

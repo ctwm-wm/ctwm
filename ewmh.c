@@ -988,10 +988,10 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 	x = GetIconOffset(twm_win->icon);
 	twm_win->icon->bm_w =
 	        XCreateWindow(dpy, twm_win->icon->w, x, 0,
-	                      (unsigned int) twm_win->icon->width,
-	                      (unsigned int) twm_win->icon->height,
-	                      (unsigned int) 0, Scr->d_depth,
-	                      (unsigned int) CopyFromParent, Scr->d_visual,
+	                      twm_win->icon->width,
+	                      twm_win->icon->height,
+	                      0, Scr->d_depth,
+	                      CopyFromParent, Scr->d_visual,
 	                      valuemask, &attributes);
 
 	if(image->mask) {

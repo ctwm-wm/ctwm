@@ -708,9 +708,9 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 					attributes.win_gravity = NorthWestGravity;
 				}
 				tbw->window = XCreateWindow(dpy, tmp_win->title_w, x, y, h, h,
-				                            (unsigned int) Scr->TBInfo.border,
-				                            0, (unsigned int) CopyFromParent,
-				                            (Visual *) CopyFromParent,
+				                            Scr->TBInfo.border,
+				                            0, CopyFromParent,
+				                            CopyFromParent,
 				                            valuemask, &attributes);
 				XStoreName(dpy, tbw->window, "TB button");
 
@@ -1152,7 +1152,7 @@ PaintTitle(TwmWindow *tmp_win)
 		 */
 		int wid = tmp_win->title_width - Scr->TBInfo.titlex
 		          - Scr->TBInfo.rightoff - Scr->TitlePadding;
-		int state = off;
+		ButtonState state = off;
 
 		/*
 		 * If SunkFocusWindowTitle, then we "sink in" the whole title

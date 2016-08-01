@@ -1328,11 +1328,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
 
 	tmp_win->frame = XCreateWindow(dpy, vroot, tmp_win->frame_x, tmp_win->frame_y,
-	                               (unsigned int) tmp_win->frame_width,
-	                               (unsigned int) tmp_win->frame_height,
-	                               (unsigned int) tmp_win->frame_bw,
+	                               tmp_win->frame_width,
+	                               tmp_win->frame_height,
+	                               tmp_win->frame_bw,
 	                               Scr->d_depth,
-	                               (unsigned int) CopyFromParent,
+	                               CopyFromParent,
 	                               Scr->d_visual, valuemask, &attributes);
 	XStoreName(dpy, tmp_win->frame, "CTWM frame");
 
@@ -1346,11 +1346,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
 		                                 tmp_win->frame_bw3D - tmp_win->frame_bw,
 		                                 tmp_win->frame_bw3D - tmp_win->frame_bw,
-		                                 (unsigned int) tmp_win->attr.width,
-		                                 (unsigned int) Scr->TitleHeight,
-		                                 (unsigned int) tmp_win->frame_bw,
+		                                 tmp_win->attr.width,
+		                                 Scr->TitleHeight,
+		                                 tmp_win->frame_bw,
 		                                 Scr->d_depth,
-		                                 (unsigned int) CopyFromParent,
+		                                 CopyFromParent,
 		                                 Scr->d_visual, valuemask,
 		                                 &attributes);
 		XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");

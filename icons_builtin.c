@@ -152,8 +152,9 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
 }
 
 
+
 /*
- * 3d variant of the "iconified" image in icon manager.
+ * Icon used in the icon manager for iconified windows.
  *
  * For the 2d case, there's just one icon stored screen-wide, which is
  * XCopyPlane()'d into the icon manager.  This works because it's just a
@@ -164,33 +165,52 @@ CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp)
  * FG/BG colors; it draws various shades from them.  So since each row in
  * an icon manager may be a different FG/BG color, we have to make a new
  * one for each row.
- *
- * XXX Should move creation of the 2d variant here for consistency.
  */
+
+const unsigned int im_iconified_icon_width = 11;
+const unsigned int im_iconified_icon_height = 11;
+static unsigned char im_iconified_icon_bits[] = {
+	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
+	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
+};
+
 Pixmap
 Create3DIconManagerIcon(ColorPair cp)
 {
-	unsigned int w, h;
 	struct Colori *col;
 	static struct Colori *colori = NULL;
+	const unsigned int w = im_iconified_icon_width;
+	const unsigned int h = im_iconified_icon_height;
 
-	w = siconify_width;
-	h = siconify_height;
-
+	/*
+	 * Keep a list of ones we've made, and if we've already made one this
+	 * color, just hand it back.
+	 */
 	for(col = colori; col; col = col->next) {
 		if(col->color == cp.back) {
-			break;
+			return col->pix;
 		}
 	}
-	if(col != NULL) {
-		return (col->pix);
-	}
+
+	/* Don't have one this color yet, make it */
 	col = malloc(sizeof(struct Colori));
 	col->color = cp.back;
 	col->pix   = XCreatePixmap(dpy, Scr->Root, w, h, Scr->d_depth);
 	Draw3DBorder(col->pix, 0, 0, w, h, 4, cp, off, true, false);
+
+	/* Add to the cache list so we hit the above next time */
 	col->next = colori;
 	colori = col;
 
-	return (colori->pix);
+	return colori->pix;
+}
+
+Pixmap
+Create2DIconManagerIcon(void)
+{
+	char *bits = (char *)im_iconified_icon_bits;
+	const unsigned int w = im_iconified_icon_width;
+	const unsigned int h = im_iconified_icon_height;
+
+	return XCreatePixmapFromBitmapData(dpy, Scr->Root, bits, w, h, 1, 0, 1);
 }

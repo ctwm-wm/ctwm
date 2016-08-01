@@ -974,12 +974,12 @@ void MakeMenu(MenuRoot *mr)
 				attributes.save_under = True;
 			}
 			mr->shadow = XCreateWindow(dpy, Scr->Root, 0, 0,
-			                           (unsigned int) mr->width,
-			                           (unsigned int) mr->height,
-			                           (unsigned int)0,
+			                           mr->width,
+			                           mr->height,
+			                           0,
 			                           CopyFromParent,
-			                           (unsigned int) CopyFromParent,
-			                           (Visual *) CopyFromParent,
+			                           CopyFromParent,
+			                           CopyFromParent,
 			                           valuemask, &attributes);
 		}
 
@@ -1008,10 +1008,10 @@ void MakeMenu(MenuRoot *mr)
 			attributes.backing_store = Always;
 		}
 		borderwidth = Scr->use3Dmenus ? 0 : 1;
-		mr->w = XCreateWindow(dpy, Scr->Root, 0, 0, (unsigned int) mr->width,
-		                      (unsigned int) mr->height, (unsigned int) borderwidth,
-		                      CopyFromParent, (unsigned int) CopyFromParent,
-		                      (Visual *) CopyFromParent,
+		mr->w = XCreateWindow(dpy, Scr->Root, 0, 0, mr->width,
+		                      mr->height, borderwidth,
+		                      CopyFromParent, CopyFromParent,
+		                      CopyFromParent,
 		                      valuemask, &attributes);
 
 
@@ -1978,9 +1978,9 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		attr.backing_store = NotUseful;
 		attr.save_under    = False;
 		blanket = XCreateWindow(dpy, Scr->Root, winattrs.x, winattrs.y,
-		                        winattrs.width, winattrs.height, (unsigned int) 0,
-		                        CopyFromParent, (unsigned int) CopyFromParent,
-		                        (Visual *) CopyFromParent, CWBackingStore | CWSaveUnder, &attr);
+		                        winattrs.width, winattrs.height, 0,
+		                        CopyFromParent, CopyFromParent,
+		                        CopyFromParent, CWBackingStore | CWSaveUnder, &attr);
 		XMapWindow(dpy, blanket);
 	}
 	XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);

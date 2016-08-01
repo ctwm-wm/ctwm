@@ -471,9 +471,9 @@ int main(int argc, char **argv)
 		if(CLarg.is_captive) {
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
 			if(Scr->captivename) {
-				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None,
-				                       NULL, 0,
-				                       NULL);
+				XmbSetWMProperties(dpy, croot,
+				                   Scr->captivename, Scr->captivename,
+				                   NULL, 0, NULL, NULL, NULL);
 			}
 		}
 		Scr->RootColormaps.number_cwins = 1;
@@ -766,10 +766,9 @@ int main(int argc, char **argv)
 		             CWBackingStore | CWCursor);
 		Scr->InfoWindow.win =
 		        XCreateWindow(dpy, Scr->Root, 0, 0,
-		                      (unsigned int) 5, (unsigned int) 5,
-		                      (unsigned int) 0, 0,
-		                      (unsigned int) CopyFromParent,
-		                      (Visual *) CopyFromParent,
+		                      5, 5,
+		                      0, 0,
+		                      CopyFromParent, CopyFromParent,
 		                      valuemask, &attributes);
 
 		XmbTextExtents(Scr->SizeFont.font_set,
@@ -792,12 +791,12 @@ int main(int argc, char **argv)
 				sy = 0;
 			}
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
-			                                (unsigned int) Scr->SizeStringWidth,
-			                                (unsigned int)(Scr->SizeFont.height +
+			                                Scr->SizeStringWidth,
+			                                (Scr->SizeFont.height +
 			                                                SIZE_VINDENT * 2),
-			                                (unsigned int) 0, 0,
-			                                (unsigned int) CopyFromParent,
-			                                (Visual *) CopyFromParent,
+			                                0, 0,
+			                                CopyFromParent,
+			                                CopyFromParent,
 			                                valuemask, &attributes);
 		}
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
@@ -1345,12 +1344,12 @@ static Window CreateRootWindow(int x, int y,
 	ret = XCreateSimpleWindow(dpy, RootWindow(dpy, scrnum),
 	                          x, y, width, height, 2, WhitePixel(dpy, scrnum),
 	                          BlackPixel(dpy, scrnum));
-	XSetStandardProperties(dpy, ret, "Captive ctwm", NULL, None, NULL, 0, NULL);
 	wmhints.initial_state = NormalState;
 	wmhints.input         = True;
 	wmhints.flags         = InputHint | StateHint;
-	XSetWMHints(dpy, ret, &wmhints);
 
+	XmbSetWMProperties(dpy, ret, "Captive ctwm", NULL, NULL, 0, NULL,
+	                   &wmhints, NULL);
 	XChangeProperty(dpy, ret, XA_WM_CTWM_ROOT, XA_WINDOW, 32,
 	                PropModeReplace, (unsigned char *) &ret, 1);
 	XSelectInput(dpy, ret, StructureNotifyMask);

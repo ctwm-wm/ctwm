@@ -1636,11 +1636,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			attributes.backing_store = NotUseful;
 			attributes.save_under = False;
 			w = XCreateWindow(dpy, Scr->Root, 0, 0,
-			                  (unsigned int) Scr->rootw,
-			                  (unsigned int) Scr->rooth,
-			                  (unsigned int) 0,
-			                  CopyFromParent, (unsigned int) CopyFromParent,
-			                  (Visual *) CopyFromParent, valuemask,
+			                  Scr->rootw,
+			                  Scr->rooth,
+			                  0,
+			                  CopyFromParent, CopyFromParent,
+			                  CopyFromParent, valuemask,
 			                  &attributes);
 			XMapWindow(dpy, w);
 			XDestroyWindow(dpy, w);

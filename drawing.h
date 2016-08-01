@@ -5,8 +5,11 @@
 #ifndef _CTWM_DRAWING_H
 #define _CTWM_DRAWING_H
 
+typedef enum {on, off} ButtonState;
+
+
 void Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
-                  ColorPair cp, int state, bool fill, bool forcebw);
+                  ColorPair cp, ButtonState state, bool fill, bool forcebw);
 
 
 typedef enum {

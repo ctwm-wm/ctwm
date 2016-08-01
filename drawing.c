@@ -30,7 +30,7 @@
 
 void
 Draw3DBorder(Window w, int x, int y, int width, int height, int bw,
-             ColorPair cp, int state, bool fill, bool forcebw)
+             ColorPair cp, ButtonState state, bool fill, bool forcebw)
 {
 	int           i;
 	XGCValues     gcv;

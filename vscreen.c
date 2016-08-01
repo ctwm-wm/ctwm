@@ -103,8 +103,8 @@ void InitVirtualScreens(ScreenInfo *scr)
 		vs->w = w;
 		vs->h = h;
 		vs->window = XCreateWindow(dpy, Scr->Root, x, y, w, h,
-		                           0, CopyFromParent, (unsigned int) CopyFromParent,
-		                           (Visual *) CopyFromParent, valuemask, &attributes);
+		                           0, CopyFromParent, CopyFromParent,
+		                           CopyFromParent, valuemask, &attributes);
 		vs->wsw = 0;
 
 		XSync(dpy, 0);

@@ -96,9 +96,6 @@ struct IconMgr {
 	int count;
 };
 
-extern const int siconify_width;
-extern const int siconify_height;
-extern int iconmgr_textx;
 extern WList *DownIconManager;
 
 void CreateIconManagers(void);
@@ -119,6 +116,8 @@ void SortIconManager(IconMgr *ip);
 void PackIconManager(IconMgr *ip);
 void PackIconManagers(void);
 void dump_iconmanager(IconMgr *mgr, char *label);
+void DrawIconManagerIconName(TwmWindow *tmp_win);
+void ShowIconifiedIcon(TwmWindow *tmp_win);
 
 
 #endif /* _CTWM_ICONMGR_H */

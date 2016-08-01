@@ -786,10 +786,10 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 
 		x = GetIconOffset(icon);
 		icon->bm_w = XCreateWindow(dpy, icon->w, x, 0,
-		                           (unsigned int)icon->width,
-		                           (unsigned int)icon->height,
-		                           (unsigned int) 0, Scr->d_depth,
-		                           (unsigned int) CopyFromParent,
+		                           icon->width,
+		                           icon->height,
+		                           0, Scr->d_depth,
+		                           CopyFromParent,
 		                           Scr->d_visual, valuemask,
 		                           &attributes);
 		if(image->mask) {
