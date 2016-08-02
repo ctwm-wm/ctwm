@@ -418,9 +418,14 @@ void GotoDownWorkSpace(VirtualScreen *vs)
 
 /*
  * Show the background (by hiding all windows) or undo it.
+ * f.showbackground, also can be called via EWMH bits.
+ *
  * newstate is the desired showing state.
  * Pass -1 to toggle, 1 to show the background,
  * or 0 to re-show the windows.
+ *
+ * XXX Doesn't really belong here; more of a functions.c-ish thing
+ * probably.  But left here for the moment.
  */
 void ShowBackground(VirtualScreen *vs, int newstate)
 {
