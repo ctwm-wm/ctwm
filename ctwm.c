@@ -793,7 +793,7 @@ int main(int argc, char **argv)
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
 			                                Scr->SizeStringWidth,
 			                                (Scr->SizeFont.height +
-			                                                SIZE_VINDENT * 2),
+			                                 SIZE_VINDENT * 2),
 			                                0, 0,
 			                                CopyFromParent,
 			                                CopyFromParent,
