@@ -100,7 +100,7 @@ void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
                        bool replace);
 void RemoveRGBColormap(Atom a);
 void LocateStandardColormaps(void);
-void GetColor(int kind, Pixel *what, char *name);
+void GetColor(int kind, Pixel *what, const char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
 bool UpdateFont(MyFont *font, int height);
