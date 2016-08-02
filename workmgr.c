@@ -744,8 +744,9 @@ char *GetCurrentWorkSpaceName(VirtualScreen *vs)
  *  #            Button BG             Map BG            Map/Root BG img
  * }
  */
-void AddWorkSpace(char *name, char *background, char *foreground,
-                  char *backback, char *backfore, char *backpix)
+void
+AddWorkSpace(const char *name, const char *background, const char *foreground,
+             const char *backback, const char *backfore, const char *backpix)
 {
 	WorkSpace *ws;
 

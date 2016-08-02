@@ -135,9 +135,10 @@ void GotoLeftWorkSpace(VirtualScreen *vs);
 void GotoUpWorkSpace(VirtualScreen *vs);
 void GotoDownWorkSpace(VirtualScreen *vs);
 void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws);
-void AddWorkSpace(char *name,
-                  char *background, char *foreground,
-                  char *backback, char *backfore, char *backpix);
+void AddWorkSpace(const char *name,
+                  const char *background, const char *foreground,
+                  const char *backback,   const char *backfore,
+                  const char *backpix);
 void AllocateOtherIconManagers(void);
 void Vanish(VirtualScreen *vs, TwmWindow *tmp_win);
 void DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win);
