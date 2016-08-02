@@ -476,7 +476,8 @@ void LocateStandardColormaps(void)
 	return;
 }
 
-void GetColor(int kind, Pixel *what, char *name)
+void
+GetColor(int kind, Pixel *what, const char *name)
 {
 	XColor color;
 	Colormap cmap = Scr->RootColormaps.cwins[0]->colormap->c;
