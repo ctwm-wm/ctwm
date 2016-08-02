@@ -1108,6 +1108,10 @@ Occupy(TwmWindow *twm_win)
 		occupy_twm->vs = twm_win->parent_vs;
 		occupy_twm->frame_x = x;
 		occupy_twm->frame_y = y;
+		/*
+		 * XXX Should this be using DisplayWin() like everything else,
+		 * rather than manually grubbing beneath it?
+		 */
 		ReparentFrameAndIcon(occupy_twm);
 	}
 	else {
