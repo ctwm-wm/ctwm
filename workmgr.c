@@ -732,26 +732,42 @@ char *GetCurrentWorkSpaceName(VirtualScreen *vs)
 	return vs->wsw->currentwspc->name;
 }
 
+
+/*
+ * Create a workspace.  This is what gets called when parsing
+ * WorkSpaces {} config file entries.
+ *
+ * WorkSpaces {
+ *  "One" { name background foreground backback backfore "backpix.jpg" }
+ *  #         |      |           |        |       |            |
+ *  #     WS name    |      Button Text   |   Map/Root FG      |
+ *  #            Button BG             Map BG            Map/Root BG img
+ * }
+ */
 void AddWorkSpace(char *name, char *background, char *foreground,
                   char *backback, char *backfore, char *backpix)
 {
 	WorkSpace *ws;
-	int       wsnum;
-	Image     *image;
 
-	wsnum = Scr->workSpaceMgr.count;
-	if(wsnum == MAXWORKSPACE) {
+	/* XXX Shouldn't just silently return if we're already at max...  */
+	if(Scr->workSpaceMgr.count == MAXWORKSPACE) {
 		return;
 	}
 
-	fullOccupation |= (1 << wsnum);
-	ws = malloc(sizeof(WorkSpace));
-	ws->FirstWindowRegion = NULL;
+	/* Init.  Label can change over time, but starts the same a name. */
+	ws = calloc(1, sizeof(WorkSpace));
 	ws->name  = strdup(name);
 	ws->label = strdup(name);
-	ws->clientlist = NULL;
-	ws->save_focus = NULL;
+	ws->number = Scr->workSpaceMgr.count++;
 
+	/* We're a new entry on the "everything" list */
+	fullOccupation |= (1 << ws->number);
+
+
+	/*
+	 * FB/BG colors for the button state may be specified, or fallback to
+	 * the icon manager's if not.
+	 */
 	if(background == NULL) {
 		ws->cp.back = Scr->IconManagerC.back;
 	}
@@ -766,6 +782,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		GetColor(Scr->Monochrome, &(ws->cp.fore), foreground);
 	}
 
+	/* Shadows for 3d buttons derived from that */
 #ifdef COLOR_BLIND_USER
 	ws->cp.shadc = Scr->White;
 	ws->cp.shadd = Scr->Black;
@@ -775,6 +792,10 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 #endif
 
+
+	/*
+	 * Map-state fb/bg color, as well as root win background.
+	 */
 	if(backback == NULL) {
 		GetColor(Scr->Monochrome, &(ws->backcp.back), "Black");
 	}
@@ -790,17 +811,16 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
 		useBackgroundInfo = true;
 	}
-	if((image = GetImage(backpix, ws->backcp)) != NULL) {
-		ws->image = image;
+
+
+	/* Maybe there's an image to stick on the root as well */
+	ws->image = GetImage(backpix, ws->backcp);
+	if(ws->image != NULL) {
 		useBackgroundInfo = true;
 	}
-	else {
-		ws->image = NULL;
-	}
-	ws->next   = NULL;
-	ws->number = wsnum;
-	Scr->workSpaceMgr.count++;
 
+
+	/* Put ourselves on the end of the workspace list */
 	if(Scr->workSpaceMgr.workSpaceList == NULL) {
 		Scr->workSpaceMgr.workSpaceList = ws;
 	}
@@ -811,7 +831,11 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		}
 		wstmp->next = ws;
 	}
+
+	/* There's at least one defined WS now */
 	Scr->workSpaceManagerActive = true;
+
+	return;
 }
 
 
