@@ -868,39 +868,83 @@ GetWorkspace(char *wname)
 	return NULL;
 }
 
+
+/*
+ * Each workspace has its own [set of] icon manager[s].  The initial main
+ * one was setup via AllocateIconManager() early in startup.  The others
+ * were setup during parsing the config file.  Then this gets called late
+ * in startup, after all the workspaces are setup, to copy them all into
+ * each one.
+ *
+ * Note this is distinct from CreateIconManagers(); that creates and
+ * draws the windows, this creates and connects up the data structures.
+ */
 void AllocateOtherIconManagers(void)
 {
-	IconMgr   *p = NULL, *ip, *oldp, *oldv;
+	IconMgr   *imfirst; // First IM on each workspace
 	WorkSpace *ws;
 
+	/* No defined workspaces?  Nothing to do. */
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
 
-	oldp = Scr->iconmgr;
-	for(ws = Scr->workSpaceMgr.workSpaceList->next; ws != NULL; ws = ws->next) {
-		ws->iconmgr  = malloc(sizeof(IconMgr));
-		*ws->iconmgr = *oldp;
-		oldv = ws->iconmgr;
-		oldp->nextv = ws->iconmgr;
-		oldv->nextv = NULL;
+	/* The first workspace just gets the ones we already have */
+	ws = Scr->workSpaceMgr.workSpaceList;
+	ws->iconmgr = Scr->iconmgr;
 
-		for(ip = oldp->next; ip != NULL; ip = ip->next) {
+	/* From the second on, we start copying */
+	imfirst = ws->iconmgr;
+	for(ws = ws->next; ws != NULL; ws = ws->next) {
+		IconMgr *ip, *previ, *p = NULL;
+
+		/* Copy in the first iconmgr */
+		ws->iconmgr  = malloc(sizeof(IconMgr));
+		*ws->iconmgr = *imfirst;
+
+		/*
+		 * This first is now the nextv to the first in the previous WS,
+		 * and we don't [yet] have a nextv of our own.
+		 * */
+		imfirst->nextv = ws->iconmgr;
+		ws->iconmgr->nextv = NULL;
+
+		/*
+		 * Start from the second, and copy them each from the prior
+		 * workspace we just went through.
+		 * */
+		previ = ws->iconmgr;
+		for(ip = imfirst->next; ip != NULL; ip = ip->next) {
+			/* Copy the base bits */
 			p  = malloc(sizeof(IconMgr));
 			*p = *ip;
+
+			/* Link up the double-links, and there's no nextv [yet] */
+			previ->next = p;
+			p->prev     = previ;
+			p->next     = NULL;
+			p->nextv    = NULL;
+
+			/* We're now the nextv to that one in the old workspace */
 			ip->nextv  = p;
-			p->next    = NULL;
-			p->prev    = oldv;
-			p->nextv   = NULL;
-			oldv->next = p;
-			oldv = p;
+
+			/* And back around to the next one to copy into this WS */
+			previ = p;
 		}
+
+		/* Each one has a pointer to the last IM in this WS, so save those */
 		for(ip = ws->iconmgr; ip != NULL; ip = ip->next) {
 			ip->lasti = p;
 		}
-		oldp = ws->iconmgr;
+
+		/*
+		 * And back around to the next workspace, which works from those
+		 * we made for this WS.  We go from imfirst rather than
+		 * Scr->iconmgr so the ip->nextv rewrites are correct above; we
+		 * have to fill them in on the next loop.
+		 */
+		imfirst = ws->iconmgr;
 	}
-	Scr->workSpaceMgr.workSpaceList->iconmgr = Scr->iconmgr;
 }
 
 void
