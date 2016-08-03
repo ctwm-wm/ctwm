@@ -1417,23 +1417,23 @@ void WMapSetButtonsState(VirtualScreen *vs)
  * - workspace manager windows
  * - or, optionally, windows with full occupation.
  */
-int
+bool
 WMapWindowMayBeAdded(TwmWindow *win)
 {
 	if(win->isiconmgr) {
-		return 0;
+		return false;
 	}
 	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
-		return 0;
+		return false;
 	}
 	if(win->iswspmgr) {
-		return 0;
+		return false;
 	}
 	if(Scr->workSpaceMgr.noshowoccupyall &&
 	                win->occupation == fullOccupation) {
-		return 0;
+		return false;
 	}
-	return 1;
+	return true;
 }
 
 void WMapAddWindow(TwmWindow *win)

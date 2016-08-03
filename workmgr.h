@@ -146,7 +146,7 @@ void PaintWorkSpaceManager(VirtualScreen *vs);
 void WMapToggleState(VirtualScreen *vs);
 void WMapSetMapState(VirtualScreen *vs);
 void WMapSetButtonsState(VirtualScreen *vs);
-int WMapWindowMayBeAdded(TwmWindow *win);
+bool WMapWindowMayBeAdded(TwmWindow *win);
 void WMapAddWindow(TwmWindow *win);
 void WMapDestroyWindow(TwmWindow *win);
 void WMapMapWindow(TwmWindow *win);
