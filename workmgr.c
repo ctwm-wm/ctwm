@@ -840,6 +840,9 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
 }
 
 
+/*
+ * Find workspace by name
+ */
 WorkSpace *
 GetWorkspace(char *wname)
 {
@@ -869,6 +872,11 @@ GetWorkspace(char *wname)
 }
 
 
+/*
+ * Move a window's frame and icon to a new VS.  This mostly happens as a
+ * backend bit of the DisplayWin() process, but it does get called
+ * directly for the Occupy window.  XXX Should it?
+ */
 void
 ReparentFrameAndIcon(TwmWindow *tmp_win)
 {
@@ -900,13 +908,18 @@ ReparentFrameAndIcon(TwmWindow *tmp_win)
 void
 Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 {
+	/* It's not here?  Nothing to do. */
 	if(vs && tmp_win->vs && tmp_win->vs != vs) {
 		return;
 	}
+
+	/* Unmap (or near-equivalent) all its bits */
 	if(tmp_win->UnmapByMovingFarAway) {
+		/* UnmapByMovingFarAway?  Move it off-screen */
 		XMoveWindow(dpy, tmp_win->frame, Scr->rootw + 1, Scr->rooth + 1);
 	}
 	else if(tmp_win->mapped) {
+		/* It's mapped; unmap it */
 		XWindowAttributes winattrs;
 		unsigned long     eventMask;
 
@@ -922,6 +935,7 @@ Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 		}
 	}
 	else if(tmp_win->icon_on && tmp_win->icon && tmp_win->icon->w) {
+		/* It's not mapped, but the icon's up; hide it away */
 		XUnmapWindow(dpy, tmp_win->icon->w);
 		IconDown(tmp_win);
 	}
@@ -957,9 +971,14 @@ Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 	}
 #endif
 
+	/* Currently displayed nowhere */
 	tmp_win->vs = NULL;
 }
 
+
+/*
+ * Display a window in a given virtual screen.
+ */
 void
 DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win)
 {
@@ -981,11 +1000,15 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 		return;
 	}
 
+	/* This is where we're moving it */
 	tmp_win->vs = vs;
 
+
+	/* If it's unmapped, RFAI() moves the necessary bits here */
 	if(!tmp_win->mapped) {
 		ReparentFrameAndIcon(tmp_win);
 
+		/* If it's got an icon that should be up, make it up here */
 		if(tmp_win->isicon) {
 			if(tmp_win->icon_on) {
 				if(tmp_win->icon && tmp_win->icon->w) {
@@ -996,10 +1019,19 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 			}
 		}
 
+		/* All there is to do with unmapped wins */
 		return;
 	}
+
+
+	/* If we make it this far, the window is mapped */
+
 	if(tmp_win->UnmapByMovingFarAway) {
-		if(vs) {        /* XXX I don't believe the handling of UnmapByMovingFarAway is quite correct */
+		/*
+		 * XXX I don't believe the handling of UnmapByMovingFarAway is
+		 * quite correct.
+		 */
+		if(vs) {
 			XReparentWindow(dpy, tmp_win->frame, vs->window,
 			                tmp_win->frame_x, tmp_win->frame_y);
 		}
@@ -1008,6 +1040,7 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 		}
 	}
 	else {
+		/* Map and move it here */
 		if(!tmp_win->squeezed) {
 			XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 			eventMask = winattrs.your_event_mask;
@@ -1024,6 +1057,11 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 }
 
 
+/*
+ * Put together the actual window for the workspace manager.  Called as
+ * part of CreateWorkSpaceManager() during startup, once per workspace
+ * (since there's a separate window in each).
+ */
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 {
 	int           mask;
