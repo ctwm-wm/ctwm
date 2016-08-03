@@ -1293,6 +1293,10 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	PaintWorkSpaceManager(vs);
 }
 
+
+/*
+ * Draw a workspace manager window on expose
+ */
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpace *ws;
@@ -1328,6 +1332,11 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 	}
 }
 
+
+/*
+ * Draw up the pieces of a WSM window.  This is subtly different from the
+ * expose handler because XXX ???
+ */
 void PaintWorkSpaceManager(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -1344,6 +1353,8 @@ void PaintWorkSpaceManager(VirtualScreen *vs)
 	}
 }
 
+
+/* Border around the WSM */
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 {
 	int width, height;
@@ -1355,6 +1366,9 @@ static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 }
 
 
+/*
+ * Moving the WSM between button and map state
+ */
 void WMapToggleState(VirtualScreen *vs)
 {
 	if(vs->wsw->state == WMS_buttons) {
@@ -1393,6 +1407,7 @@ void WMapSetButtonsState(VirtualScreen *vs)
 	}
 	vs->wsw->state = WMS_buttons;
 }
+
 
 /*
  * Verify if a window may be added to the workspace map.
