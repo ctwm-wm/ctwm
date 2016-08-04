@@ -1388,7 +1388,9 @@ void PaintWorkSpaceManager(VirtualScreen *vs)
 }
 
 
-/* Border around the WSM */
+/*
+ * Border around the WSM
+ */
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 {
 	int width, height;
