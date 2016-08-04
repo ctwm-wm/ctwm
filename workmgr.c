@@ -72,6 +72,11 @@ static bool useBackgroundInfo = false;
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
 
+
+/*
+ * Basic setup of Scr->workSpaceMgr structures.  Called (for each screen)
+ * early in startup, prior to config file parsing.
+ */
 void InitWorkSpaceManager(void)
 {
 	Scr->workSpaceMgr.count         = 0;
@@ -114,6 +119,12 @@ void InitWorkSpaceManager(void)
 	}
 }
 
+
+/*
+ * Prep up structures for WSM windows in each VS.  Called (for each
+ * screen) in startup after InitVirtualScreens() has setup the VS stuff
+ * (and after config file processing).
+ */
 void ConfigureWorkSpaceManager(void)
 {
 	VirtualScreen *vs;
@@ -131,6 +142,7 @@ void ConfigureWorkSpaceManager(void)
 		vs->wsw = wsw;
 	}
 }
+
 
 /***********************************************************************
  *
@@ -239,6 +251,11 @@ void CreateWorkSpaceManager(void)
 	}
 }
 
+
+
+/*
+ * Various funcs for switching workspaces
+ */
 void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 {
 	WorkSpace *ws;
@@ -255,6 +272,7 @@ void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 	}
 	GotoWorkSpace(vs, ws);
 }
+
 
 void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 {
@@ -275,7 +293,7 @@ void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 	}
 	GotoWorkSpace(vs, ws);
 }
-/* */
+
 
 void GotoPrevWorkSpace(VirtualScreen *vs)
 {
@@ -300,6 +318,7 @@ void GotoPrevWorkSpace(VirtualScreen *vs)
 	GotoWorkSpace(vs, ws1);
 }
 
+
 void GotoNextWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -314,6 +333,7 @@ void GotoNextWorkSpace(VirtualScreen *vs)
 	ws = (ws->next != NULL) ? ws->next : Scr->workSpaceMgr.workSpaceList;
 	GotoWorkSpace(vs, ws);
 }
+
 
 void GotoRightWorkSpace(VirtualScreen *vs)
 {
@@ -342,6 +362,7 @@ void GotoRightWorkSpace(VirtualScreen *vs)
 	GotoWorkSpaceByNumber(vs, number);
 }
 
+
 void GotoLeftWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -364,6 +385,7 @@ void GotoLeftWorkSpace(VirtualScreen *vs)
 	}
 	GotoWorkSpaceByNumber(vs, number);
 }
+
 
 void GotoUpWorkSpace(VirtualScreen *vs)
 {
@@ -393,6 +415,7 @@ void GotoUpWorkSpace(VirtualScreen *vs)
 	GotoWorkSpaceByNumber(vs, number);
 }
 
+
 void GotoDownWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -415,6 +438,8 @@ void GotoDownWorkSpace(VirtualScreen *vs)
 	}
 	GotoWorkSpaceByNumber(vs, number);
 }
+
+
 
 /*
  * Show the background (by hiding all windows) or undo it.
@@ -464,6 +489,10 @@ void ShowBackground(VirtualScreen *vs, int newstate)
 #endif /* EWMH */
 }
 
+
+/*
+ * Belongs with the above GotoWorkSpace* funcs
+ */
 void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 {
 	TwmWindow            *twmWin;
@@ -721,6 +750,11 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	MaybeAnimate = true;
 }
 
+
+/*
+ * Get the name of the currently active WS.  Used in Execute() for
+ * sub'ing in $currentworkspace in executing commands.
+ */
 char *GetCurrentWorkSpaceName(VirtualScreen *vs)
 {
 	if(! Scr->workSpaceManagerActive) {
