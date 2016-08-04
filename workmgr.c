@@ -1436,6 +1436,11 @@ WMapWindowMayBeAdded(TwmWindow *win)
 	return true;
 }
 
+
+/*
+ * Add a window into any appropriate WSM's [data structure].  Called
+ * during AddWindow().
+ */
 void WMapAddWindow(TwmWindow *win)
 {
 	WorkSpace     *ws;
@@ -1451,6 +1456,11 @@ void WMapAddWindow(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Remove a window from any WSM's [data structures].  Called during
+ * window destruction process.
+ */
 void WMapDestroyWindow(TwmWindow *win)
 {
 	WorkSpace *ws;
@@ -1470,6 +1480,13 @@ void WMapDestroyWindow(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Map up a window's subwindow in the map-mode WSM.  Happens when a
+ * window is de-iconified or otherwise mapped.  Specifically, when we get
+ * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
+ * some subtle distinctions between the two...
+ */
 void WMapMapWindow(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1489,6 +1506,10 @@ void WMapMapWindow(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Position a window in the WSM.  Happens as a result of moving things.
+ */
 void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 {
 	VirtualScreen *vs;
@@ -1551,6 +1572,11 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 	}
 }
 
+
+/*
+ * Hide away a window in the WSM map.  Happens when win is iconified;
+ * different from destruction.
+ */
 void WMapIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1573,6 +1599,21 @@ void WMapIconify(TwmWindow *win)
 	}
 }
 
+
+/*
+ * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
+ * and different from WMapMapWindow() in complicated ways.  WMMW() gets
+ * called at the end of HandleMapRequest().  A little earlier in HMR(),
+ * DeIconify() is (sometimes) called, which calls this function.  So,
+ * anything that de-iconifies invokes this, but only when it happens via
+ * a map event does WMMW() get called as well.
+ *
+ * XXX Does it make sense that they're separate?  They seem do be doing a
+ * lot of the same stuff.  In fact, the only difference is apparently
+ * that this auto-raises on !(NoRaiseDeIcon)?  This requires some further
+ * investigation...  at the least, they should probably be collapsed
+ * somehow with a conditional for that trivial difference.
+ */
 void WMapDeIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1601,6 +1642,13 @@ void WMapDeIconify(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Frontends for changing the stacking of windows in the WSM.
+ *
+ * XXX If these implementations really _should_ be identical, they should
+ * be collapsed...
+ */
 void WMapRaiseLower(TwmWindow *win)
 {
 	WorkSpace *ws;
@@ -1634,6 +1682,14 @@ void WMapRaise(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Backend for redoing the stacking of a window in the WSM.
+ *
+ * XXX Since this tends to get called iteratively, there's probably
+ * something better we can do than doing all this relatively expensive
+ * stuff over and over...
+ */
 void WMapRestack(WorkSpace *ws)
 {
 	VirtualScreen *vs;
@@ -1685,6 +1741,10 @@ void WMapRestack(WorkSpace *ws)
 	return;
 }
 
+
+/*
+ * Update stuff in the WSM when win's icon name changes
+ */
 void WMapUpdateIconName(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1703,6 +1763,13 @@ void WMapUpdateIconName(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Key press/release events in the WSM.  A major use (and only for
+ * release) is the Ctrl-key switching between map and button state.  The
+ * other use is on-the-fly renaming of workspaces by typing in the
+ * button-state WSM.
+ */
 void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
 {
 	KeySym      keysym;
@@ -1744,6 +1811,11 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 		return;
 	}
 
+
+	/*
+	 * If we're typing in a button-state WSM, and the mouse is on one of
+	 * the buttons, that means we're changing the name, so do that dance.
+	 */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(vs->wsw->bswl [ws->number]->w == event->xkey.subwindow) {
 			break;
@@ -1783,6 +1855,12 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 	}
 }
 
+
+/*
+ * Mouse clicking in WSM.  In the simple case, that's just switching
+ * workspaces.  In the more complex, it's changing window occupation in
+ * various different ways.
+ */
 void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpaceWindow     *mw;
@@ -2163,6 +2241,7 @@ move:
 	XDestroyWindow(dpy, w);
 }
 
+
 /*
  * This is really more util.c fodder, but leaving it here for now because
  * it's only used once in the below func.  If we start finding external
@@ -2181,6 +2260,11 @@ InvertColorPair(ColorPair *cp)
 	cp->shadd = save;
 }
 
+
+/*
+ * Draw a window name into the window's representation in the map-state
+ * WSM.
+ */
 void WMapRedrawName(VirtualScreen *vs, WinList wl)
 {
 	int       w = wl->width;
@@ -2197,6 +2281,16 @@ void WMapRedrawName(VirtualScreen *vs, WinList wl)
 	WMapRedrawWindow(wl->w, w, h, cp, label);
 }
 
+
+/*
+ * Draw up a window's representation in the map-state WSM, with the
+ * window name.
+ *
+ * The drawing of the window name could probably be done a bit better.
+ * The font size is based on a tiny fraction of the window's height, so
+ * is probably usually too small to be useful, and often appears just as
+ * some odd colored pixels at the top of the window.
+ */
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label)
 {
@@ -2254,6 +2348,11 @@ static void WMapRedrawWindow(Window window, int width, int height,
 	}
 }
 
+
+/*
+ * Create WSM representation of a given in a given WS.  Called when
+ * windows get added to a workspace.
+ */
 void
 WMapAddToList(TwmWindow *win, WorkSpace *ws)
 {
@@ -2323,6 +2422,10 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 	}
 }
 
+
+/*
+ * Remove window's WSM representation
+ */
 void
 WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 {
@@ -2348,6 +2451,11 @@ WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 	}
 }
 
+
+/*
+ * Size and layout a WSM.  Mostly an internal bit in the process of
+ * setting it up.
+ */
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 {
 	int           bwidth, bheight;
@@ -2413,6 +2521,9 @@ static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 }
 
 
+/*
+ * MapWindowCurrentWorkSpace {} parsing
+ */
 void WMapCreateCurrentBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap)
@@ -2449,6 +2560,10 @@ void WMapCreateCurrentBackGround(char *border,
 	ws->curImage = image;
 }
 
+
+/*
+ * MapWindowDefaultWorkSpace {} parsing
+ */
 void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap)
