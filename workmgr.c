@@ -789,7 +789,7 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
 		return;
 	}
 
-	/* Init.  Label can change over time, but starts the same a name. */
+	/* Init.  Label can change over time, but starts the same as name. */
 	ws = calloc(1, sizeof(WorkSpace));
 	ws->name  = strdup(name);
 	ws->label = strdup(name);
