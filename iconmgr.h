@@ -101,6 +101,7 @@ extern WList *DownIconManager;
 void CreateIconManagers(void);
 IconMgr *AllocateIconManager(char *name, char *geom, char *icon_name,
                              int columns);
+void AllocateOtherIconManagers(void);
 void MoveIconManager(int dir);
 void MoveMappedIconManager(int dir);
 void JumpIconManager(int dir);

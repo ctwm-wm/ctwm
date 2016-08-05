@@ -72,6 +72,11 @@ static bool useBackgroundInfo = false;
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
 
+
+/*
+ * Basic setup of Scr->workSpaceMgr structures.  Called (for each screen)
+ * early in startup, prior to config file parsing.
+ */
 void InitWorkSpaceManager(void)
 {
 	Scr->workSpaceMgr.count         = 0;
@@ -114,6 +119,12 @@ void InitWorkSpaceManager(void)
 	}
 }
 
+
+/*
+ * Prep up structures for WSM windows in each VS.  Called (for each
+ * screen) in startup after InitVirtualScreens() has setup the VS stuff
+ * (and after config file processing).
+ */
 void ConfigureWorkSpaceManager(void)
 {
 	VirtualScreen *vs;
@@ -131,6 +142,7 @@ void ConfigureWorkSpaceManager(void)
 		vs->wsw = wsw;
 	}
 }
+
 
 /***********************************************************************
  *
@@ -239,6 +251,11 @@ void CreateWorkSpaceManager(void)
 	}
 }
 
+
+
+/*
+ * Various funcs for switching workspaces
+ */
 void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 {
 	WorkSpace *ws;
@@ -255,6 +272,7 @@ void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 	}
 	GotoWorkSpace(vs, ws);
 }
+
 
 void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 {
@@ -275,7 +293,7 @@ void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 	}
 	GotoWorkSpace(vs, ws);
 }
-/* */
+
 
 void GotoPrevWorkSpace(VirtualScreen *vs)
 {
@@ -300,6 +318,7 @@ void GotoPrevWorkSpace(VirtualScreen *vs)
 	GotoWorkSpace(vs, ws1);
 }
 
+
 void GotoNextWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -314,6 +333,7 @@ void GotoNextWorkSpace(VirtualScreen *vs)
 	ws = (ws->next != NULL) ? ws->next : Scr->workSpaceMgr.workSpaceList;
 	GotoWorkSpace(vs, ws);
 }
+
 
 void GotoRightWorkSpace(VirtualScreen *vs)
 {
@@ -342,6 +362,7 @@ void GotoRightWorkSpace(VirtualScreen *vs)
 	GotoWorkSpaceByNumber(vs, number);
 }
 
+
 void GotoLeftWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -364,6 +385,7 @@ void GotoLeftWorkSpace(VirtualScreen *vs)
 	}
 	GotoWorkSpaceByNumber(vs, number);
 }
+
 
 void GotoUpWorkSpace(VirtualScreen *vs)
 {
@@ -393,6 +415,7 @@ void GotoUpWorkSpace(VirtualScreen *vs)
 	GotoWorkSpaceByNumber(vs, number);
 }
 
+
 void GotoDownWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -416,11 +439,18 @@ void GotoDownWorkSpace(VirtualScreen *vs)
 	GotoWorkSpaceByNumber(vs, number);
 }
 
+
+
 /*
  * Show the background (by hiding all windows) or undo it.
+ * f.showbackground, also can be called via EWMH bits.
+ *
  * newstate is the desired showing state.
  * Pass -1 to toggle, 1 to show the background,
  * or 0 to re-show the windows.
+ *
+ * XXX Doesn't really belong here; more of a functions.c-ish thing
+ * probably.  But left here for the moment.
  */
 void ShowBackground(VirtualScreen *vs, int newstate)
 {
@@ -459,6 +489,10 @@ void ShowBackground(VirtualScreen *vs, int newstate)
 #endif /* EWMH */
 }
 
+
+/*
+ * Belongs with the above GotoWorkSpace* funcs
+ */
 void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 {
 	TwmWindow            *twmWin;
@@ -716,6 +750,11 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	MaybeAnimate = true;
 }
 
+
+/*
+ * Get the name of the currently active WS.  Used in Execute() for
+ * sub'ing in $currentworkspace in executing commands.
+ */
 char *GetCurrentWorkSpaceName(VirtualScreen *vs)
 {
 	if(! Scr->workSpaceManagerActive) {
@@ -727,26 +766,43 @@ char *GetCurrentWorkSpaceName(VirtualScreen *vs)
 	return vs->wsw->currentwspc->name;
 }
 
-void AddWorkSpace(char *name, char *background, char *foreground,
-                  char *backback, char *backfore, char *backpix)
+
+/*
+ * Create a workspace.  This is what gets called when parsing
+ * WorkSpaces {} config file entries.
+ *
+ * WorkSpaces {
+ *  "One" { name background foreground backback backfore "backpix.jpg" }
+ *  #         |      |           |        |       |            |
+ *  #     WS name    |      Button Text   |   Map/Root FG      |
+ *  #            Button BG             Map BG            Map/Root BG img
+ * }
+ */
+void
+AddWorkSpace(const char *name, const char *background, const char *foreground,
+             const char *backback, const char *backfore, const char *backpix)
 {
 	WorkSpace *ws;
-	int       wsnum;
-	Image     *image;
 
-	wsnum = Scr->workSpaceMgr.count;
-	if(wsnum == MAXWORKSPACE) {
+	/* XXX Shouldn't just silently return if we're already at max...  */
+	if(Scr->workSpaceMgr.count == MAXWORKSPACE) {
 		return;
 	}
 
-	fullOccupation |= (1 << wsnum);
-	ws = malloc(sizeof(WorkSpace));
-	ws->FirstWindowRegion = NULL;
+	/* Init.  Label can change over time, but starts the same as name. */
+	ws = calloc(1, sizeof(WorkSpace));
 	ws->name  = strdup(name);
 	ws->label = strdup(name);
-	ws->clientlist = NULL;
-	ws->save_focus = NULL;
+	ws->number = Scr->workSpaceMgr.count++;
 
+	/* We're a new entry on the "everything" list */
+	fullOccupation |= (1 << ws->number);
+
+
+	/*
+	 * FB/BG colors for the button state may be specified, or fallback to
+	 * the icon manager's if not.
+	 */
 	if(background == NULL) {
 		ws->cp.back = Scr->IconManagerC.back;
 	}
@@ -761,6 +817,7 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		GetColor(Scr->Monochrome, &(ws->cp.fore), foreground);
 	}
 
+	/* Shadows for 3d buttons derived from that */
 #ifdef COLOR_BLIND_USER
 	ws->cp.shadc = Scr->White;
 	ws->cp.shadd = Scr->Black;
@@ -770,6 +827,10 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 	}
 #endif
 
+
+	/*
+	 * Map-state fb/bg color, as well as root win background.
+	 */
 	if(backback == NULL) {
 		GetColor(Scr->Monochrome, &(ws->backcp.back), "Black");
 	}
@@ -785,17 +846,16 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
 		useBackgroundInfo = true;
 	}
-	if((image = GetImage(backpix, ws->backcp)) != NULL) {
-		ws->image = image;
+
+
+	/* Maybe there's an image to stick on the root as well */
+	ws->image = GetImage(backpix, ws->backcp);
+	if(ws->image != NULL) {
 		useBackgroundInfo = true;
 	}
-	else {
-		ws->image = NULL;
-	}
-	ws->next   = NULL;
-	ws->number = wsnum;
-	Scr->workSpaceMgr.count++;
 
+
+	/* Put ourselves on the end of the workspace list */
 	if(Scr->workSpaceMgr.workSpaceList == NULL) {
 		Scr->workSpaceMgr.workSpaceList = ws;
 	}
@@ -806,10 +866,17 @@ void AddWorkSpace(char *name, char *background, char *foreground,
 		}
 		wstmp->next = ws;
 	}
+
+	/* There's at least one defined WS now */
 	Scr->workSpaceManagerActive = true;
+
+	return;
 }
 
 
+/*
+ * Find workspace by name
+ */
 WorkSpace *
 GetWorkspace(char *wname)
 {
@@ -838,41 +905,12 @@ GetWorkspace(char *wname)
 	return NULL;
 }
 
-void AllocateOtherIconManagers(void)
-{
-	IconMgr   *p = NULL, *ip, *oldp, *oldv;
-	WorkSpace *ws;
 
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-
-	oldp = Scr->iconmgr;
-	for(ws = Scr->workSpaceMgr.workSpaceList->next; ws != NULL; ws = ws->next) {
-		ws->iconmgr  = malloc(sizeof(IconMgr));
-		*ws->iconmgr = *oldp;
-		oldv = ws->iconmgr;
-		oldp->nextv = ws->iconmgr;
-		oldv->nextv = NULL;
-
-		for(ip = oldp->next; ip != NULL; ip = ip->next) {
-			p  = malloc(sizeof(IconMgr));
-			*p = *ip;
-			ip->nextv  = p;
-			p->next    = NULL;
-			p->prev    = oldv;
-			p->nextv   = NULL;
-			oldv->next = p;
-			oldv = p;
-		}
-		for(ip = ws->iconmgr; ip != NULL; ip = ip->next) {
-			ip->lasti = p;
-		}
-		oldp = ws->iconmgr;
-	}
-	Scr->workSpaceMgr.workSpaceList->iconmgr = Scr->iconmgr;
-}
-
+/*
+ * Move a window's frame and icon to a new VS.  This mostly happens as a
+ * backend bit of the DisplayWin() process, but it does get called
+ * directly for the Occupy window.  XXX Should it?
+ */
 void
 ReparentFrameAndIcon(TwmWindow *tmp_win)
 {
@@ -904,13 +942,18 @@ ReparentFrameAndIcon(TwmWindow *tmp_win)
 void
 Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 {
+	/* It's not here?  Nothing to do. */
 	if(vs && tmp_win->vs && tmp_win->vs != vs) {
 		return;
 	}
+
+	/* Unmap (or near-equivalent) all its bits */
 	if(tmp_win->UnmapByMovingFarAway) {
+		/* UnmapByMovingFarAway?  Move it off-screen */
 		XMoveWindow(dpy, tmp_win->frame, Scr->rootw + 1, Scr->rooth + 1);
 	}
 	else if(tmp_win->mapped) {
+		/* It's mapped; unmap it */
 		XWindowAttributes winattrs;
 		unsigned long     eventMask;
 
@@ -926,6 +969,7 @@ Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 		}
 	}
 	else if(tmp_win->icon_on && tmp_win->icon && tmp_win->icon->w) {
+		/* It's not mapped, but the icon's up; hide it away */
 		XUnmapWindow(dpy, tmp_win->icon->w);
 		IconDown(tmp_win);
 	}
@@ -961,9 +1005,14 @@ Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 	}
 #endif
 
+	/* Currently displayed nowhere */
 	tmp_win->vs = NULL;
 }
 
+
+/*
+ * Display a window in a given virtual screen.
+ */
 void
 DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win)
 {
@@ -985,11 +1034,15 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 		return;
 	}
 
+	/* This is where we're moving it */
 	tmp_win->vs = vs;
 
+
+	/* If it's unmapped, RFAI() moves the necessary bits here */
 	if(!tmp_win->mapped) {
 		ReparentFrameAndIcon(tmp_win);
 
+		/* If it's got an icon that should be up, make it up here */
 		if(tmp_win->isicon) {
 			if(tmp_win->icon_on) {
 				if(tmp_win->icon && tmp_win->icon->w) {
@@ -1000,10 +1053,19 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 			}
 		}
 
+		/* All there is to do with unmapped wins */
 		return;
 	}
+
+
+	/* If we make it this far, the window is mapped */
+
 	if(tmp_win->UnmapByMovingFarAway) {
-		if(vs) {        /* XXX I don't believe the handling of UnmapByMovingFarAway is quite correct */
+		/*
+		 * XXX I don't believe the handling of UnmapByMovingFarAway is
+		 * quite correct.
+		 */
+		if(vs) {
 			XReparentWindow(dpy, tmp_win->frame, vs->window,
 			                tmp_win->frame_x, tmp_win->frame_y);
 		}
@@ -1012,6 +1074,7 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 		}
 	}
 	else {
+		/* Map and move it here */
 		if(!tmp_win->squeezed) {
 			XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 			eventMask = winattrs.your_event_mask;
@@ -1028,6 +1091,11 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 }
 
 
+/*
+ * Put together the actual window for the workspace manager.  Called as
+ * part of CreateWorkSpaceManager() during startup, once per workspace
+ * (since there's a separate window in each).
+ */
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 {
 	int           mask;
@@ -1259,6 +1327,10 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	PaintWorkSpaceManager(vs);
 }
 
+
+/*
+ * Draw a workspace manager window on expose
+ */
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpace *ws;
@@ -1294,6 +1366,11 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 	}
 }
 
+
+/*
+ * Draw up the pieces of a WSM window.  This is subtly different from the
+ * expose handler because XXX ???
+ */
 void PaintWorkSpaceManager(VirtualScreen *vs)
 {
 	WorkSpace *ws;
@@ -1310,6 +1387,10 @@ void PaintWorkSpaceManager(VirtualScreen *vs)
 	}
 }
 
+
+/*
+ * Border around the WSM
+ */
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 {
 	int width, height;
@@ -1321,6 +1402,9 @@ static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 }
 
 
+/*
+ * Moving the WSM between button and map state
+ */
 void WMapToggleState(VirtualScreen *vs)
 {
 	if(vs->wsw->state == WMS_buttons) {
@@ -1360,6 +1444,7 @@ void WMapSetButtonsState(VirtualScreen *vs)
 	vs->wsw->state = WMS_buttons;
 }
 
+
 /*
  * Verify if a window may be added to the workspace map.
  * This is not allowed for
@@ -1368,25 +1453,30 @@ void WMapSetButtonsState(VirtualScreen *vs)
  * - workspace manager windows
  * - or, optionally, windows with full occupation.
  */
-int
+bool
 WMapWindowMayBeAdded(TwmWindow *win)
 {
 	if(win->isiconmgr) {
-		return 0;
+		return false;
 	}
 	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
-		return 0;
+		return false;
 	}
 	if(win->iswspmgr) {
-		return 0;
+		return false;
 	}
 	if(Scr->workSpaceMgr.noshowoccupyall &&
 	                win->occupation == fullOccupation) {
-		return 0;
+		return false;
 	}
-	return 1;
+	return true;
 }
 
+
+/*
+ * Add a window into any appropriate WSM's [data structure].  Called
+ * during AddWindow().
+ */
 void WMapAddWindow(TwmWindow *win)
 {
 	WorkSpace     *ws;
@@ -1402,6 +1492,11 @@ void WMapAddWindow(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Remove a window from any WSM's [data structures].  Called during
+ * window destruction process.
+ */
 void WMapDestroyWindow(TwmWindow *win)
 {
 	WorkSpace *ws;
@@ -1421,6 +1516,13 @@ void WMapDestroyWindow(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Map up a window's subwindow in the map-mode WSM.  Happens when a
+ * window is de-iconified or otherwise mapped.  Specifically, when we get
+ * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
+ * some subtle distinctions between the two...
+ */
 void WMapMapWindow(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1440,6 +1542,10 @@ void WMapMapWindow(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Position a window in the WSM.  Happens as a result of moving things.
+ */
 void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 {
 	VirtualScreen *vs;
@@ -1502,6 +1608,11 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 	}
 }
 
+
+/*
+ * Hide away a window in the WSM map.  Happens when win is iconified;
+ * different from destruction.
+ */
 void WMapIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1524,6 +1635,21 @@ void WMapIconify(TwmWindow *win)
 	}
 }
 
+
+/*
+ * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
+ * and different from WMapMapWindow() in complicated ways.  WMMW() gets
+ * called at the end of HandleMapRequest().  A little earlier in HMR(),
+ * DeIconify() is (sometimes) called, which calls this function.  So,
+ * anything that de-iconifies invokes this, but only when it happens via
+ * a map event does WMMW() get called as well.
+ *
+ * XXX Does it make sense that they're separate?  They seem do be doing a
+ * lot of the same stuff.  In fact, the only difference is apparently
+ * that this auto-raises on !(NoRaiseDeIcon)?  This requires some further
+ * investigation...  at the least, they should probably be collapsed
+ * somehow with a conditional for that trivial difference.
+ */
 void WMapDeIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1552,6 +1678,13 @@ void WMapDeIconify(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Frontends for changing the stacking of windows in the WSM.
+ *
+ * XXX If these implementations really _should_ be identical, they should
+ * be collapsed...
+ */
 void WMapRaiseLower(TwmWindow *win)
 {
 	WorkSpace *ws;
@@ -1585,6 +1718,14 @@ void WMapRaise(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Backend for redoing the stacking of a window in the WSM.
+ *
+ * XXX Since this tends to get called iteratively, there's probably
+ * something better we can do than doing all this relatively expensive
+ * stuff over and over...
+ */
 void WMapRestack(WorkSpace *ws)
 {
 	VirtualScreen *vs;
@@ -1636,6 +1777,10 @@ void WMapRestack(WorkSpace *ws)
 	return;
 }
 
+
+/*
+ * Update stuff in the WSM when win's icon name changes
+ */
 void WMapUpdateIconName(TwmWindow *win)
 {
 	VirtualScreen *vs;
@@ -1654,6 +1799,13 @@ void WMapUpdateIconName(TwmWindow *win)
 	}
 }
 
+
+/*
+ * Key press/release events in the WSM.  A major use (and only for
+ * release) is the Ctrl-key switching between map and button state.  The
+ * other use is on-the-fly renaming of workspaces by typing in the
+ * button-state WSM.
+ */
 void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
 {
 	KeySym      keysym;
@@ -1695,6 +1847,11 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 		return;
 	}
 
+
+	/*
+	 * If we're typing in a button-state WSM, and the mouse is on one of
+	 * the buttons, that means we're changing the name, so do that dance.
+	 */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(vs->wsw->bswl [ws->number]->w == event->xkey.subwindow) {
 			break;
@@ -1734,6 +1891,12 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 	}
 }
 
+
+/*
+ * Mouse clicking in WSM.  In the simple case, that's just switching
+ * workspaces.  In the more complex, it's changing window occupation in
+ * various different ways.
+ */
 void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpaceWindow     *mw;
@@ -2114,6 +2277,7 @@ move:
 	XDestroyWindow(dpy, w);
 }
 
+
 /*
  * This is really more util.c fodder, but leaving it here for now because
  * it's only used once in the below func.  If we start finding external
@@ -2132,6 +2296,11 @@ InvertColorPair(ColorPair *cp)
 	cp->shadd = save;
 }
 
+
+/*
+ * Draw a window name into the window's representation in the map-state
+ * WSM.
+ */
 void WMapRedrawName(VirtualScreen *vs, WinList wl)
 {
 	int       w = wl->width;
@@ -2148,6 +2317,16 @@ void WMapRedrawName(VirtualScreen *vs, WinList wl)
 	WMapRedrawWindow(wl->w, w, h, cp, label);
 }
 
+
+/*
+ * Draw up a window's representation in the map-state WSM, with the
+ * window name.
+ *
+ * The drawing of the window name could probably be done a bit better.
+ * The font size is based on a tiny fraction of the window's height, so
+ * is probably usually too small to be useful, and often appears just as
+ * some odd colored pixels at the top of the window.
+ */
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, char *label)
 {
@@ -2205,6 +2384,11 @@ static void WMapRedrawWindow(Window window, int width, int height,
 	}
 }
 
+
+/*
+ * Create WSM representation of a given in a given WS.  Called when
+ * windows get added to a workspace.
+ */
 void
 WMapAddToList(TwmWindow *win, WorkSpace *ws)
 {
@@ -2274,6 +2458,10 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 	}
 }
 
+
+/*
+ * Remove window's WSM representation
+ */
 void
 WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 {
@@ -2299,6 +2487,11 @@ WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 	}
 }
 
+
+/*
+ * Size and layout a WSM.  Mostly an internal bit in the process of
+ * setting it up.
+ */
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 {
 	int           bwidth, bheight;
@@ -2364,6 +2557,9 @@ static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 }
 
 
+/*
+ * MapWindowCurrentWorkSpace {} parsing
+ */
 void WMapCreateCurrentBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap)
@@ -2400,6 +2596,10 @@ void WMapCreateCurrentBackGround(char *border,
 	ws->curImage = image;
 }
 
+
+/*
+ * MapWindowDefaultWorkSpace {} parsing
+ */
 void WMapCreateDefaultBackGround(char *border,
                                  char *background, char *foreground,
                                  char *pixmap)
