@@ -1023,9 +1023,6 @@ DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win)
 
 static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 {
-	XWindowAttributes   winattrs;
-	unsigned long       eventMask;
-
 	/*
 	 * A window cannot be shown in multiple virtual screens, even if
 	 * it occupies both corresponding workspaces.
@@ -1076,6 +1073,8 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 	else {
 		/* Map and move it here */
 		if(!tmp_win->squeezed) {
+			XWindowAttributes   winattrs;
+			unsigned long       eventMask;
 			XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 			eventMask = winattrs.your_event_mask;
 			XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
