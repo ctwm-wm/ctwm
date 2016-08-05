@@ -59,8 +59,6 @@
 //#include "workmgr.h"
 
 
-static void DisplayWinUnchecked(VirtualScreen *vs,
-                                TwmWindow *tmp_win);
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
@@ -907,35 +905,6 @@ GetWorkspace(char *wname)
 
 
 /*
- * Move a window's frame and icon to a new VS.  This mostly happens as a
- * backend bit of the DisplayWin() process, but it does get called
- * directly for the Occupy window.  XXX Should it?
- */
-void
-ReparentFrameAndIcon(TwmWindow *tmp_win)
-{
-	VirtualScreen *vs = tmp_win->vs; /* which virtual screen we want it in */
-
-	/* parent_vs is the current real parent of the window */
-	if(vs != tmp_win->parent_vs) {
-		struct Icon *icon = tmp_win->icon;
-
-		tmp_win->parent_vs = vs;
-
-		if(icon && icon->w) {
-			ReparentWindowAndIcon(dpy, tmp_win, vs->window,
-			                      tmp_win->frame_x, tmp_win->frame_y,
-			                      icon->w_x, icon->w_y);
-		}
-		else {
-			ReparentWindow(dpy, tmp_win,  WinWin, vs->window,
-			               tmp_win->frame_x, tmp_win->frame_y);
-		}
-	}
-}
-
-
-/*
  * Get this window outta here.  Note that despite naming, this is
  * unrelated to f.vanish.
  */
@@ -1007,87 +976,6 @@ Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 
 	/* Currently displayed nowhere */
 	tmp_win->vs = NULL;
-}
-
-
-/*
- * Display a window in a given virtual screen.
- */
-void
-DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win)
-{
-	OtpCheckConsistency();
-	DisplayWinUnchecked(vs, tmp_win);
-	OtpCheckConsistency();
-}
-
-static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
-{
-	/*
-	 * A window cannot be shown in multiple virtual screens, even if
-	 * it occupies both corresponding workspaces.
-	 */
-	if(vs && tmp_win->vs) {
-		return;
-	}
-
-	/* This is where we're moving it */
-	tmp_win->vs = vs;
-
-
-	/* If it's unmapped, RFAI() moves the necessary bits here */
-	if(!tmp_win->mapped) {
-		ReparentFrameAndIcon(tmp_win);
-
-		/* If it's got an icon that should be up, make it up here */
-		if(tmp_win->isicon) {
-			if(tmp_win->icon_on) {
-				if(tmp_win->icon && tmp_win->icon->w) {
-
-					IconUp(tmp_win);
-					XMapWindow(dpy, tmp_win->icon->w);
-				}
-			}
-		}
-
-		/* All there is to do with unmapped wins */
-		return;
-	}
-
-
-	/* If we make it this far, the window is mapped */
-
-	if(tmp_win->UnmapByMovingFarAway) {
-		/*
-		 * XXX I don't believe the handling of UnmapByMovingFarAway is
-		 * quite correct.
-		 */
-		if(vs) {
-			XReparentWindow(dpy, tmp_win->frame, vs->window,
-			                tmp_win->frame_x, tmp_win->frame_y);
-		}
-		else {
-			XMoveWindow(dpy, tmp_win->frame, tmp_win->frame_x, tmp_win->frame_y);
-		}
-	}
-	else {
-		/* Map and move it here */
-		if(!tmp_win->squeezed) {
-			XWindowAttributes   winattrs;
-			unsigned long       eventMask;
-
-			XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-			eventMask = winattrs.your_event_mask;
-			XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
-			XMapWindow(dpy, tmp_win->w);
-			XSelectInput(dpy, tmp_win->w, eventMask);
-		}
-
-		ReparentFrameAndIcon(tmp_win);
-
-		XMapWindow(dpy, tmp_win->frame);
-		SetMapStateProp(tmp_win, NormalState);
-	}
 }
 
 
