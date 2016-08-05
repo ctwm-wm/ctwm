@@ -1075,6 +1075,7 @@ static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 		if(!tmp_win->squeezed) {
 			XWindowAttributes   winattrs;
 			unsigned long       eventMask;
+
 			XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
 			eventMask = winattrs.your_event_mask;
 			XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
