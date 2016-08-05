@@ -44,5 +44,6 @@ bool CtwmSetVScreenMap(Display *display, Window rootw,
 
 void DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win);
 void ReparentFrameAndIcon(TwmWindow *tmp_win);
+void Vanish(VirtualScreen *vs, TwmWindow *tmp_win);
 
 #endif /* _CTWM_VSCREEN_H */
