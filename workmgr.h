@@ -139,8 +139,6 @@ void AddWorkSpace(const char *name,
                   const char *background, const char *foreground,
                   const char *backback,   const char *backfore,
                   const char *backpix);
-void Vanish(VirtualScreen *vs, TwmWindow *tmp_win);
-void DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win);
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
 void PaintWorkSpaceManager(VirtualScreen *vs);
 void WMapToggleState(VirtualScreen *vs);
@@ -172,7 +170,6 @@ void WMapCreateDefaultBackGround(char *border,
                                  char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
 WorkSpace *GetWorkspace(char *wname);
-void ReparentFrameAndIcon(TwmWindow *tmp_win);
 
 void ShowBackground(VirtualScreen *vs, int state);
 
