@@ -154,8 +154,7 @@ ConfigureWorkSpaceManager(void)
 void
 CreateWorkSpaceManager(void)
 {
-	VirtualScreen    *vs;
-	WorkSpace        *ws, *fws;
+	VirtualScreen *vs;
 
 	if(! Scr->workSpaceManagerActive) {
 		return;
@@ -175,6 +174,7 @@ CreateWorkSpaceManager(void)
 	{
 		char vsmapbuf [1024], *vsmap;
 		int vsmaplen;
+		WorkSpace     *ws, *fws;
 
 		vsmaplen = sizeof(vsmapbuf);
 		if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen)) {
