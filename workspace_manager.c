@@ -173,11 +173,10 @@ CreateWorkSpaceManager(void)
 
 	{
 		WorkSpace *ws, *fws;
-		char vsmapbuf[1024], *vsmap;
-		int  vsmaplen;
+		char *vsmapbuf, *vsmap;
 
-		vsmaplen = sizeof(vsmapbuf);
-		if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen)) {
+		vsmapbuf = CtwmGetVScreenMap(dpy, Scr->Root);
+		if(vsmapbuf != NULL) {
 			vsmap = strtok(vsmapbuf, ",");
 		}
 		else {
@@ -209,6 +208,8 @@ CreateWorkSpaceManager(void)
 			}
 			CreateWorkSpaceManagerWindow(vs);
 		}
+
+		free(vsmapbuf);
 	}
 
 
