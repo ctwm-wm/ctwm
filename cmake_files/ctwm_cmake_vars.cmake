@@ -54,6 +54,7 @@ set(CTWMSRC
 	windowbox.c
 	workmgr.c
 	workspace_config.c
+	workspace_utils.c
 
 	ext/repl_str.c
 )

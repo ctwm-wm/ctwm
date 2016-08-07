@@ -92,6 +92,7 @@
 #include "functions.h"
 #include "screen.h"
 #include "workmgr.h"
+#include "workspace_utils.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif

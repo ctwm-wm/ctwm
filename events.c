@@ -96,6 +96,7 @@
 #include "image.h"
 #include "functions.h"
 #include "workmgr.h"
+#include "workspace_utils.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif

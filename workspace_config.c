@@ -12,8 +12,8 @@
 #include "list.h"
 #include "screen.h"
 #include "util.h"
-#include "workmgr.h"
 #include "workspace_config.h"
+#include "workspace_utils.h"
 
 
 
