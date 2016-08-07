@@ -154,8 +154,6 @@ ConfigureWorkSpaceManager(void)
 void
 CreateWorkSpaceManager(void)
 {
-	VirtualScreen *vs;
-
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
@@ -190,7 +188,7 @@ CreateWorkSpaceManager(void)
 		 * (depending on where they were on the actual screen.
 		 */
 		ws = Scr->workSpaceMgr.workSpaceList;
-		for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 			WorkSpaceWindow *wsw = vs->wsw;
 			if(vsmap) {
 				fws = GetWorkspace(vsmap);
@@ -213,7 +211,7 @@ CreateWorkSpaceManager(void)
 	}
 
 
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+	for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		WorkSpaceWindow *wsw = vs->wsw;
 		WorkSpace *ws2 = wsw->currentwspc;
 		MapSubwindow *msw = wsw->mswl [ws2->number];
