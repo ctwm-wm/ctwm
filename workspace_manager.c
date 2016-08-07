@@ -1590,50 +1590,73 @@ WMapRaise(TwmWindow *win)
 void
 WMapRestack(WorkSpace *ws)
 {
-	VirtualScreen *vs;
-	TwmWindow   *win;
 	WinList     wl;
-	Window      root;
-	Window      parent;
+	Window      root, parent; // Dummy
 	Window      *children, *smallws;
-	unsigned int number;
-	int         i, j;
+	unsigned int nchildren;
 
-	number = 0;
-	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &number);
-	smallws = calloc(number, sizeof(Window));
+	/* Get a whole list of the windows on the screen */
+	nchildren = 0;
+	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &nchildren);
 
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		j = 0;
-		for(i = number - 1; i >= 0; i--) {
-			if(!(win = GetTwmWindow(children [i]))) {
+	/*
+	 * We're presumably dealing with a [often very small] subset of them,
+	 * but just allocate space for the whole list; easier than trying to
+	 * shrink down, and really, how big can it possibly be?
+	 */
+	smallws = calloc(nchildren, sizeof(Window));
+
+	/* Work it up per vscreen */
+	for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		int j = 0;
+		const MapSubwindow *msw = vs->wsw->mswl[ws->number];
+
+		/* Loop backward (from top to bottom of stack) */
+		for(int i = nchildren - 1; i >= 0; i--) {
+			TwmWindow *win = GetTwmWindow(children[i]);
+
+			/*
+			 * Only care about certain windows.  If it's not a window we
+			 * know about, or not a frame (e.g., an icon), or doesn't
+			 * occupy this workspace, skip it.
+			 */
+			if(win == NULL || win->frame != children[i] || !OCCUPY(win, ws)) {
 				continue;
 			}
-			if(win->frame != children [i]) {
-				continue;        /* skip icons */
-			}
-			if(! OCCUPY(win, ws)) {
-				continue;
-			}
+
+			/* Debug */
 			if(tracefile) {
-				fprintf(tracefile, "WMapRestack : w = %lx, win = %p\n", children [i],
-				        (void *)win);
+				fprintf(tracefile, "WMapRestack : w = %lx, win = %p\n",
+				        children[i], (void *)win);
 				fflush(tracefile);
 			}
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+
+			/* Find this window in the list for the map of this WS */
+			for(wl = msw->wl; wl != NULL; wl = wl->next) {
+				/* Debug */
 				if(tracefile) {
-					fprintf(tracefile, "WMapRestack : wl = %p, twm_win = %p\n", (void *)wl,
-					        (void *)wl->twm_win);
+					fprintf(tracefile, "WMapRestack : wl = %p, twm_win = %p\n",
+					        (void *)wl, (void *)wl->twm_win);
 					fflush(tracefile);
 				}
+
 				if(win == wl->twm_win) {
-					smallws [j++] = wl->w;
+					/* There you are.  Add into our list to restack. */
+					smallws[j++] = wl->w;
 					break;
 				}
 			}
 		}
+
+		/*
+		 * Restack the windows in the map.  Note that the order is
+		 * reversed from earlier; XQueryTree() returns bottom->top,
+		 * XRestackWindows() is passed top->bottom.
+		 */
 		XRestackWindows(dpy, smallws, j);
 	}
+
+	/* Cleanup */
 	XFree(children);
 	free(smallws);
 	return;
