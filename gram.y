@@ -84,6 +84,7 @@
 #include "parse_be.h"
 #include "parse_yacc.h"
 #include "cursor.h"
+#include "workspace_config.h"
 #ifdef SOUNDS
 #	include "sound.h"
 #endif

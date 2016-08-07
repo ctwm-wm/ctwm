@@ -135,10 +135,6 @@ void GotoLeftWorkSpace(VirtualScreen *vs);
 void GotoUpWorkSpace(VirtualScreen *vs);
 void GotoDownWorkSpace(VirtualScreen *vs);
 void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws);
-void AddWorkSpace(const char *name,
-                  const char *background, const char *foreground,
-                  const char *backback,   const char *backfore,
-                  const char *backpix);
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
 void PaintWorkSpaceManager(VirtualScreen *vs);
 void WMapToggleState(VirtualScreen *vs);
@@ -162,12 +158,6 @@ void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event);
 void WMapRedrawName(VirtualScreen *vs, WinList   wl);
 void WMapAddToList(TwmWindow *win, WorkSpace *ws);
 void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
-void WMapCreateCurrentBackGround(char *border,
-                                 char *background, char *foreground,
-                                 char *pixmap);
-void WMapCreateDefaultBackGround(char *border,
-                                 char *background, char *foreground,
-                                 char *pixmap);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
 WorkSpace *GetWorkspace(char *wname);
 
