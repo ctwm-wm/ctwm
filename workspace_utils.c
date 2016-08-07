@@ -293,20 +293,31 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 }
 
 
+
 /*
  * Various frontends to GotoWorkSpace()
  */
+
+/*
+ * Simplify redundant checks.  If no multiple workspaces, or no vs given
+ * to the func, there's nothing to do.
+ */
+#define GWS_CHECK do { \
+		if(! Scr->workSpaceManagerActive) {   \
+			return;                           \
+		}                                     \
+		if(!vs) {                             \
+			return;                           \
+		}                                     \
+	} while(0)
+
 void
 GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 {
 	WorkSpace *ws;
 
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+	GWS_CHECK;
+
 	ws = GetWorkspace(wname);
 	if(ws == NULL) {
 		return;
@@ -319,12 +330,9 @@ void
 GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 {
 	WorkSpace *ws;
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+
+	GWS_CHECK;
+
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(ws->number == workspacenum) {
 			break;
@@ -342,12 +350,8 @@ GotoPrevWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws1, *ws2;
 
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+	GWS_CHECK;
+
 	ws1 = Scr->workSpaceMgr.workSpaceList;
 	if(ws1 == NULL) {
 		return;
@@ -366,12 +370,8 @@ void
 GotoNextWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+
+	GWS_CHECK;
 
 	ws = vs->wsw->currentwspc;
 	ws = (ws->next != NULL) ? ws->next : Scr->workSpaceMgr.workSpaceList;
@@ -385,12 +385,7 @@ GotoRightWorkSpace(VirtualScreen *vs)
 	WorkSpace *ws;
 	int number, columns, count;
 
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+	GWS_CHECK;
 
 	ws      = vs->wsw->currentwspc;
 	number  = ws->number;
@@ -414,12 +409,7 @@ GotoLeftWorkSpace(VirtualScreen *vs)
 	WorkSpace *ws;
 	int number, columns, count;
 
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+	GWS_CHECK;
 
 	ws      = vs->wsw->currentwspc;
 	number  = ws->number;
@@ -439,12 +429,7 @@ GotoUpWorkSpace(VirtualScreen *vs)
 	WorkSpace *ws;
 	int number, lines, columns, count;
 
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+	GWS_CHECK;
 
 	ws      = vs->wsw->currentwspc;
 	number  = ws->number;
@@ -469,12 +454,7 @@ GotoDownWorkSpace(VirtualScreen *vs)
 	WorkSpace *ws;
 	int number, columns, count;
 
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
+	GWS_CHECK;
 
 	ws      = vs->wsw->currentwspc;
 	number  = ws->number;
@@ -486,6 +466,8 @@ GotoDownWorkSpace(VirtualScreen *vs)
 	}
 	GotoWorkSpaceByNumber(vs, number);
 }
+
+#undef GWS_CHECK
 
 
 
