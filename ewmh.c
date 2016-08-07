@@ -68,6 +68,7 @@
 #include "resize.h"
 #include "image.h"
 #include "functions.h"
+#include "workmgr.h"
 
 /* #define DEBUG_EWMH */
 

@@ -28,6 +28,7 @@
 #include "version.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "workmgr.h"
 
 #include "ext/repl_str.h"
 

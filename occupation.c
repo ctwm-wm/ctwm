@@ -25,6 +25,7 @@
 #include "screen.h"
 #include "otp.h"
 #include "util.h"
+#include "workmgr.h"
 
 // Gotten via screen.h
 //#include "occupation.h"

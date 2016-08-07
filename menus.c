@@ -91,6 +91,7 @@
 #include "image.h"
 #include "functions.h"
 #include "screen.h"
+#include "workmgr.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
