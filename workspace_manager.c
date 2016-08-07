@@ -1390,16 +1390,13 @@ void
 WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 {
 	VirtualScreen *vs;
-	WorkSpace     *ws;
-	WinList       wl;
 
-	if(win->isiconmgr) {
-		return;
-	}
-	if(!win->vs) {
+	/* If it's an icon manager, or not on a vscreen, nothing to do */
+	if(win->isiconmgr || !win->vs) {
 		return;
 	}
 
+	/* If it's a WSM, we may be reseeting size/position, but that's it */
 	if(win->iswspmgr) {
 		if(w == -1) {
 			return;
@@ -1407,6 +1404,8 @@ WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 		ResizeWorkSpaceManager(win->vs, win);
 		return;
 	}
+
+	/* If it's an occupy window, ditto */
 	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
 		if(w == -1) {
 			return;
@@ -1414,16 +1413,31 @@ WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 		ResizeOccupyWindow(win);
 		return;
 	}
+
+
+	/* For anything else, we're potentially showing something */
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		WorkSpaceWindow *wsw = vs->wsw;
+		WorkSpace *ws;
+
+		/* Scale factors for windows in the map */
 		float wf = (float)(wsw->wwidth  - 2) / (float) vs->w;
 		float hf = (float)(wsw->wheight - 2) / (float) vs->h;
 
+		/*
+		 * Loop around windows in each WS to find all the places the
+		 * requested window should show up.
+		 */
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+			MapSubwindow *msw = wsw->mswl[ws->number];
+
+			for(WinList wl = msw->wl; wl != NULL; wl = wl->next) {
 				if(win == wl->twm_win) {
+					/* New positions */
 					wl->x = (int)(x * wf);
 					wl->y = (int)(y * hf);
+
+					/* Rescale if necessary and move */
 					if(w == -1) {
 						XMoveWindow(dpy, wl->w, wl->x, wl->y);
 					}
@@ -1434,13 +1448,14 @@ WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 							wl->width  -= 2;
 							wl->height -= 2;
 						}
-						if(wl->width  < 1) {
-							wl->width  = 1;
+						if(wl->width < 1) {
+							wl->width = 1;
 						}
 						if(wl->height < 1) {
 							wl->height = 1;
 						}
-						XMoveResizeWindow(dpy, wl->w, wl->x, wl->y, wl->width, wl->height);
+						XMoveResizeWindow(dpy, wl->w, wl->x, wl->y,
+						                  wl->width, wl->height);
 					}
 					break;
 				}
