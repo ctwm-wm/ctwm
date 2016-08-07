@@ -54,12 +54,14 @@ extern bool useBackgroundInfo;
 
 
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
-static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
+static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
+
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, const char *label);
 
 static void InvertColorPair(ColorPair *cp);
+
 
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
