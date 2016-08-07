@@ -28,6 +28,10 @@
 #endif
 
 
+/*
+ * XXX I'm not sure this should be here; maybe it's more of a per-screen
+ * thing, and so should be in the Screen struct?
+ */
 bool useBackgroundInfo = false;
 
 

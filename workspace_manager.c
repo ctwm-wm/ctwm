@@ -49,7 +49,7 @@
 #include "gram.tab.h"
 
 
-// Temp
+// Temp; x-ref desc in workspace_utils
 extern bool useBackgroundInfo;
 
 
