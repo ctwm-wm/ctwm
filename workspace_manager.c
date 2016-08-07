@@ -861,68 +861,99 @@ void
 WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpace *ws;
-	int       len, i, lname;
-	char      key [16];
-	unsigned char k;
-	char      name [128];
-	KeySym    keysym;
 
-	keysym  = XLookupKeysym((XKeyEvent *) event, 0);
-	if(! keysym) {
-		return;
-	}
-	if(keysym == XK_Control_L || keysym == XK_Control_R) {
-		/* DontToggleWorkSpaceManagerState added 20040607 by dl*/
-		if(!Scr->DontToggleWorkspaceManagerState) {
-			WMapToggleState(vs);
+	/* Check if we're using Control to toggle the state */
+	{
+		KeySym keysym  = XLookupKeysym((XKeyEvent *) event, 0);
+		if(! keysym) {
+			return;
 		}
-		return;
+		if(keysym == XK_Control_L || keysym == XK_Control_R) {
+			/* DontToggleWorkSpaceManagerState added 20040607 by dl*/
+			if(!Scr->DontToggleWorkspaceManagerState) {
+				WMapToggleState(vs);
+			}
+			return;
+		}
 	}
+
+	/* Otherwise, key presses do nothing in map state */
 	if(vs->wsw->state == WMS_map) {
 		return;
 	}
-
 
 	/*
 	 * If we're typing in a button-state WSM, and the mouse is on one of
 	 * the buttons, that means we're changing the name, so do that dance.
 	 */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(vs->wsw->bswl [ws->number]->w == event->xkey.subwindow) {
+		if(vs->wsw->bswl[ws->number]->w == event->xkey.subwindow) {
 			break;
 		}
 	}
 	if(ws == NULL) {
+		/* Not on a button, nothing to do */
 		return;
 	}
 
-	strcpy(name, ws->label);
-	lname = strlen(name);
-	len   = XLookupString(&(event->xkey), key, 16, NULL, NULL);
-	for(i = 0; i < len; i++) {
-		k = key [i];
-		if(isprint(k)) {
-			name [lname++] = k;
-		}
-		else if((k == 127) || (k == 8)) {
-			if(lname != 0) {
-				lname--;
+
+	/*
+	 * Edit the label.
+	 */
+	{
+		int    nkeys;
+		char   keys[16];
+		size_t lname;
+		char   *newname;
+
+		/* Look up what keystrokes are queued.  Arbitrary buf size */
+		nkeys = XLookupString(&(event->xkey), keys, 16, NULL, NULL);
+
+		/* Label length can't grow to more than cur+nkeys */
+		lname = strlen(ws->label);
+		newname = malloc(lname + nkeys + 1);
+		strcpy(newname, ws->label);
+
+		/* Iterate over the passed keystrokes */
+		for(int i = 0 ; i < nkeys ; i++) {
+			unsigned char k = keys[i];
+
+			if(isprint(k)) {
+				/* Printable chars append to the string */
+				newname[lname++] = k;
+			}
+			else if((k == 127) || (k == 8)) {
+				/*
+				 * DEL or BS back up a char.
+				 *
+				 * XXX Would it be more generally correct to do this via
+				 * keysyms, in the face of changed keyboard mappings or
+				 * significantly differing locales?
+				 */
+				if(lname != 0) {
+					lname--;
+				}
+			}
+			else {
+				/* Any other char stops the process dead */
+				break;
 			}
 		}
-		else {
-			break;
-		}
+		/* Now ends where it ends */
+		newname[lname] = '\0';
+
+		/* Swap it in */
+		free(ws->label);
+		ws->label = newname;
 	}
-	name [lname] = '\0';
-	ws->label = realloc(ws->label, (strlen(name) + 1));
-	strcpy(ws->label, name);
-	if(ws == vs->wsw->currentwspc) {
-		PaintWsButton(WSPCWINDOW, vs, vs->wsw->bswl [ws->number]->w, ws->label, ws->cp,
-		              on);
-	}
-	else {
-		PaintWsButton(WSPCWINDOW, vs, vs->wsw->bswl [ws->number]->w, ws->label, ws->cp,
-		              off);
+
+
+	/* Redraw the button with the new label */
+	{
+		ButtonState bs = (ws == vs->wsw->currentwspc) ? on : off;
+
+		PaintWsButton(WSPCWINDOW, vs, vs->wsw->bswl[ws->number]->w, ws->label,
+		              ws->cp, bs);
 	}
 }
 
