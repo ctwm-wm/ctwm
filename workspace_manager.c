@@ -1364,9 +1364,14 @@ WMapMapWindow(TwmWindow *win)
 	WorkSpace *ws;
 	WinList   wl;
 
+	/* For each VS ... */
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		/* ... and each WS ... */
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+			/* ... and each window in the map for that WS ... */
+			MapSubwindow *msw = vs->wsw->mswl[ws->number];
+			for(wl = msw->wl; wl != NULL; wl = wl->next) {
+				/* ... if that's the win we're asking after, draw it */
 				if(wl->twm_win == win) {
 					XMapWindow(dpy, wl->w);
 					WMapRedrawName(vs, wl);
