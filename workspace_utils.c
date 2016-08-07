@@ -20,7 +20,7 @@
 #include "otp.h"
 #include "screen.h"
 #include "util.h"
-#include "workmgr.h"
+#include "workspace_manager.h"
 #include "workspace_utils.h"
 
 #ifdef EWMH

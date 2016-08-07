@@ -43,7 +43,7 @@
 #include "cursor.h"
 #include "image.h"
 #include "drawing.h"
-#include "workmgr.h"
+#include "workspace_manager.h"
 #include "workspace_utils.h"
 
 #include "gram.tab.h"

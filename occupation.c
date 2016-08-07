@@ -25,7 +25,7 @@
 #include "screen.h"
 #include "otp.h"
 #include "util.h"
-#include "workmgr.h"
+#include "workspace_manager.h"
 #include "workspace_utils.h"
 
 // Gotten via screen.h

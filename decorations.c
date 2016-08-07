@@ -17,7 +17,7 @@
 #include "screen.h"
 #include "util.h"
 #include "drawing.h"
-#include "workmgr.h"
+#include "workspace_manager.h"
 
 #include "decorations.h"
 

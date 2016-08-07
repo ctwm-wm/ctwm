@@ -28,7 +28,7 @@
 #include "version.h"
 #include "windowbox.h"
 #include "captive.h"
-#include "workmgr.h"
+#include "workspace_manager.h"
 #include "workspace_utils.h"
 
 #include "ext/repl_str.h"

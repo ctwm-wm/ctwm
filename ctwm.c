@@ -106,7 +106,7 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
-#include "workmgr.h"
+#include "workspace_manager.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
