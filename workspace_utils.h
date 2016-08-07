@@ -4,6 +4,7 @@
 #ifndef _CTWM_WORKSPACE_UTILS_H
 #define _CTWM_WORKSPACE_UTILS_H
 
+void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws);
 void GotoWorkSpaceByName(VirtualScreen *vs, const char *wname);
 void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum);
 void GotoPrevWorkSpace(VirtualScreen *vs);
@@ -12,12 +13,11 @@ void GotoRightWorkSpace(VirtualScreen *vs);
 void GotoLeftWorkSpace(VirtualScreen *vs);
 void GotoUpWorkSpace(VirtualScreen *vs);
 void GotoDownWorkSpace(VirtualScreen *vs);
-void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws);
+
+void ShowBackground(VirtualScreen *vs, int state);
 
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
 WorkSpace *GetWorkspace(const char *wname);
-
-void ShowBackground(VirtualScreen *vs, int state);
 
 void ws_set_useBackgroundInfo(bool newval);
 
