@@ -1923,7 +1923,14 @@ WMapDestroyWindow(TwmWindow *win)
 			WMapRemoveFromList(win, ws);
 		}
 	}
-	/* XXX Better belongs inline in caller or separate func? */
+
+	/*
+	 * If it's a mapped occupy window, manually hide aways its bits in
+	 * here.
+	 *
+	 * XXX Better belongs inline in caller or separate func?  This is the
+	 * only thing exposing occupyWin out of occupation.c.
+	 */
 	if(win == occupyWin) {
 		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 		XUnmapWindow(dpy, occwin->twm_win->frame);
