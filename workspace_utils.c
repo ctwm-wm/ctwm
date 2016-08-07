@@ -312,7 +312,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
         } while(0)
 
 void
-GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
+GotoWorkSpaceByName(VirtualScreen *vs, const char *wname)
 {
 	WorkSpace *ws;
 
@@ -542,7 +542,7 @@ GetCurrentWorkSpaceName(VirtualScreen *vs)
  * Find workspace by name
  */
 WorkSpace *
-GetWorkspace(char *wname)
+GetWorkspace(const char *wname)
 {
 	WorkSpace *ws;
 
