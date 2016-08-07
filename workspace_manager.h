@@ -31,8 +31,8 @@ void InitWorkSpaceManager(void);
 void ConfigureWorkSpaceManager(void);
 void CreateWorkSpaceManager(void);
 void PaintWorkSpaceManager(VirtualScreen *vs);
-
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
+
 void WMapToggleState(VirtualScreen *vs);
 void WMapSetMapState(VirtualScreen *vs);
 void WMapSetButtonsState(VirtualScreen *vs);
