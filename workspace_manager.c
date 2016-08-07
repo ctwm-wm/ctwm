@@ -64,11 +64,13 @@ static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
 
 
+
 /*
  * Basic setup of Scr->workSpaceMgr structures.  Called (for each screen)
  * early in startup, prior to config file parsing.
  */
-void InitWorkSpaceManager(void)
+void
+InitWorkSpaceManager(void)
 {
 	Scr->workSpaceMgr.count         = 0;
 	Scr->workSpaceMgr.workSpaceList = NULL;
@@ -116,7 +118,8 @@ void InitWorkSpaceManager(void)
  * screen) in startup after InitVirtualScreens() has setup the VS stuff
  * (and after config file processing).
  */
-void ConfigureWorkSpaceManager(void)
+void
+ConfigureWorkSpaceManager(void)
 {
 	VirtualScreen *vs;
 
@@ -135,21 +138,13 @@ void ConfigureWorkSpaceManager(void)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      CreateWorkSpaceManager - create the workspace manager window
- *              for this screen.
- *
- *  Returned Value:
- *      none
- *
- *  Inputs:
- *      none
- *
- ***********************************************************************
+/*
+ * Create workspace manager windows for each vscreen.  Called (for each
+ * screen) late in startup, after the preceeding funcs have run their
+ * course.
  */
-void CreateWorkSpaceManager(void)
+void
+CreateWorkSpaceManager(void)
 {
 	char vsmapbuf    [1024], *vsmap;
 	VirtualScreen    *vs;
@@ -243,13 +238,13 @@ void CreateWorkSpaceManager(void)
 }
 
 
-
 /*
  * Put together the actual window for the workspace manager.  Called as
  * part of CreateWorkSpaceManager() during startup, once per workspace
  * (since there's a separate window in each).
  */
-static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
+static void
+CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 {
 	int           mask;
 	int           lines, vspace, hspace, count, columns;
@@ -482,6 +477,113 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 
 
 /*
+ * Size and layout a WSM.  Mostly an internal bit in the process of
+ * setting it up.
+ */
+static void
+ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
+{
+	int           bwidth, bheight;
+	int           wwidth, wheight;
+	int           hspace, vspace;
+	int           lines, columns;
+	int           neww, newh;
+	WorkSpace     *ws;
+	TwmWindow     *tmp_win;
+	WinList       wl;
+	int           i, j;
+	float         wf, hf;
+
+	neww = win->attr.width;
+	newh = win->attr.height;
+	if(neww == vs->wsw->width && newh == vs->wsw->height) {
+		return;
+	}
+
+	hspace  = Scr->workSpaceMgr.hspace;
+	vspace  = Scr->workSpaceMgr.vspace;
+	lines   = Scr->workSpaceMgr.lines;
+	columns = Scr->workSpaceMgr.columns;
+	bwidth  = (neww - (columns * hspace)) / columns;
+	bheight = (newh - (lines   * vspace)) / lines;
+	wwidth  = neww / columns;
+	wheight = newh / lines;
+	wf = (float)(wwidth  - 2) / (float) vs->w;
+	hf = (float)(wheight - 2) / (float) vs->h;
+
+	i = 0;
+	j = 0;
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		MapSubwindow *msw = vs->wsw->mswl [ws->number];
+		XMoveResizeWindow(dpy, vs->wsw->bswl [ws->number]->w,
+		                  i * (bwidth  + hspace) + (hspace / 2),
+		                  j * (bheight + vspace) + (vspace / 2),
+		                  bwidth, bheight);
+		msw->x = i * wwidth;
+		msw->y = j * wheight;
+		XMoveResizeWindow(dpy, msw->w, msw->x, msw->y, wwidth - 2, wheight - 2);
+		for(wl = msw->wl; wl != NULL; wl = wl->next) {
+			tmp_win    = wl->twm_win;
+			wl->x      = (int)(tmp_win->frame_x * wf);
+			wl->y      = (int)(tmp_win->frame_y * hf);
+			wl->width  = (unsigned int)((tmp_win->frame_width  * wf) + 0.5);
+			wl->height = (unsigned int)((tmp_win->frame_height * hf) + 0.5);
+			XMoveResizeWindow(dpy, wl->w, wl->x, wl->y, wl->width, wl->height);
+		}
+		i++;
+		if(i == columns) {
+			i = 0;
+			j++;
+		};
+	}
+	vs->wsw->bwidth    = bwidth;
+	vs->wsw->bheight   = bheight;
+	vs->wsw->width     = neww;
+	vs->wsw->height    = newh;
+	vs->wsw->wwidth     = wwidth;
+	vs->wsw->wheight    = wheight;
+	PaintWorkSpaceManager(vs);
+}
+
+
+/*
+ * Draw up the pieces of a WSM window.  This is subtly different from the
+ * WMgrHandleExposeEvent() handler because XXX ???
+ */
+void
+PaintWorkSpaceManager(VirtualScreen *vs)
+{
+	WorkSpace *ws;
+
+	PaintWorkSpaceManagerBorder(vs);
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		Window buttonw = vs->wsw->bswl [ws->number]->w;
+		if(ws == vs->wsw->currentwspc) {
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
+		}
+		else {
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
+		}
+	}
+}
+
+
+/*
+ * Border around the WSM
+ */
+static void
+PaintWorkSpaceManagerBorder(VirtualScreen *vs)
+{
+	int width, height;
+
+	width  = vs->wsw->width;
+	height = vs->wsw->height;
+	Draw3DBorder(vs->wsw->w, 0, 0, width, height, 2, Scr->workSpaceMgr.cp, off,
+	             true, false);
+}
+
+
+/*
  * Draw a workspace manager window on expose
  */
 void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
@@ -517,41 +619,6 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 			WMapRedrawName(vs, wl);
 		}
 	}
-}
-
-
-/*
- * Draw up the pieces of a WSM window.  This is subtly different from the
- * expose handler because XXX ???
- */
-void PaintWorkSpaceManager(VirtualScreen *vs)
-{
-	WorkSpace *ws;
-
-	PaintWorkSpaceManagerBorder(vs);
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		Window buttonw = vs->wsw->bswl [ws->number]->w;
-		if(ws == vs->wsw->currentwspc) {
-			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
-		}
-		else {
-			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
-		}
-	}
-}
-
-
-/*
- * Border around the WSM
- */
-static void PaintWorkSpaceManagerBorder(VirtualScreen *vs)
-{
-	int width, height;
-
-	width  = vs->wsw->width;
-	height = vs->wsw->height;
-	Draw3DBorder(vs->wsw->w, 0, 0, width, height, 2, Scr->workSpaceMgr.cp, off,
-	             true, false);
 }
 
 
@@ -1638,73 +1705,4 @@ WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 			wl   = *prev;
 		}
 	}
-}
-
-
-/*
- * Size and layout a WSM.  Mostly an internal bit in the process of
- * setting it up.
- */
-static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
-{
-	int           bwidth, bheight;
-	int           wwidth, wheight;
-	int           hspace, vspace;
-	int           lines, columns;
-	int           neww, newh;
-	WorkSpace     *ws;
-	TwmWindow     *tmp_win;
-	WinList       wl;
-	int           i, j;
-	float         wf, hf;
-
-	neww = win->attr.width;
-	newh = win->attr.height;
-	if(neww == vs->wsw->width && newh == vs->wsw->height) {
-		return;
-	}
-
-	hspace  = Scr->workSpaceMgr.hspace;
-	vspace  = Scr->workSpaceMgr.vspace;
-	lines   = Scr->workSpaceMgr.lines;
-	columns = Scr->workSpaceMgr.columns;
-	bwidth  = (neww - (columns * hspace)) / columns;
-	bheight = (newh - (lines   * vspace)) / lines;
-	wwidth  = neww / columns;
-	wheight = newh / lines;
-	wf = (float)(wwidth  - 2) / (float) vs->w;
-	hf = (float)(wheight - 2) / (float) vs->h;
-
-	i = 0;
-	j = 0;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		MapSubwindow *msw = vs->wsw->mswl [ws->number];
-		XMoveResizeWindow(dpy, vs->wsw->bswl [ws->number]->w,
-		                  i * (bwidth  + hspace) + (hspace / 2),
-		                  j * (bheight + vspace) + (vspace / 2),
-		                  bwidth, bheight);
-		msw->x = i * wwidth;
-		msw->y = j * wheight;
-		XMoveResizeWindow(dpy, msw->w, msw->x, msw->y, wwidth - 2, wheight - 2);
-		for(wl = msw->wl; wl != NULL; wl = wl->next) {
-			tmp_win    = wl->twm_win;
-			wl->x      = (int)(tmp_win->frame_x * wf);
-			wl->y      = (int)(tmp_win->frame_y * hf);
-			wl->width  = (unsigned int)((tmp_win->frame_width  * wf) + 0.5);
-			wl->height = (unsigned int)((tmp_win->frame_height * hf) + 0.5);
-			XMoveResizeWindow(dpy, wl->w, wl->x, wl->y, wl->width, wl->height);
-		}
-		i++;
-		if(i == columns) {
-			i = 0;
-			j++;
-		};
-	}
-	vs->wsw->bwidth    = bwidth;
-	vs->wsw->bheight   = bheight;
-	vs->wsw->width     = neww;
-	vs->wsw->height    = newh;
-	vs->wsw->wwidth     = wwidth;
-	vs->wsw->wheight    = wheight;
-	PaintWorkSpaceManager(vs);
 }
