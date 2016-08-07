@@ -1696,11 +1696,11 @@ void
 WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 {
 	VirtualScreen *vs;
-	WinList wl, *prev;
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		prev = &vs->wsw->mswl [ws->number]->wl;
-		wl = *prev;
+		WinList *prev = &vs->wsw->mswl [ws->number]->wl;
+		WinList wl = *prev;
+
 		while(wl != NULL) {
 			if(win == wl->twm_win) {
 				*prev = wl->next;
