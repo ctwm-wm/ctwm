@@ -1693,18 +1693,12 @@ WMapUpdateIconName(TwmWindow *win)
 void
 WMapRedrawName(VirtualScreen *vs, WinList wl)
 {
-	int       w = wl->width;
-	int       h = wl->height;
-	ColorPair cp;
-	char      *label;
-
-	label  = wl->twm_win->icon_name;
-	cp     = wl->cp;
+	ColorPair cp = wl->cp;
 
 	if(Scr->ReverseCurrentWorkspace && wl->wlist == vs->wsw->currentwspc) {
 		InvertColorPair(&cp);
 	}
-	WMapRedrawWindow(wl->w, w, h, cp, label);
+	WMapRedrawWindow(wl->w, wl->width, wl->height, cp, wl->twm_win->icon_name);
 }
 
 
