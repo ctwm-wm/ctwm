@@ -1482,7 +1482,7 @@ WMapIconify(TwmWindow *win)
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+			for(wl = vs->wsw->mswl[ws->number]->wl; wl != NULL; wl = wl->next) {
 				if(win == wl->twm_win) {
 					XUnmapWindow(dpy, wl->w);
 					break;
@@ -1520,7 +1520,7 @@ WMapDeIconify(TwmWindow *win)
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+			for(wl = vs->wsw->mswl[ws->number]->wl; wl != NULL; wl = wl->next) {
 				if(win == wl->twm_win) {
 					if(Scr->NoRaiseDeicon) {
 						XMapWindow(dpy, wl->w);
