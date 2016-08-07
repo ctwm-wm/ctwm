@@ -616,65 +616,76 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 static void
 ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 {
-	int           bwidth, bheight;
-	int           wwidth, wheight;
-	int           hspace, vspace;
-	int           lines, columns;
-	int           neww, newh;
 	WorkSpace     *ws;
-	TwmWindow     *tmp_win;
-	WinList       wl;
 	int           i, j;
-	float         wf, hf;
+	/* Lots of shortcuts to ease reading */
+	const int neww    = win->attr.width;
+	const int newh    = win->attr.height;
+	const int hspace  = Scr->workSpaceMgr.hspace;
+	const int vspace  = Scr->workSpaceMgr.vspace;
+	const int lines   = Scr->workSpaceMgr.lines;
+	const int columns = Scr->workSpaceMgr.columns;
+	const int bwidth  = (neww - (columns * hspace)) / columns;
+	const int bheight = (newh - (lines   * vspace)) / lines;
+	const int wwidth  = neww / columns;
+	const int wheight = newh / lines;
+	const float wf    = (float)(wwidth  - 2) / (float) vs->w;
+	const float hf    = (float)(wheight - 2) / (float) vs->h;
 
-	neww = win->attr.width;
-	newh = win->attr.height;
+	/* If nothing's changed since our last run, there's nothing to change */
 	if(neww == vs->wsw->width && newh == vs->wsw->height) {
 		return;
 	}
 
-	hspace  = Scr->workSpaceMgr.hspace;
-	vspace  = Scr->workSpaceMgr.vspace;
-	lines   = Scr->workSpaceMgr.lines;
-	columns = Scr->workSpaceMgr.columns;
-	bwidth  = (neww - (columns * hspace)) / columns;
-	bheight = (newh - (lines   * vspace)) / lines;
-	wwidth  = neww / columns;
-	wheight = newh / lines;
-	wf = (float)(wwidth  - 2) / (float) vs->w;
-	hf = (float)(wheight - 2) / (float) vs->h;
+	/* Set the new overall vals */
+	vs->wsw->bwidth    = bwidth;
+	vs->wsw->bheight   = bheight;
+	vs->wsw->width     = neww;
+	vs->wsw->height    = newh;
+	vs->wsw->wwidth    = wwidth;
+	vs->wsw->wheight   = wheight;
 
+	/* Iterate over the WS's */
 	i = 0;
 	j = 0;
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		MapSubwindow *msw = vs->wsw->mswl [ws->number];
-		XMoveResizeWindow(dpy, vs->wsw->bswl [ws->number]->w,
+		MapSubwindow    *msw = vs->wsw->mswl[ws->number];
+		ButtonSubwindow *bsw = vs->wsw->bswl[ws->number];
+
+		/* Move button window to its place in the grid and size appropriately */
+		XMoveResizeWindow(dpy, bsw->w,
 		                  i * (bwidth  + hspace) + (hspace / 2),
 		                  j * (bheight + vspace) + (vspace / 2),
 		                  bwidth, bheight);
+
+		/* Move the map window as well */
 		msw->x = i * wwidth;
 		msw->y = j * wheight;
 		XMoveResizeWindow(dpy, msw->w, msw->x, msw->y, wwidth - 2, wheight - 2);
-		for(wl = msw->wl; wl != NULL; wl = wl->next) {
-			tmp_win    = wl->twm_win;
+
+		/*
+		 * Redo interior sizing and placement of all the windows in the
+		 * WS in the map window
+		 */
+		for(WinList wl = msw->wl; wl != NULL; wl = wl->next) {
+			TwmWindow *tmp_win = wl->twm_win;
 			wl->x      = (int)(tmp_win->frame_x * wf);
 			wl->y      = (int)(tmp_win->frame_y * hf);
 			wl->width  = (unsigned int)((tmp_win->frame_width  * wf) + 0.5);
 			wl->height = (unsigned int)((tmp_win->frame_height * hf) + 0.5);
 			XMoveResizeWindow(dpy, wl->w, wl->x, wl->y, wl->width, wl->height);
 		}
+
+		/* And around to the next WS */
 		i++;
 		if(i == columns) {
 			i = 0;
 			j++;
 		};
 	}
-	vs->wsw->bwidth    = bwidth;
-	vs->wsw->bheight   = bheight;
-	vs->wsw->width     = neww;
-	vs->wsw->height    = newh;
-	vs->wsw->wwidth     = wwidth;
-	vs->wsw->wheight    = wheight;
+
+
+	/* Draw it */
 	PaintWorkSpaceManager(vs);
 }
 
