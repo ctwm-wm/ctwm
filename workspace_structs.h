@@ -95,9 +95,9 @@ struct WorkSpaceWindow {                /* There is one per virtual screen */
 
 	int           state;
 
-	int           width, height;
-	int           bwidth, bheight;
-	int           wwidth, wheight;
+	int           width, height;   // Window dimensions
+	int           bwidth, bheight; // Button dimensions
+	int           wwidth, wheight; // Map dimensions
 };
 
 #endif /* _CTWM_WORKSPACE_STRUCTS_H */
