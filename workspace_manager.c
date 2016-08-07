@@ -1166,13 +1166,19 @@ move:
 
 
 
+
+/*
+ * Functions for doing things with subwindows in the WSM in map state
+ */
+
 /*
  * Map up a window's subwindow in the map-mode WSM.  Happens when a
  * window is de-iconified or otherwise mapped.  Specifically, when we get
  * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
  * some subtle distinctions between the two...
  */
-void WMapMapWindow(TwmWindow *win)
+void
+WMapMapWindow(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
@@ -1195,7 +1201,8 @@ void WMapMapWindow(TwmWindow *win)
 /*
  * Position a window in the WSM.  Happens as a result of moving things.
  */
-void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
+void
+WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 {
 	VirtualScreen *vs;
 	WorkSpace     *ws;
@@ -1262,7 +1269,8 @@ void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
  * Hide away a window in the WSM map.  Happens when win is iconified;
  * different from destruction.
  */
-void WMapIconify(TwmWindow *win)
+void
+WMapIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
@@ -1299,7 +1307,8 @@ void WMapIconify(TwmWindow *win)
  * investigation...  at the least, they should probably be collapsed
  * somehow with a conditional for that trivial difference.
  */
-void WMapDeIconify(TwmWindow *win)
+void
+WMapDeIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
@@ -1334,7 +1343,8 @@ void WMapDeIconify(TwmWindow *win)
  * XXX If these implementations really _should_ be identical, they should
  * be collapsed...
  */
-void WMapRaiseLower(TwmWindow *win)
+void
+WMapRaiseLower(TwmWindow *win)
 {
 	WorkSpace *ws;
 
@@ -1345,7 +1355,8 @@ void WMapRaiseLower(TwmWindow *win)
 	}
 }
 
-void WMapLower(TwmWindow *win)
+void
+WMapLower(TwmWindow *win)
 {
 	WorkSpace *ws;
 
@@ -1356,7 +1367,8 @@ void WMapLower(TwmWindow *win)
 	}
 }
 
-void WMapRaise(TwmWindow *win)
+void
+WMapRaise(TwmWindow *win)
 {
 	WorkSpace *ws;
 
@@ -1375,7 +1387,8 @@ void WMapRaise(TwmWindow *win)
  * something better we can do than doing all this relatively expensive
  * stuff over and over...
  */
-void WMapRestack(WorkSpace *ws)
+void
+WMapRestack(WorkSpace *ws)
 {
 	VirtualScreen *vs;
 	TwmWindow   *win;
@@ -1430,7 +1443,8 @@ void WMapRestack(WorkSpace *ws)
 /*
  * Update stuff in the WSM when win's icon name changes
  */
-void WMapUpdateIconName(TwmWindow *win)
+void
+WMapUpdateIconName(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
@@ -1453,7 +1467,8 @@ void WMapUpdateIconName(TwmWindow *win)
  * Draw a window name into the window's representation in the map-state
  * WSM.
  */
-void WMapRedrawName(VirtualScreen *vs, WinList wl)
+void
+WMapRedrawName(VirtualScreen *vs, WinList wl)
 {
 	int       w = wl->width;
 	int       h = wl->height;
@@ -1479,8 +1494,9 @@ void WMapRedrawName(VirtualScreen *vs, WinList wl)
  * is probably usually too small to be useful, and often appears just as
  * some odd colored pixels at the top of the window.
  */
-static void WMapRedrawWindow(Window window, int width, int height,
-                             ColorPair cp, const char *label)
+static void
+WMapRedrawWindow(Window window, int width, int height,
+                 ColorPair cp, const char *label)
 {
 	int         x, y, strhei, strwid;
 	MyFont      font;
