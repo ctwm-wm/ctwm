@@ -561,9 +561,14 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 
 	/*
 	 * Mark the buttons as listening to click and exposure events, and
-	 * stash away some pointers in contexts.
+	 * stash away some pointers in contexts.  We stash the overall WSM
+	 * window in TwmContext, which means that when an event looks up the
+	 * window, it finds the WSM rather than the subwindow, and then falls
+	 * into the WMgrHandle*Event()'s, which then dig down into the event
+	 * to find where it happened in there.
 	 *
-	 * XXX Should the map window listen to exposure too?
+	 * XXX Should the map window listen to exposure too?  Or should the
+	 * button window not?
 	 */
 	for(WorkSpace *ws = Scr->workSpaceMgr.workSpaceList; ws != NULL;
 	                ws = ws->next) {
