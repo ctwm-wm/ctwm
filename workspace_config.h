@@ -8,11 +8,11 @@ void AddWorkSpace(const char *name,
                   const char *background, const char *foreground,
                   const char *backback,   const char *backfore,
                   const char *backpix);
-void WMapCreateCurrentBackGround(char *border,
-                                 char *background, char *foreground,
-                                 char *pixmap);
-void WMapCreateDefaultBackGround(char *border,
-                                 char *background, char *foreground,
-                                 char *pixmap);
+void WMapCreateCurrentBackGround(const char *border,
+                                 const char *background, const char *foreground,
+                                 const char *pixmap);
+void WMapCreateDefaultBackGround(const char *border,
+                                 const char *background, const char *foreground,
+                                 const char *pixmap);
 
 #endif /* _CTWM_WORKSPACE_CONFIG_H */

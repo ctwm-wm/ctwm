@@ -128,9 +128,9 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
  * MapWindowCurrentWorkSpace {} parsing
  */
 void
-WMapCreateCurrentBackGround(char *border,
-                            char *background, char *foreground,
-                            char *pixmap)
+WMapCreateCurrentBackGround(const char *border,
+                            const char *background, const char *foreground,
+                            const char *pixmap)
 {
 	Image *image;
 	WorkSpaceMgr *ws = &Scr->workSpaceMgr;
@@ -170,9 +170,9 @@ WMapCreateCurrentBackGround(char *border,
  * MapWindowDefaultWorkSpace {} parsing
  */
 void
-WMapCreateDefaultBackGround(char *border,
-                            char *background, char *foreground,
-                            char *pixmap)
+WMapCreateDefaultBackGround(const char *border,
+                            const char *background, const char *foreground,
+                            const char *pixmap)
 {
 	Image *image;
 	WorkSpaceMgr *ws = &Scr->workSpaceMgr;
