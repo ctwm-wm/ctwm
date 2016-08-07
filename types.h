@@ -67,22 +67,25 @@ typedef struct WindowBox WindowBox;
 typedef struct TwmWindow TwmWindow;
 typedef struct TWMWinConfigEntry TWMWinConfigEntry;
 
-/* From util.h */
+/* From image.h */
 typedef struct Image Image;
 
 /* From vscreen.h */
 typedef struct VirtualScreen VirtualScreen;
 
-/* From workmgr.h */
+/* From workspace_structs.h */
 typedef struct winList *WinList;
 typedef struct WorkSpaceMgr WorkSpaceMgr;
 typedef struct WorkSpace WorkSpace;
 typedef struct MapSubwindow MapSubwindow;
 typedef struct ButtonSubwindow ButtonSubwindow;
 typedef struct WorkSpaceWindow WorkSpaceWindow;
+
+/* From occupation.h */
 typedef struct OccupyWindow OccupyWindow;
 
 /* from otp */
 typedef struct OtpWinList OtpWinList;
 typedef struct OtpPreferences OtpPreferences;
+
 #endif /* _CTWM_TYPES_H */
