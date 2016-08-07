@@ -32,202 +32,7 @@ bool useBackgroundInfo = false;
 
 
 /*
- * Various funcs for switching workspaces
- */
-void
-GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
-{
-	WorkSpace *ws;
-
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-	ws = GetWorkspace(wname);
-	if(ws == NULL) {
-		return;
-	}
-	GotoWorkSpace(vs, ws);
-}
-
-
-void
-GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
-{
-	WorkSpace *ws;
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(ws->number == workspacenum) {
-			break;
-		}
-	}
-	if(ws == NULL) {
-		return;
-	}
-	GotoWorkSpace(vs, ws);
-}
-
-
-void
-GotoPrevWorkSpace(VirtualScreen *vs)
-{
-	WorkSpace *ws1, *ws2;
-
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-	ws1 = Scr->workSpaceMgr.workSpaceList;
-	if(ws1 == NULL) {
-		return;
-	}
-	ws2 = ws1->next;
-
-	while((ws2 != vs->wsw->currentwspc) && (ws2 != NULL)) {
-		ws1 = ws2;
-		ws2 = ws2->next;
-	}
-	GotoWorkSpace(vs, ws1);
-}
-
-
-void
-GotoNextWorkSpace(VirtualScreen *vs)
-{
-	WorkSpace *ws;
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-
-	ws = vs->wsw->currentwspc;
-	ws = (ws->next != NULL) ? ws->next : Scr->workSpaceMgr.workSpaceList;
-	GotoWorkSpace(vs, ws);
-}
-
-
-void
-GotoRightWorkSpace(VirtualScreen *vs)
-{
-	WorkSpace *ws;
-	int number, columns, count;
-
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-
-	ws      = vs->wsw->currentwspc;
-	number  = ws->number;
-	columns = Scr->workSpaceMgr.columns;
-	count   = Scr->workSpaceMgr.count;
-	number++;
-	if((number % columns) == 0) {
-		number -= columns;
-	}
-	else if(number >= count) {
-		number = (number / columns) * columns;
-	}
-
-	GotoWorkSpaceByNumber(vs, number);
-}
-
-
-void
-GotoLeftWorkSpace(VirtualScreen *vs)
-{
-	WorkSpace *ws;
-	int number, columns, count;
-
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-
-	ws      = vs->wsw->currentwspc;
-	number  = ws->number;
-	columns = Scr->workSpaceMgr.columns;
-	count   = Scr->workSpaceMgr.count;
-	number += (number % columns) ? -1 : (columns - 1);
-	if(number >= count) {
-		number = count - 1;
-	}
-	GotoWorkSpaceByNumber(vs, number);
-}
-
-
-void
-GotoUpWorkSpace(VirtualScreen *vs)
-{
-	WorkSpace *ws;
-	int number, lines, columns, count;
-
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-
-	ws      = vs->wsw->currentwspc;
-	number  = ws->number;
-	lines   = Scr->workSpaceMgr.lines;
-	columns = Scr->workSpaceMgr.columns;
-	count   = Scr->workSpaceMgr.count;
-	number -=  columns;
-	if(number < 0) {
-		number += lines * columns;
-		/* If the number of workspaces is not a multiple of nr of columns */
-		if(number >= count) {
-			number -= columns;
-		}
-	}
-	GotoWorkSpaceByNumber(vs, number);
-}
-
-
-void
-GotoDownWorkSpace(VirtualScreen *vs)
-{
-	WorkSpace *ws;
-	int number, columns, count;
-
-	if(!Scr->workSpaceManagerActive) {
-		return;
-	}
-	if(!vs) {
-		return;
-	}
-
-	ws      = vs->wsw->currentwspc;
-	number  = ws->number;
-	columns = Scr->workSpaceMgr.columns;
-	count   = Scr->workSpaceMgr.count;
-	number +=  columns;
-	if(number >= count) {
-		number %= columns;
-	}
-	GotoWorkSpaceByNumber(vs, number);
-}
-
-
-/*
- * Belongs with the above GotoWorkSpace* funcs
+ * Move the display (of a given vs) over to a new workspace.
  */
 void
 GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
@@ -485,6 +290,201 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		set_last_window(newws);
 	}
 	MaybeAnimate = true;
+}
+
+
+/*
+ * Various frontends to GotoWorkSpace()
+ */
+void
+GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
+{
+	WorkSpace *ws;
+
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+	ws = GetWorkspace(wname);
+	if(ws == NULL) {
+		return;
+	}
+	GotoWorkSpace(vs, ws);
+}
+
+
+void
+GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
+{
+	WorkSpace *ws;
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(ws->number == workspacenum) {
+			break;
+		}
+	}
+	if(ws == NULL) {
+		return;
+	}
+	GotoWorkSpace(vs, ws);
+}
+
+
+void
+GotoPrevWorkSpace(VirtualScreen *vs)
+{
+	WorkSpace *ws1, *ws2;
+
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+	ws1 = Scr->workSpaceMgr.workSpaceList;
+	if(ws1 == NULL) {
+		return;
+	}
+	ws2 = ws1->next;
+
+	while((ws2 != vs->wsw->currentwspc) && (ws2 != NULL)) {
+		ws1 = ws2;
+		ws2 = ws2->next;
+	}
+	GotoWorkSpace(vs, ws1);
+}
+
+
+void
+GotoNextWorkSpace(VirtualScreen *vs)
+{
+	WorkSpace *ws;
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+
+	ws = vs->wsw->currentwspc;
+	ws = (ws->next != NULL) ? ws->next : Scr->workSpaceMgr.workSpaceList;
+	GotoWorkSpace(vs, ws);
+}
+
+
+void
+GotoRightWorkSpace(VirtualScreen *vs)
+{
+	WorkSpace *ws;
+	int number, columns, count;
+
+	if(!Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+
+	ws      = vs->wsw->currentwspc;
+	number  = ws->number;
+	columns = Scr->workSpaceMgr.columns;
+	count   = Scr->workSpaceMgr.count;
+	number++;
+	if((number % columns) == 0) {
+		number -= columns;
+	}
+	else if(number >= count) {
+		number = (number / columns) * columns;
+	}
+
+	GotoWorkSpaceByNumber(vs, number);
+}
+
+
+void
+GotoLeftWorkSpace(VirtualScreen *vs)
+{
+	WorkSpace *ws;
+	int number, columns, count;
+
+	if(!Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+
+	ws      = vs->wsw->currentwspc;
+	number  = ws->number;
+	columns = Scr->workSpaceMgr.columns;
+	count   = Scr->workSpaceMgr.count;
+	number += (number % columns) ? -1 : (columns - 1);
+	if(number >= count) {
+		number = count - 1;
+	}
+	GotoWorkSpaceByNumber(vs, number);
+}
+
+
+void
+GotoUpWorkSpace(VirtualScreen *vs)
+{
+	WorkSpace *ws;
+	int number, lines, columns, count;
+
+	if(!Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+
+	ws      = vs->wsw->currentwspc;
+	number  = ws->number;
+	lines   = Scr->workSpaceMgr.lines;
+	columns = Scr->workSpaceMgr.columns;
+	count   = Scr->workSpaceMgr.count;
+	number -=  columns;
+	if(number < 0) {
+		number += lines * columns;
+		/* If the number of workspaces is not a multiple of nr of columns */
+		if(number >= count) {
+			number -= columns;
+		}
+	}
+	GotoWorkSpaceByNumber(vs, number);
+}
+
+
+void
+GotoDownWorkSpace(VirtualScreen *vs)
+{
+	WorkSpace *ws;
+	int number, columns, count;
+
+	if(!Scr->workSpaceManagerActive) {
+		return;
+	}
+	if(!vs) {
+		return;
+	}
+
+	ws      = vs->wsw->currentwspc;
+	number  = ws->number;
+	columns = Scr->workSpaceMgr.columns;
+	count   = Scr->workSpaceMgr.count;
+	number +=  columns;
+	if(number >= count) {
+		number %= columns;
+	}
+	GotoWorkSpaceByNumber(vs, number);
 }
 
 
