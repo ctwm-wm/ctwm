@@ -1614,7 +1614,8 @@ static void WMapRedrawWindow(Window window, int width, int height,
 
 /*
  * Create WSM representation of a given in a given WS.  Called when
- * windows get added to a workspace.
+ * windows get added to a workspace, either via WMapAddWindow() during
+ * the AddWindow() process, or via an occupation change.
  */
 void
 WMapAddToList(TwmWindow *win, WorkSpace *ws)
@@ -1687,7 +1688,9 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 
 
 /*
- * Remove window's WSM representation
+ * Remove window's WSM representation.  Happens from WMapDestroyWindow()
+ * as part of the window destruction process, and in the occupation
+ * change process.
  */
 void
 WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
