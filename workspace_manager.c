@@ -63,7 +63,7 @@ static void WMapRedrawWindow(Window window, int width, int height,
 static void InvertColorPair(ColorPair *cp);
 
 
-static XContext MapWListContext = (XContext) 0;
+static XContext MapWListContext = None;
 static Cursor handCursor = None;
 
 
@@ -115,7 +115,7 @@ InitWorkSpaceManager(void)
 	/*"-adobe-courier-bold-r-normal--8-80-75-75-m-50-iso8859-1";*/
 
 	XrmInitialize();
-	if(MapWListContext == (XContext) 0) {
+	if(MapWListContext == None) {
 		MapWListContext = XUniqueContext();
 	}
 }
