@@ -1563,7 +1563,8 @@ WMapRedrawWindow(Window window, int width, int height,
  * Add a window into any appropriate WSM's [data structure].  Called
  * during AddWindow().
  */
-void WMapAddWindow(TwmWindow *win)
+void
+WMapAddWindow(TwmWindow *win)
 {
 	WorkSpace     *ws;
 
@@ -1658,7 +1659,8 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
  * Remove a window from any WSM's [data structures].  Called during
  * window destruction process.
  */
-void WMapDestroyWindow(TwmWindow *win)
+void
+WMapDestroyWindow(TwmWindow *win)
 {
 	WorkSpace *ws;
 
