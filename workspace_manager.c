@@ -290,187 +290,241 @@ CreateWorkSpaceManager(void)
 static void
 CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 {
-	int           mask;
-	int           lines, vspace, hspace, count, columns;
-	unsigned int  width, height, bwidth, bheight;
-	char          *name, *icon_name, *geometry;
-	int           i, j;
-	ColorPair     cp;
-	MyFont        font;
-	WorkSpace     *ws;
-	int           x, y, strWid, wid;
-	unsigned long border;
-	TwmWindow     *tmp_win;
-	XSetWindowAttributes        attr;
-	XWindowAttributes           wattr;
-	unsigned long               attrmask;
-	XSizeHints    sizehints;
-	XWMHints      wmhints;
-	int           gravity;
-	XRectangle inc_rect;
-	XRectangle logical_rect;
+	unsigned int width, height;
+	TwmWindow *tmp_win;
+	int x, y, gravity;
+	/* Shortcuts */
+	const int vspace = Scr->workSpaceMgr.vspace;
+	const int hspace = Scr->workSpaceMgr.hspace;
+	const long count = Scr->workSpaceMgr.count;
 
-	name      = Scr->workSpaceMgr.name;
-	icon_name = Scr->workSpaceMgr.icon_name;
-	geometry  = Scr->workSpaceMgr.geometry;
-	columns   = Scr->workSpaceMgr.columns;
-	vspace    = Scr->workSpaceMgr.vspace;
-	hspace    = Scr->workSpaceMgr.hspace;
-	font      = Scr->workSpaceMgr.buttonFont;
-	cp        = Scr->workSpaceMgr.cp;
-	border    = Scr->workSpaceMgr.defBorderColor;
-
-	count = 0;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		count++;
-	}
-	Scr->workSpaceMgr.count = count;
+	/* No workspaces?  Nothing to do. */
 	if(count == 0) {
 		return;
 	}
 
-	if(columns == 0) {
-		lines   = 2;
-		columns = ((count - 1) / lines) + 1;
-	}
-	else {
-		lines   = ((count - 1) / columns) + 1;
-	}
-	Scr->workSpaceMgr.lines   = lines;
-	Scr->workSpaceMgr.columns = columns;
-
-	strWid = 0;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		XmbTextExtents(font.font_set, ws->label, strlen(ws->label),
-		               &inc_rect, &logical_rect);
-		wid = logical_rect.width;
-		if(wid > strWid) {
-			strWid = wid;
+	/*
+	 * Work out grid.  wSM.columns will be filled if specified in
+	 * WorkSpaceManageGeometry, or uninitialized (0) if not.
+	 */
+	{
+		int lines, columns;
+		columns = Scr->workSpaceMgr.columns;
+		if(columns == 0) {
+			lines = 2;
+			columns = ((count - 1) / lines) + 1;
 		}
-	}
-	if(geometry != NULL) {
-		mask = XParseGeometry(geometry, &x, &y, &width, &height);
-		bwidth  = (mask & WidthValue)  ? ((width - (columns * hspace)) / columns) :
-		          strWid + 10;
-		bheight = (mask & HeightValue) ? ((height - (lines  * vspace)) / lines) : 22;
-		width   = columns * (bwidth  + hspace);
-		height  = lines   * (bheight + vspace);
-
-		if(!(mask & YValue)) {
-			y = 0;
-			mask |= YNegative;
+		else {
+			lines = ((count - 1) / columns) + 1;
 		}
-		if(mask & XValue) {
-			if(mask & XNegative) {
-				x += vs->w - width;
-				gravity = (mask & YNegative) ? SouthEastGravity : NorthEastGravity;
+		Scr->workSpaceMgr.lines   = lines;
+		Scr->workSpaceMgr.columns = columns;
+	}
+
+
+	/* Work out dimensions of stuff */
+	{
+		unsigned int bwidth, bheight;
+		unsigned short strWid;
+		WorkSpace *ws;
+		const char *geometry = Scr->workSpaceMgr.geometry;
+		const int lines      = Scr->workSpaceMgr.lines;
+		const int columns    = Scr->workSpaceMgr.columns;
+
+		/* Figure longest label */
+		strWid = 0;
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			XRectangle inc_rect;
+			XRectangle logical_rect;
+			unsigned short wid;
+			const MyFont font = Scr->workSpaceMgr.buttonFont;
+
+			XmbTextExtents(font.font_set, ws->label, strlen(ws->label),
+			               &inc_rect, &logical_rect);
+			wid = logical_rect.width;
+			if(wid > strWid) {
+				strWid = wid;
+			}
+		}
+
+		/*
+		 * If WorkSpaceManagerGeometry is given, work from that.  Else,
+		 * create a workable minimum ourselves.
+		 * */
+		if(geometry != NULL) {
+			int mask;
+
+			/* Base button/subwindow sizes */
+			bwidth = strWid + 10;
+			bheight = 22;
+
+			/* Adjust to WSMGeometry if specified */
+			mask = XParseGeometry(geometry, &x, &y, &width, &height);
+			if(mask & WidthValue) {
+				bwidth = (width - (columns * hspace)) / columns;
+			}
+			if(mask & HeightValue) {
+				bheight = (height - (lines  * vspace)) / lines;
+			}
+
+			/* Size of the whole thing is based off those */
+			width  = columns * (bwidth  + hspace);
+			height = lines   * (bheight + vspace);
+
+			/*
+			 * If no Y given, put it at the bottom of the screen.  If one
+			 * is, just accept it.  If it's a negative, we have to figure
+			 * out where that actually is on this vscreen.
+			 */
+			if(!(mask & YValue)) {
+				y = 0;
+				mask |= YNegative;
+			}
+			if(mask & YNegative) {
+				y += vs->h - height;
+			}
+
+			/*
+			 * If X is given, tweak as necessary for the vscreen
+			 * location.  Otherwise, put it in in something like the
+			 * middle.
+			 */
+			if(mask & XValue) {
+				if(mask & XNegative) {
+					x += vs->w - width;
+					gravity = (mask & YNegative) ? SouthEastGravity : NorthEastGravity;
+				}
+				else {
+					gravity = (mask & YNegative) ? SouthWestGravity : NorthWestGravity;
+				}
 			}
 			else {
-				gravity = (mask & YNegative) ? SouthWestGravity : NorthWestGravity;
+				x = (vs->w - width) / 2;
+				gravity = (mask & YValue) ? ((mask & YNegative) ?
+				                             SouthGravity : NorthGravity) : SouthGravity;
 			}
 		}
 		else {
-			x = (vs->w - width) / 2;
-			gravity = (mask & YValue) ? ((mask & YNegative) ?
-			                             SouthGravity : NorthGravity) : SouthGravity;
-		}
-		if(mask & YNegative) {
-			y += vs->h - height;
+			/* No geom specified, come up with one */
+			bwidth  = strWid + 2 * Scr->WMgrButtonShadowDepth + 6;
+			bheight = 22;
+			width   = columns * (bwidth  + hspace);
+			height  = lines   * (bheight + vspace);
+			x       = (vs->w - width) / 2;
+			y       = vs->h - height;
+			gravity = NorthWestGravity;
 		}
 	}
-	else {
-		bwidth  = strWid + 2 * Scr->WMgrButtonShadowDepth + 6;
-		bheight = 22;
-		width   = columns * (bwidth  + hspace);
-		height  = lines   * (bheight + vspace);
-		x       = (vs->w - width) / 2;
-		y       = vs->h - height;
-		gravity = NorthWestGravity;
-	}
 
-#define Dummy   1
+	/* Set w/h to dummy values; ResizeWorkSpaceManager() writes real ones */
+	vs->wsw->width  = 1;
+	vs->wsw->height = 1;
 
-	vs->wsw->width   = Dummy;
-	vs->wsw->height  = Dummy;
-	vs->wsw->bswl = calloc(Scr->workSpaceMgr.count, sizeof(ButtonSubwindow *));
-	vs->wsw->mswl = calloc(Scr->workSpaceMgr.count, sizeof(MapSubwindow *));
+	/* Allocate structs for map/button subwindows */
+	vs->wsw->bswl = calloc(count, sizeof(ButtonSubwindow *));
+	vs->wsw->mswl = calloc(count, sizeof(MapSubwindow *));
 
+	/* Create main window */
 	vs->wsw->w = XCreateSimpleWindow(dpy, Scr->Root, x, y, width, height, 0,
-	                                 Scr->Black, cp.back);
-	i = 0;
-	j = 0;
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		Window mapsw, butsw;
-		MapSubwindow *msw;
-		ButtonSubwindow *bsw;
+	                                 Scr->Black, Scr->workSpaceMgr.cp.back);
 
-		vs->wsw->bswl [ws->number] = bsw = malloc(sizeof(ButtonSubwindow));
-		vs->wsw->mswl [ws->number] = msw = malloc(sizeof(MapSubwindow));
 
-		butsw = bsw->w =
-		                XCreateSimpleWindow(dpy, vs->wsw->w,
-		                                    Dummy /* x */, Dummy /* y */,
-		                                    Dummy /* width */, Dummy /* height */,
-		                                    0, Scr->Black, ws->cp.back);
+	/*
+	 * Create the map and button subwindows for each workspace
+	 */
+	{
+		WorkSpace *ws;
 
-		mapsw = msw->w =
-		                XCreateSimpleWindow(dpy, vs->wsw->w,
-		                                    Dummy /* x */, Dummy /* y */,
-		                                    Dummy /* width */, Dummy /* height */,
-		                                    1, border, ws->cp.back);
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			MapSubwindow *msw;
+			ButtonSubwindow *bsw;
+			const int Dummy = 1;
+			const unsigned long border = Scr->workSpaceMgr.defBorderColor;
 
-		if(vs->wsw->state == WMS_buttons) {
-			XMapWindow(dpy, butsw);
-		}
-		else {
-			XMapWindow(dpy, mapsw);
-		}
+			/* Alloc structs */
+			vs->wsw->bswl[ws->number] = bsw
+			                            = calloc(1, sizeof(ButtonSubwindow));
+			vs->wsw->mswl[ws->number] = msw = calloc(1, sizeof(MapSubwindow));
 
-		/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() */
-		vs->wsw->mswl [ws->number]->wl = NULL;
-		if(useBackgroundInfo) {
-			if(ws->image == NULL || Scr->NoImagesInWorkSpaceManager) {
-				XSetWindowBackground(dpy, mapsw, ws->backcp.back);
+			/*
+			 * Create windows for button/map.  ResizeWorkSpaceManager()
+			 * sets the real sizes and positions, so we dummy 'em.
+			 */
+			bsw->w = XCreateSimpleWindow(dpy, vs->wsw->w,
+			                             Dummy, Dummy, Dummy, Dummy,
+			                             0, Scr->Black, ws->cp.back);
+
+			msw->w = XCreateSimpleWindow(dpy, vs->wsw->w,
+			                             Dummy, Dummy, Dummy, Dummy,
+			                             1, border, ws->cp.back);
+
+			/* Map whichever is up by default */
+			if(vs->wsw->state == WMS_buttons) {
+				XMapWindow(dpy, bsw->w);
 			}
 			else {
-				XSetWindowBackgroundPixmap(dpy, mapsw, ws->image->pixmap);
+				XMapWindow(dpy, msw->w);
 			}
-		}
-		else {
-			if(Scr->workSpaceMgr.defImage == NULL || Scr->NoImagesInWorkSpaceManager) {
-				XSetWindowBackground(dpy, mapsw, Scr->workSpaceMgr.defColors.back);
+
+			/* Setup background on map-state window */
+			/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() */
+			if(useBackgroundInfo) {
+				if(ws->image == NULL || Scr->NoImagesInWorkSpaceManager) {
+					XSetWindowBackground(dpy, msw->w, ws->backcp.back);
+				}
+				else {
+					XSetWindowBackgroundPixmap(dpy, msw->w, ws->image->pixmap);
+				}
 			}
 			else {
-				XSetWindowBackgroundPixmap(dpy, mapsw, Scr->workSpaceMgr.defImage->pixmap);
+				if(Scr->workSpaceMgr.defImage == NULL || Scr->NoImagesInWorkSpaceManager) {
+					XSetWindowBackground(dpy, msw->w, Scr->workSpaceMgr.defColors.back);
+				}
+				else {
+					XSetWindowBackgroundPixmap(dpy, msw->w, Scr->workSpaceMgr.defImage->pixmap);
+				}
 			}
+
+			/*
+			 * Clear out button subwin; PaintWorkSpaceManager() fills it
+			 * in.  Is this really necessary?
+			 */
+			XClearWindow(dpy, bsw->w);
 		}
-		XClearWindow(dpy, butsw);
-		i++;
-		if(i == columns) {
-			i = 0;
-			j++;
-		};
 	}
 
-	sizehints.flags       = USPosition | PBaseSize | PMinSize | PResizeInc |
-	                        PWinGravity;
-	sizehints.x           = x;
-	sizehints.y           = y;
-	sizehints.base_width  = columns * hspace;
-	sizehints.base_height = lines   * vspace;
-	sizehints.width_inc   = columns;
-	sizehints.height_inc  = lines;
-	sizehints.min_width   = columns  * (hspace + 2);
-	sizehints.min_height  = lines    * (vspace + 2);
-	sizehints.win_gravity = gravity;
 
-	wmhints.flags         = InputHint | StateHint;
-	wmhints.input         = True;
-	wmhints.initial_state = NormalState;
+	/* Set WM properties */
+	{
+		XSizeHints    sizehints;
+		XWMHints      wmhints;
+		const int lines   = Scr->workSpaceMgr.lines;
+		const int columns = Scr->workSpaceMgr.columns;
+		const char *name      = Scr->workSpaceMgr.name;
+		const char *icon_name = Scr->workSpaceMgr.icon_name;
 
-	XmbSetWMProperties(dpy, vs->wsw->w, name, icon_name, NULL, 0,
-	                   &sizehints, &wmhints, NULL);
+		sizehints.flags       = USPosition | PBaseSize | PMinSize | PResizeInc |
+		                        PWinGravity;
+		sizehints.x           = x;
+		sizehints.y           = y;
+		sizehints.base_width  = columns * hspace;
+		sizehints.base_height = lines   * vspace;
+		sizehints.width_inc   = columns;
+		sizehints.height_inc  = lines;
+		sizehints.min_width   = columns  * (hspace + 2);
+		sizehints.min_height  = lines    * (vspace + 2);
+		sizehints.win_gravity = gravity;
 
+		wmhints.flags         = InputHint | StateHint;
+		wmhints.input         = True;
+		wmhints.initial_state = NormalState;
+
+		XmbSetWMProperties(dpy, vs->wsw->w, name, icon_name, NULL, 0,
+		                   &sizehints, &wmhints, NULL);
+	}
+
+
+	/* Create our TwmWindow wrapping around it */
 	tmp_win = AddWindow(vs->wsw->w, AWT_WORKSPACE_MANAGER,
 	                    Scr->iconmgr, vs);
 	if(! tmp_win) {
@@ -480,23 +534,44 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	tmp_win->occupation = fullOccupation;
 	tmp_win->attr.width = width;
 	tmp_win->attr.height = height;
+	vs->wsw->twm_win = tmp_win;
+
+
+	/* Do the figuring to size and internal-layout it */
 	ResizeWorkSpaceManager(vs, tmp_win);
 
-	attrmask = 0;
-	attr.cursor = Scr->ButtonCursor;
-	attrmask |= CWCursor;
-	attr.win_gravity = gravity;
-	attrmask |= CWWinGravity;
-	XChangeWindowAttributes(dpy, vs->wsw->w, attrmask, &attr);
 
-	XGetWindowAttributes(dpy, vs->wsw->w, &wattr);
-	attrmask = wattr.your_event_mask | KeyPressMask | KeyReleaseMask | ExposureMask;
-	XSelectInput(dpy, vs->wsw->w, attrmask);
+	/* Setup cursor/gravity and listen for events */
+	{
+		XWindowAttributes wattr;
+		XSetWindowAttributes attr;
+		unsigned long attrmask;
 
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		Window buttonw = vs->wsw->bswl [ws->number]->w;
-		Window mapsubw = vs->wsw->mswl [ws->number]->w;
-		XSelectInput(dpy, buttonw, ButtonPressMask | ButtonReleaseMask | ExposureMask);
+		attr.cursor = Scr->ButtonCursor;
+		attr.win_gravity = gravity;
+		attrmask = CWCursor | CWWinGravity;
+		XChangeWindowAttributes(dpy, vs->wsw->w, attrmask, &attr);
+
+		XGetWindowAttributes(dpy, vs->wsw->w, &wattr);
+		attrmask = wattr.your_event_mask | KeyPressMask | KeyReleaseMask
+		           | ExposureMask;
+		XSelectInput(dpy, vs->wsw->w, attrmask);
+	}
+
+
+	/*
+	 * Mark the buttons as listening to click and exposure events, and
+	 * stash away some pointers in contexts.
+	 *
+	 * XXX Should the map window listen to exposure too?
+	 */
+	for(WorkSpace *ws = Scr->workSpaceMgr.workSpaceList; ws != NULL;
+	                ws = ws->next) {
+		Window buttonw = vs->wsw->bswl[ws->number]->w;
+		Window mapsubw = vs->wsw->mswl[ws->number]->w;
+
+		XSelectInput(dpy, buttonw, ButtonPressMask | ButtonReleaseMask
+		             | ExposureMask);
 		XSaveContext(dpy, buttonw, TwmContext, (XPointer) tmp_win);
 		XSaveContext(dpy, buttonw, ScreenContext, (XPointer) Scr);
 
@@ -504,12 +579,16 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 		XSaveContext(dpy, mapsubw, TwmContext, (XPointer) tmp_win);
 		XSaveContext(dpy, mapsubw, ScreenContext, (XPointer) Scr);
 	}
-	SetMapStateProp(tmp_win, WithdrawnState);
-	vs->wsw->twm_win = tmp_win;
 
+
+	/* Set WM_STATE prop */
+	SetMapStateProp(tmp_win, WithdrawnState);
+
+
+	/* Setup root window if necessary */
 	/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() */
-	ws = Scr->workSpaceMgr.workSpaceList;
 	if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
+		WorkSpace *ws = Scr->workSpaceMgr.workSpaceList;
 		if(ws->image == NULL) {
 			XSetWindowBackground(dpy, Scr->Root, ws->backcp.back);
 		}
@@ -518,6 +597,9 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 		}
 		XClearWindow(dpy, Scr->Root);
 	}
+
+
+	/* And draw it */
 	PaintWorkSpaceManager(vs);
 }
 
