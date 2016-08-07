@@ -64,7 +64,7 @@ static void InvertColorPair(ColorPair *cp);
 
 
 static XContext MapWListContext = (XContext) 0;
-static Cursor handCursor  = (Cursor) 0;
+static Cursor handCursor = None;
 
 
 
@@ -166,7 +166,9 @@ CreateWorkSpaceManager(void)
 		GetShadeColors(&Scr->workSpaceMgr.cp);
 	}
 
-	NewFontCursor(&handCursor, "top_left_arrow");
+	if(handCursor == None) {
+		NewFontCursor(&handCursor, "top_left_arrow");
+	}
 
 
 	{
