@@ -36,7 +36,7 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
 void WMapToggleState(VirtualScreen *vs);
 void WMapSetMapState(VirtualScreen *vs);
 void WMapSetButtonsState(VirtualScreen *vs);
-bool WMapWindowMayBeAdded(TwmWindow *win);
+
 void WMapMapWindow(TwmWindow *win);
 void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h);
 void WMapIconify(TwmWindow *win);
@@ -55,5 +55,7 @@ void WMapAddWindow(TwmWindow *win);
 void WMapAddToList(TwmWindow *win, WorkSpace *ws);
 void WMapDestroyWindow(TwmWindow *win);
 void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
+
+bool WMapWindowMayBeAdded(TwmWindow *win);
 
 #endif /* _CTWM_WORKMGR_H */

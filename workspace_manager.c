@@ -56,9 +56,10 @@ extern bool useBackgroundInfo;
 static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
-static void InvertColorPair(ColorPair *cp);
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, const char *label);
+
+static void InvertColorPair(ColorPair *cp);
 
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
@@ -668,35 +669,6 @@ void WMapSetButtonsState(VirtualScreen *vs)
 		XMapWindow(dpy, vs->wsw->bswl [ws->number]->w);
 	}
 	vs->wsw->state = WMS_buttons;
-}
-
-
-
-/*
- * Verify if a window may be added to the workspace map.
- * This is not allowed for
- * - icon managers
- * - the occupy window
- * - workspace manager windows
- * - or, optionally, windows with full occupation.
- */
-bool
-WMapWindowMayBeAdded(TwmWindow *win)
-{
-	if(win->isiconmgr) {
-		return false;
-	}
-	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
-		return false;
-	}
-	if(win->iswspmgr) {
-		return false;
-	}
-	if(Scr->workSpaceMgr.noshowoccupyall &&
-	                win->occupation == fullOccupation) {
-		return false;
-	}
-	return true;
 }
 
 
@@ -1462,25 +1434,6 @@ move:
 
 
 /*
- * This is really more util.c fodder, but leaving it here for now because
- * it's only used once in WMapRedrawName().  If we start finding external
- * uses for it, it should be moved.
- */
-static void
-InvertColorPair(ColorPair *cp)
-{
-	Pixel save;
-
-	save = cp->fore;
-	cp->fore = cp->back;
-	cp->back = save;
-	save = cp->shadc;
-	cp->shadc = cp->shadd;
-	cp->shadd = save;
-}
-
-
-/*
  * Draw a window name into the window's representation in the map-state
  * WSM.
  */
@@ -1721,4 +1674,57 @@ WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 			wl   = *prev;
 		}
 	}
+}
+
+
+
+
+/*
+ * Utils-ish funcs
+ */
+
+/*
+ * This is really more util.c fodder, but leaving it here for now because
+ * it's only used once in WMapRedrawName().  If we start finding external
+ * uses for it, it should be moved.
+ */
+static void
+InvertColorPair(ColorPair *cp)
+{
+	Pixel save;
+
+	save = cp->fore;
+	cp->fore = cp->back;
+	cp->back = save;
+	save = cp->shadc;
+	cp->shadc = cp->shadd;
+	cp->shadd = save;
+}
+
+
+/*
+ * Verify if a window may be added to the workspace map.
+ * This is not allowed for
+ * - icon managers
+ * - the occupy window
+ * - workspace manager windows
+ * - or, optionally, windows with full occupation.
+ */
+bool
+WMapWindowMayBeAdded(TwmWindow *win)
+{
+	if(win->isiconmgr) {
+		return false;
+	}
+	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
+		return false;
+	}
+	if(win->iswspmgr) {
+		return false;
+	}
+	if(Scr->workSpaceMgr.noshowoccupyall &&
+	                win->occupation == fullOccupation) {
+		return false;
+	}
+	return true;
 }
