@@ -593,7 +593,8 @@ PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 /*
  * Draw a workspace manager window on expose
  */
-void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
+void
+WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpace *ws;
 	Window buttonw;
@@ -634,7 +635,8 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 /*
  * Moving the WSM between button and map state
  */
-void WMapToggleState(VirtualScreen *vs)
+void
+WMapToggleState(VirtualScreen *vs)
 {
 	if(vs->wsw->state == WMS_buttons) {
 		WMapSetMapState(vs);
@@ -644,7 +646,8 @@ void WMapToggleState(VirtualScreen *vs)
 	}
 }
 
-void WMapSetMapState(VirtualScreen *vs)
+void
+WMapSetMapState(VirtualScreen *vs)
 {
 	WorkSpace     *ws;
 
@@ -659,7 +662,8 @@ void WMapSetMapState(VirtualScreen *vs)
 	MaybeAnimate = true;
 }
 
-void WMapSetButtonsState(VirtualScreen *vs)
+void
+WMapSetButtonsState(VirtualScreen *vs)
 {
 	WorkSpace     *ws;
 
