@@ -1817,14 +1817,9 @@ WMapAddWindow(TwmWindow *win)
 void
 WMapAddToList(TwmWindow *win, WorkSpace *ws)
 {
-	VirtualScreen *vs;
-	WinList wl;
-	float   wf, hf;
 	ColorPair cp;
-	XSetWindowAttributes attr;
-	unsigned long attrmask;
-	unsigned int bw;
 
+	/* Setup coloring for the window */
 	cp.back = win->title.back;
 	cp.fore = win->title.fore;
 	if(Scr->workSpaceMgr.windowcpgiven) {
@@ -1838,15 +1833,26 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 	if(Scr->use3Dwmap && !Scr->BeNiceToColormap) {
 		GetShadeColors(&cp);
 	}
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		wf = (float)(vs->wsw->wwidth  - 2) / (float) vs->w;
-		hf = (float)(vs->wsw->wheight - 2) / (float) vs->h;
+
+	/* We need a copy in each VS */
+	for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		unsigned int bw;
+		WinList wl;
+		const float wf = (float)(vs->wsw->wwidth  - 2) / (float) vs->w;
+		const float hf = (float)(vs->wsw->wheight - 2) / (float) vs->h;
+		MapSubwindow *msw = vs->wsw->mswl[ws->number];
+
+		/* Put together its winlist entry */
 		wl = malloc(sizeof(struct winList));
 		wl->wlist  = ws;
 		wl->x      = (int)(win->frame_x * wf);
 		wl->y      = (int)(win->frame_y * hf);
 		wl->width  = (unsigned int)((win->frame_width  * wf) + 0.5);
 		wl->height = (unsigned int)((win->frame_height * hf) + 0.5);
+		wl->cp     = cp;
+		wl->twm_win = win;
+
+		/* Size the window bits */
 		bw = 0;
 		if(!Scr->use3Dwmap) {
 			bw = 1;
@@ -1859,28 +1865,47 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 		if(wl->height < 1) {
 			wl->height = 1;
 		}
-		wl->w = XCreateSimpleWindow(dpy, vs->wsw->mswl [ws->number]->w, wl->x, wl->y,
-		                            wl->width, wl->height, bw, Scr->Black, cp.back);
-		attrmask = 0;
-		if(Scr->BackingStore) {
-			attr.backing_store = WhenMapped;
-			attrmask |= CWBackingStore;
+
+		/* Create its little window */
+		wl->w = XCreateSimpleWindow(dpy, msw->w, wl->x, wl->y,
+		                            wl->width, wl->height, bw,
+		                            Scr->Black, cp.back);
+
+		/* Setup cursor and attributes for it */
+		{
+			XSetWindowAttributes attr;
+			unsigned long attrmask;
+
+			attr.cursor = handCursor;
+			attrmask = CWCursor;
+
+			if(Scr->BackingStore) {
+				attr.backing_store = WhenMapped;
+				attrmask |= CWBackingStore;
+			}
+
+			XChangeWindowAttributes(dpy, wl->w, attrmask, &attr);
 		}
-		attr.cursor = handCursor;
-		attrmask |= CWCursor;
-		XChangeWindowAttributes(dpy, wl->w, attrmask, &attr);
+
+		/* Setup events and stash context bits */
 		XSelectInput(dpy, wl->w, ExposureMask);
 		XSaveContext(dpy, wl->w, TwmContext, (XPointer) vs->wsw->twm_win);
 		XSaveContext(dpy, wl->w, ScreenContext, (XPointer) Scr);
 		XSaveContext(dpy, wl->w, MapWListContext, (XPointer) wl);
-		wl->twm_win = win;
-		wl->cp      = cp;
-		wl->next    = vs->wsw->mswl [ws->number]->wl;
-		vs->wsw->mswl [ws->number]->wl = wl;
+
+		/* Link it onto the front of the list */
+		wl->next = msw->wl;
+		msw->wl  = wl;
+
+		/*
+		 * And map it, if its window is mapped.  That'll kick an expose
+		 * event, which will work its way down to WMapRedrawWindow(), and
+		 * fill things in.
+		 */
 		if(win->mapped) {
 			XMapWindow(dpy, wl->w);
 		}
-	}
+	} // And around to the next vscreen
 }
 
 
