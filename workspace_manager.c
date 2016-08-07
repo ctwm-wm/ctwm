@@ -701,50 +701,6 @@ WMapWindowMayBeAdded(TwmWindow *win)
 
 
 /*
- * Add a window into any appropriate WSM's [data structure].  Called
- * during AddWindow().
- */
-void WMapAddWindow(TwmWindow *win)
-{
-	WorkSpace     *ws;
-
-	if(!WMapWindowMayBeAdded(win)) {
-		return;
-	}
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapAddToList(win, ws);
-		}
-	}
-}
-
-
-/*
- * Remove a window from any WSM's [data structures].  Called during
- * window destruction process.
- */
-void WMapDestroyWindow(TwmWindow *win)
-{
-	WorkSpace *ws;
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapRemoveFromList(win, ws);
-		}
-	}
-	/* XXX Better belongs inline in caller or separate func? */
-	if(win == occupyWin) {
-		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
-		XUnmapWindow(dpy, occwin->twm_win->frame);
-		occwin->twm_win->mapped = false;
-		occwin->twm_win->occupation = 0;
-		occupyWin = NULL;
-	}
-}
-
-
-/*
  * Map up a window's subwindow in the map-mode WSM.  Happens when a
  * window is de-iconified or otherwise mapped.  Specifically, when we get
  * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
@@ -1613,6 +1569,26 @@ static void WMapRedrawWindow(Window window, int width, int height,
 
 
 /*
+ * Add a window into any appropriate WSM's [data structure].  Called
+ * during AddWindow().
+ */
+void WMapAddWindow(TwmWindow *win)
+{
+	WorkSpace     *ws;
+
+	if(!WMapWindowMayBeAdded(win)) {
+		return;
+	}
+
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(OCCUPY(win, ws)) {
+			WMapAddToList(win, ws);
+		}
+	}
+}
+
+
+/*
  * Create WSM representation of a given in a given WS.  Called when
  * windows get added to a workspace, either via WMapAddWindow() during
  * the AddWindow() process, or via an occupation change.
@@ -1683,6 +1659,30 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 		if(win->mapped) {
 			XMapWindow(dpy, wl->w);
 		}
+	}
+}
+
+
+/*
+ * Remove a window from any WSM's [data structures].  Called during
+ * window destruction process.
+ */
+void WMapDestroyWindow(TwmWindow *win)
+{
+	WorkSpace *ws;
+
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(OCCUPY(win, ws)) {
+			WMapRemoveFromList(win, ws);
+		}
+	}
+	/* XXX Better belongs inline in caller or separate func? */
+	if(win == occupyWin) {
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
+		XUnmapWindow(dpy, occwin->twm_win->frame);
+		occwin->twm_win->mapped = false;
+		occwin->twm_win->occupation = 0;
+		occupyWin = NULL;
 	}
 }
 
