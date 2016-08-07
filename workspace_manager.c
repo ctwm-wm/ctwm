@@ -58,7 +58,7 @@ static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
 static void InvertColorPair(ColorPair *cp);
 static void WMapRedrawWindow(Window window, int width, int height,
-                             ColorPair cp, char *label);
+                             ColorPair cp, const char *label);
 
 static XContext MapWListContext = (XContext) 0;
 static Cursor handCursor  = (Cursor) 0;
@@ -1481,7 +1481,7 @@ void WMapRedrawName(VirtualScreen *vs, WinList wl)
  * some odd colored pixels at the top of the window.
  */
 static void WMapRedrawWindow(Window window, int width, int height,
-                             ColorPair cp, char *label)
+                             ColorPair cp, const char *label)
 {
 	int         x, y, strhei, strwid;
 	MyFont      font;
