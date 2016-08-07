@@ -303,13 +303,13 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
  * to the func, there's nothing to do.
  */
 #define GWS_CHECK do { \
-		if(! Scr->workSpaceManagerActive) {   \
-			return;                           \
-		}                                     \
-		if(!vs) {                             \
-			return;                           \
-		}                                     \
-	} while(0)
+                if(! Scr->workSpaceManagerActive) {   \
+                        return;                       \
+                }                                     \
+                if(!vs) {                             \
+                        return;                       \
+                }                                     \
+        } while(0)
 
 void
 GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
