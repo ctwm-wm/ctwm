@@ -1715,41 +1715,51 @@ static void
 WMapRedrawWindow(Window window, int width, int height,
                  ColorPair cp, const char *label)
 {
-	int         x, y, strhei, strwid;
-	MyFont      font;
-	XRectangle inc_rect;
-	XRectangle logical_rect;
-	XFontStruct **xfonts;
-	char **font_names;
-	int i;
-	int descent;
-	int fnum;
+	int x, y;
+	const MyFont font = Scr->workSpaceMgr.windowFont;
 
+	/* Blank out window background color */
 	XClearWindow(dpy, window);
-	font = Scr->workSpaceMgr.windowFont;
 
-	XmbTextExtents(font.font_set, label, strlen(label),
-	               &inc_rect, &logical_rect);
-	strwid = logical_rect.width;
-	strhei = logical_rect.height;
-	if(strhei > height) {
-		return;
+	/* Figure out where to position the name */
+	{
+		XRectangle inc_rect;
+		XRectangle logical_rect;
+		int strhei, strwid;
+		int i, descent;
+		XFontStruct **xfonts;
+		char **font_names;
+		int fnum;
+
+		XmbTextExtents(font.font_set, label, strlen(label),
+		               &inc_rect, &logical_rect);
+		strwid = logical_rect.width;
+		strhei = logical_rect.height;
+
+		/*
+		 * If it's too tall to fit, just give up now.
+		 * XXX Probably should still do border stuff below...
+		 */
+		if(strhei > height) {
+			return;
+		}
+
+		x = (width - strwid) / 2;
+		if(x < 1) {
+			x = 1;
+		}
+
+		fnum = XFontsOfFontSet(font.font_set, &xfonts, &font_names);
+		for(i = 0, descent = 0; i < fnum; i++) {
+			/* xf = xfonts[i]; */
+			descent = ((descent < (xfonts[i]->max_bounds.descent)) ?
+			           (xfonts[i]->max_bounds.descent) : descent);
+		}
+
+		y = ((height + strhei) / 2) - descent;
 	}
 
-	x = (width  - strwid) / 2;
-	if(x < 1) {
-		x = 1;
-	}
-
-	fnum = XFontsOfFontSet(font.font_set, &xfonts, &font_names);
-	for(i = 0, descent = 0; i < fnum; i++) {
-		/* xf = xfonts[i]; */
-		descent = ((descent < (xfonts[i]->max_bounds.descent)) ?
-		           (xfonts[i]->max_bounds.descent) : descent);
-	}
-
-	y = ((height + strhei) / 2) - descent;
-
+	/* Draw up borders around the win */
 	if(Scr->use3Dwmap) {
 		Draw3DBorder(window, 0, 0, width, height, 1, cp, off, true, false);
 		FB(cp.fore, cp.back);
@@ -1759,13 +1769,15 @@ WMapRedrawWindow(Window window, int width, int height,
 		XFillRectangle(dpy, window, Scr->NormalGC, 0, 0, width, height);
 		FB(cp.fore, cp.back);
 	}
+
+	/* Write in the name */
 	if(Scr->Monochrome != COLOR) {
-		XmbDrawImageString(dpy, window, font.font_set, Scr->NormalGC, x, y, label,
-		                   strlen(label));
+		XmbDrawImageString(dpy, window, font.font_set, Scr->NormalGC, x, y,
+		                   label, strlen(label));
 	}
 	else {
-		XmbDrawString(dpy, window, font.font_set, Scr->NormalGC, x, y, label,
-		              strlen(label));
+		XmbDrawString(dpy, window, font.font_set, Scr->NormalGC, x, y,
+		              label, strlen(label));
 	}
 }
 
