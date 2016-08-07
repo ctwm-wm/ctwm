@@ -172,9 +172,9 @@ CreateWorkSpaceManager(void)
 
 
 	{
-		char vsmapbuf [1024], *vsmap;
-		int vsmaplen;
-		WorkSpace     *ws, *fws;
+		WorkSpace *ws, *fws;
+		char vsmapbuf[1024], *vsmap;
+		int  vsmaplen;
 
 		vsmaplen = sizeof(vsmapbuf);
 		if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen)) {
