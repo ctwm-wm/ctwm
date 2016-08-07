@@ -173,4 +173,6 @@ WorkSpace *GetWorkspace(char *wname);
 
 void ShowBackground(VirtualScreen *vs, int state);
 
+void ws_set_useBackgroundInfo(bool newval);
+
 #endif /* _CTWM_WORKMGR_H */

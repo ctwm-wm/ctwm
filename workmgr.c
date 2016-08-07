@@ -834,7 +834,7 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.back), backback);
-		useBackgroundInfo = true;
+		ws_set_useBackgroundInfo(true);
 	}
 
 	if(backfore == NULL) {
@@ -842,14 +842,14 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
-		useBackgroundInfo = true;
+		ws_set_useBackgroundInfo(true);
 	}
 
 
 	/* Maybe there's an image to stick on the root as well */
 	ws->image = GetImage(backpix, ws->backcp);
 	if(ws->image != NULL) {
-		useBackgroundInfo = true;
+		ws_set_useBackgroundInfo(true);
 	}
 
 
@@ -2444,4 +2444,14 @@ void WMapCreateDefaultBackGround(char *border,
 		return;
 	}
 	ws->defImage = image;
+}
+
+
+/*
+ * Util for setting useBackgroundInfo var, to reduce its exposure across
+ * the multiple files that might touch it.
+ */
+void ws_set_useBackgroundInfo(bool newval)
+{
+	useBackgroundInfo = newval;
 }
