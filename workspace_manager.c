@@ -66,6 +66,11 @@ static Cursor handCursor  = (Cursor) 0;
 
 
 /*
+ * First, functions related to general creation and drawing of the WSM
+ * window and its backing structs
+ */
+
+/*
  * Basic setup of Scr->workSpaceMgr structures.  Called (for each screen)
  * early in startup, prior to config file parsing.
  */
@@ -621,6 +626,8 @@ void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 }
 
 
+
+
 /*
  * Moving the WSM between button and map state
  */
@@ -662,6 +669,7 @@ void WMapSetButtonsState(VirtualScreen *vs)
 	}
 	vs->wsw->state = WMS_buttons;
 }
+
 
 
 /*
@@ -1499,7 +1507,7 @@ move:
 
 /*
  * This is really more util.c fodder, but leaving it here for now because
- * it's only used once in the below func.  If we start finding external
+ * it's only used once in WMapRedrawName().  If we start finding external
  * uses for it, it should be moved.
  */
 static void
