@@ -35,30 +35,19 @@
 #include "ctwm_atoms.h"
 #include "util.h"
 #include "animate.h"
-#include "parse.h"
 #include "screen.h"
-#include "icons.h"
 #include "decorations.h"
-#include "resize.h"
 #include "add_window.h"
 #include "events.h"
 #include "otp.h"
-#include "clicktofocus.h"
 #include "cursor.h"
-#include "list.h"
 #include "image.h"
-#include "functions.h"
 #include "drawing.h"
 #include "workmgr.h"
 #include "workspace_utils.h"
-#ifdef EWMH
-#  include "ewmh_atoms.h"
-#endif
 
 #include "gram.tab.h"
 
-// Gotten via screen.h
-//#include "workmgr.h"
 
 // Temp
 extern bool useBackgroundInfo;
