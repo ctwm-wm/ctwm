@@ -221,6 +221,14 @@ CreateWorkSpaceManager(void)
 	/*
 	 * Init background in the WSM workspace subwindow and potentially the
 	 * root window to the settings for the active workspace
+	 *
+	 * XXX CTAG_BGDRAW This process is also done in similar fashion
+	 * during CreateWorkSpaceManagerWindow(), and the two parts are done
+	 * split well apart during GotoWorkSpace().  The details of the
+	 * process should be factored out into helper functions instead of
+	 * being reimplemented in each place.  That will require a little
+	 * shuffling of code, and careful thinking on the apparent
+	 * differences (which seem like they may be cosmetic).  Todo.
 	 */
 	for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		WorkSpaceWindow *wsw = vs->wsw;    // Our WSW
@@ -418,6 +426,7 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 			XMapWindow(dpy, mapsw);
 		}
 
+		/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() */
 		vs->wsw->mswl [ws->number]->wl = NULL;
 		if(useBackgroundInfo) {
 			if(ws->image == NULL || Scr->NoImagesInWorkSpaceManager) {
@@ -498,6 +507,7 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	SetMapStateProp(tmp_win, WithdrawnState);
 	vs->wsw->twm_win = tmp_win;
 
+	/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() */
 	ws = Scr->workSpaceMgr.workSpaceList;
 	if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
 		if(ws->image == NULL) {

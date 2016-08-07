@@ -72,6 +72,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	attr.backing_store = NotUseful;
 	attr.save_under    = False;
 
+	/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() and below */
 	if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
 		if(newws->image == NULL) {
 			XSetWindowBackground(dpy, vs->window, newws->backcp.back);
@@ -206,6 +207,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	oldws->iconmgr = Scr->iconmgr;
 	Scr->iconmgr = newws->iconmgr;
 
+	/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() and above */
 	oldw = vs->wsw->mswl [oldws->number]->w;
 	neww = vs->wsw->mswl [newws->number]->w;
 	if(useBackgroundInfo) {
