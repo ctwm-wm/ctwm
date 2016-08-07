@@ -158,6 +158,7 @@ CreateWorkSpaceManager(void)
 		return;
 	}
 
+	/* Setup basic fonts/colors/cursors */
 	Scr->workSpaceMgr.windowFont.basename =
 	        "-adobe-courier-medium-r-normal--10-100-75-75-m-60-iso8859-1";
 	Scr->workSpaceMgr.buttonFont = Scr->IconManagerFont;
@@ -165,12 +166,16 @@ CreateWorkSpaceManager(void)
 	if(!Scr->BeNiceToColormap) {
 		GetShadeColors(&Scr->workSpaceMgr.cp);
 	}
-
 	if(handCursor == None) {
 		NewFontCursor(&handCursor, "top_left_arrow");
 	}
 
 
+	/*
+	 * Create a WSM window for each vscreen.  We don't need one for each
+	 * workspace (we just reuse the same one), but we do need one for
+	 * each vscreen (since they have to be displayed simultaneously).
+	 */
 	{
 		WorkSpace *ws, *fws;
 		char *vsmapbuf, *vsmap;
@@ -213,10 +218,16 @@ CreateWorkSpaceManager(void)
 	}
 
 
+	/*
+	 * Init background in the WSM workspace subwindow and potentially the
+	 * root window to the settings for the active workspace
+	 */
 	for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		WorkSpaceWindow *wsw = vs->wsw;
-		WorkSpace *ws2 = wsw->currentwspc;
-		MapSubwindow *msw = wsw->mswl [ws2->number];
+		WorkSpaceWindow *wsw = vs->wsw;    // Our WSW
+		WorkSpace *ws2 = wsw->currentwspc; // Active WS
+		MapSubwindow *msw = wsw->mswl[ws2->number]; // Active WS's subwin
+
+		/* Setup the background/border on the active workspace */
 		if(Scr->workSpaceMgr.curImage == NULL) {
 			if(Scr->workSpaceMgr.curPaint) {
 				XSetWindowBackground(dpy, msw->w, Scr->workSpaceMgr.curColors.back);
@@ -228,6 +239,7 @@ CreateWorkSpaceManager(void)
 		XSetWindowBorder(dpy, msw->w, Scr->workSpaceMgr.curBorderColor);
 		XClearWindow(dpy, msw->w);
 
+		/* Set the root window to the color/image of that WS if we should */
 		if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
 			if(ws2->image == NULL) {
 				XSetWindowBackground(dpy, vs->window, ws2->backcp.back);
@@ -239,6 +251,17 @@ CreateWorkSpaceManager(void)
 		}
 	}
 
+
+	/*
+	 * Set the property we use to store the full list of workspaces.
+	 *
+	 * XXX This isn't really part of creating the WSM windows, so doesn't
+	 * strictly belong here.  It does need to happen after the config
+	 * file parsing setup the workspaces, so couldn't go into
+	 * InitWorkSpaceManager().  It could probably move into
+	 * ConfigureWorkSpaceManager() though, or could move into a separate
+	 * hypotehtical ConfigureWorkSpaces() sort of thing...
+	 */
 	{
 		char *wrkSpcList;
 		int  len;
