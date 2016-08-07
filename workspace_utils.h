@@ -19,6 +19,4 @@ void ShowBackground(VirtualScreen *vs, int state);
 char *GetCurrentWorkSpaceName(VirtualScreen *vs);
 WorkSpace *GetWorkspace(const char *wname);
 
-void ws_set_useBackgroundInfo(bool newval);
-
 #endif /* _CTWM_WORKSPACE_UTILS_H */

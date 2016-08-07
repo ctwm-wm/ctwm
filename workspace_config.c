@@ -16,6 +16,9 @@
 #include "workspace_utils.h"
 
 
+// Temp; x-ref desc in workspace_utils
+extern bool useBackgroundInfo;
+
 
 /*
  * Create a workspace.  This is what gets called when parsing
@@ -86,7 +89,7 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.back), backback);
-		ws_set_useBackgroundInfo(true);
+		useBackgroundInfo = true;
 	}
 
 	if(backfore == NULL) {
@@ -94,14 +97,14 @@ AddWorkSpace(const char *name, const char *background, const char *foreground,
 	}
 	else {
 		GetColor(Scr->Monochrome, &(ws->backcp.fore), backfore);
-		ws_set_useBackgroundInfo(true);
+		useBackgroundInfo = true;
 	}
 
 
 	/* Maybe there's an image to stick on the root as well */
 	ws->image = GetImage(backpix, ws->backcp);
 	if(ws->image != NULL) {
-		ws_set_useBackgroundInfo(true);
+		useBackgroundInfo = true;
 	}
 
 

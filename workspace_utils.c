@@ -572,14 +572,3 @@ GetWorkspace(const char *wname)
 	/* Nope */
 	return NULL;
 }
-
-
-/*
- * Util for setting useBackgroundInfo var, to reduce its exposure across
- * the multiple files that might touch it.
- */
-void
-ws_set_useBackgroundInfo(bool newval)
-{
-	useBackgroundInfo = newval;
-}
