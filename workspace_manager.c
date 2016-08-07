@@ -1568,6 +1568,12 @@ static void WMapRedrawWindow(Window window, int width, int height,
 }
 
 
+
+
+/*
+ * Processes for adding/removing windows from the WSM
+ */
+
 /*
  * Add a window into any appropriate WSM's [data structure].  Called
  * during AddWindow().
