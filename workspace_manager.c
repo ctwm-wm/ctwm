@@ -678,288 +678,11 @@ WMapSetButtonsState(VirtualScreen *vs)
 }
 
 
-/*
- * Map up a window's subwindow in the map-mode WSM.  Happens when a
- * window is de-iconified or otherwise mapped.  Specifically, when we get
- * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
- * some subtle distinctions between the two...
- */
-void WMapMapWindow(TwmWindow *win)
-{
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList   wl;
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(wl->twm_win == win) {
-					XMapWindow(dpy, wl->w);
-					WMapRedrawName(vs, wl);
-					break;
-				}
-			}
-		}
-	}
-}
 
 
 /*
- * Position a window in the WSM.  Happens as a result of moving things.
+ * Handlers for mouse/key actions in the WSM
  */
-void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
-{
-	VirtualScreen *vs;
-	WorkSpace     *ws;
-	WinList       wl;
-
-	if(win->isiconmgr) {
-		return;
-	}
-	if(!win->vs) {
-		return;
-	}
-
-	if(win->iswspmgr) {
-		if(w == -1) {
-			return;
-		}
-		ResizeWorkSpaceManager(win->vs, win);
-		return;
-	}
-	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
-		if(w == -1) {
-			return;
-		}
-		ResizeOccupyWindow(win);
-		return;
-	}
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		WorkSpaceWindow *wsw = vs->wsw;
-		float wf = (float)(wsw->wwidth  - 2) / (float) vs->w;
-		float hf = (float)(wsw->wheight - 2) / (float) vs->h;
-
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(win == wl->twm_win) {
-					wl->x = (int)(x * wf);
-					wl->y = (int)(y * hf);
-					if(w == -1) {
-						XMoveWindow(dpy, wl->w, wl->x, wl->y);
-					}
-					else {
-						wl->width  = (unsigned int)((w * wf) + 0.5);
-						wl->height = (unsigned int)((h * hf) + 0.5);
-						if(!Scr->use3Dwmap) {
-							wl->width  -= 2;
-							wl->height -= 2;
-						}
-						if(wl->width  < 1) {
-							wl->width  = 1;
-						}
-						if(wl->height < 1) {
-							wl->height = 1;
-						}
-						XMoveResizeWindow(dpy, wl->w, wl->x, wl->y, wl->width, wl->height);
-					}
-					break;
-				}
-			}
-		}
-	}
-}
-
-
-/*
- * Hide away a window in the WSM map.  Happens when win is iconified;
- * different from destruction.
- */
-void WMapIconify(TwmWindow *win)
-{
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList    wl;
-
-	if(!win->vs) {
-		return;
-	}
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(win == wl->twm_win) {
-					XUnmapWindow(dpy, wl->w);
-					break;
-				}
-			}
-		}
-	}
-}
-
-
-/*
- * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
- * and different from WMapMapWindow() in complicated ways.  WMMW() gets
- * called at the end of HandleMapRequest().  A little earlier in HMR(),
- * DeIconify() is (sometimes) called, which calls this function.  So,
- * anything that de-iconifies invokes this, but only when it happens via
- * a map event does WMMW() get called as well.
- *
- * XXX Does it make sense that they're separate?  They seem do be doing a
- * lot of the same stuff.  In fact, the only difference is apparently
- * that this auto-raises on !(NoRaiseDeIcon)?  This requires some further
- * investigation...  at the least, they should probably be collapsed
- * somehow with a conditional for that trivial difference.
- */
-void WMapDeIconify(TwmWindow *win)
-{
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList    wl;
-
-	if(!win->vs) {
-		return;
-	}
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(win == wl->twm_win) {
-					if(Scr->NoRaiseDeicon) {
-						XMapWindow(dpy, wl->w);
-					}
-					else {
-						XMapRaised(dpy, wl->w);
-					}
-					WMapRedrawName(win->vs, wl);
-					break;
-				}
-			}
-		}
-	}
-}
-
-
-/*
- * Frontends for changing the stacking of windows in the WSM.
- *
- * XXX If these implementations really _should_ be identical, they should
- * be collapsed...
- */
-void WMapRaiseLower(TwmWindow *win)
-{
-	WorkSpace *ws;
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapRestack(ws);
-		}
-	}
-}
-
-void WMapLower(TwmWindow *win)
-{
-	WorkSpace *ws;
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapRestack(ws);
-		}
-	}
-}
-
-void WMapRaise(TwmWindow *win)
-{
-	WorkSpace *ws;
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapRestack(ws);
-		}
-	}
-}
-
-
-/*
- * Backend for redoing the stacking of a window in the WSM.
- *
- * XXX Since this tends to get called iteratively, there's probably
- * something better we can do than doing all this relatively expensive
- * stuff over and over...
- */
-void WMapRestack(WorkSpace *ws)
-{
-	VirtualScreen *vs;
-	TwmWindow   *win;
-	WinList     wl;
-	Window      root;
-	Window      parent;
-	Window      *children, *smallws;
-	unsigned int number;
-	int         i, j;
-
-	number = 0;
-	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &number);
-	smallws = calloc(number, sizeof(Window));
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		j = 0;
-		for(i = number - 1; i >= 0; i--) {
-			if(!(win = GetTwmWindow(children [i]))) {
-				continue;
-			}
-			if(win->frame != children [i]) {
-				continue;        /* skip icons */
-			}
-			if(! OCCUPY(win, ws)) {
-				continue;
-			}
-			if(tracefile) {
-				fprintf(tracefile, "WMapRestack : w = %lx, win = %p\n", children [i],
-				        (void *)win);
-				fflush(tracefile);
-			}
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(tracefile) {
-					fprintf(tracefile, "WMapRestack : wl = %p, twm_win = %p\n", (void *)wl,
-					        (void *)wl->twm_win);
-					fflush(tracefile);
-				}
-				if(win == wl->twm_win) {
-					smallws [j++] = wl->w;
-					break;
-				}
-			}
-		}
-		XRestackWindows(dpy, smallws, j);
-	}
-	XFree(children);
-	free(smallws);
-	return;
-}
-
-
-/*
- * Update stuff in the WSM when win's icon name changes
- */
-void WMapUpdateIconName(TwmWindow *win)
-{
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList   wl;
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(win == wl->twm_win) {
-					WMapRedrawName(vs, wl);
-					break;
-				}
-			}
-		}
-	}
-}
-
 
 /*
  * Key press/release events in the WSM.  A major use (and only for
@@ -967,7 +690,8 @@ void WMapUpdateIconName(TwmWindow *win)
  * other use is on-the-fly renaming of workspaces by typing in the
  * button-state WSM.
  */
-void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
+void
+WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
 {
 	KeySym      keysym;
 
@@ -984,7 +708,8 @@ void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
 	}
 }
 
-void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
+void
+WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpace *ws;
 	int       len, i, lname;
@@ -1058,7 +783,8 @@ void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
  * workspaces.  In the more complex, it's changing window occupation in
  * various different ways.
  */
-void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
+void
+WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpaceWindow     *mw;
 	WorkSpace           *ws, *oldws, *newws, *cws;
@@ -1436,6 +1162,290 @@ move:
 			return;
 	}
 	XDestroyWindow(dpy, w);
+}
+
+
+
+/*
+ * Map up a window's subwindow in the map-mode WSM.  Happens when a
+ * window is de-iconified or otherwise mapped.  Specifically, when we get
+ * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
+ * some subtle distinctions between the two...
+ */
+void WMapMapWindow(TwmWindow *win)
+{
+	VirtualScreen *vs;
+	WorkSpace *ws;
+	WinList   wl;
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(wl->twm_win == win) {
+					XMapWindow(dpy, wl->w);
+					WMapRedrawName(vs, wl);
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+/*
+ * Position a window in the WSM.  Happens as a result of moving things.
+ */
+void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
+{
+	VirtualScreen *vs;
+	WorkSpace     *ws;
+	WinList       wl;
+
+	if(win->isiconmgr) {
+		return;
+	}
+	if(!win->vs) {
+		return;
+	}
+
+	if(win->iswspmgr) {
+		if(w == -1) {
+			return;
+		}
+		ResizeWorkSpaceManager(win->vs, win);
+		return;
+	}
+	if(win == Scr->workSpaceMgr.occupyWindow->twm_win) {
+		if(w == -1) {
+			return;
+		}
+		ResizeOccupyWindow(win);
+		return;
+	}
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		WorkSpaceWindow *wsw = vs->wsw;
+		float wf = (float)(wsw->wwidth  - 2) / (float) vs->w;
+		float hf = (float)(wsw->wheight - 2) / (float) vs->h;
+
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(win == wl->twm_win) {
+					wl->x = (int)(x * wf);
+					wl->y = (int)(y * hf);
+					if(w == -1) {
+						XMoveWindow(dpy, wl->w, wl->x, wl->y);
+					}
+					else {
+						wl->width  = (unsigned int)((w * wf) + 0.5);
+						wl->height = (unsigned int)((h * hf) + 0.5);
+						if(!Scr->use3Dwmap) {
+							wl->width  -= 2;
+							wl->height -= 2;
+						}
+						if(wl->width  < 1) {
+							wl->width  = 1;
+						}
+						if(wl->height < 1) {
+							wl->height = 1;
+						}
+						XMoveResizeWindow(dpy, wl->w, wl->x, wl->y, wl->width, wl->height);
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+/*
+ * Hide away a window in the WSM map.  Happens when win is iconified;
+ * different from destruction.
+ */
+void WMapIconify(TwmWindow *win)
+{
+	VirtualScreen *vs;
+	WorkSpace *ws;
+	WinList    wl;
+
+	if(!win->vs) {
+		return;
+	}
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(win == wl->twm_win) {
+					XUnmapWindow(dpy, wl->w);
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+/*
+ * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
+ * and different from WMapMapWindow() in complicated ways.  WMMW() gets
+ * called at the end of HandleMapRequest().  A little earlier in HMR(),
+ * DeIconify() is (sometimes) called, which calls this function.  So,
+ * anything that de-iconifies invokes this, but only when it happens via
+ * a map event does WMMW() get called as well.
+ *
+ * XXX Does it make sense that they're separate?  They seem do be doing a
+ * lot of the same stuff.  In fact, the only difference is apparently
+ * that this auto-raises on !(NoRaiseDeIcon)?  This requires some further
+ * investigation...  at the least, they should probably be collapsed
+ * somehow with a conditional for that trivial difference.
+ */
+void WMapDeIconify(TwmWindow *win)
+{
+	VirtualScreen *vs;
+	WorkSpace *ws;
+	WinList    wl;
+
+	if(!win->vs) {
+		return;
+	}
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(win == wl->twm_win) {
+					if(Scr->NoRaiseDeicon) {
+						XMapWindow(dpy, wl->w);
+					}
+					else {
+						XMapRaised(dpy, wl->w);
+					}
+					WMapRedrawName(win->vs, wl);
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+/*
+ * Frontends for changing the stacking of windows in the WSM.
+ *
+ * XXX If these implementations really _should_ be identical, they should
+ * be collapsed...
+ */
+void WMapRaiseLower(TwmWindow *win)
+{
+	WorkSpace *ws;
+
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(OCCUPY(win, ws)) {
+			WMapRestack(ws);
+		}
+	}
+}
+
+void WMapLower(TwmWindow *win)
+{
+	WorkSpace *ws;
+
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(OCCUPY(win, ws)) {
+			WMapRestack(ws);
+		}
+	}
+}
+
+void WMapRaise(TwmWindow *win)
+{
+	WorkSpace *ws;
+
+	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+		if(OCCUPY(win, ws)) {
+			WMapRestack(ws);
+		}
+	}
+}
+
+
+/*
+ * Backend for redoing the stacking of a window in the WSM.
+ *
+ * XXX Since this tends to get called iteratively, there's probably
+ * something better we can do than doing all this relatively expensive
+ * stuff over and over...
+ */
+void WMapRestack(WorkSpace *ws)
+{
+	VirtualScreen *vs;
+	TwmWindow   *win;
+	WinList     wl;
+	Window      root;
+	Window      parent;
+	Window      *children, *smallws;
+	unsigned int number;
+	int         i, j;
+
+	number = 0;
+	XQueryTree(dpy, Scr->Root, &root, &parent, &children, &number);
+	smallws = calloc(number, sizeof(Window));
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		j = 0;
+		for(i = number - 1; i >= 0; i--) {
+			if(!(win = GetTwmWindow(children [i]))) {
+				continue;
+			}
+			if(win->frame != children [i]) {
+				continue;        /* skip icons */
+			}
+			if(! OCCUPY(win, ws)) {
+				continue;
+			}
+			if(tracefile) {
+				fprintf(tracefile, "WMapRestack : w = %lx, win = %p\n", children [i],
+				        (void *)win);
+				fflush(tracefile);
+			}
+			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(tracefile) {
+					fprintf(tracefile, "WMapRestack : wl = %p, twm_win = %p\n", (void *)wl,
+					        (void *)wl->twm_win);
+					fflush(tracefile);
+				}
+				if(win == wl->twm_win) {
+					smallws [j++] = wl->w;
+					break;
+				}
+			}
+		}
+		XRestackWindows(dpy, smallws, j);
+	}
+	XFree(children);
+	free(smallws);
+	return;
+}
+
+
+/*
+ * Update stuff in the WSM when win's icon name changes
+ */
+void WMapUpdateIconName(TwmWindow *win)
+{
+	VirtualScreen *vs;
+	WorkSpace *ws;
+	WinList   wl;
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = vs->wsw->mswl [ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(win == wl->twm_win) {
+					WMapRedrawName(vs, wl);
+					break;
+				}
+			}
+		}
+	}
 }
 
 
