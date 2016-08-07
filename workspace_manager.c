@@ -154,10 +154,8 @@ ConfigureWorkSpaceManager(void)
 void
 CreateWorkSpaceManager(void)
 {
-	char vsmapbuf    [1024], *vsmap;
 	VirtualScreen    *vs;
 	WorkSpace        *ws, *fws;
-	int              vsmaplen;
 
 	if(! Scr->workSpaceManagerActive) {
 		return;
@@ -173,39 +171,46 @@ CreateWorkSpaceManager(void)
 
 	NewFontCursor(&handCursor, "top_left_arrow");
 
-	vsmaplen = sizeof(vsmapbuf);
-	if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen)) {
-		vsmap = strtok(vsmapbuf, ",");
-	}
-	else {
-		vsmap = NULL;
+
+	{
+		char vsmapbuf [1024], *vsmap;
+		int vsmaplen;
+
+		vsmaplen = sizeof(vsmapbuf);
+		if(CtwmGetVScreenMap(dpy, Scr->Root, vsmapbuf, &vsmaplen)) {
+			vsmap = strtok(vsmapbuf, ",");
+		}
+		else {
+			vsmap = NULL;
+		}
+
+		/*
+		 * weird things can happen if the config file is changed or the
+		 * atom returned above is messed with.  Sometimes windows may
+		 * disappear in that case depending on what's changed.
+		 * (depending on where they were on the actual screen.
+		 */
+		ws = Scr->workSpaceMgr.workSpaceList;
+		for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+			WorkSpaceWindow *wsw = vs->wsw;
+			if(vsmap) {
+				fws = GetWorkspace(vsmap);
+			}
+			else {
+				fws = NULL;
+			}
+			if(fws) {
+				wsw->currentwspc = fws;
+				vsmap = strtok(NULL, ",");
+			}
+			else {
+				wsw->currentwspc = ws;
+				ws = ws->next;
+			}
+			CreateWorkSpaceManagerWindow(vs);
+		}
 	}
 
-	/*
-	 * weird things can happen if the config file is changed or the atom
-	 * returned above is messed with.  Sometimes windows may disappear in
-	 * that case depending on what's changed.  (depending on where they were
-	 * on the actual screen.
-	 */
-	ws = Scr->workSpaceMgr.workSpaceList;
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		WorkSpaceWindow *wsw = vs->wsw;
-		if(vsmap) {
-			fws = GetWorkspace(vsmap);
-		}
-		else {
-			fws = NULL;
-		}
-		if(fws) {
-			wsw->currentwspc = fws;
-			vsmap = strtok(NULL, ",");
-		}
-		else {
-			wsw->currentwspc = ws;
-			ws = ws->next;
-		}
-		CreateWorkSpaceManagerWindow(vs);
-	}
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		WorkSpaceWindow *wsw = vs->wsw;
