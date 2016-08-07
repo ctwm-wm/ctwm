@@ -34,7 +34,8 @@ bool useBackgroundInfo = false;
 /*
  * Various funcs for switching workspaces
  */
-void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
+void
+GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 {
 	WorkSpace *ws;
 
@@ -52,7 +53,8 @@ void GotoWorkSpaceByName(VirtualScreen *vs, char *wname)
 }
 
 
-void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
+void
+GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 {
 	WorkSpace *ws;
 	if(! Scr->workSpaceManagerActive) {
@@ -73,7 +75,8 @@ void GotoWorkSpaceByNumber(VirtualScreen *vs, int workspacenum)
 }
 
 
-void GotoPrevWorkSpace(VirtualScreen *vs)
+void
+GotoPrevWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws1, *ws2;
 
@@ -97,7 +100,8 @@ void GotoPrevWorkSpace(VirtualScreen *vs)
 }
 
 
-void GotoNextWorkSpace(VirtualScreen *vs)
+void
+GotoNextWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 	if(! Scr->workSpaceManagerActive) {
@@ -113,7 +117,8 @@ void GotoNextWorkSpace(VirtualScreen *vs)
 }
 
 
-void GotoRightWorkSpace(VirtualScreen *vs)
+void
+GotoRightWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 	int number, columns, count;
@@ -141,7 +146,8 @@ void GotoRightWorkSpace(VirtualScreen *vs)
 }
 
 
-void GotoLeftWorkSpace(VirtualScreen *vs)
+void
+GotoLeftWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 	int number, columns, count;
@@ -165,7 +171,8 @@ void GotoLeftWorkSpace(VirtualScreen *vs)
 }
 
 
-void GotoUpWorkSpace(VirtualScreen *vs)
+void
+GotoUpWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 	int number, lines, columns, count;
@@ -194,7 +201,8 @@ void GotoUpWorkSpace(VirtualScreen *vs)
 }
 
 
-void GotoDownWorkSpace(VirtualScreen *vs)
+void
+GotoDownWorkSpace(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 	int number, columns, count;
@@ -230,7 +238,8 @@ void GotoDownWorkSpace(VirtualScreen *vs)
  * XXX Doesn't really belong here; more of a functions.c-ish thing
  * probably.  But left here for the moment.
  */
-void ShowBackground(VirtualScreen *vs, int newstate)
+void
+ShowBackground(VirtualScreen *vs, int newstate)
 {
 	static int state = 0;
 	TwmWindow *twmWin;
@@ -271,7 +280,8 @@ void ShowBackground(VirtualScreen *vs, int newstate)
 /*
  * Belongs with the above GotoWorkSpace* funcs
  */
-void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
+void
+GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 {
 	TwmWindow            *twmWin;
 	WorkSpace            *oldws, *newws;
@@ -533,7 +543,8 @@ void GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
  * Get the name of the currently active WS.  Used in Execute() for
  * sub'ing in $currentworkspace in executing commands.
  */
-char *GetCurrentWorkSpaceName(VirtualScreen *vs)
+char *
+GetCurrentWorkSpaceName(VirtualScreen *vs)
 {
 	if(! Scr->workSpaceManagerActive) {
 		return (NULL);
@@ -581,7 +592,8 @@ GetWorkspace(char *wname)
  * Util for setting useBackgroundInfo var, to reduce its exposure across
  * the multiple files that might touch it.
  */
-void ws_set_useBackgroundInfo(bool newval)
+void
+ws_set_useBackgroundInfo(bool newval)
 {
 	useBackgroundInfo = newval;
 }
