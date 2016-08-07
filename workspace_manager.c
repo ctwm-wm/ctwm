@@ -1952,21 +1952,27 @@ WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
 	VirtualScreen *vs;
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		WinList *prev = &vs->wsw->mswl [ws->number]->wl;
-		WinList wl = *prev;
+		WinList *prev = &vs->wsw->mswl[ws->number]->wl;
 
-		while(wl != NULL) {
-			if(win == wl->twm_win) {
-				*prev = wl->next;
-				XDeleteContext(dpy, wl->w, TwmContext);
-				XDeleteContext(dpy, wl->w, ScreenContext);
-				XDeleteContext(dpy, wl->w, MapWListContext);
-				XDestroyWindow(dpy, wl->w);
-				free(wl);
-				break;
+		/* Pull it out of the list and destroy it */
+		for(WinList wl = *prev ; wl != NULL ; wl = wl->next) {
+			if(win != wl->twm_win) {
+				/* Not it */
+				prev = &wl->next;
+				continue;
 			}
-			prev = &wl->next;
-			wl   = *prev;
+
+			/* There you are.  Unlink and kill */
+			*prev = wl->next;
+
+			XDeleteContext(dpy, wl->w, TwmContext);
+			XDeleteContext(dpy, wl->w, ScreenContext);
+			XDeleteContext(dpy, wl->w, MapWListContext);
+			XDestroyWindow(dpy, wl->w);
+			free(wl);
+
+			/* Around to the next vscreen */
+			break;
 		}
 	}
 }
