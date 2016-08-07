@@ -198,7 +198,6 @@ CreateWorkSpaceManager(void)
 		}
 		CreateWorkSpaceManagerWindow(vs);
 	}
-	CreateOccupyWindow();
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		WorkSpaceWindow *wsw = vs->wsw;

@@ -699,6 +699,7 @@ int main(int argc, char **argv)
 		AllocateOtherIconManagers();
 		CreateIconManagers();
 		CreateWorkSpaceManager();
+		CreateOccupyWindow();
 		MakeWorkspacesMenu();
 		createWindowBoxes();
 #ifdef EWMH
