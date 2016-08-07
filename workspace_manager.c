@@ -691,8 +691,10 @@ ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 
 
 /*
- * Draw up the pieces of a WSM window.  This is subtly different from the
- * WMgrHandleExposeEvent() handler because XXX ???
+ * Draw up the button-state pieces of a WSM window.  This is subtly
+ * different from the WMgrHandleExposeEvent() handler because that draws
+ * the map-mode as well.  And it draws the button mode stuff a little
+ * different than we do here as well, because ???
  */
 void
 PaintWorkSpaceManager(VirtualScreen *vs)
@@ -700,8 +702,9 @@ PaintWorkSpaceManager(VirtualScreen *vs)
 	WorkSpace *ws;
 
 	PaintWorkSpaceManagerBorder(vs);
+
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		Window buttonw = vs->wsw->bswl [ws->number]->w;
+		Window buttonw = vs->wsw->bswl[ws->number]->w;
 		if(ws == vs->wsw->currentwspc) {
 			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
 		}
@@ -728,21 +731,25 @@ PaintWorkSpaceManagerBorder(VirtualScreen *vs)
 
 
 /*
- * Draw a workspace manager window on expose
+ * Draw a workspace manager window on expose.  X-ref comment on
+ * PaintWorkSpaceManager().
  */
 void
 WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 {
-	WorkSpace *ws;
-	Window buttonw;
-
 	if(vs->wsw->state == WMS_buttons) {
+		Window buttonw;
+		WorkSpace *ws;
+
+		/* Find the button we're exposing */
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			buttonw = vs->wsw->bswl [ws->number]->w;
+			buttonw = vs->wsw->bswl[ws->number]->w;
 			if(event->xexpose.window == buttonw) {
 				break;
 			}
 		}
+
+		/* If none, just paint the border.  Else paint the button. */
 		if(ws == NULL) {
 			PaintWorkSpaceManagerBorder(vs);
 		}
@@ -756,6 +763,11 @@ WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 	else {
 		WinList   wl;
 
+		/*
+		 * This is presumably exposing some individual window in the WS
+		 * subwindow; find it from the stashed context on the window, and
+		 * redraw it.
+		 */
 		if(XFindContext(dpy, event->xexpose.window, MapWListContext,
 		                (XPointer *) &wl) == XCNOENT) {
 			return;
