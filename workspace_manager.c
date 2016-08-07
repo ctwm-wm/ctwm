@@ -903,15 +903,15 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 	{
 		int    nkeys;
 		char   keys[16];
-		size_t lname;
+		size_t nlen;
 		char   *newname;
 
 		/* Look up what keystrokes are queued.  Arbitrary buf size */
 		nkeys = XLookupString(&(event->xkey), keys, 16, NULL, NULL);
 
 		/* Label length can't grow to more than cur+nkeys */
-		lname = strlen(ws->label);
-		newname = malloc(lname + nkeys + 1);
+		nlen = strlen(ws->label);
+		newname = malloc(nlen + nkeys + 1);
 		strcpy(newname, ws->label);
 
 		/* Iterate over the passed keystrokes */
@@ -920,7 +920,7 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 
 			if(isprint(k)) {
 				/* Printable chars append to the string */
-				newname[lname++] = k;
+				newname[nlen++] = k;
 			}
 			else if((k == 127) || (k == 8)) {
 				/*
@@ -930,8 +930,8 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 				 * keysyms, in the face of changed keyboard mappings or
 				 * significantly differing locales?
 				 */
-				if(lname != 0) {
-					lname--;
+				if(nlen != 0) {
+					nlen--;
 				}
 			}
 			else {
@@ -940,7 +940,7 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 			}
 		}
 		/* Now ends where it ends */
-		newname[lname] = '\0';
+		newname[nlen] = '\0';
 
 		/* Swap it in */
 		free(ws->label);
