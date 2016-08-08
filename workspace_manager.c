@@ -1226,16 +1226,48 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 			XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
 			           ButtonReleaseMask | ExposureMask, &ev);
 			switch(ev.xany.type) {
+				case Expose : {
+					/* Something got exposed */
+					if(ev.xexpose.window == w) {
+						/*
+						 * The win we're working with?  We know how to do
+						 * that.
+						 */
+						WMapRedrawWindow(w, W0, H0, wl->cp,
+						                 wl->twm_win->icon_name);
+						break;
+					}
+
+					/* Else, delegate to our global dispatcher */
+					Event = ev;
+					DispatchEvent();
+					break;
+				}
+
 				case ButtonPress :
 				case ButtonRelease : {
+					/*
+					 * Events for buttons other than the one whose press
+					 * started this activity are totally ignored.
+					 */
 					if(ev.xbutton.button != button) {
 						break;
 					}
+
+					/*
+					 * Otherwise, this is a press/release of the button
+					 * that started things.  Though I'm not sure how it
+					 * could be a press, since it was already pressed.
+					 * Regardless, this is our exit condition.  Fall
+					 * through into the Motion case to handle any
+					 * remaining movement.
+					 */
 					cont = false;
 					newX = ev.xbutton.x;
 					newY = ev.xbutton.y;
 				}
 
+				/* Everything remaining is motion handling */
 				case MotionNotify : {
 					if(cont) {
 						newX = ev.xmotion.x;
@@ -1353,23 +1385,6 @@ movewin:
 					}
 move:
 					XMoveWindow(dpy, w, newX - XW, newY - YW);
-					break;
-				}
-				case Expose : {
-					/* Something got exposed */
-					if(ev.xexpose.window == w) {
-						/*
-						 * The win we're working with?  We know how to do
-						 * that.
-						 */
-						WMapRedrawWindow(w, W0, H0, wl->cp,
-						                 wl->twm_win->icon_name);
-						break;
-					}
-
-					/* Else, delegate to our global dispatcher */
-					Event = ev;
-					DispatchEvent();
 					break;
 				}
 			}
