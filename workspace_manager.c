@@ -976,7 +976,6 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	XEvent              ev;
 	Window              w = 0;
 	Position            newX = 0, newY = 0, winX = 0, winY = 0;
-	Window              junkW;
 	bool                alreadyvivible, realmovemode;
 	const WorkSpaceWindow *mw = vs->wsw;
 
@@ -1095,31 +1094,63 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	 */
 	switch(button) {
 		case 1 : {
+			/*
+			 * Moving from one to another; get rid of the old location,
+			 * then fall through to the "duplicating" case below.
+			 */
 			XUnmapWindow(dpy, sw);
 			/* FALLTHRU */
 		}
 
 		case 2 : {
+			/*
+			 * Duplicating window to another WS.  We create a copy of the
+			 * window, and start moving that.  The 'moving' case above
+			 * falls through to us after unmapping that old window,
+			 * leaving just our copy, which is good enough.  This is
+			 * really just setting up the visual stuff for the move; the
+			 * actual occupation changes etc. come at the end of the
+			 * motion, much lower down.
+			 */
 			int X0, Y0, X1, Y1;
 			unsigned int bw;
 			XSetWindowAttributes attrs;
+			Window junkW;
 
+			/* Size/location of the avatar in the map */
 			XGetGeometry(dpy, sw, &junkW, &X0, &Y0, &W0, &H0, &bw, &JunkDepth);
-			XTranslateCoordinates(dpy, vs->wsw->mswl [oldws->number]->w,
+
+			/*
+			 * [XY]0 are the coordinates of the avatar subwindow inside
+			 * workspace window in the map.  Turn those into [XY]1 as the
+			 * coordinates of it relative to the whole WSM window.
+			 */
+			XTranslateCoordinates(dpy, vs->wsw->mswl[oldws->number]->w,
 			                      mw->w, X0, Y0, &X1, &Y1, &junkW);
 
+			/*
+			 * Create the copy window to drag around, as a child of the
+			 * whole WSM (so we can move it between workspaces), and map
+			 * it.
+			 */
 			attrs.event_mask       = ExposureMask;
 			attrs.background_pixel = wl->cp.back;
 			attrs.border_pixel     = wl->cp.back;
-			/* Create a draggable mini-window */
 			w = XCreateWindow(dpy, mw->w, X1, Y1, W0, H0, bw,
-			                  CopyFromParent,
-			                  CopyFromParent,
-			                  CopyFromParent,
-			                  CWEventMask | CWBackPixel | CWBorderPixel, &attrs);
-
+			                  CopyFromParent, CopyFromParent, CopyFromParent,
+			                  CWEventMask | CWBackPixel | CWBorderPixel,
+			                  &attrs);
 			XMapRaised(dpy, w);
+
+			/* Do our dance on it to draw the name/color/etc */
 			WMapRedrawWindow(w, W0, H0, wl->cp, wl->twm_win->icon_name);
+
+			/*
+			 * If we're moving the real window and
+			 * AlwaysShowWindowWhenMovingFromWorkspaceManager is set in
+			 * config, we need to be sure the real window is visible
+			 * while we move it.
+			 */
 			if(realmovemode && Scr->ShowWinWhenMovingInWmgr) {
 				if(Scr->OpaqueMove) {
 					DisplayWin(vs, win);
@@ -1161,6 +1192,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		const float hf = (float)(mw->wheight - 1) / (float) vs->h;
 		int XW, YW;
 		bool cont;
+		Window junkW;
 
 		/* Figure where in the subwindow the click was, and stash in XW/YW */
 		XTranslateCoordinates(dpy, Scr->Root, sw, event->xbutton.x_root,
