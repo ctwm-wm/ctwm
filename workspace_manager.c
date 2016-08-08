@@ -959,85 +959,113 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 
 
 /*
- * Mouse clicking in WSM.  In the simple case, that's just switching
- * workspaces.  In the more complex, it's changing window occupation in
- * various different ways.
+ * Mouse clicking in WSM.  Gets called on button press (not release).  In
+ * the simple case, that's just switching workspaces.  In the more
+ * complex, it's changing window occupation in various different ways, or
+ * even moving windows.  When that's happening, it internally hijacks
+ * button/motion/exposure events and implements them for the moving, with
+ * magic escapes if it gets them for something else.  Ew.
  */
 void
 WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
-	WorkSpaceWindow     *mw;
-	WorkSpace           *ws, *oldws, *newws, *cws;
+	WorkSpace           *ws, *oldws, *newws;
 	WinList             wl;
 	TwmWindow           *win;
-	int                 occupation;
-	unsigned int        W0, H0, bw;
-	bool                cont;
+	unsigned int        W0, H0;
 	XEvent              ev;
-	Window              w = 0, sw, parent;
-	int                 X0, Y0, X1, Y1, XW, YW, XSW, YSW;
+	Window              w = 0;
 	Position            newX = 0, newY = 0, winX = 0, winY = 0;
 	Window              junkW;
-	unsigned int        junk;
-	unsigned int        button;
-	unsigned int        modifier;
-	XSetWindowAttributes attrs;
-	float               wf, hf;
-	bool                alreadyvivible, realmovemode, startincurrent;
-	Time                etime;
+	bool                alreadyvivible, realmovemode;
+	const WorkSpaceWindow *mw = vs->wsw;
 
-	parent   = event->xbutton.window;
-	sw       = event->xbutton.subwindow;        /* mini-window in ws manager */
-	mw       = vs->wsw;
-	button   = event->xbutton.button;
-	modifier = event->xbutton.state;
-	etime    = event->xbutton.time;
+	/* Shortcuts into the event */
+	const Window parent = event->xbutton.window;    // Map/button for WS
+	const Window sw     = event->xbutton.subwindow; // Map mini-win
+	const Time etime    = event->xbutton.time;
+	const unsigned int button   = event->xbutton.button;
+	const unsigned int modifier = event->xbutton.state;
 
+
+	/* If we're in button state, we're just clicking to change */
 	if(vs->wsw->state == WMS_buttons) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(vs->wsw->bswl [ws->number]->w == parent) {
+			if(vs->wsw->bswl[ws->number]->w == parent) {
+				GotoWorkSpace(vs, ws);
 				break;
 			}
 		}
-		if(ws == NULL) {
-			return;
-		}
-		GotoWorkSpace(vs, ws);
 		return;
 	}
 
+	/*
+	 * If we get this far, we're in map state, where things are more
+	 * complicated.  A simple click/release means change here too, but
+	 * there's also the possibility of dragging a subwindow around to
+	 * change its window's occupation.
+	 */
+
+	/* Find what workspace we're clicking in */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(vs->wsw->mswl [ws->number]->w == parent) {
+		if(vs->wsw->mswl[ws->number]->w == parent) {
 			break;
 		}
 	}
 	if(ws == NULL) {
+		/* None?  We're done here. */
 		return;
 	}
+
+	/*
+	 * If clicked in the workspace but outside a window, we can only be
+	 * switching workspaces.  So just do that, and we're done.
+	 */
 	if(sw == (Window) 0) {
-		/*
-		 * If clicked in the workspace but outside a window,
-		 * only switch workspaces.
-		 */
 		GotoWorkSpace(vs, ws);
 		return;
 	}
+
+	/* Stash.  XXX Temp? */
 	oldws = ws;
 
+	/* Use the context to find the winlist entry for this window */
 	if(XFindContext(dpy, sw, MapWListContext, (XPointer *) &wl) == XCNOENT) {
 		return;
 	}
 	win = wl->twm_win;
+
+	/*
+	 * Sometimes we skip transients, so do so.  XXX Should this
+	 * GotoWorkSpace()?
+	 */
 	if((! Scr->TransientHasOccupation) && win->istransient) {
 		return;
 	}
 
-	XTranslateCoordinates(dpy, Scr->Root, sw, event->xbutton.x_root,
-	                      event->xbutton.y_root,
-	                      &XW, &YW, &junkW);
-	realmovemode = (Scr->ReallyMoveInWorkspaceManager && !(modifier & ShiftMask)) ||
-	               (!Scr->ReallyMoveInWorkspaceManager && (modifier & ShiftMask));
-	startincurrent = (oldws == vs->wsw->currentwspc);
+	/*
+	 * Are we trying to actually move the window, by moving its avatar in
+	 * the WSM?  If ReallyMoveInWorkspaceManager is set, we're moving on
+	 * click, but not in shift-click.  If it's not, it's the reverse.
+	 *
+	 * XXX This interacts really oddly and badly when you're also moving
+	 * the window from WS to WS.
+	 */
+	realmovemode = false;
+	if(Scr->ReallyMoveInWorkspaceManager) {
+		if(modifier & ShiftMask) {
+			realmovemode = true;
+		}
+	}
+	else if(modifier & ShiftMask) {
+		realmovemode = true;
+	}
+
+	/*
+	 * Frob screen-wide OpaqueMove as necessary for this window's
+	 * details.
+	 * XXX Really?
+	 */
 	if(win->OpaqueMove) {
 		int sw2, ss;
 
@@ -1053,6 +1081,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	else {
 		Scr->OpaqueMove = false;
 	}
+
 	/*
 	 * Buttons inside the workspace manager, when clicking on the
 	 * representation of a window:
@@ -1060,13 +1089,22 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	 * 2: drag a copy of the window to a different workspace
 	 *    (show it in both workspaces)
 	 * 3: remove the window from this workspace (if it isn't the last).
+	 *
+	 * XXX If you move between workspaces while also doing realmovemode,
+	 * really messed up things happen.
 	 */
 	switch(button) {
-		case 1 :
+		case 1 : {
 			XUnmapWindow(dpy, sw);
+			/* FALLTHRU */
+		}
 
-		case 2 :
-			XGetGeometry(dpy, sw, &junkW, &X0, &Y0, &W0, &H0, &bw, &junk);
+		case 2 : {
+			int X0, Y0, X1, Y1;
+			unsigned int bw;
+			XSetWindowAttributes attrs;
+
+			XGetGeometry(dpy, sw, &junkW, &X0, &Y0, &W0, &H0, &bw, &JunkDepth);
 			XTranslateCoordinates(dpy, vs->wsw->mswl [oldws->number]->w,
 			                      mw->w, X0, Y0, &X1, &Y1, &junkW);
 
@@ -1097,13 +1135,20 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 				}
 			}
 			break;
+		}
 
-		case 3 :
-			occupation = win->occupation & ~(1 << oldws->number);
+		/*
+		 * For the button 3 or anything else case, there's no dragging or
+		 * anything, so they do their thing and just immediately return.
+		 */
+		case 3 : {
+			int occupation = win->occupation & ~(1 << oldws->number);
 			if(occupation != 0) {
 				ChangeOccupation(win, occupation);
 			}
 			return;
+		}
+
 		default :
 			return;
 	}
@@ -1111,150 +1156,181 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	/*
 	 * Keep dragging the representation of the window
 	 */
-	wf = (float)(mw->wwidth  - 1) / (float) vs->w;
-	hf = (float)(mw->wheight - 1) / (float) vs->h;
-	XGrabPointer(dpy, mw->w, False,
-	             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
-	             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor, CurrentTime);
+	{
+		const float wf = (float)(mw->wwidth  - 1) / (float) vs->w;
+		const float hf = (float)(mw->wheight - 1) / (float) vs->h;
+		int XW, YW;
+		bool cont;
 
-	alreadyvivible = false;
-	cont = true;
-	while(cont) {
-		MapSubwindow *msw;
-		XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
-		           ButtonReleaseMask | ExposureMask, &ev);
-		switch(ev.xany.type) {
-			case ButtonPress :
-			case ButtonRelease :
-				if(ev.xbutton.button != button) {
-					break;
-				}
-				cont = false;
-				newX = ev.xbutton.x;
-				newY = ev.xbutton.y;
+		/* Figure where in the subwindow the click was, and stash in XW/YW */
+		XTranslateCoordinates(dpy, Scr->Root, sw, event->xbutton.x_root,
+		                      event->xbutton.y_root,
+		                      &XW, &YW, &junkW);
 
-			case MotionNotify :
-				if(cont) {
-					newX = ev.xmotion.x;
-					newY = ev.xmotion.y;
-				}
-				if(realmovemode) {
-					for(cws = Scr->workSpaceMgr.workSpaceList;
-					                cws != NULL;
-					                cws = cws->next) {
-						msw = vs->wsw->mswl [cws->number];
-						if((newX >= msw->x) && (newX <  msw->x + mw->wwidth) &&
-						                (newY >= msw->y) && (newY <  msw->y + mw->wheight)) {
-							break;
-						}
-					}
-					if(!cws) {
+		XGrabPointer(dpy, mw->w, False,
+		             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
+		             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor,
+		             CurrentTime);
+
+		alreadyvivible = false;
+		cont = true;
+		while(cont) {
+			MapSubwindow *msw;
+			XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
+			           ButtonReleaseMask | ExposureMask, &ev);
+			switch(ev.xany.type) {
+				case ButtonPress :
+				case ButtonRelease :
+					if(ev.xbutton.button != button) {
 						break;
 					}
-					winX = newX - XW;
-					winY = newY - YW;
-					msw = vs->wsw->mswl [cws->number];
-					XTranslateCoordinates(dpy, mw->w, msw->w,
-					                      winX, winY, &XSW, &YSW, &junkW);
-					winX = (int)(XSW / wf);
-					winY = (int)(YSW / hf);
-					if(Scr->DontMoveOff) {
-						int width = win->frame_width;
-						int height = win->frame_height;
+					cont = false;
+					newX = ev.xbutton.x;
+					newY = ev.xbutton.y;
 
-						if((winX < Scr->BorderLeft) && ((Scr->MoveOffResistance < 0) ||
-						                                (winX > Scr->BorderLeft - Scr->MoveOffResistance))) {
-							winX = Scr->BorderLeft;
-							newX = msw->x + XW + Scr->BorderLeft * mw->wwidth / vs->w;
-						}
-						if(((winX + width) > vs->w - Scr->BorderRight) &&
-						                ((Scr->MoveOffResistance < 0) ||
-						                 ((winX + width) < vs->w - Scr->BorderRight + Scr->MoveOffResistance))) {
-							winX = vs->w - Scr->BorderRight - width;
-							newX = msw->x + mw->wwidth *
-							       (1 - Scr->BorderRight / (double) vs->w) - wl->width + XW - 2;
-						}
-						if((winY < Scr->BorderTop) && ((Scr->MoveOffResistance < 0) ||
-						                               (winY > Scr->BorderTop - Scr->MoveOffResistance))) {
-							winY = Scr->BorderTop;
-							newY = msw->y + YW + Scr->BorderTop * mw->height / vs->h;
-						}
-						if(((winY + height) > vs->h - Scr->BorderBottom) &&
-						                ((Scr->MoveOffResistance < 0) ||
-						                 ((winY + height) < vs->h - Scr->BorderBottom + Scr->MoveOffResistance))) {
-							winY = vs->h - Scr->BorderBottom - height;
-							newY = msw->y + mw->wheight *
-							       (1 - Scr->BorderBottom / (double) vs->h) - wl->height + YW - 2;
-						}
+				case MotionNotify :
+					if(cont) {
+						newX = ev.xmotion.x;
+						newY = ev.xmotion.y;
 					}
-					WMapSetupWindow(win, winX, winY, -1, -1);
-					if(Scr->ShowWinWhenMovingInWmgr) {
-						goto movewin;
-					}
-					if(cws == vs->wsw->currentwspc) {
-						if(alreadyvivible) {
+					if(realmovemode) {
+						int XSW, YSW;
+						WorkSpace *cws;
+						/* Did the move start in the current WS? */
+						bool startincurrent = (oldws == vs->wsw->currentwspc);
+
+						for(cws = Scr->workSpaceMgr.workSpaceList ;
+						                cws != NULL ;
+						                cws = cws->next) {
+							msw = vs->wsw->mswl [cws->number];
+							if((newX >= msw->x)
+							                && (newX <  msw->x + mw->wwidth)
+							                && (newY >= msw->y)
+							                && (newY <  msw->y + mw->wheight)) {
+								break;
+							}
+						}
+						if(!cws) {
+							break;
+						}
+						winX = newX - XW;
+						winY = newY - YW;
+						msw = vs->wsw->mswl [cws->number];
+						XTranslateCoordinates(dpy, mw->w, msw->w,
+						                      winX, winY, &XSW, &YSW, &junkW);
+						winX = (int)(XSW / wf);
+						winY = (int)(YSW / hf);
+						if(Scr->DontMoveOff) {
+							int width = win->frame_width;
+							int height = win->frame_height;
+
+							if((winX < Scr->BorderLeft) && ((Scr->MoveOffResistance < 0) ||
+							                                (winX > Scr->BorderLeft - Scr->MoveOffResistance))) {
+								winX = Scr->BorderLeft;
+								newX = msw->x + XW + Scr->BorderLeft * mw->wwidth / vs->w;
+							}
+							if(((winX + width) > vs->w - Scr->BorderRight) &&
+							                ((Scr->MoveOffResistance < 0) ||
+							                 ((winX + width) < vs->w - Scr->BorderRight + Scr->MoveOffResistance))) {
+								winX = vs->w - Scr->BorderRight - width;
+								newX = msw->x + mw->wwidth *
+								       (1 - Scr->BorderRight / (double) vs->w) - wl->width + XW - 2;
+							}
+							if((winY < Scr->BorderTop) && ((Scr->MoveOffResistance < 0) ||
+							                               (winY > Scr->BorderTop - Scr->MoveOffResistance))) {
+								winY = Scr->BorderTop;
+								newY = msw->y + YW + Scr->BorderTop * mw->height / vs->h;
+							}
+							if(((winY + height) > vs->h - Scr->BorderBottom) &&
+							                ((Scr->MoveOffResistance < 0) ||
+							                 ((winY + height) < vs->h - Scr->BorderBottom + Scr->MoveOffResistance))) {
+								winY = vs->h - Scr->BorderBottom - height;
+								newY = msw->y + mw->wheight
+								       * (1 - Scr->BorderBottom / (double) vs->h)
+								       * - wl->height + YW - 2;
+							}
+						}
+						WMapSetupWindow(win, winX, winY, -1, -1);
+						if(Scr->ShowWinWhenMovingInWmgr) {
 							goto movewin;
 						}
+						if(cws == vs->wsw->currentwspc) {
+							if(alreadyvivible) {
+								goto movewin;
+							}
+							if(Scr->OpaqueMove) {
+								XMoveWindow(dpy, win->frame, winX, winY);
+								DisplayWin(vs, win);
+							}
+							else {
+								MoveOutline(Scr->Root,
+								            winX - win->frame_bw,
+								            winY - win->frame_bw,
+								            win->frame_width  + 2 * win->frame_bw,
+								            win->frame_height + 2 * win->frame_bw,
+								            win->frame_bw,
+								            win->title_height + win->frame_bw3D);
+							}
+							alreadyvivible = true;
+							goto move;
+						}
+						if(!alreadyvivible) {
+							goto move;
+						}
+						if(!OCCUPY(win, vs->wsw->currentwspc) ||
+						                (startincurrent && (button == 1))) {
+							if(Scr->OpaqueMove) {
+								Vanish(vs, win);
+								XMoveWindow(dpy, win->frame, winX, winY);
+							}
+							else {
+								MoveOutline(Scr->Root, 0, 0, 0, 0, 0, 0);
+							}
+							alreadyvivible = false;
+							goto move;
+						}
+movewin:
 						if(Scr->OpaqueMove) {
 							XMoveWindow(dpy, win->frame, winX, winY);
-							DisplayWin(vs, win);
 						}
 						else {
 							MoveOutline(Scr->Root,
-							            winX - win->frame_bw, winY - win->frame_bw,
+							            winX - win->frame_bw,
+							            winY - win->frame_bw,
 							            win->frame_width  + 2 * win->frame_bw,
 							            win->frame_height + 2 * win->frame_bw,
 							            win->frame_bw,
 							            win->title_height + win->frame_bw3D);
 						}
-						alreadyvivible = true;
-						goto move;
 					}
-					if(!alreadyvivible) {
-						goto move;
-					}
-					if(!OCCUPY(win, vs->wsw->currentwspc) ||
-					                (startincurrent && (button == 1))) {
-						if(Scr->OpaqueMove) {
-							Vanish(vs, win);
-							XMoveWindow(dpy, win->frame, winX, winY);
-						}
-						else {
-							MoveOutline(Scr->Root, 0, 0, 0, 0, 0, 0);
-						}
-						alreadyvivible = false;
-						goto move;
-					}
-movewin:
-					if(Scr->OpaqueMove) {
-						XMoveWindow(dpy, win->frame, winX, winY);
-					}
-					else {
-						MoveOutline(Scr->Root,
-						            winX - win->frame_bw, winY - win->frame_bw,
-						            win->frame_width  + 2 * win->frame_bw,
-						            win->frame_height + 2 * win->frame_bw,
-						            win->frame_bw,
-						            win->title_height + win->frame_bw3D);
-					}
-				}
 move:
-				XMoveWindow(dpy, w, newX - XW, newY - YW);
-				break;
-			case Expose :
-				if(ev.xexpose.window == w) {
-					WMapRedrawWindow(w, W0, H0, wl->cp, wl->twm_win->icon_name);
+					XMoveWindow(dpy, w, newX - XW, newY - YW);
 					break;
-				}
-				Event = ev;
-				DispatchEvent();
-				break;
+				case Expose :
+					/* Something got exposed */
+					if(ev.xexpose.window == w) {
+						/*
+						 * The win we're working with?  We know how to do
+						 * that.
+						 */
+						WMapRedrawWindow(w, W0, H0, wl->cp,
+						                 wl->twm_win->icon_name);
+						break;
+					}
+
+					/* Else, delegate to our global dispatcher */
+					Event = ev;
+					DispatchEvent();
+					break;
+			}
 		}
 	}
+
 	/*
 	 * Finished with dragging (button released).
 	 */
 	if(realmovemode) {
+		/* Moving the real window?  Move the real window. */
 		if(Scr->ShowWinWhenMovingInWmgr || alreadyvivible) {
 			if(Scr->OpaqueMove && !OCCUPY(win, vs->wsw->currentwspc)) {
 				Vanish(vs, win);
@@ -1266,6 +1342,7 @@ move:
 		}
 		SetupWindow(win, winX, winY, win->frame_width, win->frame_height, -1);
 	}
+
 	ev.xbutton.subwindow = (Window) 0;
 	ev.xbutton.window = parent;
 	XPutBackEvent(dpy, &ev);
@@ -1302,16 +1379,24 @@ move:
 			break;
 		}
 	}
+
 	newws = ws;
 	switch(button) {
-		case 1 : /* moving to another workspace */
+		case 1 : { /* moving to another workspace */
+			int occupation;
+
 			if((newws == NULL) || (newws == oldws) ||
 			                OCCUPY(wl->twm_win, newws)) {
 				XMapWindow(dpy, sw);
 				break;
 			}
-			occupation = (win->occupation | (1 << newws->number)) & ~(1 << oldws->number);
+
+			/* Out of the old, into the new */
+			occupation = win->occupation;
+			occupation |= (1 << newws->number);
+			occupation &= ~(1 << oldws->number);
 			ChangeOccupation(win, occupation);
+
 			if(newws == vs->wsw->currentwspc) {
 				OtpRaise(win, WinWin);
 				WMapRaise(win);
@@ -1320,8 +1405,11 @@ move:
 				WMapRestack(newws);
 			}
 			break;
+		}
 
-		case 2 : /* putting in extra workspace */
+		case 2 : { /* putting in extra workspace */
+			int occupation;
+
 			if((newws == NULL) || (newws == oldws) ||
 			                OCCUPY(wl->twm_win, newws)) {
 				break;
@@ -1337,10 +1425,12 @@ move:
 				WMapRestack(newws);
 			}
 			break;
+		}
 
 		default :
 			return;
 	}
+
 	XDestroyWindow(dpy, w);
 }
 
