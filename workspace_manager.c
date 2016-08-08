@@ -1220,8 +1220,6 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		alreadyvivible = false;
 		cont = true;
 		while(cont) {
-			MapSubwindow *msw;
-
 			/* Grab the next event and handle */
 			XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
 			           ButtonReleaseMask | ExposureMask, &ev);
@@ -1269,16 +1267,22 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 
 				/* Everything remaining is motion handling */
 				case MotionNotify : {
+					/* If we fell through from above, no new movement */
 					if(cont) {
 						newX = ev.xmotion.x;
 						newY = ev.xmotion.y;
 					}
+
+					/* Lots to do if we're moving the window for real */
 					if(realmovemode) {
 						int XSW, YSW;
 						WorkSpace *cws;
-						/* Did the move start in the current WS? */
+						MapSubwindow *msw;
+
+						/* Did the move start in the currently visible WS? */
 						bool startincurrent = (oldws == vs->wsw->currentwspc);
 
+						/* Find the workspace we wound up in */
 						for(cws = Scr->workSpaceMgr.workSpaceList ;
 						                cws != NULL ;
 						                cws = cws->next) {
@@ -1291,18 +1295,48 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 							}
 						}
 						if(!cws) {
+							/* None?  Ignore. */
 							break;
 						}
+
+						/*
+						 * Mouse is wherever it started inside the
+						 * subwindow, so figure the X/Y of the top left
+						 * of the subwindow from there.  (coords relative
+						 * to the whole WSM because of grab)
+						 */
 						winX = newX - XW;
 						winY = newY - YW;
-						msw = vs->wsw->mswl [cws->number];
+
+						/* XXX redundant w/previous? */
+						msw = vs->wsw->mswl[cws->number];
+
+						/*
+						 * Figure where those coords are relative to the
+						 * per-workspace window.
+						 */
 						XTranslateCoordinates(dpy, mw->w, msw->w,
 						                      winX, winY, &XSW, &YSW, &junkW);
+
+						/*
+						 * Now rework the win[XY] to be the coordinates
+						 * the window would be in the whole screen, based
+						 * on the [XY]SW inside the map, using our scale
+						 * factors.
+						 */
 						winX = (int)(XSW / wf);
 						winY = (int)(YSW / hf);
+
+						/*
+						 * Clip to the screen if DontMoveOff is set.
+						 *
+						 * XXX Can we use the Constrain*() functions for
+						 * this, instead of implementing icky magic
+						 * internally?
+						 */
 						if(Scr->DontMoveOff) {
-							int width = win->frame_width;
-							int height = win->frame_height;
+							const int width = win->frame_width;
+							const int height = win->frame_height;
 
 							if((winX < Scr->BorderLeft) && ((Scr->MoveOffResistance < 0) ||
 							                                (winX > Scr->BorderLeft - Scr->MoveOffResistance))) {
@@ -1330,12 +1364,32 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 								       * - wl->height + YW - 2;
 							}
 						}
+
+
+						/* Setup the avatar for the new position of win */
 						WMapSetupWindow(win, winX, winY, -1, -1);
+
+						/*
+						 * If SWWMIW, we already made sure above the
+						 * window is always visible on the screen.  So we
+						 * don't need to do any of the following steps to
+						 * maybe show it or maybe un-show it, since we
+						 * know it's already always shown.
+						 */
 						if(Scr->ShowWinWhenMovingInWmgr) {
 							goto movewin;
 						}
+
+						/*
+						 * If we wound up in the same workspace as is
+						 * being displayed on the screen, we need to make
+						 * sure that window is showing up on the screen
+						 * as a "about to be occupied here if you release
+						 * the button" indication.
+						 */
 						if(cws == vs->wsw->currentwspc) {
 							if(alreadyvivible) {
+								/* Unless it's already there */
 								goto movewin;
 							}
 							if(Scr->OpaqueMove) {
@@ -1352,11 +1406,32 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 								            win->title_height + win->frame_bw3D);
 							}
 							alreadyvivible = true;
+
+							/*
+							 * We already moved it, skip past the other
+							 * code trying to move it in other cases.
+							 */
 							goto move;
 						}
+
+						/*
+						 * If it's for whatever reason not being shown on
+						 * the screen, then we don't need to move it; hop
+						 * straight to moving the avatar.
+						 */
 						if(!alreadyvivible) {
 							goto move;
 						}
+
+						/*
+						 * So it _is_ being shown.  If it's not supposed
+						 * to be here, hide it away (don't need to worry
+						 * about AlwaysShow, it would have skipped past
+						 * us from ab0ve).  Also, if we started moving
+						 * the window out of the visible workspace with
+						 * button 1, it's gonna not be here if you
+						 * release, so hide it away.
+						 */
 						if(!OCCUPY(win, vs->wsw->currentwspc) ||
 						                (startincurrent && (button == 1))) {
 							if(Scr->OpaqueMove) {
@@ -1369,7 +1444,12 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 							alreadyvivible = false;
 							goto move;
 						}
+
 movewin:
+						/*
+						 * However we get here, the real window is
+						 * visible and needs to be moved.  So move it.
+						 */
 						if(Scr->OpaqueMove) {
 							XMoveWindow(dpy, win->frame, winX, winY);
 						}
@@ -1383,8 +1463,15 @@ movewin:
 							            win->title_height + win->frame_bw3D);
 						}
 					}
+
 move:
+					/*
+					 * Just move the subwindow in the map to the new
+					 * location.
+					 */
 					XMoveWindow(dpy, w, newX - XW, newY - YW);
+
+					/* And we're done.  Next event! */
 					break;
 				}
 			}
