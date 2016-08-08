@@ -1216,24 +1216,27 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor,
 		             CurrentTime);
 
+		/* Start handling events until we're done */
 		alreadyvivible = false;
 		cont = true;
 		while(cont) {
 			MapSubwindow *msw;
 
+			/* Grab the next event and handle */
 			XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
 			           ButtonReleaseMask | ExposureMask, &ev);
 			switch(ev.xany.type) {
 				case ButtonPress :
-				case ButtonRelease :
+				case ButtonRelease : {
 					if(ev.xbutton.button != button) {
 						break;
 					}
 					cont = false;
 					newX = ev.xbutton.x;
 					newY = ev.xbutton.y;
+				}
 
-				case MotionNotify :
+				case MotionNotify : {
 					if(cont) {
 						newX = ev.xmotion.x;
 						newY = ev.xmotion.y;
@@ -1351,7 +1354,8 @@ movewin:
 move:
 					XMoveWindow(dpy, w, newX - XW, newY - YW);
 					break;
-				case Expose :
+				}
+				case Expose : {
 					/* Something got exposed */
 					if(ev.xexpose.window == w) {
 						/*
@@ -1367,6 +1371,7 @@ move:
 					Event = ev;
 					DispatchEvent();
 					break;
+				}
 			}
 		}
 	}
