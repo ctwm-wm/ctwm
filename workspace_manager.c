@@ -1117,13 +1117,14 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 			XSetWindowAttributes attrs;
 			Window junkW;
 
-			/* Size/location of the avatar in the map */
+			/* [XYWH]0 = size/location of the avatar in the map */
 			XGetGeometry(dpy, sw, &junkW, &X0, &Y0, &W0, &H0, &bw, &JunkDepth);
 
 			/*
 			 * [XY]0 are the coordinates of the avatar subwindow inside
-			 * workspace window in the map.  Turn those into [XY]1 as the
-			 * coordinates of it relative to the whole WSM window.
+			 * the individual workspace window in the map.  Turn those
+			 * into [XY]1 as the coordinates of it relative to the whole
+			 * WSM window.
 			 */
 			XTranslateCoordinates(dpy, vs->wsw->mswl[oldws->number]->w,
 			                      mw->w, X0, Y0, &X1, &Y1, &junkW);
@@ -1165,6 +1166,8 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 					            win->title_height + win->frame_bw3D);
 				}
 			}
+
+			/* Move onward */
 			break;
 		}
 
