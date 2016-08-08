@@ -1189,6 +1189,9 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 
 	/*
 	 * Keep dragging the representation of the window
+	 *
+	 * XXX Look back at this and see if we can move it to an inner
+	 * function for readability...
 	 */
 	{
 		const float wf = (float)(mw->wwidth  - 1) / (float) vs->w;
@@ -1202,6 +1205,12 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		                      event->xbutton.y_root,
 		                      &XW, &YW, &junkW);
 
+		/*
+		 * Grab the pointer, lock it into the WSM, and get the events
+		 * related to buttons and movement.  We don't need
+		 * PointerMotionMask, since that would only happen after buttons
+		 * are released, and we'll be done by then.
+		 */
 		XGrabPointer(dpy, mw->w, False,
 		             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
 		             GrabModeAsync, GrabModeAsync, mw->w, Scr->MoveCursor,
@@ -1211,6 +1220,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		cont = true;
 		while(cont) {
 			MapSubwindow *msw;
+
 			XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
 			           ButtonReleaseMask | ExposureMask, &ev);
 			switch(ev.xany.type) {
@@ -1378,11 +1388,18 @@ move:
 		SetupWindow(win, winX, winY, win->frame_width, win->frame_height, -1);
 	}
 
+	/*
+	 * Last event that caused us to escape is other code's
+	 * responsibility, put it back in the queue.
+	 */
 	ev.xbutton.subwindow = (Window) 0;
 	ev.xbutton.window = parent;
 	XPutBackEvent(dpy, &ev);
+
+	/* End our grab */
 	XUngrabPointer(dpy, CurrentTime);
 
+	/* If it was <250ms, ??? */
 	if((ev.xbutton.time - etime) < 250) {
 		/* Just a quick click or drag */
 		KeyCode control_L_code, control_R_code;
