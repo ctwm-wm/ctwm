@@ -1142,9 +1142,9 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		 * anything, so they do their thing and just immediately return.
 		 */
 		case 3 : {
-			int occupation = win->occupation & ~(1 << oldws->number);
-			if(occupation != 0) {
-				ChangeOccupation(win, occupation);
+			int newocc = win->occupation & ~(1 << oldws->number);
+			if(newocc != 0) {
+				ChangeOccupation(win, newocc);
 			}
 			return;
 		}
