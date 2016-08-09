@@ -1052,7 +1052,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	 */
 	realmovemode = false;
 	if(Scr->ReallyMoveInWorkspaceManager) {
-		if(modifier & ShiftMask) {
+		if(!(modifier & ShiftMask)) {
 			realmovemode = true;
 		}
 	}
