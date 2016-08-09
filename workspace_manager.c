@@ -1506,19 +1506,64 @@ move:
 	/* End our grab */
 	XUngrabPointer(dpy, CurrentTime);
 
-	/* If it was <250ms, ??? */
+	/*
+	 * If you wanted to change workspaces, and clicked _outside_ a
+	 * window, it would have just switched way up near the top of the
+	 * function.  But if you clicked _in_ a window [in the WSM map], it
+	 * would have to go through the whole fun to find out whether you
+	 * wanted to move/reoccupy the window, or were just wanting to change
+	 * WSen.
+	 *
+	 * So if it's been <250ms (completely arbitrary and non-configgable,
+	 * probably should be rethought) since you started, assume you just
+	 * wanted to switch workspaces.  Don't do any occupation change, And
+	 * just switch.  Also do some magic related to the map/button
+	 * toggling.
+	 *
+	 * XXX This still leaves any window _moves_ done.  It seems like it
+	 * should probably revert those too?
+	 */
 	if((ev.xbutton.time - etime) < 250) {
-		/* Just a quick click or drag */
 		KeyCode control_L_code, control_R_code;
 		KeySym  control_L_sym,  control_R_sym;
 		char keys [32];
 
+		/* Re-show old miniwindow, destroy the temp, and warp to WS */
 		XMapWindow(dpy, sw);
 		XDestroyWindow(dpy, w);
 		GotoWorkSpace(vs, ws);
 		if(!Scr->DontWarpCursorInWMap) {
 			WarpToWindow(win, Scr->RaiseOnWarp);
 		}
+
+		/*
+		 * The control keys toggle between map and button state.  If we
+		 * did a short move, and ctrl is being held at the end, flip the
+		 * state.  This has several possible causes and effects.
+		 *
+		 * One is that _during_ a move, we don't do look through KeyPress
+		 * events, so we wouldn't see it happen yet.  But after we're
+		 * done and return back into the event loop, that press will come
+		 * in and cause the state to change.  It may be weird to the user
+		 * to see that happen, not when they hit ctrl, but _later_, after
+		 * they release the mouse button.  The "best" solution may be to
+		 * find that press in the event queue and empty it out, but a
+		 * cheap solution is just to pre-flip it and then let the event
+		 * code flip it back.  Flickery maybe, but easy.  Now, _should_ we be
+		 * doing that?  I'm a little doubtful...
+		 *
+		 * A second is that if the WSM is "naturally" in button mode, and
+		 * you temporarily ctrl-flip it into map mode and then click in a
+		 * window.  This code will cause it to automatically flip back
+		 * after you release the mouse if you haven't released ctrl yet.
+		 * This is apparently needed because, unless you have
+		 * DontWarpCursorInWMap set, the previous few lines of code would
+		 * have shifted the cursor to the window you clicked, which means
+		 * you don't get a chance to release it in the WSM and flip the
+		 * state back.  It seems a reasonable assumption that the user
+		 * wanted a temporary change of state just for the purposes of
+		 * the change.
+		 */
 		control_L_sym  = XStringToKeysym("Control_L");
 		control_R_sym  = XStringToKeysym("Control_R");
 		control_L_code = XKeysymToKeycode(dpy, control_L_sym);
