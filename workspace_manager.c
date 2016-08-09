@@ -705,12 +705,9 @@ PaintWorkSpaceManager(VirtualScreen *vs)
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		Window buttonw = vs->wsw->bswl[ws->number]->w;
-		if(ws == vs->wsw->currentwspc) {
-			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
-		}
-		else {
-			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
-		}
+		ButtonState bs = (ws == vs->wsw->currentwspc) ? on : off;
+
+		PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, bs);
 	}
 }
 
@@ -753,11 +750,9 @@ WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 		if(ws == NULL) {
 			PaintWorkSpaceManagerBorder(vs);
 		}
-		else if(ws == vs->wsw->currentwspc) {
-			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, on);
-		}
 		else {
-			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, off);
+			ButtonState bs = (ws == vs->wsw->currentwspc) ? on : off;
+			PaintWsButton(WSPCWINDOW, vs, buttonw, ws->label, ws->cp, bs);
 		}
 	}
 	else {
