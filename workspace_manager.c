@@ -364,7 +364,7 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 				bwidth = (width - (columns * hspace)) / columns;
 			}
 			if(mask & HeightValue) {
-				bheight = (height - (lines  * vspace)) / lines;
+				bheight = (height - (lines * vspace)) / lines;
 			}
 
 			/* Size of the whole thing is based off those */
@@ -496,8 +496,8 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 
 	/* Set WM properties */
 	{
-		XSizeHints    sizehints;
-		XWMHints      wmhints;
+		XSizeHints sizehints;
+		XWMHints   wmhints;
 		const int lines   = Scr->workSpaceMgr.lines;
 		const int columns = Scr->workSpaceMgr.columns;
 		const char *name      = Scr->workSpaceMgr.name;
@@ -616,8 +616,8 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 static void
 ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 {
-	WorkSpace     *ws;
-	int           i, j;
+	WorkSpace *ws;
+	int       i, j;
 	/* Lots of shortcuts to ease reading */
 	const int neww    = win->attr.width;
 	const int newh    = win->attr.height;
@@ -638,12 +638,12 @@ ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 	}
 
 	/* Set the new overall vals */
-	vs->wsw->bwidth    = bwidth;
-	vs->wsw->bheight   = bheight;
-	vs->wsw->width     = neww;
-	vs->wsw->height    = newh;
-	vs->wsw->wwidth    = wwidth;
-	vs->wsw->wheight   = wheight;
+	vs->wsw->bwidth  = bwidth;
+	vs->wsw->bheight = bheight;
+	vs->wsw->width   = neww;
+	vs->wsw->height  = newh;
+	vs->wsw->wwidth  = wwidth;
+	vs->wsw->wheight = wheight;
 
 	/* Iterate over the WS's */
 	i = 0;
@@ -761,7 +761,7 @@ WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 		}
 	}
 	else {
-		WinList   wl;
+		WinList wl;
 
 		/*
 		 * This is presumably exposing some individual window in the WS
@@ -798,7 +798,7 @@ WMapToggleState(VirtualScreen *vs)
 void
 WMapSetMapState(VirtualScreen *vs)
 {
-	WorkSpace     *ws;
+	WorkSpace *ws;
 
 	if(vs->wsw->state == WMS_map) {
 		return;
@@ -814,7 +814,7 @@ WMapSetMapState(VirtualScreen *vs)
 void
 WMapSetButtonsState(VirtualScreen *vs)
 {
-	WorkSpace     *ws;
+	WorkSpace *ws;
 
 	if(vs->wsw->state == WMS_buttons) {
 		return;
@@ -842,9 +842,9 @@ WMapSetButtonsState(VirtualScreen *vs)
 void
 WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
 {
-	KeySym      keysym;
+	KeySym keysym;
 
-	keysym  = XLookupKeysym((XKeyEvent *) event, 0);
+	keysym = XLookupKeysym((XKeyEvent *) event, 0);
 	if(! keysym) {
 		return;
 	}
@@ -864,7 +864,7 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 
 	/* Check if we're using Control to toggle the state */
 	{
-		KeySym keysym  = XLookupKeysym((XKeyEvent *) event, 0);
+		KeySym keysym = XLookupKeysym((XKeyEvent *) event, 0);
 		if(! keysym) {
 			return;
 		}
@@ -969,14 +969,14 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 void
 WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
-	WorkSpace           *oldws, *newws;
-	WinList             wl;
-	TwmWindow           *win;
-	unsigned int        W0, H0;
-	XEvent              lastev;
-	Window              w = 0;
-	Position            newX = 0, newY = 0, winX = 0, winY = 0;
-	bool                alreadyvivible, realmovemode;
+	WorkSpace    *oldws, *newws;
+	WinList      wl;
+	TwmWindow    *win;
+	unsigned int W0, H0;
+	XEvent       lastev;
+	Window       w = 0;
+	Position     newX = 0, newY = 0, winX = 0, winY = 0;
+	bool         alreadyvivible, realmovemode;
 	const WorkSpaceWindow *mw = vs->wsw;
 
 	/* Shortcuts into the event */
@@ -1683,7 +1683,7 @@ WMapMapWindow(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList   wl;
+	WinList wl;
 
 	/* For each VS ... */
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
@@ -1795,7 +1795,7 @@ WMapIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList    wl;
+	WinList wl;
 
 	if(!win->vs) {
 		return;
@@ -1833,7 +1833,7 @@ WMapDeIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList    wl;
+	WinList wl;
 
 	if(!win->vs) {
 		return;
@@ -1911,9 +1911,9 @@ WMapRaise(TwmWindow *win)
 void
 WMapRestack(WorkSpace *ws)
 {
-	WinList     wl;
-	Window      root, parent; // Dummy
-	Window      *children, *smallws;
+	WinList wl;
+	Window  root, parent; // Dummy
+	Window  *children, *smallws;
 	unsigned int nchildren;
 
 	/* Get a whole list of the windows on the screen */
@@ -1992,7 +1992,7 @@ WMapUpdateIconName(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList   wl;
+	WinList wl;
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -2116,7 +2116,7 @@ WMapRedrawWindow(Window window, int width, int height,
 void
 WMapAddWindow(TwmWindow *win)
 {
-	WorkSpace     *ws;
+	WorkSpace *ws;
 
 	if(!WMapWindowMayBeAdded(win)) {
 		return;
@@ -2180,7 +2180,7 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 			wl->width  -= 2;
 			wl->height -= 2;
 		}
-		if(wl->width  < 1) {
+		if(wl->width < 1) {
 			wl->width  = 1;
 		}
 		if(wl->height < 1) {
