@@ -1533,7 +1533,6 @@ move:
 	 */
 	if((lastev.xbutton.time - etime) < 250) {
 		KeyCode control_L_code, control_R_code;
-		KeySym  control_L_sym,  control_R_sym;
 		char keys [32];
 
 		/* Re-show old miniwindow, destroy the temp, and warp to WS */
@@ -1579,10 +1578,8 @@ move:
 		 * XXX Should we be checking DontToggleWorkSpaceManagerState
 		 * here?
 		 */
-		control_L_sym  = XStringToKeysym("Control_L");
-		control_R_sym  = XStringToKeysym("Control_R");
-		control_L_code = XKeysymToKeycode(dpy, control_L_sym);
-		control_R_code = XKeysymToKeycode(dpy, control_R_sym);
+		control_L_code = XKeysymToKeycode(dpy, XStringToKeysym("Control_L"));
+		control_R_code = XKeysymToKeycode(dpy, XStringToKeysym("Control_R"));
 		XQueryKeymap(dpy, keys);
 		if((keys [control_L_code / 8] & ((char) 0x80 >> (control_L_code % 8))) ||
 		                keys [control_R_code / 8] & ((char) 0x80 >> (control_R_code % 8))) {
