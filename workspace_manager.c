@@ -693,15 +693,24 @@ ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 
 
 /*
- * Draw up the button-state pieces of a WSM window.  This is subtly
- * different from the WMgrHandleExposeEvent() handler because that draws
- * the map-mode as well.  And it draws the button mode stuff a little
- * different than we do here as well, because ???
+ * Draw up the button-state pieces of a WSM window.
+ *
+ * Note: this is currently stubbed out and does thing.  Historically it's
+ * been called during startup when the WSM window is put together, and
+ * when the screen is unmasked.  However, the only apparent result is
+ * that the border and buttons get drawn a little earlier; they already
+ * get expose events that get picked up when we start the event loop.
+ *
+ * If we don't find any reason to reinstate it, we should remove this in
+ * the future.
  */
 void
 PaintWorkSpaceManager(VirtualScreen *vs)
 {
 	WorkSpace *ws;
+
+	/* x-ref header comment */
+	return;
 
 	PaintWorkSpaceManagerBorder(vs);
 
