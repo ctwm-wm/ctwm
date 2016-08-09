@@ -57,6 +57,8 @@ static void CreateWorkSpaceManagerWindow(VirtualScreen *vs);
 static void ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win);
 static void PaintWorkSpaceManagerBorder(VirtualScreen *vs);
 
+static void wmap_mapwin_backend(TwmWindow *win, bool handleraise);
+
 static void WMapRedrawWindow(Window window, int width, int height,
                              ColorPair cp, const char *label);
 
@@ -1676,6 +1678,41 @@ move:
  */
 
 /*
+ * Backend for mapping up windows in the WSM map.
+ */
+static void
+wmap_mapwin_backend(TwmWindow *win, bool handleraise)
+{
+	VirtualScreen *vs;
+	WorkSpace *ws;
+	WinList wl;
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = vs->wsw->mswl[ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(win == wl->twm_win) {
+					/*
+					 * When called via deiconify, we might have to do
+					 * stuff related to auto-raising the window while we
+					 * de-iconify.  When called via a map request, the
+					 * window is always wherever it previously was in the
+					 * stack.
+					 */
+					if(!handleraise || Scr->NoRaiseDeicon) {
+						XMapWindow(dpy, wl->w);
+					}
+					else {
+						XMapRaised(dpy, wl->w);
+					}
+					WMapRedrawName(win->vs, wl);
+					break;
+				}
+			}
+		}
+	}
+}
+
+/*
  * Map up a window's subwindow in the map-mode WSM.  Happens as a result
  * of getting (or faking) a Map request event.  Notably, _not_ in the
  * process of de-iconifying a window; mostly as a result of _creating_
@@ -1687,26 +1724,8 @@ move:
 void
 WMapMapWindow(TwmWindow *win)
 {
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList wl;
-
-	/* For each VS ... */
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		/* ... and each WS ... */
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			/* ... and each window in the map for that WS ... */
-			MapSubwindow *msw = vs->wsw->mswl[ws->number];
-			for(wl = msw->wl; wl != NULL; wl = wl->next) {
-				/* ... if that's the win we're asking after, draw it */
-				if(wl->twm_win == win) {
-					XMapWindow(dpy, wl->w);
-					WMapRedrawName(vs, wl);
-					break;
-				}
-			}
-		}
-	}
+	/* We don't do raise handling */
+	wmap_mapwin_backend(win, false);
 }
 
 
@@ -1825,40 +1844,17 @@ WMapIconify(TwmWindow *win)
  * and different from WMapMapWindow() in complicated ways.  This function
  * winds up getting called when a window is de-iconified via a ctwm
  * function.
- *
- * XXX Does it make sense that they're separate?  They seem do be doing a
- * lot of the same stuff.  In fact, the only difference is apparently
- * that this auto-raises on !(NoRaiseDeIcon)?  This requires some further
- * investigation...  at the least, they should probably be collapsed
- * somehow with a conditional for that trivial difference.
  */
 void
 WMapDeIconify(TwmWindow *win)
 {
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList wl;
-
+	/* If it's not showing anywhere, nothing to do.  Is this possible? */
 	if(!win->vs) {
 		return;
 	}
 
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl[ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(win == wl->twm_win) {
-					if(Scr->NoRaiseDeicon) {
-						XMapWindow(dpy, wl->w);
-					}
-					else {
-						XMapRaised(dpy, wl->w);
-					}
-					WMapRedrawName(win->vs, wl);
-					break;
-				}
-			}
-		}
-	}
+	/* Loop and map, handling raises if necessary */
+	wmap_mapwin_backend(win, true);
 }
 
 
