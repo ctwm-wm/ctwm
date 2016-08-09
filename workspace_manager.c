@@ -1563,6 +1563,10 @@ move:
 		 * state back.  It seems a reasonable assumption that the user
 		 * wanted a temporary change of state just for the purposes of
 		 * the change.
+		 *
+		 * (if you had released the ctrl before the mouse, the release
+		 * event would already be queued up up on the WSM, so would flip
+		 * it back)
 		 */
 		control_L_sym  = XStringToKeysym("Control_L");
 		control_R_sym  = XStringToKeysym("Control_R");
