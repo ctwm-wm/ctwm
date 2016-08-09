@@ -1676,10 +1676,13 @@ move:
  */
 
 /*
- * Map up a window's subwindow in the map-mode WSM.  Happens when a
- * window is de-iconified or otherwise mapped.  Specifically, when we get
- * (or fake) a Map request event.  x-ref comment on WMapDeIconify() for
- * some subtle distinctions between the two...
+ * Map up a window's subwindow in the map-mode WSM.  Happens as a result
+ * of getting (or faking) a Map request event.  Notably, _not_ in the
+ * process of de-iconifying a window; mostly as a result of _creating_
+ * windows, or when a client maps itself without a request from us.
+ *
+ * x-ref comment on WMapDeIconify() for some subtle distinctions between
+ * the two...
  */
 void
 WMapMapWindow(TwmWindow *win)
@@ -1819,11 +1822,9 @@ WMapIconify(TwmWindow *win)
 
 /*
  * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
- * and different from WMapMapWindow() in complicated ways.  WMMW() gets
- * called at the end of HandleMapRequest().  A little earlier in HMR(),
- * DeIconify() is (sometimes) called, which calls this function.  So,
- * anything that de-iconifies invokes this, but only when it happens via
- * a map event does WMMW() get called as well.
+ * and different from WMapMapWindow() in complicated ways.  This function
+ * winds up getting called when a window is de-iconified via a ctwm
+ * function.
  *
  * XXX Does it make sense that they're separate?  They seem do be doing a
  * lot of the same stuff.  In fact, the only difference is apparently
