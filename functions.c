@@ -1251,7 +1251,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			else {
 				OtpTinyLower(tmp_win, WinWin);
-				WMapRaise(tmp_win);
+				WMapLower(tmp_win);
 			}
 			break;
 
