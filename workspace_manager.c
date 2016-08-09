@@ -604,8 +604,10 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	}
 
 
-	/* And draw it */
-	PaintWorkSpaceManager(vs);
+	/*
+	 * Don't have to PaintWorkSpaceManager(vs) here, because
+	 * ResizeWorkSpaceManager() already called it for us.
+	 */
 }
 
 
