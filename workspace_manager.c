@@ -1567,6 +1567,9 @@ move:
 		 * (if you had released the ctrl before the mouse, the release
 		 * event would already be queued up up on the WSM, so would flip
 		 * it back)
+		 *
+		 * XXX Should we be checking DontToggleWorkSpaceManagerState
+		 * here?
 		 */
 		control_L_sym  = XStringToKeysym("Control_L");
 		control_R_sym  = XStringToKeysym("Control_R");
