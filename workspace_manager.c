@@ -1864,8 +1864,13 @@ WMapDeIconify(TwmWindow *win)
 /*
  * Frontends for changing the stacking of windows in the WSM.
  *
- * XXX If these implementations really _should_ be identical, they should
- * be collapsed...
+ * Strictly speaker, we have no ability to raise or lower a window in the
+ * map; we only draw the whole stack.  And these functions don't actually
+ * change the stacking of a window, they're called as a _result_ of
+ * changing the stacking, to notify the WSM to re-check and update
+ * itself.  So while conceptually we maintain a separation for our
+ * callers between various reasons this is being called, the
+ * implementations are identical.
  */
 void
 WMapRaiseLower(TwmWindow *win)
@@ -1882,25 +1887,13 @@ WMapRaiseLower(TwmWindow *win)
 void
 WMapLower(TwmWindow *win)
 {
-	WorkSpace *ws;
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapRestack(ws);
-		}
-	}
+	WMapRaiseLower(win);
 }
 
 void
 WMapRaise(TwmWindow *win)
 {
-	WorkSpace *ws;
-
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(OCCUPY(win, ws)) {
-			WMapRestack(ws);
-		}
-	}
+	WMapRaiseLower(win);
 }
 
 
