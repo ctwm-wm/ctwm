@@ -284,8 +284,8 @@ CreateWorkSpaceManager(void)
 
 /*
  * Put together the actual window for the workspace manager.  Called as
- * part of CreateWorkSpaceManager() during startup, once per workspace
- * (since there's a separate window in each).
+ * part of CreateWorkSpaceManager() during startup, once per vscreen
+ * (since there's a separate window for each).
  */
 static void
 CreateWorkSpaceManagerWindow(VirtualScreen *vs)
