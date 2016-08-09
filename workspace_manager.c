@@ -1583,6 +1583,8 @@ move:
 		return;
 	}
 
+
+	/* Find the workspace we finally found up in */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		MapSubwindow *msw = vs->wsw->mswl [ws->number];
 		if((newX >= msw->x) && (newX < msw->x + mw->wwidth) &&
@@ -1591,11 +1593,13 @@ move:
 		}
 	}
 
+	/* And finish off whatever we're supposed to be doing */
 	newws = ws;
 	switch(button) {
 		case 1 : { /* moving to another workspace */
 			int occupation;
 
+			/* If nothing to change, re-map avatar and we're done */
 			if((newws == NULL) || (newws == oldws) ||
 			                OCCUPY(wl->twm_win, newws)) {
 				XMapWindow(dpy, sw);
@@ -1608,6 +1612,10 @@ move:
 			occupation &= ~(1 << oldws->number);
 			ChangeOccupation(win, occupation);
 
+			/*
+			 * Raise it to the top if it's in our current ws, and
+			 * properly slot it into the WSM map stack if not.
+			 */
 			if(newws == vs->wsw->currentwspc) {
 				OtpRaise(win, WinWin);
 				WMapRaise(win);
@@ -1615,19 +1623,24 @@ move:
 			else {
 				WMapRestack(newws);
 			}
+
 			break;
 		}
 
 		case 2 : { /* putting in extra workspace */
 			int occupation;
 
+			/* Nothing to do if it's going nowhere or places it already is */
 			if((newws == NULL) || (newws == oldws) ||
 			                OCCUPY(wl->twm_win, newws)) {
 				break;
 			}
 
+			/* Move */
 			occupation = win->occupation | (1 << newws->number);
 			ChangeOccupation(win, occupation);
+
+			/* Raise/stack */
 			if(newws == vs->wsw->currentwspc) {
 				OtpRaise(win, WinWin);
 				WMapRaise(win);
@@ -1638,10 +1651,15 @@ move:
 			break;
 		}
 
+		/*
+		 * Should actually never hit this state; only 1/2 would have
+		 * gotten this far into the code...
+		 */
 		default :
 			return;
 	}
 
+	/* Clean up our temporary moving-around-in the WSM window */
 	XDestroyWindow(dpy, w);
 }
 
