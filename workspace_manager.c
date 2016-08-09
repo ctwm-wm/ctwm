@@ -973,7 +973,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	WinList             wl;
 	TwmWindow           *win;
 	unsigned int        W0, H0;
-	XEvent              ev;
+	XEvent              lastev;
 	Window              w = 0;
 	Position            newX = 0, newY = 0, winX = 0, winY = 0;
 	bool                alreadyvivible, realmovemode;
@@ -1219,6 +1219,8 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 		alreadyvivible = false;
 		cont = true;
 		while(cont) {
+			XEvent ev;
+
 			/* Grab the next event and handle */
 			XMaskEvent(dpy, ButtonPressMask | ButtonMotionMask |
 			           ButtonReleaseMask | ExposureMask, &ev);
@@ -1259,6 +1261,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 					 * through into the Motion case to handle any
 					 * remaining movement.
 					 */
+					lastev = ev;
 					cont = false;
 					newX = ev.xbutton.x;
 					newY = ev.xbutton.y;
@@ -1498,9 +1501,9 @@ move:
 	 * Last event that caused us to escape is other code's
 	 * responsibility, put it back in the queue.
 	 */
-	ev.xbutton.subwindow = (Window) 0;
-	ev.xbutton.window = parent;
-	XPutBackEvent(dpy, &ev);
+	lastev.xbutton.subwindow = (Window) 0;
+	lastev.xbutton.window = parent;
+	XPutBackEvent(dpy, &lastev);
 
 	/* End our grab */
 	XUngrabPointer(dpy, CurrentTime);
@@ -1522,7 +1525,7 @@ move:
 	 * XXX This still leaves any window _moves_ done.  It seems like it
 	 * should probably revert those too?
 	 */
-	if((ev.xbutton.time - etime) < 250) {
+	if((lastev.xbutton.time - etime) < 250) {
 		KeyCode control_L_code, control_R_code;
 		KeySym  control_L_sym,  control_R_sym;
 		char keys [32];
