@@ -969,7 +969,7 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 void
 WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
-	WorkSpace           *ws, *oldws, *newws;
+	WorkSpace           *oldws, *newws;
 	WinList             wl;
 	TwmWindow           *win;
 	unsigned int        W0, H0;
@@ -989,6 +989,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 
 	/* If we're in button state, we're just clicking to change */
 	if(vs->wsw->state == WMS_buttons) {
+		WorkSpace *ws;
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			if(vs->wsw->bswl[ws->number]->w == parent) {
 				GotoWorkSpace(vs, ws);
@@ -1006,12 +1007,13 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	 */
 
 	/* Find what workspace we're clicking in */
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(vs->wsw->mswl[ws->number]->w == parent) {
+	for(oldws = Scr->workSpaceMgr.workSpaceList ; oldws != NULL ;
+			oldws = oldws->next) {
+		if(vs->wsw->mswl[oldws->number]->w == parent) {
 			break;
 		}
 	}
-	if(ws == NULL) {
+	if(oldws == NULL) {
 		/* None?  We're done here. */
 		return;
 	}
@@ -1021,12 +1023,9 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	 * switching workspaces.  So just do that, and we're done.
 	 */
 	if(sw == (Window) 0) {
-		GotoWorkSpace(vs, ws);
+		GotoWorkSpace(vs, oldws);
 		return;
 	}
-
-	/* Stash.  XXX Temp? */
-	oldws = ws;
 
 	/* Use the context to find the winlist entry for this window */
 	if(XFindContext(dpy, sw, MapWListContext, (XPointer *) &wl) == XCNOENT) {
@@ -1531,7 +1530,7 @@ move:
 		/* Re-show old miniwindow, destroy the temp, and warp to WS */
 		XMapWindow(dpy, sw);
 		XDestroyWindow(dpy, w);
-		GotoWorkSpace(vs, ws);
+		GotoWorkSpace(vs, oldws);
 		if(!Scr->DontWarpCursorInWMap) {
 			WarpToWindow(win, Scr->RaiseOnWarp);
 		}
@@ -1585,8 +1584,9 @@ move:
 
 
 	/* Find the workspace we finally found up in */
-	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		MapSubwindow *msw = vs->wsw->mswl [ws->number];
+	for(newws = Scr->workSpaceMgr.workSpaceList ; newws != NULL ;
+			newws = newws->next) {
+		MapSubwindow *msw = vs->wsw->mswl[newws->number];
 		if((newX >= msw->x) && (newX < msw->x + mw->wwidth) &&
 		                (newY >= msw->y) && (newY < msw->y + mw->wheight)) {
 			break;
@@ -1594,7 +1594,6 @@ move:
 	}
 
 	/* And finish off whatever we're supposed to be doing */
-	newws = ws;
 	switch(button) {
 		case 1 : { /* moving to another workspace */
 			int occupation;
