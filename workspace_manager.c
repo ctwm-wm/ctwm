@@ -503,8 +503,8 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 		const char *name      = Scr->workSpaceMgr.name;
 		const char *icon_name = Scr->workSpaceMgr.icon_name;
 
-		sizehints.flags       = USPosition | PBaseSize | PMinSize | PResizeInc |
-		                        PWinGravity;
+		sizehints.flags       = USPosition | PBaseSize | PMinSize | PResizeInc
+		                        | PWinGravity;
 		sizehints.x           = x;
 		sizehints.y           = y;
 		sizehints.base_width  = columns * hspace;
