@@ -1008,7 +1008,7 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 
 	/* Find what workspace we're clicking in */
 	for(oldws = Scr->workSpaceMgr.workSpaceList ; oldws != NULL ;
-			oldws = oldws->next) {
+	                oldws = oldws->next) {
 		if(vs->wsw->mswl[oldws->number]->w == parent) {
 			break;
 		}
@@ -1588,7 +1588,7 @@ move:
 
 	/* Find the workspace we finally found up in */
 	for(newws = Scr->workSpaceMgr.workSpaceList ; newws != NULL ;
-			newws = newws->next) {
+	                newws = newws->next) {
 		MapSubwindow *msw = vs->wsw->mswl[newws->number];
 		if((newX >= msw->x) && (newX < msw->x + mw->wwidth) &&
 		                (newY >= msw->y) && (newY < msw->y + mw->wheight)) {
