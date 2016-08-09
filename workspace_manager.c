@@ -1574,7 +1574,7 @@ move:
 		 *
 		 * (if you had released the ctrl before the mouse, the release
 		 * event would already be queued up up on the WSM, so would flip
-		 * it back)
+		 * it back after we return)
 		 *
 		 * XXX Should we be checking DontToggleWorkSpaceManagerState
 		 * here?
