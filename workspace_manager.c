@@ -695,9 +695,9 @@ ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 /*
  * Draw up the button-state pieces of a WSM window.
  *
- * Note: this is currently stubbed out and does thing.  Historically it's
- * been called during startup when the WSM window is put together, and
- * when the screen is unmasked.  However, the only apparent result is
+ * Note: this is currently stubbed out and does nothing.  Historically
+ * it's been called during startup when the WSM window is put together,
+ * and when the screen is unmasked.  However, the only apparent result is
  * that the border and buttons get drawn a little earlier; they already
  * get expose events that get picked up when we start the event loop.
  *
