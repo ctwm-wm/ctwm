@@ -1737,6 +1737,53 @@ WMapMapWindow(TwmWindow *win)
 
 
 /*
+ * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
+ * and different from WMapMapWindow() in complicated ways.  This function
+ * winds up getting called when a window is de-iconified via a ctwm
+ * function.
+ */
+void
+WMapDeIconify(TwmWindow *win)
+{
+	/* If it's not showing anywhere, nothing to do.  Is this possible? */
+	if(!win->vs) {
+		return;
+	}
+
+	/* Loop and map, handling raises if necessary */
+	wmap_mapwin_backend(win, true);
+}
+
+
+/*
+ * Hide away a window in the WSM map.  Happens when win is iconified;
+ * different from destruction.
+ */
+void
+WMapIconify(TwmWindow *win)
+{
+	VirtualScreen *vs;
+	WorkSpace *ws;
+	WinList wl;
+
+	if(!win->vs) {
+		return;
+	}
+
+	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
+			for(wl = vs->wsw->mswl[ws->number]->wl; wl != NULL; wl = wl->next) {
+				if(win == wl->twm_win) {
+					XUnmapWindow(dpy, wl->w);
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+/*
  * Position a window in the WSM.  Happens as a result of moving things.
  */
 void
@@ -1815,53 +1862,6 @@ WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 			}
 		}
 	}
-}
-
-
-/*
- * Hide away a window in the WSM map.  Happens when win is iconified;
- * different from destruction.
- */
-void
-WMapIconify(TwmWindow *win)
-{
-	VirtualScreen *vs;
-	WorkSpace *ws;
-	WinList wl;
-
-	if(!win->vs) {
-		return;
-	}
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			for(wl = vs->wsw->mswl[ws->number]->wl; wl != NULL; wl = wl->next) {
-				if(win == wl->twm_win) {
-					XUnmapWindow(dpy, wl->w);
-					break;
-				}
-			}
-		}
-	}
-}
-
-
-/*
- * De-iconify a window in the WSM map.  The opposite of WMapIconify(),
- * and different from WMapMapWindow() in complicated ways.  This function
- * winds up getting called when a window is de-iconified via a ctwm
- * function.
- */
-void
-WMapDeIconify(TwmWindow *win)
-{
-	/* If it's not showing anywhere, nothing to do.  Is this possible? */
-	if(!win->vs) {
-		return;
-	}
-
-	/* Loop and map, handling raises if necessary */
-	wmap_mapwin_backend(win, true);
 }
 
 
