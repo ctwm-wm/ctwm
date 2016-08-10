@@ -2124,9 +2124,9 @@ WMapAddWindow(TwmWindow *win)
 
 
 /*
- * Create WSM representation of a given in a given WS.  Called when
- * windows get added to a workspace, either via WMapAddWindow() during
- * the AddWindow() process, or via an occupation change.
+ * Create WSM representation of a given window in a given WS.  Called
+ * when windows get added to a workspace, either via WMapAddWindow()
+ * during the AddWindow() process, or via an occupation change.
  */
 void
 WMapAddToList(TwmWindow *win, WorkSpace *ws)
