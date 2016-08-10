@@ -271,15 +271,15 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_TOGGLESTATE:
-			WMapToggleState(Scr->currentvs);
+			WMgrToggleState(Scr->currentvs);
 			break;
 
 		case F_SETBUTTONSTATE:
-			WMapSetButtonsState(Scr->currentvs);
+			WMgrSetButtonsState(Scr->currentvs);
 			break;
 
 		case F_SETMAPSTATE:
-			WMapSetMapState(Scr->currentvs);
+			WMgrSetMapState(Scr->currentvs);
 			break;
 
 		case F_PIN:

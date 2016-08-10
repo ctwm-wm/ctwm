@@ -800,18 +800,18 @@ WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
  * Moving the WSM between button and map state
  */
 void
-WMapToggleState(VirtualScreen *vs)
+WMgrToggleState(VirtualScreen *vs)
 {
 	if(vs->wsw->state == WMS_buttons) {
-		WMapSetMapState(vs);
+		WMgrSetMapState(vs);
 	}
 	else {
-		WMapSetButtonsState(vs);
+		WMgrSetButtonsState(vs);
 	}
 }
 
 void
-WMapSetMapState(VirtualScreen *vs)
+WMgrSetMapState(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 
@@ -827,7 +827,7 @@ WMapSetMapState(VirtualScreen *vs)
 }
 
 void
-WMapSetButtonsState(VirtualScreen *vs)
+WMgrSetButtonsState(VirtualScreen *vs)
 {
 	WorkSpace *ws;
 
@@ -866,7 +866,7 @@ WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event)
 	if(keysym == XK_Control_L || keysym == XK_Control_R) {
 		/* DontToggleWorkSpaceManagerState added 20040607 by dl*/
 		if(!Scr->DontToggleWorkspaceManagerState) {
-			WMapToggleState(vs);
+			WMgrToggleState(vs);
 		}
 		return;
 	}
@@ -886,7 +886,7 @@ WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event)
 		if(keysym == XK_Control_L || keysym == XK_Control_R) {
 			/* DontToggleWorkSpaceManagerState added 20040607 by dl*/
 			if(!Scr->DontToggleWorkspaceManagerState) {
-				WMapToggleState(vs);
+				WMgrToggleState(vs);
 			}
 			return;
 		}
@@ -1592,7 +1592,7 @@ move:
 		XQueryKeymap(dpy, keys);
 		if((keys [control_L_code / 8] & ((char) 0x80 >> (control_L_code % 8))) ||
 		                keys [control_R_code / 8] & ((char) 0x80 >> (control_R_code % 8))) {
-			WMapToggleState(vs);
+			WMgrToggleState(vs);
 		}
 		return;
 	}
