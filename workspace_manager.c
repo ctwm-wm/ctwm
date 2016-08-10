@@ -71,8 +71,12 @@ static Cursor handCursor = None;
 
 
 /*
+ ****************************************************************
+ *
  * First, functions related to general creation and drawing of the WSM
  * window and its backing structs
+ *
+ ****************************************************************
  */
 
 /*
@@ -795,7 +799,6 @@ WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 
 
 
-
 /*
  * Moving the WSM between button and map state
  */
@@ -845,7 +848,11 @@ WMgrSetButtonsState(VirtualScreen *vs)
 
 
 /*
+ ****************************************************************
+ *
  * Handlers for mouse/key actions in the WSM
+ *
+ ****************************************************************
  */
 
 /*
@@ -1681,7 +1688,11 @@ move:
 
 
 /*
+ ****************************************************************
+ *
  * Functions for doing things with subwindows in the WSM in map state
+ *
+ ****************************************************************
  */
 
 /*
@@ -1987,7 +1998,11 @@ WMapRestack(WorkSpace *ws)
 
 
 /*
+ ****************************************************************
+ *
  * Bits related to the actual drawing of the windows in the map.
+ *
+ ****************************************************************
  */
 
 /*
@@ -2314,7 +2329,11 @@ WMapRemoveWindowFromWorkspace(TwmWindow *win, WorkSpace *ws)
 
 
 /*
+ ****************************************************************
+ *
  * Utils-ish funcs
+ *
+ ****************************************************************
  */
 
 /*
