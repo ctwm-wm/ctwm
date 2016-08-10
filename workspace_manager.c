@@ -569,8 +569,9 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	 * into the WMgrHandle*Event()'s, which then dig down into the event
 	 * to find where it happened in there.
 	 *
-	 * XXX Should the map window listen to exposure too?  Or should the
-	 * button window not?
+	 * The map window doesn't listen to expose events; it's just empty
+	 * and background colored.  The individual subwindows in the map
+	 * listen for exposes for drawing themselves.
 	 */
 	for(WorkSpace *ws = Scr->workSpaceMgr.workSpaceList; ws != NULL;
 	                ws = ws->next) {
