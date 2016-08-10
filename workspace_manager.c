@@ -1984,6 +1984,12 @@ WMapRestack(WorkSpace *ws)
 }
 
 
+
+
+/*
+ * Bits related to the actual drawing of the windows in the map.
+ */
+
 /*
  * Update stuff in the WSM when win's icon name changes
  */
