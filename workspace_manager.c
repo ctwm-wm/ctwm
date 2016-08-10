@@ -572,6 +572,12 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 	 * The map window doesn't listen to expose events; it's just empty
 	 * and background colored.  The individual subwindows in the map
 	 * listen for exposes for drawing themselves.
+	 *
+	 * Dragging windows around to move or re-occupy in the map window
+	 * does rely on motion events, but we don't listen for them here.
+	 * That happens in WMgrHandleButtonEvent() after getting the initial
+	 * click.  It changes the listen and runs through the action
+	 * internally; those motions never run through our main event loop.
 	 */
 	for(WorkSpace *ws = Scr->workSpaceMgr.workSpaceList; ws != NULL;
 	                ws = ws->next) {
