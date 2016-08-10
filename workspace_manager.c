@@ -1742,7 +1742,7 @@ WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 		return;
 	}
 
-	/* If it's a WSM, we may be reseeting size/position, but that's it */
+	/* If it's a WSM, we may be resetting size/position, but that's it */
 	if(win->iswspmgr) {
 		if(w == -1) {
 			return;
