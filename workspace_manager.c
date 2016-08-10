@@ -2103,8 +2103,8 @@ WMapRedrawWindow(Window window, int width, int height,
  */
 
 /*
- * Add a window into any appropriate WSM's [data structure].  Called
- * during AddWindow().
+ * Add a window into any appropriate WSMs' maps.  Called during
+ * AddWindow().
  */
 void
 WMapAddWindow(TwmWindow *win)
@@ -2117,7 +2117,7 @@ WMapAddWindow(TwmWindow *win)
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(OCCUPY(win, ws)) {
-			WMapAddToList(win, ws);
+			WMapAddWindowToWorkspace(win, ws);
 		}
 	}
 }
@@ -2127,9 +2127,11 @@ WMapAddWindow(TwmWindow *win)
  * Create WSM representation of a given window in a given WS.  Called
  * when windows get added to a workspace, either via WMapAddWindow()
  * during the AddWindow() process, or via an occupation change.
+ *
+ * (previously: WMapAddToList())
  */
 void
-WMapAddToList(TwmWindow *win, WorkSpace *ws)
+WMapAddWindowToWorkspace(TwmWindow *win, WorkSpace *ws)
 {
 	ColorPair cp;
 
@@ -2224,17 +2226,19 @@ WMapAddToList(TwmWindow *win, WorkSpace *ws)
 
 
 /*
- * Remove a window from any WSM's [data structures].  Called during
- * window destruction process.
+ * Remove a window from any WSM maps it's in.  Called during window
+ * destruction process.
+ *
+ * (previously: WMapDestroyWindow())
  */
 void
-WMapDestroyWindow(TwmWindow *win)
+WMapRemoveWindow(TwmWindow *win)
 {
 	WorkSpace *ws;
 
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 		if(OCCUPY(win, ws)) {
-			WMapRemoveFromList(win, ws);
+			WMapRemoveWindowFromWorkspace(win, ws);
 		}
 	}
 
@@ -2256,12 +2260,14 @@ WMapDestroyWindow(TwmWindow *win)
 
 
 /*
- * Remove window's WSM representation.  Happens from WMapDestroyWindow()
+ * Remove window's WSM representation.  Happens from WMapRemoveWindow()
  * as part of the window destruction process, and in the occupation
  * change process.
+ *
+ * (previously: WMapRemoveFromList())
  */
 void
-WMapRemoveFromList(TwmWindow *win, WorkSpace *ws)
+WMapRemoveWindowFromWorkspace(TwmWindow *win, WorkSpace *ws)
 {
 	VirtualScreen *vs;
 

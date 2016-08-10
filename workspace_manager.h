@@ -53,9 +53,9 @@ void WMapUpdateIconName(TwmWindow *win);
 void WMapRedrawName(VirtualScreen *vs, WinList   wl);
 
 void WMapAddWindow(TwmWindow *win);
-void WMapAddToList(TwmWindow *win, WorkSpace *ws);
-void WMapDestroyWindow(TwmWindow *win);
-void WMapRemoveFromList(TwmWindow *win, WorkSpace *ws);
+void WMapAddWindowToWorkspace(TwmWindow *win, WorkSpace *ws);
+void WMapRemoveWindow(TwmWindow *win);
+void WMapRemoveWindowFromWorkspace(TwmWindow *win, WorkSpace *ws);
 
 bool WMapWindowMayBeAdded(TwmWindow *win);
 

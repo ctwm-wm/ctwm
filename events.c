@@ -2432,7 +2432,7 @@ void HandleDestroyNotify(void)
 	 *     13. HiliteImage
 	 *     14. iconslist
 	 */
-	WMapDestroyWindow(Tmp_win);
+	WMapRemoveWindow(Tmp_win);
 	if(Tmp_win->gray) {
 		XFreePixmap(dpy, Tmp_win->gray);
 	}
