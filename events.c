@@ -567,8 +567,6 @@ void HandleEvents(void)
 	}
 }
 
-#define nextEvent(event) XtAppNextEvent(appContext, event);
-
 
 static void CtwmNextEvent(Display *display, XEvent  *event)
 {
@@ -578,6 +576,8 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout, *tout = NULL;
+
+#define nextEvent(event) XtAppNextEvent(appContext, event);
 
 	if(RestartFlag) {
 		DoRestart(CurrentTime);
@@ -635,6 +635,10 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 			continue;
 		}
 	}
+
+#undef nextEvent
+
+	/* NOTREACHED */
 }
 
 
