@@ -4471,8 +4471,8 @@ static void flush_expose(Window w)
 {
 	XEvent dummy;
 
-	/* SUPPRESS 530 */
-	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy)) ;
+	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
+		/* nada */;
 }
 
 

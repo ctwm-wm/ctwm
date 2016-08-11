@@ -1885,8 +1885,7 @@ void FetchWmColormapWindows(TwmWindow *tmp)
 
 	number_cmap_windows = 0;
 
-	if( /* SUPPRESS 560 */
-	        (previously_installed =
+	if((previously_installed =
 	                 (Scr->cmapInfo.cmaps == &tmp->cmaps && tmp->cmaps.number_cwins))) {
 		cwins = tmp->cmaps.cwins;
 		for(i = 0; i < tmp->cmaps.number_cwins; i++) {
