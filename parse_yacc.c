@@ -230,8 +230,9 @@ CheckWarpScreenArg(char *s)
 		return true;
 	}
 
-	for(; *s && Isascii(*s) && Isdigit(*s); s++)
+	for(; *s && Isascii(*s) && Isdigit(*s); s++) {
 		/* nada */;
+	}
 	return (*s ? false : true);
 }
 
