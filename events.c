@@ -570,12 +570,11 @@ void HandleEvents(void)
 
 static void CtwmNextEvent(Display *display, XEvent  *event)
 {
-	int animate = (AnimationActive && MaybeAnimate);
-
 	int         found;
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout, *tout = NULL;
+	const bool animate = (AnimationActive && MaybeAnimate);
 
 #define nextEvent(event) XtAppNextEvent(appContext, event);
 
