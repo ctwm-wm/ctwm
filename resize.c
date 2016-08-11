@@ -81,6 +81,7 @@
 #include "decorations.h"
 #include "screen.h"
 #include "drawing.h"
+#include "workspace_manager.h"
 
 #define MINHEIGHT 0     /* had been 32 */
 #define MINWIDTH 0      /* had been 60 */

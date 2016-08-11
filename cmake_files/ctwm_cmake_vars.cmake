@@ -52,7 +52,9 @@ set(CTWMSRC
 	version.c
 	vscreen.c
 	windowbox.c
-	workmgr.c
+	workspace_config.c
+	workspace_manager.c
+	workspace_utils.c
 
 	ext/repl_str.c
 )

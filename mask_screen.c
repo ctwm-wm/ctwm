@@ -15,6 +15,7 @@
 #include "cursor.h"
 #include "image.h"
 #include "gram.tab.h"
+#include "workspace_manager.h"
 
 #include "mask_screen.h"
 

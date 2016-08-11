@@ -60,7 +60,7 @@
 #include "list.h"
 #include "menus.h"
 #include "vscreen.h"
-#include "workmgr.h"
+#include "workspace_structs.h"
 #include "occupation.h"
 
 typedef enum {

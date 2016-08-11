@@ -25,6 +25,8 @@
 #include "screen.h"
 #include "otp.h"
 #include "util.h"
+#include "workspace_manager.h"
+#include "workspace_utils.h"
 
 // Gotten via screen.h
 //#include "occupation.h"
@@ -41,7 +43,7 @@ int fullOccupation = 0;
  * The window whose occupation is currently being manipulated.
  *
  * XXX Should probably be static, but currently needed in
- * WMapDestroyWindow().  Revisit.
+ * WMapRemoveWindow().  Revisit.
  */
 TwmWindow *occupyWin = NULL;
 
@@ -1311,7 +1313,7 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		if(changedoccupation & mask) {
 			if(newoccupation & mask) {
 				/* Add to WS */
-				WMapAddToList(tmp_win, ws);
+				WMapAddWindowToWorkspace(tmp_win, ws);
 			}
 			else {
 				/*
@@ -1319,7 +1321,7 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 				 * if it were there.  Maybe there are other places we
 				 * might need to remove it from (warpring?)?
 				 */
-				WMapRemoveFromList(tmp_win, ws);
+				WMapRemoveWindowFromWorkspace(tmp_win, ws);
 				if(Scr->SaveWorkspaceFocus && ws->save_focus == tmp_win) {
 					ws->save_focus = NULL;
 				}

@@ -106,6 +106,7 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "workspace_manager.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -698,6 +699,7 @@ int main(int argc, char **argv)
 		AllocateOtherIconManagers();
 		CreateIconManagers();
 		CreateWorkSpaceManager();
+		CreateOccupyWindow();
 		MakeWorkspacesMenu();
 		createWindowBoxes();
 #ifdef EWMH

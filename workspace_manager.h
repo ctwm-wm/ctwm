@@ -23,26 +23,40 @@
  *
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
-#ifndef _CTWM_VSCREEN_H
-#define _CTWM_VSCREEN_H
 
-struct VirtualScreen {
-	int   x, y, w, h;             /* x,y relative to XineramaRoot */
-	Window window;
-	/* Boolean main; */
-	struct WorkSpaceWindow *wsw;
-	struct VirtualScreen *next;
-};
+#ifndef _CTWM_WORKMGR_H
+#define _CTWM_WORKMGR_H
 
-void InitVirtualScreens(ScreenInfo *scr);
-VirtualScreen *findIfVScreenOf(int x, int y);
-VirtualScreen *getVScreenOf(int x, int y);
-char *CtwmGetVScreenMap(Display *display, Window rootw);
-bool CtwmSetVScreenMap(Display *display, Window rootw,
-                       struct VirtualScreen *firstvs);
+void InitWorkSpaceManager(void);
+void ConfigureWorkSpaceManager(void);
+void CreateWorkSpaceManager(void);
+void PaintWorkSpaceManager(VirtualScreen *vs);
+void WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event);
 
-void DisplayWin(VirtualScreen *vs, TwmWindow *tmp_win);
-void ReparentFrameAndIcon(TwmWindow *tmp_win);
-void Vanish(VirtualScreen *vs, TwmWindow *tmp_win);
+void WMgrToggleState(VirtualScreen *vs);
+void WMgrSetMapState(VirtualScreen *vs);
+void WMgrSetButtonsState(VirtualScreen *vs);
 
-#endif /* _CTWM_VSCREEN_H */
+void WMgrHandleKeyReleaseEvent(VirtualScreen *vs, XEvent *event);
+void WMgrHandleKeyPressEvent(VirtualScreen *vs, XEvent *event);
+void WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event);
+
+void WMapMapWindow(TwmWindow *win);
+void WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h);
+void WMapIconify(TwmWindow *win);
+void WMapDeIconify(TwmWindow *win);
+void WMapRaiseLower(TwmWindow *win);
+void WMapLower(TwmWindow *win);
+void WMapRaise(TwmWindow *win);
+void WMapRestack(WorkSpace *ws);
+void WMapUpdateIconName(TwmWindow *win);
+void WMapRedrawName(VirtualScreen *vs, WinList   wl);
+
+void WMapAddWindow(TwmWindow *win);
+void WMapAddWindowToWorkspace(TwmWindow *win, WorkSpace *ws);
+void WMapRemoveWindow(TwmWindow *win);
+void WMapRemoveWindowFromWorkspace(TwmWindow *win, WorkSpace *ws);
+
+bool WMapWindowMayBeAdded(TwmWindow *win);
+
+#endif /* _CTWM_WORKMGR_H */

@@ -177,15 +177,15 @@ VirtualScreen *getVScreenOf(int x, int y)
  * list.  This is stored this way so everything ends up in the right place
  * on a ctwm restart.
  */
-bool
-CtwmGetVScreenMap(Display *display, Window rootw,
-                  char *outbuf, int *outbuf_len)
+char *
+CtwmGetVScreenMap(Display *display, Window rootw)
 {
 	unsigned char       *prop;
 	unsigned long       bytesafter;
 	unsigned long       len;
 	Atom                actual_type;
 	int                 actual_format;
+	char                *ret;
 
 	if(XA_WM_CTWM_VSCREENMAP == None) {
 		return false;
@@ -193,16 +193,18 @@ CtwmGetVScreenMap(Display *display, Window rootw,
 	if(XGetWindowProperty(display, rootw, XA_WM_CTWM_VSCREENMAP, 0L, 512,
 	                      False, XA_STRING, &actual_type, &actual_format, &len,
 	                      &bytesafter, &prop) != Success) {
-		return false;
+		return NULL;
 	}
 	if(len == 0) {
-		return false;
+		return NULL;
 	}
-	*outbuf_len = (len >= *outbuf_len) ? *outbuf_len - 1 : len;
-	memcpy(outbuf, prop, *outbuf_len);
-	outbuf[*outbuf_len] = '\0';
+
+	ret = malloc(len + 1);
+	memcpy(ret, prop, len);
+	ret[len] = '\0';
 	XFree(prop);
-	return true;
+
+	return ret;
 }
 
 bool

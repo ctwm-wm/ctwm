@@ -28,6 +28,8 @@
 #include "version.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "workspace_manager.h"
+#include "workspace_utils.h"
 
 #include "ext/repl_str.h"
 
@@ -269,15 +271,15 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_TOGGLESTATE:
-			WMapToggleState(Scr->currentvs);
+			WMgrToggleState(Scr->currentvs);
 			break;
 
 		case F_SETBUTTONSTATE:
-			WMapSetButtonsState(Scr->currentvs);
+			WMgrSetButtonsState(Scr->currentvs);
 			break;
 
 		case F_SETMAPSTATE:
-			WMapSetMapState(Scr->currentvs);
+			WMgrSetMapState(Scr->currentvs);
 			break;
 
 		case F_PIN:
@@ -1249,7 +1251,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			else {
 				OtpTinyLower(tmp_win, WinWin);
-				WMapRaise(tmp_win);
+				WMapLower(tmp_win);
 			}
 			break;
 

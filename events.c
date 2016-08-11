@@ -95,6 +95,8 @@
 #include "version.h"
 #include "image.h"
 #include "functions.h"
+#include "workspace_manager.h"
+#include "workspace_utils.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif
@@ -2430,7 +2432,7 @@ void HandleDestroyNotify(void)
 	 *     13. HiliteImage
 	 *     14. iconslist
 	 */
-	WMapDestroyWindow(Tmp_win);
+	WMapRemoveWindow(Tmp_win);
 	if(Tmp_win->gray) {
 		XFreePixmap(dpy, Tmp_win->gray);
 	}
