@@ -50,7 +50,7 @@ void WMapLower(TwmWindow *win);
 void WMapRaise(TwmWindow *win);
 void WMapRestack(WorkSpace *ws);
 void WMapUpdateIconName(TwmWindow *win);
-void WMapRedrawName(VirtualScreen *vs, WinList   wl);
+void WMapRedrawName(VirtualScreen *vs, WinList *wl);
 
 void WMapAddWindow(TwmWindow *win);
 void WMapAddWindowToWorkspace(TwmWindow *win, WorkSpace *ws);

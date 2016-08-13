@@ -44,7 +44,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	TwmWindow            *twmWin;
 	WorkSpace            *oldws, *newws;
 	WList                *wl, *wl1;
-	WinList              winl;
+	WinList              *winl;
 	XSetWindowAttributes attr;
 	long                 eventMask;
 	IconMgr              *iconmgr;
