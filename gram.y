@@ -157,31 +157,31 @@ stmt		: error
 		| sarg
 		| narg
 		| squeeze
-		| ICON_REGION string GRAVITY GRAVITY number number {
+		| ICON_REGION string vgrav hgrav number number {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
-		| ICON_REGION string GRAVITY GRAVITY number number string {
+		| ICON_REGION string vgrav hgrav number number string {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
-		| ICON_REGION string GRAVITY GRAVITY number number string string {
+		| ICON_REGION string vgrav hgrav number number string string {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
-		| ICON_REGION string GRAVITY GRAVITY number number string string string {
+		| ICON_REGION string vgrav hgrav number number string string string {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
-		| ICON_REGION string GRAVITY GRAVITY number number {
+		| ICON_REGION string vgrav hgrav number number {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
 		  win_list
-		| ICON_REGION string GRAVITY GRAVITY number number string {
+		| ICON_REGION string vgrav hgrav number number string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
 		  win_list
-		| ICON_REGION string GRAVITY GRAVITY number number string string {
+		| ICON_REGION string vgrav hgrav number number string string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
 		  win_list
-		| ICON_REGION string GRAVITY GRAVITY number number string string string {
+		| ICON_REGION string vgrav hgrav number number string string string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
 		  win_list
