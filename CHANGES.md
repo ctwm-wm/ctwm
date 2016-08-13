@@ -68,6 +68,12 @@ remnants of special-case VMS support have been removed.
    single will work with both variants, unless you need multiple
    backslashes in a row in your workspace names.
 
+1. The IconRegion and WindowRegion config params both take a `vgrav
+   hgrav` pair of parameters to control layout.  Previous versions would
+   accept a `hgrav vgrav` ordering in the parsing, and would mostly work
+   by odd quirks of the code.  The parsing has been made stricter, so
+   only the documented `vgrav grav` ordering is accepted now.
+
 ### User Visible Changes
 
 1. The default install locations have been changed.  See the README for
