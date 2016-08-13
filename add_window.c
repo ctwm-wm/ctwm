@@ -2071,7 +2071,8 @@ void GetWindowSizeHints(TwmWindow *tmp)
 }
 
 
-name_list **AddWindowRegion(char *geom, int grav1, int grav2)
+name_list **
+AddWindowRegion(char *geom, RegGravity grav1, RegGravity grav2)
 {
 	WindowRegion *wr;
 	int mask;

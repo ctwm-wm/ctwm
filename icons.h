@@ -109,7 +109,7 @@ struct IconEntry {
 
 void IconUp(TwmWindow *tmp_win);
 void IconDown(TwmWindow *tmp_win);
-name_list **AddIconRegion(char *geom, int grav1, int grav2,
+name_list **AddIconRegion(char *geom, RegGravity grav1, RegGravity grav2,
                           int stepx, int stepy,
                           char *ijust, char *just, char *align);
 void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);

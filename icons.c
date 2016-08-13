@@ -433,7 +433,7 @@ void IconDown(TwmWindow *tmp_win)
 }
 
 name_list **AddIconRegion(char *geom,
-                          int grav1, int grav2,
+                          RegGravity grav1, RegGravity grav2,
                           int stepx, int stepy,
                           char *ijust, char *just, char *align)
 {
