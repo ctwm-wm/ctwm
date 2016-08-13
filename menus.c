@@ -1868,7 +1868,6 @@ static void
 UnmapTransients(TwmWindow *tmp_win, bool iconify, long eventMask)
 {
 	TwmWindow *t;
-	bool domask;
 
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
 		if(t != tmp_win &&
@@ -1889,21 +1888,11 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify, long eventMask)
 			 */
 			t->mapped = false;
 
-			/*
-			 * Mildly hackish; this is a microoptimization for a trivial
-			 * case, but also a useful hack for when we're doing the
-			 * masking at a higher level.
-			 */
-			domask = (eventMask & StructureNotifyMask);
-			if(domask) {
-				mask_out_event_mask(t->w, StructureNotifyMask, eventMask);
-			}
+			mask_out_event_mask(t->w, StructureNotifyMask, eventMask);
 			XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
 			XUnmapWindow(dpy, t->w);
 			XUnmapWindow(dpy, t->frame);
-			if(domask) {
-				restore_mask(t->w, eventMask);
-			}
+			restore_mask(t->w, eventMask);
 
 			if(t->icon && t->icon->w) {
 				XUnmapWindow(dpy, t->icon->w);
