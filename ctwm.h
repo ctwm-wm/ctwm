@@ -260,7 +260,12 @@ typedef enum {
 } IRJust;
 
 
-/* Gravity used by IconRegion and WindowRegion */
+/*
+ * Gravity used by IconRegion and WindowRegion.  Strictly, there should
+ * probably be separate vertical/horizontal types, but it'll take some
+ * nontrivial code reshuffling to make that possible because of how the
+ * values are used in the split* functions.
+ */
 typedef enum {
 	GRAV_NORTH,
 	GRAV_EAST,
