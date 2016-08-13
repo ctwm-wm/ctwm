@@ -626,8 +626,9 @@ CreateOccupyWindow(void)
 		XRectangle inc_rect;
 		XRectangle logical_rect;
 		MyFont font = occwin->font;
-		int bbwidth;
-		int bb_width, ws_width;;
+		int bbwidth;  // Bottom button width
+		/* Window min width based on bottom vs. workspace btns */
+		int bb_width, ws_width;
 
 		/* Buttons gotta be as wide as the biggest of the three strings */
 		XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
