@@ -2184,6 +2184,8 @@ PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	return true;
 }
 
+
+/* x-ref comment on splitIconRegionEntry() */
 static void
 splitWindowRegionEntry(WindowEntry *we, RegGravity grav1, RegGravity grav2,
                        int w, int h)

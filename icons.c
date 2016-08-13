@@ -79,6 +79,16 @@
 static void ReshapeIcon(Icon *icon);
 
 
+/*
+ * This function operates in very weird and obtuse ways, especially in
+ * how it handles vertical vs. horizontal in weird recursive calls.  Part
+ * of this is what previously allowed specs with "hgrav vgrav" instead of
+ * the proper "vgrav hgrav" to sorta-work.  This should be broken up at
+ * some point into clean h/v functions, but because of the recursion it's
+ * not exactly trivial.  The parsing code now enforces v/h, so at least
+ * things can be known to come in in the right order initially.  Revisit
+ * someday.
+ */
 static void
 splitIconRegionEntry(IconEntry *ie, RegGravity grav1, RegGravity grav2,
                      int w, int h)
