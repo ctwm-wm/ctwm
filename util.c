@@ -1347,3 +1347,47 @@ visible(const TwmWindow *tmp_win)
 {
 	return (tmp_win->vs != NULL);
 }
+
+
+/*
+ * Various code paths do a dance of "mask off notifications of event type
+ * ; do something that triggers that event (but we're doing it, so we
+ * don't need the notification) ; restore previous mask".  So have some
+ * util funcs to make it more visually obvious.
+ *
+ * e.g.:
+ *     long prev_mask = mask_out_event(w, PropertyChangeMask);
+ *     do_something_that_changes_properties();
+ *     restore_mask(prev_mask);
+ *
+ * We're cheating a little with the -1 return on mask_out_event(), as
+ * that's theoretically valid for the data type.  It's not as far as I
+ * can tell for X or us though; having all the bits set (well, I guess
+ * I'm assuming 2s-complement too) is pretty absurd, and there are only
+ * 25 defined bits in Xlib, so even on 32-bit systems, it shouldn't fill
+ * up long.
+ */
+long
+mask_out_event(Window w, long ignore_event)
+{
+	XWindowAttributes wattr;
+	long curmask;
+
+	/* Get current mask */
+	if(XGetWindowAttributes(dpy, w, &wattr) != 0) {
+		return -1;
+	}
+	curmask = wattr.your_event_mask;
+
+	/* Set to the current, minus what we're wanting to ignore */
+	XSelectInput(dpy, w, (curmask & ~ignore_event));
+
+	/* Return what it was */
+	return curmask;
+}
+
+int
+restore_mask(Window w, long restore)
+{
+	return XSelectInput(dpy, w, restore);
+}
