@@ -186,7 +186,7 @@ stmt		: error
 		  }
 		  win_list
 
-		| WINDOW_REGION string GRAVITY GRAVITY {
+		| WINDOW_REGION string vgrav hgrav {
 		      curplist = AddWindowRegion ($2, $3, $4);
 		  }
 		  win_list
