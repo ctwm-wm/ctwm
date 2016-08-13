@@ -586,8 +586,8 @@ vgrav	: GRAVITY {
 				default:
 					twmrc_error_prefix();
 					fprintf(stderr, "Bad vertical gravity '%s'\n", yytext);
-					YYERROR;
 					ParseError = true;
+					YYERROR;
 			}
 		}
 
@@ -601,8 +601,8 @@ hgrav	: GRAVITY {
 				default:
 					twmrc_error_prefix();
 					fprintf(stderr, "Bad horiz gravity '%s'\n", yytext);
-					YYERROR;
 					ParseError = true;
+					YYERROR;
 			}
 		}
 
