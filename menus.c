@@ -1918,7 +1918,6 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 {
 	TwmWindow *t;
 	bool iconify;
-	XWindowAttributes winattrs;
 	long eventMask;
 	WList *wl;
 	Window leader = (Window) - 1;
@@ -1960,8 +1959,8 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		}
 	}
 
-	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-	eventMask = winattrs.your_event_mask;
+	/* Don't mask anything yet, just get the current for various uses */
+	eventMask = mask_out_event(tmp_win->w, 0);
 
 	/* iconify transients and window group first */
 	UnmapTransients(tmp_win, iconify, eventMask);
@@ -1977,7 +1976,9 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 	tmp_win->mapped = false;
 
 	if((Scr->IconifyStyle != ICONIFY_NORMAL) && !Scr->WindowMask) {
+		XWindowAttributes winattrs;
 		XSetWindowAttributes attr;
+
 		XGetWindowAttributes(dpy, tmp_win->frame, &winattrs);
 		attr.backing_store = NotUseful;
 		attr.save_under    = False;
