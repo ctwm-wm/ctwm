@@ -91,7 +91,7 @@ struct Icon {
 struct IconRegion {
 	struct IconRegion   *next;
 	int                 x, y, w, h;
-	int                 grav1, grav2;
+	RegGravity          grav1, grav2;
 	int                 stepx, stepy;       // allocation granularity
 	TitleJust           TitleJustification;
 	IRJust              Justification;

@@ -578,8 +578,8 @@ key		: META			{ mods |= Mod1Mask; }
 
 vgrav	: GRAVITY {
 			switch($1) {
-				case D_NORTH:
-				case D_SOUTH:
+				case GRAV_NORTH:
+				case GRAV_SOUTH:
 					/* OK */
 					$$ = $1;
 					break;
@@ -593,8 +593,8 @@ vgrav	: GRAVITY {
 
 hgrav	: GRAVITY {
 			switch($1) {
-				case D_EAST:
-				case D_WEST:
+				case GRAV_EAST:
+				case GRAV_WEST:
 					/* OK */
 					$$ = $1;
 					break;

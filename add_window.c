@@ -2188,8 +2188,8 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
                                    int w, int h)
 {
 	switch(grav1) {
-		case D_NORTH:
-		case D_SOUTH:
+		case GRAV_NORTH:
+		case GRAV_SOUTH:
 			if(w != we->w) {
 				splitWindowRegionEntry(we, grav2, grav1, w, we->h);
 			}
@@ -2201,7 +2201,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				new->h    = (we->h - h);
 				new->w    = we->w;
 				we->h     = h;
-				if(grav1 == D_SOUTH) {
+				if(grav1 == GRAV_SOUTH) {
 					new->y = we->y;
 					we->y  = new->y + new->h;
 				}
@@ -2210,8 +2210,8 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				}
 			}
 			break;
-		case D_EAST:
-		case D_WEST:
+		case GRAV_EAST:
+		case GRAV_WEST:
 			if(h != we->h) {
 				splitWindowRegionEntry(we, grav2, grav1, we->w, h);
 			}
@@ -2223,7 +2223,7 @@ static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
 				new->w    = (we->w - w);
 				new->h    = we->h;
 				we->w = w;
-				if(grav1 == D_EAST) {
+				if(grav1 == GRAV_EAST) {
 					new->x = we->x;
 					we->x  = new->x + new->w;
 				}

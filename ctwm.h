@@ -324,7 +324,7 @@ struct Colormaps {
 struct WindowRegion {
 	struct WindowRegion *next;
 	int                 x, y, w, h;
-	int                 grav1, grav2;
+	RegGravity          grav1, grav2;
 	name_list           *clientlist;
 	struct WindowEntry  *entries;
 };
