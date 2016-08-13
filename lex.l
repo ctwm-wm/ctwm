@@ -88,7 +88,7 @@
 #define YY_NO_UNPUT
 #define YY_NO_INPUT
 
-/* From gram.y, for debugging */
+/* From gram.y, for debugging and error reporting */
 extern const char *lex_str;
 
 %}
