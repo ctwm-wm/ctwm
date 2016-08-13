@@ -626,24 +626,26 @@ CreateOccupyWindow(void)
 		XRectangle inc_rect;
 		XRectangle logical_rect;
 		MyFont font = occwin->font;
-		int min_bwidth, min_width;
+		int bbwidth;  // Bottom button width
+		/* Window min width based on bottom vs. workspace btns */
+		int bb_width, ws_width;
 
 		/* Buttons gotta be as wide as the biggest of the three strings */
 		XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
 		               &inc_rect, &logical_rect);
-		min_bwidth = logical_rect.width;
+		bbwidth = logical_rect.width;
 
 		XmbTextExtents(font.font_set, cancel_string, strlen(cancel_string),
 		               &inc_rect, &logical_rect);
-		min_bwidth = MAX(min_bwidth, logical_rect.width);
+		bbwidth = MAX(bbwidth, logical_rect.width);
 
 		XmbTextExtents(font.font_set, everywhere_string,
 		               strlen(everywhere_string),
 		               &inc_rect, &logical_rect);
-		min_bwidth = MAX(min_bwidth, logical_rect.width);
+		bbwidth = MAX(bbwidth, logical_rect.width);
 
 		/* Plus the padding width */
-		min_bwidth += hspace;
+		bbwidth += hspace;
 
 		/*
 		 * So, the final width of those bottom buttons is that, plus the
@@ -653,25 +655,25 @@ CreateOccupyWindow(void)
 		 * for it on the workspace manager (which is the config used for
 		 * the occupy window), so leave it as a magic constant for now.
 		 */
-		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+		occwin->owidth = bbwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
 
 		/*
 		 * The whole thing has to be at least triple the min width of
-		 * those bottom buttons, since there are three of them.  We add
-		 * an extra hspace to each here because ???
-		 * */
-		min_width = 3 * (min_bwidth + hspace);
+		 * those bottom buttons, since there are three of them.  The
+		 * layout is "hspace button hspace button [...] hspace", to pad
+		 * between and on both sides.
+		 */
+		bb_width = 3 * (bbwidth + hspace) + hspace;
 
 		/*
-		 * Width of the Occupy window starts out as the number of columns
-		 * times the width of the WS buttons plus their padding.
-		 *
-		 * XXX extra hspace here to handle the other outside?
+		 * It also has to be the width of our per-WS buttons.  Per-ws
+		 * buttons are sized the same as in the button-state WSM, and
+		 * then we add the padding to them as above.
 		 */
-		width = columns * (bwidth + hspace);
+		ws_width = columns * (bwidth + hspace) + hspace;
 
-		/* But shift up as necessary */
-		width = MAX(width, min_width);
+		/* So the window has to be as wide as the wider of those */
+		width = MAX(bb_width, ws_width);
 	}
 
 
@@ -757,14 +759,13 @@ CreateOccupyWindow(void)
 		XSizeHints sizehints;
 		XWMHints wmhints;
 
-		/* These sizes seem pretty much bogus */
 		sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
-		sizehints.base_width  = columns;
-		sizehints.base_height = lines;
+		sizehints.min_width   = width;
+		sizehints.min_height  = height;
+		sizehints.base_width  = width;
+		sizehints.base_height = height;
 		sizehints.width_inc   = columns;
 		sizehints.height_inc  = lines;
-		sizehints.min_width   = 2 * columns;
-		sizehints.min_height  = 2 * lines;
 
 		wmhints.flags         = InputHint | StateHint;
 		wmhints.input         = True;
@@ -780,7 +781,7 @@ CreateOccupyWindow(void)
 	 * do this so early in startup that we're not listening for window
 	 * creation events yet.
 	 */
-	tmp_win = AddWindow(w, AWT_NORMAL, Scr->iconmgr, Scr->currentvs);
+	tmp_win = AddWindow(w, AWT_OCCUPY, Scr->iconmgr, Scr->currentvs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
 		exit(1);
@@ -1349,8 +1350,12 @@ CanChangeOccupation(TwmWindow **twm_winp)
 		return false;
 	}
 
-	/* f.occupy window up?  Can't change in the middle of changing. */
-	if(occupyWin != NULL) {
+	/*
+	 * f.occupy window up?  Can't change in the middle of changing.
+	 * Though if it's not mapped, still pull it up, else iconifying the
+	 * occupy window breaks it forever.
+	 */
+	if(occupyWin != NULL && Scr->workSpaceMgr.occupyWindow->twm_win->mapped) {
 		return false;
 	}
 

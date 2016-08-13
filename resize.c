@@ -585,16 +585,18 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		if(clampTop) {
 			dragy = origy + origHeight - dragHeight;
 		}
-		if(Scr->OpaqueResize && ! resizeWhenAdd)
+		if(Scr->OpaqueResize && ! resizeWhenAdd) {
 			SetupWindow(tmp_win, dragx - tmp_win->frame_bw, dragy - tmp_win->frame_bw,
 			            dragWidth, dragHeight, -1);
-		else
+		}
+		else {
 			MoveOutline(Scr->Root,
 			            dragx - tmp_win->frame_bw,
 			            dragy - tmp_win->frame_bw,
 			            dragWidth + 2 * tmp_win->frame_bw,
 			            dragHeight + 2 * tmp_win->frame_bw,
 			            tmp_win->frame_bw, tmp_win->title_height + tmp_win->frame_bw3D);
+		}
 		if(Scr->BorderCursors && (cursor != tmp_win->curcurs)) {
 			tmp_win->curcurs = cursor;
 			XChangeActivePointerGrab(dpy, resizeGrabMask, cursor, CurrentTime);

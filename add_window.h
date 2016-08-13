@@ -74,6 +74,7 @@ typedef enum {
 	AWT_ICON_MANAGER,
 	AWT_WINDOWBOX,
 	AWT_WORKSPACE_MANAGER,
+	AWT_OCCUPY,
 } AWType;
 
 void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
