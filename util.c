@@ -1377,6 +1377,15 @@ mask_out_event(Window w, long ignore_event)
 		return -1;
 	}
 
+	/*
+	 * If we're ignoring nothing, nothing to do.  This is probably not
+	 * strictly speaking a useful thing to ask for in general, but it's
+	 * the right thing for us to do if we're asked to do nothing.
+	 */
+	if(ignore_event == 0) {
+		return wattr.your_event_mask;
+	}
+
 	/* Delegate */
 	return mask_out_event_mask(w, ignore_event, wattr.your_event_mask);
 }
