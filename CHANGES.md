@@ -123,8 +123,9 @@ remnants of special-case VMS support have been removed.
     but now occurs for ClickToFocus users as well.
     [Alexander Klein]
 
-1. Fix bug where iconifying the Occupy window would lose it and leave you
-    unable to pull it up again.
+1. Several bugs relating to the Occupy window were fixed.  Iconifying the
+    Occupy window no longer loses it and leaves you unable to pull it up
+    again.  Resizing it now works right as well.
 
 ### Internals
 
