@@ -1373,7 +1373,7 @@ mask_out_event(Window w, long ignore_event)
 	XWindowAttributes wattr;
 
 	/* Get current mask */
-	if(XGetWindowAttributes(dpy, w, &wattr) != 0) {
+	if(XGetWindowAttributes(dpy, w, &wattr) == 0) {
 		return -1;
 	}
 
