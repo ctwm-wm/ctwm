@@ -1371,14 +1371,19 @@ long
 mask_out_event(Window w, long ignore_event)
 {
 	XWindowAttributes wattr;
-	long curmask;
 
 	/* Get current mask */
 	if(XGetWindowAttributes(dpy, w, &wattr) != 0) {
 		return -1;
 	}
-	curmask = wattr.your_event_mask;
 
+	/* Delegate */
+	return mask_out_event_mask(w, ignore_event, wattr.your_event_mask);
+}
+
+long
+mask_out_event_mask(Window w, long ignore_event, long curmask)
+{
 	/* Set to the current, minus what we're wanting to ignore */
 	XSelectInput(dpy, w, (curmask & ~ignore_event));
 
