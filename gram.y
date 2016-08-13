@@ -95,6 +95,7 @@ static char *workspace = NULL;
 static MenuItem *lastmenuitem = NULL;
 static name_list **curplist = NULL;
 static int color = 0;
+const char *lex_str = NULL;
 
 int yylex(void);
 %}

@@ -88,6 +88,9 @@
 #define YY_NO_UNPUT
 #define YY_NO_INPUT
 
+/* From gram.y, for debugging */
+extern const char *lex_str;
+
 %}
 
 string				\"([^"]|\\.)*\"
@@ -112,6 +115,7 @@ number				[0-9]+
 					       yytext);
 				      ParseError = true;
 				  } else 
+				    lex_str = yytext;
 				    return token;
 				}
 
@@ -119,7 +123,7 @@ number				[0-9]+
 
 {string}			{ yylval.ptr = yytext; return STRING; }
 {number}			{ (void)sscanf(yytext, "%d", &yylval.num);
-				  return NUMBER; }
+				  lex_str = yytext; return NUMBER; }
 \#[^\n]*\n			{;}
 [\n\t ]				{;}
 .				{
