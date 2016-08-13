@@ -36,6 +36,7 @@
 #include "icons.h"
 #include "otp.h"
 #include "screen.h"
+#include "util.h"
 
 
 static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win);
@@ -304,14 +305,11 @@ DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win)
 	else {
 		/* Map and move it here */
 		if(!tmp_win->squeezed) {
-			XWindowAttributes   winattrs;
-			unsigned long       eventMask;
+			long eventMask;
 
-			XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-			eventMask = winattrs.your_event_mask;
-			XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
+			eventMask = mask_out_event(tmp_win->w, StructureNotifyMask);
 			XMapWindow(dpy, tmp_win->w);
-			XSelectInput(dpy, tmp_win->w, eventMask);
+			restore_mask(tmp_win->w, eventMask);
 		}
 
 		ReparentFrameAndIcon(tmp_win);
@@ -370,15 +368,12 @@ Vanish(VirtualScreen *vs, TwmWindow *tmp_win)
 	}
 	else if(tmp_win->mapped) {
 		/* It's mapped; unmap it */
-		XWindowAttributes winattrs;
-		unsigned long     eventMask;
+		long eventMask;
 
-		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-		eventMask = winattrs.your_event_mask;
-		XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
+		eventMask = mask_out_event(tmp_win->w, StructureNotifyMask);
 		XUnmapWindow(dpy, tmp_win->w);
 		XUnmapWindow(dpy, tmp_win->frame);
-		XSelectInput(dpy, tmp_win->w, eventMask);
+		restore_mask(tmp_win->w, eventMask);
 
 		if(!tmp_win->DontSetInactive) {
 			SetMapStateProp(tmp_win, InactiveState);
