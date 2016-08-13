@@ -1351,8 +1351,12 @@ CanChangeOccupation(TwmWindow **twm_winp)
 		return false;
 	}
 
-	/* f.occupy window up?  Can't change in the middle of changing. */
-	if(occupyWin != NULL) {
+	/*
+	 * f.occupy window up?  Can't change in the middle of changing.
+	 * Though if it's not mapped, still pull it up, else iconifying the
+	 * occupy window breaks it forever.
+	 */
+	if(occupyWin != NULL && Scr->workSpaceMgr.occupyWindow->twm_win->mapped) {
 		return false;
 	}
 
