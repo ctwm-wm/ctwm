@@ -139,6 +139,7 @@ int yylex(void);
 
 %type <ptr> string
 %type <num> action button number signed_number keyaction full fullkey
+%type <num> vgrav hgrav
 
 %start twmrc
 
@@ -574,6 +575,36 @@ key		: META			{ mods |= Mod1Mask; }
 					}
 		| OR			{ }
 		;
+
+vgrav	: GRAVITY {
+			switch($1) {
+				case D_NORTH:
+				case D_SOUTH:
+					/* OK */
+					$$ = $1;
+					break;
+				default:
+					twmrc_error_prefix();
+					fprintf(stderr, "Bad vertical gravity '%s'\n", lex_str);
+					YYERROR;
+					ParseError = true;
+			}
+		}
+
+hgrav	: GRAVITY {
+			switch($1) {
+				case D_EAST:
+				case D_WEST:
+					/* OK */
+					$$ = $1;
+					break;
+				default:
+					twmrc_error_prefix();
+					fprintf(stderr, "Bad horiz gravity '%s'\n", lex_str);
+					YYERROR;
+					ParseError = true;
+			}
+		}
 
 contexts	: /* Empty */
 		| contexts context
