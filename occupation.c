@@ -626,24 +626,25 @@ CreateOccupyWindow(void)
 		XRectangle inc_rect;
 		XRectangle logical_rect;
 		MyFont font = occwin->font;
-		int min_bwidth, min_width;
+		int bbwidth;
+		int bb_width, ws_width;;
 
 		/* Buttons gotta be as wide as the biggest of the three strings */
 		XmbTextExtents(font.font_set, ok_string, strlen(ok_string),
 		               &inc_rect, &logical_rect);
-		min_bwidth = logical_rect.width;
+		bbwidth = logical_rect.width;
 
 		XmbTextExtents(font.font_set, cancel_string, strlen(cancel_string),
 		               &inc_rect, &logical_rect);
-		min_bwidth = MAX(min_bwidth, logical_rect.width);
+		bbwidth = MAX(bbwidth, logical_rect.width);
 
 		XmbTextExtents(font.font_set, everywhere_string,
 		               strlen(everywhere_string),
 		               &inc_rect, &logical_rect);
-		min_bwidth = MAX(min_bwidth, logical_rect.width);
+		bbwidth = MAX(bbwidth, logical_rect.width);
 
 		/* Plus the padding width */
-		min_bwidth += hspace;
+		bbwidth += hspace;
 
 		/*
 		 * So, the final width of those bottom buttons is that, plus the
@@ -653,7 +654,7 @@ CreateOccupyWindow(void)
 		 * for it on the workspace manager (which is the config used for
 		 * the occupy window), so leave it as a magic constant for now.
 		 */
-		occwin->owidth = min_bwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
+		occwin->owidth = bbwidth + 2 * Scr->WMgrButtonShadowDepth + 2;
 
 		/*
 		 * The whole thing has to be at least triple the min width of
@@ -661,16 +662,17 @@ CreateOccupyWindow(void)
 		 * layout is "hspace button hspace button [...] hspace", to pad
 		 * between and on both sides.
 		 */
-		min_width = 3 * (min_bwidth + hspace) + hspace;
+		bb_width = 3 * (bbwidth + hspace) + hspace;
 
 		/*
-		 * Per-ws buttons are sized the same as in the button-state WSM,
-		 * and then we add the padding to them as above.
+		 * It also has to be the width of our per-WS buttons.  Per-ws
+		 * buttons are sized the same as in the button-state WSM, and
+		 * then we add the padding to them as above.
 		 */
-		width = columns * (bwidth + hspace) + hspace;
+		ws_width = columns * (bwidth + hspace) + hspace;
 
-		/* But shift up as necessary */
-		width = MAX(width, min_width);
+		/* So the window has to be as wide as the wider of those */
+		width = MAX(bb_width, ws_width);
 	}
 
 
