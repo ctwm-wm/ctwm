@@ -74,7 +74,7 @@ typedef struct Image Image;
 typedef struct VirtualScreen VirtualScreen;
 
 /* From workspace_structs.h */
-typedef struct winList *WinList;
+typedef struct winList WinList;
 typedef struct WorkSpaceMgr WorkSpaceMgr;
 typedef struct WorkSpace WorkSpace;
 typedef struct MapSubwindow MapSubwindow;

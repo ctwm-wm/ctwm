@@ -78,7 +78,7 @@ struct WorkSpace {
 struct MapSubwindow {
 	Window  w;
 	int     x, y;
-	WinList wl;
+	WinList *wl;
 };
 
 struct ButtonSubwindow {

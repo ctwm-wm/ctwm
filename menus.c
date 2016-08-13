@@ -1865,8 +1865,7 @@ void DeIconify(TwmWindow *tmp_win)
 }
 
 static void
-UnmapTransients(TwmWindow *tmp_win, bool iconify,
-                unsigned long eventMask)
+UnmapTransients(TwmWindow *tmp_win, bool iconify, long eventMask)
 {
 	TwmWindow *t;
 
@@ -1888,10 +1887,20 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify,
 			 * cause a transition to the Withdrawn state.
 			 */
 			t->mapped = false;
-			XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+
+			/*
+			 * Note that here, we're setting masks relative to what we
+			 * were passed, which is that of the window these are
+			 * transient for, rather than relative to these windows'
+			 * current masks.  I believe in practice it's the same thing,
+			 * and it saves getting attributes on each for masking.
+			 * Still, a little odd...
+			 */
+			mask_out_event_mask(t->w, StructureNotifyMask, eventMask);
 			XUnmapWindow(dpy, t->w);
 			XUnmapWindow(dpy, t->frame);
-			XSelectInput(dpy, t->w, eventMask);
+			restore_mask(t->w, eventMask);
+
 			if(t->icon && t->icon->w) {
 				XUnmapWindow(dpy, t->icon->w);
 			}
@@ -1916,8 +1925,7 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 {
 	TwmWindow *t;
 	bool iconify;
-	XWindowAttributes winattrs;
-	unsigned long eventMask;
+	long eventMask;
 	WList *wl;
 	Window leader = (Window) - 1;
 	Window blanket = (Window) - 1;
@@ -1958,8 +1966,8 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		}
 	}
 
-	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-	eventMask = winattrs.your_event_mask;
+	/* Don't mask anything yet, just get the current for various uses */
+	eventMask = mask_out_event(tmp_win->w, 0);
 
 	/* iconify transients and window group first */
 	UnmapTransients(tmp_win, iconify, eventMask);
@@ -1975,7 +1983,9 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 	tmp_win->mapped = false;
 
 	if((Scr->IconifyStyle != ICONIFY_NORMAL) && !Scr->WindowMask) {
+		XWindowAttributes winattrs;
 		XSetWindowAttributes attr;
+
 		XGetWindowAttributes(dpy, tmp_win->frame, &winattrs);
 		attr.backing_store = NotUseful;
 		attr.save_under    = False;
@@ -1985,10 +1995,12 @@ void Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		                        CopyFromParent, CWBackingStore | CWSaveUnder, &attr);
 		XMapWindow(dpy, blanket);
 	}
-	XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
+
+	mask_out_event_mask(tmp_win->w, StructureNotifyMask, eventMask);
 	XUnmapWindow(dpy, tmp_win->w);
 	XUnmapWindow(dpy, tmp_win->frame);
-	XSelectInput(dpy, tmp_win->w, eventMask);
+	restore_mask(tmp_win->w, eventMask);
+
 	SetMapStateProp(tmp_win, IconicState);
 
 	if((Scr->IconifyStyle != ICONIFY_NORMAL) && !Scr->WindowMask) {
@@ -2052,8 +2064,7 @@ void Squeeze(TwmWindow *tmp_win)
 	bool south;
 	int  grav = ((tmp_win->hints.flags & PWinGravity)
 	             ? tmp_win->hints.win_gravity : NorthWestGravity);
-	XWindowAttributes winattrs;
-	unsigned long eventMask;
+	long eventMask;
 	if(tmp_win->squeezed) {
 		tmp_win->squeezed = False;
 #ifdef EWMH
@@ -2100,14 +2111,13 @@ void Squeeze(TwmWindow *tmp_win)
 		fx  += tmp_win->title_x - tmp_win->frame_bw3D;
 		neww = tmp_win->title_width + 2 * (tmp_win->frame_bw + tmp_win->frame_bw3D);
 	}
-	XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-	eventMask = winattrs.your_event_mask;
-	XSelectInput(dpy, tmp_win->w, eventMask & ~StructureNotifyMask);
+
+	eventMask = mask_out_event(tmp_win->w, StructureNotifyMask);
 #ifdef EWMH
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_SHADED);
 #endif /* EWMH */
 	XUnmapWindow(dpy, tmp_win->w);
-	XSelectInput(dpy, tmp_win->w, eventMask);
+	restore_mask(tmp_win->w, eventMask);
 
 	if(fx + neww >= Scr->rootw - Scr->BorderRight) {
 		fx = Scr->rootw - Scr->BorderRight - neww;

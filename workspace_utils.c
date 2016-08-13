@@ -44,10 +44,9 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	TwmWindow            *twmWin;
 	WorkSpace            *oldws, *newws;
 	WList                *wl, *wl1;
-	WinList              winl;
+	WinList              *winl;
 	XSetWindowAttributes attr;
-	XWindowAttributes    winattrs;
-	unsigned long        eventMask;
+	long                 eventMask;
 	IconMgr              *iconmgr;
 	Window               oldw;
 	Window               neww;
@@ -243,9 +242,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	XClearWindow(dpy, oldw);
 	XClearWindow(dpy, neww);
 
-	XGetWindowAttributes(dpy, Scr->Root, &winattrs);
-	eventMask = winattrs.your_event_mask;
-	XSelectInput(dpy, Scr->Root, eventMask & ~PropertyChangeMask);
+	eventMask = mask_out_event(Scr->Root, PropertyChangeMask);
 
 	XChangeProperty(dpy, Scr->Root, XA_WM_CURRENTWORKSPACE, XA_STRING, 8,
 	                PropModeReplace, (unsigned char *) newws->name, strlen(newws->name));
@@ -263,7 +260,8 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		                PropModeReplace, (unsigned char *) &number, 1);
 	}
 #endif /* EWMH */
-	XSelectInput(dpy, Scr->Root, eventMask);
+
+	restore_mask(Scr->Root, eventMask);
 
 	/*    XDestroyWindow (dpy, cachew);*/
 	if(Scr->ChangeWorkspaceFunction.func != 0) {

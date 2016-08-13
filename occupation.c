@@ -211,25 +211,17 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 	}
 
 
-	/*
-	 * Set the property for the occupation.  Mask off getting
-	 * PropertyChange events around that; we're changing it, we don't
-	 * need X telling us it's changing!
-	 *
-	 * XXX should probably make a util func for that process...
-	 */
+	/* Set the property for the occupation */
 	{
-		XWindowAttributes winattrs;
 		long eventMask;
 		char *wsstr;
 		int  len;
 
-		if(!XGetWindowAttributes(dpy, twm_win->w, &winattrs)) {
+		/* Ignore the PropertyChange we're about to do */
+		if((eventMask = mask_out_event(twm_win->w, PropertyChangeMask)) < 0) {
 			/* Window is horked, not much we can do */
 			return;
 		}
-		eventMask = winattrs.your_event_mask;
-		XSelectInput(dpy, twm_win->w, eventMask & ~PropertyChangeMask);
 
 		/* Set the property for the occupation */
 		len = GetPropertyFromMask(twm_win->occupation, &wsstr);
@@ -242,7 +234,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 #endif
 
 		/* Restore event mask */
-		XSelectInput(dpy, twm_win->w, eventMask);
+		restore_mask(twm_win->w, eventMask);
 	}
 
 	/* Set WM_STATE prop */
@@ -1168,13 +1160,10 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		 */
 		char *namelist;
 		int  len;
-		XWindowAttributes winattrs;
 		long eventMask;
 
 		/* Mask out the PropertyChange events while we change the prop */
-		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-		eventMask = winattrs.your_event_mask;
-		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
+		eventMask = mask_out_event(tmp_win->w, PropertyChangeMask);
 
 		len = GetPropertyFromMask(tmp_win->occupation, &namelist);
 		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
@@ -1185,7 +1174,7 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 #endif
 
 		/* Reset event mask */
-		XSelectInput(dpy, tmp_win->w, eventMask);
+		restore_mask(tmp_win->w, eventMask);
 		return;
 	}
 
@@ -1251,22 +1240,13 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		}
 	}
 
-	/*
-	 * Now set the WM_OCCUPATION property.  As up at the beginning in the
-	 * no-change branch, mask out the PropertyChange events while we do
-	 * it.
-	 *
-	 * XXX I should abstract that out into a function...
-	 */
+	/* Now set the WM_OCCUPATION property */
 	{
 		char *namelist;
 		int  len;
-		XWindowAttributes winattrs;
 		long eventMask;
 
-		XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
-		eventMask = winattrs.your_event_mask;
-		XSelectInput(dpy, tmp_win->w, eventMask & ~PropertyChangeMask);
+		eventMask = mask_out_event(tmp_win->w, PropertyChangeMask);
 
 		len = GetPropertyFromMask(newoccupation, &namelist);
 		XChangeProperty(dpy, tmp_win->w, XA_WM_OCCUPATION, XA_STRING, 8,
@@ -1276,7 +1256,7 @@ ChangeOccupation(TwmWindow *tmp_win, int newoccupation)
 		EwmhSet_NET_WM_DESKTOP(tmp_win);
 #endif
 
-		XSelectInput(dpy, tmp_win->w, eventMask);
+		restore_mask(tmp_win->w, eventMask);
 	}
 
 

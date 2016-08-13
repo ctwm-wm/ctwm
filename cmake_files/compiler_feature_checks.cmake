@@ -50,7 +50,6 @@ endif(NOT COMPILER_TAKES_WALL)
 # With -std=c99, GNU libc's includes get strict about what they export.
 # Particularly, a lot of POSIX stuff doesn't get defined unless we
 # explicitly ask for it.  Do our best at checking for what's there...
-set(USE_GLIBC_FEATURES_H OFF)
 check_include_files(features.h HAS_FEATURES_H)
 if(HAS_FEATURES_H)
 	# Check if including it with our args sets __USE_ISOC99; that's a
@@ -59,7 +58,6 @@ if(HAS_FEATURES_H)
 	if(SETS_USE_ISOC99)
 		# OK, it does.  Assume that's a good enough test that things are
 		# acting as we expect.
-		set(USE_GLIBC_FEATURES_H ON)
 		set(GLIBC_FEATURE_FLAGS
 			"-D_POSIX_C_SOURCE=200809L"
 			"-D_XOPEN_SOURCE=700"

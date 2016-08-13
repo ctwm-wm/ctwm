@@ -280,8 +280,9 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 	}
 	else if(append && rightside) {      /* 3 */
 		TitleButton *t;
-		for /* SUPPRESS 530 */
-		(t = Scr->TBInfo.head; t->next; t = t->next);
+		for(t = Scr->TBInfo.head; t->next; t = t->next) {
+			/* just walking to tail */;
+		}
 		t->next = cur_tb;
 		cur_tb->next = NULL;
 	}

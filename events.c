@@ -567,17 +567,16 @@ void HandleEvents(void)
 	}
 }
 
-#define nextEvent(event) XtAppNextEvent(appContext, event);
-
 
 static void CtwmNextEvent(Display *display, XEvent  *event)
 {
-	int animate = (AnimationActive && MaybeAnimate);
-
 	int         found;
 	fd_set      mask;
 	int         fd;
 	struct timeval timeout, *tout = NULL;
+	const bool animate = (AnimationActive && MaybeAnimate);
+
+#define nextEvent(event) XtAppNextEvent(appContext, event);
 
 	if(RestartFlag) {
 		DoRestart(CurrentTime);
@@ -635,6 +634,10 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 			continue;
 		}
 	}
+
+#undef nextEvent
+
+	/* NOTREACHED */
 }
 
 
@@ -4471,8 +4474,9 @@ static void flush_expose(Window w)
 {
 	XEvent dummy;
 
-	/* SUPPRESS 530 */
-	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy)) ;
+	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy)) {
+		/* nada */;
+	}
 }
 
 

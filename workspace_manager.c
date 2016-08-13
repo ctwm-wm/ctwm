@@ -682,7 +682,7 @@ ResizeWorkSpaceManager(VirtualScreen *vs, TwmWindow *win)
 		 * Redo interior sizing and placement of all the windows in the
 		 * WS in the map window
 		 */
-		for(WinList wl = msw->wl; wl != NULL; wl = wl->next) {
+		for(WinList *wl = msw->wl; wl != NULL; wl = wl->next) {
 			TwmWindow *tmp_win = wl->twm_win;
 			wl->x      = (int)(tmp_win->frame_x * wf);
 			wl->y      = (int)(tmp_win->frame_y * hf);
@@ -780,7 +780,7 @@ WMgrHandleExposeEvent(VirtualScreen *vs, XEvent *event)
 		}
 	}
 	else {
-		WinList wl;
+		WinList *wl;
 
 		/*
 		 * This is presumably exposing some individual window in the WS
@@ -992,7 +992,7 @@ void
 WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 {
 	WorkSpace    *oldws, *newws;
-	WinList      wl;
+	WinList      *wl;
 	TwmWindow    *win;
 	unsigned int W0, H0;
 	XEvent       lastev;
@@ -1703,7 +1703,7 @@ wmap_mapwin_backend(TwmWindow *win, bool handleraise)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList wl;
+	WinList *wl;
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -1775,7 +1775,7 @@ WMapIconify(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList wl;
+	WinList *wl;
 
 	if(!win->vs) {
 		return;
@@ -1842,7 +1842,7 @@ WMapSetupWindow(TwmWindow *win, int x, int y, int w, int h)
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
 			MapSubwindow *msw = wsw->mswl[ws->number];
 
-			for(WinList wl = msw->wl; wl != NULL; wl = wl->next) {
+			for(WinList *wl = msw->wl; wl != NULL; wl = wl->next) {
 				if(win == wl->twm_win) {
 					/* New positions */
 					wl->x = (int)(x * wf);
@@ -1922,7 +1922,7 @@ WMapRaise(TwmWindow *win)
 void
 WMapRestack(WorkSpace *ws)
 {
-	WinList wl;
+	WinList *wl;
 	Window  root, parent; // Dummy
 	Window  *children, *smallws;
 	unsigned int nchildren;
@@ -2013,7 +2013,7 @@ WMapUpdateIconName(TwmWindow *win)
 {
 	VirtualScreen *vs;
 	WorkSpace *ws;
-	WinList wl;
+	WinList *wl;
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
@@ -2033,7 +2033,7 @@ WMapUpdateIconName(TwmWindow *win)
  * WSM.
  */
 void
-WMapRedrawName(VirtualScreen *vs, WinList wl)
+WMapRedrawName(VirtualScreen *vs, WinList *wl)
 {
 	ColorPair cp = wl->cp;
 
@@ -2181,7 +2181,7 @@ WMapAddWindowToWorkspace(TwmWindow *win, WorkSpace *ws)
 	/* We need a copy in each VS */
 	for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 		unsigned int bw;
-		WinList wl;
+		WinList *wl;
 		const float wf = (float)(vs->wsw->wwidth  - 2) / (float) vs->w;
 		const float hf = (float)(vs->wsw->wheight - 2) / (float) vs->h;
 		MapSubwindow *msw = vs->wsw->mswl[ws->number];
@@ -2300,10 +2300,10 @@ WMapRemoveWindowFromWorkspace(TwmWindow *win, WorkSpace *ws)
 	VirtualScreen *vs;
 
 	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
-		WinList *prev = &vs->wsw->mswl[ws->number]->wl;
+		WinList **prev = &vs->wsw->mswl[ws->number]->wl;
 
 		/* Pull it out of the list and destroy it */
-		for(WinList wl = *prev ; wl != NULL ; wl = wl->next) {
+		for(WinList *wl = *prev ; wl != NULL ; wl = wl->next) {
 			if(win != wl->twm_win) {
 				/* Not it */
 				prev = &wl->next;

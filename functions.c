@@ -3108,9 +3108,8 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 	if(inc && tmp->cmaps.number_cwins > 0) {
 		cwins = calloc(tmp->cmaps.number_cwins, sizeof(ColormapWindow *));
 		if(cwins) {
-			if((previously_installed =
-			                        /* SUPPRESS 560 */(Scr->cmapInfo.cmaps == &tmp->cmaps &&
-			                                        tmp->cmaps.number_cwins))) {
+			if((previously_installed = (Scr->cmapInfo.cmaps == &tmp->cmaps &&
+			                            tmp->cmaps.number_cwins))) {
 				for(i = tmp->cmaps.number_cwins; i-- > 0;) {
 					tmp->cmaps.cwins[i]->colormap->state = 0;
 				}
