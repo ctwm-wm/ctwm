@@ -1888,6 +1888,14 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify, long eventMask)
 			 */
 			t->mapped = false;
 
+			/*
+			 * Note that here, we're setting masks relative to what we
+			 * were passed, which is that of the window these are
+			 * transient for, rather than relative to these windows'
+			 * current masks.  I believe in practice it's the same thing,
+			 * and it saves getting attributes on each for masking.
+			 * Still, a little odd...
+			 */
 			mask_out_event_mask(t->w, StructureNotifyMask, eventMask);
 			XUnmapWindow(dpy, t->w);
 			XUnmapWindow(dpy, t->frame);
