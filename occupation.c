@@ -657,18 +657,17 @@ CreateOccupyWindow(void)
 
 		/*
 		 * The whole thing has to be at least triple the min width of
-		 * those bottom buttons, since there are three of them.  We add
-		 * an extra hspace to each here because ???
-		 * */
-		min_width = 3 * (min_bwidth + hspace);
+		 * those bottom buttons, since there are three of them.  The
+		 * layout is "hspace button hspace button [...] hspace", to pad
+		 * between and on both sides.
+		 */
+		min_width = 3 * (min_bwidth + hspace) + hspace;
 
 		/*
-		 * Width of the Occupy window starts out as the number of columns
-		 * times the width of the WS buttons plus their padding.
-		 *
-		 * XXX extra hspace here to handle the other outside?
+		 * Per-ws buttons are sized the same as in the button-state WSM,
+		 * and then we add the padding to them as above.
 		 */
-		width = columns * (bwidth + hspace);
+		width = columns * (bwidth + hspace) + hspace;
 
 		/* But shift up as necessary */
 		width = MAX(width, min_width);
