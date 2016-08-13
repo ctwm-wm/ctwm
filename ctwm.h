@@ -403,6 +403,7 @@ struct TwmWindow {
 	bool iconify_by_unmapping;  /* unmap window to iconify it */
 	bool isiconmgr;             /* this is an icon manager window */
 	bool iswspmgr;              /* this is a workspace manager manager window */
+	bool isoccupy;              /* this is an Occupy window */
 	bool istransient;           /* this is a transient window */
 	Window transientfor;        /* window contained in XA_XM_TRANSIENT_FOR */
 	bool titlehighlight;        /* should I highlight the title bar */
