@@ -782,7 +782,7 @@ CreateOccupyWindow(void)
 	 * do this so early in startup that we're not listening for window
 	 * creation events yet.
 	 */
-	tmp_win = AddWindow(w, AWT_NORMAL, Scr->iconmgr, Scr->currentvs);
+	tmp_win = AddWindow(w, AWT_OCCUPY, Scr->iconmgr, Scr->currentvs);
 	if(! tmp_win) {
 		fprintf(stderr, "cannot create occupy window, exiting...\n");
 		exit(1);
