@@ -95,7 +95,7 @@ static char *workspace = NULL;
 static MenuItem *lastmenuitem = NULL;
 static name_list **curplist = NULL;
 static int color = 0;
-const char *lex_str = NULL;
+extern char *yytext; // Have to manually pull this in
 
 int yylex(void);
 %}
@@ -585,7 +585,7 @@ vgrav	: GRAVITY {
 					break;
 				default:
 					twmrc_error_prefix();
-					fprintf(stderr, "Bad vertical gravity '%s'\n", lex_str);
+					fprintf(stderr, "Bad vertical gravity '%s'\n", yytext);
 					YYERROR;
 					ParseError = true;
 			}
@@ -600,7 +600,7 @@ hgrav	: GRAVITY {
 					break;
 				default:
 					twmrc_error_prefix();
-					fprintf(stderr, "Bad horiz gravity '%s'\n", lex_str);
+					fprintf(stderr, "Bad horiz gravity '%s'\n", yytext);
 					YYERROR;
 					ParseError = true;
 			}
