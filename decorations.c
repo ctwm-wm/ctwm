@@ -136,6 +136,28 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	}
 
 	/*
+	 * If the window is an Occupy window, we have to tell it about its
+	 * new size too.
+	 */
+	if(tmp_win->isoccupy) {
+		/* XXX maybe add something like ->iconmgrp above? */
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
+
+		/* occwin not yet set during startup */
+		if(occwin != NULL && occwin->twm_win != NULL) {
+			if(tmp_win != occwin->twm_win) {
+				fprintf(stderr, "%s(): %p not the expected Occupy window %p.\n",
+				        __func__, tmp_win, occwin->twm_win);
+			}
+			else {
+				occwin->width  = w;
+				occwin->height = h;
+				ResizeOccupyWindow(tmp_win);
+			}
+		}
+	}
+
+	/*
 	 * According to the July 27, 1988 ICCCM draft, we should send a
 	 * "synthetic" ConfigureNotify event to the client if the window
 	 * was moved but not resized.
