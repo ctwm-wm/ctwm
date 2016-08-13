@@ -260,6 +260,15 @@ typedef enum {
 } IRJust;
 
 
+/* Gravity used by IconRegion and WindowRegion */
+typedef enum {
+	GRAV_NORTH,
+	GRAV_EAST,
+	GRAV_SOUTH,
+	GRAV_WEST,
+} RegGravity;
+
+
 /* RandomPlacement bits */
 typedef enum {
 	RP_OFF,
