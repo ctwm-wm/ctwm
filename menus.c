@@ -1889,7 +1889,6 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify, long eventMask)
 			t->mapped = false;
 
 			mask_out_event_mask(t->w, StructureNotifyMask, eventMask);
-			XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
 			XUnmapWindow(dpy, t->w);
 			XUnmapWindow(dpy, t->frame);
 			restore_mask(t->w, eventMask);
