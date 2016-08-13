@@ -80,7 +80,8 @@ static void ReshapeIcon(Icon *icon);
 
 
 static void
-splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
+splitIconRegionEntry(IconEntry *ie, RegGravity grav1, RegGravity grav2,
+		int w, int h)
 {
 	switch(grav1) {
 		case GRAV_NORTH:

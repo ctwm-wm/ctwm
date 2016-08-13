@@ -111,9 +111,8 @@ static int PlaceY = -1;
 void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
                                    TwmWindow *tmp_win);
 
-static void             splitWindowRegionEntry(WindowEntry     *we,
-                int grav1, int grav2,
-                int w, int h);
+static void splitWindowRegionEntry(WindowEntry *we,
+                RegGravity grav1, RegGravity grav2, int w, int h);
 static WindowEntry      *findWindowEntry(WorkSpace    *wl,
                 TwmWindow    *tmp_win,
                 WindowRegion **wrp);
@@ -2185,8 +2184,8 @@ PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	return true;
 }
 
-static void splitWindowRegionEntry(WindowEntry *we, int grav1, int grav2,
-                                   int w, int h)
+static void splitWindowRegionEntry(WindowEntry *we,
+		RegGravity grav1, RegGravity grav2, int w, int h)
 {
 	switch(grav1) {
 		case GRAV_NORTH:
