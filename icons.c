@@ -79,12 +79,23 @@
 static void ReshapeIcon(Icon *icon);
 
 
+/*
+ * This function operates in very weird and obtuse ways, especially in
+ * how it handles vertical vs. horizontal in weird recursive calls.  Part
+ * of this is what previously allowed specs with "hgrav vgrav" instead of
+ * the proper "vgrav hgrav" to sorta-work.  This should be broken up at
+ * some point into clean h/v functions, but because of the recursion it's
+ * not exactly trivial.  The parsing code now enforces v/h, so at least
+ * things can be known to come in in the right order initially.  Revisit
+ * someday.
+ */
 static void
-splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
+splitIconRegionEntry(IconEntry *ie, RegGravity grav1, RegGravity grav2,
+                     int w, int h)
 {
 	switch(grav1) {
-		case D_NORTH:
-		case D_SOUTH:
+		case GRAV_NORTH:
+		case GRAV_SOUTH:
 			if(w != ie->w) {
 				splitIconRegionEntry(ie, grav2, grav1, w, ie->h);
 			}
@@ -96,7 +107,7 @@ splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				new->h = (ie->h - h);
 				new->w = ie->w;
 				ie->h = h;
-				if(grav1 == D_SOUTH) {
+				if(grav1 == GRAV_SOUTH) {
 					new->y = ie->y;
 					ie->y = new->y + new->h;
 				}
@@ -105,8 +116,8 @@ splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				}
 			}
 			break;
-		case D_EAST:
-		case D_WEST:
+		case GRAV_EAST:
+		case GRAV_WEST:
 			if(h != ie->h) {
 				splitIconRegionEntry(ie, grav2, grav1, ie->w, h);
 			}
@@ -118,7 +129,7 @@ splitIconRegionEntry(IconEntry *ie, int grav1, int grav2, int w, int h)
 				new->w = (ie->w - w);
 				new->h = ie->h;
 				ie->w = w;
-				if(grav1 == D_EAST) {
+				if(grav1 == GRAV_EAST) {
 					new->x = ie->x;
 					ie->x = new->x + new->w;
 				}
@@ -237,7 +248,7 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				*final_x = ie->x + ie->w - iconWidth(tmp_win);
 				break;
 			case IRJ_BORDER:
-				if(ir->grav2 == D_EAST) {
+				if(ir->grav2 == GRAV_EAST) {
 					*final_x = ie->x + ie->w - iconWidth(tmp_win);
 				}
 				else {
@@ -259,7 +270,7 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				*final_y = ie->y + ie->h - iconHeight(tmp_win);
 				break;
 			case IRA_BORDER :
-				if(ir->grav1 == D_SOUTH) {
+				if(ir->grav1 == GRAV_SOUTH) {
 					*final_y = ie->y + ie->h - iconHeight(tmp_win);
 				}
 				else {
@@ -433,7 +444,7 @@ void IconDown(TwmWindow *tmp_win)
 }
 
 name_list **AddIconRegion(char *geom,
-                          int grav1, int grav2,
+                          RegGravity grav1, RegGravity grav2,
                           int stepx, int stepy,
                           char *ijust, char *just, char *align)
 {

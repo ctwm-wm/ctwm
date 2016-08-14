@@ -95,6 +95,7 @@ static char *workspace = NULL;
 static MenuItem *lastmenuitem = NULL;
 static name_list **curplist = NULL;
 static int color = 0;
+extern char *yytext; // Have to manually pull this in
 
 int yylex(void);
 %}
@@ -120,7 +121,8 @@ int yylex(void);
 %token <num> MOVE RESIZE WAITC SELECT KILL LEFT_TITLEBUTTON RIGHT_TITLEBUTTON
 %token <num> NUMBER KEYWORD NKEYWORD CKEYWORD CLKEYWORD FKEYWORD FSKEYWORD
 %token <num> FNKEYWORD PRIORITY_SWITCHING PRIORITY_NOT_SWITCHING
-%token <num> SKEYWORD SSKEYWORD DKEYWORD WINDOW_RING WINDOW_RING_EXCLUDE WARP_CURSOR ERRORTOKEN
+%token <num> SKEYWORD SSKEYWORD WINDOW_RING WINDOW_RING_EXCLUDE WARP_CURSOR ERRORTOKEN
+%token <num> GRAVITY /* N/S/E/W */
 %token <num> SIJENUM /* SqueezeTitle justifications, SIJust enum */
 %token <num> NO_STACKMODE ALWAYS_ON_TOP WORKSPACE WORKSPACES WORKSPCMGR_GEOMETRY
 %token <num> OCCUPYALL OCCUPYLIST MAPWINDOWCURRENTWORKSPACE MAPWINDOWDEFAULTWORKSPACE
@@ -137,6 +139,7 @@ int yylex(void);
 
 %type <ptr> string
 %type <num> action button number signed_number keyaction full fullkey
+%type <num> vgrav hgrav
 
 %start twmrc
 
@@ -154,36 +157,36 @@ stmt		: error
 		| sarg
 		| narg
 		| squeeze
-		| ICON_REGION string DKEYWORD DKEYWORD number number {
+		| ICON_REGION string vgrav hgrav number number {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number string {
+		| ICON_REGION string vgrav hgrav number number string {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string {
+		| ICON_REGION string vgrav hgrav number number string string {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string string {
+		| ICON_REGION string vgrav hgrav number number string string string {
 		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number {
+		| ICON_REGION string vgrav hgrav number number {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
 		  win_list
-		| ICON_REGION string DKEYWORD DKEYWORD number number string {
+		| ICON_REGION string vgrav hgrav number number string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
 		  win_list
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string {
+		| ICON_REGION string vgrav hgrav number number string string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
 		  win_list
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string string {
+		| ICON_REGION string vgrav hgrav number number string string string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
 		  win_list
 
-		| WINDOW_REGION string DKEYWORD DKEYWORD {
+		| WINDOW_REGION string vgrav hgrav {
 		      curplist = AddWindowRegion ($2, $3, $4);
 		  }
 		  win_list
@@ -572,6 +575,36 @@ key		: META			{ mods |= Mod1Mask; }
 					}
 		| OR			{ }
 		;
+
+vgrav	: GRAVITY {
+			switch($1) {
+				case GRAV_NORTH:
+				case GRAV_SOUTH:
+					/* OK */
+					$$ = $1;
+					break;
+				default:
+					twmrc_error_prefix();
+					fprintf(stderr, "Bad vertical gravity '%s'\n", yytext);
+					ParseError = true;
+					YYERROR;
+			}
+		}
+
+hgrav	: GRAVITY {
+			switch($1) {
+				case GRAV_EAST:
+				case GRAV_WEST:
+					/* OK */
+					$$ = $1;
+					break;
+				default:
+					twmrc_error_prefix();
+					fprintf(stderr, "Bad horiz gravity '%s'\n", yytext);
+					ParseError = true;
+					YYERROR;
+			}
+		}
 
 contexts	: /* Empty */
 		| contexts context

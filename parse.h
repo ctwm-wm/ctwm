@@ -243,9 +243,4 @@ void TwmOutput(int c);
 #define F_RAISEORSQUEEZE        157
 #define F_RESCUE_WINDOWS        158
 
-#define D_NORTH                 1
-#define D_SOUTH                 2
-#define D_EAST                  3
-#define D_WEST                  4
-
 #endif /* _CTWM_PARSE_H */

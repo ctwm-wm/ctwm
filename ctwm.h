@@ -260,6 +260,20 @@ typedef enum {
 } IRJust;
 
 
+/*
+ * Gravity used by IconRegion and WindowRegion.  Strictly, there should
+ * probably be separate vertical/horizontal types, but it'll take some
+ * nontrivial code reshuffling to make that possible because of how the
+ * values are used in the split* functions.
+ */
+typedef enum {
+	GRAV_NORTH,
+	GRAV_EAST,
+	GRAV_SOUTH,
+	GRAV_WEST,
+} RegGravity;
+
+
 /* RandomPlacement bits */
 typedef enum {
 	RP_OFF,
@@ -315,7 +329,7 @@ struct Colormaps {
 struct WindowRegion {
 	struct WindowRegion *next;
 	int                 x, y, w, h;
-	int                 grav1, grav2;
+	RegGravity          grav1, grav2;
 	name_list           *clientlist;
 	struct WindowEntry  *entries;
 };

@@ -89,7 +89,7 @@ void CreateWindowRegions(void);
 bool PlaceWindowInRegion(TwmWindow *tmp_win,
                          int *final_x, int *final_y);
 void RemoveWindowFromRegion(TwmWindow   *tmp_win);
-name_list **AddWindowRegion(char *geom, int  grav1, int grav2);
+name_list **AddWindowRegion(char *geom, RegGravity grav1, RegGravity grav2);
 extern int AddingX;
 extern int AddingY;
 extern unsigned int AddingW;
