@@ -18,6 +18,9 @@ _CFLAGS+=-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_GNU_SOURCE
 # And BSD headers, when they see the above, need this
 _CFLAGS+=-D__BSD_VISIBLE
 
+# Solaris b0rkedness needs this for gethostbyname
+#_LFLAGS+=-lnsl
+
 
 # Default target
 all: ${BDIR} ctwm
