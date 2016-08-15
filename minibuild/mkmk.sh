@@ -49,8 +49,13 @@ for i in ${ngfiles}; do
 	echo "    \${BDIR}/${i%.c}.o \\"
 done
 echo
+
+# Have to manually write these; transform rules won't work across dirs
 for i in ${ngfiles} ${ongfiles}; do
-	echo "\${BDIR}/${i%.c}.o: \${RTDIR}/${i}"
+	src="\${RTDIR}/${i}"
+	dst="\${BDIR}/${i%.c}.o"
+	echo "${dst}: ${src}"
+	echo "	\${CC} \${_CFLAGS} \${CFLAGS} -c -o ${dst} ${src}"
 done
 echo
 
