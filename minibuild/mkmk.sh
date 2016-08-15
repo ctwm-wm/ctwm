@@ -125,10 +125,15 @@ exec 1<&4
 
 
 
-# Run make depend if we have it
+# Run make depend if we have it.  Else, run make gen so the generated
+# files are already there, since otherwise we don't have the detailed
+# dependencies to know when we need various headers.
 if [ "X" != "X${mkdep}" ]; then
 	echo "Running make depend"
 	echo ${MAKE} depend
 	${MAKE} depend
 	rm Makefile.bak
+else
+	echo "Running make gen"
+	${MAKE} gen
 fi
