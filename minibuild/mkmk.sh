@@ -20,7 +20,7 @@ gfiles=`sed \
 	${rtdir}/cmake_files/ctwm_cmake_vars.cmake`
 
 
-# Non-generates files that are optional; separate so they don't end up in
+# Non-generated files that are optional; separate so they don't end up in
 # OFILES in the main run
 ongfiles=""
 ongfiles="${ongfiles} image_xpm.c"
