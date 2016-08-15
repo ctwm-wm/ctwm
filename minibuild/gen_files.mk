@@ -15,13 +15,13 @@ ${BDIR}/ctwm_config.h:
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
 	(cd ${BDIR} && \
-		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms)
+		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms CTWM)
 
 # Only when EWMH
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
 	(cd ${BDIR} && \
-		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ewmh_atoms.in ewmh_atoms)
+		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ewmh_atoms.in ewmh_atoms EWMH)
 
 
 # Just make null version file
