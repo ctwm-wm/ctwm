@@ -44,7 +44,7 @@ cat defs.mk
 echo
 
 
-# List the core files first
+# Will need this for setting the name of the obj file for a given .c
 mkobj()
 {
 	# /bin/sh on Slowaris is ksh93, which doesn't support 'local'.
@@ -57,6 +57,9 @@ mkobj()
 	eval "$2=$_o"
 }
 
+
+
+# List the core files first
 echo "## Core files"
 echo "OFILES = \\"
 for i in ${ngfiles}; do
