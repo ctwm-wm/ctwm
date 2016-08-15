@@ -57,7 +57,7 @@ ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
 # Just make null version file
 GENSRC+=${BDIR}/version.c
 ${BDIR}/version.o: ${BDIR}/version.c
-${BDIR}/version.c: ${RTDIR}/version.c.in
+${BDIR}/version.c: ${RTDIR}/version.c.in ${RTDIR}/VERSION
 	( \
 		vstr=`sed -E \
 			-e 's/([0-9]+)\.([0-9]+)\.([0-9]+)(.*)/\1 \2 \3 \4/' \
