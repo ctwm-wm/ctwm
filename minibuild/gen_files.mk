@@ -6,8 +6,8 @@
 gen: ${BDIR}/ctwm_config.h
 ${BDIR}/ctwm_config.h:
 	( \
-		echo '#define SYSTEM_INIT_FILE "/not/yet/set/system.ctwmrc"' \
-		echo '#define PIXMAP_DIRECTORY "/not/yet/set/pixmaps"' \
+		echo '#define SYSTEM_INIT_FILE "/not/yet/set/system.ctwmrc"' ; \
+		echo '#define PIXMAP_DIRECTORY "/not/yet/set/pixmaps"' ; \
 	) > ${BDIR}/ctwm_config.h
 
 
