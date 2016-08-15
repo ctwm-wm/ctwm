@@ -93,9 +93,9 @@ echo
 echo
 
 
-# Build up ALLSRC for depend state
+# Build up STDSRC for depend state
 echo "## For make depend"
-echo "ALLSRC = \\"
+echo "STDSRC = \\"
 for i in ${ngfiles}; do
 	echo "	\${RTDIR}/${i} \\"
 done
@@ -116,7 +116,7 @@ for i in gccmakedep makedepend; do
 	if [ "X" != "X${mkdep}" ]; then
 		echo
 		echo "depend: \${BDIR} \${GENSRC}"
-		echo "	${mkdep} -- \${_CFLAGS} -- \${ALLSRC}"
+		echo "	${mkdep} -- \${_CFLAGS} -- \${STDSRC} \${GENSRC}"
 		echo
 		echo
 		break

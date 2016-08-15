@@ -8,18 +8,18 @@ OPTDEFS+=USE_SYS_REGEX
 OPTDEFS+=XPM
 _LFLAGS+=-lXpm
 OFILES+=${BDIR}/image_xpm.o
-ALLSRC+=${RTDIR}/image_xpm.c
+STDSRC+=${RTDIR}/image_xpm.c
 
 # JPEG
 OPTDEFS+=JPEG
 _LFLAGS+=-ljpeg
 OFILES+=${BDIR}/image_jpeg.o
-ALLSRC+=${RTDIR}/image_jpeg.c
+STDSRC+=${RTDIR}/image_jpeg.c
 
 # m4
 OPTDEFS+=USEM4
 OFILES+=${BDIR}/parse_m4.o
-ALLSRC+=${RTDIR}/parse_m4.c
+STDSRC+=${RTDIR}/parse_m4.c
 
 # EWMH
 OPTDEFS+=EWMH
@@ -53,6 +53,7 @@ ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
 		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms CTWM)
 
 # Only when EWMH
+STDSRC+=${RTDIR}/ewmh.c
 GENSRC+=${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
@@ -110,7 +111,6 @@ ${BDIR}/gram.tab.c: ${RTDIR}/gram.y
 
 
 ## Main build
-ALLSRC+=${GENSRC}
 gen: ${GENSRC}
 
 # Finalize LFLAGS like CFLAGS
