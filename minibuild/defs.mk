@@ -33,6 +33,6 @@ clean:
 	rm -rf ${BDIR} ctwm
 
 allclean: clean
-	rm -f Makefile
+	rm -f Makefile*
 
 gen: ${BDIR}

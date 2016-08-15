@@ -121,3 +121,12 @@ done
 
 # Done
 exec 1<&4
+
+
+
+# Run make depend if we have it
+if [ "X" != "X${mkdep}" ]; then
+	echo "Running make depend"
+	make depend
+	rm Makefile.bak
+fi
