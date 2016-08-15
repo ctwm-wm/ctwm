@@ -20,6 +20,8 @@ _CFLAGS+=-D__BSD_VISIBLE
 
 # Solaris b0rkedness needs this for gethostbyname
 #_LFLAGS+=-lnsl
+# and for asprintf declaration
+#_CFLAGS+=-D__EXTENSIONS__
 
 
 # Default target
