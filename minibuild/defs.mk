@@ -9,7 +9,7 @@ FLEX?=flex
 C99FLAG?=-std=c99
 
 # Basic flags for build and pulling in X
-_CFLAGS=${C99FLAG} -O -I${RTDIR} -I${RTDIR}/ext -I/usr/local/include
+_CFLAGS=${C99FLAG} -O -I${RTDIR} -I${RTDIR}/ext -I${BDIR} -I/usr/local/include
 _LFLAGS=-L/usr/local/include -lSM -lICE -lX11 -lXext -lXmu -lXt
 
 # Currently non-optional but still needed
