@@ -26,5 +26,8 @@ all: ${BDIR} ctwm
 ${BDIR}:
 	mkdir -p ${BDIR}
 
-allclean:
-	rm -rf ${BDIR}
+clean:
+	rm -rf ${BDIR} ctwm
+
+allclean: clean
+	rm -f Makefile
