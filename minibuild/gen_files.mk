@@ -10,6 +10,7 @@ ${BDIR}/ctwm_config.h:
 		echo '#define PIXMAP_DIRECTORY "/not/yet/set/pixmaps"' \
 	) > ${BDIR}/ctwm_config.h
 
+
 # Atom lists are script-generated
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
