@@ -1,8 +1,8 @@
 # Defs
 CC?=cc
 YACC?=yacc
-YFLAGS?=-d -b gram
-YACC_CMD?=${YACC} ${YFLAGS}
+YACC_FLAGS?=-d -b gram
+YACC_CMD?=${YACC} ${YACC_FLAGS}
 FLEX?=flex
 
 # Alt: -xc99 for Sun Studio
