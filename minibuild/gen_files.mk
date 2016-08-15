@@ -5,7 +5,7 @@
 # Atom lists are script-generated
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
-	(cd ${BDIR} && 
+	(cd ${BDIR} && \
 		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms)
 
 # Only when EWMH
@@ -21,7 +21,7 @@ ${BDIR}/version.o: ${BDIR}/version.c
 ${BDIR}/version.c: ${RTDIR}/version.c.in
 	sed \
 		-e "s/%%[A-Z]*%%/NULL/" \
-		${RTDIR}/version.c > ${BDIR}/version.c
+		${RTDIR}/version.c.in > ${BDIR}/version.c
 
 
 # Table of event names
