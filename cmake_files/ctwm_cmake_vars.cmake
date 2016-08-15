@@ -11,6 +11,7 @@ set(SRCDOCDIR ${CMAKE_SOURCE_DIR}/doc)
 
 # Our base set of sources
 set(CTWMSRC
+	# Basic files  ##STDSRC-START
 	add_window.c
 	animate.c
 	captive.c
@@ -18,17 +19,14 @@ set(CTWMSRC
 	clicktofocus.c
 	ctopts.c
 	ctwm.c
-	ctwm_atoms.c
 	cursor.c
 	decorations.c
 	decorations_init.c
-	deftwmrc.c
 	drawing.c
 	event_names.c
 	events.c
 	functions.c
 	gc.c
-	gram.tab.c
 	iconmgr.c
 	icons.c
 	icons_builtin.c
@@ -36,7 +34,6 @@ set(CTWMSRC
 	image_bitmap.c
 	image_bitmap_builtin.c
 	image_xwd.c
-	lex.c
 	list.c
 	mask_screen.c
 	menus.c
@@ -49,14 +46,23 @@ set(CTWMSRC
 	resize.c
 	session.c
 	util.c
-	version.c
 	vscreen.c
 	windowbox.c
 	workspace_config.c
 	workspace_manager.c
 	workspace_utils.c
 
+	# External libs
 	ext/repl_str.c
+	##STDSRC-END
+
+	# Generated files  ##GENSRC-START
+	ctwm_atoms.c
+	deftwmrc.c
+	gram.tab.c
+	lex.c
+	version.c
+	##GENSRC-END
 )
 
 
