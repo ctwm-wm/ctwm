@@ -86,9 +86,5 @@ echo
 echo
 
 
-# Various options
-cat options.mk
-
-
-# And the final build bits
-cat gen_files.mk
+# The rest of the file
+cat main.mk
