@@ -18,3 +18,4 @@ OFILES+=${BDIR}/parse_m4.o
 # EWMH
 _CFLAGS+=-DEWMH
 OFILES+=${BDIR}/ewmh.o ${BDIR}/ewmh_atoms.o
+gen: ${BDIR}/ewmh_atoms.c

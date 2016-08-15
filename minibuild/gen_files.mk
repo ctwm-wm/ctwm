@@ -19,7 +19,6 @@ ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
 		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms CTWM)
 
 # Only when EWMH
-gen: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
 	(cd ${BDIR} && \
