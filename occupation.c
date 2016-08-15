@@ -927,8 +927,7 @@ ResizeOccupyWindow(TwmWindow *win)
 	occwin->bheight = bheight;
 	occwin->owidth  = owidth;
 
-	/* And blat it out */
-	PaintOccupyWindow();
+	/* Don't need to repaint it; it'll get expose events */
 }
 
 
