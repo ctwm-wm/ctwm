@@ -34,6 +34,7 @@ ${BDIR}/version.c: ${RTDIR}/version.c.in
 
 
 # Table of event names
+gen: ${BDIR}/event_names_table.h
 ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 	${RTDIR}/tools/mk_event_names.sh ${RTDIR}/event_names.list \
 		> ${BDIR}/event_names_table.h
