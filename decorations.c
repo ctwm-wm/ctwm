@@ -150,8 +150,6 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 				        __func__, tmp_win, occwin->twm_win);
 			}
 			else {
-				occwin->width  = w;
-				occwin->height = h;
 				ResizeOccupyWindow(tmp_win);
 			}
 		}
