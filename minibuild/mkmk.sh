@@ -47,12 +47,13 @@ echo
 # List the core files first
 mkobj()
 {
-	local o
-	o=$1
-	o=${o##*/}
-	o="${o%.c}.o"
+	# /bin/sh on Slowaris is ksh93, which isn't a POSIX Bourne shell and
+	# doesn't support 'local'.  Thanks, guys.
+	_o=$1
+	_o=${_o##*/}
+	_o="${_o%.c}.o"
 
-	eval "$2=$o"
+	eval "$2=$_o"
 }
 
 echo "## Core files"
