@@ -74,7 +74,7 @@ for i in ${ngfiles} ${ongfiles}; do
 	mkobj $i dst
 	dst="\${BDIR}/${dst}"
 	echo "${dst}: ${src}"
-	echo "	\${CC} \${_CFLAGS} \${CFLAGS} -c -o ${dst} ${src}"
+	echo "	\${CC} \${_CFLAGS} -c -o ${dst} ${src}"
 done
 echo
 
@@ -116,7 +116,7 @@ for i in gccmakedep makedepend; do
 	if [ "X" != "X${mkdep}" ]; then
 		echo
 		echo "depend: \${BDIR} \${GENSRC}"
-		echo "	${mkdep} -- \${_CFLAGS} \${CFLAGS} -- \${ALLSRC}"
+		echo "	${mkdep} -- \${_CFLAGS} -- \${ALLSRC}"
 		echo
 		echo
 		break

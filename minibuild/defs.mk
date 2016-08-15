@@ -24,6 +24,13 @@ _LFLAGS=-L/usr/local/lib -lSM -lICE -lX11 -lXext -lXmu -lXt
 #_CFLAGS+=-D__EXTENSIONS__
 
 
+
+# $CFLAGS is a standard place to set or pass compiler flags, so put that
+# on the end of our flags, and finalize 'em.
+_CFLAGS+=${CFLAGS}
+
+
+
 # Default target
 all: ${BDIR} ctwm
 

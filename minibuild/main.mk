@@ -113,8 +113,11 @@ ${BDIR}/gram.tab.c: ${RTDIR}/gram.y
 ALLSRC+=${GENSRC}
 gen: ${GENSRC}
 
+# Finalize LFLAGS like CFLAGS
+_LFLAGS+=${LFLAGS}
+
 ctwm: ${BDIR} ${GENSRC} ${OFILES}
 	cc -o ctwm ${OFILES} ${_LFLAGS}
 
 .c.o:
-	${CC} ${_CFLAGS} ${CFLAGS} -c -o ${@} ${<}
+	${CC} ${_CFLAGS} -c -o ${@} ${<}
