@@ -57,13 +57,26 @@ ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
 
 
 # Just make null version file
-# XXX Doesn't sub version yet
 ALLSRC+=${BDIR}/version.c
 ${BDIR}/version.o: ${BDIR}/version.c
 ${BDIR}/version.c: ${RTDIR}/version.c.in
-	sed \
-		-e "s/%%[A-Z]*%%/NULL/" \
-		${RTDIR}/version.c.in > ${BDIR}/version.c
+	( \
+		vstr=`sed -E \
+			-e 's/([0-9]+)\.([0-9]+)\.([0-9]+)(.*)/\1 \2 \3 \4/' \
+			${RTDIR}/VERSION` ; \
+		set -- junk $$vstr ; shift ; \
+		maj=$$1;  \
+		min=$$2;  \
+		pat=$$3;  \
+		addl=$$4;  \
+		sed \
+			-e "s/%%[A-Z]*%%/NULL/" \
+			-e "s/@ctwm_version_major@/$$maj/" \
+			-e "s/@ctwm_version_minor@/$$min/" \
+			-e "s/@ctwm_version_patch@/$$pat/" \
+			-e "s/@ctwm_version_addl@/$$addl/" \
+			${RTDIR}/version.c.in > ${BDIR}/version.c \
+	)
 
 
 # Table of event names
