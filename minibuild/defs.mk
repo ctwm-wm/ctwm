@@ -34,3 +34,5 @@ clean:
 
 allclean: clean
 	rm -f Makefile
+
+gen: ${BDIR}

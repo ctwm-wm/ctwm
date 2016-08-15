@@ -1,7 +1,7 @@
 gen/
 *.tar*
 build/*
-minibuild/Makefile
+minibuild/Makefile*
 minibuild/build
 minibuild/ctwm
 *.html

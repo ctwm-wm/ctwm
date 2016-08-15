@@ -5,6 +5,7 @@ build="build"
 
 # Output into Makefile
 echo "Generating Makefile"
+exec 4<&1
 exec 1>Makefile
 
 # Get the list of base non-generated and generated sources
@@ -86,5 +87,37 @@ echo
 echo
 
 
+# Build up ALLSRC for depend state
+echo "## For make depend"
+echo "ALLSRC = \\"
+for i in ${ngfiles}; do
+	echo "	\${RTDIR}/${i} \\"
+done
+echo
+
+
 # The rest of the file
 cat main.mk
+
+
+
+# Figure out how we can run 'make depend', if we can.  'gccmakedep' and
+# 'makedepend' are both programs from X.org that do it, and imake uses
+# them, so probably anyone running X has one of them...
+mkdep=""
+for i in gccmakedep makedepend; do
+	mkdep=`command -v ${i}`
+	if [ "X" != "X${mkdep}" ]; then
+		echo
+		echo "depend: gen"
+		echo "	${mkdep} -- \${_CFLAGS} \${CFLAGS} -- \${ALLSRC}"
+		echo
+		echo
+		break
+	fi
+done
+
+
+
+# Done
+exec 1<&4
