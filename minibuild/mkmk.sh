@@ -47,8 +47,9 @@ echo
 # List the core files first
 mkobj()
 {
-	# /bin/sh on Slowaris is ksh93, which isn't a POSIX Bourne shell and
-	# doesn't support 'local'.  Thanks, guys.
+	# /bin/sh on Slowaris is ksh93, which doesn't support 'local'.
+	# Thanks, guys.  Well, I guess I'll just be sure not to use $_o
+	# anywhere else...
 	_o=$1
 	_o=${_o##*/}
 	_o="${_o%.c}.o"
