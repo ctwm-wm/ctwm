@@ -43,17 +43,29 @@ echo
 
 
 # List the core files first
+mkobj()
+{
+	local o
+	o=$1
+	o=${o##*/}
+	o="${o%.c}.o"
+
+	eval "$2=$o"
+}
+
 echo "## Core files"
 echo "OFILES = \\"
 for i in ${ngfiles}; do
-	echo "    \${BDIR}/${i%.c}.o \\"
+	mkobj $i oret
+	echo "    \${BDIR}/${oret} \\"
 done
 echo
 
 # Have to manually write these; transform rules won't work across dirs
 for i in ${ngfiles} ${ongfiles}; do
 	src="\${RTDIR}/${i}"
-	dst="\${BDIR}/${i%.c}.o"
+	mkobj $i dst
+	dst="\${BDIR}/${dst}"
 	echo "${dst}: ${src}"
 	echo "	\${CC} \${_CFLAGS} \${CFLAGS} -c -o ${dst} ${src}"
 done
