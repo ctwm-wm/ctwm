@@ -130,7 +130,6 @@ exec 1<&4
 # dependencies to know when we need various headers.
 if [ "X" != "X${mkdep}" ]; then
 	echo "Running make depend"
-	echo ${MAKE} depend
 	${MAKE} depend
 	rm Makefile.bak
 else
