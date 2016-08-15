@@ -3,6 +3,10 @@ cd `dirname $0`
 rtdir=".."
 build="build"
 
+# Output into Makefile
+echo "Generating Makefile"
+exec 1>Makefile
+
 # Get the list of base non-generated and generated sources
 ngfiles=`sed \
 	-e '1,/##STDSRC-START/d' -e '/##STDSRC-END/,$d' \
