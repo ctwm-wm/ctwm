@@ -1,25 +1,28 @@
 ## Options
+OPTDEFS=
+
+# Currently non-optional but still needed
+OPTDEFS+=USE_SYS_REGEX
 
 # XPM
-_CFLAGS+=-DXPM
+OPTDEFS+=XPM
 _LFLAGS+=-lXpm
 OFILES+=${BDIR}/image_xpm.o
 ALLSRC+=${RTDIR}/image_xpm.c
 
 # JPEG
-_CFLAGS+=-DJPEG
+OPTDEFS+=JPEG
 _LFLAGS+=-ljpeg
 OFILES+=${BDIR}/image_jpeg.o
 ALLSRC+=${RTDIR}/image_jpeg.c
 
 # m4
-_CFLAGS+=-DUSEM4
-#_CFLAGS+=-DM4CMD=/usr/local/bin/my_special_m4
+OPTDEFS+=USEM4
 OFILES+=${BDIR}/parse_m4.o
 ALLSRC+=${RTDIR}/parse_m4.c
 
 # EWMH
-_CFLAGS+=-DEWMH
+OPTDEFS+=EWMH
 OFILES+=${BDIR}/ewmh.o ${BDIR}/ewmh_atoms.o
 GENSRC+=${BDIR}/ewmh_atoms.c
 
@@ -36,6 +39,9 @@ ${BDIR}/ctwm_config.h:
 		echo '#define SYSTEM_INIT_FILE "/not/yet/set/system.ctwmrc"' ; \
 		echo '#define PIXMAP_DIRECTORY "/not/yet/set/pixmaps"' ; \
 		echo '#define M4CMD "m4"' ; \
+		for i in ${OPTDEFS}; do \
+			echo "#define $${i}" ; \
+		done ; \
 	) > ${BDIR}/ctwm_config.h
 
 
