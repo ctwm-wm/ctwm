@@ -48,4 +48,4 @@ ${BDIR}/gram.tab.c: ${RTDIR}/gram.y
 
 ## Main build
 ctwm: ${BDIR} gen ${OFILES}
-	cc -o ${CTWM} ${OFILES} ${LFLAGS}
+	cc -o ctwm ${OFILES} ${LFLAGS}
