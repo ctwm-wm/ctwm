@@ -8,6 +8,7 @@ ${BDIR}/ctwm_config.h:
 	( \
 		echo '#define SYSTEM_INIT_FILE "/not/yet/set/system.ctwmrc"' ; \
 		echo '#define PIXMAP_DIRECTORY "/not/yet/set/pixmaps"' ; \
+		echo '#define M4CMD "m4"' ; \
 	) > ${BDIR}/ctwm_config.h
 
 
