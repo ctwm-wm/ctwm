@@ -21,8 +21,7 @@ ALLSRC+=${RTDIR}/parse_m4.c
 # EWMH
 _CFLAGS+=-DEWMH
 OFILES+=${BDIR}/ewmh.o ${BDIR}/ewmh_atoms.o
-gen: ${BDIR}/ewmh_atoms.c
-ALLSRC+=${BDIR}/ewmh_atoms.c
+GENSRC+=${BDIR}/ewmh_atoms.c
 
 
 
@@ -31,7 +30,7 @@ ALLSRC+=${BDIR}/ewmh_atoms.c
 ## Autogen'd files
 
 # Stand-in ctwm_config.h
-gen: ${BDIR}/ctwm_config.h
+GENSRC+=${BDIR}/ctwm_config.h
 ${BDIR}/ctwm_config.h:
 	( \
 		echo '#define SYSTEM_INIT_FILE "/not/yet/set/system.ctwmrc"' ; \
@@ -41,15 +40,14 @@ ${BDIR}/ctwm_config.h:
 
 
 # Atom lists are script-generated
-ALLSRC+=${BDIR}/ctwm_atoms.c
-gen: ${BDIR}/ctwm_atoms.c
+GENSRC+=${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
 	(cd ${BDIR} && \
 		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms CTWM)
 
 # Only when EWMH
-ALLSRC+=${BDIR}/ewmh_atoms.c
+GENSRC+=${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
 	(cd ${BDIR} && \
@@ -57,7 +55,7 @@ ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
 
 
 # Just make null version file
-ALLSRC+=${BDIR}/version.c
+GENSRC+=${BDIR}/version.c
 ${BDIR}/version.o: ${BDIR}/version.c
 ${BDIR}/version.c: ${RTDIR}/version.c.in
 	( \
@@ -80,25 +78,25 @@ ${BDIR}/version.c: ${RTDIR}/version.c.in
 
 
 # Table of event names
-gen: ${BDIR}/event_names_table.h
+GENSRC+=${BDIR}/event_names_table.h
 ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 	${RTDIR}/tools/mk_event_names.sh ${RTDIR}/event_names.list \
 		> ${BDIR}/event_names_table.h
 
 
 # Default config
-ALLSRC+=${BDIR}/deftwmrc.c
+GENSRC+=${BDIR}/deftwmrc.c
 ${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc
 	${RTDIR}/tools/mk_deftwmrc.sh ${RTDIR}/system.ctwmrc > ${BDIR}/deftwmrc.c
 
 
 # lex/yacc inputs
-ALLSRC+=${BDIR}/lex.c
+GENSRC+=${BDIR}/lex.c
 ${BDIR}/lex.o: ${BDIR}/lex.c
 ${BDIR}/lex.c: ${RTDIR}/lex.l
 	${FLEX} -o ${BDIR}/lex.c ${RTDIR}/lex.l
 
-ALLSRC+=${BDIR}/gram.tab.c
+GENSRC+=${BDIR}/gram.tab.c
 ${BDIR}/gram.tab.o ${BDIR}/gram.tab.h: ${BDIR}/gram.tab.c
 ${BDIR}/gram.tab.c: ${RTDIR}/gram.y
 	(cd ${BDIR} && ${YACC_CMD} ${RTDIR}/../gram.y)
@@ -106,7 +104,10 @@ ${BDIR}/gram.tab.c: ${RTDIR}/gram.y
 
 
 ## Main build
-ctwm: ${BDIR} gen ${OFILES}
+ALLSRC+=${GENSRC}
+gen: ${GENSRC}
+
+ctwm: ${BDIR} ${GENSRC} ${OFILES}
 	cc -o ctwm ${OFILES} ${_LFLAGS}
 
 .c.o:

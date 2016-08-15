@@ -36,3 +36,4 @@ allclean: clean
 	rm -f Makefile*
 
 gen: ${BDIR}
+GENSRC=
