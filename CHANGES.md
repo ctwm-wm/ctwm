@@ -131,7 +131,7 @@ remnants of special-case VMS support have been removed.
 
 1. Several bugs relating to the Occupy window were fixed.  Iconifying the
     Occupy window no longer loses it and leaves you unable to pull it up
-    again.  Resizing it now works right as well.
+    again.  Minor undersizing in some cases fixed.
 
 ### Internals
 

@@ -681,6 +681,10 @@ CreateOccupyWindow(void)
 	w = occwin->w = XCreateSimpleWindow(dpy, Scr->Root, 0, 0, width, height,
 	                                    1, Scr->Black, occwin->cp.back);
 
+	/* Take those base sizes as a minimum */
+	occwin->minwidth  = width;
+	occwin->minheight = height;
+
 
 	/*
 	 * Make subwindows as buttons for the workspaces.  They're laid out
@@ -759,13 +763,13 @@ CreateOccupyWindow(void)
 		XSizeHints sizehints;
 		XWMHints wmhints;
 
-		sizehints.flags       = PBaseSize | PMinSize | PResizeInc;
+		sizehints.flags       = PBaseSize | PMinSize | PMaxSize;
 		sizehints.min_width   = width;
 		sizehints.min_height  = height;
 		sizehints.base_width  = width;
 		sizehints.base_height = height;
-		sizehints.width_inc   = columns;
-		sizehints.height_inc  = lines;
+		sizehints.max_width   = width;
+		sizehints.max_height  = height;
 
 		wmhints.flags         = InputHint | StateHint;
 		wmhints.input         = True;
@@ -863,8 +867,9 @@ ResizeOccupyWindow(TwmWindow *win)
 	int        i, j, x, y;
 	OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
 
-	neww = win->attr.width;
-	newh = win->attr.height;
+	/* Floor at the original size */
+	neww = MAX(win->attr.width,  occwin->minwidth);
+	newh = MAX(win->attr.height, occwin->minheight);
 	if(occwin->width == neww && occwin->height == newh) {
 		return;
 	}
@@ -924,8 +929,7 @@ ResizeOccupyWindow(TwmWindow *win)
 	occwin->bheight = bheight;
 	occwin->owidth  = owidth;
 
-	/* And blat it out */
-	PaintOccupyWindow();
+	/* Don't need to repaint it; it'll get expose events */
 }
 
 

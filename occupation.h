@@ -13,6 +13,7 @@ struct OccupyWindow {
 	Window        *obuttonw;
 	Window        OK, cancel, allworkspc;
 	int           width, height;
+	int           minwidth, minheight;
 	char          *name;
 	char          *icon_name;
 	int           lines, columns;
