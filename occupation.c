@@ -763,11 +763,13 @@ CreateOccupyWindow(void)
 		XSizeHints sizehints;
 		XWMHints wmhints;
 
-		sizehints.flags       = PBaseSize | PMinSize;
+		sizehints.flags       = PBaseSize | PMinSize | PMaxSize;
 		sizehints.min_width   = width;
 		sizehints.min_height  = height;
 		sizehints.base_width  = width;
 		sizehints.base_height = height;
+		sizehints.max_width   = width;
+		sizehints.max_height  = height;
 
 		wmhints.flags         = InputHint | StateHint;
 		wmhints.input         = True;
