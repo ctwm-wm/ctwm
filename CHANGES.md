@@ -10,10 +10,10 @@ The old `imake` build system has been replaced by a new structure using
 build ctwm.  See the `README.md` file for how to run it.
 
 A fallback minimal build system is available in the `minibuild/`
-directory for environments that can't use the main one.  The main build
-is strongly preferred, and this is likely to need some manual adjustment
-on many systems, but it should suffice to get a runnable binary if all
-else fails.
+directory for environments that can't use the main one.  This is likely
+to need some manual adjustment on many systems, and the main build is
+strongly preferred.  But it should suffice to get a runnable binary if
+all else fails.
 
 ### Platform Support
 
