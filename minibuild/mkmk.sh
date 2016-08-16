@@ -115,7 +115,7 @@ for i in gccmakedep makedepend; do
 	mkdep=`command -v ${i}`
 	if [ "X" != "X${mkdep}" ]; then
 		echo
-		echo "depend: \${BDIR} \${GENSRC}"
+		echo "depend: \${BDIR} \${GENFILES}"
 		echo "	${mkdep} -- \${_CFLAGS} -- \${STDSRC} \${GENSRC}"
 		echo
 		echo

@@ -34,7 +34,7 @@ GENSRC+=${BDIR}/ewmh_atoms.c
 ## Autogen'd files
 
 # Stand-in ctwm_config.h
-GENSRC+=${BDIR}/ctwm_config.h
+GENXTRA+=${BDIR}/ctwm_config.h
 ${BDIR}/ctwm_config.h:
 	( \
 		echo '#define SYSTEM_INIT_FILE "/not/yet/set/system.ctwmrc"' ; \
@@ -84,7 +84,7 @@ ${BDIR}/version.c: ${RTDIR}/version.c.in ${RTDIR}/VERSION
 
 
 # Table of event names
-GENSRC+=${BDIR}/event_names_table.h
+GENXTRA+=${BDIR}/event_names_table.h
 ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 	${RTDIR}/tools/mk_event_names.sh ${RTDIR}/event_names.list \
 		> ${BDIR}/event_names_table.h
@@ -110,12 +110,13 @@ ${BDIR}/gram.tab.c: ${RTDIR}/gram.y
 
 
 ## Main build
-gen: ${GENSRC}
+GENFILES=${GENSRC} ${GENXTRA}
+gen: ${GENFILES}
 
 # Finalize LFLAGS like CFLAGS
 _LFLAGS+=${LFLAGS}
 
-ctwm: ${BDIR} ${GENSRC} ${OFILES}
+ctwm: ${BDIR} ${GENFILES} ${OFILES}
 	cc -o ctwm ${OFILES} ${_LFLAGS}
 
 .c.o:

@@ -46,3 +46,4 @@ allclean: clean
 
 gen: ${BDIR}
 GENSRC=
+GENXTRA=
