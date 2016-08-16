@@ -20,15 +20,15 @@ least get you something you can run.
 
 ### GNU libc
 
-Systems using GNU libc and its header (e.g., almost any Linux system)
+Systems using GNU libc and its headers (e.g., almost any Linux system)
 will require some extra -D flags to build properly.  Uncomment the
 appropriate line in the Makefile (search for 'glibc') to turn them on.
 
 ### Linux
 
-Linux systems are fairly likely to have bison install, but no yacc.  You
-can set `YACC=bison` in the environment or make command line.  (env is
-the only way to trigger it properly when running mkmk.sh)
+Linux systems are fairly likely to have bison installed, but not yacc.
+You can set `YACC=bison` in the environment or on the make command line.
+(env is the only way to trigger it properly when running mkmk.sh)
 
 ### Solarish
 
