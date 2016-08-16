@@ -9,6 +9,12 @@ The old `imake` build system has been replaced by a new structure using
 `cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
 build ctwm.  See the `README.md` file for how to run it.
 
+A fallback minimal build system is available in the `minibuild/`
+directory for environments that can't use the main one.  The main build
+is strongly preferred, and this is likely to need some manual adjustment
+on many systems, but it should suffice to get a runnable binary if all
+else fails.
+
 ### Platform Support
 
 Support for many non-current platforms has been dropped.  In particular,
