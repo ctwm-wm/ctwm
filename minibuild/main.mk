@@ -103,8 +103,8 @@ ${BDIR}/lex.c: ${RTDIR}/lex.l
 	${FLEX} -o ${BDIR}/lex.c ${RTDIR}/lex.l
 
 GENSRC+=${BDIR}/gram.tab.c
-${BDIR}/gram.tab.o ${BDIR}/gram.tab.h: ${BDIR}/gram.tab.c
-${BDIR}/gram.tab.c: ${RTDIR}/gram.y
+${BDIR}/gram.tab.o: ${BDIR}/gram.tab.c
+${BDIR}/gram.tab.c ${BDIR}/gram.tab.h: ${RTDIR}/gram.y
 	(cd ${BDIR} && ${YACC_CMD} ${RTDIR}/../gram.y)
 
 
