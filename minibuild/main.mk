@@ -50,14 +50,12 @@ ${BDIR}/ctwm_config.h:
 GENSRC+=${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
-	(cd ${BDIR} && \
-		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ctwm_atoms.in ctwm_atoms CTWM)
+	${RTDIR}/tools/mk_atoms.sh ${RTDIR}/ctwm_atoms.in ${BDIR}/ctwm_atoms CTWM
 
 # Only needed when EWMH (but doesn't hurt anything to have around if not)
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
-	(cd ${BDIR} && \
-		${RTDIR}/../tools/mk_atoms.sh ${RTDIR}/../ewmh_atoms.in ewmh_atoms EWMH)
+	${RTDIR}/tools/mk_atoms.sh ${RTDIR}/ewmh_atoms.in ${BDIR}/ewmh_atoms EWMH
 
 
 # Just make null version file
