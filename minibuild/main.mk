@@ -102,8 +102,10 @@ ${BDIR}/lex.c: ${RTDIR}/lex.l
 
 GENSRC+=${BDIR}/gram.tab.c
 ${BDIR}/gram.tab.o: ${BDIR}/gram.tab.c
-${BDIR}/gram.tab.c ${BDIR}/gram.tab.h: ${RTDIR}/gram.y
-	(cd ${BDIR} && ${YACC_CMD} ${RTDIR}/../gram.y)
+${BDIR}/gram.tab.c ${BDIR}/gram.tab.h: ${BDIR}/gram.y
+	(cd ${BDIR} && ${YACC_CMD} gram.y)
+${BDIR}/gram.y: ${RTDIR}/gram.y
+	cp ${RTDIR}/gram.y ${BDIR}/gram.y
 
 
 
