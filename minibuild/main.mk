@@ -50,12 +50,12 @@ ${BDIR}/ctwm_config.h:
 GENSRC+=${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
-	${RTDIR}/tools/mk_atoms.sh ${RTDIR}/ctwm_atoms.in ${BDIR}/ctwm_atoms CTWM
+	${TOOLS}/mk_atoms.sh ${RTDIR}/ctwm_atoms.in ${BDIR}/ctwm_atoms CTWM
 
 # Only needed when EWMH (but doesn't hurt anything to have around if not)
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
 ${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
-	${RTDIR}/tools/mk_atoms.sh ${RTDIR}/ewmh_atoms.in ${BDIR}/ewmh_atoms EWMH
+	${TOOLS}/mk_atoms.sh ${RTDIR}/ewmh_atoms.in ${BDIR}/ewmh_atoms EWMH
 
 
 # Just make null version file
@@ -84,14 +84,14 @@ ${BDIR}/version.c: ${RTDIR}/version.c.in ${RTDIR}/VERSION
 # Table of event names
 GENXTRA+=${BDIR}/event_names_table.h
 ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
-	${RTDIR}/tools/mk_event_names.sh ${RTDIR}/event_names.list \
+	${TOOLS}/mk_event_names.sh ${RTDIR}/event_names.list \
 		> ${BDIR}/event_names_table.h
 
 
 # Default config
 GENSRC+=${BDIR}/deftwmrc.c
 ${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc
-	${RTDIR}/tools/mk_deftwmrc.sh ${RTDIR}/system.ctwmrc > ${BDIR}/deftwmrc.c
+	${TOOLS}/mk_deftwmrc.sh ${RTDIR}/system.ctwmrc > ${BDIR}/deftwmrc.c
 
 
 # lex/yacc inputs

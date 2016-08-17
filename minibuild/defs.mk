@@ -1,4 +1,6 @@
 # Defs
+TOOLS=${RTDIR}/tools
+
 CC?=cc
 YACC?=yacc
 YACC_FLAGS?=-d -b gram
