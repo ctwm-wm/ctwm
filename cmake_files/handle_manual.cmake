@@ -36,8 +36,8 @@ set(MANPDF   ${CMAKE_BINARY_DIR}/ctwm.1.pdf)
 # pretty freeform in the manual.
 # \-escaped @ needed for pre-3.1 CMake compat and warning avoidance;
 # x-ref `cmake --help-policy CMP0053`
-set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},"
-	-e "s,\@ctwm_version_str@,${ctwm_version_str},")
+set(MANSED_CMD sed -e \"s,\@ETCDIR@,${ETCDIR},\"
+	-e \"s,\@ctwm_version_str@,`head -1 ${CMAKE_SOURCE_DIR}/VERSION`,\")
 
 # Pregen'd doc file paths we might have, in case we can't build them
 # ourselves.
@@ -107,7 +107,7 @@ if(SETUP_MAN_REWRITE)
 	# We hop through a temporary file to process in definitions for e.g.
 	# $ETCDIR.
 	add_custom_command(OUTPUT ${ADOC_TMPSRC}
-		DEPENDS ${ADOC_SRC}
+		DEPENDS ${ADOC_SRC} ${CMAKE_SOURCE_DIR}/VERSION
 		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
 		COMMENT "Processing ctwm.1.adoc -> mantmp/ctwm.1.adoc"
 	)
@@ -161,7 +161,7 @@ elseif(EXISTS ${MAN_PRESRC})
 	# We still have to do the substitutions like above, but we're doing
 	# it on the built version now, rather than the source.
 	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${MAN_PRESRC}
+		DEPENDS ${MAN_PRESRC} ${CMAKE_SOURCE_DIR}/VERSION
 		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
 		COMMENT "Processing prebuilt manpage -> ctwm.1"
 	)
@@ -225,7 +225,7 @@ elseif(EXISTS ${HTML_PRESRC})
 	# As with the manpage above, we need to do the processing on the
 	# generated version for build options.
 	add_custom_command(OUTPUT ${MANHTML}
-		DEPENDS ${HTML_PRESRC}
+		DEPENDS ${HTML_PRESRC} ${CMAKE_SOURCE_DIR}/VERSION
 		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
 		COMMENT "Processing prebuilt manual -> ctwm.1.html"
 	)
