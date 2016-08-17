@@ -38,6 +38,13 @@ configure_file(ctwm_config.h.in ctwm_config.h ESCAPE_QUOTES)
 
 
 # Fill in version info
+#
+# ${version_c_src} is the source version.c.in, except in the "have
+# pregen'd" case where it's the pregen'd (from e.g. a release tarball,
+# with VCS info preset).  ${version_c_in} is ${version_c_src} processed
+# with the info from VERSION filled in.  And ${version_c} is
+# ${version_c_in} processed with the VCS info (or nothing, in the
+# pregen'd case) for the actual build.
 set(version_c_src ${CMAKE_CURRENT_SOURCE_DIR}/version.c.in)
 set(version_c_in  ${CMAKE_CURRENT_BINARY_DIR}/version.c.in)
 set(version_c     ${CMAKE_CURRENT_BINARY_DIR}/version.c)
@@ -61,16 +68,18 @@ elseif(IS_GIT_CO AND HAS_GIT)
 else()
 	# Is there a prebuilt one to use?
 	if(EXISTS ${GENSRCDIR}/version.c)
-		# Yep, just use it as the source for configure_file()
+		# Yep, switch to using it as the source for building
+		# ${version_c_in}.
 		set(version_c_src ${GENSRCDIR}/version.c)
 
+		# And just copy to the final
 		add_custom_command(OUTPUT ${version_c}
 			DEPENDS ${version_c_in}
 			COMMAND cp ${version_c_in} ${version_c}
 			COMMENT "Using pregenerated version.c."
 		)
 	else()
-		# Nope
+		# Nope, we got nothing at all.
 		add_custom_command(OUTPUT ${version_c}
 			DEPENDS ${version_c_in}
 			COMMAND sed -e 's/%%VCSTYPE%%/NULL/' -e 's/%%REVISION%%/NULL/'
@@ -80,7 +89,14 @@ else()
 	endif(EXISTS ${GENSRCDIR}/version.c)
 endif(IS_BZR_CO AND HAS_BZR)
 
-configure_file(${version_c_src} ${version_c_in} ESCAPE_QUOTES)
+# Note that the above may be rewriting version_c_src in the "no VCS info,
+# but we have a pregen'd gen/version.c to use" case.
+add_custom_command(OUTPUT ${version_c_in}
+	DEPENDS ${version_c_src} ${CMAKE_CURRENT_SOURCE_DIR}/VERSION
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_version_in.sh ${version_c_src} > ${version_c_in}
+	COMMENT "Writing version info into version.c.in"
+)
+
 
 # Setup a 'version' binary build tool too, for easily printing bits or
 # wholes of our version.
