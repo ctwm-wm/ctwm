@@ -42,7 +42,7 @@ ${GEN}:
 	mkdir -p ${GEN}
 
 # All the generated source files
-_RELEASE_FILES=gram.tab.c gram.tab.h lex.c version.c
+_RELEASE_FILES=gram.tab.c gram.tab.h lex.c version.c.in
 RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
 # Build those, the .html versions of the above docs, and the HTML/man
@@ -64,5 +64,5 @@ ${GEN}/lex.c: ${GEN} lex.l build/MKTAR_GENFILES
 	cp build/lex.c ${GEN}/
 
 # Setup version file
-${GEN}/version.c: ${GEN} version.c.in .bzr/checkout/dirstate
-	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c
+${GEN}/version.c.in: ${GEN} version.c.in .bzr/checkout/dirstate
+	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c.in
