@@ -134,6 +134,7 @@ static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
+static bool MappedNotOverride(Window w);
 
 Cursor  UpperLeftCursor;
 Cursor  TopRightCursor,
@@ -1357,4 +1358,19 @@ static Window CreateRootWindow(int x, int y,
 	XSelectInput(dpy, ret, StructureNotifyMask);
 	XMapWindow(dpy, ret);
 	return (ret);
+}
+
+
+/*
+ * Return true if a window is not set to override_redirect ("Hey!  WM!
+ * Leave those wins alone!"), and isn't unmapped.  Used during startup to
+ * fake mapping for wins that should be up.
+ */
+static bool
+MappedNotOverride(Window w)
+{
+	XWindowAttributes wa;
+
+	XGetWindowAttributes(dpy, w, &wa);
+	return ((wa.map_state != IsUnmapped) && (wa.override_redirect != True));
 }

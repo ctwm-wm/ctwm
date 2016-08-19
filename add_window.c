@@ -1539,33 +1539,6 @@ TwmWindow *GetTwmWindow(Window w)
 	return twmwin;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      MappedNotOverride - checks to see if we should really
- *              put a twm frame on the window
- *
- *  Returned Value:
- *      true    - go ahead and frame the window
- *      false   - don't frame the window
- *
- *  Inputs:
- *      w       - the window to check
- *
- ***********************************************************************
- */
-
-bool
-MappedNotOverride(Window w)
-{
-	XWindowAttributes wa;
-
-	XGetWindowAttributes(dpy, w, &wa);
-	return ((wa.map_state != IsUnmapped) && (wa.override_redirect != True));
-}
-
-
-
 
 /***********************************************************************
  *
