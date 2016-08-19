@@ -1918,8 +1918,9 @@ WindowGeometries {
 ------
 +
 
-WindowRegion `geomstring` `vgrav` `hgrav` [{ `win-list` }]::
-  Similar to IconRegion, but for windows.
+WindowRegion `geomstring` `vgrav` `hgrav` { `win-list` }::
+  Similar to IconRegion, but for windows.  Note that the `win-list` is
+  not optional.
 
 WindowRing [{ `win-list` }]::
   This variable specifies a list of windows along which the `f.warpring`
