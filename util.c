@@ -823,10 +823,10 @@ void move_to_after(TwmWindow *t, TwmWindow *after)
 void SetFocus(TwmWindow *tmp_win, Time tim)
 {
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
-	int f_iconmgr = 0;
+	bool f_iconmgr = false;
 
 	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
-		f_iconmgr = 1;
+		f_iconmgr = true;
 	}
 	if(Scr->SloppyFocus && (w == PointerRoot) && (!f_iconmgr)) {
 		return;
