@@ -103,7 +103,7 @@ void SynthesiseFocusOut(Window w);
 void SynthesiseFocusIn(Window w);
 void HandleCirculateNotify(void);
 bool Transient(Window w, Window *propw);
-void RedoIconName(void);
+void RedoIconName(TwmWindow *win);
 
 ScreenInfo *FindScreenInfo(Window w);
 

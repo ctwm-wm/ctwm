@@ -1850,7 +1850,7 @@ void HandlePropertyNotify(void)
 					                        0, &rect, 1, ShapeUnion, 0);
 				}
 				XMapSubwindows(dpy, icon->w);
-				RedoIconName();
+				RedoIconName(Tmp_win);
 			}
 			if(icon && icon->w &&
 			                (Tmp_win->wmhints->flags & IconMaskHint) &&
@@ -1893,7 +1893,7 @@ void HandlePropertyNotify(void)
 						XFreePixmap(dpy, icon->image->mask);
 					}
 					icon->image->mask = mask;
-					RedoIconName();
+					RedoIconName(Tmp_win);
 				}
 			}
 			if(Tmp_win->wmhints->flags & IconPixmapHint) {
@@ -1947,7 +1947,7 @@ RedoIcon(TwmWindow *win)
 	if(old_icon && (
 	                        old_icon->w_not_ours ||
 	                        old_icon->match != match_list)) {
-		RedoIconName();
+		RedoIconName(win);
 		return;
 	}
 	icon = NULL;
@@ -1962,12 +1962,12 @@ RedoIcon(TwmWindow *win)
 		icon = (Icon *) LookInNameList(win->iconslist, pattern);
 	}
 	if(pattern == NULL) {
-		RedoIconName();
+		RedoIconName(win);
 		return;
 	}
 	if(icon != NULL) {
 		if(old_icon == icon) {
-			RedoIconName();
+			RedoIconName(win);
 			return;
 		}
 		if(win->icon_on && visible(win)) {
@@ -1985,7 +1985,7 @@ RedoIcon(TwmWindow *win)
 			win->icon = icon;
 			OtpReassignIcon(win, old_icon);
 		}
-		RedoIconName();
+		RedoIconName(win);
 	}
 	else {
 		if(win->icon_on && visible(win)) {
@@ -2013,7 +2013,7 @@ RedoIcon(TwmWindow *win)
 			win->icon = NULL;
 			WMapUpdateIconName(win);
 		}
-		RedoIconName();
+		RedoIconName(win);
 	}
 }
 
@@ -2025,107 +2025,108 @@ RedoIcon(TwmWindow *win)
  ***********************************************************************
  */
 
-void RedoIconName(void)
+void
+RedoIconName(TwmWindow *win)
 {
 	int x;
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 
 	if(Scr->NoIconTitlebar ||
-	                LookInNameList(Scr->NoIconTitle, Tmp_win->icon_name) ||
-	                LookInList(Scr->NoIconTitle, Tmp_win->full_name, &Tmp_win->class)) {
+	                LookInNameList(Scr->NoIconTitle, win->icon_name) ||
+	                LookInList(Scr->NoIconTitle, win->full_name, &win->class)) {
 		goto wmapupd;
 	}
-	if(Tmp_win->iconmanagerlist) {
+	if(win->iconmanagerlist) {
 		/* let the expose event cause the repaint */
-		XClearArea(dpy, Tmp_win->iconmanagerlist->w, 0, 0, 0, 0, True);
+		XClearArea(dpy, win->iconmanagerlist->w, 0, 0, 0, 0, True);
 
 		if(Scr->SortIconMgr) {
-			SortIconManager(Tmp_win->iconmanagerlist->iconmgr);
+			SortIconManager(win->iconmanagerlist->iconmgr);
 		}
 	}
 
-	if(!Tmp_win->icon  || !Tmp_win->icon->w) {
+	if(!win->icon  || !win->icon->w) {
 		goto wmapupd;
 	}
 
-	if(Tmp_win->icon->w_not_ours) {
+	if(win->icon->w_not_ours) {
 		goto wmapupd;
 	}
 
 	XmbTextExtents(Scr->IconFont.font_set,
-	               Tmp_win->icon_name, strlen(Tmp_win->icon_name),
+	               win->icon_name, strlen(win->icon_name),
 	               &ink_rect, &logical_rect);
-	Tmp_win->icon->w_width = logical_rect.width;
-	Tmp_win->icon->w_width += 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
-	if(Tmp_win->icon->w_width > Scr->MaxIconTitleWidth) {
-		Tmp_win->icon->w_width = Scr->MaxIconTitleWidth;
+	win->icon->w_width = logical_rect.width;
+	win->icon->w_width += 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
+	if(win->icon->w_width > Scr->MaxIconTitleWidth) {
+		win->icon->w_width = Scr->MaxIconTitleWidth;
 	}
 
-	if(Tmp_win->icon->w_width < Tmp_win->icon->width) {
-		Tmp_win->icon->x = (Tmp_win->icon->width - Tmp_win->icon->w_width) / 2;
-		Tmp_win->icon->x += Scr->IconManagerShadowDepth + ICON_MGR_IBORDER;
-		Tmp_win->icon->w_width = Tmp_win->icon->width;
+	if(win->icon->w_width < win->icon->width) {
+		win->icon->x = (win->icon->width - win->icon->w_width) / 2;
+		win->icon->x += Scr->IconManagerShadowDepth + ICON_MGR_IBORDER;
+		win->icon->w_width = win->icon->width;
 	}
 	else {
-		Tmp_win->icon->x = Scr->IconManagerShadowDepth + ICON_MGR_IBORDER;
+		win->icon->x = Scr->IconManagerShadowDepth + ICON_MGR_IBORDER;
 	}
 
-	x = GetIconOffset(Tmp_win->icon);
-	Tmp_win->icon->y = Tmp_win->icon->height + Scr->IconFont.height +
+	x = GetIconOffset(win->icon);
+	win->icon->y = win->icon->height + Scr->IconFont.height +
 	                   Scr->IconManagerShadowDepth;
-	Tmp_win->icon->w_height = Tmp_win->icon->height + Scr->IconFont.height +
+	win->icon->w_height = win->icon->height + Scr->IconFont.height +
 	                          2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
 
-	XResizeWindow(dpy, Tmp_win->icon->w, Tmp_win->icon->w_width,
-	              Tmp_win->icon->w_height);
-	if(Tmp_win->icon->bm_w) {
+	XResizeWindow(dpy, win->icon->w, win->icon->w_width,
+	              win->icon->w_height);
+	if(win->icon->bm_w) {
 		XRectangle rect;
 
-		XMoveWindow(dpy, Tmp_win->icon->bm_w, x, 0);
-		XMapWindow(dpy, Tmp_win->icon->bm_w);
-		if(Tmp_win->icon->image && Tmp_win->icon->image->mask) {
-			XShapeCombineMask(dpy, Tmp_win->icon->bm_w, ShapeBounding, 0, 0,
-			                  Tmp_win->icon->image->mask, ShapeSet);
-			XShapeCombineMask(dpy, Tmp_win->icon->w, ShapeBounding, x, 0,
-			                  Tmp_win->icon->image->mask, ShapeSet);
+		XMoveWindow(dpy, win->icon->bm_w, x, 0);
+		XMapWindow(dpy, win->icon->bm_w);
+		if(win->icon->image && win->icon->image->mask) {
+			XShapeCombineMask(dpy, win->icon->bm_w, ShapeBounding, 0, 0,
+			                  win->icon->image->mask, ShapeSet);
+			XShapeCombineMask(dpy, win->icon->w, ShapeBounding, x, 0,
+			                  win->icon->image->mask, ShapeSet);
 		}
-		else if(Tmp_win->icon->has_title) {
+		else if(win->icon->has_title) {
 			rect.x      = x;
 			rect.y      = 0;
-			rect.width  = Tmp_win->icon->width;
-			rect.height = Tmp_win->icon->height;
-			XShapeCombineRectangles(dpy, Tmp_win->icon->w, ShapeBounding,
+			rect.width  = win->icon->width;
+			rect.height = win->icon->height;
+			XShapeCombineRectangles(dpy, win->icon->w, ShapeBounding,
 			                        0, 0, &rect, 1, ShapeSet, 0);
 		}
-		if(Tmp_win->icon->has_title) {
-			if(Scr->ShrinkIconTitles && Tmp_win->icon->title_shrunk) {
+		if(win->icon->has_title) {
+			if(Scr->ShrinkIconTitles && win->icon->title_shrunk) {
 				rect.x      = x;
-				rect.y      = Tmp_win->icon->height;
-				rect.width  = Tmp_win->icon->width;
-				rect.height = Tmp_win->icon->w_height - Tmp_win->icon->height;
+				rect.y      = win->icon->height;
+				rect.width  = win->icon->width;
+				rect.height = win->icon->w_height - win->icon->height;
 			}
 			else {
 				rect.x      = 0;
-				rect.y      = Tmp_win->icon->height;
-				rect.width  = Tmp_win->icon->w_width;
-				rect.height = Tmp_win->icon->w_height - Tmp_win->icon->height;
+				rect.y      = win->icon->height;
+				rect.width  = win->icon->w_width;
+				rect.height = win->icon->w_height - win->icon->height;
 			}
-			XShapeCombineRectangles(dpy,  Tmp_win->icon->w, ShapeBounding, 0,
+			XShapeCombineRectangles(dpy,  win->icon->w, ShapeBounding, 0,
 			                        0, &rect, 1, ShapeUnion, 0);
 		}
 	}
 	if(Scr->ShrinkIconTitles &&
-	                Tmp_win->icon->title_shrunk &&
-	                Tmp_win->icon_on && (visible(Tmp_win))) {
-		IconDown(Tmp_win);
-		IconUp(Tmp_win);
+	                win->icon->title_shrunk &&
+	                win->icon_on && (visible(win))) {
+		IconDown(win);
+		IconUp(win);
 	}
-	if(Tmp_win->isicon) {
-		XClearArea(dpy, Tmp_win->icon->w, 0, 0, 0, 0, True);
+	if(win->isicon) {
+		XClearArea(dpy, win->icon->w, 0, 0, 0, 0, True);
 	}
 wmapupd:
-	WMapUpdateIconName(Tmp_win);
+	WMapUpdateIconName(win);
 }
 
 
