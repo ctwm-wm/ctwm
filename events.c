@@ -1944,9 +1944,7 @@ RedoIcon(TwmWindow *win)
 
 	old_icon = win->icon;
 
-	if(old_icon && (
-	                        old_icon->w_not_ours ||
-	                        old_icon->match != match_list)) {
+	if(old_icon && (old_icon->w_not_ours || old_icon->match != match_list)) {
 		RedoIconName(win);
 		return;
 	}
@@ -2074,9 +2072,9 @@ RedoIconName(TwmWindow *win)
 
 	x = GetIconOffset(win->icon);
 	win->icon->y = win->icon->height + Scr->IconFont.height +
-	                   Scr->IconManagerShadowDepth;
+	               Scr->IconManagerShadowDepth;
 	win->icon->w_height = win->icon->height + Scr->IconFont.height +
-	                          2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
+	                      2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
 
 	XResizeWindow(dpy, win->icon->w, win->icon->w_width,
 	              win->icon->w_height);
