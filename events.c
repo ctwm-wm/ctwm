@@ -1950,14 +1950,14 @@ RedoIcon(TwmWindow *win)
 	}
 	icon = NULL;
 	if((pattern = LookPatternInNameList(Scr->IconNames, win->icon_name))) {
-		icon = (Icon *) LookInNameList(win->iconslist, pattern);
+		icon = LookInNameList(win->iconslist, pattern);
 	}
 	else if((pattern = LookPatternInNameList(Scr->IconNames, win->full_name))) {
-		icon = (Icon *) LookInNameList(win->iconslist, pattern);
+		icon = LookInNameList(win->iconslist, pattern);
 	}
 	else if((pattern = LookPatternInList(Scr->IconNames, win->full_name,
 	                                     &win->class))) {
-		icon = (Icon *) LookInNameList(win->iconslist, pattern);
+		icon = LookInNameList(win->iconslist, pattern);
 	}
 	if(pattern == NULL) {
 		RedoIconName(win);
