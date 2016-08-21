@@ -120,5 +120,7 @@ void DeleteIconsList(TwmWindow *tmp_win);
 void ShrinkIconTitle(TwmWindow *tmp_win);
 void ExpandIconTitle(TwmWindow *tmp_win);
 int GetIconOffset(Icon *icon);
+void RedoIcon(TwmWindow *win);
+void RedoIconName(TwmWindow *win);
 
 #endif /* _CTWM_ICONS_H */

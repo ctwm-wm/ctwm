@@ -69,6 +69,7 @@
 
 #include "drawing.h"
 #include "screen.h"
+#include "iconmgr.h"
 #include "icons.h"
 #include "otp.h"
 #include "list.h"
@@ -76,6 +77,7 @@
 #include "util.h"
 #include "animate.h"
 #include "image.h"
+#include "workspace_manager.h"
 
 static void ReshapeIcon(Icon *icon);
 
@@ -1121,4 +1123,197 @@ int GetIconOffset(Icon *icon)
 			        __func__, justif);
 			return 0;
 	}
+}
+
+
+
+/*
+ * [Re-]lookup the image for an icon and [re-]layout it.
+ */
+void
+RedoIcon(TwmWindow *win)
+{
+	Icon *icon, *old_icon;
+	char *pattern;
+
+	old_icon = win->icon;
+
+	if(old_icon && (old_icon->w_not_ours || old_icon->match != match_list)) {
+		RedoIconName(win);
+		return;
+	}
+	icon = NULL;
+	if((pattern = LookPatternInNameList(Scr->IconNames, win->icon_name))) {
+		icon = LookInNameList(win->iconslist, pattern);
+	}
+	else if((pattern = LookPatternInNameList(Scr->IconNames, win->full_name))) {
+		icon = LookInNameList(win->iconslist, pattern);
+	}
+	else if((pattern = LookPatternInList(Scr->IconNames, win->full_name,
+	                                     &win->class))) {
+		icon = LookInNameList(win->iconslist, pattern);
+	}
+	if(pattern == NULL) {
+		RedoIconName(win);
+		return;
+	}
+	if(icon != NULL) {
+		if(old_icon == icon) {
+			RedoIconName(win);
+			return;
+		}
+		if(win->icon_on && visible(win)) {
+			IconDown(win);
+			if(old_icon && old_icon->w) {
+				XUnmapWindow(dpy, old_icon->w);
+			}
+			win->icon = icon;
+			OtpReassignIcon(win, old_icon);
+			IconUp(win);
+			OtpRaise(win, IconWin);
+			XMapWindow(dpy, win->icon->w);
+		}
+		else {
+			win->icon = icon;
+			OtpReassignIcon(win, old_icon);
+		}
+		RedoIconName(win);
+	}
+	else {
+		if(win->icon_on && visible(win)) {
+			IconDown(win);
+			if(old_icon && old_icon->w) {
+				XUnmapWindow(dpy, old_icon->w);
+			}
+			/*
+			 * If the icon name/class was found on one of the above lists,
+			 * the call to CreateIconWindow() will find it again there
+			 * and keep track of it on win->iconslist for eventual
+			 * deallocation. (It is now checked that the current struct
+			 * Icon is also already on that list)
+			 */
+			OtpFreeIcon(win);
+			bool saveForceIcon = Scr->ForceIcon;
+			Scr->ForceIcon = true;
+			CreateIconWindow(win, -100, -100);
+			Scr->ForceIcon = saveForceIcon;
+			OtpRaise(win, IconWin);
+			XMapWindow(dpy, win->icon->w);
+		}
+		else {
+			OtpFreeIcon(win);
+			win->icon = NULL;
+			WMapUpdateIconName(win);
+		}
+		RedoIconName(win);
+	}
+}
+
+
+/*
+ * Resize the icon window, and reposition the image and name within it.
+ * (a lot of the actual repositioning gets done during the later expose).
+ */
+void
+RedoIconName(TwmWindow *win)
+{
+	int x;
+	XRectangle ink_rect;
+	XRectangle logical_rect;
+
+	if(Scr->NoIconTitlebar ||
+	                LookInNameList(Scr->NoIconTitle, win->icon_name) ||
+	                LookInList(Scr->NoIconTitle, win->full_name, &win->class)) {
+		goto wmapupd;
+	}
+	if(win->iconmanagerlist) {
+		/* let the expose event cause the repaint */
+		XClearArea(dpy, win->iconmanagerlist->w, 0, 0, 0, 0, True);
+
+		if(Scr->SortIconMgr) {
+			SortIconManager(win->iconmanagerlist->iconmgr);
+		}
+	}
+
+	if(!win->icon  || !win->icon->w) {
+		goto wmapupd;
+	}
+
+	if(win->icon->w_not_ours) {
+		goto wmapupd;
+	}
+
+	XmbTextExtents(Scr->IconFont.font_set,
+	               win->icon_name, strlen(win->icon_name),
+	               &ink_rect, &logical_rect);
+	win->icon->w_width = logical_rect.width;
+	win->icon->w_width += 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
+	if(win->icon->w_width > Scr->MaxIconTitleWidth) {
+		win->icon->w_width = Scr->MaxIconTitleWidth;
+	}
+
+	if(win->icon->w_width < win->icon->width) {
+		win->icon->x = (win->icon->width - win->icon->w_width) / 2;
+		win->icon->x += Scr->IconManagerShadowDepth + ICON_MGR_IBORDER;
+		win->icon->w_width = win->icon->width;
+	}
+	else {
+		win->icon->x = Scr->IconManagerShadowDepth + ICON_MGR_IBORDER;
+	}
+
+	x = GetIconOffset(win->icon);
+	win->icon->y = win->icon->height + Scr->IconFont.height +
+	               Scr->IconManagerShadowDepth;
+	win->icon->w_height = win->icon->height + Scr->IconFont.height +
+	                      2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
+
+	XResizeWindow(dpy, win->icon->w, win->icon->w_width,
+	              win->icon->w_height);
+	if(win->icon->bm_w) {
+		XRectangle rect;
+
+		XMoveWindow(dpy, win->icon->bm_w, x, 0);
+		XMapWindow(dpy, win->icon->bm_w);
+		if(win->icon->image && win->icon->image->mask) {
+			XShapeCombineMask(dpy, win->icon->bm_w, ShapeBounding, 0, 0,
+			                  win->icon->image->mask, ShapeSet);
+			XShapeCombineMask(dpy, win->icon->w, ShapeBounding, x, 0,
+			                  win->icon->image->mask, ShapeSet);
+		}
+		else if(win->icon->has_title) {
+			rect.x      = x;
+			rect.y      = 0;
+			rect.width  = win->icon->width;
+			rect.height = win->icon->height;
+			XShapeCombineRectangles(dpy, win->icon->w, ShapeBounding,
+			                        0, 0, &rect, 1, ShapeSet, 0);
+		}
+		if(win->icon->has_title) {
+			if(Scr->ShrinkIconTitles && win->icon->title_shrunk) {
+				rect.x      = x;
+				rect.y      = win->icon->height;
+				rect.width  = win->icon->width;
+				rect.height = win->icon->w_height - win->icon->height;
+			}
+			else {
+				rect.x      = 0;
+				rect.y      = win->icon->height;
+				rect.width  = win->icon->w_width;
+				rect.height = win->icon->w_height - win->icon->height;
+			}
+			XShapeCombineRectangles(dpy,  win->icon->w, ShapeBounding, 0,
+			                        0, &rect, 1, ShapeUnion, 0);
+		}
+	}
+	if(Scr->ShrinkIconTitles &&
+	                win->icon->title_shrunk &&
+	                win->icon_on && (visible(win))) {
+		IconDown(win);
+		IconUp(win);
+	}
+	if(win->isicon) {
+		XClearArea(dpy, win->icon->w, 0, 0, 0, 0, True);
+	}
+wmapupd:
+	WMapUpdateIconName(win);
 }
