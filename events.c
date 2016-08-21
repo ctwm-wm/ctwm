@@ -2000,7 +2000,7 @@ static void RedoIcon(void)
 			 * Icon is also already on that list)
 			 */
 			OtpFreeIcon(Tmp_win);
-			int saveForceIcon = Scr->ForceIcon;
+			bool saveForceIcon = Scr->ForceIcon;
 			Scr->ForceIcon = true;
 			CreateIconWindow(Tmp_win, -100, -100);
 			Scr->ForceIcon = saveForceIcon;
