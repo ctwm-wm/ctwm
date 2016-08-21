@@ -1936,6 +1936,9 @@ void HandlePropertyNotify(void)
 }
 
 
+/*
+ * [Re-]lookup the image for an icon and [re-]layout it.
+ */
 static void
 RedoIcon(TwmWindow *win)
 {
@@ -2015,14 +2018,11 @@ RedoIcon(TwmWindow *win)
 	}
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      RedoIconName - procedure to re-position the icon window and name
- *
- ***********************************************************************
- */
 
+/*
+ * Resize the icon window, and reposition the image and name within it.
+ * (a lot of the actual repositioning gets done during the later expose).
+ */
 void
 RedoIconName(TwmWindow *win)
 {
