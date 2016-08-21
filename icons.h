@@ -107,6 +107,7 @@ struct IconEntry {
 	bool                used;
 };
 
+void PaintIcon(TwmWindow *tmp_win);
 void IconUp(TwmWindow *tmp_win);
 void IconDown(TwmWindow *tmp_win);
 name_list **AddIconRegion(char *geom, RegGravity grav1, RegGravity grav2,

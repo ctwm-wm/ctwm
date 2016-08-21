@@ -67,6 +67,7 @@
 
 #include <X11/extensions/shape.h>
 
+#include "drawing.h"
 #include "screen.h"
 #include "icons.h"
 #include "otp.h"
@@ -306,6 +307,60 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 
 #undef iconWidth
 #undef iconHeight
+
+
+/*
+ * Slightly misnamed: draws the text label under an icon.
+ */
+void
+PaintIcon(TwmWindow *tmp_win)
+{
+	int         width, twidth, mwidth, len, x;
+	Icon        *icon;
+	XRectangle ink_rect;
+	XRectangle logical_rect;
+
+	if(!tmp_win || !tmp_win->icon) {
+		return;
+	}
+	icon = tmp_win->icon;
+	if(!icon->has_title) {
+		return;
+	}
+
+	x     = 0;
+	width = icon->w_width;
+	if(Scr->ShrinkIconTitles && icon->title_shrunk) {
+		x     = GetIconOffset(icon);
+		width = icon->width;
+	}
+	len    = strlen(tmp_win->icon_name);
+	XmbTextExtents(Scr->IconFont.font_set,
+	               tmp_win->icon_name, len,
+	               &ink_rect, &logical_rect);
+	twidth = logical_rect.width;
+	mwidth = width - 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
+	if(Scr->use3Diconmanagers) {
+		Draw3DBorder(icon->w, x, icon->height, width,
+		             Scr->IconFont.height +
+		             2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER),
+		             Scr->IconManagerShadowDepth, icon->iconc, off, false, false);
+	}
+	while((len > 0) && (twidth > mwidth)) {
+		len--;
+		XmbTextExtents(Scr->IconFont.font_set,
+		               tmp_win->icon_name, len,
+		               &ink_rect, &logical_rect);
+		twidth = logical_rect.width;
+	}
+	FB(icon->iconc.fore, icon->iconc.back);
+	XmbDrawString(dpy, icon->w, Scr->IconFont.font_set, Scr->NormalGC,
+	              x + ((mwidth - twidth) / 2) +
+	              Scr->IconManagerShadowDepth + ICON_MGR_IBORDER,
+	              icon->y, tmp_win->icon_name, len);
+}
+
+
 
 static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 {
