@@ -104,7 +104,7 @@
 #include "gram.tab.h"
 
 static void CtwmNextEvent(Display *display, XEvent  *event);
-static void RedoIcon(void);
+static void RedoIcon(TwmWindow *win);
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w);             /* invoking window or None */
 static bool StashEventTime(XEvent *ev);
@@ -1670,7 +1670,7 @@ void HandlePropertyNotify(void)
 			}
 			if(name_change || icon_change) {
 				if(icon_change) {
-					RedoIcon();
+					RedoIcon(Tmp_win);
 				}
 				AutoPopupMaybe(Tmp_win);
 			}
@@ -1694,7 +1694,7 @@ void HandlePropertyNotify(void)
 			Tmp_win->icon_name = (char *) prop;
 
 			if(icon_change) {
-				RedoIcon();
+				RedoIcon(Tmp_win);
 				AutoPopupMaybe(Tmp_win);
 			}
 			break;
@@ -1936,12 +1936,13 @@ void HandlePropertyNotify(void)
 }
 
 
-static void RedoIcon(void)
+static void
+RedoIcon(TwmWindow *win)
 {
 	Icon *icon, *old_icon;
 	char *pattern;
 
-	old_icon = Tmp_win->icon;
+	old_icon = win->icon;
 
 	if(old_icon && (
 	                        old_icon->w_not_ours ||
@@ -1950,15 +1951,15 @@ static void RedoIcon(void)
 		return;
 	}
 	icon = NULL;
-	if((pattern = LookPatternInNameList(Scr->IconNames, Tmp_win->icon_name))) {
-		icon = (Icon *) LookInNameList(Tmp_win->iconslist, pattern);
+	if((pattern = LookPatternInNameList(Scr->IconNames, win->icon_name))) {
+		icon = (Icon *) LookInNameList(win->iconslist, pattern);
 	}
-	else if((pattern = LookPatternInNameList(Scr->IconNames, Tmp_win->full_name))) {
-		icon = (Icon *) LookInNameList(Tmp_win->iconslist, pattern);
+	else if((pattern = LookPatternInNameList(Scr->IconNames, win->full_name))) {
+		icon = (Icon *) LookInNameList(win->iconslist, pattern);
 	}
-	else if((pattern = LookPatternInList(Scr->IconNames, Tmp_win->full_name,
-	                                     &Tmp_win->class))) {
-		icon = (Icon *) LookInNameList(Tmp_win->iconslist, pattern);
+	else if((pattern = LookPatternInList(Scr->IconNames, win->full_name,
+	                                     &win->class))) {
+		icon = (Icon *) LookInNameList(win->iconslist, pattern);
 	}
 	if(pattern == NULL) {
 		RedoIconName();
@@ -1969,48 +1970,48 @@ static void RedoIcon(void)
 			RedoIconName();
 			return;
 		}
-		if(Tmp_win->icon_on && visible(Tmp_win)) {
-			IconDown(Tmp_win);
+		if(win->icon_on && visible(win)) {
+			IconDown(win);
 			if(old_icon && old_icon->w) {
 				XUnmapWindow(dpy, old_icon->w);
 			}
-			Tmp_win->icon = icon;
-			OtpReassignIcon(Tmp_win, old_icon);
-			IconUp(Tmp_win);
-			OtpRaise(Tmp_win, IconWin);
-			XMapWindow(dpy, Tmp_win->icon->w);
+			win->icon = icon;
+			OtpReassignIcon(win, old_icon);
+			IconUp(win);
+			OtpRaise(win, IconWin);
+			XMapWindow(dpy, win->icon->w);
 		}
 		else {
-			Tmp_win->icon = icon;
-			OtpReassignIcon(Tmp_win, old_icon);
+			win->icon = icon;
+			OtpReassignIcon(win, old_icon);
 		}
 		RedoIconName();
 	}
 	else {
-		if(Tmp_win->icon_on && visible(Tmp_win)) {
-			IconDown(Tmp_win);
+		if(win->icon_on && visible(win)) {
+			IconDown(win);
 			if(old_icon && old_icon->w) {
 				XUnmapWindow(dpy, old_icon->w);
 			}
 			/*
 			 * If the icon name/class was found on one of the above lists,
 			 * the call to CreateIconWindow() will find it again there
-			 * and keep track of it on Tmp_win->iconslist for eventual
+			 * and keep track of it on win->iconslist for eventual
 			 * deallocation. (It is now checked that the current struct
 			 * Icon is also already on that list)
 			 */
-			OtpFreeIcon(Tmp_win);
+			OtpFreeIcon(win);
 			bool saveForceIcon = Scr->ForceIcon;
 			Scr->ForceIcon = true;
-			CreateIconWindow(Tmp_win, -100, -100);
+			CreateIconWindow(win, -100, -100);
 			Scr->ForceIcon = saveForceIcon;
-			OtpRaise(Tmp_win, IconWin);
-			XMapWindow(dpy, Tmp_win->icon->w);
+			OtpRaise(win, IconWin);
+			XMapWindow(dpy, win->icon->w);
 		}
 		else {
-			OtpFreeIcon(Tmp_win);
-			Tmp_win->icon = NULL;
-			WMapUpdateIconName(Tmp_win);
+			OtpFreeIcon(win);
+			win->icon = NULL;
+			WMapUpdateIconName(win);
 		}
 		RedoIconName();
 	}
