@@ -1224,7 +1224,8 @@ RedoIconName(TwmWindow *win)
 	if(Scr->NoIconTitlebar ||
 	                LookInNameList(Scr->NoIconTitle, win->icon_name) ||
 	                LookInList(Scr->NoIconTitle, win->full_name, &win->class)) {
-		goto wmapupd;
+		WMapUpdateIconName(win);
+		return;
 	}
 	if(win->iconmanagerlist) {
 		/* let the expose event cause the repaint */
@@ -1236,11 +1237,13 @@ RedoIconName(TwmWindow *win)
 	}
 
 	if(!win->icon  || !win->icon->w) {
-		goto wmapupd;
+		WMapUpdateIconName(win);
+		return;
 	}
 
 	if(win->icon->w_not_ours) {
-		goto wmapupd;
+		WMapUpdateIconName(win);
+		return;
 	}
 
 	XmbTextExtents(Scr->IconFont.font_set,
@@ -1314,6 +1317,6 @@ RedoIconName(TwmWindow *win)
 	if(win->isicon) {
 		XClearArea(dpy, win->icon->w, 0, 0, 0, 0, True);
 	}
-wmapupd:
+
 	WMapUpdateIconName(win);
 }
