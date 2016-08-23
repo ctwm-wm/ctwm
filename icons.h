@@ -57,7 +57,7 @@
 #ifndef _CTWM_ICONS_H
 #define _CTWM_ICONS_H
 
-/* Where dit the Image for the Icon come from? */
+/* Where did the Image for the Icon come from? */
 typedef enum {
 	match_none,
 	match_list,                 /* shared Image: iconslist and Scr->ImageCache */
