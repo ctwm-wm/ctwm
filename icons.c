@@ -363,7 +363,11 @@ PaintIcon(TwmWindow *tmp_win)
 }
 
 
-
+/*
+ * Look up an IconEntry holding the icon for a given window, and
+ * optionally stash its IconRegion in irp.  Used internally in
+ * IconDown().
+ */
 static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 {
 	IconRegion  *ir;
@@ -381,6 +385,10 @@ static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 	return NULL;
 }
 
+
+/*
+ * Show up an icon.
+ */
 void
 IconUp(TwmWindow *tmp_win)
 {
@@ -432,6 +440,10 @@ IconUp(TwmWindow *tmp_win)
 	return;
 }
 
+
+/*
+ * Find prior IE in list.  Used internally in IconDown().
+ */
 static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir)
 {
 	IconEntry   *ip;
@@ -444,10 +456,11 @@ static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir)
 	return ip;
 }
 
-/* old is being freed; and is adjacent to ie.  Merge
- * regions together
- */
 
+/*
+ * Merge two adjacent IconEntry's.  old is being freed; and is adjacent
+ * to ie.  Merge regions together.
+ */
 static void mergeEntries(IconEntry *old, IconEntry *ie)
 {
 	if(old->y == ie->y) {
@@ -464,6 +477,10 @@ static void mergeEntries(IconEntry *old, IconEntry *ie)
 	}
 }
 
+
+/*
+ * Remove an icon from its displayed IconEntry
+ */
 void IconDown(TwmWindow *tmp_win)
 {
 	IconEntry   *ie, *ip, *in;
@@ -500,6 +517,10 @@ void IconDown(TwmWindow *tmp_win)
 	}
 }
 
+
+/*
+ * Backend for parsing IconRegion config
+ */
 name_list **
 AddIconRegion(const char *geom, RegGravity grav1, RegGravity grav2,
               int stepx, int stepy,
@@ -573,6 +594,12 @@ AddIconRegion(const char *geom, RegGravity grav1, RegGravity grav2,
 	return(&(ir->clientlist));
 }
 
+
+/*
+ * Find the image set in Icons{} for a TwmWindow if possible.  Return the
+ * image, record its provenance inside *icon, and pass back what pattern
+ * it matched in **pattern.
+ */
 static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
                                     char **pattern)
 {
@@ -618,6 +645,11 @@ static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
 	return image;
 }
 
+
+/*
+ * Create the window scaffolding for an icon.  Called when we need to
+ * make one, e.g. the first time a window is iconified.
+ */
 void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 {
 	unsigned long event_mask;
@@ -948,6 +980,11 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	MaybeAnimate = true;
 }
 
+
+/*
+ * Delete a single Icon.  Called iteratively from DeleteIconList(), and
+ * directly during window destruction.
+ */
 void DeleteIcon(Icon *icon)
 {
 	if(icon->w && !icon->w_not_ours) {
@@ -956,6 +993,7 @@ void DeleteIcon(Icon *icon)
 	ReleaseImage(icon);
 	free(icon);
 }
+
 
 /*
  * Delete the Image from an icon, if it is not a shared one.
@@ -968,6 +1006,7 @@ void ReleaseImage(Icon *icon)
 		FreeImage(icon->image);
 	}
 }
+
 
 /*
  * Delete TwmWindow.iconslist.
@@ -1000,6 +1039,12 @@ void DeleteIconsList(TwmWindow *tmp_win)
 	tmp_win->iconslist = NULL;
 }
 
+
+/*
+ * Handling for ShrinkIconTitles; when pointer is away from them, shrink
+ * the titles down to the width of the image, and expand back out when it
+ * enters.
+ */
 void ShrinkIconTitle(TwmWindow *tmp_win)
 {
 	Icon        *icon;
@@ -1030,6 +1075,7 @@ void ShrinkIconTitle(TwmWindow *tmp_win)
 	           icon->w_height - icon->height, True);
 }
 
+
 void ExpandIconTitle(TwmWindow *tmp_win)
 {
 	Icon        *icon;
@@ -1059,6 +1105,7 @@ void ExpandIconTitle(TwmWindow *tmp_win)
 	XClearArea(dpy, icon->w, 0, icon->height, icon->w_width,
 	           icon->w_height - icon->height, True);
 }
+
 
 /*
  * Setup X Shape'ing around icons and their titles.
@@ -1098,6 +1145,11 @@ ReshapeIcon(Icon *icon)
 	                        0);
 }
 
+
+/*
+ * Figure horizontal positioning/offset for the icon image within its
+ * window.
+ */
 int GetIconOffset(Icon *icon)
 {
 	TitleJust justif;
@@ -1124,7 +1176,6 @@ int GetIconOffset(Icon *icon)
 			return 0;
 	}
 }
-
 
 
 /*
