@@ -605,7 +605,7 @@ static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
 {
 	char *icon_name = NULL;
 	Image *image;
-	int matched = match_none;
+	Matchtype matched = match_none;
 
 	icon_name = LookInNameList(Scr->IconNames, tmp_win->icon_name);
 	if(icon_name != NULL) {
