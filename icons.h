@@ -114,7 +114,7 @@ name_list **AddIconRegion(const char *geom, RegGravity grav1, RegGravity grav2,
                           int stepx, int stepy, const char *ijust,
                           const char *just, const char *align);
 void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);
-void ReleaseImage(Icon *icon);
+void ReleaseIconImage(Icon *icon);
 void DeleteIcon(Icon *icon);
 void DeleteIconsList(TwmWindow *tmp_win);
 void ShrinkIconTitle(TwmWindow *tmp_win);

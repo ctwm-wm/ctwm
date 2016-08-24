@@ -1811,7 +1811,7 @@ void HandlePropertyNotify(void)
 
 				if(icon->image) {
 					/* Release the existing Image: it may be a shared one (UnknownIcon) */
-					ReleaseImage(icon);
+					ReleaseIconImage(icon);
 					/* conjure up a new Image */
 					Image *image = AllocImage();
 					image->pixmap = pm;
