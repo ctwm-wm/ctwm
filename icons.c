@@ -160,10 +160,6 @@ static int roundUp(int v, int multiple)
 }
 
 
-#define iconWidth(w)    (w->icon->border_width * 2 + \
-                        (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
-#define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
-
 /*
  * Figure out where to put a window's icon based on the IconRegion
  * specifications given in config.  Passed def_[xy] which are used
@@ -178,6 +174,10 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	IconRegion  *ir, *oldir;
 	IconEntry   *ie;
 	int         w, h;
+
+#define iconWidth(w)    (w->icon->border_width * 2 + \
+                        (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
+#define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
 
 	/*
 	 * First, check to see if the window is in a region's client list
@@ -314,11 +314,11 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 		}
 	}
 
-	return;
-}
-
 #undef iconWidth
 #undef iconHeight
+
+	return;
+}
 
 
 /*
