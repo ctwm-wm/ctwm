@@ -79,6 +79,16 @@
 #include "image.h"
 #include "workspace_manager.h"
 
+static void splitIconRegionEntry(IconEntry *ie, RegGravity grav1,
+                                 RegGravity grav2, int w, int h);
+static int roundUp(int v, int multiple);
+static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
+                      int *final_x, int *final_y);
+static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp);
+static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir);
+static void mergeEntries(IconEntry *old, IconEntry *ie);
+static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
+                                    char **pattern);
 static void ReshapeIcon(Icon *icon);
 
 
