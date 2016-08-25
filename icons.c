@@ -175,9 +175,11 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	IconEntry   *ie;
 	int         w, h;
 
-#define iconWidth(w)    (w->icon->border_width * 2 + \
-                        (Scr->ShrinkIconTitles ? w->icon->width : w->icon->w_width))
-#define iconHeight(w)   (w->icon->border_width * 2 + w->icon->w_height)
+	const int iconWidth = tmp_win->icon->border_width * 2
+	                      + (Scr->ShrinkIconTitles ? tmp_win->icon->width
+	                         : tmp_win->icon->w_width);
+	const int iconHeight = tmp_win->icon->border_width * 2
+	                       + tmp_win->icon->w_height;
 
 	/*
 	 * First, check to see if the window is in a region's client list
@@ -191,8 +193,8 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 			 * size, based on the icon's side itself and the grid for
 			 * this IR.
 			 */
-			w = roundUp(iconWidth(tmp_win), ir->stepx);
-			h = roundUp(iconHeight(tmp_win), ir->stepy);
+			w = roundUp(iconWidth, ir->stepx);
+			h = roundUp(iconHeight, ir->stepy);
 
 			/* Find a currently-unused region that's big enough */
 			for(ie = ir->entries; ie; ie = ie->next) {
@@ -219,8 +221,8 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	 */
 	if(!ie) {
 		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
-			w = roundUp(iconWidth(tmp_win), ir->stepx);
-			h = roundUp(iconHeight(tmp_win), ir->stepy);
+			w = roundUp(iconWidth, ir->stepx);
+			h = roundUp(iconHeight, ir->stepy);
 			for(ie = ir->entries; ie; ie = ie->next) {
 				if(ie->used) {
 					continue;
@@ -255,14 +257,14 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				break;
 			case IRJ_UNDEF:
 			case IRJ_CENTER:
-				*final_x = ie->x + (ie->w - iconWidth(tmp_win)) / 2;
+				*final_x = ie->x + (ie->w - iconWidth) / 2;
 				break;
 			case IRJ_RIGHT:
-				*final_x = ie->x + ie->w - iconWidth(tmp_win);
+				*final_x = ie->x + ie->w - iconWidth;
 				break;
 			case IRJ_BORDER:
 				if(ir->grav2 == GRAV_EAST) {
-					*final_x = ie->x + ie->w - iconWidth(tmp_win);
+					*final_x = ie->x + ie->w - iconWidth;
 				}
 				else {
 					*final_x = ie->x;
@@ -277,14 +279,14 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 				break;
 			case IRA_UNDEF :
 			case IRA_CENTER :
-				*final_y = ie->y + (ie->h - iconHeight(tmp_win)) / 2;
+				*final_y = ie->y + (ie->h - iconHeight) / 2;
 				break;
 			case IRA_BOTTOM :
-				*final_y = ie->y + ie->h - iconHeight(tmp_win);
+				*final_y = ie->y + ie->h - iconHeight;
 				break;
 			case IRA_BORDER :
 				if(ir->grav1 == GRAV_SOUTH) {
-					*final_y = ie->y + ie->h - iconHeight(tmp_win);
+					*final_y = ie->y + ie->h - iconHeight;
 				}
 				else {
 					*final_y = ie->y;
@@ -313,9 +315,6 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 			ReshapeIcon(tmp_win->icon);
 		}
 	}
-
-#undef iconWidth
-#undef iconHeight
 
 	return;
 }
