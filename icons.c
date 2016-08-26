@@ -81,15 +81,26 @@
 
 static void splitIconRegionEntry(IconEntry *ie, RegGravity grav1,
                                  RegGravity grav2, int w, int h);
-static int roundUp(int v, int multiple);
 static void PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
                       int *final_x, int *final_y);
 static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp);
 static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir);
 static void mergeEntries(IconEntry *old, IconEntry *ie);
+static void ReshapeIcon(Icon *icon);
+static int roundUp(int v, int multiple);
 static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
                                     char **pattern);
-static void ReshapeIcon(Icon *icon);
+
+
+
+/*
+ ****************************************************************
+ *
+ * First some bits related to figuring out where icons go.  Lots of
+ * IconRegion handling stuff, handling of IconEntry tracking, etc.
+ *
+ ****************************************************************
+ */
 
 
 /*
@@ -154,9 +165,81 @@ splitIconRegionEntry(IconEntry *ie, RegGravity grav1, RegGravity grav2,
 	}
 }
 
-static int roundUp(int v, int multiple)
+
+/*
+ * Backend for parsing IconRegion config
+ */
+name_list **
+AddIconRegion(const char *geom, RegGravity grav1, RegGravity grav2,
+              int stepx, int stepy,
+              const char *ijust, const char *just, const char *align)
 {
-	return ((v + multiple - 1) / multiple) * multiple;
+	IconRegion *ir;
+	int mask, tmp;
+
+	ir = malloc(sizeof(IconRegion));
+	ir->next = NULL;
+
+	if(Scr->LastRegion) {
+		Scr->LastRegion->next = ir;
+	}
+	Scr->LastRegion = ir;
+	if(!Scr->FirstRegion) {
+		Scr->FirstRegion = ir;
+	}
+
+	ir->entries = NULL;
+	ir->clientlist = NULL;
+	ir->grav1 = grav1;
+	ir->grav2 = grav2;
+	if(stepx <= 0) {
+		stepx = 1;
+	}
+	if(stepy <= 0) {
+		stepy = 1;
+	}
+	ir->stepx = stepx;
+	ir->stepy = stepy;
+	ir->x = ir->y = ir->w = ir->h = 0;
+
+	mask = XParseGeometry(geom, &ir->x, &ir->y, (unsigned int *)&ir->w,
+	                      (unsigned int *)&ir->h);
+
+	if(mask & XNegative) {
+		ir->x += Scr->rootw - ir->w;
+	}
+	if(mask & YNegative) {
+		ir->y += Scr->rooth - ir->h;
+	}
+
+	ir->entries = calloc(1, sizeof(IconEntry));
+	ir->entries->x = ir->x;
+	ir->entries->y = ir->y;
+	ir->entries->w = ir->w;
+	ir->entries->h = ir->h;
+
+	if((tmp = ParseTitleJustification(ijust)) < 0) {
+		twmrc_error_prefix();
+		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", ijust);
+		tmp = TJ_UNDEF;
+	}
+	ir->TitleJustification = tmp;
+
+	if((tmp = ParseIRJustification(just)) < 0) {
+		twmrc_error_prefix();
+		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", just);
+		tmp = IRJ_UNDEF;
+	}
+	ir->Justification = tmp;
+
+	if((tmp = ParseAlignement(align)) < 0) {
+		twmrc_error_prefix();
+		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", align);
+		tmp = IRA_UNDEF;
+	}
+	ir->Alignement = tmp;
+
+	return(&(ir->clientlist));
 }
 
 
@@ -321,63 +404,12 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 
 
 /*
- * Slightly misnamed: draws the text label under an icon.
- */
-void
-PaintIcon(TwmWindow *tmp_win)
-{
-	int         width, twidth, mwidth, len, x;
-	Icon        *icon;
-	XRectangle ink_rect;
-	XRectangle logical_rect;
-
-	if(!tmp_win || !tmp_win->icon) {
-		return;
-	}
-	icon = tmp_win->icon;
-	if(!icon->has_title) {
-		return;
-	}
-
-	x     = 0;
-	width = icon->w_width;
-	if(Scr->ShrinkIconTitles && icon->title_shrunk) {
-		x     = GetIconOffset(icon);
-		width = icon->width;
-	}
-	len    = strlen(tmp_win->icon_name);
-	XmbTextExtents(Scr->IconFont.font_set,
-	               tmp_win->icon_name, len,
-	               &ink_rect, &logical_rect);
-	twidth = logical_rect.width;
-	mwidth = width - 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
-	if(Scr->use3Diconmanagers) {
-		Draw3DBorder(icon->w, x, icon->height, width,
-		             Scr->IconFont.height +
-		             2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER),
-		             Scr->IconManagerShadowDepth, icon->iconc, off, false, false);
-	}
-	while((len > 0) && (twidth > mwidth)) {
-		len--;
-		XmbTextExtents(Scr->IconFont.font_set,
-		               tmp_win->icon_name, len,
-		               &ink_rect, &logical_rect);
-		twidth = logical_rect.width;
-	}
-	FB(icon->iconc.fore, icon->iconc.back);
-	XmbDrawString(dpy, icon->w, Scr->IconFont.font_set, Scr->NormalGC,
-	              x + ((mwidth - twidth) / 2) +
-	              Scr->IconManagerShadowDepth + ICON_MGR_IBORDER,
-	              icon->y, tmp_win->icon_name, len);
-}
-
-
-/*
  * Look up an IconEntry holding the icon for a given window, and
  * optionally stash its IconRegion in irp.  Used internally in
  * IconDown().
  */
-static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
+static IconEntry *
+FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 {
 	IconRegion  *ir;
 	IconEntry   *ie;
@@ -396,64 +428,10 @@ static IconEntry *FindIconEntry(TwmWindow *tmp_win, IconRegion **irp)
 
 
 /*
- * Show up an icon.
- */
-void
-IconUp(TwmWindow *tmp_win)
-{
-	int         x, y;
-	int         defx, defy;
-
-	/*
-	 * If the client specified a particular location, let's use it (this might
-	 * want to be an option at some point).  Otherwise, try to fit within the
-	 * icon region.
-	 */
-	if(tmp_win->wmhints && (tmp_win->wmhints->flags & IconPositionHint)) {
-		return;
-	}
-
-	if(tmp_win->icon_moved) {
-		struct IconRegion *ir;
-		unsigned int iww, iwh;
-
-		if(!XGetGeometry(dpy, tmp_win->icon->w, &JunkRoot, &defx, &defy,
-		                 &iww, &iwh, &JunkBW, &JunkDepth)) {
-			return;
-		}
-
-		x = defx + ((int) iww) / 2;
-		y = defy + ((int) iwh) / 2;
-
-		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
-			if(x >= ir->x && x < (ir->x + ir->w) &&
-			                y >= ir->y && y < (ir->y + ir->h)) {
-				break;
-			}
-		}
-		if(!ir) {
-			return;        /* outside icon regions, leave alone */
-		}
-	}
-
-	defx = -100;
-	defy = -100;
-	PlaceIcon(tmp_win, defx, defy, &x, &y);
-	if(x != defx || y != defy) {
-		XMoveWindow(dpy, tmp_win->icon->w, x, y);
-		tmp_win->icon->w_x = x;
-		tmp_win->icon->w_y = y;
-		tmp_win->icon_moved = false;    /* since we've restored it */
-	}
-	MaybeAnimate = true;
-	return;
-}
-
-
-/*
  * Find prior IE in list.  Used internally in IconDown().
  */
-static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir)
+static IconEntry *
+prevIconEntry(IconEntry *ie, IconRegion *ir)
 {
 	IconEntry   *ip;
 
@@ -470,7 +448,8 @@ static IconEntry *prevIconEntry(IconEntry *ie, IconRegion *ir)
  * Merge two adjacent IconEntry's.  old is being freed; and is adjacent
  * to ie.  Merge regions together.
  */
-static void mergeEntries(IconEntry *old, IconEntry *ie)
+static void
+mergeEntries(IconEntry *old, IconEntry *ie)
 {
 	if(old->y == ie->y) {
 		ie->w = old->w + ie->w;
@@ -487,179 +466,24 @@ static void mergeEntries(IconEntry *old, IconEntry *ie)
 }
 
 
-/*
- * Remove an icon from its displayed IconEntry
- */
-void IconDown(TwmWindow *tmp_win)
-{
-	IconEntry   *ie, *ip, *in;
-	IconRegion  *ir;
-
-	ie = FindIconEntry(tmp_win, &ir);
-	if(ie) {
-		ie->twm_win = NULL;
-		ie->used = false;
-		ip = prevIconEntry(ie, ir);
-		in = ie->next;
-		for(;;) {
-			if(ip && ip->used == false &&
-			                ((ip->x == ie->x && ip->w == ie->w) ||
-			                 (ip->y == ie->y && ip->h == ie->h))) {
-				ip->next = ie->next;
-				mergeEntries(ie, ip);
-				free(ie);
-				ie = ip;
-				ip = prevIconEntry(ip, ir);
-			}
-			else if(in && in->used == false &&
-			                ((in->x == ie->x && in->w == ie->w) ||
-			                 (in->y == ie->y && in->h == ie->h))) {
-				ie->next = in->next;
-				mergeEntries(in, ie);
-				free(in);
-				in = ie->next;
-			}
-			else {
-				break;
-			}
-		}
-	}
-}
 
 
 /*
- * Backend for parsing IconRegion config
+ ****************************************************************
+ *
+ * Next, the bits related to creating and putting together the icon
+ * windows, as well as destroying them.
+ *
+ ****************************************************************
  */
-name_list **
-AddIconRegion(const char *geom, RegGravity grav1, RegGravity grav2,
-              int stepx, int stepy,
-              const char *ijust, const char *just, const char *align)
-{
-	IconRegion *ir;
-	int mask, tmp;
-
-	ir = malloc(sizeof(IconRegion));
-	ir->next = NULL;
-
-	if(Scr->LastRegion) {
-		Scr->LastRegion->next = ir;
-	}
-	Scr->LastRegion = ir;
-	if(!Scr->FirstRegion) {
-		Scr->FirstRegion = ir;
-	}
-
-	ir->entries = NULL;
-	ir->clientlist = NULL;
-	ir->grav1 = grav1;
-	ir->grav2 = grav2;
-	if(stepx <= 0) {
-		stepx = 1;
-	}
-	if(stepy <= 0) {
-		stepy = 1;
-	}
-	ir->stepx = stepx;
-	ir->stepy = stepy;
-	ir->x = ir->y = ir->w = ir->h = 0;
-
-	mask = XParseGeometry(geom, &ir->x, &ir->y, (unsigned int *)&ir->w,
-	                      (unsigned int *)&ir->h);
-
-	if(mask & XNegative) {
-		ir->x += Scr->rootw - ir->w;
-	}
-	if(mask & YNegative) {
-		ir->y += Scr->rooth - ir->h;
-	}
-
-	ir->entries = calloc(1, sizeof(IconEntry));
-	ir->entries->x = ir->x;
-	ir->entries->y = ir->y;
-	ir->entries->w = ir->w;
-	ir->entries->h = ir->h;
-
-	if((tmp = ParseTitleJustification(ijust)) < 0) {
-		twmrc_error_prefix();
-		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", ijust);
-		tmp = TJ_UNDEF;
-	}
-	ir->TitleJustification = tmp;
-
-	if((tmp = ParseIRJustification(just)) < 0) {
-		twmrc_error_prefix();
-		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", just);
-		tmp = IRJ_UNDEF;
-	}
-	ir->Justification = tmp;
-
-	if((tmp = ParseAlignement(align)) < 0) {
-		twmrc_error_prefix();
-		fprintf(stderr, "ignoring invalid IconRegion argument \"%s\"\n", align);
-		tmp = IRA_UNDEF;
-	}
-	ir->Alignement = tmp;
-
-	return(&(ir->clientlist));
-}
-
-
-/*
- * Find the image set in Icons{} for a TwmWindow if possible.  Return the
- * image, record its provenance inside *icon, and pass back what pattern
- * it matched in **pattern.
- */
-static Image *LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon,
-                                    char **pattern)
-{
-	char *icon_name = NULL;
-	Image *image;
-	Matchtype matched = match_none;
-
-	icon_name = LookInNameList(Scr->IconNames, tmp_win->icon_name);
-	if(icon_name != NULL) {
-		*pattern = LookPatternInNameList(Scr->IconNames, tmp_win->icon_name);
-		matched = match_list;
-	}
-
-	if(matched == match_none) {
-		icon_name = LookInNameList(Scr->IconNames, tmp_win->full_name);
-		if(icon_name != NULL) {
-			*pattern = LookPatternInNameList(Scr->IconNames, tmp_win->full_name);
-			matched = match_list;
-		}
-	}
-
-	if(matched == match_none) {
-		icon_name = LookInList(Scr->IconNames, tmp_win->full_name, &tmp_win->class);
-		if(icon_name != NULL) {
-			*pattern = LookPatternInList(Scr->IconNames, tmp_win->full_name,
-			                             &tmp_win->class);
-			matched = match_list;
-		}
-	}
-
-	if((image  = GetImage(icon_name, icon->iconc)) != NULL) {
-		icon->match  = matched;
-		icon->image  = image;
-		icon->width  = image->width;
-		icon->height = image->height;
-		tmp_win->forced = true;
-	}
-	else {
-		icon->match = match_none;
-		*pattern = NULL;
-	}
-
-	return image;
-}
 
 
 /*
  * Create the window scaffolding for an icon.  Called when we need to
  * make one, e.g. the first time a window is iconified.
  */
-void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
+void
+CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 {
 	unsigned long event_mask;
 	unsigned long valuemask;            /* mask for create windows */
@@ -991,41 +815,12 @@ void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 
 
 /*
- * Delete a single Icon.  Called iteratively from DeleteIconList(), and
- * directly during window destruction.
- */
-void DeleteIcon(Icon *icon)
-{
-	if(icon->w && !icon->w_not_ours) {
-		XDestroyWindow(dpy, icon->w);
-	}
-	ReleaseIconImage(icon);
-	free(icon);
-}
-
-
-/*
- * Delete the Image from an icon, if it is not a shared one.  match_list
- * ands match_unknown_default need not be freed.
- *
- * Formerly ReleaseImage()
- */
-void
-ReleaseIconImage(Icon *icon)
-{
-	if(icon->match == match_icon_pixmap_hint ||
-	                icon->match == match_net_wm_icon) {
-		FreeImage(icon->image);
-	}
-}
-
-
-/*
  * Delete TwmWindow.iconslist.
  * Call it before deleting TwmWindow.icon, since we need to check
  * that we're not deleting that Icon.
  */
-void DeleteIconsList(TwmWindow *tmp_win)
+void
+DeleteIconsList(TwmWindow *tmp_win)
 {
 	/*
 	 * Only the list itself needs to be freed, since the pointers it
@@ -1053,11 +848,218 @@ void DeleteIconsList(TwmWindow *tmp_win)
 
 
 /*
+ * Delete a single Icon.  Called iteratively from DeleteIconList(), and
+ * directly during window destruction.
+ */
+void
+DeleteIcon(Icon *icon)
+{
+	if(icon->w && !icon->w_not_ours) {
+		XDestroyWindow(dpy, icon->w);
+	}
+	ReleaseIconImage(icon);
+	free(icon);
+}
+
+
+/*
+ * Delete the Image from an icon, if it is not a shared one.  match_list
+ * ands match_unknown_default need not be freed.
+ *
+ * Formerly ReleaseImage()
+ */
+void
+ReleaseIconImage(Icon *icon)
+{
+	if(icon->match == match_icon_pixmap_hint ||
+	                icon->match == match_net_wm_icon) {
+		FreeImage(icon->image);
+	}
+}
+
+
+
+
+/*
+ ****************************************************************
+ *
+ * Bringing an icon up or down.
+ *
+ ****************************************************************
+ */
+
+
+/*
+ * Show up an icon.  Note that neither IconUp nor IconDown actually map
+ * or unmap the icon window; that's handled by the callers.  These
+ * functions limit themselves to figuring out where it should be, moving
+ * it (still unmapped) there, and linking/unlinking it from the iconentry
+ * lists.
+ */
+void
+IconUp(TwmWindow *tmp_win)
+{
+	int         x, y;
+	int         defx, defy;
+
+	/*
+	 * If the client specified a particular location, let's use it (this might
+	 * want to be an option at some point).  Otherwise, try to fit within the
+	 * icon region.
+	 */
+	if(tmp_win->wmhints && (tmp_win->wmhints->flags & IconPositionHint)) {
+		return;
+	}
+
+	if(tmp_win->icon_moved) {
+		struct IconRegion *ir;
+		unsigned int iww, iwh;
+
+		if(!XGetGeometry(dpy, tmp_win->icon->w, &JunkRoot, &defx, &defy,
+		                 &iww, &iwh, &JunkBW, &JunkDepth)) {
+			return;
+		}
+
+		x = defx + ((int) iww) / 2;
+		y = defy + ((int) iwh) / 2;
+
+		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
+			if(x >= ir->x && x < (ir->x + ir->w) &&
+			                y >= ir->y && y < (ir->y + ir->h)) {
+				break;
+			}
+		}
+		if(!ir) {
+			return;        /* outside icon regions, leave alone */
+		}
+	}
+
+	defx = -100;
+	defy = -100;
+	PlaceIcon(tmp_win, defx, defy, &x, &y);
+	if(x != defx || y != defy) {
+		XMoveWindow(dpy, tmp_win->icon->w, x, y);
+		tmp_win->icon->w_x = x;
+		tmp_win->icon->w_y = y;
+		tmp_win->icon_moved = false;    /* since we've restored it */
+	}
+	MaybeAnimate = true;
+	return;
+}
+
+
+/*
+ * Remove an icon from its displayed IconEntry.  x-ref comment on
+ * IconUp().
+ */
+void
+IconDown(TwmWindow *tmp_win)
+{
+	IconEntry   *ie, *ip, *in;
+	IconRegion  *ir;
+
+	ie = FindIconEntry(tmp_win, &ir);
+	if(ie) {
+		ie->twm_win = NULL;
+		ie->used = false;
+		ip = prevIconEntry(ie, ir);
+		in = ie->next;
+		for(;;) {
+			if(ip && ip->used == false &&
+			                ((ip->x == ie->x && ip->w == ie->w) ||
+			                 (ip->y == ie->y && ip->h == ie->h))) {
+				ip->next = ie->next;
+				mergeEntries(ie, ip);
+				free(ie);
+				ie = ip;
+				ip = prevIconEntry(ip, ir);
+			}
+			else if(in && in->used == false &&
+			                ((in->x == ie->x && in->w == ie->w) ||
+			                 (in->y == ie->y && in->h == ie->h))) {
+				ie->next = in->next;
+				mergeEntries(in, ie);
+				free(in);
+				in = ie->next;
+			}
+			else {
+				break;
+			}
+		}
+	}
+}
+
+
+
+
+/*
+ ****************************************************************
+ *
+ * Funcs related to drawing the icon.
+ *
+ ****************************************************************
+ */
+
+
+/*
+ * Slightly misnamed: draws the text label under an icon.
+ */
+void
+PaintIcon(TwmWindow *tmp_win)
+{
+	int         width, twidth, mwidth, len, x;
+	Icon        *icon;
+	XRectangle ink_rect;
+	XRectangle logical_rect;
+
+	if(!tmp_win || !tmp_win->icon) {
+		return;
+	}
+	icon = tmp_win->icon;
+	if(!icon->has_title) {
+		return;
+	}
+
+	x     = 0;
+	width = icon->w_width;
+	if(Scr->ShrinkIconTitles && icon->title_shrunk) {
+		x     = GetIconOffset(icon);
+		width = icon->width;
+	}
+	len    = strlen(tmp_win->icon_name);
+	XmbTextExtents(Scr->IconFont.font_set,
+	               tmp_win->icon_name, len,
+	               &ink_rect, &logical_rect);
+	twidth = logical_rect.width;
+	mwidth = width - 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
+	if(Scr->use3Diconmanagers) {
+		Draw3DBorder(icon->w, x, icon->height, width,
+		             Scr->IconFont.height +
+		             2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER),
+		             Scr->IconManagerShadowDepth, icon->iconc, off, false, false);
+	}
+	while((len > 0) && (twidth > mwidth)) {
+		len--;
+		XmbTextExtents(Scr->IconFont.font_set,
+		               tmp_win->icon_name, len,
+		               &ink_rect, &logical_rect);
+		twidth = logical_rect.width;
+	}
+	FB(icon->iconc.fore, icon->iconc.back);
+	XmbDrawString(dpy, icon->w, Scr->IconFont.font_set, Scr->NormalGC,
+	              x + ((mwidth - twidth) / 2) +
+	              Scr->IconManagerShadowDepth + ICON_MGR_IBORDER,
+	              icon->y, tmp_win->icon_name, len);
+}
+
+
+/*
  * Handling for ShrinkIconTitles; when pointer is away from them, shrink
  * the titles down to the width of the image, and expand back out when it
  * enters.
  */
-void ShrinkIconTitle(TwmWindow *tmp_win)
+void
+ShrinkIconTitle(TwmWindow *tmp_win)
 {
 	Icon        *icon;
 	XRectangle  rect;
@@ -1088,7 +1090,8 @@ void ShrinkIconTitle(TwmWindow *tmp_win)
 }
 
 
-void ExpandIconTitle(TwmWindow *tmp_win)
+void
+ExpandIconTitle(TwmWindow *tmp_win)
 {
 	Icon        *icon;
 	XRectangle  rect;
@@ -1162,7 +1165,8 @@ ReshapeIcon(Icon *icon)
  * Figure horizontal positioning/offset for the icon image within its
  * window.
  */
-int GetIconOffset(Icon *icon)
+int
+GetIconOffset(Icon *icon)
 {
 	TitleJust justif;
 
@@ -1382,4 +1386,76 @@ RedoIconName(TwmWindow *win)
 	}
 
 	WMapUpdateIconName(win);
+}
+
+
+
+
+/*
+ ****************************************************************
+ *
+ * Misc internal utils.
+ *
+ ****************************************************************
+ */
+
+
+/*
+ * What it says on the tin.
+ */
+static int
+roundUp(int v, int multiple)
+{
+	return ((v + multiple - 1) / multiple) * multiple;
+}
+
+
+/*
+ * Find the image set in Icons{} for a TwmWindow if possible.  Return the
+ * image, record its provenance inside *icon, and pass back what pattern
+ * it matched in **pattern.
+ */
+static Image *
+LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon, char **pattern)
+{
+	char *icon_name = NULL;
+	Image *image;
+	Matchtype matched = match_none;
+
+	icon_name = LookInNameList(Scr->IconNames, tmp_win->icon_name);
+	if(icon_name != NULL) {
+		*pattern = LookPatternInNameList(Scr->IconNames, tmp_win->icon_name);
+		matched = match_list;
+	}
+
+	if(matched == match_none) {
+		icon_name = LookInNameList(Scr->IconNames, tmp_win->full_name);
+		if(icon_name != NULL) {
+			*pattern = LookPatternInNameList(Scr->IconNames, tmp_win->full_name);
+			matched = match_list;
+		}
+	}
+
+	if(matched == match_none) {
+		icon_name = LookInList(Scr->IconNames, tmp_win->full_name, &tmp_win->class);
+		if(icon_name != NULL) {
+			*pattern = LookPatternInList(Scr->IconNames, tmp_win->full_name,
+			                             &tmp_win->class);
+			matched = match_list;
+		}
+	}
+
+	if((image  = GetImage(icon_name, icon->iconc)) != NULL) {
+		icon->match  = matched;
+		icon->image  = image;
+		icon->width  = image->width;
+		icon->height = image->height;
+		tmp_win->forced = true;
+	}
+	else {
+		icon->match = match_none;
+		*pattern = NULL;
+	}
+
+	return image;
 }
