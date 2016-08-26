@@ -107,16 +107,24 @@ struct IconEntry {
 	bool                used;
 };
 
-void PaintIcon(TwmWindow *tmp_win);
-void IconUp(TwmWindow *tmp_win);
-void IconDown(TwmWindow *tmp_win);
+
+/* Placement and IconsRegion handling */
 name_list **AddIconRegion(const char *geom, RegGravity grav1, RegGravity grav2,
                           int stepx, int stepy, const char *ijust,
                           const char *just, const char *align);
+
+/* Icon [window] creation/destruction */
 void CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y);
-void ReleaseIconImage(Icon *icon);
-void DeleteIcon(Icon *icon);
 void DeleteIconsList(TwmWindow *tmp_win);
+void DeleteIcon(Icon *icon);
+void ReleaseIconImage(Icon *icon);
+
+/* Handling for bringing them up or down */
+void IconUp(TwmWindow *tmp_win);
+void IconDown(TwmWindow *tmp_win);
+
+/* Drawing */
+void PaintIcon(TwmWindow *tmp_win);
 void ShrinkIconTitle(TwmWindow *tmp_win);
 void ExpandIconTitle(TwmWindow *tmp_win);
 int GetIconOffset(Icon *icon);
