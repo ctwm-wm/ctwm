@@ -90,6 +90,7 @@
 #include "animate.h"
 #include "otp.h"
 #include "screen.h"
+#include "iconmgr.h"
 #include "icons.h"
 #include "version.h"
 #include "image.h"

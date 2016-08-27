@@ -96,6 +96,7 @@
 #include "add_window.h"
 #include "gram.tab.h"
 #include "screen.h"
+#include "iconmgr.h"
 #include "icons.h"
 #include "cursor.h"
 #include "resize.h"

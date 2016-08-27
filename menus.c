@@ -82,6 +82,7 @@
 #include "events.h"
 #include "util.h"
 #include "drawing.h"
+#include "iconmgr.h"
 #include "icons_builtin.h"
 #include "parse.h"
 #include "icons.h"

@@ -17,6 +17,7 @@
 #include "cursor.h"
 #include "decorations.h"
 #include "events.h"
+#include "iconmgr.h"
 #include "icons.h"
 #include "menus.h"
 #include "otp.h"
