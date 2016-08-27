@@ -4,7 +4,6 @@
 
 #include "ctwm.h"
 
-#include <stdio.h> // XXX
 #include <stdlib.h>
 
 #include "screen.h"
