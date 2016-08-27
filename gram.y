@@ -73,8 +73,8 @@
 
 #include "otp.h"
 #include "menus.h"
-#include "icons.h"
 #include "iconmgr.h"
+#include "icons.h"
 #include "windowbox.h"
 #include "decorations_init.h"
 #include "list.h"
