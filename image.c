@@ -52,7 +52,7 @@ GetImage(const char *name, ColorPair cp)
 #ifdef XPM
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
 
-		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
+		if((image = LookInNameList(*list, fullname)) == NULL) {
 			int startn = (name [0] == '@') ? 1 : 4;
 			if((image = GetXpmImage(name + startn, cp)) != NULL) {
 				AddToList(list, fullname, image);
@@ -65,7 +65,7 @@ GetImage(const char *name, ColorPair cp)
 	}
 	else if(strncmp(name, "jpeg:", 5) == 0) {
 #ifdef JPEG
-		if((image = (Image *) LookInNameList(*list, name)) == NULL) {
+		if((image = LookInNameList(*list, name)) == NULL) {
 			if((image = GetJpegImage(&name [5])) != NULL) {
 				AddToList(list, name, image);
 			}
@@ -77,7 +77,7 @@ GetImage(const char *name, ColorPair cp)
 	}
 	else if((strncmp(name, "xwd:", 4) == 0) || (name [0] == '|')) {
 		int startn = (name [0] == '|') ? 0 : 4;
-		if((image = (Image *) LookInNameList(*list, name)) == NULL) {
+		if((image = LookInNameList(*list, name)) == NULL) {
 			if((image = GetXwdImage(&name [startn], cp)) != NULL) {
 				AddToList(list, name, image);
 			}
@@ -85,7 +85,7 @@ GetImage(const char *name, ColorPair cp)
 	}
 	else if(strncmp(name, ":xpm:", 5) == 0) {
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
+		if((image = LookInNameList(*list, fullname)) == NULL) {
 			image = get_builtin_scalable_pixmap(name, cp);
 			if(image == NULL) {
 				/* g_b_s_p() already warned */
@@ -96,7 +96,7 @@ GetImage(const char *name, ColorPair cp)
 	}
 	else if(strncmp(name, "%xpm:", 5) == 0) {
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
+		if((image = LookInNameList(*list, fullname)) == NULL) {
 			image = get_builtin_animated_pixmap(name, cp);
 			if(image == NULL) {
 				/* g_b_a_p() already warned */
@@ -111,7 +111,7 @@ GetImage(const char *name, ColorPair cp)
 		XGCValues       gcvalues;
 
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
+		if((image = LookInNameList(*list, fullname)) == NULL) {
 			pm = get_builtin_plain_pixmap(name, &width, &height);
 			if(pm == None) {
 				/* g_b_p_p() already warned */
@@ -134,7 +134,7 @@ GetImage(const char *name, ColorPair cp)
 	}
 	else {
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
-		if((image = (Image *) LookInNameList(*list, fullname)) == NULL) {
+		if((image = LookInNameList(*list, fullname)) == NULL) {
 			if((image = GetBitmapImage(name, cp)) != NULL) {
 				AddToList(list, fullname, image);
 			}

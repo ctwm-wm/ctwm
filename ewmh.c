@@ -1012,7 +1012,7 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 		                        0, &rect, 1, ShapeUnion, 0);
 	}
 	XMapSubwindows(dpy, twm_win->icon->w);
-	RedoIconName();
+	RedoIconName(twm_win);
 }
 
 /*

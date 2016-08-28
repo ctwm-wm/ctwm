@@ -823,10 +823,10 @@ void move_to_after(TwmWindow *t, TwmWindow *after)
 void SetFocus(TwmWindow *tmp_win, Time tim)
 {
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
-	int f_iconmgr = 0;
+	bool f_iconmgr = false;
 
 	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
-		f_iconmgr = 1;
+		f_iconmgr = true;
 	}
 	if(Scr->SloppyFocus && (w == PointerRoot) && (!f_iconmgr)) {
 		return;
@@ -855,54 +855,6 @@ void SetFocus(TwmWindow *tmp_win, Time tim)
 	Scr->Focus = tmp_win;
 }
 
-
-
-void PaintIcon(TwmWindow *tmp_win)
-{
-	int         width, twidth, mwidth, len, x;
-	Icon        *icon;
-	XRectangle ink_rect;
-	XRectangle logical_rect;
-
-	if(!tmp_win || !tmp_win->icon) {
-		return;
-	}
-	icon = tmp_win->icon;
-	if(!icon->has_title) {
-		return;
-	}
-
-	x     = 0;
-	width = icon->w_width;
-	if(Scr->ShrinkIconTitles && icon->title_shrunk) {
-		x     = GetIconOffset(icon);
-		width = icon->width;
-	}
-	len    = strlen(tmp_win->icon_name);
-	XmbTextExtents(Scr->IconFont.font_set,
-	               tmp_win->icon_name, len,
-	               &ink_rect, &logical_rect);
-	twidth = logical_rect.width;
-	mwidth = width - 2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER);
-	if(Scr->use3Diconmanagers) {
-		Draw3DBorder(icon->w, x, icon->height, width,
-		             Scr->IconFont.height +
-		             2 * (Scr->IconManagerShadowDepth + ICON_MGR_IBORDER),
-		             Scr->IconManagerShadowDepth, icon->iconc, off, false, false);
-	}
-	while((len > 0) && (twidth > mwidth)) {
-		len--;
-		XmbTextExtents(Scr->IconFont.font_set,
-		               tmp_win->icon_name, len,
-		               &ink_rect, &logical_rect);
-		twidth = logical_rect.width;
-	}
-	FB(icon->iconc.fore, icon->iconc.back);
-	XmbDrawString(dpy, icon->w, Scr->IconFont.font_set, Scr->NormalGC,
-	              x + ((mwidth - twidth) / 2) +
-	              Scr->IconManagerShadowDepth + ICON_MGR_IBORDER,
-	              icon->y, tmp_win->icon_name, len);
-}
 
 void AdoptWindow(void)
 {
