@@ -87,6 +87,7 @@
 #include "parse.h"
 #include "icons.h"
 #include "add_window.h"
+#include "colormaps.h"
 #include "decorations.h"
 #include "otp.h"
 #include "image.h"

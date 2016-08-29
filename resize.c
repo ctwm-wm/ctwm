@@ -78,6 +78,7 @@
 #include "otp.h"
 #include "resize.h"
 #include "add_window.h"
+#include "colormaps.h"
 #include "decorations.h"
 #include "screen.h"
 #include "drawing.h"

@@ -79,6 +79,7 @@
 
 #include "ctwm_atoms.h"
 #include "add_window.h"
+#include "colormaps.h"
 #include "windowbox.h"
 #include "util.h"
 #include "otp.h"

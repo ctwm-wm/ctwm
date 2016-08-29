@@ -12,6 +12,7 @@
 
 #include "add_window.h"
 #include "animate.h"
+#include "colormaps.h"
 #include "ctopts.h"
 #include "ctwm_atoms.h"
 #include "cursor.h"

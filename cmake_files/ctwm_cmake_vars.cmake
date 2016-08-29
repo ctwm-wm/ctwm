@@ -17,6 +17,7 @@ set(CTWMSRC
 	captive.c
 	clargs.c
 	clicktofocus.c
+	colormaps.c
 	ctopts.c
 	ctwm.c
 	cursor.c
