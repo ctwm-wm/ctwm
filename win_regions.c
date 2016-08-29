@@ -14,7 +14,7 @@ static void splitWindowRegionEntry(WindowEntry *we,
                                    RegGravity grav1, RegGravity grav2,
                                    int w, int h);
 static WindowEntry *findWindowEntry(WorkSpace *wl,
-                TwmWindow *tmp_win, WindowRegion **wrp);
+                                    TwmWindow *tmp_win, WindowRegion **wrp);
 static WindowEntry *prevWindowEntry(WindowEntry *we, WindowRegion *wr);
 static void mergeWindowEntries(WindowEntry *old, WindowEntry *we);
 
