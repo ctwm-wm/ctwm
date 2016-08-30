@@ -32,6 +32,8 @@ static Bool UninstallRootColormapQScanner(Display *display, XEvent *ev,
  *                window structure, whose colormaps are to be installed.
  *
  ***********************************************************************
+ *
+ * Previously in events.c
  */
 int
 InstallWindowColormaps(int type, TwmWindow *tmp)
@@ -158,6 +160,8 @@ InstallColormaps(int type, Colormaps *cmaps)
  *         Enter or Leave Notify events are queued, indicating some
  *         other colormap list would potentially be loaded anyway.
  ***********************************************************************
+ *
+ * Previously in events.c
  */
 void
 InstallRootColormap(void)
