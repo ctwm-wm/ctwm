@@ -88,12 +88,7 @@ extern int AddingY;
 extern unsigned int AddingW;
 extern unsigned int AddingH;
 
-void FetchWmColormapWindows(TwmWindow *tmp);
 void FetchWmProtocols(TwmWindow *tmp);
 
-TwmColormap *CreateTwmColormap(Colormap c);
-ColormapWindow *CreateColormapWindow(Window w,
-                                     bool creating_parent,
-                                     bool property_window);
 #endif /* _CTWM_ADD_WINDOW_H */
 
