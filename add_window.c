@@ -1767,6 +1767,12 @@ void FetchWmProtocols(TwmWindow *tmp)
 	tmp->protocols = flags;
 }
 
+
+/*
+ * Create a TwmColormap struct and tie it to an [X] Colormap.  Places
+ * that need to mess with colormaps and look up the metainfo we hang off
+ * them need to look this up and find it via the X Context.
+ */
 TwmColormap *CreateTwmColormap(Colormap c)
 {
 	TwmColormap *cmap;
@@ -1785,6 +1791,11 @@ TwmColormap *CreateTwmColormap(Colormap c)
 	return (cmap);
 }
 
+
+/*
+ * Put together a ColormapWindow struct.  This is a thing we hang off a
+ * TwmWindow for some colormap tracking stuff.
+ */
 ColormapWindow *
 CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 {
@@ -1840,6 +1851,14 @@ CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 	return (cwin);
 }
 
+
+/*
+ * Do something with looking up stuff from WM_COLORMAPS_WINDOWS (relating
+ * to windows with their own colormap) and finding or putting this window
+ * into it.
+ *
+ * XXX Someone should figure it out better than that...
+ */
 void FetchWmColormapWindows(TwmWindow *tmp)
 {
 	int i, j;
