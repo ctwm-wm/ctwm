@@ -102,7 +102,6 @@ static bool NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
-static void BumpWindowColormap(TwmWindow *tmp, int inc);
 static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
 
 
@@ -3091,60 +3090,6 @@ static void
 SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp)
 {
 	send_clientmessage(tmp->w, XA_WM_SAVE_YOURSELF, timestamp);
-}
-
-
-/*
- * BumpWindowColormap - rotate our internal copy of WM_COLORMAP_WINDOWS
- */
-static void
-BumpWindowColormap(TwmWindow *tmp, int inc)
-{
-	int i, j, previously_installed;
-	ColormapWindow **cwins;
-
-	if(!tmp) {
-		return;
-	}
-
-	if(inc && tmp->cmaps.number_cwins > 0) {
-		cwins = calloc(tmp->cmaps.number_cwins, sizeof(ColormapWindow *));
-		if(cwins) {
-			if((previously_installed = (Scr->cmapInfo.cmaps == &tmp->cmaps &&
-			                            tmp->cmaps.number_cwins))) {
-				for(i = tmp->cmaps.number_cwins; i-- > 0;) {
-					tmp->cmaps.cwins[i]->colormap->state = 0;
-				}
-			}
-
-			for(i = 0; i < tmp->cmaps.number_cwins; i++) {
-				j = i - inc;
-				if(j >= tmp->cmaps.number_cwins) {
-					j -= tmp->cmaps.number_cwins;
-				}
-				else if(j < 0) {
-					j += tmp->cmaps.number_cwins;
-				}
-				cwins[j] = tmp->cmaps.cwins[i];
-			}
-
-			free(tmp->cmaps.cwins);
-
-			tmp->cmaps.cwins = cwins;
-
-			if(tmp->cmaps.number_cwins > 1)
-				memset(tmp->cmaps.scoreboard, 0,
-				       ColormapsScoreboardLength(&tmp->cmaps));
-
-			if(previously_installed) {
-				InstallColormaps(PropertyNotify, NULL);
-			}
-		}
-	}
-	else {
-		FetchWmColormapWindows(tmp);
-	}
-	return;
 }
 
 
