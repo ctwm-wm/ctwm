@@ -1549,8 +1549,6 @@ void HandlePropertyNotify(void)
 
 	/* watch for standard colormap changes */
 	if(Event.xproperty.window == Scr->Root) {
-		XStandardColormap *maps = NULL;
-		int nmaps;
 
 		if(Event.xproperty.atom == XA_WM_CURRENTWORKSPACE) {
 			switch(Event.xproperty.state) {
@@ -1571,13 +1569,17 @@ void HandlePropertyNotify(void)
 			}
 		}
 		switch(Event.xproperty.state) {
-			case PropertyNewValue:
+			case PropertyNewValue: {
+				XStandardColormap *maps = NULL;
+				int nmaps;
+
 				if(XGetRGBColormaps(dpy, Scr->Root, &maps, &nmaps,
 				                    Event.xproperty.atom)) {
 					/* if got one, then replace any existing entry */
 					InsertRGBColormap(Event.xproperty.atom, maps, nmaps, true);
 				}
 				return;
+			}
 
 			case PropertyDelete:
 				RemoveRGBColormap(Event.xproperty.atom);
