@@ -17,4 +17,9 @@ void FetchWmColormapWindows(TwmWindow *tmp);
 
 void BumpWindowColormap(TwmWindow *tmp, int inc);
 
+void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
+                       bool replace);
+void RemoveRGBColormap(Atom a);
+void LocateStandardColormaps(void);
+
 #endif /* _CTWM_COLORMAPS_H */

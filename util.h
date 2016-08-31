@@ -96,10 +96,6 @@ void     MoveOutline(Window root,
 char     *ExpandFilename(const char *name);
 char     *ExpandFilePath(char *path);
 
-void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       bool replace);
-void RemoveRGBColormap(Atom a);
-void LocateStandardColormaps(void);
 void GetColor(int kind, Pixel *what, const char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
