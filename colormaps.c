@@ -464,7 +464,8 @@ done:
 
 
 /*
- * BumpWindowColormap - rotate our internal copy of WM_COLORMAP_WINDOWS
+ * BumpWindowColormap - rotate our internal copy of WM_COLORMAP_WINDOWS.
+ * This is the backend for f.colormap.
  *
  * Previously in functions.c
  */
