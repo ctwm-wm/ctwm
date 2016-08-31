@@ -335,12 +335,12 @@ FetchWmColormapWindows(TwmWindow *tmp)
 	bool can_free_cmap_windows = false;
 	int number_cmap_windows = 0;
 	ColormapWindow **cwins = NULL;
-	int previously_installed;
+	bool previnst;
 
 	number_cmap_windows = 0;
 
-	if((previously_installed =
-	                        (Scr->cmapInfo.cmaps == &tmp->cmaps && tmp->cmaps.number_cwins))) {
+	previnst = (Scr->cmapInfo.cmaps == &tmp->cmaps && tmp->cmaps.number_cwins);
+	if(previnst) {
 		cwins = tmp->cmaps.cwins;
 		for(i = 0; i < tmp->cmaps.number_cwins; i++) {
 			cwins[i]->colormap->state = 0;
@@ -447,7 +447,7 @@ FetchWmColormapWindows(TwmWindow *tmp)
 		tmp->cmaps.scoreboard =
 		        calloc(1, ColormapsScoreboardLength(&tmp->cmaps));
 
-	if(previously_installed) {
+	if(previnst) {
 		InstallColormaps(PropertyNotify, NULL);
 	}
 
@@ -472,7 +472,8 @@ done:
 void
 BumpWindowColormap(TwmWindow *tmp, int inc)
 {
-	int i, j, previously_installed;
+	int i, j;
+	bool previously_installed;
 	ColormapWindow **cwins;
 
 	if(!tmp) {
@@ -482,8 +483,9 @@ BumpWindowColormap(TwmWindow *tmp, int inc)
 	if(inc && tmp->cmaps.number_cwins > 0) {
 		cwins = calloc(tmp->cmaps.number_cwins, sizeof(ColormapWindow *));
 		if(cwins) {
-			if((previously_installed = (Scr->cmapInfo.cmaps == &tmp->cmaps &&
-			                            tmp->cmaps.number_cwins))) {
+			previously_installed = (Scr->cmapInfo.cmaps == &tmp->cmaps &&
+			                            tmp->cmaps.number_cwins);
+			if(previously_installed) {
 				for(i = tmp->cmaps.number_cwins; i-- > 0;) {
 					tmp->cmaps.cwins[i]->colormap->state = 0;
 				}
