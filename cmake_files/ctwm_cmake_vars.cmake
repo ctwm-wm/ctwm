@@ -17,6 +17,7 @@ set(CTWMSRC
 	captive.c
 	clargs.c
 	clicktofocus.c
+	colormaps.c
 	ctopts.c
 	ctwm.c
 	cursor.c
@@ -47,6 +48,7 @@ set(CTWMSRC
 	session.c
 	util.c
 	vscreen.c
+	win_regions.c
 	windowbox.c
 	workspace_config.c
 	workspace_manager.c

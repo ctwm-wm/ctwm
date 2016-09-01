@@ -73,15 +73,16 @@
 #include <stdlib.h>
 
 #include "parse.h"
-#include "events.h"
 #include "util.h"
 #include "otp.h"
 #include "resize.h"
 #include "add_window.h"
+#include "colormaps.h"
 #include "decorations.h"
 #include "screen.h"
 #include "drawing.h"
 #include "workspace_manager.h"
+#include "iconmgr.h"
 
 #define MINHEIGHT 0     /* had been 32 */
 #define MINWIDTH 0      /* had been 60 */

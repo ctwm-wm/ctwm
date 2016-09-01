@@ -96,6 +96,7 @@
 #include "add_window.h"
 #include "gram.tab.h"
 #include "screen.h"
+#include "iconmgr.h"
 #include "icons.h"
 #include "cursor.h"
 #include "resize.h"
@@ -374,107 +375,6 @@ ExpandFilename(const char *name)
 	return newname;
 }
 
-
-
-void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       bool replace)
-{
-	StdCmap *sc = NULL;
-
-	if(replace) {                       /* locate existing entry */
-		for(sc = Scr->StdCmapInfo.head; sc; sc = sc->next) {
-			if(sc->atom == a) {
-				break;
-			}
-		}
-	}
-
-	if(!sc) {                           /* no existing, allocate new */
-		sc = calloc(1, sizeof(StdCmap));
-		if(!sc) {
-			fprintf(stderr, "%s:  unable to allocate %lu bytes for StdCmap\n",
-			        ProgramName, (unsigned long) sizeof(StdCmap));
-			return;
-		}
-	}
-
-	if(replace) {                       /* just update contents */
-		if(sc->maps) {
-			XFree(maps);
-		}
-		if(sc == Scr->StdCmapInfo.mru) {
-			Scr->StdCmapInfo.mru = NULL;
-		}
-	}
-	else {                              /* else appending */
-		sc->next = NULL;
-		sc->atom = a;
-		if(Scr->StdCmapInfo.tail) {
-			Scr->StdCmapInfo.tail->next = sc;
-		}
-		else {
-			Scr->StdCmapInfo.head = sc;
-		}
-		Scr->StdCmapInfo.tail = sc;
-	}
-	sc->nmaps = nmaps;
-	sc->maps = maps;
-
-	return;
-}
-
-void RemoveRGBColormap(Atom a)
-{
-	StdCmap *sc, *prev;
-
-	prev = NULL;
-	for(sc = Scr->StdCmapInfo.head; sc; sc = sc->next) {
-		if(sc->atom == a) {
-			break;
-		}
-		prev = sc;
-	}
-	if(sc) {                            /* found one */
-		if(sc->maps) {
-			XFree(sc->maps);
-		}
-		if(prev) {
-			prev->next = sc->next;
-		}
-		if(Scr->StdCmapInfo.head == sc) {
-			Scr->StdCmapInfo.head = sc->next;
-		}
-		if(Scr->StdCmapInfo.tail == sc) {
-			Scr->StdCmapInfo.tail = prev;
-		}
-		if(Scr->StdCmapInfo.mru == sc) {
-			Scr->StdCmapInfo.mru = NULL;
-		}
-	}
-	return;
-}
-
-void LocateStandardColormaps(void)
-{
-	Atom *atoms;
-	int natoms;
-	int i;
-
-	atoms = XListProperties(dpy, Scr->Root, &natoms);
-	for(i = 0; i < natoms; i++) {
-		XStandardColormap *maps = NULL;
-		int nmaps;
-
-		if(XGetRGBColormaps(dpy, Scr->Root, &maps, &nmaps, atoms[i])) {
-			/* if got one, then append to current list */
-			InsertRGBColormap(atoms[i], maps, nmaps, false);
-		}
-	}
-	if(atoms) {
-		XFree(atoms);
-	}
-	return;
-}
 
 void
 GetColor(int kind, Pixel *what, const char *name)

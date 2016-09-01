@@ -64,6 +64,8 @@
 #ifndef _CTWM_EVENTS_H
 #define _CTWM_EVENTS_H
 
+#include <stdio.h>  // For FILE
+
 typedef void (*event_proc)(void);
 
 void InitEvents(void);
@@ -106,10 +108,6 @@ bool Transient(Window w, Window *propw);
 
 ScreenInfo *FindScreenInfo(Window w);
 
-int InstallWindowColormaps(int type, TwmWindow *tmp);
-int InstallColormaps(int type, Colormaps *cmaps);
-void InstallRootColormap(void);
-void UninstallRootColormap(void);
 void ConfigureRootWindow(XEvent *ev);
 
 void free_cwins(TwmWindow *tmp);

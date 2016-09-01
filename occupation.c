@@ -22,9 +22,11 @@
 #include "drawing.h"
 #include "events.h"
 #include "ewmh.h"
+#include "iconmgr.h"
 #include "screen.h"
 #include "otp.h"
 #include "util.h"
+#include "win_regions.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
 
