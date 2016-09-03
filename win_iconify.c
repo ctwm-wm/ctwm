@@ -29,6 +29,7 @@ static void FadeWindow(TwmWindow *tmp_win, Window blanket);
 static void SweepWindow(TwmWindow *tmp_win, Window blanket);
 
 /* De/iconify utils */
+static void Zoom(Window wf, Window wt);
 static void ReMapOne(TwmWindow *t, TwmWindow *leader);
 static void waitamoment(float timeout);
 
@@ -428,6 +429,63 @@ SweepWindow(TwmWindow *tmp_win, Window blanket)
 /*
  * Utils used by various bits above
  */
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      Zoom - zoom in or out of an icon
+ *
+ *  Inputs:
+ *      wf      - window to zoom from
+ *      wt      - window to zoom to
+ *
+ ***********************************************************************
+ */
+static void
+Zoom(Window wf, Window wt)
+{
+	int fx, fy, tx, ty;                 /* from, to */
+	unsigned int fw, fh, tw, th;        /* from, to */
+	long dx, dy, dw, dh;
+	long z;
+	int j;
+
+	if((Scr->IconifyStyle != ICONIFY_NORMAL) || !Scr->DoZoom
+	                || Scr->ZoomCount < 1) {
+		return;
+	}
+
+	if(wf == None || wt == None) {
+		return;
+	}
+
+	XGetGeometry(dpy, wf, &JunkRoot, &fx, &fy, &fw, &fh, &JunkBW, &JunkDepth);
+	XGetGeometry(dpy, wt, &JunkRoot, &tx, &ty, &tw, &th, &JunkBW, &JunkDepth);
+
+	dx = (long) tx - (long) fx; /* going from -> to */
+	dy = (long) ty - (long) fy; /* going from -> to */
+	dw = (long) tw - (long) fw; /* going from -> to */
+	dh = (long) th - (long) fh; /* going from -> to */
+	z = (long)(Scr->ZoomCount + 1);
+
+	for(j = 0; j < 2; j++) {
+		long i;
+
+		XDrawRectangle(dpy, Scr->Root, Scr->DrawGC, fx, fy, fw, fh);
+		for(i = 1; i < z; i++) {
+			int x = fx + (int)((dx * i) / z);
+			int y = fy + (int)((dy * i) / z);
+			unsigned width = (unsigned)(((long) fw) + (dw * i) / z);
+			unsigned height = (unsigned)(((long) fh) + (dh * i) / z);
+
+			XDrawRectangle(dpy, Scr->Root, Scr->DrawGC,
+			               x, y, width, height);
+		}
+		XDrawRectangle(dpy, Scr->Root, Scr->DrawGC, tx, ty, tw, th);
+	}
+}
+
+
 static void
 ReMapOne(TwmWindow *t, TwmWindow *leader)
 {
