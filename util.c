@@ -652,6 +652,7 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 	tmp_win->hasfocusvisible = focus;
 }
 
+#if 0
 static void move_to_head(TwmWindow *t)
 {
 	if(t == NULL) {
@@ -715,6 +716,7 @@ void move_to_after(TwmWindow *t, TwmWindow *after)
 	t->prev = after;
 	after->next = t;
 }
+#endif
 
 /*
  * SetFocus - separate routine to set focus to make things more understandable
