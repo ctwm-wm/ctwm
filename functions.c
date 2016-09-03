@@ -28,6 +28,7 @@
 #include "util.h"
 #include "drawing.h"
 #include "version.h"
+#include "win_iconify.h"
 #include "windowbox.h"
 #include "captive.h"
 #include "workspace_manager.h"

@@ -26,6 +26,7 @@
 #include "screen.h"
 #include "otp.h"
 #include "util.h"
+#include "win_iconify.h"
 #include "win_regions.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"

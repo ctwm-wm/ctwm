@@ -96,6 +96,7 @@
 #include "version.h"
 #include "image.h"
 #include "functions.h"
+#include "win_iconify.h"
 #include "win_regions.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
