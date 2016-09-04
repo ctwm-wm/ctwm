@@ -68,6 +68,7 @@
 #include "resize.h"
 #include "image.h"
 #include "functions.h"
+#include "win_iconify.h"
 #include "workspace_utils.h"
 
 /* #define DEBUG_EWMH */

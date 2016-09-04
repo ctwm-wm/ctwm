@@ -48,6 +48,7 @@ set(CTWMSRC
 	session.c
 	util.c
 	vscreen.c
+	win_iconify.c
 	win_regions.c
 	windowbox.c
 	workspace_config.c

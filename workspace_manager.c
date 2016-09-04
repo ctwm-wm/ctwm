@@ -43,6 +43,7 @@
 #include "cursor.h"
 #include "image.h"
 #include "drawing.h"
+#include "win_iconify.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
 

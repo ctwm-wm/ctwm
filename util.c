@@ -236,61 +236,6 @@ void MoveOutline(Window root,
 	}
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      Zoom - zoom in or out of an icon
- *
- *  Inputs:
- *      wf      - window to zoom from
- *      wt      - window to zoom to
- *
- ***********************************************************************
- */
-
-void Zoom(Window wf, Window wt)
-{
-	int fx, fy, tx, ty;                 /* from, to */
-	unsigned int fw, fh, tw, th;        /* from, to */
-	long dx, dy, dw, dh;
-	long z;
-	int j;
-
-	if((Scr->IconifyStyle != ICONIFY_NORMAL) || !Scr->DoZoom
-	                || Scr->ZoomCount < 1) {
-		return;
-	}
-
-	if(wf == None || wt == None) {
-		return;
-	}
-
-	XGetGeometry(dpy, wf, &JunkRoot, &fx, &fy, &fw, &fh, &JunkBW, &JunkDepth);
-	XGetGeometry(dpy, wt, &JunkRoot, &tx, &ty, &tw, &th, &JunkBW, &JunkDepth);
-
-	dx = (long) tx - (long) fx; /* going from -> to */
-	dy = (long) ty - (long) fy; /* going from -> to */
-	dw = (long) tw - (long) fw; /* going from -> to */
-	dh = (long) th - (long) fh; /* going from -> to */
-	z = (long)(Scr->ZoomCount + 1);
-
-	for(j = 0; j < 2; j++) {
-		long i;
-
-		XDrawRectangle(dpy, Scr->Root, Scr->DrawGC, fx, fy, fw, fh);
-		for(i = 1; i < z; i++) {
-			int x = fx + (int)((dx * i) / z);
-			int y = fy + (int)((dy * i) / z);
-			unsigned width = (unsigned)(((long) fw) + (dw * i) / z);
-			unsigned height = (unsigned)(((long) fh) + (dh * i) / z);
-
-			XDrawRectangle(dpy, Scr->Root, Scr->DrawGC,
-			               x, y, width, height);
-		}
-		XDrawRectangle(dpy, Scr->Root, Scr->DrawGC, tx, ty, tw, th);
-	}
-}
-
 
 /*
  * Rewrite this, possibly in terms of replace_substr().  Alternately, the
@@ -652,6 +597,7 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 	tmp_win->hasfocusvisible = focus;
 }
 
+#if 0
 static void move_to_head(TwmWindow *t)
 {
 	if(t == NULL) {
@@ -715,6 +661,7 @@ void move_to_after(TwmWindow *t, TwmWindow *after)
 	t->prev = after;
 	after->next = t;
 }
+#endif
 
 /*
  * SetFocus - separate routine to set focus to make things more understandable

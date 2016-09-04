@@ -89,7 +89,6 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-void     Zoom(Window wf, Window wt);
 void     MoveOutline(Window root,
                      int x, int y, int width, int height,
                      int bw, int th);
@@ -101,7 +100,9 @@ void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
 bool UpdateFont(MyFont *font, int height);
 void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
+#if 0
 void move_to_after(TwmWindow *t, TwmWindow *after);
+#endif
 void SetFocus(TwmWindow *tmp_win, Time tim);
 void AdoptWindow(void);
 void RescueWindows(void);
