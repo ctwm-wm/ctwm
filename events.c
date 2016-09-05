@@ -77,25 +77,26 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 
-#include "ctwm_atoms.h"
 #include "add_window.h"
-#include "decorations.h"
+#include "animate.h"
 #include "clicktofocus.h"
 #include "colormaps.h"
-#include "menus.h"
+#include "ctwm_atoms.h"
+#include "decorations.h"
 #include "events.h"
 #include "event_names.h"
-#include "resize.h"
-#include "parse.h"
-#include "util.h"
-#include "animate.h"
-#include "otp.h"
-#include "screen.h"
+#include "functions.h"
+#include "gram.tab.h"
 #include "iconmgr.h"
 #include "icons.h"
-#include "version.h"
 #include "image.h"
-#include "functions.h"
+#include "menus.h"
+#include "otp.h"
+#include "parse.h"
+#include "resize.h"
+#include "screen.h"
+#include "util.h"
+#include "version.h"
 #include "win_iconify.h"
 #include "win_regions.h"
 #include "workspace_manager.h"
@@ -104,7 +105,6 @@
 #include "sound.h"
 #endif
 
-#include "gram.tab.h"
 
 static void CtwmNextEvent(Display *display, XEvent  *event);
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
