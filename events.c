@@ -148,7 +148,9 @@ bool Cancel = false;
 static void HandleCreateNotify(void);
 static void HandleShapeNotify(void);
 static void HandleFocusChange(void);
+#ifdef EWMH
 static void HandleSelectionClear(void);
+#endif
 
 static ScreenInfo *FindScreenInfo(Window w);
 
