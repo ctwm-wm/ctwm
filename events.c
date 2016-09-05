@@ -520,7 +520,7 @@ DispatchEvent(void)
 	if(CLarg.is_captive) {
 		if((Event.type == ConfigureNotify)
 		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
-			ConfigureRootWindow(&Event);
+			ConfigureCaptiveRootWindow(&Event);
 			return false;
 		}
 	}
@@ -4306,7 +4306,7 @@ static void flush_expose(Window w)
 }
 
 
-void ConfigureRootWindow(XEvent *ev)
+void ConfigureCaptiveRootWindow(XEvent *ev)
 {
 	Window       root, child;
 	int          x, y;

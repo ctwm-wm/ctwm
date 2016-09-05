@@ -106,7 +106,7 @@ void SynthesiseFocusIn(Window w);
 void HandleCirculateNotify(void);
 bool Transient(Window w, Window *propw);
 
-void ConfigureRootWindow(XEvent *ev);
+void ConfigureCaptiveRootWindow(XEvent *ev);
 
 void free_cwins(TwmWindow *tmp);
 
