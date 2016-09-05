@@ -4321,8 +4321,8 @@ void ConfigureCaptiveRootWindow(XEvent *ev)
 	Scr->crootw = ev->xconfigure.width;
 	Scr->crooth = ev->xconfigure.height;
 	/*
-	fprintf (stderr, "ConfigureRootWindow: cx = %d, cy = %d, cw = %d, ch = %d\n",
-	     Scr->crootx, Scr->crooty, Scr->crootw, Scr->crooth);
+	fprintf (stderr, "%s(): cx = %d, cy = %d, cw = %d, ch = %d\n",
+	     __func__, Scr->crootx, Scr->crooty, Scr->crootw, Scr->crooth);
 	*/
 	if(Scr->currentvs) {
 		Scr->rootx = Scr->crootx + Scr->currentvs->x;
