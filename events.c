@@ -150,6 +150,8 @@ void HandleShapeNotify(void);
 void HandleFocusChange(void);
 void HandleSelectionClear(void);
 
+static ScreenInfo *FindScreenInfo(Window w);
+
 
 /*#define TRACE_FOCUS*/
 /*#define TRACE*/
@@ -4267,7 +4269,8 @@ Transient(Window w, Window *propw)
  ***********************************************************************
  */
 
-ScreenInfo *FindScreenInfo(Window w)
+static ScreenInfo *
+FindScreenInfo(Window w)
 {
 	XWindowAttributes attr;
 	int scrnum;
