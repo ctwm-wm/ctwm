@@ -79,6 +79,7 @@
 
 #include "add_window.h"
 #include "animate.h"
+#include "captive.h"
 #include "clicktofocus.h"
 #include "colormaps.h"
 #include "ctwm_atoms.h"
@@ -4305,46 +4306,6 @@ static void flush_expose(Window w)
 	}
 }
 
-
-void ConfigureCaptiveRootWindow(XEvent *ev)
-{
-	Window       root, child;
-	int          x, y;
-	unsigned int w, h, bw, d, oldw, oldh;
-
-	/* Guard */
-	if(!CLarg.is_captive) {
-		fprintf(stderr, "BUG: %s(): Shouldn't get called unless captive.\n",
-		        __func__);
-		return;
-	}
-
-	XGetGeometry(dpy, Scr->CaptiveRoot, &root, &x, &y, &w, &h, &bw, &d);
-	XTranslateCoordinates(dpy, Scr->CaptiveRoot, root, 0, 0, &Scr->crootx,
-	                      &Scr->crooty, &child);
-
-	oldw = Scr->crootw;
-	oldh = Scr->crooth;
-	Scr->crootw = ev->xconfigure.width;
-	Scr->crooth = ev->xconfigure.height;
-#if 0
-	fprintf(stderr, "%s(): cx = %d, cy = %d, cw = %d, ch = %d\n",
-	        __func__, Scr->crootx, Scr->crooty, Scr->crootw, Scr->crooth);
-#endif
-	if(Scr->currentvs) {
-		Scr->rootx = Scr->crootx + Scr->currentvs->x;
-		Scr->rooty = Scr->crooty + Scr->currentvs->y;
-	}
-	Scr->rootw = Scr->crootw;
-	Scr->rooth = Scr->crooth;
-
-	if((Scr->crootw != oldw) || (Scr->crooth != oldh)) {
-		fprintf(stderr, "%s: You cannot change root window geometry "
-		        "with virtual screens active,\n"
-		        "from now on, the ctwm behaviour is unpredictable.\n",
-		        ProgramName);
-	}
-}
 
 static void dumpevent(XEvent *e)
 {
