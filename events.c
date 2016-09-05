@@ -4312,6 +4312,13 @@ void ConfigureCaptiveRootWindow(XEvent *ev)
 	int          x, y;
 	unsigned int w, h, bw, d, oldw, oldh;
 
+	/* Guard */
+	if(!CLarg.is_captive) {
+		fprintf(stderr, "BUG: %s(): Shouldn't get called unless captive.\n",
+		        __func__);
+		return;
+	}
+
 	XGetGeometry(dpy, Scr->CaptiveRoot, &root, &x, &y, &w, &h, &bw, &d);
 	XTranslateCoordinates(dpy, Scr->CaptiveRoot, root, 0, 0, &Scr->crootx,
 	                      &Scr->crooty, &child);
@@ -4331,7 +4338,7 @@ void ConfigureCaptiveRootWindow(XEvent *ev)
 	Scr->rootw = Scr->crootw;
 	Scr->rooth = Scr->crooth;
 
-	if(CLarg.is_captive && ((Scr->crootw != oldw) || (Scr->crooth != oldh))) {
+	if((Scr->crootw != oldw) || (Scr->crooth != oldh)) {
 		fprintf(stderr, "%s: You cannot change root window geometry "
 		        "with virtual screens active,\n"
 		        "from now on, the ctwm behaviour is unpredictable.\n",
