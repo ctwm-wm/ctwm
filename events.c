@@ -145,10 +145,10 @@ bool ColortableThrashing;
 int ButtonPressed = -1;
 bool Cancel = false;
 
-void HandleCreateNotify(void);
-void HandleShapeNotify(void);
-void HandleFocusChange(void);
-void HandleSelectionClear(void);
+static void HandleCreateNotify(void);
+static void HandleShapeNotify(void);
+static void HandleFocusChange(void);
+static void HandleSelectionClear(void);
 
 static ScreenInfo *FindScreenInfo(Window w);
 
@@ -915,7 +915,8 @@ void HandleFocusOut(XFocusOutEvent *event)
 	Scr->Focus = NULL;
 }
 
-void HandleFocusChange(void)
+static void
+HandleFocusChange(void)
 {
 	XEvent *event;
 
@@ -2325,7 +2326,8 @@ void HandleDestroyNotify(void)
 }
 
 
-void HandleCreateNotify(void)
+static void
+HandleCreateNotify(void)
 {
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "CreateNotify w = 0x%x\n",
@@ -4180,7 +4182,8 @@ void HandleConfigureRequest(void)
  *
  ***********************************************************************
  */
-void HandleShapeNotify(void)
+static void
+HandleShapeNotify(void)
 {
 	XShapeEvent     *sev = (XShapeEvent *) &Event;
 
@@ -4206,7 +4209,8 @@ void HandleShapeNotify(void)
  ***********************************************************************
  */
 #ifdef EWMH
-void HandleSelectionClear(void)
+static void
+HandleSelectionClear(void)
 {
 	XSelectionClearEvent    *sev = (XSelectionClearEvent *) &Event;
 
