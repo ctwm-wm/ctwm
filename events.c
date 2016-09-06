@@ -85,6 +85,7 @@
 #include "ctwm_atoms.h"
 #include "decorations.h"
 #include "events.h"
+#include "event_handlers.h"
 #include "event_names.h"
 #include "functions.h"
 #include "gram.tab.h"

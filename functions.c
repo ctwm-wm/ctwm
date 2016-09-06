@@ -18,6 +18,7 @@
 #include "cursor.h"
 #include "decorations.h"
 #include "events.h"
+#include "event_handlers.h"
 #include "iconmgr.h"
 #include "icons.h"
 #include "menus.h"
