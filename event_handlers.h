@@ -24,4 +24,10 @@ void HandleVisibilityNotify(void);
 void HandleUnknown(void);
 void HandleCirculateNotify(void);
 
+void HandleFocusChange(void);
+void HandleCreateNotify(void);
+void HandleShapeNotify(void);
+#ifdef EWMH
+void HandleSelectionClear(void);
+#endif
 #endif /* _CTWM_EVENT_HANDLERS_H */
