@@ -24,6 +24,7 @@ set(CTWMSRC
 	decorations.c
 	decorations_init.c
 	drawing.c
+	event_core.c
 	event_names.c
 	events.c
 	functions.c
