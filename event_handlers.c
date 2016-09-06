@@ -71,7 +71,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <sys/time.h>
 
 #include <X11/Xatom.h>
@@ -79,7 +78,6 @@
 
 #include "add_window.h"
 #include "animate.h"
-#include "captive.h"
 #include "clicktofocus.h"
 #include "colormaps.h"
 #include "ctwm_atoms.h"
@@ -92,20 +90,15 @@
 #include "iconmgr.h"
 #include "icons.h"
 #include "image.h"
-#include "menus.h"
 #include "otp.h"
 #include "parse.h"
 #include "resize.h"
 #include "screen.h"
 #include "util.h"
-#include "version.h"
 #include "win_iconify.h"
 #include "win_regions.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
-#ifdef SOUNDS
-#include "sound.h"
-#endif
 
 
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
