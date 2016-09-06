@@ -81,8 +81,6 @@ void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
-void HandleFocusIn(XFocusInEvent *event);
-void HandleFocusOut(XFocusOutEvent *event);
 void SynthesiseFocusOut(Window w);
 void SynthesiseFocusIn(Window w);
 bool Transient(Window w, Window *propw);

@@ -113,6 +113,10 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w);             /* invoking window or None */
 static bool StashEventTime(XEvent *ev);
 
+/* Only called from HandleFocusChange() */
+static void HandleFocusIn(XFocusInEvent *event);
+static void HandleFocusOut(XFocusOutEvent *event);
+
 FILE *tracefile = NULL;
 
 #define MAX_X_EVENT 256
@@ -855,7 +859,8 @@ static XEvent *LastFocusEvent(Window w, XEvent *first)
  * HandleFocusIn -- deal with the focus moving under us.
  */
 
-void HandleFocusIn(XFocusInEvent *event)
+static void
+HandleFocusIn(XFocusInEvent *event)
 {
 
 #ifdef TRACE_FOCUS
@@ -884,7 +889,8 @@ void HandleFocusIn(XFocusInEvent *event)
 	Scr->Focus = Tmp_win;
 }
 
-void HandleFocusOut(XFocusOutEvent *event)
+static void
+HandleFocusOut(XFocusOutEvent *event)
 {
 #ifdef TRACE_FOCUS
 	fprintf(stderr, "HandleFocusOut : -0x%x (0x%x, 0x%x), mode=%d, detail=%d\n",
