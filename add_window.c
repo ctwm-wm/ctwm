@@ -111,7 +111,7 @@ unsigned int AddingH;
 static int PlaceX = -1;
 static int PlaceY = -1;
 static void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
-                                   TwmWindow *tmp_win);
+                TwmWindow *tmp_win);
 static bool Transient(Window w, Window *propw);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
@@ -1847,7 +1847,7 @@ void GetWindowSizeHints(TwmWindow *tmp)
  */
 static void
 DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
-                                   TwmWindow *tmp_win)
+                              TwmWindow *tmp_win)
 {
 	Window              vvroot;
 	int                 x, y;
