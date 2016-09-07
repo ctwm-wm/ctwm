@@ -70,10 +70,6 @@ typedef void (*event_proc)(void);
 
 void InitEvents(void);
 void SimulateMapRequest(Window w);
-void AutoRaiseWindow(TwmWindow *tmp);
-void SetRaiseWindow(TwmWindow *tmp);
-void AutoPopupMaybe(TwmWindow *tmp);
-void AutoLowerWindow(TwmWindow *tmp);
 Window WindowOfEvent(XEvent *e);
 void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
@@ -84,6 +80,12 @@ void SynthesiseFocusIn(Window w);
 bool Transient(Window w, Window *propw);
 
 void free_cwins(TwmWindow *tmp);
+
+/*
+ * This should maybe be in event_internal.h, but a few other places use
+ * it.  TBD: figure out why and whether they should
+ */
+void AutoRaiseWindow(TwmWindow *tmp);
 
 extern event_proc EventHandler[];
 extern Window DragWindow;

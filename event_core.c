@@ -84,15 +84,13 @@
 #include "colormaps.h"
 #include "events.h"
 #include "event_handlers.h"
+#include "event_internal.h"
 #include "event_names.h"
 #include "functions.h"
 #include "iconmgr.h"
 #include "image.h"
-#include "otp.h"
 #include "screen.h"
 #include "version.h"
-#include "win_iconify.h"
-#include "workspace_manager.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif
@@ -144,64 +142,6 @@ bool Cancel = false;
 /*#define TRACE_FOCUS*/
 /*#define TRACE*/
 
-
-void AutoRaiseWindow(TwmWindow *tmp)
-{
-	OtpRaise(tmp, WinWin);
-
-	if(ActiveMenu && ActiveMenu->w) {
-		XRaiseWindow(dpy, ActiveMenu->w);
-	}
-	XSync(dpy, 0);
-	enter_win = NULL;
-	enter_flag = true;
-	raise_win = tmp;
-	WMapRaise(tmp);
-}
-
-void SetRaiseWindow(TwmWindow *tmp)
-{
-	enter_flag = true;
-	enter_win = NULL;
-	raise_win = tmp;
-	leave_win = NULL;
-	leave_flag = false;
-	lower_win = NULL;
-	XSync(dpy, 0);
-}
-
-void AutoPopupMaybe(TwmWindow *tmp)
-{
-	if(LookInList(Scr->AutoPopupL, tmp->full_name, &tmp->class)
-	                || Scr->AutoPopup) {
-		if(OCCUPY(tmp, Scr->currentvs->wsw->currentwspc)) {
-			if(!tmp->mapped) {
-				DeIconify(tmp);
-				SetRaiseWindow(tmp);
-			}
-		}
-		else {
-			tmp->mapped = true;
-		}
-	}
-}
-
-void AutoLowerWindow(TwmWindow *tmp)
-{
-	OtpLower(tmp, WinWin);
-
-	if(ActiveMenu && ActiveMenu->w) {
-		XRaiseWindow(dpy, ActiveMenu->w);
-	}
-	XSync(dpy, 0);
-	enter_win = NULL;
-	enter_flag = false;
-	raise_win = NULL;
-	leave_win = NULL;
-	leave_flag = true;
-	lower_win = tmp;
-	WMapLower(tmp);
-}
 
 
 /***********************************************************************

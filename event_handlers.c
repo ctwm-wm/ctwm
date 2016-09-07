@@ -84,6 +84,7 @@
 #include "decorations.h"
 #include "events.h"
 #include "event_handlers.h"
+#include "event_internal.h"
 #include "event_names.h"
 #include "functions.h"
 #include "gram.tab.h"
@@ -109,15 +110,6 @@ static void HandleFocusIn(XFocusInEvent *event);
 static void HandleFocusOut(XFocusOutEvent *event);
 
 static char *Action;            /* XXX This may be narrowable */
-
-/* Maybe temp? */
-extern TwmWindow *Tmp_win;
-extern bool ColortableThrashing;
-extern bool enter_flag;
-extern bool leave_flag;
-extern TwmWindow *enter_win, *raise_win, *leave_win, *lower_win;
-extern TwmWindow *ButtonWindow;
-
 
 
 static unsigned int set_mask_ignore(unsigned int modifier)
