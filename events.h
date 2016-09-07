@@ -69,13 +69,11 @@
 typedef void (*event_proc)(void);
 
 void InitEvents(void);
-extern Time lastTimestamp;
 void SimulateMapRequest(Window w);
 void AutoRaiseWindow(TwmWindow *tmp);
 void SetRaiseWindow(TwmWindow *tmp);
 void AutoPopupMaybe(TwmWindow *tmp);
 void AutoLowerWindow(TwmWindow *tmp);
-#define LastTimestamp() lastTimestamp
 Window WindowOfEvent(XEvent *e);
 void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
@@ -105,5 +103,7 @@ extern int ButtonPressed;
 extern bool Cancel;
 
 extern XEvent Event;
+extern Time lastTimestamp;
+#define LastTimestamp() lastTimestamp
 
 #endif /* _CTWM_EVENTS_H */
