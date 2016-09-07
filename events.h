@@ -76,8 +76,6 @@ bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
 bool Transient(Window w, Window *propw);
 
-void free_cwins(TwmWindow *tmp);
-
 /*
  * This should maybe be in event_internal.h, but a few other places use
  * it.  TBD: figure out why and whether they should

@@ -939,33 +939,6 @@ static void free_window_names(TwmWindow *tmp,
 }
 
 
-void free_cwins(TwmWindow *tmp)
-{
-	int i;
-	TwmColormap *cmap;
-
-	if(tmp->cmaps.number_cwins) {
-		for(i = 0; i < tmp->cmaps.number_cwins; i++) {
-			if(--tmp->cmaps.cwins[i]->refcnt == 0) {
-				cmap = tmp->cmaps.cwins[i]->colormap;
-				if(--cmap->refcnt == 0) {
-					XDeleteContext(dpy, cmap->c, ColormapContext);
-					free(cmap);
-				}
-				XDeleteContext(dpy, tmp->cmaps.cwins[i]->w, ColormapContext);
-				free(tmp->cmaps.cwins[i]);
-			}
-		}
-		free(tmp->cmaps.cwins);
-		if(tmp->cmaps.number_cwins > 1) {
-			free(tmp->cmaps.scoreboard);
-			tmp->cmaps.scoreboard = NULL;
-		}
-		tmp->cmaps.number_cwins = 0;
-	}
-}
-
-
 /***********************************************************************
  *
  *  Procedure:
