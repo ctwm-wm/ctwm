@@ -70,13 +70,10 @@ typedef void (*event_proc)(void);
 
 void InitEvents(void);
 void SimulateMapRequest(Window w);
-Window WindowOfEvent(XEvent *e);
 void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
-void SynthesiseFocusOut(Window w);
-void SynthesiseFocusIn(Window w);
 bool Transient(Window w, Window *propw);
 
 void free_cwins(TwmWindow *tmp);
