@@ -100,6 +100,8 @@
 
 static void CtwmNextEvent(Display *display, XEvent  *event);
 static bool StashEventTime(XEvent *ev);
+static ScreenInfo *FindScreenInfo(Window w);
+static void dumpevent(XEvent *e);
 
 FILE *tracefile = NULL;
 
@@ -137,13 +139,10 @@ TwmWindow *Tmp_win; // the current twm window; shared with other event code
 int ButtonPressed = -1;
 bool Cancel = false;
 
-static ScreenInfo *FindScreenInfo(Window w);
-
 
 /*#define TRACE_FOCUS*/
 /*#define TRACE*/
 
-static void dumpevent(XEvent *e);
 
 void AutoRaiseWindow(TwmWindow *tmp)
 {
