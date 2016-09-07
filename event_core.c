@@ -612,28 +612,6 @@ void SimulateMapRequest(Window w)
 /***********************************************************************
  *
  *  Procedure:
- *      Transient - checks to see if the window is a transient
- *
- *  Returned Value:
- *      true    - window is a transient
- *      false   - window is not a transient
- *
- *  Inputs:
- *      w       - the window to check
- *
- ***********************************************************************
- */
-
-bool
-Transient(Window w, Window *propw)
-{
-	return (bool)XGetTransientForHint(dpy, w, propw);
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
  *      FindScreenInfo - get ScreenInfo struct associated with a given window
  *
  *  Returned Value:

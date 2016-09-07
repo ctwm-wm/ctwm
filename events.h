@@ -74,7 +74,6 @@ void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
-bool Transient(Window w, Window *propw);
 
 /*
  * This should maybe be in event_internal.h, but a few other places use
