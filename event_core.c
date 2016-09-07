@@ -98,8 +98,9 @@
 #endif
 
 
-static void CtwmNextEvent(Display *display, XEvent  *event);
 static bool StashEventTime(XEvent *ev);
+static ScreenInfo *GetTwmScreen(XEvent *event);
+static void CtwmNextEvent(Display *display, XEvent  *event);
 static ScreenInfo *FindScreenInfo(Window w);
 static void dumpevent(XEvent *e);
 
