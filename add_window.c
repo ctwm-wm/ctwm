@@ -110,7 +110,7 @@ unsigned int AddingH;
 
 static int PlaceX = -1;
 static int PlaceY = -1;
-void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
+static void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
                                    TwmWindow *tmp_win);
 static bool Transient(Window w, Window *propw);
 
@@ -1845,7 +1845,8 @@ void GetWindowSizeHints(TwmWindow *tmp)
  * this approach assumes screens that are next to each other horizontally,
  * Other possibilities need to be investigated and accounted for.
  */
-void DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
+static void
+DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
                                    TwmWindow *tmp_win)
 {
 	Window              vvroot;
