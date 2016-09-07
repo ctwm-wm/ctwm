@@ -122,7 +122,7 @@ unsigned int DragBW;
 int CurrentDragX;
 int CurrentDragY;
 
-Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
+Time EventTime = CurrentTime;       /* until Xlib does this for us */
 
 /* Maybe more staticizable later? */
 bool enter_flag;
@@ -265,30 +265,30 @@ StashEventTime(XEvent *ev)
 	switch(ev->type) {
 		case KeyPress:
 		case KeyRelease:
-			lastTimestamp = ev->xkey.time;
+			EventTime = ev->xkey.time;
 			return true;
 		case ButtonPress:
 		case ButtonRelease:
-			lastTimestamp = ev->xbutton.time;
+			EventTime = ev->xbutton.time;
 			return true;
 		case MotionNotify:
-			lastTimestamp = ev->xmotion.time;
+			EventTime = ev->xmotion.time;
 			return true;
 		case EnterNotify:
 		case LeaveNotify:
-			lastTimestamp = ev->xcrossing.time;
+			EventTime = ev->xcrossing.time;
 			return true;
 		case PropertyNotify:
-			lastTimestamp = ev->xproperty.time;
+			EventTime = ev->xproperty.time;
 			return true;
 		case SelectionClear:
-			lastTimestamp = ev->xselectionclear.time;
+			EventTime = ev->xselectionclear.time;
 			return true;
 		case SelectionRequest:
-			lastTimestamp = ev->xselectionrequest.time;
+			EventTime = ev->xselectionrequest.time;
 			return true;
 		case SelectionNotify:
-			lastTimestamp = ev->xselection.time;
+			EventTime = ev->xselection.time;
 			return true;
 	}
 	return false;

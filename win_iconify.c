@@ -145,7 +145,7 @@ Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		XDestroyWindow(dpy, blanket);
 	}
 	if(tmp_win == Scr->Focus) {
-		SetFocus(NULL, LastTimestamp());
+		SetFocus(NULL, EventTime);
 		if(! Scr->ClickToFocus) {
 			Scr->FocusRoot = true;
 		}
@@ -594,7 +594,7 @@ UnmapTransients(TwmWindow *tmp_win, bool iconify, long eventMask)
 			}
 			SetMapStateProp(t, IconicState);
 			if(t == Scr->Focus) {
-				SetFocus(NULL, LastTimestamp());
+				SetFocus(NULL, EventTime);
 				if(! Scr->ClickToFocus) {
 					Scr->FocusRoot = true;
 				}

@@ -1752,7 +1752,7 @@ SetLastCursor(Cursor newcur)
 
 void FocusOnRoot(void)
 {
-	SetFocus(NULL, LastTimestamp());
+	SetFocus(NULL, EventTime);
 	InstallColormaps(0, &Scr->RootColormaps);
 	if(! Scr->ClickToFocus) {
 		Scr->FocusRoot = true;
@@ -2099,7 +2099,7 @@ WarpToWindow(TwmWindow *t, bool must_raise)
 	}
 
 	XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0, x + t->frame_x, y + t->frame_y);
-	SetFocus(t, LastTimestamp());
+	SetFocus(t, EventTime);
 
 #ifdef DEBUG
 	{

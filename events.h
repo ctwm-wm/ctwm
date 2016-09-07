@@ -103,7 +103,6 @@ extern int ButtonPressed;
 extern bool Cancel;
 
 extern XEvent Event;
-extern Time lastTimestamp;
-#define LastTimestamp() lastTimestamp
+extern Time EventTime;
 
 #endif /* _CTWM_EVENTS_H */
