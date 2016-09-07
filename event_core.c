@@ -119,6 +119,8 @@ unsigned int DragBW;
 int CurrentDragX;
 int CurrentDragY;
 
+Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
+
 /* Maybe more staticizable later? */
 bool enter_flag;
 bool leave_flag;
@@ -256,8 +258,6 @@ void InitEvents(void)
 }
 
 
-
-Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
 
 static bool
 StashEventTime(XEvent *ev)
