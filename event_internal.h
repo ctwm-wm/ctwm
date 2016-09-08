@@ -5,7 +5,6 @@
 #define _CTWM_EVENT_INTERNAL_H
 
 /* event_core.c */
-Window WindowOfEvent(XEvent *e);
 void SynthesiseFocusOut(Window w);
 void SynthesiseFocusIn(Window w);
 
@@ -14,6 +13,8 @@ void SynthesiseFocusIn(Window w);
 void SetRaiseWindow(TwmWindow *tmp);
 void AutoPopupMaybe(TwmWindow *tmp);
 void AutoLowerWindow(TwmWindow *tmp);
+Window WindowOfEvent(XEvent *e);
+ScreenInfo *GetTwmScreen(XEvent *event);
 
 
 extern TwmWindow *Tmp_win;

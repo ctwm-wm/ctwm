@@ -70,7 +70,6 @@ typedef void (*event_proc)(void);
 
 void InitEvents(void);
 void SimulateMapRequest(Window w);
-void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
@@ -80,6 +79,8 @@ void HandleEvents(void) __attribute__((noreturn));
  * it.  TBD: figure out why and whether they should
  */
 void AutoRaiseWindow(TwmWindow *tmp);
+
+void FixRootEvent(XEvent *e);
 
 extern event_proc EventHandler[];
 extern Window DragWindow;
