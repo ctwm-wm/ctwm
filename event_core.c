@@ -433,13 +433,6 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 }
 
 
-void SimulateMapRequest(Window w)
-{
-	Event.xmaprequest.window = w;
-	HandleMapRequest();
-}
-
-
 static void dumpevent(XEvent *e)
 {
 	const char *name = "Unknown event";

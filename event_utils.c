@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+#include "event_handlers.h"
 #include "event_internal.h"
 #include "events.h"
 #include "otp.h"
@@ -284,4 +285,16 @@ SynthesiseFocusIn(Window w)
 
 	XPutBackEvent(dpy, &event);
 
+}
+
+
+/*
+ * This is actually never called anywhere in event code, but it digs into
+ * the innards of events to do somewhat scary things.
+ */
+void
+SimulateMapRequest(Window w)
+{
+	Event.xmaprequest.window = w;
+	HandleMapRequest();
 }

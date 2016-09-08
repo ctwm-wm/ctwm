@@ -69,7 +69,6 @@
 typedef void (*event_proc)(void);
 
 void InitEvents(void);
-void SimulateMapRequest(Window w);
 bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
@@ -82,6 +81,7 @@ void HandleEvents(void) __attribute__((noreturn));
 void AutoRaiseWindow(TwmWindow *tmp);
 
 void FixRootEvent(XEvent *e);
+void SimulateMapRequest(Window w);
 
 
 extern event_proc EventHandler[];
