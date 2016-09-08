@@ -74,6 +74,7 @@ bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
 
+/* Bits in event_utils.c */
 /*
  * This should maybe be in event_internal.h, but a few other places use
  * it.  TBD: figure out why and whether they should
@@ -81,6 +82,7 @@ void HandleEvents(void) __attribute__((noreturn));
 void AutoRaiseWindow(TwmWindow *tmp);
 
 void FixRootEvent(XEvent *e);
+
 
 extern event_proc EventHandler[];
 extern Window DragWindow;

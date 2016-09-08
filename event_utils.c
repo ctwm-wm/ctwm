@@ -1,5 +1,8 @@
 /*
  * Various util-ish functions for event handling.
+ *
+ * Many, probably most, are internal to the event code, but a few are
+ * used elsewhere.
  */
 
 #include "ctwm.h"
