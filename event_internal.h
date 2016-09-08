@@ -4,6 +4,7 @@
 #ifndef _CTWM_EVENT_INTERNAL_H
 #define _CTWM_EVENT_INTERNAL_H
 
+
 /* event_utils.c */
 /* AutoRaiseWindow in events.h (temporarily?) */
 void SetRaiseWindow(TwmWindow *tmp);
@@ -21,5 +22,10 @@ extern bool enter_flag;
 extern bool leave_flag;
 extern TwmWindow *enter_win, *raise_win, *leave_win, *lower_win;
 extern TwmWindow *ButtonWindow;
+
+
+/* SynthesiseFocus*() and focus handlers look at this */
+//#define TRACE_FOCUS
+
 
 #endif /* _CTWM_EVENT_INTERNAL_H */

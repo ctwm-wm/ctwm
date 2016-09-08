@@ -137,10 +137,6 @@ int ButtonPressed = -1;
 bool Cancel = false;
 
 
-/*#define TRACE_FOCUS*/
-/*#define TRACE*/
-
-
 
 /***********************************************************************
  *
