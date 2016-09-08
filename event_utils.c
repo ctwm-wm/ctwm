@@ -248,3 +248,40 @@ FindScreenInfo(Window w)
 
 	return NULL;
 }
+
+
+void
+SynthesiseFocusOut(Window w)
+{
+	XEvent event;
+
+#ifdef TRACE_FOCUS
+	fprintf(stderr, "Synthesizing FocusOut on %x\n", w);
+#endif
+
+	event.type = FocusOut;
+	event.xfocus.window = w;
+	event.xfocus.mode = NotifyNormal;
+	event.xfocus.detail = NotifyPointer;
+
+	XPutBackEvent(dpy, &event);
+}
+
+
+void
+SynthesiseFocusIn(Window w)
+{
+	XEvent event;
+
+#ifdef TRACE_FOCUS
+	fprintf(stderr, "Synthesizing FocusIn on %x\n", w);
+#endif
+
+	event.type = FocusIn;
+	event.xfocus.window = w;
+	event.xfocus.mode = NotifyNormal;
+	event.xfocus.detail = NotifyPointer;
+
+	XPutBackEvent(dpy, &event);
+
+}
