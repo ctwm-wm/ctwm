@@ -324,14 +324,48 @@ static XEvent *LastFocusEvent(Window w, XEvent *first)
 	return last;
 }
 
+
 /*
- * HandleFocusIn -- deal with the focus moving under us.
+ * Focus change handlers.
+ *
+ * Depending on how events get called, these are sometimes redundant, as
+ * the Enter event handler does practically all of this anyway.  But
+ * there are presumably ways we can wind up Focus'ing a window without
+ * Enter'ing it as well.
+ *
+ * It's also a little convoluted how these wind up getting called.  With
+ * most events, we call a handler, then handle that event.  However, with
+ * focus, we troll through our list of pending Focus-related events for
+ * the window and just handle the last one, since some could pile up
+ * fast.  That means that, even if we get called for a FocusIn event,
+ * there might be a FocusOut later in the queue, and _that_'s the one we
+ * pick up and handle, and we discard the rest [for that window].  So,
+ * the event handling code calls a single entry point for both types, and
+ * then it figures out which backend handler to actually first.
  */
+void
+HandleFocusChange(void)
+{
+	XEvent *event;
+
+	if(Tmp_win) {
+		event = LastFocusEvent(Event.xany.window, &Event);
+
+		if(event != NULL) {
+			if(event->type == FocusIn) {
+				HandleFocusIn(&event->xfocus);
+			}
+			else {
+				HandleFocusOut(&event->xfocus);
+			}
+		}
+	}
+}
+
 
 static void
 HandleFocusIn(XFocusInEvent *event)
 {
-
 #ifdef TRACE_FOCUS
 	fprintf(stderr, "HandleFocusIn : +0x%x (0x%x, 0x%x), mode=%d, detail=%d\n",
 	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
@@ -357,6 +391,7 @@ HandleFocusIn(XFocusInEvent *event)
 #endif
 	Scr->Focus = Tmp_win;
 }
+
 
 static void
 HandleFocusOut(XFocusOutEvent *event)
@@ -387,24 +422,6 @@ HandleFocusOut(XFocusOutEvent *event)
 	Scr->Focus = NULL;
 }
 
-void
-HandleFocusChange(void)
-{
-	XEvent *event;
-
-	if(Tmp_win) {
-		event = LastFocusEvent(Event.xany.window, &Event);
-
-		if(event != NULL) {
-			if(event->type == FocusIn) {
-				HandleFocusIn(&event->xfocus);
-			}
-			else {
-				HandleFocusOut(&event->xfocus);
-			}
-		}
-	}
-}
 
 
 /*
