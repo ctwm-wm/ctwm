@@ -388,6 +388,7 @@ HandleFocusChange(void)
 	        event->detail);
 #endif
 
+	/* And call actual handler */
 	if(event->type == FocusIn) {
 		HandleFocusIn();
 	}
