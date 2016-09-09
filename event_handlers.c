@@ -348,7 +348,11 @@ HandleFocusChange(void)
 {
 	XEvent *event;
 
-	if(Tmp_win) {
+	/* If there's no event window, nothing to do */
+	if(!Tmp_win) {
+		return;
+	}
+
 		event = LastFocusEvent(Event.xany.window, &Event);
 
 		if(event != NULL) {
@@ -367,7 +371,6 @@ HandleFocusChange(void)
 				HandleFocusOut();
 			}
 		}
-	}
 }
 
 
