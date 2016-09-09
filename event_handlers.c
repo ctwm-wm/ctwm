@@ -106,8 +106,8 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w);             /* invoking window or None */
 
 /* Only called from HandleFocusChange() */
-static void HandleFocusIn(XFocusInEvent *event);
-static void HandleFocusOut(XFocusOutEvent *event);
+static void HandleFocusIn(void);
+static void HandleFocusOut(void);
 
 static char *Action;            /* XXX This may be narrowable */
 
@@ -352,11 +352,19 @@ HandleFocusChange(void)
 		event = LastFocusEvent(Event.xany.window, &Event);
 
 		if(event != NULL) {
+#ifdef TRACE_FOCUS
+			fprintf(stderr, "HandleFocus%s(): 0x%x (0x%x, 0x%x), mode=%d, "
+			        "detail=%d\n",
+			        (event->type == FocusIn ? "In" : "Out"),
+			        Tmp_win, Tmp_win->w, event->window, event->mode,
+			        event->detail);
+#endif
+
 			if(event->type == FocusIn) {
-				HandleFocusIn(&event->xfocus);
+				HandleFocusIn();
 			}
 			else {
-				HandleFocusOut(&event->xfocus);
+				HandleFocusOut();
 			}
 		}
 	}
@@ -364,13 +372,8 @@ HandleFocusChange(void)
 
 
 static void
-HandleFocusIn(XFocusInEvent *event)
+HandleFocusIn(void)
 {
-#ifdef TRACE_FOCUS
-	fprintf(stderr, "HandleFocusIn : +0x%x (0x%x, 0x%x), mode=%d, detail=%d\n",
-	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
-#endif
-
 	if(Tmp_win->isiconmgr) {
 		return;
 	}
@@ -394,13 +397,8 @@ HandleFocusIn(XFocusInEvent *event)
 
 
 static void
-HandleFocusOut(XFocusOutEvent *event)
+HandleFocusOut(void)
 {
-#ifdef TRACE_FOCUS
-	fprintf(stderr, "HandleFocusOut : -0x%x (0x%x, 0x%x), mode=%d, detail=%d\n",
-	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
-#endif
-
 	if(Tmp_win->isiconmgr) {
 		return;
 	}
