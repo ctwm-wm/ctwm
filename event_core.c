@@ -138,19 +138,14 @@ bool Cancel = false;
 
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      InitEvents - initialize the event jump table
- *
- ***********************************************************************
+/*
+ * Initialize the event handling bits.  Mainly the jump table for event
+ * handling, plus various event vars.  Called during startup.
  */
-
-void InitEvents(void)
+void
+InitEvents(void)
 {
-	int i;
-
-
+	/* Clear out vars */
 	ResizeWindow = (Window) 0;
 	DragWindow = (Window) 0;
 	enter_flag = false;
@@ -158,10 +153,12 @@ void InitEvents(void)
 	leave_flag = false;
 	leave_win = lower_win = NULL;
 
-	for(i = 0; i < MAX_X_EVENT; i++) {
+	/* Set everything to unknown to start */
+	for(int i = 0; i < MAX_X_EVENT; i++) {
 		EventHandler[i] = HandleUnknown;
 	}
 
+	/* And init all the standard events */
 	EventHandler[Expose] = HandleExpose;
 	EventHandler[CreateNotify] = HandleCreateNotify;
 	EventHandler[DestroyNotify] = HandleDestroyNotify;
@@ -183,12 +180,18 @@ void InitEvents(void)
 	EventHandler[FocusIn] = HandleFocusChange;
 	EventHandler[FocusOut] = HandleFocusChange;
 	EventHandler[CirculateNotify] = HandleCirculateNotify;
-	if(HasShape) {
-		EventHandler[ShapeEventBase + ShapeNotify] = HandleShapeNotify;
-	}
+
+	/* Some more conditional bits */
 #ifdef EWMH
 	EventHandler[SelectionClear] = HandleSelectionClear;
 #endif
+
+	if(HasShape) {
+		EventHandler[ShapeEventBase + ShapeNotify] = HandleShapeNotify;
+	}
+
+	/* And done */
+	return;
 }
 
 
