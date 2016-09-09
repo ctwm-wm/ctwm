@@ -98,7 +98,7 @@
 
 static bool StashEventTime(XEvent *ev);
 static void CtwmNextEvent(Display *display, XEvent  *event);
-static void dumpevent(XEvent *e);
+static void dumpevent(const XEvent *e);
 
 FILE *tracefile = NULL;
 
@@ -433,9 +433,15 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 }
 
 
-static void dumpevent(XEvent *e)
+/*
+ * Debugging: output details of an event.  Or at least, details of a few
+ * events, presumably those which somebody doing debugging needed at the
+ * time.
+ */
+static void
+dumpevent(const XEvent *e)
 {
-	const char *name = "Unknown event";
+	const char *name;
 
 	if(! tracefile) {
 		return;
