@@ -361,8 +361,14 @@ HandleFocusChange(void)
 	 * global Event is the same as Tmp_win->w as the event dispatcher
 	 * sets it so.  Maybe we should do both checks on the same var for
 	 * consistency though?
+	 *
+	 * It's not immediately clear how this can wind up returning nothing,
+	 * but if it does, we don't have anything to do either.
 	 */
 	event = LastFocusEvent(Event.xany.window, &Event);
+	if(event == NULL) {
+		return;
+	}
 
 	/*
 	 * Icon managers don't do anything with focus events on themselves,
@@ -374,7 +380,6 @@ HandleFocusChange(void)
 		return;
 	}
 
-	if(event != NULL) {
 #ifdef TRACE_FOCUS
 		fprintf(stderr, "HandleFocus%s(): 0x%x (0x%x, 0x%x), mode=%d, "
 		        "detail=%d\n",
@@ -389,7 +394,6 @@ HandleFocusChange(void)
 		else {
 			HandleFocusOut();
 		}
-	}
 }
 
 
