@@ -306,19 +306,14 @@ static XEvent *LastFocusEvent(Window w, XEvent *first)
 		                   )) {
 			current = new;
 			last = &current;
-#ifdef TRACE_FOCUS
-			fprintf(stderr, "! %s 0x%x mode=%d, detail=%d\n",
-			        new.xfocus.type == FocusIn ? "in" : "out",
-			        Tmp_win, new.xfocus.mode, new.xfocus.detail);
-#endif
 		}
-		else {
+
 #ifdef TRACE_FOCUS
-			fprintf(stderr, "~ %s 0x%x mode=%d, detail=%d\n",
-			        new.xfocus.type == FocusIn ? "in" : "out",
-			        Tmp_win, new.xfocus.mode, new.xfocus.detail);
+		fprintf(stderr, "%s(): Focus%s 0x%x mode=%d, detail=%d\n",
+		        __func__, new.xfocus.type == FocusIn ? "In" : "Out",
+		        Tmp_win, new.xfocus.mode, new.xfocus.detail);
 #endif
-		}
+
 	}
 	while(XCheckWindowEvent(dpy, w, FocusChangeMask, &new));
 	return last;
