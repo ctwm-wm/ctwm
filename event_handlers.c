@@ -353,7 +353,26 @@ HandleFocusChange(void)
 		return;
 	}
 
+	/*
+	 * Consume all the focus events for the window we're called about and
+	 * grab the last one to process.
+	 *
+	 * XXX It should be guaranteed that the window in the X event in our
+	 * global Event is the same as Tmp_win->w as the event dispatcher
+	 * sets it so.  Maybe we should do both checks on the same var for
+	 * consistency though?
+	 */
 	event = LastFocusEvent(Event.xany.window, &Event);
+
+	/*
+	 * Icon managers don't do anything with focus events on themselves,
+	 * so just skip back if this is one.  Done after LastFocusEvent()
+	 * call for efficiency, so we don't fall into this func multiple
+	 * times if multiple events are queued for it.
+	 */
+	if(Tmp_win->isiconmgr) {
+		return;
+	}
 
 	if(event != NULL) {
 #ifdef TRACE_FOCUS
@@ -377,9 +396,6 @@ HandleFocusChange(void)
 static void
 HandleFocusIn(void)
 {
-	if(Tmp_win->isiconmgr) {
-		return;
-	}
 	if(Tmp_win->wmhints && ! Tmp_win->wmhints->input) {
 		return;
 	}
@@ -402,9 +418,6 @@ HandleFocusIn(void)
 static void
 HandleFocusOut(void)
 {
-	if(Tmp_win->isiconmgr) {
-		return;
-	}
 	if(Scr->Focus != Tmp_win) {
 		return;
 	}
