@@ -177,9 +177,11 @@ InitEvents(void)
 	EventHandler[KeyRelease] = HandleKeyRelease;
 	EventHandler[ColormapNotify] = HandleColormapNotify;
 	EventHandler[VisibilityNotify] = HandleVisibilityNotify;
+	EventHandler[CirculateNotify] = HandleCirculateNotify;
+
+	/* Focus handlers are special; see comment on HandleFocusChange() */
 	EventHandler[FocusIn] = HandleFocusChange;
 	EventHandler[FocusOut] = HandleFocusChange;
-	EventHandler[CirculateNotify] = HandleCirculateNotify;
 
 	/* Some more conditional bits */
 #ifdef EWMH
