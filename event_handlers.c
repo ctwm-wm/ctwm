@@ -381,19 +381,19 @@ HandleFocusChange(void)
 	}
 
 #ifdef TRACE_FOCUS
-		fprintf(stderr, "HandleFocus%s(): 0x%x (0x%x, 0x%x), mode=%d, "
-		        "detail=%d\n",
-		        (event->type == FocusIn ? "In" : "Out"),
-		        Tmp_win, Tmp_win->w, event->window, event->mode,
-		        event->detail);
+	fprintf(stderr, "HandleFocus%s(): 0x%x (0x%x, 0x%x), mode=%d, "
+	        "detail=%d\n",
+	        (event->type == FocusIn ? "In" : "Out"),
+	        Tmp_win, Tmp_win->w, event->window, event->mode,
+	        event->detail);
 #endif
 
-		if(event->type == FocusIn) {
-			HandleFocusIn();
-		}
-		else {
-			HandleFocusOut();
-		}
+	if(event->type == FocusIn) {
+		HandleFocusIn();
+	}
+	else {
+		HandleFocusOut();
+	}
 }
 
 
