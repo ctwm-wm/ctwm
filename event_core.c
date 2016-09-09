@@ -368,13 +368,13 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 	struct timeval timeout, *tout = NULL;
 	const bool animate = (AnimationActive && MaybeAnimate);
 
-#define nextEvent(event) XtAppNextEvent(appContext, event);
+#define NEXTEVENT XtAppNextEvent(appContext, event)
 
 	if(RestartFlag) {
 		DoRestart(CurrentTime);
 	}
 	if(XEventsQueued(display, QueuedAfterFlush) != 0) {
-		nextEvent(event);
+		NEXTEVENT;
 		return;
 	}
 	fd = ConnectionNumber(display);
@@ -386,7 +386,7 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 		DoRestart(CurrentTime);
 	}
 	if(! MaybeAnimate) {
-		nextEvent(event);
+		NEXTEVENT;
 		return;
 	}
 	if(animate) {
@@ -409,7 +409,7 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 			continue;
 		}
 		if(FD_ISSET(fd, &mask)) {
-			nextEvent(event);
+			NEXTEVENT;
 			return;
 		}
 		if(found == 0) {
@@ -420,14 +420,14 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 				DoRestart(CurrentTime);
 			}
 			if(! MaybeAnimate) {
-				nextEvent(event);
+				NEXTEVENT;
 				return;
 			}
 			continue;
 		}
 	}
 
-#undef nextEvent
+#undef NEXTEVENT
 
 	/* NOTREACHED */
 }
