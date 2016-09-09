@@ -158,26 +158,29 @@ InitEvents(void)
 		EventHandler[i] = HandleUnknown;
 	}
 
+#define STDH(evt) EventHandler[evt] = Handle##evt
+
 	/* And init all the standard events */
-	EventHandler[Expose] = HandleExpose;
-	EventHandler[CreateNotify] = HandleCreateNotify;
-	EventHandler[DestroyNotify] = HandleDestroyNotify;
-	EventHandler[MapRequest] = HandleMapRequest;
-	EventHandler[MapNotify] = HandleMapNotify;
-	EventHandler[UnmapNotify] = HandleUnmapNotify;
-	EventHandler[MotionNotify] = HandleMotionNotify;
-	EventHandler[ButtonRelease] = HandleButtonRelease;
-	EventHandler[ButtonPress] = HandleButtonPress;
-	EventHandler[EnterNotify] = HandleEnterNotify;
-	EventHandler[LeaveNotify] = HandleLeaveNotify;
-	EventHandler[ConfigureRequest] = HandleConfigureRequest;
-	EventHandler[ClientMessage] = HandleClientMessage;
-	EventHandler[PropertyNotify] = HandlePropertyNotify;
-	EventHandler[KeyPress] = HandleKeyPress;
-	EventHandler[KeyRelease] = HandleKeyRelease;
-	EventHandler[ColormapNotify] = HandleColormapNotify;
-	EventHandler[VisibilityNotify] = HandleVisibilityNotify;
-	EventHandler[CirculateNotify] = HandleCirculateNotify;
+	STDH(Expose);
+	STDH(CreateNotify);
+	STDH(DestroyNotify);
+	STDH(MapRequest);
+	STDH(MapNotify);
+	STDH(UnmapNotify);
+	STDH(MotionNotify);
+	STDH(ButtonRelease);
+	STDH(ButtonPress);
+	STDH(EnterNotify);
+	STDH(LeaveNotify);
+	STDH(ConfigureRequest);
+	STDH(ClientMessage);
+	STDH(PropertyNotify);
+	STDH(KeyPress);
+	STDH(KeyRelease);
+	STDH(ColormapNotify);
+	STDH(VisibilityNotify);
+	STDH(CirculateNotify);
+
 
 	/* Focus handlers are special; see comment on HandleFocusChange() */
 	EventHandler[FocusIn] = HandleFocusChange;
@@ -185,12 +188,14 @@ InitEvents(void)
 
 	/* Some more conditional bits */
 #ifdef EWMH
-	EventHandler[SelectionClear] = HandleSelectionClear;
+	STDH(SelectionClear);
 #endif
 
 	if(HasShape) {
 		EventHandler[ShapeEventBase + ShapeNotify] = HandleShapeNotify;
 	}
+
+#undef STDH
 
 	/* And done */
 	return;
