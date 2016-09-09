@@ -2007,6 +2007,7 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 			p->ring.curs_x = ev->x_root - t->frame_x;
 			p->ring.curs_y = ev->y_root - t->frame_y;
 #ifdef DEBUG
+			/* XXX This is the Tmp_win [now] internal to the event code? */
 			fprintf(stderr,
 			        "WarpAlongRing: cursor_valid := true; x := %d (%d-%d), y := %d (%d-%d)\n",
 			        Tmp_win->ring.curs_x, ev->x_root, t->frame_x, Tmp_win->ring.curs_y, ev->y_root,
