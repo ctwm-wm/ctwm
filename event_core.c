@@ -206,6 +206,134 @@ InitEvents(void)
 }
 
 
+
+/*
+ * Main event loop.
+ *
+ * This is the last thing called during ctwm startup, and never returns.
+ * So in essence, this is everything ctwm does except starting up and
+ * shutting down (and that latter winds up called through us as well).
+ */
+void
+HandleEvents(void)
+{
+	while(1) {
+		if(enter_flag && !QLength(dpy)) {
+			if(enter_win && enter_win != raise_win) {
+				AutoRaiseWindow(enter_win);   /* sets enter_flag T */
+			}
+			else {
+				enter_flag = false;
+			}
+		}
+		if(leave_flag && !QLength(dpy)) {
+			if(leave_win && leave_win != lower_win) {
+				AutoLowerWindow(leave_win);  /* sets leave_flag T */
+			}
+			else {
+				leave_flag = false;
+			}
+		}
+		if(ColortableThrashing && !QLength(dpy) && Scr) {
+			InstallColormaps(ColormapNotify, NULL);
+		}
+		WindowMoved = false;
+
+		CtwmNextEvent(dpy, &Event);
+
+		if(Event.type < 0 || Event.type >= MAX_X_EVENT) {
+			XtDispatchEvent(&Event);
+		}
+		else {
+			(void) DispatchEvent();
+		}
+	}
+
+	/* NOTREACHED */
+	fprintf(stderr, "Error: Should never reach the end of HandleEvents()\n");
+	exit(1);
+}
+
+
+/*
+ * Grab the next event in the queue to process.
+ */
+static void
+CtwmNextEvent(Display *display, XEvent *event)
+{
+	int         fd;
+	struct timeval timeout, *tout = NULL;
+	const bool animate = (AnimationActive && MaybeAnimate);
+
+#define NEXTEVENT XtAppNextEvent(appContext, event)
+
+	if(RestartFlag) {
+		DoRestart(CurrentTime);
+	}
+	if(XEventsQueued(display, QueuedAfterFlush) != 0) {
+		NEXTEVENT;
+		return;
+	}
+	fd = ConnectionNumber(display);
+
+	if(animate) {
+		TryToAnimate();
+	}
+	if(RestartFlag) {
+		DoRestart(CurrentTime);
+	}
+	if(! MaybeAnimate) {
+		NEXTEVENT;
+		return;
+	}
+	if(animate) {
+		tout = (AnimationSpeed > 0) ? &timeout : NULL;
+	}
+	while(1) {
+		fd_set mask;
+		int found;
+
+		FD_ZERO(&mask);
+		FD_SET(fd, &mask);
+		if(animate) {
+			timeout = AnimateTimeout;
+		}
+		found = select(fd + 1, &mask, NULL, NULL, tout);
+		if(RestartFlag) {
+			DoRestart(CurrentTime);
+		}
+		if(found < 0) {
+			if(errno != EINTR) {
+				perror("select");
+			}
+			continue;
+		}
+		if(FD_ISSET(fd, &mask)) {
+			NEXTEVENT;
+			return;
+		}
+		if(found == 0) {
+			if(animate) {
+				TryToAnimate();
+			}
+			if(RestartFlag) {
+				DoRestart(CurrentTime);
+			}
+			if(! MaybeAnimate) {
+				NEXTEVENT;
+				return;
+			}
+			continue;
+		}
+	}
+
+#undef NEXTEVENT
+
+	/* NOTREACHED */
+}
+
+
+
 /***********************************************************************
  *
  *  Procedure:
@@ -294,121 +422,6 @@ DispatchEvent(void)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleEvents - handle X events
- *
- ***********************************************************************
- */
-
-void HandleEvents(void)
-{
-	while(1) {
-		if(enter_flag && !QLength(dpy)) {
-			if(enter_win && enter_win != raise_win) {
-				AutoRaiseWindow(enter_win);   /* sets enter_flag T */
-			}
-			else {
-				enter_flag = false;
-			}
-		}
-		if(leave_flag && !QLength(dpy)) {
-			if(leave_win && leave_win != lower_win) {
-				AutoLowerWindow(leave_win);  /* sets leave_flag T */
-			}
-			else {
-				leave_flag = false;
-			}
-		}
-		if(ColortableThrashing && !QLength(dpy) && Scr) {
-			InstallColormaps(ColormapNotify, NULL);
-		}
-		WindowMoved = false;
-
-		CtwmNextEvent(dpy, &Event);
-
-		if(Event.type < 0 || Event.type >= MAX_X_EVENT) {
-			XtDispatchEvent(&Event);
-		}
-		else {
-			(void) DispatchEvent();
-		}
-	}
-}
-
-
-static void CtwmNextEvent(Display *display, XEvent  *event)
-{
-	int         found;
-	fd_set      mask;
-	int         fd;
-	struct timeval timeout, *tout = NULL;
-	const bool animate = (AnimationActive && MaybeAnimate);
-
-#define NEXTEVENT XtAppNextEvent(appContext, event)
-
-	if(RestartFlag) {
-		DoRestart(CurrentTime);
-	}
-	if(XEventsQueued(display, QueuedAfterFlush) != 0) {
-		NEXTEVENT;
-		return;
-	}
-	fd = ConnectionNumber(display);
-
-	if(animate) {
-		TryToAnimate();
-	}
-	if(RestartFlag) {
-		DoRestart(CurrentTime);
-	}
-	if(! MaybeAnimate) {
-		NEXTEVENT;
-		return;
-	}
-	if(animate) {
-		tout = (AnimationSpeed > 0) ? &timeout : NULL;
-	}
-	while(1) {
-		FD_ZERO(&mask);
-		FD_SET(fd, &mask);
-		if(animate) {
-			timeout = AnimateTimeout;
-		}
-		found = select(fd + 1, &mask, NULL, NULL, tout);
-		if(RestartFlag) {
-			DoRestart(CurrentTime);
-		}
-		if(found < 0) {
-			if(errno != EINTR) {
-				perror("select");
-			}
-			continue;
-		}
-		if(FD_ISSET(fd, &mask)) {
-			NEXTEVENT;
-			return;
-		}
-		if(found == 0) {
-			if(animate) {
-				TryToAnimate();
-			}
-			if(RestartFlag) {
-				DoRestart(CurrentTime);
-			}
-			if(! MaybeAnimate) {
-				NEXTEVENT;
-				return;
-			}
-			continue;
-		}
-	}
-
-#undef NEXTEVENT
-
-	/* NOTREACHED */
-}
 
 
 /*
