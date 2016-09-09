@@ -192,42 +192,6 @@ void InitEvents(void)
 }
 
 
-
-static bool
-StashEventTime(XEvent *ev)
-{
-	switch(ev->type) {
-		case KeyPress:
-		case KeyRelease:
-			EventTime = ev->xkey.time;
-			return true;
-		case ButtonPress:
-		case ButtonRelease:
-			EventTime = ev->xbutton.time;
-			return true;
-		case MotionNotify:
-			EventTime = ev->xmotion.time;
-			return true;
-		case EnterNotify:
-		case LeaveNotify:
-			EventTime = ev->xcrossing.time;
-			return true;
-		case PropertyNotify:
-			EventTime = ev->xproperty.time;
-			return true;
-		case SelectionClear:
-			EventTime = ev->xselectionclear.time;
-			return true;
-		case SelectionRequest:
-			EventTime = ev->xselectionrequest.time;
-			return true;
-		case SelectionNotify:
-			EventTime = ev->xselection.time;
-			return true;
-	}
-	return false;
-}
-
 /***********************************************************************
  *
  *  Procedure:
@@ -430,6 +394,46 @@ static void CtwmNextEvent(Display *display, XEvent  *event)
 #undef NEXTEVENT
 
 	/* NOTREACHED */
+}
+
+
+/*
+ * Stash the time of the given event in our EventTime global.  Called
+ * during dispatching the event.
+ */
+static bool
+StashEventTime(XEvent *ev)
+{
+	switch(ev->type) {
+		case KeyPress:
+		case KeyRelease:
+			EventTime = ev->xkey.time;
+			return true;
+		case ButtonPress:
+		case ButtonRelease:
+			EventTime = ev->xbutton.time;
+			return true;
+		case MotionNotify:
+			EventTime = ev->xmotion.time;
+			return true;
+		case EnterNotify:
+		case LeaveNotify:
+			EventTime = ev->xcrossing.time;
+			return true;
+		case PropertyNotify:
+			EventTime = ev->xproperty.time;
+			return true;
+		case SelectionClear:
+			EventTime = ev->xselectionclear.time;
+			return true;
+		case SelectionRequest:
+			EventTime = ev->xselectionrequest.time;
+			return true;
+		case SelectionNotify:
+			EventTime = ev->xselection.time;
+			return true;
+	}
+	return false;
 }
 
 
