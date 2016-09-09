@@ -96,8 +96,8 @@
 #endif
 
 
-static bool StashEventTime(XEvent *ev);
 static void CtwmNextEvent(Display *display, XEvent  *event);
+static bool StashEventTime(XEvent *ev);
 static void dumpevent(const XEvent *e);
 
 FILE *tracefile = NULL;
