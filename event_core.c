@@ -160,7 +160,7 @@ InitEvents(void)
 
 #define STDH(evt) EventHandler[evt] = Handle##evt
 
-	/* And init all the standard events */
+	/* Init the standard events */
 	STDH(Expose);
 	STDH(CreateNotify);
 	STDH(DestroyNotify);
@@ -181,7 +181,6 @@ InitEvents(void)
 	STDH(VisibilityNotify);
 	STDH(CirculateNotify);
 
-
 	/* Focus handlers are special; see comment on HandleFocusChange() */
 	EventHandler[FocusIn] = HandleFocusChange;
 	EventHandler[FocusOut] = HandleFocusChange;
@@ -191,6 +190,11 @@ InitEvents(void)
 	STDH(SelectionClear);
 #endif
 
+	/*
+	 * Optional extensions are registered dynamically, so their events
+	 * are put by the X server at some offset into the event number tree
+	 * when it starts.
+	 */
 	if(HasShape) {
 		EventHandler[ShapeEventBase + ShapeNotify] = HandleShapeNotify;
 	}
