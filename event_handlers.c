@@ -336,7 +336,7 @@ static XEvent *LastFocusEvent(Window w, XEvent *first)
  * there might be a FocusOut later in the queue, and _that_'s the one we
  * pick up and handle, and we discard the rest [for that window].  So,
  * the event handling code calls a single entry point for both types, and
- * then it figures out which backend handler to actually first.
+ * then it figures out which backend handler to actually fire.
  */
 void
 HandleFocusChange(void)
