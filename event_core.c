@@ -334,15 +334,52 @@ CtwmNextEvent(Display *display, XEvent *event)
 
 
 
-/***********************************************************************
+/*
+ * And dispatchers.  These look at the global Event and run with it from
+ * there.
  *
- *  Procedure:
- *      DispatchEvent2 -
- *      handle a single X event stored in global var Event
- *      this routine for is for a call during an f.move
- *
- ***********************************************************************
+ * There are slight differences between the two, and it's not at all
+ * clear to what extent there should be or why they're different.  At
+ * least some of the difference seem gratuitous; this requires further
+ * research.  They probably can and should be collapsed together.
  */
+/* Main dispatcher, from the loop above and a few other places */
+bool
+DispatchEvent(void)
+{
+	Window w = Event.xany.window;
+	ScreenInfo *thisScr;
+
+	StashEventTime(&Event);
+	Tmp_win = GetTwmWindow(w);
+	thisScr = GetTwmScreen(&Event);
+
+	dumpevent(&Event);
+
+	if(!thisScr) {
+		return false;
+	}
+	Scr = thisScr;
+
+	if(CLarg.is_captive) {
+		if((Event.type == ConfigureNotify)
+		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
+			ConfigureCaptiveRootWindow(&Event);
+			return false;
+		}
+	}
+	FixRootEvent(&Event);
+	if(Event.type >= 0 && Event.type < MAX_X_EVENT) {
+#ifdef SOUNDS
+		play_sound(Event.type);
+#endif
+		(*EventHandler[Event.type])();
+	}
+	return true;
+}
+
+
+/* Alternate; called from various function and menu code */
 bool
 DispatchEvent2(void)
 {
@@ -377,47 +414,6 @@ DispatchEvent2(void)
 		}
 	}
 
-	return true;
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *      DispatchEvent - handle a single X event stored in global var Event
- *
- ***********************************************************************
- */
-bool
-DispatchEvent(void)
-{
-	Window w = Event.xany.window;
-	ScreenInfo *thisScr;
-
-	StashEventTime(&Event);
-	Tmp_win = GetTwmWindow(w);
-	thisScr = GetTwmScreen(&Event);
-
-	dumpevent(&Event);
-
-	if(!thisScr) {
-		return false;
-	}
-	Scr = thisScr;
-
-	if(CLarg.is_captive) {
-		if((Event.type == ConfigureNotify)
-		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
-			ConfigureCaptiveRootWindow(&Event);
-			return false;
-		}
-	}
-	FixRootEvent(&Event);
-	if(Event.type >= 0 && Event.type < MAX_X_EVENT) {
-#ifdef SOUNDS
-		play_sound(Event.type);
-#endif
-		(*EventHandler[Event.type])();
-	}
 	return true;
 }
 
