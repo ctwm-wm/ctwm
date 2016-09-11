@@ -90,6 +90,7 @@
 #include "iconmgr.h"
 #include "image.h"
 #include "screen.h"
+#include "util.h"
 #include "version.h"
 #ifdef SOUNDS
 #include "sound.h"
@@ -99,8 +100,6 @@
 static void CtwmNextEvent(Display *display, XEvent  *event);
 static bool StashEventTime(XEvent *ev);
 static void dumpevent(const XEvent *e);
-
-FILE *tracefile = NULL;
 
 #define MAX_X_EVENT 256
 event_proc EventHandler[MAX_X_EVENT]; /* event handler jump table */

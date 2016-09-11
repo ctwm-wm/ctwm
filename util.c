@@ -105,6 +105,11 @@
 #include "drawing.h"
 
 
+/* Handle for debug tracing */
+FILE *tracefile = NULL;
+
+
+
 /***********************************************************************
  *
  *  Procedure:

@@ -64,8 +64,6 @@
 #ifndef _CTWM_EVENTS_H
 #define _CTWM_EVENTS_H
 
-#include <stdio.h>  // For FILE
-
 typedef void (*event_proc)(void);
 
 void InitEvents(void);
@@ -96,7 +94,6 @@ extern unsigned int DragBW;
 extern int CurrentDragX;
 extern int CurrentDragY;
 extern int Context;
-extern FILE *tracefile;
 
 extern int ButtonPressed;
 extern bool Cancel;
