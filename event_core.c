@@ -124,7 +124,6 @@ Time EventTime = CurrentTime;       /* until Xlib does this for us */
 bool enter_flag;
 bool leave_flag;
 TwmWindow *enter_win, *raise_win, *leave_win, *lower_win;
-TwmWindow *ButtonWindow; /* button press window structure */
 
 /*
  * Not static because shared with colormaps.c and other events files, but

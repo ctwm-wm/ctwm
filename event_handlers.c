@@ -110,6 +110,7 @@ static void HandleFocusIn(void);
 static void HandleFocusOut(void);
 
 static char *Action;            /* XXX This may be narrowable */
+static TwmWindow *ButtonWindow; /* button press window structure */
 
 
 static unsigned int set_mask_ignore(unsigned int modifier)

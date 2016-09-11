@@ -21,7 +21,6 @@ extern bool ColortableThrashing;
 extern bool enter_flag;
 extern bool leave_flag;
 extern TwmWindow *enter_win, *raise_win, *leave_win, *lower_win;
-extern TwmWindow *ButtonWindow;
 
 
 /* SynthesiseFocus*() and focus handlers look at this */
