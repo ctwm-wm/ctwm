@@ -1752,7 +1752,7 @@ SetLastCursor(Cursor newcur)
 
 void FocusOnRoot(void)
 {
-	SetFocus(NULL, LastTimestamp());
+	SetFocus(NULL, EventTime);
 	InstallColormaps(0, &Scr->RootColormaps);
 	if(! Scr->ClickToFocus) {
 		Scr->FocusRoot = true;
@@ -2007,6 +2007,7 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 			p->ring.curs_x = ev->x_root - t->frame_x;
 			p->ring.curs_y = ev->y_root - t->frame_y;
 #ifdef DEBUG
+			/* XXX This is the Tmp_win [now] internal to the event code? */
 			fprintf(stderr,
 			        "WarpAlongRing: cursor_valid := true; x := %d (%d-%d), y := %d (%d-%d)\n",
 			        Tmp_win->ring.curs_x, ev->x_root, t->frame_x, Tmp_win->ring.curs_y, ev->y_root,
@@ -2099,7 +2100,7 @@ WarpToWindow(TwmWindow *t, bool must_raise)
 	}
 
 	XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0, x + t->frame_x, y + t->frame_y);
-	SetFocus(t, LastTimestamp());
+	SetFocus(t, EventTime);
 
 #ifdef DEBUG
 	{

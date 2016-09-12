@@ -64,53 +64,23 @@
 #ifndef _CTWM_EVENTS_H
 #define _CTWM_EVENTS_H
 
-#include <stdio.h>  // For FILE
-
 typedef void (*event_proc)(void);
 
 void InitEvents(void);
-extern Time lastTimestamp;
-void SimulateMapRequest(Window w);
-void AutoRaiseWindow(TwmWindow *tmp);
-void SetRaiseWindow(TwmWindow *tmp);
-void AutoPopupMaybe(TwmWindow *tmp);
-void AutoLowerWindow(TwmWindow *tmp);
-#define LastTimestamp() lastTimestamp
-Window WindowOfEvent(XEvent *e);
-void FixRootEvent(XEvent *e);
 bool DispatchEvent(void);
 bool DispatchEvent2(void);
 void HandleEvents(void) __attribute__((noreturn));
-void HandleExpose(void);
-void HandleDestroyNotify(void);
-void HandleMapRequest(void);
-void HandleMapNotify(void);
-void HandleUnmapNotify(void);
-void HandleMotionNotify(void);
-void HandleButtonRelease(void);
-void HandleButtonPress(void);
-void HandleEnterNotify(void);
-void HandleLeaveNotify(void);
-void HandleConfigureRequest(void);
-void HandleClientMessage(void);
-void HandlePropertyNotify(void);
-void HandleKeyPress(void);
-void HandleKeyRelease(void);
-void HandleColormapNotify(void);
-void HandleVisibilityNotify(void);
-void HandleUnknown(void);
-void HandleFocusIn(XFocusInEvent *event);
-void HandleFocusOut(XFocusOutEvent *event);
-void SynthesiseFocusOut(Window w);
-void SynthesiseFocusIn(Window w);
-void HandleCirculateNotify(void);
-bool Transient(Window w, Window *propw);
 
-ScreenInfo *FindScreenInfo(Window w);
+/* Bits in event_utils.c */
+/*
+ * This should maybe be in event_internal.h, but a few other places use
+ * it.  TBD: figure out why and whether they should
+ */
+void AutoRaiseWindow(TwmWindow *tmp);
 
-void ConfigureRootWindow(XEvent *ev);
+void FixRootEvent(XEvent *e);
+void SimulateMapRequest(Window w);
 
-void free_cwins(TwmWindow *tmp);
 
 extern event_proc EventHandler[];
 extern Window DragWindow;
@@ -124,11 +94,11 @@ extern unsigned int DragBW;
 extern int CurrentDragX;
 extern int CurrentDragY;
 extern int Context;
-extern FILE *tracefile;
 
 extern int ButtonPressed;
 extern bool Cancel;
 
 extern XEvent Event;
+extern Time EventTime;
 
 #endif /* _CTWM_EVENTS_H */

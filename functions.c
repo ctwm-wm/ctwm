@@ -18,6 +18,7 @@
 #include "cursor.h"
 #include "decorations.h"
 #include "events.h"
+#include "event_handlers.h"
 #include "iconmgr.h"
 #include "icons.h"
 #include "menus.h"
@@ -1363,7 +1364,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				break;
 			}
 			if(tmp_win->protocols & DoesWmDeleteWindow) {
-				SendDeleteWindowMessage(tmp_win, LastTimestamp());
+				SendDeleteWindowMessage(tmp_win, EventTime);
 				if(ButtonPressed != -1) {
 					XEvent kev;
 
@@ -1394,7 +1395,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				break;
 			}
 			if(tmp_win->protocols & DoesWmDeleteWindow) {
-				SendDeleteWindowMessage(tmp_win, LastTimestamp());
+				SendDeleteWindowMessage(tmp_win, EventTime);
 			}
 			else {
 				XKillClient(dpy, tmp_win->w);
@@ -1416,7 +1417,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 
 			if(tmp_win->protocols & DoesWmSaveYourself) {
-				SendSaveYourselfMessage(tmp_win, LastTimestamp());
+				SendSaveYourselfMessage(tmp_win, EventTime);
 			}
 			else {
 				XBell(dpy, 0);

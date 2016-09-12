@@ -110,8 +110,9 @@ unsigned int AddingH;
 
 static int PlaceX = -1;
 static int PlaceY = -1;
-void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
-                                   TwmWindow *tmp_win);
+static void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
+                TwmWindow *tmp_win);
+static bool Transient(Window w, Window *propw);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
 bool resizeWhenAdd;
@@ -1844,8 +1845,9 @@ void GetWindowSizeHints(TwmWindow *tmp)
  * this approach assumes screens that are next to each other horizontally,
  * Other possibilities need to be investigated and accounted for.
  */
-void DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
-                                   TwmWindow *tmp_win)
+static void
+DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
+                              TwmWindow *tmp_win)
 {
 	Window              vvroot;
 	int                 x, y;
@@ -1885,4 +1887,17 @@ void DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
 	else {
 	}
 
+}
+
+
+/*
+ * Figure out if a window is a transient, and stash what it's transient
+ * for.
+ *
+ * Previously in events.c.  Maybe fodder for a win_utils file?
+ */
+static bool
+Transient(Window w, Window *propw)
+{
+	return (bool)XGetTransientForHint(dpy, w, propw);
 }

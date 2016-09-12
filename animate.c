@@ -221,7 +221,7 @@ Animate(void)
 	MaybeAnimate |= AnimateRoot();
 	if(MaybeAnimate) {
 		Animating++;
-		SendEndAnimationMessage(scr->currentvs->wsw->w, LastTimestamp());
+		SendEndAnimationMessage(scr->currentvs->wsw->w, EventTime);
 	}
 	XFlush(dpy);
 	return;

@@ -22,4 +22,6 @@ void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
 void RemoveRGBColormap(Atom a);
 void LocateStandardColormaps(void);
 
+void free_cwins(TwmWindow *tmp);
+
 #endif /* _CTWM_COLORMAPS_H */

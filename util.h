@@ -65,6 +65,7 @@
 #define _CTWM_UTIL_H
 
 #include <ctype.h>
+#include <stdio.h>
 
 #ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
@@ -122,5 +123,7 @@ bool visible(const TwmWindow *tmp_win);
 long mask_out_event(Window w, long ignore_event);
 long mask_out_event_mask(Window w, long ignore_event, long curmask);
 int restore_mask(Window w, long restore);
+
+extern FILE *tracefile;
 
 #endif /* _CTWM_UTIL_H */

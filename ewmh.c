@@ -60,6 +60,7 @@
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"
+#include "event_handlers.h"
 #include "icons.h"
 #include "add_window.h"
 #include "otp.h"
@@ -165,7 +166,7 @@ static void GenerateTimestamp(ScreenInfo *scr)
 	tosleep.tv_sec  = 0;
 	tosleep.tv_nsec = (10 * 1000 * 1000);
 
-	if(lastTimestamp > 0) {
+	if(EventTime > 0) {
 		return;
 	}
 
@@ -187,8 +188,8 @@ static void GenerateTimestamp(ScreenInfo *scr)
 		fprintf(stderr, "GenerateTimestamp: time = %ld, timeout left = %d\n",
 		        event.xproperty.time, timeout);
 #endif /* DEBUG_EWMH */
-		if(lastTimestamp < event.xproperty.time) {
-			lastTimestamp = event.xproperty.time;
+		if(EventTime < event.xproperty.time) {
+			EventTime = event.xproperty.time;
 		}
 	}
 }
@@ -294,7 +295,7 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 	GenerateTimestamp(scr);
 
 	SendPropertyMessage(scr->XineramaRoot, scr->XineramaRoot,
-	                    XA_MANAGER, lastTimestamp, wmAtom, scr->icccm_Window, 0, 0,
+	                    XA_MANAGER, EventTime, wmAtom, scr->icccm_Window, 0, 0,
 	                    StructureNotifyMask);
 
 	return true;
@@ -1304,7 +1305,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			xevent.xbutton.y_root = twm_win->frame_y;
 			xevent.xbutton.x = 0;
 			xevent.xbutton.y = 0;
-			xevent.xbutton.time = lastTimestamp;
+			xevent.xbutton.time = EventTime;
 			menuFromFrameOrWindowOrTitlebar = true;
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
 			                &xevent, C_TITLE, false);

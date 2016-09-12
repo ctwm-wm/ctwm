@@ -71,580 +71,53 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <sys/time.h>
 
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 
-#include "ctwm_atoms.h"
 #include "add_window.h"
-#include "decorations.h"
+#include "animate.h"
 #include "clicktofocus.h"
 #include "colormaps.h"
-#include "menus.h"
+#include "ctwm_atoms.h"
+#include "decorations.h"
 #include "events.h"
+#include "event_handlers.h"
+#include "event_internal.h"
 #include "event_names.h"
-#include "resize.h"
-#include "parse.h"
-#include "util.h"
-#include "animate.h"
-#include "otp.h"
-#include "screen.h"
+#include "functions.h"
+#include "gram.tab.h"
 #include "iconmgr.h"
 #include "icons.h"
-#include "version.h"
 #include "image.h"
-#include "functions.h"
+#include "otp.h"
+#include "parse.h"
+#include "resize.h"
+#include "screen.h"
+#include "util.h"
 #include "win_iconify.h"
 #include "win_regions.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
-#ifdef SOUNDS
-#include "sound.h"
-#endif
 
-#include "gram.tab.h"
 
-static void CtwmNextEvent(Display *display, XEvent  *event);
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w);             /* invoking window or None */
-static bool StashEventTime(XEvent *ev);
 
-FILE *tracefile = NULL;
+/* Only called from HandleFocusChange() */
+static void HandleFocusIn(void);
+static void HandleFocusOut(void);
 
-#define MAX_X_EVENT 256
-event_proc EventHandler[MAX_X_EVENT]; /* event handler jump table */
 static char *Action;            /* XXX This may be narrowable */
-int Context = C_NO_CONTEXT;     /* current button press context */
 static TwmWindow *ButtonWindow; /* button press window structure */
-XEvent Event;                   /* the current event */
-static TwmWindow *Tmp_win;      /* the current twm window */
 
-Window DragWindow;              /* variables used in moving windows */
-int origDragX;
-int origDragY;
-int DragX;
-int DragY;
-unsigned int DragWidth;
-unsigned int DragHeight;
-unsigned int DragBW;
-int CurrentDragX;
-int CurrentDragY;
-
-static bool enter_flag;
-static bool leave_flag;
-static TwmWindow *enter_win, *raise_win, *leave_win, *lower_win;
-
-/*
- * Not static because shared with colormaps.c, but not listed in events.h
- * since nowhere else needs it.
- */
-bool ColortableThrashing;
-
-int ButtonPressed = -1;
-bool Cancel = false;
-
-void HandleCreateNotify(void);
-void HandleShapeNotify(void);
-void HandleFocusChange(void);
-void HandleSelectionClear(void);
-
-
-/*#define TRACE_FOCUS*/
-/*#define TRACE*/
-
-static void dumpevent(XEvent *e);
 
 static unsigned int set_mask_ignore(unsigned int modifier)
 {
 	modifier &= ~Scr->IgnoreModifier;
 
 	return modifier;
-}
-
-void AutoRaiseWindow(TwmWindow *tmp)
-{
-	OtpRaise(tmp, WinWin);
-
-	if(ActiveMenu && ActiveMenu->w) {
-		XRaiseWindow(dpy, ActiveMenu->w);
-	}
-	XSync(dpy, 0);
-	enter_win = NULL;
-	enter_flag = true;
-	raise_win = tmp;
-	WMapRaise(tmp);
-}
-
-void SetRaiseWindow(TwmWindow *tmp)
-{
-	enter_flag = true;
-	enter_win = NULL;
-	raise_win = tmp;
-	leave_win = NULL;
-	leave_flag = false;
-	lower_win = NULL;
-	XSync(dpy, 0);
-}
-
-void AutoPopupMaybe(TwmWindow *tmp)
-{
-	if(LookInList(Scr->AutoPopupL, tmp->full_name, &tmp->class)
-	                || Scr->AutoPopup) {
-		if(OCCUPY(tmp, Scr->currentvs->wsw->currentwspc)) {
-			if(!tmp->mapped) {
-				DeIconify(tmp);
-				SetRaiseWindow(tmp);
-			}
-		}
-		else {
-			tmp->mapped = true;
-		}
-	}
-}
-
-void AutoLowerWindow(TwmWindow *tmp)
-{
-	OtpLower(tmp, WinWin);
-
-	if(ActiveMenu && ActiveMenu->w) {
-		XRaiseWindow(dpy, ActiveMenu->w);
-	}
-	XSync(dpy, 0);
-	enter_win = NULL;
-	enter_flag = false;
-	raise_win = NULL;
-	leave_win = NULL;
-	leave_flag = true;
-	lower_win = tmp;
-	WMapLower(tmp);
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
- *      InitEvents - initialize the event jump table
- *
- ***********************************************************************
- */
-
-void InitEvents(void)
-{
-	int i;
-
-
-	ResizeWindow = (Window) 0;
-	DragWindow = (Window) 0;
-	enter_flag = false;
-	enter_win = raise_win = NULL;
-	leave_flag = false;
-	leave_win = lower_win = NULL;
-
-	for(i = 0; i < MAX_X_EVENT; i++) {
-		EventHandler[i] = HandleUnknown;
-	}
-
-	EventHandler[Expose] = HandleExpose;
-	EventHandler[CreateNotify] = HandleCreateNotify;
-	EventHandler[DestroyNotify] = HandleDestroyNotify;
-	EventHandler[MapRequest] = HandleMapRequest;
-	EventHandler[MapNotify] = HandleMapNotify;
-	EventHandler[UnmapNotify] = HandleUnmapNotify;
-	EventHandler[MotionNotify] = HandleMotionNotify;
-	EventHandler[ButtonRelease] = HandleButtonRelease;
-	EventHandler[ButtonPress] = HandleButtonPress;
-	EventHandler[EnterNotify] = HandleEnterNotify;
-	EventHandler[LeaveNotify] = HandleLeaveNotify;
-	EventHandler[ConfigureRequest] = HandleConfigureRequest;
-	EventHandler[ClientMessage] = HandleClientMessage;
-	EventHandler[PropertyNotify] = HandlePropertyNotify;
-	EventHandler[KeyPress] = HandleKeyPress;
-	EventHandler[KeyRelease] = HandleKeyRelease;
-	EventHandler[ColormapNotify] = HandleColormapNotify;
-	EventHandler[VisibilityNotify] = HandleVisibilityNotify;
-	EventHandler[FocusIn] = HandleFocusChange;
-	EventHandler[FocusOut] = HandleFocusChange;
-	EventHandler[CirculateNotify] = HandleCirculateNotify;
-	if(HasShape) {
-		EventHandler[ShapeEventBase + ShapeNotify] = HandleShapeNotify;
-	}
-#ifdef EWMH
-	EventHandler[SelectionClear] = HandleSelectionClear;
-#endif
-}
-
-
-
-Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
-
-static bool
-StashEventTime(XEvent *ev)
-{
-	switch(ev->type) {
-		case KeyPress:
-		case KeyRelease:
-			lastTimestamp = ev->xkey.time;
-			return true;
-		case ButtonPress:
-		case ButtonRelease:
-			lastTimestamp = ev->xbutton.time;
-			return true;
-		case MotionNotify:
-			lastTimestamp = ev->xmotion.time;
-			return true;
-		case EnterNotify:
-		case LeaveNotify:
-			lastTimestamp = ev->xcrossing.time;
-			return true;
-		case PropertyNotify:
-			lastTimestamp = ev->xproperty.time;
-			return true;
-		case SelectionClear:
-			lastTimestamp = ev->xselectionclear.time;
-			return true;
-		case SelectionRequest:
-			lastTimestamp = ev->xselectionrequest.time;
-			return true;
-		case SelectionNotify:
-			lastTimestamp = ev->xselection.time;
-			return true;
-	}
-	return false;
-}
-
-
-/*
- * WindowOfEvent - return the window about which this event is concerned; this
- * window may not be the same as XEvent.xany.window (the first window listed
- * in the structure).
- */
-Window WindowOfEvent(XEvent *e)
-{
-	/*
-	 * Each window subfield is marked with whether or not it is the same as
-	 * XEvent.xany.window or is different (which is the case for some of the
-	 * notify events).
-	 */
-	switch(e->type) {
-		case KeyPress:
-		case KeyRelease:
-			return e->xkey.window;                       /* same */
-		case ButtonPress:
-		case ButtonRelease:
-			return e->xbutton.window;                 /* same */
-		case MotionNotify:
-			return e->xmotion.window;                  /* same */
-		case EnterNotify:
-		case LeaveNotify:
-			return e->xcrossing.window;                 /* same */
-		case FocusIn:
-		case FocusOut:
-			return e->xfocus.window;                       /* same */
-		case KeymapNotify:
-			return e->xkeymap.window;                  /* same */
-		case Expose:
-			return e->xexpose.window;                        /* same */
-		case GraphicsExpose:
-			return e->xgraphicsexpose.drawable;      /* same */
-		case NoExpose:
-			return e->xnoexpose.drawable;                  /* same */
-		case VisibilityNotify:
-			return e->xvisibility.window;          /* same */
-		case CreateNotify:
-			return e->xcreatewindow.window;            /* DIFF */
-		case DestroyNotify:
-			return e->xdestroywindow.window;          /* DIFF */
-		case UnmapNotify:
-			return e->xunmap.window;                    /* DIFF */
-		case MapNotify:
-			return e->xmap.window;                        /* DIFF */
-		case MapRequest:
-			return e->xmaprequest.window;                /* DIFF */
-		case ReparentNotify:
-			return e->xreparent.window;              /* DIFF */
-		case ConfigureNotify:
-			return e->xconfigure.window;            /* DIFF */
-		case ConfigureRequest:
-			return e->xconfigurerequest.window;    /* DIFF */
-		case GravityNotify:
-			return e->xgravity.window;                /* DIFF */
-		case ResizeRequest:
-			return e->xresizerequest.window;          /* same */
-		case CirculateNotify:
-			return e->xcirculate.window;            /* DIFF */
-		case CirculateRequest:
-			return e->xcirculaterequest.window;    /* DIFF */
-		case PropertyNotify:
-			return e->xproperty.window;              /* same */
-		case SelectionClear:
-			return e->xselectionclear.window;        /* same */
-		case SelectionRequest:
-			return e->xselectionrequest.requestor;  /* DIFF */
-		case SelectionNotify:
-			return e->xselection.requestor;         /* same */
-		case ColormapNotify:
-			return e->xcolormap.window;              /* same */
-		case ClientMessage:
-			return e->xclient.window;                 /* same */
-		case MappingNotify:
-			return None;
-	}
-	return None;
-}
-
-void FixRootEvent(XEvent *e)
-{
-	if(Scr->Root == Scr->RealRoot) {
-		return;
-	}
-
-	switch(e->type) {
-		case KeyPress:
-		case KeyRelease:
-			e->xkey.x_root -= Scr->rootx;
-			e->xkey.y_root -= Scr->rooty;
-			e->xkey.root    = Scr->Root;
-			break;
-		case ButtonPress:
-		case ButtonRelease:
-			e->xbutton.x_root -= Scr->rootx;
-			e->xbutton.y_root -= Scr->rooty;
-			e->xbutton.root    = Scr->Root;
-			break;
-		case MotionNotify:
-			e->xmotion.x_root -= Scr->rootx;
-			e->xmotion.y_root -= Scr->rooty;
-			e->xmotion.root    = Scr->Root;
-			break;
-		case EnterNotify:
-		case LeaveNotify:
-			e->xcrossing.x_root -= Scr->rootx;
-			e->xcrossing.y_root -= Scr->rooty;
-			e->xcrossing.root    = Scr->Root;
-			break;
-		default:
-			break;
-	}
-}
-
-
-/* Move this next to GetTwmWindow()? */
-static ScreenInfo *GetTwmScreen(XEvent *event)
-{
-	ScreenInfo *scr;
-
-	if(XFindContext(dpy, event->xany.window, ScreenContext,
-	                (XPointer *)&scr) == XCNOENT) {
-		scr = FindScreenInfo(WindowOfEvent(event));
-	}
-
-	return scr;
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *      DispatchEvent2 -
- *      handle a single X event stored in global var Event
- *      this routine for is for a call during an f.move
- *
- ***********************************************************************
- */
-bool
-DispatchEvent2(void)
-{
-	Window w = Event.xany.window;
-	ScreenInfo *thisScr;
-
-	StashEventTime(&Event);
-	Tmp_win = GetTwmWindow(w);
-	thisScr = GetTwmScreen(&Event);
-
-	dumpevent(&Event);
-
-	if(!thisScr) {
-		return false;
-	}
-	Scr = thisScr;
-
-	FixRootEvent(&Event);
-
-#ifdef SOUNDS
-	play_sound(Event.type);
-#endif
-
-	if(menuFromFrameOrWindowOrTitlebar) {
-		if(Event.type == Expose) {
-			HandleExpose();
-		}
-	}
-	else {
-		if(Event.type >= 0 && Event.type < MAX_X_EVENT) {
-			(*EventHandler[Event.type])();
-		}
-	}
-
-	return true;
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *      DispatchEvent - handle a single X event stored in global var Event
- *
- ***********************************************************************
- */
-bool
-DispatchEvent(void)
-{
-	Window w = Event.xany.window;
-	ScreenInfo *thisScr;
-
-	StashEventTime(&Event);
-	Tmp_win = GetTwmWindow(w);
-	thisScr = GetTwmScreen(&Event);
-
-	dumpevent(&Event);
-
-	if(!thisScr) {
-		return false;
-	}
-	Scr = thisScr;
-
-	if(CLarg.is_captive) {
-		if((Event.type == ConfigureNotify)
-		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
-			ConfigureRootWindow(&Event);
-			return false;
-		}
-	}
-	FixRootEvent(&Event);
-	if(Event.type >= 0 && Event.type < MAX_X_EVENT) {
-#ifdef SOUNDS
-		play_sound(Event.type);
-#endif
-		(*EventHandler[Event.type])();
-	}
-	return true;
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
- *      HandleEvents - handle X events
- *
- ***********************************************************************
- */
-
-void HandleEvents(void)
-{
-	while(1) {
-		if(enter_flag && !QLength(dpy)) {
-			if(enter_win && enter_win != raise_win) {
-				AutoRaiseWindow(enter_win);   /* sets enter_flag T */
-			}
-			else {
-				enter_flag = false;
-			}
-		}
-		if(leave_flag && !QLength(dpy)) {
-			if(leave_win && leave_win != lower_win) {
-				AutoLowerWindow(leave_win);  /* sets leave_flag T */
-			}
-			else {
-				leave_flag = false;
-			}
-		}
-		if(ColortableThrashing && !QLength(dpy) && Scr) {
-			InstallColormaps(ColormapNotify, NULL);
-		}
-		WindowMoved = false;
-
-		CtwmNextEvent(dpy, &Event);
-
-		if(Event.type < 0 || Event.type >= MAX_X_EVENT) {
-			XtDispatchEvent(&Event);
-		}
-		else {
-			(void) DispatchEvent();
-		}
-	}
-}
-
-
-static void CtwmNextEvent(Display *display, XEvent  *event)
-{
-	int         found;
-	fd_set      mask;
-	int         fd;
-	struct timeval timeout, *tout = NULL;
-	const bool animate = (AnimationActive && MaybeAnimate);
-
-#define nextEvent(event) XtAppNextEvent(appContext, event);
-
-	if(RestartFlag) {
-		DoRestart(CurrentTime);
-	}
-	if(XEventsQueued(display, QueuedAfterFlush) != 0) {
-		nextEvent(event);
-		return;
-	}
-	fd = ConnectionNumber(display);
-
-	if(animate) {
-		TryToAnimate();
-	}
-	if(RestartFlag) {
-		DoRestart(CurrentTime);
-	}
-	if(! MaybeAnimate) {
-		nextEvent(event);
-		return;
-	}
-	if(animate) {
-		tout = (AnimationSpeed > 0) ? &timeout : NULL;
-	}
-	while(1) {
-		FD_ZERO(&mask);
-		FD_SET(fd, &mask);
-		if(animate) {
-			timeout = AnimateTimeout;
-		}
-		found = select(fd + 1, &mask, NULL, NULL, tout);
-		if(RestartFlag) {
-			DoRestart(CurrentTime);
-		}
-		if(found < 0) {
-			if(errno != EINTR) {
-				perror("select");
-			}
-			continue;
-		}
-		if(FD_ISSET(fd, &mask)) {
-			nextEvent(event);
-			return;
-		}
-		if(found == 0) {
-			if(animate) {
-				TryToAnimate();
-			}
-			if(RestartFlag) {
-				DoRestart(CurrentTime);
-			}
-			if(! MaybeAnimate) {
-				nextEvent(event);
-				return;
-			}
-			continue;
-		}
-	}
-
-#undef nextEvent
-
-	/* NOTREACHED */
 }
 
 
@@ -834,39 +307,96 @@ static XEvent *LastFocusEvent(Window w, XEvent *first)
 		                   )) {
 			current = new;
 			last = &current;
-#ifdef TRACE_FOCUS
-			fprintf(stderr, "! %s 0x%x mode=%d, detail=%d\n",
-			        new.xfocus.type == FocusIn ? "in" : "out",
-			        Tmp_win, new.xfocus.mode, new.xfocus.detail);
-#endif
 		}
-		else {
+
 #ifdef TRACE_FOCUS
-			fprintf(stderr, "~ %s 0x%x mode=%d, detail=%d\n",
-			        new.xfocus.type == FocusIn ? "in" : "out",
-			        Tmp_win, new.xfocus.mode, new.xfocus.detail);
+		fprintf(stderr, "%s(): Focus%s 0x%x mode=%d, detail=%d\n",
+		        __func__, new.xfocus.type == FocusIn ? "In" : "Out",
+		        Tmp_win, new.xfocus.mode, new.xfocus.detail);
 #endif
-		}
+
 	}
 	while(XCheckWindowEvent(dpy, w, FocusChangeMask, &new));
 	return last;
 }
 
+
 /*
- * HandleFocusIn -- deal with the focus moving under us.
+ * Focus change handlers.
+ *
+ * Depending on how events get called, these are sometimes redundant, as
+ * the Enter event handler does practically all of this anyway.  But
+ * there are presumably ways we can wind up Focus'ing a window without
+ * Enter'ing it as well.
+ *
+ * It's also a little convoluted how these wind up getting called.  With
+ * most events, we call a handler, then handle that event.  However, with
+ * focus, we troll through our list of pending Focus-related events for
+ * the window and just handle the last one, since some could pile up
+ * fast.  That means that, even if we get called for a FocusIn event,
+ * there might be a FocusOut later in the queue, and _that_'s the one we
+ * pick up and handle, and we discard the rest [for that window].  So,
+ * the event handling code calls a single entry point for both types, and
+ * then it figures out which backend handler to actually fire.
  */
-
-void HandleFocusIn(XFocusInEvent *event)
+void
+HandleFocusChange(void)
 {
+	XEvent *event;
 
-#ifdef TRACE_FOCUS
-	fprintf(stderr, "HandleFocusIn : +0x%x (0x%x, 0x%x), mode=%d, detail=%d\n",
-	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
-#endif
+	/* If there's no event window, nothing to do */
+	if(!Tmp_win) {
+		return;
+	}
 
+	/*
+	 * Consume all the focus events for the window we're called about and
+	 * grab the last one to process.
+	 *
+	 * XXX It should be guaranteed that the window in the X event in our
+	 * global Event is the same as Tmp_win->w as the event dispatcher
+	 * sets it so.  Maybe we should do both checks on the same var for
+	 * consistency though?
+	 *
+	 * It's not immediately clear how this can wind up returning nothing,
+	 * but if it does, we don't have anything to do either.
+	 */
+	event = LastFocusEvent(Event.xany.window, &Event);
+	if(event == NULL) {
+		return;
+	}
+
+	/*
+	 * Icon managers don't do anything with focus events on themselves,
+	 * so just skip back if this is one.  Done after LastFocusEvent()
+	 * call for efficiency, so we don't fall into this func multiple
+	 * times if multiple events are queued for it.
+	 */
 	if(Tmp_win->isiconmgr) {
 		return;
 	}
+
+#ifdef TRACE_FOCUS
+	fprintf(stderr, "HandleFocus%s(): 0x%x (0x%x, 0x%x), mode=%d, "
+	        "detail=%d\n",
+	        (event->type == FocusIn ? "In" : "Out"),
+	        Tmp_win, Tmp_win->w, event->window, event->mode,
+	        event->detail);
+#endif
+
+	/* And call actual handler */
+	if(event->type == FocusIn) {
+		HandleFocusIn();
+	}
+	else {
+		HandleFocusOut();
+	}
+}
+
+
+static void
+HandleFocusIn(void)
+{
 	if(Tmp_win->wmhints && ! Tmp_win->wmhints->input) {
 		return;
 	}
@@ -885,16 +415,10 @@ void HandleFocusIn(XFocusInEvent *event)
 	Scr->Focus = Tmp_win;
 }
 
-void HandleFocusOut(XFocusOutEvent *event)
-{
-#ifdef TRACE_FOCUS
-	fprintf(stderr, "HandleFocusOut : -0x%x (0x%x, 0x%x), mode=%d, detail=%d\n",
-	        Tmp_win, Tmp_win->w, event->window, event->mode, event->detail);
-#endif
 
-	if(Tmp_win->isiconmgr) {
-		return;
-	}
+static void
+HandleFocusOut(void)
+{
 	if(Scr->Focus != Tmp_win) {
 		return;
 	}
@@ -913,57 +437,7 @@ void HandleFocusOut(XFocusOutEvent *event)
 	Scr->Focus = NULL;
 }
 
-void HandleFocusChange(void)
-{
-	XEvent *event;
 
-	if(Tmp_win) {
-		event = LastFocusEvent(Event.xany.window, &Event);
-
-		if(event != NULL) {
-			if(event->type == FocusIn) {
-				HandleFocusIn(&event->xfocus);
-			}
-			else {
-				HandleFocusOut(&event->xfocus);
-			}
-		}
-	}
-}
-
-void SynthesiseFocusOut(Window w)
-{
-	XEvent event;
-
-#ifdef TRACE_FOCUS
-	fprintf(stderr, "Synthesizing FocusOut on %x\n", w);
-#endif
-
-	event.type = FocusOut;
-	event.xfocus.window = w;
-	event.xfocus.mode = NotifyNormal;
-	event.xfocus.detail = NotifyPointer;
-
-	XPutBackEvent(dpy, &event);
-}
-
-
-void SynthesiseFocusIn(Window w)
-{
-	XEvent event;
-
-#ifdef TRACE_FOCUS
-	fprintf(stderr, "Synthesizing FocusIn on %x\n", w);
-#endif
-
-	event.type = FocusIn;
-	event.xfocus.window = w;
-	event.xfocus.mode = NotifyNormal;
-	event.xfocus.detail = NotifyPointer;
-
-	XPutBackEvent(dpy, &event);
-
-}
 
 /*
  * Only sent if SubstructureNotifyMask is selected on the (root) window.
@@ -1494,33 +968,6 @@ static void free_window_names(TwmWindow *tmp,
 		}
 	}
 	return;
-}
-
-
-void free_cwins(TwmWindow *tmp)
-{
-	int i;
-	TwmColormap *cmap;
-
-	if(tmp->cmaps.number_cwins) {
-		for(i = 0; i < tmp->cmaps.number_cwins; i++) {
-			if(--tmp->cmaps.cwins[i]->refcnt == 0) {
-				cmap = tmp->cmaps.cwins[i]->colormap;
-				if(--cmap->refcnt == 0) {
-					XDeleteContext(dpy, cmap->c, ColormapContext);
-					free(cmap);
-				}
-				XDeleteContext(dpy, tmp->cmaps.cwins[i]->w, ColormapContext);
-				free(tmp->cmaps.cwins[i]);
-			}
-		}
-		free(tmp->cmaps.cwins);
-		if(tmp->cmaps.number_cwins > 1) {
-			free(tmp->cmaps.scoreboard);
-			tmp->cmaps.scoreboard = NULL;
-		}
-		tmp->cmaps.number_cwins = 0;
-	}
 }
 
 
@@ -2323,7 +1770,8 @@ void HandleDestroyNotify(void)
 }
 
 
-void HandleCreateNotify(void)
+void
+HandleCreateNotify(void)
 {
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "CreateNotify w = 0x%x\n",
@@ -2481,13 +1929,6 @@ void HandleMapRequest(void)
 		WMapMapWindow(Tmp_win);
 	}
 	MaybeAnimate = true;
-}
-
-
-void SimulateMapRequest(Window w)
-{
-	Event.xmaprequest.window = w;
-	HandleMapRequest();
 }
 
 
@@ -4178,7 +3619,8 @@ void HandleConfigureRequest(void)
  *
  ***********************************************************************
  */
-void HandleShapeNotify(void)
+void
+HandleShapeNotify(void)
 {
 	XShapeEvent     *sev = (XShapeEvent *) &Event;
 
@@ -4204,7 +3646,8 @@ void HandleShapeNotify(void)
  ***********************************************************************
  */
 #ifdef EWMH
-void HandleSelectionClear(void)
+void
+HandleSelectionClear(void)
 {
 	XSelectionClearEvent    *sev = (XSelectionClearEvent *) &Event;
 
@@ -4231,136 +3674,11 @@ void HandleUnknown(void)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      Transient - checks to see if the window is a transient
- *
- *  Returned Value:
- *      true    - window is a transient
- *      false   - window is not a transient
- *
- *  Inputs:
- *      w       - the window to check
- *
- ***********************************************************************
- */
-
-bool
-Transient(Window w, Window *propw)
-{
-	return (bool)XGetTransientForHint(dpy, w, propw);
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
- *      FindScreenInfo - get ScreenInfo struct associated with a given window
- *
- *  Returned Value:
- *      ScreenInfo struct
- *
- *  Inputs:
- *      w       - the window
- *
- ***********************************************************************
- */
-
-ScreenInfo *FindScreenInfo(Window w)
-{
-	XWindowAttributes attr;
-	int scrnum;
-
-	attr.screen = NULL;
-	if(XGetWindowAttributes(dpy, w, &attr)) {
-		for(scrnum = 0; scrnum < NumScreens; scrnum++) {
-			if(ScreenList[scrnum] != NULL &&
-			                (ScreenOfDisplay(dpy, ScreenList[scrnum]->screen) ==
-			                 attr.screen)) {
-				return ScreenList[scrnum];
-			}
-		}
-	}
-
-	return NULL;
-}
-
-
 static void flush_expose(Window w)
 {
 	XEvent dummy;
 
 	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy)) {
 		/* nada */;
-	}
-}
-
-
-void ConfigureRootWindow(XEvent *ev)
-{
-	Window       root, child;
-	int          x, y;
-	unsigned int w, h, bw, d, oldw, oldh;
-
-	XGetGeometry(dpy, Scr->CaptiveRoot, &root, &x, &y, &w, &h, &bw, &d);
-	XTranslateCoordinates(dpy, Scr->CaptiveRoot, root, 0, 0, &Scr->crootx,
-	                      &Scr->crooty, &child);
-
-	oldw = Scr->crootw;
-	oldh = Scr->crooth;
-	Scr->crootw = ev->xconfigure.width;
-	Scr->crooth = ev->xconfigure.height;
-	/*
-	fprintf (stderr, "ConfigureRootWindow: cx = %d, cy = %d, cw = %d, ch = %d\n",
-	     Scr->crootx, Scr->crooty, Scr->crootw, Scr->crooth);
-	*/
-	if(Scr->currentvs) {
-		Scr->rootx = Scr->crootx + Scr->currentvs->x;
-		Scr->rooty = Scr->crooty + Scr->currentvs->y;
-	}
-	Scr->rootw = Scr->crootw;
-	Scr->rooth = Scr->crooth;
-
-	if(CLarg.is_captive && ((Scr->crootw != oldw) || (Scr->crooth != oldh))) {
-		fprintf(stderr, "%s: You cannot change root window geometry "
-		        "with virtual screens active,\n"
-		        "from now on, the ctwm behaviour is unpredictable.\n",
-		        ProgramName);
-	}
-}
-
-static void dumpevent(XEvent *e)
-{
-	const char *name = "Unknown event";
-
-	if(! tracefile) {
-		return;
-	}
-
-	/* Whatsit? */
-	name = event_name_by_num(e->type);
-	if(!name) {
-		name = "Unknown event";
-	}
-
-	/* Tell about it */
-	fprintf(tracefile, "event:  %s in window 0x%x\n", name,
-	        (unsigned int)e->xany.window);
-	switch(e->type) {
-		case KeyPress:
-		case KeyRelease:
-			fprintf(tracefile, "     :  +%d,+%d (+%d,+%d)  state=%d, keycode=%d\n",
-			        e->xkey.x, e->xkey.y,
-			        e->xkey.x_root, e->xkey.y_root,
-			        e->xkey.state, e->xkey.keycode);
-			break;
-		case ButtonPress:
-		case ButtonRelease:
-			fprintf(tracefile, "     :  +%d,+%d (+%d,+%d)  state=%d, button=%d\n",
-			        e->xbutton.x, e->xbutton.y,
-			        e->xbutton.x_root, e->xbutton.y_root,
-			        e->xbutton.state, e->xbutton.button);
-			break;
 	}
 }
