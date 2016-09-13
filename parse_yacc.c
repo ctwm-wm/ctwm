@@ -221,15 +221,19 @@ void GotTitleButton(char *bitmapname, int func, bool rightside)
 	pull = NULL;
 }
 
+
+/* Check f.warptoscreen arg */
 bool
-CheckWarpScreenArg(char *s)
+CheckWarpScreenArg(const char *s)
 {
+	/* next/prev/back are valid */
 	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_PREV) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_BACK) == 0) {
 		return true;
 	}
 
+	/* Or if the whole thing is numeric, it's valid too */
 	for(; *s && Isascii(*s) && Isdigit(*s); s++) {
 		/* nada */;
 	}
@@ -237,8 +241,9 @@ CheckWarpScreenArg(char *s)
 }
 
 
+/* f.warptoring arg */
 bool
-CheckWarpRingArg(char *s)
+CheckWarpRingArg(const char *s)
 {
 	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
 	                strcasecmp(s,  WARPSCREEN_PREV) == 0) {
@@ -249,8 +254,9 @@ CheckWarpRingArg(char *s)
 }
 
 
+/* f.colormap arg */
 bool
-CheckColormapArg(char *s)
+CheckColormapArg(const char *s)
 {
 	if(strcasecmp(s, COLORMAP_NEXT) == 0 ||
 	                strcasecmp(s, COLORMAP_PREV) == 0 ||
