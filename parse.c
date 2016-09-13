@@ -199,7 +199,7 @@ ParseTwmrc(char *filename)
 						homelen = strlen(home);
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.ctwmrc.%d",
-						               home, Scr->screen);
+						        home, Scr->screen);
 						break;
 					}
 				}
@@ -218,7 +218,7 @@ ParseTwmrc(char *filename)
 						homelen = strlen(home);
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.twmrc.%d",
-						               home, Scr->screen);
+						        home, Scr->screen);
 						break;
 					}
 				}

@@ -2992,7 +2992,7 @@ void HandleEnterNotify(void)
 						scanArgs.w = ewp->window;
 						scanArgs.leaves = scanArgs.enters = False;
 						XCheckIfEvent(dpy, &dummy, HENQueueScanner,
-						                     (void *) &scanArgs);
+						              (void *) &scanArgs);
 						if(scanArgs.leaves && !scanArgs.inferior) {
 							return;
 						}
@@ -3388,7 +3388,7 @@ void HandleLeaveNotify(void)
 				scanArgs.w = Event.xcrossing.window;
 				scanArgs.enters = scanArgs.matches = False;
 				XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
-				                     (char *) &scanArgs);
+				              (char *) &scanArgs);
 
 				if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
 					if(Scr->TitleFocus ||
