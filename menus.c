@@ -2273,7 +2273,7 @@ void DisplayPosition(TwmWindow *tmp_win, int x, int y)
 		y = -y;
 		signy = '-';
 	}
-	(void) sprintf(str, " %c%-4d %c%-4d ", signx, x, signy, y);
+	sprintf(str, " %c%-4d %c%-4d ", signx, x, signy, y);
 	XRaiseWindow(dpy, Scr->SizeWindow);
 
 	Draw3DBorder(Scr->SizeWindow, 0, 0,

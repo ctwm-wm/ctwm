@@ -243,7 +243,7 @@ HandleEvents(void)
 			XtDispatchEvent(&Event);
 		}
 		else {
-			(void) DispatchEvent();
+			DispatchEvent();
 		}
 	}
 

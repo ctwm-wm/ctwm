@@ -1824,7 +1824,7 @@ void HandleMapRequest(void)
 		 * in the icon manager.  Add it again, if requested.
 		 */
 		if(Tmp_win->iconmanagerlist == NULL) {
-			(void) AddIconManager(Tmp_win);
+			AddIconManager(Tmp_win);
 		}
 	}
 
@@ -2390,7 +2390,7 @@ static void do_menu(MenuRoot *menu,     /* menu to pop up */
 		int h = Scr->TBInfo.width - Scr->TBInfo.border;
 		Window child;
 
-		(void) XTranslateCoordinates(dpy, w, Scr->Root, 0, h, &x, &y, &child);
+		XTranslateCoordinates(dpy, w, Scr->Root, 0, h, &x, &y, &child);
 		center = false;
 	}
 	else {
@@ -2418,7 +2418,7 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
 		int h = Scr->TBInfo.width - Scr->TBInfo.border;
 		Window child;
 
-		(void) XTranslateCoordinates(dpy, w, Scr->Root, 0, h, &x, &y, &child);
+		XTranslateCoordinates(dpy, w, Scr->Root, 0, h, &x, &y, &child);
 		center = false;
 	}
 	else {
@@ -2919,7 +2919,7 @@ void HandleEnterNotify(void)
 		 */
 		scanArgs.w = ewp->window;
 		scanArgs.leaves = scanArgs.enters = False;
-		(void) XCheckIfEvent(dpy, &dummy, HENQueueScanner, (void *) &scanArgs);
+		XCheckIfEvent(dpy, &dummy, HENQueueScanner, (void *) &scanArgs);
 
 		/*
 		 * if entering root window, restore twm default colormap so that
@@ -2991,7 +2991,7 @@ void HandleEnterNotify(void)
 						/* Did we leave this window already? */
 						scanArgs.w = ewp->window;
 						scanArgs.leaves = scanArgs.enters = False;
-						(void) XCheckIfEvent(dpy, &dummy, HENQueueScanner,
+						XCheckIfEvent(dpy, &dummy, HENQueueScanner,
 						                     (void *) &scanArgs);
 						if(scanArgs.leaves && !scanArgs.inferior) {
 							return;
@@ -3019,7 +3019,7 @@ void HandleEnterNotify(void)
 			 */
 			scanArgs.w = ewp->window;
 			scanArgs.leaves = scanArgs.enters = False;
-			(void) XCheckIfEvent(dpy, &dummy, HENQueueScanner, (void *) &scanArgs);
+			XCheckIfEvent(dpy, &dummy, HENQueueScanner, (void *) &scanArgs);
 
 			/*
 			 * if entering root window, restore twm default colormap so that
@@ -3387,7 +3387,7 @@ void HandleLeaveNotify(void)
 				 */
 				scanArgs.w = Event.xcrossing.window;
 				scanArgs.enters = scanArgs.matches = False;
-				(void) XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
+				XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
 				                     (char *) &scanArgs);
 
 				if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
