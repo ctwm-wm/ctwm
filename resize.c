@@ -657,7 +657,7 @@ static void DisplaySize(TwmWindow *tmp_win, int width, int height)
 		dheight /= tmp_win->hints.height_inc;
 	}
 
-	(void) sprintf(str, " %4d x %-4d ", dwidth, dheight);
+	sprintf(str, " %4d x %-4d ", dwidth, dheight);
 	XRaiseWindow(dpy, Scr->SizeWindow);
 
 	Draw3DBorder(Scr->SizeWindow, 0, 0,

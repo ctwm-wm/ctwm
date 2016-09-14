@@ -181,7 +181,7 @@ ParseTwmrc(char *filename)
 			case 0:                       /* -f filename.# */
 				if(filename) {
 					cp = tmpfilename;
-					(void) sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
+					sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
 				}
 				else {
 					cp = filename;
@@ -198,8 +198,8 @@ ParseTwmrc(char *filename)
 					if(home) {
 						homelen = strlen(home);
 						cp = tmpfilename;
-						(void) sprintf(tmpfilename, "%s/.ctwmrc.%d",
-						               home, Scr->screen);
+						sprintf(tmpfilename, "%s/.ctwmrc.%d",
+						        home, Scr->screen);
 						break;
 					}
 				}
@@ -217,8 +217,8 @@ ParseTwmrc(char *filename)
 					if(home) {
 						homelen = strlen(home);
 						cp = tmpfilename;
-						(void) sprintf(tmpfilename, "%s/.twmrc.%d",
-						               home, Scr->screen);
+						sprintf(tmpfilename, "%s/.twmrc.%d",
+						        home, Scr->screen);
 						break;
 					}
 				}

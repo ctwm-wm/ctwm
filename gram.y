@@ -159,16 +159,16 @@ stmt		: error
 		| narg
 		| squeeze
 		| ICON_REGION string vgrav hgrav number number {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
+		      AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
 		| ICON_REGION string vgrav hgrav number number string {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
+		      AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
 		| ICON_REGION string vgrav hgrav number number string string {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
+		      AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
 		| ICON_REGION string vgrav hgrav number number string string string {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
+		      AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
 		| ICON_REGION string vgrav hgrav number number {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");

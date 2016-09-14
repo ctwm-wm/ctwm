@@ -11,9 +11,9 @@ void RemoveDQuote(char *str);
 
 MenuRoot *GetRoot(char *name, char *fore, char *back);
 
-bool CheckWarpScreenArg(char *s);
-bool CheckWarpRingArg(char *s);
-bool CheckColormapArg(char *s);
+bool CheckWarpScreenArg(const char *s);
+bool CheckWarpRingArg(const char *s);
+bool CheckColormapArg(const char *s);
 void GotButton(int butt, int func);
 void GotKey(char *key, int func);
 void GotTitleButton(char *bitmapname, int func, bool rightside);

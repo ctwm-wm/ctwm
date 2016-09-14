@@ -220,7 +220,7 @@ UninstallRootColormap(void)
 		 */
 		XSync(dpy, 0);
 		args = 0;
-		(void) XCheckIfEvent(dpy, &dummy, UninstallRootColormapQScanner, &args);
+		XCheckIfEvent(dpy, &dummy, UninstallRootColormapQScanner, &args);
 
 		if(!args) {
 			InstallColormaps(0, Scr->cmapInfo.pushed_cmaps);

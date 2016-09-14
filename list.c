@@ -296,7 +296,7 @@ bool match(const char *pattern, const char *string)
 	error = regcomp(&preg, pattern, REG_EXTENDED | REG_NOSUB);
 	if(error != 0) {
 		char buf [256];
-		(void) regerror(error, &preg, buf, sizeof buf);
+		regerror(error, &preg, buf, sizeof buf);
 		fprintf(stderr, "%s : %s\n", buf, pattern);
 		return false;
 	}

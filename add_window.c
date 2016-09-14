@@ -1447,7 +1447,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		GrabKeys(tmp_win);
 	}
 
-	(void) AddIconManager(tmp_win);
+	AddIconManager(tmp_win);
 
 	XSaveContext(dpy, tmp_win->w, TwmContext, (XPointer) tmp_win);
 	XSaveContext(dpy, tmp_win->w, ScreenContext, (XPointer) Scr);

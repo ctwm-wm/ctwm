@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 
 
 #define newhandler(sig, action) \
-    if (signal (sig, SIG_IGN) != SIG_IGN) (void) signal (sig, action)
+    if (signal (sig, SIG_IGN) != SIG_IGN) signal (sig, action)
 
 	newhandler(SIGINT, Done);
 	signal(SIGHUP, Restart);
@@ -822,7 +822,7 @@ int main(int argc, char **argv)
 			        ProgramName);
 		exit(1);
 	}
-	(void) ConnectToSessionManager(CLarg.client_id);
+	ConnectToSessionManager(CLarg.client_id);
 #ifdef SOUNDS
 	sound_load_list();
 	play_startup_sound();
