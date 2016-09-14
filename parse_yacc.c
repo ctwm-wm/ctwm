@@ -227,9 +227,9 @@ bool
 CheckWarpScreenArg(const char *s)
 {
 	/* next/prev/back are valid */
-	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
-	                strcasecmp(s,  WARPSCREEN_PREV) == 0 ||
-	                strcasecmp(s,  WARPSCREEN_BACK) == 0) {
+	if(strcasecmp(s, WARPSCREEN_NEXT) == 0 ||
+	                strcasecmp(s, WARPSCREEN_PREV) == 0 ||
+	                strcasecmp(s, WARPSCREEN_BACK) == 0) {
 		return true;
 	}
 
@@ -245,8 +245,8 @@ CheckWarpScreenArg(const char *s)
 bool
 CheckWarpRingArg(const char *s)
 {
-	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
-	                strcasecmp(s,  WARPSCREEN_PREV) == 0) {
+	if(strcasecmp(s, WARPSCREEN_NEXT) == 0 ||
+	                strcasecmp(s, WARPSCREEN_PREV) == 0) {
 		return true;
 	}
 
