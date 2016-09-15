@@ -87,7 +87,6 @@ extern int AddingY;
 extern unsigned int AddingW;
 extern unsigned int AddingH;
 
-void FetchWmProtocols(TwmWindow *tmp);
 
 #endif /* _CTWM_ADD_WINDOW_H */
 

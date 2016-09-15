@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "ctwm_atoms.h"
 #include "screen.h"
 #include "win_utils.h"
 
@@ -74,4 +75,39 @@ GetWindowSizeHints(TwmWindow *tmp)
 			}
 		}
 	}
+}
+
+
+/*
+ * Fill in info from WM_PROTOCOLS property
+ *
+ * Formerly in add_window.c
+ */
+void
+FetchWmProtocols(TwmWindow *tmp)
+{
+	unsigned long flags = 0L;
+	Atom *protocols = NULL;
+	int n;
+
+	if(XGetWMProtocols(dpy, tmp->w, &protocols, &n)) {
+		int i;
+		Atom *ap;
+
+		for(i = 0, ap = protocols; i < n; i++, ap++) {
+			if(*ap == XA_WM_TAKE_FOCUS) {
+				flags |= DoesWmTakeFocus;
+			}
+			if(*ap == XA_WM_SAVE_YOURSELF) {
+				flags |= DoesWmSaveYourself;
+			}
+			if(*ap == XA_WM_DELETE_WINDOW) {
+				flags |= DoesWmDeleteWindow;
+			}
+		}
+		if(protocols) {
+			XFree(protocols);
+		}
+	}
+	tmp->protocols = flags;
 }
