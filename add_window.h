@@ -81,7 +81,6 @@ TwmWindow *AddWindow(Window w, AWType wtype, IconMgr *iconp,
 TwmWindow *GetTwmWindow(Window w);
 void GrabButtons(TwmWindow *tmp_win);
 void GrabKeys(TwmWindow *tmp_win);
-void GetWindowSizeHints(TwmWindow *tmp_win);
 
 extern int AddingX;
 extern int AddingY;
