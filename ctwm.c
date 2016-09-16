@@ -108,6 +108,7 @@
 #include "windowbox.h"
 #include "captive.h"
 #include "win_regions.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 #ifdef SOUNDS
 #  include "sound.h"

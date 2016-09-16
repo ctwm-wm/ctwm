@@ -117,46 +117,6 @@ static bool Transient(Window w, Window *propw);
 char NoName[] = "Untitled"; /* name if no name is specified */
 bool resizeWhenAdd;
 
-/************************************************************************
- *
- *  Procedure:
- *      GetGravityOffsets - map gravity to (x,y) offset signs for adding
- *              to x and y when window is mapped to get proper placement.
- *
- ************************************************************************
- */
-
-void GetGravityOffsets(TwmWindow *tmp,  /* window from which to get gravity */
-                       int *xp, int *yp)       /* return values */
-{
-	static struct _gravity_offset {
-		int x, y;
-	} gravity_offsets[11] = {
-		{  0,  0 },                     /* ForgetGravity */
-		{ -1, -1 },                     /* NorthWestGravity */
-		{  0, -1 },                     /* NorthGravity */
-		{  1, -1 },                     /* NorthEastGravity */
-		{ -1,  0 },                     /* WestGravity */
-		{  0,  0 },                     /* CenterGravity */
-		{  1,  0 },                     /* EastGravity */
-		{ -1,  1 },                     /* SouthWestGravity */
-		{  0,  1 },                     /* SouthGravity */
-		{  1,  1 },                     /* SouthEastGravity */
-		{  0,  0 },                     /* StaticGravity */
-	};
-	int g = ((tmp->hints.flags & PWinGravity)
-	         ? tmp->hints.win_gravity : NorthWestGravity);
-
-	if(g < ForgetGravity || g > StaticGravity) {
-		*xp = *yp = 0;
-	}
-	else {
-		*xp = gravity_offsets[g].x;
-		*yp = gravity_offsets[g].y;
-	}
-}
-
-
 
 
 /***********************************************************************

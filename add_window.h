@@ -75,7 +75,6 @@ typedef enum {
 	AWT_OCCUPY,
 } AWType;
 
-void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 TwmWindow *AddWindow(Window w, AWType wtype, IconMgr *iconp,
                      VirtualScreen *vs);
 TwmWindow *GetTwmWindow(Window w);
