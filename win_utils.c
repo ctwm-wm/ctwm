@@ -129,18 +129,18 @@ GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp)
 {
 	static struct _gravity_offset {
 		int x, y;
-	} gravity_offsets[11] = {
-		{  0,  0 },                     /* ForgetGravity */
-		{ -1, -1 },                     /* NorthWestGravity */
-		{  0, -1 },                     /* NorthGravity */
-		{  1, -1 },                     /* NorthEastGravity */
-		{ -1,  0 },                     /* WestGravity */
-		{  0,  0 },                     /* CenterGravity */
-		{  1,  0 },                     /* EastGravity */
-		{ -1,  1 },                     /* SouthWestGravity */
-		{  0,  1 },                     /* SouthGravity */
-		{  1,  1 },                     /* SouthEastGravity */
-		{  0,  0 },                     /* StaticGravity */
+	} gravity_offsets[] = {
+		[ForgetGravity]    = {  0,  0 },
+		[NorthWestGravity] = { -1, -1 },
+		[NorthGravity]     = {  0, -1 },
+		[NorthEastGravity] = {  1, -1 },
+		[WestGravity]      = { -1,  0 },
+		[CenterGravity]    = {  0,  0 },
+		[EastGravity]      = {  1,  0 },
+		[SouthWestGravity] = { -1,  1 },
+		[SouthGravity]     = {  0,  1 },
+		[SouthEastGravity] = {  1,  1 },
+		[StaticGravity]    = {  0,  0 },
 	};
 	int g = ((tmp->hints.flags & PWinGravity)
 	         ? tmp->hints.win_gravity : NorthWestGravity);
