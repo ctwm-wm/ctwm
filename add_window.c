@@ -1461,6 +1461,21 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 }
 
 
+/*
+ * XXX GrabButtons() and GrabKeys() are in a slightly odd state.  They're
+ * almost strictly a piece of the window-adding process, which is why
+ * they're here.  They're not static because the icon manager setup in
+ * CreateIconManagers() calls them explicitly, because they're also
+ * explicitly skipped in AddWindow() for icon manager windows.  I'm not
+ * sure that's necessary; x-ref comment in CIM() about some ideas on the
+ * matter.
+ *
+ * This should be resolved.  Until it is, they're left exported so the
+ * iconmgr code can all them, and they're left here (rather than moved to
+ * win_utils) on the guess that it may well be resolvable and so they'd
+ * stay here and be staticized in the end.
+ */
+
 /***********************************************************************
  *
  *  Procedure:
