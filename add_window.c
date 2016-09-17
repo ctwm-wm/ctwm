@@ -1730,7 +1730,8 @@ DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
  * Figure out if a window is a transient, and stash what it's transient
  * for.
  *
- * Previously in events.c.  Maybe fodder for a win_utils file?
+ * Previously in events.c.  Strictly win_utils-ish, but only used in
+ * AddWindow(), so might as well leave it here and static for now.
  */
 static bool
 Transient(Window w, Window *propw)
