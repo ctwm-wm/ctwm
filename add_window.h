@@ -77,7 +77,6 @@ typedef enum {
 
 TwmWindow *AddWindow(Window w, AWType wtype, IconMgr *iconp,
                      VirtualScreen *vs);
-TwmWindow *GetTwmWindow(Window w);
 void GrabButtons(TwmWindow *tmp_win);
 void GrabKeys(TwmWindow *tmp_win);
 

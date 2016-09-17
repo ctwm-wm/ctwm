@@ -1460,39 +1460,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	return (tmp_win);
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      GetTwmWindow - finds the TwmWindow structure associated with
- *              a Window (if any), or NULL.
- *
- *  Returned Value:
- *      NULL    - it is not a Window we know about
- *      otherwise- the TwmWindow *
- *
- *  Inputs:
- *      w       - the window to check
- *
- *  Note:
- *      This is a relatively cheap function since it does not involve
- *      communication with the server. Probably faster than walking
- *      the list of TwmWindows, since the lookup is by a hash table.
- *
- ***********************************************************************
- */
-TwmWindow *GetTwmWindow(Window w)
-{
-	TwmWindow *twmwin;
-	int stat;
-
-	stat = XFindContext(dpy, w, TwmContext, (XPointer *)&twmwin);
-	if(stat == XCNOENT) {
-		twmwin = NULL;
-	}
-
-	return twmwin;
-}
-
 
 /***********************************************************************
  *

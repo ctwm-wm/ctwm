@@ -81,6 +81,7 @@
 #include "decorations.h"
 #include "screen.h"
 #include "drawing.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 #include "iconmgr.h"
 

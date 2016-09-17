@@ -153,3 +153,26 @@ GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp)
 		*yp = gravity_offsets[g].y;
 	}
 }
+
+
+/*
+ * Finds the TwmWindow structure associated with a Window (if any), or
+ * NULL.
+ *
+ * This is a relatively cheap function since it does not involve
+ * communication with the server. Probably faster than walking the list
+ * of TwmWindows, since the lookup is by a hash table.
+ */
+TwmWindow *
+GetTwmWindow(Window w)
+{
+	TwmWindow *twmwin;
+	int stat;
+
+	stat = XFindContext(dpy, w, TwmContext, (XPointer *)&twmwin);
+	if(stat == XCNOENT) {
+		twmwin = NULL;
+	}
+
+	return twmwin;
+}

@@ -92,6 +92,7 @@
 #include "screen.h"
 #include "util.h"
 #include "version.h"
+#include "win_utils.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif
