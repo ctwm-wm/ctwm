@@ -78,7 +78,6 @@
 
 #include <X11/extensions/shape.h>
 
-#include "add_window.h"
 #include "animate.h"
 #include "captive.h"
 #include "colormaps.h"

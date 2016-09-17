@@ -62,7 +62,6 @@
 #include "events.h"
 #include "event_handlers.h"
 #include "icons.h"
-#include "add_window.h"
 #include "otp.h"
 #include "util.h"
 #include "parse.h"

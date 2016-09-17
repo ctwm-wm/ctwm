@@ -8,7 +8,6 @@
 
 #include <X11/extensions/shape.h>
 
-#include "add_window.h"
 #include "events.h"
 #include "functions.h"
 #include "iconmgr.h"
