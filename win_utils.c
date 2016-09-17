@@ -162,6 +162,8 @@ GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp)
  * This is a relatively cheap function since it does not involve
  * communication with the server. Probably faster than walking the list
  * of TwmWindows, since the lookup is by a hash table.
+ *
+ * Formerly in add_window.c
  */
 TwmWindow *
 GetTwmWindow(Window w)
