@@ -5,7 +5,11 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
+#include <X11/Xatom.h>
+
+#include "add_window.h" // NoName
 #include "ctwm_atoms.h"
 #include "screen.h"
 #include "win_utils.h"
@@ -177,4 +181,108 @@ GetTwmWindow(Window w)
 	}
 
 	return twmwin;
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      GetWMPropertyString - Get Window Manager text property and
+ *                              convert it to a string.
+ *
+ *  Returned Value:
+ *      (char *) - pointer to the malloc'd string or NULL
+ *
+ *  Inputs:
+ *      w       - the id of the window whose property is to be retrieved
+ *      prop    - property atom (typically WM_NAME or WM_ICON_NAME)
+ *
+ ***********************************************************************
+ *
+ * Formerly in util.c
+ */
+unsigned char *
+GetWMPropertyString(Window w, Atom prop)
+{
+	XTextProperty       text_prop;
+	char                **text_list;
+	int                 text_list_count;
+	unsigned char       *stringptr;
+	int                 status, len = -1;
+
+	(void)XGetTextProperty(dpy, w, &text_prop, prop);
+	if(text_prop.value != NULL) {
+		if(text_prop.encoding == XA_STRING
+		                || text_prop.encoding == XA_COMPOUND_TEXT) {
+			/* property is encoded as compound text - convert to locale string */
+			status = XmbTextPropertyToTextList(dpy, &text_prop,
+			                                   &text_list, &text_list_count);
+			if(text_list_count == 0) {
+				stringptr = NULL;
+			}
+			else if(text_list == NULL) {
+				stringptr = NULL;
+			}
+			else if(text_list [0] == NULL) {
+				stringptr = NULL;
+			}
+			else if(status < 0 || text_list_count < 0) {
+				switch(status) {
+					case XConverterNotFound:
+						fprintf(stderr,
+						        "%s: Converter not found; unable to convert property %s of window ID %lx.\n",
+						        ProgramName, XGetAtomName(dpy, prop), w);
+						break;
+					case XNoMemory:
+						fprintf(stderr,
+						        "%s: Insufficient memory; unable to convert property %s of window ID %lx.\n",
+						        ProgramName, XGetAtomName(dpy, prop), w);
+						break;
+					case XLocaleNotSupported:
+						fprintf(stderr,
+						        "%s: Locale not supported; unable to convert property %s of window ID %lx.\n",
+						        ProgramName, XGetAtomName(dpy, prop), w);
+						break;
+				}
+				stringptr = NULL;
+				/*
+				   don't call XFreeStringList - text_list appears to have
+				   invalid address if status is bad
+				   XFreeStringList(text_list);
+				*/
+			}
+			else {
+				len = strlen(text_list[0]);
+				stringptr = memcpy(malloc(len + 1), text_list[0], len + 1);
+				XFreeStringList(text_list);
+			}
+		}
+		else {
+			/* property is encoded in a format we don't understand */
+			fprintf(stderr,
+			        "%s: Encoding not STRING or COMPOUND_TEXT; unable to decode property %s of window ID %lx.\n",
+			        ProgramName, XGetAtomName(dpy, prop), w);
+			stringptr = NULL;
+		}
+		XFree(text_prop.value);
+	}
+	else {
+		stringptr = NULL;
+	}
+
+	return stringptr;
+}
+
+
+/*
+ * Cleanup something stored that we got from the above originally.
+ *
+ * Formerly in util.c
+ */
+void
+FreeWMPropertyString(char *prop)
+{
+	if(prop && (char *)prop != NoName) {
+		free(prop);
+	}
 }

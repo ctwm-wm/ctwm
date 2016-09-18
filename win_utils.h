@@ -9,6 +9,8 @@ void GetWindowSizeHints(TwmWindow *tmp_win);
 void FetchWmProtocols(TwmWindow *tmp);
 void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 TwmWindow *GetTwmWindow(Window w);
+unsigned char *GetWMPropertyString(Window w, Atom prop);
+void FreeWMPropertyString(char *prop);
 
 
 #endif /* _CTWM_WIN_UTILS_H */

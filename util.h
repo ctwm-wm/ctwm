@@ -111,8 +111,6 @@ void DebugTrace(char *file);
 void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
 
-unsigned char *GetWMPropertyString(Window w, Atom prop);
-void FreeWMPropertyString(char *prop);
 void ConstrainByBorders1(int *left, int width, int *top, int height);
 void ConstrainByBorders(TwmWindow *twmwin,
                         int *left, int width,
