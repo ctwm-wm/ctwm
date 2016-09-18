@@ -15,7 +15,6 @@
 #include "image.h"
 #include "iconmgr.h"
 #include "screen.h"
-#include "util.h"
 #include "drawing.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
