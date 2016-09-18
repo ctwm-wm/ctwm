@@ -63,7 +63,6 @@
 #include "event_handlers.h"
 #include "icons.h"
 #include "otp.h"
-#include "util.h"
 #include "parse.h"
 #include "resize.h"
 #include "image.h"
