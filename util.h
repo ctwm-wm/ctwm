@@ -106,7 +106,6 @@ void move_to_after(TwmWindow *t, TwmWindow *after);
 void AdoptWindow(void);
 void RescueWindows(void);
 void DebugTrace(char *file);
-void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
 
 void ConstrainByBorders1(int *left, int width, int *top, int height);
