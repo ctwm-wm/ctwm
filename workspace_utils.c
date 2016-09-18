@@ -20,6 +20,7 @@
 #include "otp.h"
 #include "screen.h"
 #include "util.h"
+#include "win_ops.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
 
