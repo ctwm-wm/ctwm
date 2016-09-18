@@ -36,7 +36,7 @@
 #include "icons.h"
 #include "otp.h"
 #include "screen.h"
-#include "util.h"
+#include "win_utils.h"
 
 
 static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win);

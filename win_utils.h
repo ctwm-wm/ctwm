@@ -12,6 +12,9 @@ TwmWindow *GetTwmWindow(Window w);
 unsigned char *GetWMPropertyString(Window w, Atom prop);
 void FreeWMPropertyString(char *prop);
 bool visible(const TwmWindow *tmp_win);
+long mask_out_event(Window w, long ignore_event);
+long mask_out_event_mask(Window w, long ignore_event, long curmask);
+int restore_mask(Window w, long restore);
 
 
 #endif /* _CTWM_WIN_UTILS_H */

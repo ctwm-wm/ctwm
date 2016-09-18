@@ -13,9 +13,9 @@
 #include "image.h"
 #include "otp.h"
 #include "screen.h"
-#include "util.h"  // event masks
 #include "win_iconify.h"
 #include "win_ops.h"
+#include "win_utils.h"
 
 
 /*
