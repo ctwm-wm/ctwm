@@ -11,8 +11,10 @@
 #include "drawing.h"
 #include "iconmgr.h"
 #include "image.h"
-#include "menus.h"  // AutoSqueeze
+#include "otp.h"
 #include "screen.h"
+#include "util.h"  // event masks
+#include "win_iconify.h"
 #include "win_ops.h"
 
 
@@ -154,4 +156,105 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 		SetFocusVisualAttributes(tmp_win, true);
 	}
 	Scr->Focus = tmp_win;
+}
+
+
+/*
+ * Handle doing squeezing bits for AutoSqueeze{} windows.
+ *
+ * Formerly in menus.c
+ */
+void
+AutoSqueeze(TwmWindow *tmp_win)
+{
+	if(tmp_win->isiconmgr) {
+		return;
+	}
+	if(Scr->RaiseWhenAutoUnSqueeze && tmp_win->squeezed) {
+		OtpRaise(tmp_win, WinWin);
+	}
+	Squeeze(tmp_win);
+}
+
+
+/*
+ * Toggle a window's squeezed state.
+ *
+ * Formerly in menus.c
+ */
+void
+Squeeze(TwmWindow *tmp_win)
+{
+	long fx, fy, savex, savey;
+	int  neww, newh;
+	bool south;
+	int  grav = ((tmp_win->hints.flags & PWinGravity)
+	             ? tmp_win->hints.win_gravity : NorthWestGravity);
+	long eventMask;
+	if(tmp_win->squeezed) {
+		tmp_win->squeezed = False;
+#ifdef EWMH
+		EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_SHADED);
+#endif /* EWMH */
+		if(!tmp_win->isicon) {
+			XMapWindow(dpy, tmp_win->w);
+		}
+		SetupWindow(tmp_win, tmp_win->actual_frame_x, tmp_win->actual_frame_y,
+		            tmp_win->actual_frame_width, tmp_win->actual_frame_height, -1);
+		ReMapTransients(tmp_win);
+		return;
+	}
+
+	newh = tmp_win->title_height + 2 * tmp_win->frame_bw3D;
+	if(newh < 3) {
+		XBell(dpy, 0);
+		return;
+	}
+	switch(grav) {
+		case SouthWestGravity :
+		case SouthGravity :
+		case SouthEastGravity :
+			south = true;
+			break;
+		default :
+			south = false;
+			break;
+	}
+	if(tmp_win->title_height && !tmp_win->AlwaysSqueezeToGravity) {
+		south = false;
+	}
+
+	tmp_win->squeezed = true;
+	tmp_win->actual_frame_width  = tmp_win->frame_width;
+	tmp_win->actual_frame_height = tmp_win->frame_height;
+	savex = fx = tmp_win->frame_x;
+	savey = fy = tmp_win->frame_y;
+	neww  = tmp_win->actual_frame_width;
+	if(south) {
+		fy += tmp_win->frame_height - newh;
+	}
+	if(tmp_win->squeeze_info) {
+		fx  += tmp_win->title_x - tmp_win->frame_bw3D;
+		neww = tmp_win->title_width + 2 * (tmp_win->frame_bw + tmp_win->frame_bw3D);
+	}
+
+	eventMask = mask_out_event(tmp_win->w, StructureNotifyMask);
+#ifdef EWMH
+	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_SHADED);
+#endif /* EWMH */
+	XUnmapWindow(dpy, tmp_win->w);
+	restore_mask(tmp_win->w, eventMask);
+
+	if(fx + neww >= Scr->rootw - Scr->BorderRight) {
+		fx = Scr->rootw - Scr->BorderRight - neww;
+	}
+	if(fy + newh >= Scr->rooth - Scr->BorderBottom) {
+		fy = Scr->rooth - Scr->BorderBottom - newh;
+	}
+	SetupWindow(tmp_win, fx, fy, neww, newh, -1);
+	tmp_win->actual_frame_x = savex;
+	tmp_win->actual_frame_y = savey;
+
+	/* Now make the group members disappear */
+	UnmapTransients(tmp_win, false, eventMask);
 }

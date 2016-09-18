@@ -21,7 +21,6 @@
 #include "event_handlers.h"
 #include "iconmgr.h"
 #include "icons.h"
-#include "menus.h"
 #include "otp.h"
 #include "parse.h"
 #include "resize.h"

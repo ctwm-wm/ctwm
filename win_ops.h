@@ -7,6 +7,8 @@
 
 void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 void SetFocus(TwmWindow *tmp_win, Time tim);
+void AutoSqueeze(TwmWindow *tmp_win);
+void Squeeze(TwmWindow *tmp_win);
 
 
 #endif /* _CTWM_WIN_OPS_H */

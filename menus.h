@@ -225,8 +225,6 @@ void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);
 void DisplayPosition(TwmWindow *tmp_win, int x, int y);
-void AutoSqueeze(TwmWindow *tmp_win);
-void Squeeze(TwmWindow *tmp_win);
 
 /* To move soonish? */
 void WarpAlongRing(XButtonEvent *ev, bool forward);

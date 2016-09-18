@@ -92,7 +92,6 @@
 #include "gc.h"
 #include "parse.h"
 #include "version.h"
-#include "menus.h"
 #include "colormaps.h"
 #include "decorations_init.h"
 #include "events.h"
