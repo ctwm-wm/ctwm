@@ -30,6 +30,7 @@
 #include "version.h"
 #include "win_iconify.h"
 #include "win_ops.h"
+#include "win_utils.h"
 #include "windowbox.h"
 #include "captive.h"
 #include "workspace_manager.h"

@@ -80,6 +80,7 @@
 #include "otp.h"
 #include "add_window.h"
 #include "gram.tab.h"
+#include "win_utils.h"
 
 
 /* Where we start drawing the name in the icon manager */

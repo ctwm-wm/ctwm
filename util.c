@@ -843,16 +843,6 @@ safe_strncpy(char *dest, const char *src, size_t size)
 
 
 /*
- * Window mapped on some virtual screen?
- */
-bool
-visible(const TwmWindow *tmp_win)
-{
-	return (tmp_win->vs != NULL);
-}
-
-
-/*
  * Various code paths do a dance of "mask off notifications of event type
  * ; do something that triggers that event (but we're doing it, so we
  * don't need the notification) ; restore previous mask".  So have some

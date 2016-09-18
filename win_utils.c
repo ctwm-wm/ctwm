@@ -286,3 +286,15 @@ FreeWMPropertyString(char *prop)
 		free(prop);
 	}
 }
+
+
+/*
+ * Window mapped on some virtual screen?
+ *
+ * Formerly in util.c
+ */
+bool
+visible(const TwmWindow *tmp_win)
+{
+	return (tmp_win->vs != NULL);
+}
