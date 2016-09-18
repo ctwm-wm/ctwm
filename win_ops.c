@@ -16,6 +16,12 @@
 #include "win_ops.h"
 
 
+/*
+ * Update the visuals of a window (e.g., its own decorations and its
+ * representation in the icon manager) for having/losing focus.
+ *
+ * Formerly in util.c
+ */
 void
 SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 {
@@ -109,8 +115,10 @@ SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus)
 
 
 /*
- * SetFocus - separate routine to set focus to make things more understandable
- * and easier to debug
+ * Shift the focus to a given window, and do whatever subsidiary ops that
+ * entails.
+ *
+ * Formerly in util.c
  */
 void
 SetFocus(TwmWindow *tmp_win, Time tim)
