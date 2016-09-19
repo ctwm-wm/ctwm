@@ -2020,46 +2020,6 @@ void MoveMenu(XEvent *eventp)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      DisplayPosition - display the position in the dimensions window
- *
- *  Inputs:
- *      tmp_win - the current twm window
- *      x, y    - position of the window
- *
- ***********************************************************************
- */
-
-void DisplayPosition(TwmWindow *tmp_win, int x, int y)
-{
-	char str [100];
-	char signx = '+';
-	char signy = '+';
-
-	if(x < 0) {
-		x = -x;
-		signx = '-';
-	}
-	if(y < 0) {
-		y = -y;
-		signy = '-';
-	}
-	sprintf(str, " %c%-4d %c%-4d ", signx, x, signy, y);
-	XRaiseWindow(dpy, Scr->SizeWindow);
-
-	Draw3DBorder(Scr->SizeWindow, 0, 0,
-	             Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
-	             Scr->SizeFont.height + SIZE_VINDENT * 2,
-	             2, Scr->DefaultC, off, false, false);
-
-	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
-	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
-	                   Scr->NormalGC, Scr->SizeStringOffset,
-	                   Scr->SizeFont.ascent + SIZE_VINDENT , str, 13);
-}
-
 
 void TryToPack(TwmWindow *tmp_win, int *x, int *y)
 {

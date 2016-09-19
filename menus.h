@@ -220,7 +220,6 @@ void TryToPush(TwmWindow *tmp_win, int x, int y);
 void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);
-void DisplayPosition(TwmWindow *tmp_win, int x, int y);
 
 /* To move soonish? */
 void WarpAlongRing(XButtonEvent *ev, bool forward);

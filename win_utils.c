@@ -11,6 +11,7 @@
 
 #include "add_window.h" // NoName
 #include "ctwm_atoms.h"
+#include "drawing.h"
 #include "icons.h"
 #include "screen.h"
 #include "win_utils.h"
@@ -405,4 +406,45 @@ GetWMState(Window w, int *statep, Window *iwp)
 
 	XFree(datap);
 	return retval;
+}
+
+
+/*
+ * Display a window's position in the dimensions window.  This is used
+ * during various window positioning (during new window popups, moves,
+ * etc).
+ *
+ * This reuses the same window for the position as is used during
+ * resizing for the dimesions of the window in DisplaySize().  The
+ * innards of the funcs can probably be collapsed together a little, and
+ * the higher-level knowledge of Scr->SizeWindow (e.g., for unmapping
+ * after ths op is done) should probably be encapsulated a bit better.
+ */
+void
+DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y)
+{
+	char str [100];
+	char signx = '+';
+	char signy = '+';
+
+	if(x < 0) {
+		x = -x;
+		signx = '-';
+	}
+	if(y < 0) {
+		y = -y;
+		signy = '-';
+	}
+	sprintf(str, " %c%-4d %c%-4d ", signx, x, signy, y);
+	XRaiseWindow(dpy, Scr->SizeWindow);
+
+	Draw3DBorder(Scr->SizeWindow, 0, 0,
+	             Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
+	             Scr->SizeFont.height + SIZE_VINDENT * 2,
+	             2, Scr->DefaultC, off, false, false);
+
+	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
+	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
+	                   Scr->NormalGC, Scr->SizeStringOffset,
+	                   Scr->SizeFont.ascent + SIZE_VINDENT , str, 13);
 }
