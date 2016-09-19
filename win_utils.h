@@ -18,6 +18,9 @@ int restore_mask(Window w, long restore);
 void SetMapStateProp(TwmWindow *tmp_win, int state);
 bool GetWMState(Window w, int *statep, Window *iwp);
 void DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y);
+void TryToPack(TwmWindow *tmp_win, int *x, int *y);
+void TryToPush(TwmWindow *tmp_win, int x, int y);
+void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 
 
 #endif /* _CTWM_WIN_UTILS_H */

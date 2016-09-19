@@ -11,9 +11,11 @@
 
 #include "add_window.h" // NoName
 #include "ctwm_atoms.h"
+#include "decorations.h"
 #include "drawing.h"
 #include "icons.h"
 #include "screen.h"
+#include "util.h"
 #include "win_utils.h"
 
 
@@ -447,4 +449,215 @@ DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y)
 	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
 	                   Scr->NormalGC, Scr->SizeStringOffset,
 	                   Scr->SizeFont.ascent + SIZE_VINDENT , str, 13);
+}
+
+
+/*
+ * Various funcs for adjusting coordinates for windows based on
+ * resistances etc.
+ *
+ * XXX In desperate need of better commenting.
+ */
+void
+TryToPack(TwmWindow *tmp_win, int *x, int *y)
+{
+	TwmWindow   *t;
+	int         newx, newy;
+	int         w, h;
+	int         winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	int         winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+
+	newx = *x;
+	newy = *y;
+	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
+		if(t == tmp_win) {
+			continue;
+		}
+		if(t->winbox != tmp_win->winbox) {
+			continue;
+		}
+		if(t->vs != tmp_win->vs) {
+			continue;
+		}
+		if(!t->mapped) {
+			continue;
+		}
+
+		w = t->frame_width  + 2 * t->frame_bw;
+		h = t->frame_height + 2 * t->frame_bw;
+		if(newx >= t->frame_x + w) {
+			continue;
+		}
+		if(newy >= t->frame_y + h) {
+			continue;
+		}
+		if(newx + winw <= t->frame_x) {
+			continue;
+		}
+		if(newy + winh <= t->frame_y) {
+			continue;
+		}
+
+		if(newx + Scr->MovePackResistance > t->frame_x + w) {  /* left */
+			newx = MAX(newx, t->frame_x + w);
+			continue;
+		}
+		if(newx + winw < t->frame_x + Scr->MovePackResistance) {  /* right */
+			newx = MIN(newx, t->frame_x - winw);
+			continue;
+		}
+		if(newy + Scr->MovePackResistance > t->frame_y + h) {  /* top */
+			newy = MAX(newy, t->frame_y + h);
+			continue;
+		}
+		if(newy + winh < t->frame_y + Scr->MovePackResistance) {  /* bottom */
+			newy = MIN(newy, t->frame_y - winh);
+			continue;
+		}
+	}
+	*x = newx;
+	*y = newy;
+}
+
+
+/*
+ * Directionals for TryToPush_be().  These differ from the specs for
+ * jump/pack/fill in functions. because there's an indeterminate option.
+ */
+typedef enum {
+	PD_ANY,
+	PD_BOTTOM,
+	PD_LEFT,
+	PD_RIGHT,
+	PD_TOP,
+} PushDirection;
+static void TryToPush_be(TwmWindow *tmp_win, int x, int y, PushDirection dir);
+
+void
+TryToPush(TwmWindow *tmp_win, int x, int y)
+{
+	TryToPush_be(tmp_win, x, y, PD_ANY);
+}
+
+static void
+TryToPush_be(TwmWindow *tmp_win, int x, int y, PushDirection dir)
+{
+	TwmWindow   *t;
+	int         newx, newy, ndir;
+	bool        move;
+	int         w, h;
+	int         winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	int         winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+
+	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
+		if(t == tmp_win) {
+			continue;
+		}
+		if(t->winbox != tmp_win->winbox) {
+			continue;
+		}
+		if(t->vs != tmp_win->vs) {
+			continue;
+		}
+		if(!t->mapped) {
+			continue;
+		}
+
+		w = t->frame_width  + 2 * t->frame_bw;
+		h = t->frame_height + 2 * t->frame_bw;
+		if(x >= t->frame_x + w) {
+			continue;
+		}
+		if(y >= t->frame_y + h) {
+			continue;
+		}
+		if(x + winw <= t->frame_x) {
+			continue;
+		}
+		if(y + winh <= t->frame_y) {
+			continue;
+		}
+
+		move = false;
+		if((dir == PD_ANY || dir == PD_LEFT) &&
+		                (x + Scr->MovePackResistance > t->frame_x + w)) {
+			newx = x - w;
+			newy = t->frame_y;
+			ndir = PD_LEFT;
+			move = true;
+		}
+		else if((dir == PD_ANY || dir == PD_RIGHT) &&
+		                (x + winw < t->frame_x + Scr->MovePackResistance)) {
+			newx = x + winw;
+			newy = t->frame_y;
+			ndir = PD_RIGHT;
+			move = true;
+		}
+		else if((dir == PD_ANY || dir == PD_TOP) &&
+		                (y + Scr->MovePackResistance > t->frame_y + h)) {
+			newx = t->frame_x;
+			newy = y - h;
+			ndir = PD_TOP;
+			move = true;
+		}
+		else if((dir == PD_ANY || dir == PD_BOTTOM) &&
+		                (y + winh < t->frame_y + Scr->MovePackResistance)) {
+			newx = t->frame_x;
+			newy = y + winh;
+			ndir = PD_BOTTOM;
+			move = true;
+		}
+		if(move) {
+			TryToPush_be(t, newx, newy, ndir);
+			TryToPack(t, &newx, &newy);
+			ConstrainByBorders(tmp_win,
+			                   &newx, t->frame_width  + 2 * t->frame_bw,
+			                   &newy, t->frame_height + 2 * t->frame_bw);
+			SetupWindow(t, newx, newy, t->frame_width, t->frame_height, -1);
+		}
+	}
+}
+
+
+void
+TryToGrid(TwmWindow *tmp_win, int *x, int *y)
+{
+	int w    = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	int h    = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	int grav = ((tmp_win->hints.flags & PWinGravity)
+	            ? tmp_win->hints.win_gravity : NorthWestGravity);
+
+	switch(grav) {
+		case ForgetGravity :
+		case StaticGravity :
+		case NorthWestGravity :
+		case NorthGravity :
+		case WestGravity :
+		case CenterGravity :
+			*x = ((*x - Scr->BorderLeft) / Scr->XMoveGrid) * Scr->XMoveGrid
+			     + Scr->BorderLeft;
+			*y = ((*y - Scr->BorderTop) / Scr->YMoveGrid) * Scr->YMoveGrid
+			     + Scr->BorderTop;
+			break;
+		case NorthEastGravity :
+		case EastGravity :
+			*x = (((*x + w - Scr->BorderLeft) / Scr->XMoveGrid) *
+			      Scr->XMoveGrid) - w + Scr->BorderLeft;
+			*y = ((*y - Scr->BorderTop) / Scr->YMoveGrid) *
+			     Scr->YMoveGrid + Scr->BorderTop;
+			break;
+		case SouthWestGravity :
+		case SouthGravity :
+			*x = ((*x - Scr->BorderLeft) / Scr->XMoveGrid) * Scr->XMoveGrid
+			     + Scr->BorderLeft;
+			*y = (((*y + h - Scr->BorderTop) / Scr->YMoveGrid) * Scr->YMoveGrid)
+			     - h + Scr->BorderTop;
+			break;
+		case SouthEastGravity :
+			*x = (((*x + w - Scr->BorderLeft) / Scr->XMoveGrid) *
+			      Scr->XMoveGrid) - w + Scr->BorderLeft;
+			*y = (((*y + h - Scr->BorderTop) / Scr->YMoveGrid) *
+			      Scr->YMoveGrid) - h + Scr->BorderTop;
+			break;
+	}
 }
