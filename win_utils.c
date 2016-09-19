@@ -364,6 +364,9 @@ restore_mask(Window w, long restore)
  *
  * x-ref ICCCM section 4.1.3.1
  * https://tronche.com/gui/x/icccm/sec-4.html#s-4.1.3.1
+ *
+ * XXX These should probably be named more alike, as they're
+ * complementary ops.
  */
 void
 SetMapStateProp(TwmWindow *tmp_win, int state)
