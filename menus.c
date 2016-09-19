@@ -1663,24 +1663,6 @@ SetLastCursor(Cursor newcur)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      FocusOnRoot - put input focus on the root window
- *
- ***********************************************************************
- */
-
-void FocusOnRoot(void)
-{
-	SetFocus(NULL, EventTime);
-	InstallColormaps(0, &Scr->RootColormaps);
-	if(! Scr->ClickToFocus) {
-		Scr->FocusRoot = true;
-	}
-}
-
-
 int WarpToScreen(int n, int inc)
 {
 	Window dumwin;

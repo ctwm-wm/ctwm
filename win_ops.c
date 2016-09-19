@@ -7,8 +7,10 @@
 #include <stdio.h>
 
 #include "animate.h"
+#include "colormaps.h"
 #include "decorations.h"
 #include "drawing.h"
+#include "events.h"
 #include "iconmgr.h"
 #include "image.h"
 #include "otp.h"
@@ -156,6 +158,21 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 		SetFocusVisualAttributes(tmp_win, true);
 	}
 	Scr->Focus = tmp_win;
+}
+
+
+/*
+ * Move the focus straight to the root, with associated cleanup.
+ *
+ * Formerly in menus.c
+ */
+void FocusOnRoot(void)
+{
+	SetFocus(NULL, EventTime);
+	InstallColormaps(0, &Scr->RootColormaps);
+	if(! Scr->ClickToFocus) {
+		Scr->FocusRoot = true;
+	}
 }
 
 
