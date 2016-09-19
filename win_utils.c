@@ -11,6 +11,7 @@
 
 #include "add_window.h" // NoName
 #include "ctwm_atoms.h"
+#include "icons.h"
 #include "screen.h"
 #include "win_utils.h"
 
@@ -355,4 +356,50 @@ int
 restore_mask(Window w, long restore)
 {
 	return XSelectInput(dpy, w, restore);
+}
+
+
+/*
+ * Setting and getting WM_STATE property.
+ *
+ * x-ref ICCCM section 4.1.3.1
+ * https://tronche.com/gui/x/icccm/sec-4.html#s-4.1.3.1
+ */
+void
+SetMapStateProp(TwmWindow *tmp_win, int state)
+{
+	unsigned long data[2];              /* "suggested" by ICCCM version 1 */
+
+	data[0] = (unsigned long) state;
+	data[1] = (unsigned long)(tmp_win->iconify_by_unmapping ? None :
+	                          (tmp_win->icon ? tmp_win->icon->w : None));
+
+	XChangeProperty(dpy, tmp_win->w, XA_WM_STATE, XA_WM_STATE, 32,
+	                PropModeReplace, (unsigned char *) data, 2);
+}
+
+
+bool
+GetWMState(Window w, int *statep, Window *iwp)
+{
+	Atom actual_type;
+	int actual_format;
+	unsigned long nitems, bytesafter;
+	unsigned long *datap = NULL;
+	bool retval = false;
+
+	if(XGetWindowProperty(dpy, w, XA_WM_STATE, 0L, 2L, False, XA_WM_STATE,
+	                      &actual_type, &actual_format, &nitems, &bytesafter,
+	                      (unsigned char **) &datap) != Success || !datap) {
+		return false;
+	}
+
+	if(nitems <= 2) {                   /* "suggested" by ICCCM version 1 */
+		*statep = (int) datap[0];
+		*iwp = (Window) datap[1];
+		retval = true;
+	}
+
+	XFree(datap);
+	return retval;
 }

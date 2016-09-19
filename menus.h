@@ -206,8 +206,6 @@ void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
 void MoveMenu(XEvent *eventp);
-void SetMapStateProp(TwmWindow *tmp_win, int state);
-bool GetWMState(Window w, int *statep, Window *iwp);
 void send_clientmessage(Window w, Atom a, Time timestamp);
 void SendEndAnimationMessage(Window w, Time timestamp);
 void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
