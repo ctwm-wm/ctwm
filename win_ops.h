@@ -10,6 +10,8 @@ void SetFocus(TwmWindow *tmp_win, Time tim);
 void FocusOnRoot(void);
 void AutoSqueeze(TwmWindow *tmp_win);
 void Squeeze(TwmWindow *tmp_win);
+void MoveOutline(Window root, int x, int y, int width, int height,
+                 int bw, int th);
 
 
 #endif /* _CTWM_WIN_OPS_H */

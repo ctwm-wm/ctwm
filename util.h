@@ -90,9 +90,6 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-void     MoveOutline(Window root,
-                     int x, int y, int width, int height,
-                     int bw, int th);
 char     *ExpandFilename(const char *name);
 char     *ExpandFilePath(char *path);
 
