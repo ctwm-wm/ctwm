@@ -90,9 +90,6 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-void     MoveOutline(Window root,
-                     int x, int y, int width, int height,
-                     int bw, int th);
 char     *ExpandFilename(const char *name);
 char     *ExpandFilePath(char *path);
 
@@ -100,29 +97,15 @@ void GetColor(int kind, Pixel *what, const char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
 bool UpdateFont(MyFont *font, int height);
-void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
 #if 0
 void move_to_after(TwmWindow *t, TwmWindow *after);
 #endif
-void SetFocus(TwmWindow *tmp_win, Time tim);
 void AdoptWindow(void);
 void RescueWindows(void);
 void DebugTrace(char *file);
-void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
 
-unsigned char *GetWMPropertyString(Window w, Atom prop);
-void FreeWMPropertyString(char *prop);
-void ConstrainByBorders1(int *left, int width, int *top, int height);
-void ConstrainByBorders(TwmWindow *twmwin,
-                        int *left, int width,
-                        int *top, int height);
 void safe_strncpy(char *dest, const char *src, size_t size);
-bool visible(const TwmWindow *tmp_win);
-
-long mask_out_event(Window w, long ignore_event);
-long mask_out_event_mask(Window w, long ignore_event, long curmask);
-int restore_mask(Window w, long restore);
 
 extern FILE *tracefile;
 

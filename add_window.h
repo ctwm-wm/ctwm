@@ -75,20 +75,16 @@ typedef enum {
 	AWT_OCCUPY,
 } AWType;
 
-void GetGravityOffsets(TwmWindow *tmp, int *xp, int *yp);
 TwmWindow *AddWindow(Window w, AWType wtype, IconMgr *iconp,
                      VirtualScreen *vs);
-TwmWindow *GetTwmWindow(Window w);
 void GrabButtons(TwmWindow *tmp_win);
 void GrabKeys(TwmWindow *tmp_win);
-void GetWindowSizeHints(TwmWindow *tmp_win);
 
 extern int AddingX;
 extern int AddingY;
 extern unsigned int AddingW;
 extern unsigned int AddingH;
 
-void FetchWmProtocols(TwmWindow *tmp);
 
 #endif /* _CTWM_ADD_WINDOW_H */
 

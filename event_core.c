@@ -78,7 +78,6 @@
 
 #include <X11/extensions/shape.h>
 
-#include "add_window.h"
 #include "animate.h"
 #include "captive.h"
 #include "colormaps.h"
@@ -92,6 +91,7 @@
 #include "screen.h"
 #include "util.h"
 #include "version.h"
+#include "win_utils.h"
 #ifdef SOUNDS
 #include "sound.h"
 #endif

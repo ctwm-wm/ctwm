@@ -84,4 +84,6 @@ void restoregeometry(TwmWindow *tmp_win);
 
 void ChangeSize(char *in_string, TwmWindow *tmp_win);
 
+void resizeFromCenter(Window w, TwmWindow *tmp_win);
+
 #endif /* _CTWM_RESIZE_H */

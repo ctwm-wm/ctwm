@@ -197,7 +197,6 @@ void AddFuncButton(int num, int cont, int mods, int func,
 void AddDefaultFuncButtons(void);
 void PopDownMenu(void);
 void HideMenu(MenuRoot *menu);
-void resizeFromCenter(Window w, TwmWindow *tmp_win);
 void ReGrab(void);
 void SetLastCursor(Cursor newcur);
 void PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
@@ -207,8 +206,6 @@ void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
 void MoveMenu(XEvent *eventp);
-void SetMapStateProp(TwmWindow *tmp_win, int state);
-bool GetWMState(Window w, int *statep, Window *iwp);
 void send_clientmessage(Window w, Atom a, Time timestamp);
 void SendEndAnimationMessage(Window w, Time timestamp);
 void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
@@ -218,15 +215,8 @@ void RaiseLower(TwmWindow *tmp_win);
 void RaiseLowerFrame(Window frame, int ontop);
 void MapRaised(TwmWindow *tmp_win);
 void RaiseFrame(Window frame);
-void FocusOnRoot(void);
-void TryToPack(TwmWindow *tmp_win, int *x, int *y);
-void TryToPush(TwmWindow *tmp_win, int x, int y);
-void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);
-void DisplayPosition(TwmWindow *tmp_win, int x, int y);
-void AutoSqueeze(TwmWindow *tmp_win);
-void Squeeze(TwmWindow *tmp_win);
 
 /* To move soonish? */
 void WarpAlongRing(XButtonEvent *ev, bool forward);

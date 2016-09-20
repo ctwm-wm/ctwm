@@ -8,13 +8,13 @@
 
 #include <sys/select.h>
 
-#include "util.h"
 #include "decorations.h"
 #include "screen.h"
 #include "icons.h"
 #include "cursor.h"
 #include "image.h"
 #include "gram.tab.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 
 #include "mask_screen.h"

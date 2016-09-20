@@ -8,7 +8,6 @@
 
 #include <X11/extensions/shape.h>
 
-#include "add_window.h"
 #include "events.h"
 #include "functions.h"
 #include "iconmgr.h"
@@ -18,6 +17,8 @@
 #include "screen.h"
 #include "util.h"
 #include "win_iconify.h"
+#include "win_ops.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 
 

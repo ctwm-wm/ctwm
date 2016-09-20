@@ -92,7 +92,6 @@
 #include "gc.h"
 #include "parse.h"
 #include "version.h"
-#include "menus.h"
 #include "colormaps.h"
 #include "decorations_init.h"
 #include "events.h"
@@ -107,7 +106,9 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "win_ops.h"
 #include "win_regions.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 #ifdef SOUNDS
 #  include "sound.h"

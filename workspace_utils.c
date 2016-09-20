@@ -19,7 +19,8 @@
 #include "image.h"
 #include "otp.h"
 #include "screen.h"
-#include "util.h"
+#include "win_ops.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
 

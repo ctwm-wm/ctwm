@@ -51,7 +51,9 @@ set(CTWMSRC
 	util.c
 	vscreen.c
 	win_iconify.c
+	win_ops.c
 	win_regions.c
+	win_utils.c
 	windowbox.c
 	workspace_config.c
 	workspace_manager.c

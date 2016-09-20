@@ -1,7 +1,7 @@
 #include "ctwm.h"
-#include "util.h"
 #include "screen.h"
 #include "clicktofocus.h"
+#include "win_ops.h"
 
 static TwmWindow *get_last_window(WorkSpace *current)
 {

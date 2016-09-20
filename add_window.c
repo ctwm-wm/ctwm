@@ -77,7 +77,6 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 
-#include "ctwm_atoms.h"
 #include "add_window.h"
 #include "colormaps.h"
 #include "windowbox.h"
@@ -97,7 +96,9 @@
 #include "functions.h"  // Only for RootFunction
 #include "decorations.h"
 #include "captive.h"
+#include "win_ops.h"
 #include "win_regions.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 
 #include "gram.tab.h"
@@ -116,46 +117,6 @@ static bool Transient(Window w, Window *propw);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
 bool resizeWhenAdd;
-
-/************************************************************************
- *
- *  Procedure:
- *      GetGravityOffsets - map gravity to (x,y) offset signs for adding
- *              to x and y when window is mapped to get proper placement.
- *
- ************************************************************************
- */
-
-void GetGravityOffsets(TwmWindow *tmp,  /* window from which to get gravity */
-                       int *xp, int *yp)       /* return values */
-{
-	static struct _gravity_offset {
-		int x, y;
-	} gravity_offsets[11] = {
-		{  0,  0 },                     /* ForgetGravity */
-		{ -1, -1 },                     /* NorthWestGravity */
-		{  0, -1 },                     /* NorthGravity */
-		{  1, -1 },                     /* NorthEastGravity */
-		{ -1,  0 },                     /* WestGravity */
-		{  0,  0 },                     /* CenterGravity */
-		{  1,  0 },                     /* EastGravity */
-		{ -1,  1 },                     /* SouthWestGravity */
-		{  0,  1 },                     /* SouthGravity */
-		{  1,  1 },                     /* SouthEastGravity */
-		{  0,  0 },                     /* StaticGravity */
-	};
-	int g = ((tmp->hints.flags & PWinGravity)
-	         ? tmp->hints.win_gravity : NorthWestGravity);
-
-	if(g < ForgetGravity || g > StaticGravity) {
-		*xp = *yp = 0;
-	}
-	else {
-		*xp = gravity_offsets[g].x;
-		*yp = gravity_offsets[g].y;
-	}
-}
-
 
 
 
@@ -1500,39 +1461,21 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	return (tmp_win);
 }
 
-/***********************************************************************
+
+/*
+ * XXX GrabButtons() and GrabKeys() are in a slightly odd state.  They're
+ * almost strictly a piece of the window-adding process, which is why
+ * they're here.  They're not static because the icon manager setup in
+ * CreateIconManagers() calls them explicitly, because they're also
+ * explicitly skipped in AddWindow() for icon manager windows.  I'm not
+ * sure that's necessary; x-ref comment in CIM() about some ideas on the
+ * matter.
  *
- *  Procedure:
- *      GetTwmWindow - finds the TwmWindow structure associated with
- *              a Window (if any), or NULL.
- *
- *  Returned Value:
- *      NULL    - it is not a Window we know about
- *      otherwise- the TwmWindow *
- *
- *  Inputs:
- *      w       - the window to check
- *
- *  Note:
- *      This is a relatively cheap function since it does not involve
- *      communication with the server. Probably faster than walking
- *      the list of TwmWindows, since the lookup is by a hash table.
- *
- ***********************************************************************
+ * This should be resolved.  Until it is, they're left exported so the
+ * iconmgr code can all them, and they're left here (rather than moved to
+ * win_utils) on the guess that it may well be resolvable and so they'd
+ * stay here and be staticized in the end.
  */
-TwmWindow *GetTwmWindow(Window w)
-{
-	TwmWindow *twmwin;
-	int stat;
-
-	stat = XFindContext(dpy, w, TwmContext, (XPointer *)&twmwin);
-	if(stat == XCNOENT) {
-		twmwin = NULL;
-	}
-
-	return twmwin;
-}
-
 
 /***********************************************************************
  *
@@ -1739,97 +1682,6 @@ void GrabKeys(TwmWindow *tmp_win)
 #undef ungrabkey
 
 
-
-void FetchWmProtocols(TwmWindow *tmp)
-{
-	unsigned long flags = 0L;
-	Atom *protocols = NULL;
-	int n;
-
-	if(XGetWMProtocols(dpy, tmp->w, &protocols, &n)) {
-		int i;
-		Atom *ap;
-
-		for(i = 0, ap = protocols; i < n; i++, ap++) {
-			if(*ap == XA_WM_TAKE_FOCUS) {
-				flags |= DoesWmTakeFocus;
-			}
-			if(*ap == XA_WM_SAVE_YOURSELF) {
-				flags |= DoesWmSaveYourself;
-			}
-			if(*ap == XA_WM_DELETE_WINDOW) {
-				flags |= DoesWmDeleteWindow;
-			}
-		}
-		if(protocols) {
-			XFree(protocols);
-		}
-	}
-	tmp->protocols = flags;
-}
-
-
-void GetWindowSizeHints(TwmWindow *tmp)
-{
-	long supplied = 0;
-	XSizeHints *hints = &tmp->hints;
-
-	if(!XGetWMNormalHints(dpy, tmp->w, hints, &supplied)) {
-		hints->flags = 0;
-	}
-
-	if(hints->flags & PResizeInc) {
-		if(hints->width_inc == 0) {
-			hints->width_inc = 1;
-		}
-		if(hints->height_inc == 0) {
-			hints->height_inc = 1;
-		}
-	}
-
-	if(!(supplied & PWinGravity) && (hints->flags & USPosition)) {
-		static int gravs[] = { SouthEastGravity, SouthWestGravity,
-		                       NorthEastGravity, NorthWestGravity
-		                     };
-		int right =  tmp->attr.x + tmp->attr.width + 2 * tmp->old_bw;
-		int bottom = tmp->attr.y + tmp->attr.height + 2 * tmp->old_bw;
-		hints->win_gravity =
-		        gravs[((Scr->rooth - bottom <
-		                tmp->title_height + 2 * tmp->frame_bw3D) ? 0 : 2) |
-		              ((Scr->rootw - right   <
-		                tmp->title_height + 2 * tmp->frame_bw3D) ? 0 : 1)];
-		hints->flags |= PWinGravity;
-	}
-
-	/* Check for min size < max size */
-	if((hints->flags & (PMinSize | PMaxSize)) == (PMinSize | PMaxSize)) {
-		if(hints->max_width < hints->min_width) {
-			if(hints->max_width > 0) {
-				hints->min_width = hints->max_width;
-			}
-			else if(hints->min_width > 0) {
-				hints->max_width = hints->min_width;
-			}
-			else {
-				hints->max_width = hints->min_width = 1;
-			}
-		}
-
-		if(hints->max_height < hints->min_height) {
-			if(hints->max_height > 0) {
-				hints->min_height = hints->max_height;
-			}
-			else if(hints->min_height > 0) {
-				hints->max_height = hints->min_height;
-			}
-			else {
-				hints->max_height = hints->min_height = 1;
-			}
-		}
-	}
-}
-
-
 /*
  * This is largely for Xinerama support with VirtualScreens.
  * In this case, windows may be on something other then the main screen
@@ -1894,7 +1746,8 @@ DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
  * Figure out if a window is a transient, and stash what it's transient
  * for.
  *
- * Previously in events.c.  Maybe fodder for a win_utils file?
+ * Previously in events.c.  Strictly win_utils-ish, but only used in
+ * AddWindow(), so might as well leave it here and static for now.
  */
 static bool
 Transient(Window w, Window *propw)

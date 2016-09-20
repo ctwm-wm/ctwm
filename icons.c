@@ -77,6 +77,7 @@
 #include "util.h"
 #include "animate.h"
 #include "image.h"
+#include "win_utils.h"
 #include "workspace_manager.h"
 
 static void splitIconRegionEntry(IconEntry *ie, RegGravity grav1,
