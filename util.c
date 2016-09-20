@@ -641,59 +641,6 @@ void DebugTrace(char *file)
 }
 
 
-static void ConstrainLeftTop(int *value, int border)
-{
-	if(*value < border) {
-		if(Scr->MoveOffResistance < 0 ||
-		                *value > border - Scr->MoveOffResistance) {
-			*value = border;
-		}
-		else if(Scr->MoveOffResistance > 0 &&
-		                *value <= border - Scr->MoveOffResistance) {
-			*value = *value + Scr->MoveOffResistance;
-		}
-	}
-}
-
-static void ConstrainRightBottom(int *value, int size1, int border, int size2)
-{
-	if(*value + size1 > size2 - border) {
-		if(Scr->MoveOffResistance < 0 ||
-		                *value + size1 < size2 - border + Scr->MoveOffResistance) {
-			*value = size2 - size1 - border;
-		}
-		else if(Scr->MoveOffResistance > 0 &&
-		                *value + size1 >= size2 - border + Scr->MoveOffResistance) {
-			*value = *value - Scr->MoveOffResistance;
-		}
-	}
-}
-
-void ConstrainByBorders1(int *left, int width, int *top, int height)
-{
-	ConstrainRightBottom(left, width, Scr->BorderRight, Scr->rootw);
-	ConstrainLeftTop(left, Scr->BorderLeft);
-	ConstrainRightBottom(top, height, Scr->BorderBottom, Scr->rooth);
-	ConstrainLeftTop(top, Scr->BorderTop);
-}
-
-void ConstrainByBorders(TwmWindow *twmwin,
-                        int *left, int width, int *top, int height)
-{
-	if(twmwin->winbox) {
-		XWindowAttributes attr;
-		XGetWindowAttributes(dpy, twmwin->winbox->window, &attr);
-		ConstrainRightBottom(left, width, 0, attr.width);
-		ConstrainLeftTop(left, 0);
-		ConstrainRightBottom(top, height, 0, attr.height);
-		ConstrainLeftTop(top, 0);
-	}
-	else {
-		ConstrainByBorders1(left, width, top, height);
-	}
-}
-
-
 /*
  * A safe strncpy(), which always ensures NUL-termination.
  *

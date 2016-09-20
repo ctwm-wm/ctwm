@@ -105,10 +105,6 @@ void RescueWindows(void);
 void DebugTrace(char *file);
 
 
-void ConstrainByBorders1(int *left, int width, int *top, int height);
-void ConstrainByBorders(TwmWindow *twmwin,
-                        int *left, int width,
-                        int *top, int height);
 void safe_strncpy(char *dest, const char *src, size_t size);
 
 extern FILE *tracefile;
