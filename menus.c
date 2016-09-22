@@ -87,6 +87,7 @@
 #include "colormaps.h"
 #include "otp.h"
 #include "image.h"
+#include "list.h"
 #include "functions.h"
 #include "screen.h"
 #include "occupation.h"

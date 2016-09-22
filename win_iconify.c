@@ -12,6 +12,7 @@
 #include "functions.h"
 #include "iconmgr.h"
 #include "icons.h"
+#include "list.h"
 #include "otp.h"
 #include "screen.h"
 #include "util.h"

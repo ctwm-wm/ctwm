@@ -35,6 +35,7 @@
 #include "screen.h"
 #include "add_window.h"
 #include "decorations.h"
+#include "list.h"
 #include "resize.h"
 #include "windowbox.h"
 #include "win_utils.h"

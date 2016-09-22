@@ -23,6 +23,7 @@
 #include "events.h"
 #include "ewmh.h"
 #include "iconmgr.h"
+#include "list.h"
 #include "screen.h"
 #include "occupation.h"
 #include "otp.h"

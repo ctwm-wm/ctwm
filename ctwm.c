@@ -101,6 +101,7 @@
 #include "screen.h"
 #include "icons.h"
 #include "iconmgr.h"
+#include "list.h"
 #include "session.h"
 #include "occupation.h"
 #include "otp.h"

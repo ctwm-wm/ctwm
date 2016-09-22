@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include "list.h"
 #include "screen.h"
 #include "win_regions.h"
 

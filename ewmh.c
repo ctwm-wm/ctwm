@@ -66,6 +66,7 @@
 #include "parse.h"
 #include "resize.h"
 #include "image.h"
+#include "list.h"
 #include "functions.h"
 #include "occupation.h"
 #include "vscreen.h"

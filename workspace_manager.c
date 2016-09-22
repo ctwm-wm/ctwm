@@ -43,6 +43,7 @@
 #include "cursor.h"
 #include "image.h"
 #include "drawing.h"
+#include "list.h"
 #include "occupation.h"
 #include "vscreen.h"
 #include "win_iconify.h"

@@ -76,6 +76,7 @@
 #include "screen.h"
 #include "decorations.h"
 #include "drawing.h"
+#include "list.h"
 #include "resize.h"
 #include "occupation.h"
 #include "otp.h"

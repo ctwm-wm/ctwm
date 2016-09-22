@@ -21,6 +21,7 @@
 #include "event_handlers.h"
 #include "iconmgr.h"
 #include "icons.h"
+#include "list.h" // for match()
 #include "otp.h"
 #include "parse.h"
 #include "resize.h"
