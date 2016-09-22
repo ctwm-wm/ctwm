@@ -10,6 +10,7 @@
 
 #include "image.h"
 #include "list.h"
+#include "occupation.h"
 #include "screen.h"
 #include "util.h"
 #include "workspace_config.h"

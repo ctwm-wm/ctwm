@@ -24,6 +24,7 @@
 #include "ewmh.h"
 #include "iconmgr.h"
 #include "screen.h"
+#include "occupation.h"
 #include "otp.h"
 #include "util.h"
 #include "win_iconify.h"
@@ -31,9 +32,6 @@
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
-
-// Gotten via screen.h
-//#include "occupation.h"
 
 
 static int GetMaskFromResource(TwmWindow *win, char *res);

@@ -27,6 +27,7 @@
 #include "screen.h"
 #include "util.h"
 #include "drawing.h"
+#include "occupation.h"
 #include "version.h"
 #include "win_iconify.h"
 #include "win_ops.h"

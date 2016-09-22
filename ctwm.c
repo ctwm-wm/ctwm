@@ -102,6 +102,7 @@
 #include "icons.h"
 #include "iconmgr.h"
 #include "session.h"
+#include "occupation.h"
 #include "otp.h"
 #include "cursor.h"
 #include "windowbox.h"

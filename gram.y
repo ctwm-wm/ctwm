@@ -79,6 +79,7 @@
 #include "decorations_init.h"
 #include "list.h"
 #include "util.h"
+#include "occupation.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_be.h"

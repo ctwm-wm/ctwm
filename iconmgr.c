@@ -77,6 +77,7 @@
 #include "decorations.h"
 #include "drawing.h"
 #include "resize.h"
+#include "occupation.h"
 #include "otp.h"
 #include "add_window.h"
 #include "gram.tab.h"
