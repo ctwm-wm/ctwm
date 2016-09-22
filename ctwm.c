@@ -107,6 +107,7 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "vscreen.h"
 #include "win_ops.h"
 #include "win_regions.h"
 #include "win_utils.h"

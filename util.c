@@ -103,6 +103,7 @@
 #include "image.h"
 #include "decorations.h"
 #include "drawing.h"
+#include "vscreen.h"
 
 
 /* Handle for debug tracing */

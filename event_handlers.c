@@ -97,6 +97,7 @@
 #include "resize.h"
 #include "screen.h"
 #include "util.h"
+#include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
 #include "win_regions.h"

@@ -36,6 +36,7 @@
 #include "icons.h"
 #include "otp.h"
 #include "screen.h"
+#include "vscreen.h"
 #include "win_utils.h"
 
 

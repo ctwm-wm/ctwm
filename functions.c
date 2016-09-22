@@ -34,6 +34,7 @@
 #include "win_utils.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "vscreen.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
 

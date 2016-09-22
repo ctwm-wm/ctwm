@@ -15,6 +15,7 @@
 #include "screen.h"
 #include "gram.tab.h"
 #include "occupation.h"
+#include "vscreen.h"
 
 #include "drawing.h"
 

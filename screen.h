@@ -59,7 +59,6 @@
 
 #include "list.h"
 #include "menus.h"
-#include "vscreen.h"
 #include "workspace_structs.h"  // embedded ScreenInfo.workSpaceMgr
 
 typedef enum {

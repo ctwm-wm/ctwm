@@ -68,6 +68,7 @@
 #include "image.h"
 #include "functions.h"
 #include "occupation.h"
+#include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
 #include "win_utils.h"

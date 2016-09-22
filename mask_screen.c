@@ -14,6 +14,7 @@
 #include "cursor.h"
 #include "image.h"
 #include "gram.tab.h"
+#include "vscreen.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 

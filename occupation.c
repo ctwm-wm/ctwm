@@ -27,6 +27,7 @@
 #include "occupation.h"
 #include "otp.h"
 #include "util.h"
+#include "vscreen.h"
 #include "win_iconify.h"
 #include "win_regions.h"
 #include "win_utils.h"
