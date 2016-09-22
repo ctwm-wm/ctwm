@@ -21,7 +21,6 @@
 #include "ctwm_atoms.h"
 #include "drawing.h"
 #include "events.h"
-#include "ewmh.h"
 #include "iconmgr.h"
 #include "list.h"
 #include "screen.h"
