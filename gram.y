@@ -72,7 +72,6 @@
 #include <strings.h>
 
 #include "otp.h"
-#include "menus.h"
 #include "iconmgr.h"
 #include "icons.h"
 #include "windowbox.h"

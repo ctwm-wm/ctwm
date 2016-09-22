@@ -86,7 +86,6 @@
 #include "parse.h"
 #include "list.h"
 #include "events.h"
-#include "menus.h"
 #include "screen.h"
 #include "icons.h"
 #include "iconmgr.h"
