@@ -21,19 +21,18 @@
 #include "ctwm_atoms.h"
 #include "drawing.h"
 #include "events.h"
-#include "ewmh.h"
 #include "iconmgr.h"
+#include "list.h"
 #include "screen.h"
+#include "occupation.h"
 #include "otp.h"
 #include "util.h"
+#include "vscreen.h"
 #include "win_iconify.h"
 #include "win_regions.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
-
-// Gotten via screen.h
-//#include "occupation.h"
 
 
 static int GetMaskFromResource(TwmWindow *win, char *res);

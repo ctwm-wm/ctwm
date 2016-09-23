@@ -34,6 +34,7 @@
 #include "screen.h"
 #include "ctwm_atoms.h"
 #include "util.h"
+#include "vscreen.h"
 
 
 static char **GetCaptivesList(int scrnum);

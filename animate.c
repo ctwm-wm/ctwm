@@ -15,8 +15,8 @@
 #include "icons.h"
 #include "image.h"
 #include "screen.h"
-#include "menus.h"
 #include "util.h"
+#include "vscreen.h"
 #include "win_utils.h"
 
 #include "animate.h"

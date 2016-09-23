@@ -75,7 +75,6 @@
 #include <strings.h>
 
 #include "ctwm_atoms.h"
-#include "menus.h"
 #include "resize.h"
 #include "events.h"
 #include "util.h"
@@ -88,8 +87,11 @@
 #include "colormaps.h"
 #include "otp.h"
 #include "image.h"
+#include "list.h"
 #include "functions.h"
 #include "screen.h"
+#include "occupation.h"
+#include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
 #include "win_utils.h"

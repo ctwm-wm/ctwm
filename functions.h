@@ -16,7 +16,7 @@ typedef enum {
 	MOVE_HORIZ,
 } CMoveDir;
 
-/* Needed in events.c */
+/* Needed in event_handlers.c */
 extern bool ConstMove;
 extern CMoveDir ConstMoveDir;
 extern int ConstMoveX;

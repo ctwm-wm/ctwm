@@ -111,6 +111,7 @@
 
 #include "ctwm_atoms.h"
 #include "icons.h"
+#include "list.h"
 #include "screen.h"
 #include "session.h"
 

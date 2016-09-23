@@ -72,13 +72,13 @@
 #include <strings.h>
 
 #include "otp.h"
-#include "menus.h"
 #include "iconmgr.h"
 #include "icons.h"
 #include "windowbox.h"
 #include "decorations_init.h"
 #include "list.h"
 #include "util.h"
+#include "occupation.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_be.h"

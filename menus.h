@@ -209,12 +209,6 @@ void MoveMenu(XEvent *eventp);
 void send_clientmessage(Window w, Atom a, Time timestamp);
 void SendEndAnimationMessage(Window w, Time timestamp);
 void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
-void RaiseWindow(TwmWindow *tmp_win);
-void LowerWindow(TwmWindow *tmp_win);
-void RaiseLower(TwmWindow *tmp_win);
-void RaiseLowerFrame(Window frame, int ontop);
-void MapRaised(TwmWindow *tmp_win);
-void RaiseFrame(Window frame);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);
 

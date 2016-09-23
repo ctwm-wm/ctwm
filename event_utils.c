@@ -12,8 +12,10 @@
 #include "event_handlers.h"
 #include "event_internal.h"
 #include "events.h"
+#include "list.h"
 #include "otp.h"
 #include "screen.h"
+#include "vscreen.h"
 #include "win_iconify.h"
 #include "workspace_manager.h"
 

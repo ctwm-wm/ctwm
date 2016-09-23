@@ -19,6 +19,7 @@
 #include "image.h"
 #include "otp.h"
 #include "screen.h"
+#include "vscreen.h"
 #include "win_ops.h"
 #include "win_utils.h"
 #include "workspace_manager.h"

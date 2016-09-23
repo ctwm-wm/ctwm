@@ -57,11 +57,8 @@
 #ifndef _CTWM_SCREEN_H
 #define _CTWM_SCREEN_H
 
-#include "list.h"
-#include "menus.h"
-#include "vscreen.h"
-#include "workspace_structs.h"
-#include "occupation.h"
+#include "menus.h"  // embedded MouseButton/Func{Button,Key}
+#include "workspace_structs.h"  // embedded ScreenInfo.workSpaceMgr
 
 typedef enum {
 	ICONIFY_NORMAL,

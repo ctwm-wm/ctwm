@@ -22,6 +22,8 @@
 #include "util.h"
 #include "animate.h"
 #include "image.h"
+#include "list.h"
+#include "occupation.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"

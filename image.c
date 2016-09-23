@@ -11,6 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "list.h"
 #include "screen.h"
 
 #include "image.h"

@@ -34,8 +34,10 @@
 #include "ctwm_atoms.h"
 #include "cursor.h"
 #include "icons.h"
+#include "list.h"
 #include "otp.h"
 #include "screen.h"
+#include "vscreen.h"
 #include "win_utils.h"
 
 

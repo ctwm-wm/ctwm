@@ -44,6 +44,7 @@
 #include "list.h"
 #include "events.h"
 #include "event_handlers.h"
+#include "vscreen.h"
 
 #define DEBUG_OTP       0
 #if DEBUG_OTP
