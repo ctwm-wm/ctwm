@@ -59,7 +59,14 @@
  */
 int RootFunction = 0;
 
-int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
+/*
+ * Which move-ish function is in progress.  This is _almost_ really a
+ * local var in the movewindow() function, but we also reference it in
+ * the HandleButtonRelease() event handler because that has to know
+ * which move variant we're doing to figure out whether it has to
+ * constrain the final coordinates in various ways.
+ */
+int MoveFunction;
 
 /* Building the f.identify window.  The events code grubs in these. */
 #define INFO_LINES 30
