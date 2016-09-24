@@ -118,7 +118,7 @@ void TwmOutput(int c);
 #define F_WINREFRESH            6
 #define F_DELTASTOP             7
 #define F_MOVE                  8
-#define F_POPUP                 9
+#define F_POPUP                 9   // Synthetic
 #define F_FORCEMOVE             10
 #define F_AUTORAISE             11
 #define F_IDENTIFY              12
@@ -204,7 +204,7 @@ void TwmOutput(int c);
 
 
 #define F_MENU                  101     /* string */
-#define F_WARPTO                102     /* string */
+#define F_WARPTO                102     /* string ; synthetic */
 #define F_WARPTOICONMGR         103     /* string */
 #define F_WARPRING              104     /* string */
 //#define F_FILE                105     /* string */

@@ -633,6 +633,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_POPUP:
+			/*
+			 * This is a synthetic function; it exists only to be called
+			 * internally from the various magic menus like TwmWindows
+			 * etc.
+			 */
 			tmp_win = (TwmWindow *)action;
 			if(! tmp_win) {
 				break;
@@ -649,6 +654,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_WINWARP:
+			/* Synthetic function; x-ref comment on F_POPUP */
 			tmp_win = (TwmWindow *)action;
 
 			if(! tmp_win) {
