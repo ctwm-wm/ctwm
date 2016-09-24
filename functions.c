@@ -44,7 +44,21 @@
 #include "functions.h"
 
 
+/*
+ * Various functions can be executed "from the root" (which generally
+ * means "from a menu"), but apply to a specific window (e.g., f.move,
+ * f.identify, etc).  You obviously can't be selecting it from a menu and
+ * pointing at the window to target at the same time, so we have to
+ * 2-step those calls.  This happens via the DeferExecution() call in the
+ * implementations of those functions, which stashes the "in progress"
+ * function in RootFunction.  The HandleButtonPress() event handler will
+ * later notice that and loop events back around into ExecuteFunction()
+ * again to pick up where it left off.
+ *
+ * (a more descriptive name might be in order)
+ */
 int RootFunction = 0;
+
 int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
 
 /* Building the f.identify window.  The events code grubs in these. */
@@ -1917,20 +1931,18 @@ HideIconManager(void)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      DeferExecution - defer the execution of a function to the
- *          next button press if the context is C_ROOT
+/*
+ * Check to see if a function (implicitly, a window-targetting function)
+ * is happening in a context away from an actual window, and if so stash
+ * up info about what's in progress and return true to tell the caller to
+ * end processing the function (for now).  X-ref comment on RootFunction
+ * variable definition for details.
  *
  *  Inputs:
  *      context - the context in which the mouse button was pressed
  *      func    - the function to defer
  *      cursor  - the cursor to display while waiting
- *
- ***********************************************************************
  */
-
 static bool
 DeferExecution(int context, int func, Cursor cursor)
 {
