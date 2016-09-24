@@ -2893,16 +2893,15 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 }
 
 
-/***********************************************************************
+/*
+ * Checks each function in the list to see if it is one that needs to be
+ * defered.  Only currently called during handling of "f.function"
+ * handling; direct calls to funcs that need to be deferred already have
+ * DeferExecution() calls hardcoded in their handling.
  *
- *  Procedure:
- *      NeedToDefer - checks each function in the list to see if it
- *              is one that needs to be defered.
+ * XXX Should that be?  Maybe we should better harmonize the cases.
  *
- *  Inputs:
- *      root    - the menu root to check
- *
- ***********************************************************************
+ * XXX I'm not sure this list is actually up to date.  Check.
  */
 static bool
 NeedToDefer(MenuRoot *root)
