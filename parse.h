@@ -178,7 +178,7 @@ void TwmOutput(int c);
 #define F_REREADSOUNDS          65
 #endif
 #define F_TRACE                 66
-#define F_WINWARP               67
+#define F_WINWARP               67 // Synthetic
 #define F_ALTCONTEXT            68
 #define F_LEFTWORKSPACE         69
 #define F_RIGHTWORKSPACE        70
@@ -204,7 +204,7 @@ void TwmOutput(int c);
 
 
 #define F_MENU                  101     /* string */
-#define F_WARPTO                102     /* string ; synthetic */
+#define F_WARPTO                102     /* string */
 #define F_WARPTOICONMGR         103     /* string */
 #define F_WARPRING              104     /* string */
 //#define F_FILE                105     /* string */
