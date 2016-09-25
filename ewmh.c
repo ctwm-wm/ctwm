@@ -1163,7 +1163,7 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 				newZoom = twm_win->zoomed;      /* turn off whatever zoom */
 				break;
 			case EWMH_STATE_MAXIMIZED_VERT:
-				newZoom = F_VERTZOOM;
+				newZoom = F_ZOOM;
 				break;
 			case EWMH_STATE_MAXIMIZED_HORZ:
 				newZoom = F_HORIZOOM;
@@ -2006,7 +2006,7 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 				newFlags = EWMH_STATE_MAXIMIZED_VERT |
 				           EWMH_STATE_MAXIMIZED_HORZ;
 				break;
-			case F_VERTZOOM:
+			case F_ZOOM:
 			case F_LEFTZOOM:
 			case F_RIGHTZOOM:
 				newFlags = EWMH_STATE_MAXIMIZED_VERT;

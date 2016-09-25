@@ -239,7 +239,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			JumpIconManager(func);
 			break;
 
-		case F_SHOWLIST:
+		case F_SHOWICONMGR:
 			if(Scr->NoIconManagers) {
 				break;
 			}
@@ -262,14 +262,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			ModifyAnimationSpeed(-1);
 			break;
 
-		case F_HIDELIST:
+		case F_HIDEICONMGR:
 			if(Scr->NoIconManagers) {
 				break;
 			}
 			HideIconManager();
 			break;
 
-		case F_SHOWWORKMGR:
+		case F_SHOWWORKSPACEMGR:
 			if(! Scr->workSpaceManagerActive) {
 				break;
 			}
@@ -277,7 +277,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			OtpRaise(Scr->currentvs->wsw->twm_win, WinWin);
 			break;
 
-		case F_HIDEWORKMGR:
+		case F_HIDEWORKSPACEMGR:
 			if(! Scr->workSpaceManagerActive) {
 				break;
 			}
@@ -285,7 +285,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			        eventp->xbutton.y_root - 5);
 			break;
 
-		case F_TOGGLEWORKMGR:
+		case F_TOGGLEWORKSPACEMGR:
 			if(! Scr->workSpaceManagerActive) {
 				break;
 			}
@@ -743,7 +743,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 
-		case F_VERTZOOM:
+		case F_ZOOM:
 		case F_HORIZOOM:
 		case F_FULLZOOM:
 		case F_FULLSCREENZOOM:
@@ -1239,7 +1239,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			break;
 
-		case F_SHOWBGRD:
+		case F_SHOWBACKGROUND:
 			ShowBackground(Scr->currentvs, -1);
 			break;
 
@@ -1790,7 +1790,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			Done(0);
 			break;
 
-		case F_RESCUE_WINDOWS:
+		case F_RESCUEWINDOWS:
 			RescueWindows();
 			break;
 
@@ -2398,7 +2398,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 				newy = tmp_win->save_frame_y +
 				       tmp_win->save_frame_height - newh;
 			}
-			tmp_win->zoomed = F_VERTZOOM;
+			tmp_win->zoomed = F_ZOOM;
 			SetupWindow(tmp_win, newx, newy, neww, newh, -1);
 		}
 		else {
@@ -2928,7 +2928,7 @@ NeedToDefer(MenuRoot *root)
 			case F_FOCUS:
 			case F_DESTROY:
 			case F_WINREFRESH:
-			case F_VERTZOOM:
+			case F_ZOOM:
 			case F_FULLZOOM:
 			case F_FULLSCREENZOOM:
 			case F_HORIZOOM:
