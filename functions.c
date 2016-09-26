@@ -2298,10 +2298,10 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 	int cons, newx, newy, save;
 	unsigned int neww, newh;
 	int i;
-	int winx = tmp_win->frame_x;
-	int winy = tmp_win->frame_y;
-	int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	const int winx = tmp_win->frame_x;
+	const int winy = tmp_win->frame_y;
+	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
 	if(!strcmp(direction, "left")) {
 		cons = FindConstraint(tmp_win, MFD_LEFT);
