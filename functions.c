@@ -2190,7 +2190,7 @@ void
 draw_info_window(void)
 {
 	int i;
-	int height;
+	const int height = Scr->DefaultFont.height + 2;
 
 	Draw3DBorder(Scr->InfoWindow.win, 0, 0,
 	             Scr->InfoWindow.width, Scr->InfoWindow.height,
@@ -2198,7 +2198,6 @@ draw_info_window(void)
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 
-	height = Scr->DefaultFont.height + 2;
 	for(i = 0; i < Scr->InfoWindow.lines ; i++) {
 		XmbDrawString(dpy, Scr->InfoWindow.win, Scr->DefaultFont.font_set,
 		              Scr->NormalGC, 5,
