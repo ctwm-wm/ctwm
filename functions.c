@@ -167,6 +167,21 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		return true;        /* XXX should this be false? */
 	}
 
+	/*
+	 * For most functions with a few exceptions, grab the pointer.
+	 *
+	 * XXX big XXX.  I have no idea why.  Apart from adding 1 or 2
+	 * functions to the exclusion list, this code comes verbatim from
+	 * twm, which has no history or documentation as to why it's
+	 * happening.  It seems not [entirely] related to the conditional
+	 * UnGrab() at the end of this function, since that's testing a
+	 * totally different condition.
+	 *
+	 * Not grabbing here doesn't obviously affect anything in some
+	 * testing.  Grabbing all the time doesn't seem to affect anything.
+	 * Removing the ungrab at the end doesn't seem to affect anything.
+	 * What the blankity blank?
+	 */
 	switch(func) {
 		case F_UPICONMGR:
 		case F_LEFTICONMGR:
@@ -1796,9 +1811,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 	}
 
+	/* XXX x-ref comment before the early switch() with the Grab */
 	if(ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
 	}
+
 	return do_next_action;
 }
 
