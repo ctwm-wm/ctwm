@@ -1921,6 +1921,14 @@ ShowIconManager(void)
 }
 
 
+/*
+ * f.hideiconmanager.  Also called when you f.delete an icon manager.
+ *
+ * This hides all the icon managers in all the workspaces, and it doesn't
+ * leave icons behind, so it's _not_ the same as just iconifying, and
+ * thus not implemented by just calling Iconify(), but by doing the
+ * hiding manually.
+ */
 static void
 HideIconManager(void)
 {
@@ -1930,13 +1938,19 @@ HideIconManager(void)
 	if(Scr->NoIconManagers) {
 		return;
 	}
+
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		for(i = wl->iconmgr; i != NULL; i = i->next) {
+			/* Hide the IM window */
 			SetMapStateProp(i->twm_win, WithdrawnState);
 			XUnmapWindow(dpy, i->twm_win->frame);
+
+			/* Hide its icon */
 			if(i->twm_win->icon && i->twm_win->icon->w) {
 				XUnmapWindow(dpy, i->twm_win->icon->w);
 			}
+
+			/* Mark as pretend-iconified, even though the icon is hidden */
 			i->twm_win->mapped = false;
 			i->twm_win->isicon = true;
 		}
