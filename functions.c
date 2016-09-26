@@ -2236,7 +2236,7 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 	if(t->titlebuttons) {
 		TBWindow *tbw;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
-		for(tbw = t->titlebuttons; nb > 0; tbw++, nb--) {
+		for(tbw = t->titlebuttons ; nb > 0 ; tbw++, nb--) {
 			if(tbw->window == w) {
 				return true;
 			}
