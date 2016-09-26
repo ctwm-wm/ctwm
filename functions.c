@@ -173,14 +173,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 	 * XXX big XXX.  I have no idea why.  Apart from adding 1 or 2
 	 * functions to the exclusion list, this code comes verbatim from
 	 * twm, which has no history or documentation as to why it's
-	 * happening.  It seems not [entirely] related to the conditional
-	 * UnGrab() at the end of this function, since that's testing a
-	 * totally different condition.
+	 * happening.
 	 *
-	 * Not grabbing here doesn't obviously affect anything in some
-	 * testing.  Grabbing all the time doesn't seem to affect anything.
-	 * Removing the ungrab at the end doesn't seem to affect anything.
-	 * What the blankity blank?
+	 * My best guess is that this is being done solely to set the cursor?
+	 * X-ref the comment on the Ungrab() at the end of the function.
 	 */
 	switch(func) {
 		case F_UPICONMGR:
@@ -1811,7 +1807,18 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 	}
 
-	/* XXX x-ref comment before the early switch() with the Grab */
+
+	/*
+	 * Ungrab the pointer.  Sometimes.  This condition apparently means
+	 * we got to the end of the execution (didn't return early due to
+	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
+	 * button.  Note that this is _not_ strictly dual to the
+	 * XGrabPointer() conditionally called in the switch() early on;
+	 * there will be plenty of cases where one executes without the
+	 * other.
+	 *
+	 * XXX It isn't clear that this really belong here...
+	 */
 	if(ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
 	}
