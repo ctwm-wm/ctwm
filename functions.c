@@ -1887,12 +1887,20 @@ jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action)
 }
 
 
+/*
+ * f.showiconmanager
+ */
 static void
 ShowIconManager(void)
 {
 	IconMgr   *i;
 	WorkSpace *wl;
 
+	/*
+	 * XXX I don't think this is right; there can still be icon managers
+	 * to show even if we've never set any Workspaces {}.  And
+	 * HideIconManager() doesn't have this extra condition either...
+	 */
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
@@ -1900,20 +1908,29 @@ ShowIconManager(void)
 	if(Scr->NoIconManagers) {
 		return;
 	}
+
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		for(i = wl->iconmgr; i != NULL; i = i->next) {
+			/* Don't show iconmgr's with nothing in 'em */
 			if(i->count == 0) {
 				continue;
 			}
+
+			/* If it oughta be in a vscreen, show it */
 			if(visible(i->twm_win)) {
+				/* IM window */
 				SetMapStateProp(i->twm_win, NormalState);
 				XMapWindow(dpy, i->twm_win->w);
 				OtpRaise(i->twm_win, WinWin);
 				XMapWindow(dpy, i->twm_win->frame);
+
+				/* Hide icon */
 				if(i->twm_win->icon && i->twm_win->icon->w) {
 					XUnmapWindow(dpy, i->twm_win->icon->w);
 				}
 			}
+
+			/* Mark as shown */
 			i->twm_win->mapped = true;
 			i->twm_win->isicon = false;
 		}
