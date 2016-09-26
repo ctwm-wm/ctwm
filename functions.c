@@ -3127,11 +3127,11 @@ static int
 FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 {
 	TwmWindow  *t;
-	int winx = tmp_win->frame_x;
-	int winy = tmp_win->frame_y;
-	int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 	int ret;
+	const int winx = tmp_win->frame_x;
+	const int winy = tmp_win->frame_y;
+	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
 	switch(direction) {
 		case MFD_LEFT:
@@ -3162,7 +3162,8 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 			return -1;
 	}
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
-		int w, h;
+		const int w = t->frame_width  + 2 * t->frame_bw;
+		const int h = t->frame_height + 2 * t->frame_bw;
 
 		if(t == tmp_win) {
 			continue;
@@ -3173,8 +3174,6 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 		if(!t->mapped) {
 			continue;
 		}
-		w = t->frame_width  + 2 * t->frame_bw;
-		h = t->frame_height + 2 * t->frame_bw;
 
 		switch(direction) {
 			case MFD_LEFT:
