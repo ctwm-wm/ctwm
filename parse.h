@@ -118,7 +118,7 @@ void TwmOutput(int c);
 #define F_WINREFRESH            6
 #define F_DELTASTOP             7
 #define F_MOVE                  8
-#define F_POPUP                 9
+#define F_POPUP                 9   // Synthetic
 #define F_FORCEMOVE             10
 #define F_AUTORAISE             11
 #define F_IDENTIFY              12
@@ -126,7 +126,7 @@ void TwmOutput(int c);
 #define F_DEICONIFY             14
 #define F_UNFOCUS               15
 #define F_RESIZE                16
-#define F_VERTZOOM              17
+#define F_ZOOM                  17
 #define F_LEFTZOOM              18
 #define F_RIGHTZOOM             19
 #define F_TOPZOOM               20
@@ -153,12 +153,12 @@ void TwmOutput(int c);
 #define F_CIRCLEUP              41
 #define F_CIRCLEDOWN            42
 //#define F_CUTFILE             43
-#define F_SHOWLIST              44
-#define F_HIDELIST              45
+#define F_SHOWICONMGR           44
+#define F_HIDEICONMGR           45
 #define F_OCCUPY                46
 #define F_OCCUPYALL             47
-#define F_SHOWWORKMGR           48
-#define F_HIDEWORKMGR           49
+#define F_SHOWWORKSPACEMGR      48
+#define F_HIDEWORKSPACEMGR      49
 #define F_SETBUTTONSTATE        50
 #define F_SETMAPSTATE           51
 #define F_TOGGLESTATE           52
@@ -178,7 +178,7 @@ void TwmOutput(int c);
 #define F_REREADSOUNDS          65
 #endif
 #define F_TRACE                 66
-#define F_WINWARP               67
+#define F_WINWARP               67 // Synthetic
 #define F_ALTCONTEXT            68
 #define F_LEFTWORKSPACE         69
 #define F_RIGHTWORKSPACE        70
@@ -193,13 +193,13 @@ void TwmOutput(int c);
 #define F_BACKMAPICONMGR        79
 #define F_SAVEGEOMETRY          80
 #define F_RESTOREGEOMETRY       81
-#define F_TOGGLEWORKMGR         82
+#define F_TOGGLEWORKSPACEMGR    82
 #define F_HYPERMOVE             83
 #define F_INITSIZE              84
 #define F_RING                  85
 #define F_AUTOLOWER             86
 #define F_FITTOCONTENT          87
-#define F_SHOWBGRD              88
+#define F_SHOWBACKGROUND        88
 #define F_FULLSCREENZOOM        89
 
 
@@ -241,6 +241,6 @@ void TwmOutput(int c);
 #define F_TINYLOWER             155
 #define F_UNSQUEEZE             156
 #define F_RAISEORSQUEEZE        157
-#define F_RESCUE_WINDOWS        158
+#define F_RESCUEWINDOWS         158
 
 #endif /* _CTWM_PARSE_H */

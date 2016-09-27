@@ -44,8 +44,29 @@
 #include "functions.h"
 
 
+/*
+ * Various functions can be executed "from the root" (which generally
+ * means "from a menu"), but apply to a specific window (e.g., f.move,
+ * f.identify, etc).  You obviously can't be selecting it from a menu and
+ * pointing at the window to target at the same time, so we have to
+ * 2-step those calls.  This happens via the DeferExecution() call in the
+ * implementations of those functions, which stashes the "in progress"
+ * function in RootFunction.  The HandleButtonPress() event handler will
+ * later notice that and loop events back around into ExecuteFunction()
+ * again to pick up where it left off.
+ *
+ * (a more descriptive name might be in order)
+ */
 int RootFunction = 0;
-int MoveFunction;  /* either F_MOVE or F_FORCEMOVE */
+
+/*
+ * Which move-ish function is in progress.  This is _almost_ really a
+ * local var in the movewindow() function, but we also reference it in
+ * the HandleButtonRelease() event handler because that has to know
+ * which move variant we're doing to figure out whether it has to
+ * constrain the final coordinates in various ways.
+ */
+int MoveFunction;
 
 /* Building the f.identify window.  The events code grubs in these. */
 #define INFO_LINES 30
@@ -146,6 +167,17 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		return true;        /* XXX should this be false? */
 	}
 
+	/*
+	 * For most functions with a few exceptions, grab the pointer.
+	 *
+	 * XXX big XXX.  I have no idea why.  Apart from adding 1 or 2
+	 * functions to the exclusion list, this code comes verbatim from
+	 * twm, which has no history or documentation as to why it's
+	 * happening.
+	 *
+	 * My best guess is that this is being done solely to set the cursor?
+	 * X-ref the comment on the Ungrab() at the end of the function.
+	 */
 	switch(func) {
 		case F_UPICONMGR:
 		case F_LEFTICONMGR:
@@ -218,7 +250,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			JumpIconManager(func);
 			break;
 
-		case F_SHOWLIST:
+		case F_SHOWICONMGR:
 			if(Scr->NoIconManagers) {
 				break;
 			}
@@ -241,14 +273,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			ModifyAnimationSpeed(-1);
 			break;
 
-		case F_HIDELIST:
+		case F_HIDEICONMGR:
 			if(Scr->NoIconManagers) {
 				break;
 			}
 			HideIconManager();
 			break;
 
-		case F_SHOWWORKMGR:
+		case F_SHOWWORKSPACEMGR:
 			if(! Scr->workSpaceManagerActive) {
 				break;
 			}
@@ -256,7 +288,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			OtpRaise(Scr->currentvs->wsw->twm_win, WinWin);
 			break;
 
-		case F_HIDEWORKMGR:
+		case F_HIDEWORKSPACEMGR:
 			if(! Scr->workSpaceManagerActive) {
 				break;
 			}
@@ -264,7 +296,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			        eventp->xbutton.y_root - 5);
 			break;
 
-		case F_TOGGLEWORKMGR:
+		case F_TOGGLEWORKSPACEMGR:
 			if(! Scr->workSpaceManagerActive) {
 				break;
 			}
@@ -612,6 +644,11 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_POPUP:
+			/*
+			 * This is a synthetic function; it exists only to be called
+			 * internally from the various magic menus like TwmWindows
+			 * etc.
+			 */
 			tmp_win = (TwmWindow *)action;
 			if(! tmp_win) {
 				break;
@@ -628,6 +665,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_WINWARP:
+			/* Synthetic function; x-ref comment on F_POPUP */
 			tmp_win = (TwmWindow *)action;
 
 			if(! tmp_win) {
@@ -716,7 +754,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 
-		case F_VERTZOOM:
+		case F_ZOOM:
 		case F_HORIZOOM:
 		case F_FULLZOOM:
 		case F_FULLSCREENZOOM:
@@ -1212,7 +1250,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			break;
 
-		case F_SHOWBGRD:
+		case F_SHOWBACKGROUND:
 			ShowBackground(Scr->currentvs, -1);
 			break;
 
@@ -1763,15 +1801,28 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			Done(0);
 			break;
 
-		case F_RESCUE_WINDOWS:
+		case F_RESCUEWINDOWS:
 			RescueWindows();
 			break;
 
 	}
 
+
+	/*
+	 * Ungrab the pointer.  Sometimes.  This condition apparently means
+	 * we got to the end of the execution (didn't return early due to
+	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
+	 * button.  Note that this is _not_ strictly dual to the
+	 * XGrabPointer() conditionally called in the switch() early on;
+	 * there will be plenty of cases where one executes without the
+	 * other.
+	 *
+	 * XXX It isn't clear that this really belong here...
+	 */
 	if(ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
 	}
+
 	return do_next_action;
 }
 
@@ -1860,12 +1911,20 @@ jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action)
 }
 
 
+/*
+ * f.showiconmanager
+ */
 static void
 ShowIconManager(void)
 {
 	IconMgr   *i;
 	WorkSpace *wl;
 
+	/*
+	 * XXX I don't think this is right; there can still be icon managers
+	 * to show even if we've never set any Workspaces {}.  And
+	 * HideIconManager() doesn't have this extra condition either...
+	 */
 	if(! Scr->workSpaceManagerActive) {
 		return;
 	}
@@ -1873,20 +1932,29 @@ ShowIconManager(void)
 	if(Scr->NoIconManagers) {
 		return;
 	}
+
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		for(i = wl->iconmgr; i != NULL; i = i->next) {
+			/* Don't show iconmgr's with nothing in 'em */
 			if(i->count == 0) {
 				continue;
 			}
+
+			/* If it oughta be in a vscreen, show it */
 			if(visible(i->twm_win)) {
+				/* IM window */
 				SetMapStateProp(i->twm_win, NormalState);
 				XMapWindow(dpy, i->twm_win->w);
 				OtpRaise(i->twm_win, WinWin);
 				XMapWindow(dpy, i->twm_win->frame);
+
+				/* Hide icon */
 				if(i->twm_win->icon && i->twm_win->icon->w) {
 					XUnmapWindow(dpy, i->twm_win->icon->w);
 				}
 			}
+
+			/* Mark as shown */
 			i->twm_win->mapped = true;
 			i->twm_win->isicon = false;
 		}
@@ -1894,6 +1962,14 @@ ShowIconManager(void)
 }
 
 
+/*
+ * f.hideiconmanager.  Also called when you f.delete an icon manager.
+ *
+ * This hides all the icon managers in all the workspaces, and it doesn't
+ * leave icons behind, so it's _not_ the same as just iconifying, and
+ * thus not implemented by just calling Iconify(), but by doing the
+ * hiding manually.
+ */
 static void
 HideIconManager(void)
 {
@@ -1903,13 +1979,19 @@ HideIconManager(void)
 	if(Scr->NoIconManagers) {
 		return;
 	}
+
 	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
 		for(i = wl->iconmgr; i != NULL; i = i->next) {
+			/* Hide the IM window */
 			SetMapStateProp(i->twm_win, WithdrawnState);
 			XUnmapWindow(dpy, i->twm_win->frame);
+
+			/* Hide its icon */
 			if(i->twm_win->icon && i->twm_win->icon->w) {
 				XUnmapWindow(dpy, i->twm_win->icon->w);
 			}
+
+			/* Mark as pretend-iconified, even though the icon is hidden */
 			i->twm_win->mapped = false;
 			i->twm_win->isicon = true;
 		}
@@ -1917,20 +1999,18 @@ HideIconManager(void)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      DeferExecution - defer the execution of a function to the
- *          next button press if the context is C_ROOT
+/*
+ * Check to see if a function (implicitly, a window-targetting function)
+ * is happening in a context away from an actual window, and if so stash
+ * up info about what's in progress and return true to tell the caller to
+ * end processing the function (for now).  X-ref comment on RootFunction
+ * variable definition for details.
  *
  *  Inputs:
  *      context - the context in which the mouse button was pressed
  *      func    - the function to defer
  *      cursor  - the cursor to display while waiting
- *
- ***********************************************************************
  */
-
 static bool
 DeferExecution(int context, int func, Cursor cursor)
 {
@@ -2165,7 +2245,7 @@ void
 draw_info_window(void)
 {
 	int i;
-	int height;
+	const int height = Scr->DefaultFont.height + 2;
 
 	Draw3DBorder(Scr->InfoWindow.win, 0, 0,
 	             Scr->InfoWindow.width, Scr->InfoWindow.height,
@@ -2173,7 +2253,6 @@ draw_info_window(void)
 
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 
-	height = Scr->DefaultFont.height + 2;
 	for(i = 0; i < Scr->InfoWindow.lines ; i++) {
 		XmbDrawString(dpy, Scr->InfoWindow.win, Scr->DefaultFont.font_set,
 		              Scr->NormalGC, 5,
@@ -2183,27 +2262,42 @@ draw_info_window(void)
 }
 
 
+/*
+ * Is Window w part of the conglomerate of metawindows we put around the
+ * real window for TwmWindow t?  Note that this does _not_ check if w is
+ * the actual window we built the TwmWindow t around.
+ */
 static bool
 belongs_to_twm_window(TwmWindow *t, Window w)
 {
+	/* Safety */
 	if(!t) {
 		return false;
 	}
 
-	if(w == t->frame || w == t->title_w || w == t->hilite_wl || w == t->hilite_wr ||
-	                (t->icon && (w == t->icon->w || w == t->icon->bm_w))) {
+	/* Part of the framing we put around the window? */
+	if(w == t->frame || w == t->title_w
+	                || w == t->hilite_wl || w == t->hilite_wr) {
 		return true;
 	}
 
-	if(t && t->titlebuttons) {
+	/* Part of the icon bits? */
+	if(t->icon && (w == t->icon->w || w == t->icon->bm_w)) {
+		return true;
+	}
+
+	/* One of the title button windows? */
+	if(t->titlebuttons) {
 		TBWindow *tbw;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
-		for(tbw = t->titlebuttons; nb > 0; tbw++, nb--) {
+		for(tbw = t->titlebuttons ; nb > 0 ; tbw++, nb--) {
 			if(tbw->window == w) {
 				return true;
 			}
 		}
 	}
+
+	/* Then no */
 	return false;
 }
 
@@ -2273,10 +2367,10 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 	int cons, newx, newy, save;
 	unsigned int neww, newh;
 	int i;
-	int winx = tmp_win->frame_x;
-	int winy = tmp_win->frame_y;
-	int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	const int winx = tmp_win->frame_x;
+	const int winy = tmp_win->frame_y;
+	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
 	if(!strcmp(direction, "left")) {
 		cons = FindConstraint(tmp_win, MFD_LEFT);
@@ -2373,7 +2467,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 				newy = tmp_win->save_frame_y +
 				       tmp_win->save_frame_height - newh;
 			}
-			tmp_win->zoomed = F_VERTZOOM;
+			tmp_win->zoomed = F_ZOOM;
 			SetupWindow(tmp_win, newx, newy, neww, newh, -1);
 		}
 		else {
@@ -2874,16 +2968,15 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 }
 
 
-/***********************************************************************
+/*
+ * Checks each function in the list to see if it is one that needs to be
+ * defered.  Only currently called during handling of "f.function"
+ * handling; direct calls to funcs that need to be deferred already have
+ * DeferExecution() calls hardcoded in their handling.
  *
- *  Procedure:
- *      NeedToDefer - checks each function in the list to see if it
- *              is one that needs to be defered.
+ * XXX Should that be?  Maybe we should better harmonize the cases.
  *
- *  Inputs:
- *      root    - the menu root to check
- *
- ***********************************************************************
+ * XXX I'm not sure this list is actually up to date.  Check.
  */
 static bool
 NeedToDefer(MenuRoot *root)
@@ -2904,7 +2997,7 @@ NeedToDefer(MenuRoot *root)
 			case F_FOCUS:
 			case F_DESTROY:
 			case F_WINREFRESH:
-			case F_VERTZOOM:
+			case F_ZOOM:
 			case F_FULLZOOM:
 			case F_FULLSCREENZOOM:
 			case F_HORIZOOM:
@@ -3103,11 +3196,11 @@ static int
 FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 {
 	TwmWindow  *t;
-	int winx = tmp_win->frame_x;
-	int winy = tmp_win->frame_y;
-	int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 	int ret;
+	const int winx = tmp_win->frame_x;
+	const int winy = tmp_win->frame_y;
+	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
 	switch(direction) {
 		case MFD_LEFT:
@@ -3138,7 +3231,8 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 			return -1;
 	}
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
-		int w, h;
+		const int w = t->frame_width  + 2 * t->frame_bw;
+		const int h = t->frame_height + 2 * t->frame_bw;
 
 		if(t == tmp_win) {
 			continue;
@@ -3149,8 +3243,6 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 		if(!t->mapped) {
 			continue;
 		}
-		w = t->frame_width  + 2 * t->frame_bw;
-		h = t->frame_height + 2 * t->frame_bw;
 
 		switch(direction) {
 			case MFD_LEFT:
