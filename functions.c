@@ -2977,8 +2977,9 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
  * intermediate enum value instead of just the cursor since it isn't
  * available at compile time, and we can't just make it a pointer into
  * Scr since there are [potentially] multiple Scr's anyway.  And we need
- * an explicit unused DC_NONE value so that all our real DC_ values are
- * non-zero, and the F_'s we don't set wind up at 0.
+ * an explicit unused DC_NONE value so our real values are all non-zero;
+ * the ones we don't explicitly set get initialized to 0, which we can
+ * then take as a flag saying "we don't defer this func".
  *
  * XXX This list came from the list used in f.function handling for
  * determining whether the whole thing should be deferred.  Should that
