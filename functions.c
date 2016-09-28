@@ -125,6 +125,7 @@ static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
 static bool movewindow(int func, Window w, TwmWindow *tmp_win,
                        XEvent *eventp, int context, bool pulldown);
+static bool should_defer(int func);
 static bool NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
@@ -2965,6 +2966,49 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 
 
 /*
+ * Determines whether a function should be deferred if it's in general
+ * (rather than win-specific) contexts.
+ */
+static bool
+should_defer(int func)
+{
+	switch(func) {
+		case F_IDENTIFY:
+		case F_RESIZE:
+		case F_MOVE:
+		case F_FORCEMOVE:
+		case F_DEICONIFY:
+		case F_ICONIFY:
+		case F_RAISELOWER:
+		case F_RAISE:
+		case F_LOWER:
+		case F_FOCUS:
+		case F_DESTROY:
+		case F_WINREFRESH:
+		case F_ZOOM:
+		case F_FULLZOOM:
+		case F_FULLSCREENZOOM:
+		case F_HORIZOOM:
+		case F_RIGHTZOOM:
+		case F_LEFTZOOM:
+		case F_TOPZOOM:
+		case F_BOTTOMZOOM:
+		case F_SQUEEZE:
+		case F_AUTORAISE:
+		case F_AUTOLOWER:
+		case F_CHANGESIZE:
+			return true;
+
+		default:
+			return false;
+	}
+
+	/* NOTREACHED */
+	return false;
+}
+
+
+/*
  * Checks each function in a user-defined Function list called via
  * f.function to see any of them need to be defered.  The Function config
  * action creates pseudo-menus to store the items in that call, so we
@@ -2981,32 +3025,8 @@ NeedToDefer(MenuRoot *root)
 	MenuItem *mitem;
 
 	for(mitem = root->first; mitem != NULL; mitem = mitem->next) {
-		switch(mitem->func) {
-			case F_IDENTIFY:
-			case F_RESIZE:
-			case F_MOVE:
-			case F_FORCEMOVE:
-			case F_DEICONIFY:
-			case F_ICONIFY:
-			case F_RAISELOWER:
-			case F_RAISE:
-			case F_LOWER:
-			case F_FOCUS:
-			case F_DESTROY:
-			case F_WINREFRESH:
-			case F_ZOOM:
-			case F_FULLZOOM:
-			case F_FULLSCREENZOOM:
-			case F_HORIZOOM:
-			case F_RIGHTZOOM:
-			case F_LEFTZOOM:
-			case F_TOPZOOM:
-			case F_BOTTOMZOOM:
-			case F_SQUEEZE:
-			case F_AUTORAISE:
-			case F_AUTOLOWER:
-			case F_CHANGESIZE:
-				return true;
+		if(should_defer(mitem->func)) {
+			return true;
 		}
 	}
 	return false;
