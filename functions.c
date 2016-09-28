@@ -2966,44 +2966,56 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 
 
 /*
- * Determines whether a function should be deferred if it's in general
- * (rather than win-specific) contexts.
+ * Various determinates of whether a function should be deferred if its
+ * called in a general (rather than win-specific) context, and what
+ * cursor should be used in the meantime.
+ *
+ * We define a big lookup array to do it.  We have to indirect through an
+ * intermediate enum value instead of just the cursor since it isn't
+ * available at compile time, and we can't just make it a pointer into
+ * Scr since there are [potentially] multiple Scr's anyway.  And we need
+ * an explicit unused DC_NONE value so that all our real DC_ values are
+ * non-zero, and the F_'s we don't set wind up at 0.
  */
+typedef enum {
+	DC_NONE = 0,
+	DC_SELECT,
+	DC_MOVE,
+	DC_DESTROY,
+} _dfcs_cursor;
+static _dfcs_cursor dfcs[F_maxfunc] = {
+		[F_IDENTIFY] =   DC_SELECT,
+		[F_RESIZE] =     DC_MOVE,
+		[F_MOVE] =       DC_MOVE,
+		[F_FORCEMOVE] =  DC_MOVE,
+		[F_DEICONIFY] =  DC_SELECT,
+		[F_ICONIFY] =    DC_SELECT,
+		[F_RAISELOWER] = DC_SELECT,
+		[F_RAISE] =      DC_SELECT,
+		[F_LOWER] =      DC_SELECT,
+		[F_FOCUS] =      DC_SELECT,
+		[F_DESTROY] =    DC_DESTROY,
+		[F_WINREFRESH] = DC_SELECT,
+		[F_ZOOM] =       DC_SELECT,
+		[F_FULLZOOM] =   DC_SELECT,
+		[F_FULLSCREENZOOM] = DC_SELECT,
+		[F_HORIZOOM] =   DC_SELECT,
+		[F_RIGHTZOOM] =  DC_SELECT,
+		[F_LEFTZOOM] =   DC_SELECT,
+		[F_TOPZOOM] =    DC_SELECT,
+		[F_BOTTOMZOOM] = DC_SELECT,
+		[F_SQUEEZE] =    DC_SELECT,
+		[F_AUTORAISE] =  DC_SELECT,
+		[F_AUTOLOWER] =  DC_SELECT,
+		[F_CHANGESIZE] = DC_SELECT,
+};
+#undef MKC
+
 static bool
 should_defer(int func)
 {
-	switch(func) {
-		case F_IDENTIFY:
-		case F_RESIZE:
-		case F_MOVE:
-		case F_FORCEMOVE:
-		case F_DEICONIFY:
-		case F_ICONIFY:
-		case F_RAISELOWER:
-		case F_RAISE:
-		case F_LOWER:
-		case F_FOCUS:
-		case F_DESTROY:
-		case F_WINREFRESH:
-		case F_ZOOM:
-		case F_FULLZOOM:
-		case F_FULLSCREENZOOM:
-		case F_HORIZOOM:
-		case F_RIGHTZOOM:
-		case F_LEFTZOOM:
-		case F_TOPZOOM:
-		case F_BOTTOMZOOM:
-		case F_SQUEEZE:
-		case F_AUTORAISE:
-		case F_AUTOLOWER:
-		case F_CHANGESIZE:
-			return true;
-
-		default:
-			return false;
-	}
-
-	/* NOTREACHED */
+	if(dfcs[func] != DC_NONE)
+		return true;
 	return false;
 }
 
