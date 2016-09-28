@@ -2976,6 +2976,14 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
  * Scr since there are [potentially] multiple Scr's anyway.  And we need
  * an explicit unused DC_NONE value so that all our real DC_ values are
  * non-zero, and the F_'s we don't set wind up at 0.
+ *
+ * XXX This list came from the list used in f.function handling for
+ * determining whether the whole thing should be deferred.  Should that
+ * actually be different from the list of functions that are themselves
+ * deferred?  Maybe we should harmonize them.
+ *
+ * XXX And if so, we should use this more directly to defer things as
+ * needed instead of hardcoding.
  */
 typedef enum {
 	DC_NONE = 0,
@@ -3026,10 +3034,6 @@ should_defer(int func)
  * action creates pseudo-menus to store the items in that call, so we
  * loop through the "items" in that "menu".  Try not to think about that
  * too much.
- *
- * XXX Should that be?  Maybe we should better harmonize the cases.
- *
- * XXX I'm not sure this list is actually up to date.  Check.
  */
 static bool
 NeedToDefer(MenuRoot *root)
