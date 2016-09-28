@@ -126,7 +126,8 @@ static void fillwindow(TwmWindow *tmp_win, const char *direction);
 static bool movewindow(int func, Window w, TwmWindow *tmp_win,
                        XEvent *eventp, int context, bool pulldown);
 static bool should_defer(int func);
-static bool NeedToDefer(MenuRoot *root);
+static Cursor defer_cursor(int func);
+static Cursor NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
@@ -1187,6 +1188,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_FUNCTION: {
 			MenuRoot *mroot;
 			MenuItem *mitem;
+			Cursor curs;
 
 			if((mroot = FindMenuRoot(action)) == NULL) {
 				if(!action) {
@@ -1197,7 +1199,8 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(NeedToDefer(mroot) && DeferExecution(context, func, Scr->SelectCursor)) {
+			if((curs = NeedToDefer(mroot)) != None
+					&& DeferExecution(context, func, curs)) {
 				return true;
 			}
 			else {
@@ -3027,6 +3030,26 @@ should_defer(int func)
 	return false;
 }
 
+static Cursor
+defer_cursor(int func)
+{
+	switch(dfcs[func]) {
+		case DC_SELECT:
+			return Scr->SelectCursor;
+		case DC_MOVE:
+			return Scr->MoveCursor;
+		case DC_DESTROY:
+			return Scr->DestroyCursor;
+
+		default:
+			/* Is there a better choice? */
+			return None;
+	}
+
+	/* NOTREACHED */
+	return None;
+}
+
 
 /*
  * Checks each function in a user-defined Function list called via
@@ -3035,17 +3058,17 @@ should_defer(int func)
  * loop through the "items" in that "menu".  Try not to think about that
  * too much.
  */
-static bool
+static Cursor
 NeedToDefer(MenuRoot *root)
 {
 	MenuItem *mitem;
 
 	for(mitem = root->first; mitem != NULL; mitem = mitem->next) {
 		if(should_defer(mitem->func)) {
-			return true;
+			return defer_cursor(mitem->func);
 		}
 	}
-	return false;
+	return None;
 }
 
 
