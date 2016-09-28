@@ -3025,6 +3025,11 @@ static _dfcs_cursor dfcs[F_maxfunc] = {
 static bool
 should_defer(int func)
 {
+	/* Shouldn't ever happen, so "no" is the best response */
+	if(func < 0 || func > F_maxfunc) {
+		return false;
+	}
+
 	if(dfcs[func] != DC_NONE) {
 		return true;
 	}
@@ -3034,6 +3039,11 @@ should_defer(int func)
 static Cursor
 defer_cursor(int func)
 {
+	/* Shouldn't ever happen, but be safe */
+	if(func < 0 || func > F_maxfunc) {
+		return None;
+	}
+
 	switch(dfcs[func]) {
 		case DC_SELECT:
 			return Scr->SelectCursor;
