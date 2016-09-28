@@ -3077,8 +3077,9 @@ NeedToDefer(MenuRoot *root)
 	for(mitem = root->first; mitem != NULL; mitem = mitem->next) {
 		if(should_defer(mitem->func)) {
 			Cursor dc = defer_cursor(mitem->func);
-			if(dc == None)
+			if(dc == None) {
 				return Scr->SelectCursor;
+			}
 			return dc;
 		}
 	}
