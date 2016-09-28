@@ -1200,7 +1200,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 
 			if((curs = NeedToDefer(mroot)) != None
-					&& DeferExecution(context, func, curs)) {
+			                && DeferExecution(context, func, curs)) {
 				return true;
 			}
 			else {
@@ -2995,38 +2995,39 @@ typedef enum {
 	DC_DESTROY,
 } _dfcs_cursor;
 static _dfcs_cursor dfcs[F_maxfunc] = {
-		[F_IDENTIFY] =   DC_SELECT,
-		[F_RESIZE] =     DC_MOVE,
-		[F_MOVE] =       DC_MOVE,
-		[F_FORCEMOVE] =  DC_MOVE,
-		[F_DEICONIFY] =  DC_SELECT,
-		[F_ICONIFY] =    DC_SELECT,
-		[F_RAISELOWER] = DC_SELECT,
-		[F_RAISE] =      DC_SELECT,
-		[F_LOWER] =      DC_SELECT,
-		[F_FOCUS] =      DC_SELECT,
-		[F_DESTROY] =    DC_DESTROY,
-		[F_WINREFRESH] = DC_SELECT,
-		[F_ZOOM] =       DC_SELECT,
-		[F_FULLZOOM] =   DC_SELECT,
-		[F_FULLSCREENZOOM] = DC_SELECT,
-		[F_HORIZOOM] =   DC_SELECT,
-		[F_RIGHTZOOM] =  DC_SELECT,
-		[F_LEFTZOOM] =   DC_SELECT,
-		[F_TOPZOOM] =    DC_SELECT,
-		[F_BOTTOMZOOM] = DC_SELECT,
-		[F_SQUEEZE] =    DC_SELECT,
-		[F_AUTORAISE] =  DC_SELECT,
-		[F_AUTOLOWER] =  DC_SELECT,
-		[F_CHANGESIZE] = DC_SELECT,
+	[F_IDENTIFY] =   DC_SELECT,
+	[F_RESIZE] =     DC_MOVE,
+	[F_MOVE] =       DC_MOVE,
+	[F_FORCEMOVE] =  DC_MOVE,
+	[F_DEICONIFY] =  DC_SELECT,
+	[F_ICONIFY] =    DC_SELECT,
+	[F_RAISELOWER] = DC_SELECT,
+	[F_RAISE] =      DC_SELECT,
+	[F_LOWER] =      DC_SELECT,
+	[F_FOCUS] =      DC_SELECT,
+	[F_DESTROY] =    DC_DESTROY,
+	[F_WINREFRESH] = DC_SELECT,
+	[F_ZOOM] =       DC_SELECT,
+	[F_FULLZOOM] =   DC_SELECT,
+	[F_FULLSCREENZOOM] = DC_SELECT,
+	[F_HORIZOOM] =   DC_SELECT,
+	[F_RIGHTZOOM] =  DC_SELECT,
+	[F_LEFTZOOM] =   DC_SELECT,
+	[F_TOPZOOM] =    DC_SELECT,
+	[F_BOTTOMZOOM] = DC_SELECT,
+	[F_SQUEEZE] =    DC_SELECT,
+	[F_AUTORAISE] =  DC_SELECT,
+	[F_AUTOLOWER] =  DC_SELECT,
+	[F_CHANGESIZE] = DC_SELECT,
 };
 #undef MKC
 
 static bool
 should_defer(int func)
 {
-	if(dfcs[func] != DC_NONE)
+	if(dfcs[func] != DC_NONE) {
 		return true;
+	}
 	return false;
 }
 
