@@ -2994,7 +2994,7 @@ typedef enum {
 	DC_MOVE,
 	DC_DESTROY,
 } _dfcs_cursor;
-static _dfcs_cursor dfcs[F_maxfunc] = {
+static _dfcs_cursor dfcs[F_maxfunc + 1] = {
 	[F_IDENTIFY] =   DC_SELECT,
 	[F_RESIZE] =     DC_MOVE,
 	[F_MOVE] =       DC_MOVE,
