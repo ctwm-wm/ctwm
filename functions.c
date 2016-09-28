@@ -2965,10 +2965,11 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 
 
 /*
- * Checks each function in the list to see if it is one that needs to be
- * defered.  Only currently called during handling of "f.function"
- * handling; direct calls to funcs that need to be deferred already have
- * DeferExecution() calls hardcoded in their handling.
+ * Checks each function in a user-defined Function list called via
+ * f.function to see any of them need to be defered.  The Function config
+ * action creates pseudo-menus to store the items in that call, so we
+ * loop through the "items" in that "menu".  Try not to think about that
+ * too much.
  *
  * XXX Should that be?  Maybe we should better harmonize the cases.
  *
