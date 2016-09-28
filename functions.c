@@ -871,10 +871,6 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				captive_root = cctwm.root;
 			}
 
-			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return true;
-			}
-
 			XGrabPointer(dpy, root, True,
 			             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync, root, cursor, CurrentTime);
