@@ -243,4 +243,6 @@ void TwmOutput(int c);
 #define F_RAISEORSQUEEZE        157
 #define F_RESCUEWINDOWS         158
 
+#define F_maxfunc               158
+
 #endif /* _CTWM_PARSE_H */

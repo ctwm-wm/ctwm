@@ -125,7 +125,9 @@ static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
 static bool movewindow(int func, Window w, TwmWindow *tmp_win,
                        XEvent *eventp, int context, bool pulldown);
-static bool NeedToDefer(MenuRoot *root);
+static bool should_defer(int func);
+static Cursor defer_cursor(int func);
+static Cursor NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
@@ -871,10 +873,6 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				captive_root = cctwm.root;
 			}
 
-			if(DeferExecution(context, func, Scr->MoveCursor)) {
-				return true;
-			}
-
 			XGrabPointer(dpy, root, True,
 			             ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync, root, cursor, CurrentTime);
@@ -1190,6 +1188,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_FUNCTION: {
 			MenuRoot *mroot;
 			MenuItem *mitem;
+			Cursor curs;
 
 			if((mroot = FindMenuRoot(action)) == NULL) {
 				if(!action) {
@@ -1200,7 +1199,8 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				return true;
 			}
 
-			if(NeedToDefer(mroot) && DeferExecution(context, func, Scr->SelectCursor)) {
+			if((curs = NeedToDefer(mroot)) != None
+			                && DeferExecution(context, func, curs)) {
 				return true;
 			}
 			else {
@@ -2969,50 +2969,122 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 
 
 /*
- * Checks each function in the list to see if it is one that needs to be
- * defered.  Only currently called during handling of "f.function"
- * handling; direct calls to funcs that need to be deferred already have
- * DeferExecution() calls hardcoded in their handling.
+ * Various determinates of whether a function should be deferred if its
+ * called in a general (rather than win-specific) context, and what
+ * cursor should be used in the meantime.
  *
- * XXX Should that be?  Maybe we should better harmonize the cases.
+ * We define a big lookup array to do it.  We have to indirect through an
+ * intermediate enum value instead of just the cursor since it isn't
+ * available at compile time, and we can't just make it a pointer into
+ * Scr since there are [potentially] multiple Scr's anyway.  And we need
+ * an explicit unused DC_NONE value so our real values are all non-zero;
+ * the ones we don't explicitly set get initialized to 0, which we can
+ * then take as a flag saying "we don't defer this func".
  *
- * XXX I'm not sure this list is actually up to date.  Check.
+ * XXX This list came from the list used in f.function handling for
+ * determining whether the whole thing should be deferred.  Should that
+ * actually be different from the list of functions that are themselves
+ * deferred?  Maybe we should harmonize them.
+ *
+ * XXX And if so, we should use this more directly to defer things as
+ * needed instead of hardcoding.
  */
+typedef enum {
+	DC_NONE = 0,
+	DC_SELECT,
+	DC_MOVE,
+	DC_DESTROY,
+} _dfcs_cursor;
+static _dfcs_cursor dfcs[F_maxfunc + 1] = {
+	[F_IDENTIFY]   = DC_SELECT,
+	[F_RESIZE]     = DC_MOVE,
+	[F_MOVE]       = DC_MOVE,
+	[F_FORCEMOVE]  = DC_MOVE,
+	[F_DEICONIFY]  = DC_SELECT,
+	[F_ICONIFY]    = DC_SELECT,
+	[F_RAISELOWER] = DC_SELECT,
+	[F_RAISE]      = DC_SELECT,
+	[F_LOWER]      = DC_SELECT,
+	[F_FOCUS]      = DC_SELECT,
+	[F_DESTROY]    = DC_DESTROY,
+	[F_WINREFRESH] = DC_SELECT,
+	[F_ZOOM]       = DC_SELECT,
+	[F_FULLZOOM]   = DC_SELECT,
+	[F_FULLSCREENZOOM] = DC_SELECT,
+	[F_HORIZOOM]   = DC_SELECT,
+	[F_RIGHTZOOM]  = DC_SELECT,
+	[F_LEFTZOOM]   = DC_SELECT,
+	[F_TOPZOOM]    = DC_SELECT,
+	[F_BOTTOMZOOM] = DC_SELECT,
+	[F_SQUEEZE]    = DC_SELECT,
+	[F_AUTORAISE]  = DC_SELECT,
+	[F_AUTOLOWER]  = DC_SELECT,
+	[F_CHANGESIZE] = DC_SELECT,
+};
+#undef MKC
+
 static bool
+should_defer(int func)
+{
+	/* Shouldn't ever happen, so "no" is the best response */
+	if(func < 0 || func > F_maxfunc) {
+		return false;
+	}
+
+	if(dfcs[func] != DC_NONE) {
+		return true;
+	}
+	return false;
+}
+
+static Cursor
+defer_cursor(int func)
+{
+	/* Shouldn't ever happen, but be safe */
+	if(func < 0 || func > F_maxfunc) {
+		return None;
+	}
+
+	switch(dfcs[func]) {
+		case DC_SELECT:
+			return Scr->SelectCursor;
+		case DC_MOVE:
+			return Scr->MoveCursor;
+		case DC_DESTROY:
+			return Scr->DestroyCursor;
+
+		default:
+			/* Is there a better choice? */
+			return None;
+	}
+
+	/* NOTREACHED */
+	return None;
+}
+
+
+/*
+ * Checks each function in a user-defined Function list called via
+ * f.function to see any of them need to be defered.  The Function config
+ * action creates pseudo-menus to store the items in that call, so we
+ * loop through the "items" in that "menu".  Try not to think about that
+ * too much.
+ */
+static Cursor
 NeedToDefer(MenuRoot *root)
 {
 	MenuItem *mitem;
 
 	for(mitem = root->first; mitem != NULL; mitem = mitem->next) {
-		switch(mitem->func) {
-			case F_IDENTIFY:
-			case F_RESIZE:
-			case F_MOVE:
-			case F_FORCEMOVE:
-			case F_DEICONIFY:
-			case F_ICONIFY:
-			case F_RAISELOWER:
-			case F_RAISE:
-			case F_LOWER:
-			case F_FOCUS:
-			case F_DESTROY:
-			case F_WINREFRESH:
-			case F_ZOOM:
-			case F_FULLZOOM:
-			case F_FULLSCREENZOOM:
-			case F_HORIZOOM:
-			case F_RIGHTZOOM:
-			case F_LEFTZOOM:
-			case F_TOPZOOM:
-			case F_BOTTOMZOOM:
-			case F_SQUEEZE:
-			case F_AUTORAISE:
-			case F_AUTOLOWER:
-			case F_CHANGESIZE:
-				return true;
+		if(should_defer(mitem->func)) {
+			Cursor dc = defer_cursor(mitem->func);
+			if(dc == None) {
+				return Scr->SelectCursor;
+			}
+			return dc;
 		}
 	}
-	return false;
+	return None;
 }
 
 
