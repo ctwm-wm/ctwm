@@ -1507,6 +1507,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		}
 
 		case F_COLORMAP: {
+			/* XXX Window targetting; should this be on the Defer list? */
 			if(strcmp(action, COLORMAP_NEXT) == 0) {
 				BumpWindowColormap(tmp_win, 1);
 			}
