@@ -3074,6 +3074,7 @@ static _dfcs_cursor dfcs[F_maxfunc + 1] = {
 	[F_FOCUS]      = DC_SELECT,
 	[F_RING]       = DC_SELECT,
 	[F_WINREFRESH] = DC_SELECT,
+	/* x-ref comment questioning if F_COLORMAP should be here */
 
 	/* Window deletion related */
 	[F_DELETE]  = DC_DESTROY,
