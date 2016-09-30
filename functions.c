@@ -1999,41 +1999,6 @@ HideIconManager(void)
 }
 
 
-/*
- * Check to see if a function (implicitly, a window-targetting function)
- * is happening in a context away from an actual window, and if so stash
- * up info about what's in progress and return true to tell the caller to
- * end processing the function (for now).  X-ref comment on RootFunction
- * variable definition for details.
- *
- *  Inputs:
- *      context - the context in which the mouse button was pressed
- *      func    - the function to defer
- *      cursor  - the cursor to display while waiting
- */
-static bool
-DeferExecution(int context, int func, Cursor cursor)
-{
-	if((context == C_ROOT) || (context == C_ALTERNATE)) {
-		SetLastCursor(cursor);
-		XGrabPointer(dpy,
-		             Scr->Root,
-		             True,
-		             ButtonPressMask | ButtonReleaseMask,
-		             GrabModeAsync,
-		             GrabModeAsync,
-		             (func == F_ADOPTWINDOW) ? None : Scr->Root,
-		             cursor,
-		             CurrentTime);
-		RootFunction = func;
-
-		return true;
-	}
-
-	return false;
-}
-
-
 
 /*
  * Backend for f.identify and f.version: Fills in the Info array with the
@@ -2962,6 +2927,41 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 
 	if(!Scr->OpaqueMove && DragWindow == None) {
 		UninstallRootColormap();
+	}
+
+	return false;
+}
+
+
+/*
+ * Check to see if a function (implicitly, a window-targetting function)
+ * is happening in a context away from an actual window, and if so stash
+ * up info about what's in progress and return true to tell the caller to
+ * end processing the function (for now).  X-ref comment on RootFunction
+ * variable definition for details.
+ *
+ *  Inputs:
+ *      context - the context in which the mouse button was pressed
+ *      func    - the function to defer
+ *      cursor  - the cursor to display while waiting
+ */
+static bool
+DeferExecution(int context, int func, Cursor cursor)
+{
+	if((context == C_ROOT) || (context == C_ALTERNATE)) {
+		SetLastCursor(cursor);
+		XGrabPointer(dpy,
+		             Scr->Root,
+		             True,
+		             ButtonPressMask | ButtonReleaseMask,
+		             GrabModeAsync,
+		             GrabModeAsync,
+		             (func == F_ADOPTWINDOW) ? None : Scr->Root,
+		             cursor,
+		             CurrentTime);
+		RootFunction = func;
+
+		return true;
 	}
 
 	return false;
