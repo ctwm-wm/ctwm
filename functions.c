@@ -2982,11 +2982,6 @@ DeferExecution(int context, int func, Cursor cursor)
  * the ones we don't explicitly set get initialized to 0, which we can
  * then take as a flag saying "we don't defer this func".
  *
- * XXX This list came from the list used in f.function handling for
- * determining whether the whole thing should be deferred.  Should that
- * actually be different from the list of functions that are themselves
- * deferred?  Maybe we should harmonize them.
- *
  * XXX And if so, we should use this more directly to defer things as
  * needed instead of hardcoding.
  */
@@ -3130,6 +3125,12 @@ defer_cursor(int func)
  * action creates pseudo-menus to store the items in that call, so we
  * loop through the "items" in that "menu".  Try not to think about that
  * too much.
+ *
+ * This previously used a hardcoded list of functions to defer, which was
+ * substantially smaller than the list it's currently checking.  It now
+ * checks all the same functions that are themselves checked
+ * individually, which is almost certainly how it should have always
+ * worked anyway.
  */
 static Cursor
 NeedToDefer(MenuRoot *root)
