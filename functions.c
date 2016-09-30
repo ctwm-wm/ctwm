@@ -3077,7 +3077,6 @@ static _dfcs_cursor dfcs[F_maxfunc + 1] = {
 	[F_SAVEYOURSELF] = DC_SELECT,
 	[F_DELETEORDESTROY] = DC_DESTROY,
 };
-#undef MKC
 
 static bool
 should_defer(int func)
