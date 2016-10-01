@@ -1507,6 +1507,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		}
 
 		case F_COLORMAP: {
+			/* XXX Window targetting; should this be on the Defer list? */
 			if(strcmp(action, COLORMAP_NEXT) == 0) {
 				BumpWindowColormap(tmp_win, 1);
 			}
@@ -1996,41 +1997,6 @@ HideIconManager(void)
 			i->twm_win->isicon = true;
 		}
 	}
-}
-
-
-/*
- * Check to see if a function (implicitly, a window-targetting function)
- * is happening in a context away from an actual window, and if so stash
- * up info about what's in progress and return true to tell the caller to
- * end processing the function (for now).  X-ref comment on RootFunction
- * variable definition for details.
- *
- *  Inputs:
- *      context - the context in which the mouse button was pressed
- *      func    - the function to defer
- *      cursor  - the cursor to display while waiting
- */
-static bool
-DeferExecution(int context, int func, Cursor cursor)
-{
-	if((context == C_ROOT) || (context == C_ALTERNATE)) {
-		SetLastCursor(cursor);
-		XGrabPointer(dpy,
-		             Scr->Root,
-		             True,
-		             ButtonPressMask | ButtonReleaseMask,
-		             GrabModeAsync,
-		             GrabModeAsync,
-		             (func == F_ADOPTWINDOW) ? None : Scr->Root,
-		             cursor,
-		             CurrentTime);
-		RootFunction = func;
-
-		return true;
-	}
-
-	return false;
 }
 
 
@@ -2969,6 +2935,41 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 
 
 /*
+ * Check to see if a function (implicitly, a window-targetting function)
+ * is happening in a context away from an actual window, and if so stash
+ * up info about what's in progress and return true to tell the caller to
+ * end processing the function (for now).  X-ref comment on RootFunction
+ * variable definition for details.
+ *
+ *  Inputs:
+ *      context - the context in which the mouse button was pressed
+ *      func    - the function to defer
+ *      cursor  - the cursor to display while waiting
+ */
+static bool
+DeferExecution(int context, int func, Cursor cursor)
+{
+	if((context == C_ROOT) || (context == C_ALTERNATE)) {
+		SetLastCursor(cursor);
+		XGrabPointer(dpy,
+		             Scr->Root,
+		             True,
+		             ButtonPressMask | ButtonReleaseMask,
+		             GrabModeAsync,
+		             GrabModeAsync,
+		             (func == F_ADOPTWINDOW) ? None : Scr->Root,
+		             cursor,
+		             CurrentTime);
+		RootFunction = func;
+
+		return true;
+	}
+
+	return false;
+}
+
+
+/*
  * Various determinates of whether a function should be deferred if its
  * called in a general (rather than win-specific) context, and what
  * cursor should be used in the meantime.
@@ -2981,11 +2982,6 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
  * the ones we don't explicitly set get initialized to 0, which we can
  * then take as a flag saying "we don't defer this func".
  *
- * XXX This list came from the list used in f.function handling for
- * determining whether the whole thing should be deferred.  Should that
- * actually be different from the list of functions that are themselves
- * deferred?  Maybe we should harmonize them.
- *
  * XXX And if so, we should use this more directly to defer things as
  * needed instead of hardcoding.
  */
@@ -2996,32 +2992,91 @@ typedef enum {
 	DC_DESTROY,
 } _dfcs_cursor;
 static _dfcs_cursor dfcs[F_maxfunc + 1] = {
-	[F_IDENTIFY]   = DC_SELECT,
+	/* Windowbox related */
+	[F_FITTOCONTENT] = DC_SELECT,
+
+	/* Icon manager related */
+	[F_SORTICONMGR] = DC_SELECT,
+
+	/* Messing with window occupation */
+	[F_ADDTOWORKSPACE]      = DC_SELECT,
+	[F_REMOVEFROMWORKSPACE] = DC_SELECT,
+	[F_MOVETONEXTWORKSPACE] = DC_SELECT,
+	[F_MOVETOPREVWORKSPACE] = DC_SELECT,
+	[F_MOVETONEXTWORKSPACEANDFOLLOW] = DC_SELECT,
+	[F_MOVETOPREVWORKSPACEANDFOLLOW] = DC_SELECT,
+	[F_TOGGLEOCCUPATION] = DC_SELECT,
+	[F_VANISH]    = DC_SELECT,
+	[F_OCCUPY]    = DC_SELECT,
+	[F_OCCUPYALL] = DC_SELECT,
+
+	/* Messing with position */
+	[F_MOVE]      = DC_MOVE,
+	[F_FORCEMOVE] = DC_MOVE,
+	[F_PACK]      = DC_SELECT,
+	[F_FILL]      = DC_SELECT,
+	[F_MOVEPACK]  = DC_MOVE,
+	[F_MOVEPUSH]  = DC_MOVE,
+	[F_JUMPLEFT]  = DC_MOVE,
+	[F_JUMPRIGHT] = DC_MOVE,
+	[F_JUMPDOWN]  = DC_MOVE,
+	[F_JUMPUP]    = DC_MOVE,
+
+	/* Messing with size */
+	[F_INITSIZE]   = DC_SELECT,
 	[F_RESIZE]     = DC_MOVE,
-	[F_MOVE]       = DC_MOVE,
-	[F_FORCEMOVE]  = DC_MOVE,
-	[F_DEICONIFY]  = DC_SELECT,
-	[F_ICONIFY]    = DC_SELECT,
-	[F_RAISELOWER] = DC_SELECT,
-	[F_RAISE]      = DC_SELECT,
-	[F_LOWER]      = DC_SELECT,
-	[F_FOCUS]      = DC_SELECT,
-	[F_DESTROY]    = DC_DESTROY,
-	[F_WINREFRESH] = DC_SELECT,
+	[F_CHANGESIZE] = DC_SELECT,
 	[F_ZOOM]       = DC_SELECT,
-	[F_FULLZOOM]   = DC_SELECT,
-	[F_FULLSCREENZOOM] = DC_SELECT,
 	[F_HORIZOOM]   = DC_SELECT,
 	[F_RIGHTZOOM]  = DC_SELECT,
 	[F_LEFTZOOM]   = DC_SELECT,
 	[F_TOPZOOM]    = DC_SELECT,
 	[F_BOTTOMZOOM] = DC_SELECT,
-	[F_SQUEEZE]    = DC_SELECT,
-	[F_AUTORAISE]  = DC_SELECT,
-	[F_AUTOLOWER]  = DC_SELECT,
-	[F_CHANGESIZE] = DC_SELECT,
+	[F_FULLZOOM]   = DC_SELECT,
+	[F_FULLSCREENZOOM] = DC_SELECT,
+
+	/* Messing with all sorts of geometry */
+	[F_MOVERESIZE]   = DC_SELECT,
+	[F_SAVEGEOMETRY] = DC_SELECT,
+	[F_RESTOREGEOMETRY] = DC_SELECT,
+
+	/* Special moves */
+	[F_HYPERMOVE] = DC_MOVE,
+
+	/* Window and titlebar squeeze-related */
+	[F_SQUEEZE]   = DC_SELECT,
+	[F_UNSQUEEZE] = DC_SELECT,
+	[F_MOVETITLEBAR] = DC_MOVE,
+
+	/* Stacking */
+	[F_RAISE]     = DC_SELECT,
+	[F_LOWER]     = DC_SELECT,
+	[F_TINYRAISE] = DC_SELECT,
+	[F_TINYLOWER] = DC_SELECT,
+	[F_AUTORAISE] = DC_SELECT,
+	[F_AUTOLOWER] = DC_SELECT,
+	[F_RAISELOWER] = DC_SELECT,
+	[F_SETPRIORITY] = DC_SELECT,
+	[F_CHANGEPRIORITY] = DC_SELECT,
+	[F_SWITCHPRIORITY] = DC_SELECT,
+	[F_PRIORITYSWITCHING] = DC_SELECT,
+
+	/* Combo and misc ops */
+	[F_RAISEORSQUEEZE] = DC_SELECT,
+	[F_IDENTIFY]   = DC_SELECT,
+	[F_DEICONIFY]  = DC_SELECT,
+	[F_ICONIFY]    = DC_SELECT,
+	[F_FOCUS]      = DC_SELECT,
+	[F_RING]       = DC_SELECT,
+	[F_WINREFRESH] = DC_SELECT,
+	/* x-ref comment questioning if F_COLORMAP should be here */
+
+	/* Window deletion related */
+	[F_DELETE]  = DC_DESTROY,
+	[F_DESTROY] = DC_DESTROY,
+	[F_SAVEYOURSELF] = DC_SELECT,
+	[F_DELETEORDESTROY] = DC_DESTROY,
 };
-#undef MKC
 
 static bool
 should_defer(int func)
@@ -3069,6 +3124,12 @@ defer_cursor(int func)
  * action creates pseudo-menus to store the items in that call, so we
  * loop through the "items" in that "menu".  Try not to think about that
  * too much.
+ *
+ * This previously used a hardcoded list of functions to defer, which was
+ * substantially smaller than the list it's currently checking.  It now
+ * checks all the same functions that are themselves checked
+ * individually, which is almost certainly how it should have always
+ * worked anyway.
  */
 static Cursor
 NeedToDefer(MenuRoot *root)
