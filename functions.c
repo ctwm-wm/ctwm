@@ -1267,7 +1267,12 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 				/* XXX pressing a second button should cancel and undo this */
 				SetFrameShape(tmp_win);
 			}
-			break;
+
+			/*
+			 * The ButtonRelease handler will have taken care of
+			 * ungrabbing our pointer.
+			 */
+			return true;
 		}
 
 		case F_DEICONIFY:
