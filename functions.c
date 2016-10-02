@@ -180,8 +180,6 @@ static bool
 EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
         XEvent *eventp, int context, bool pulldown)
 {
-	bool do_next_action = true;
-
 	/* This should always start out clear when we come in here */
 	RootFunction = 0;
 
@@ -273,7 +271,17 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 	switch(func) {
 		case F_DELTASTOP:
 			if(WindowMoved) {
-				do_next_action = false;
+				/*
+				 * If we're returning false here, it's because we were in
+				 * the midst of a f.function, and we should stop.  That
+				 * means when we return from here it'll be into the false
+				 * case in the F_FUNCTION handler below, which will break
+				 * right out and fall through to the end of this
+				 * function, which will do the post-function cleanup
+				 * bits.  That means we don't need to try and break out
+				 * to them here, we can just return straight off.
+				 */
+				return false;
 			}
 			break;
 
@@ -345,7 +353,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		XUngrabPointer(dpy, CurrentTime);
 	}
 
-	return do_next_action;
+	return true;
 }
 
 
