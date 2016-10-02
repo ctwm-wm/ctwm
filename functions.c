@@ -157,9 +157,6 @@ static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
  *      context - the context in which the button was pressed
  *      pulldown- flag indicating execution from pull down menu
  *
- *  Returns:
- *      true if should continue with remaining actions else false to abort
- *
  ***********************************************************************
  */
 void
