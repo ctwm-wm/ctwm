@@ -159,7 +159,6 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                 XEvent *eventp, int context, bool pulldown)
 {
 	bool do_next_action = true;
-	TwmWindow *t;
 
 	/* This should always start out clear when we come in here */
 	RootFunction = 0;
@@ -1252,7 +1251,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_RAISEICONS:
-			for(t = Scr->FirstWindow; t != NULL; t = t->next) {
+			for(TwmWindow *t = Scr->FirstWindow; t != NULL; t = t->next) {
 				if(t->icon && t->icon->w) {
 					OtpRaise(t, IconWin);
 				}
