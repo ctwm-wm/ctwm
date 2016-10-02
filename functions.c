@@ -171,7 +171,8 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
  * Main ExecuteFunction body; returns true if we should continue a
  * f.function's progress, false if we should stop.  This is separate
  * because only the recursive calls in f.function handling care about
- * that return.
+ * that return.  The only possible way to get to a false return is via
+ * f.deltastop triggering.
  */
 static bool
 EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
