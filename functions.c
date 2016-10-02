@@ -349,7 +349,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		default: {
 			bool r;
 			r = EF_core(func, action, w, tmp_win, eventp, context, pulldown);
-			if(r == false) {
+			if(false && r == false) {
 				return true;
 			}
 		}
@@ -634,6 +634,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			XGrabPointer(dpy, Scr->Root, True, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
+			func_reset_cursor = false;  // Leave special cursor alone
 			XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
 			return false;
 		}
@@ -643,6 +644,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			XGrabPointer(dpy, Scr->Root, False, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
+			func_reset_cursor = false;  // Leave special cursor alone
 			XGrabKeyboard(dpy, Scr->Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
 			return false;
 		}
@@ -854,6 +856,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 					ResizeOrigY = eventp->xbutton.y_root;
 
 					StartResize(eventp, tmp_win, fromtitlebar, from3dborder);
+					func_reset_cursor = false;  // Leave special cursor alone
 
 					do {
 						XMaskEvent(dpy,
@@ -882,7 +885,6 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 
 					}
 					while(!(Event.type == ButtonRelease || Cancel));
-					return false;
 				}
 			}
 			break;
@@ -2679,10 +2681,7 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 				             ButtonReleaseMask | ButtonPressMask,
 				             GrabModeAsync, GrabModeAsync,
 				             Scr->Root, cur, CurrentTime);
-				/*
-				 * Pass up command to leave that cursor as-is until
-				 * ButtonRelease cleans it up for us.
-				 */
+				func_reset_cursor = false;  // Leave cursor alone
 				return false;
 			}
 		}
@@ -2706,7 +2705,7 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 			if(!Scr->OpaqueMove) {
 				UninstallRootColormap();
 			}
-			/* Leave cursor alone */
+			func_reset_cursor = false;  // Leave cursor alone
 			return false;
 		}
 		if(Event.type == releaseEvent) {
