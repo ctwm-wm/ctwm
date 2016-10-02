@@ -973,6 +973,16 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			 * are "weeded out" - although incompletely only
 			 * F_MOVE and F_RESIZE - in HandleKeyPress().
 			 */
+
+			/*
+			 * XXX This var may be actually unnecessary; it's used only
+			 * once as an arg to a later X call, but during that time I
+			 * don't believe anything can mutate eventp or anything near
+			 * the root.  However, due to the union nature of XEvent,
+			 * it's hard to be sure without more investigation, so I
+			 * leave the intermediate var for now.
+			 */
+
 			rootw = eventp->xbutton.root;
 
 			EventHandler[EnterNotify] = HandleUnknown;
