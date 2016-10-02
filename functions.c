@@ -981,8 +981,15 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			 * the root.  However, due to the union nature of XEvent,
 			 * it's hard to be sure without more investigation, so I
 			 * leave the intermediate var for now.
+			 *
+			 * Note that we're looking inside the XButtonEvent member
+			 * here, but other bits of this code later look at the
+			 * XMotionEvent piece.  This should be further investigated
+			 * and resolved; they can't both be right (though the
+			 * structure of the structs are such that almost all the
+			 * similar elements are in the same place, at least in
+			 * theory).
 			 */
-
 			rootw = eventp->xbutton.root;
 
 			EventHandler[EnterNotify] = HandleUnknown;
