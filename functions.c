@@ -145,7 +145,7 @@ static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
 static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
-static bool movewindow(int func, Window w, TwmWindow *tmp_win,
+static void movewindow(int func, Window w, TwmWindow *tmp_win,
                        XEvent *eventp, int context, bool pulldown);
 static bool should_defer(int func);
 static Cursor defer_cursor(int func);
@@ -1030,14 +1030,8 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVEPACK:
 		case F_MOVEPUSH: {
 			/* All in external func */
-			if(!movewindow(func, w, tmp_win, eventp, context, pulldown)) {
-				/*
-				 * Did something odd, which means we should leave the
-				 * pointer alone.
-				 */
-				return;
-			}
-			break;
+			movewindow(func, w, tmp_win, eventp, context, pulldown);
+			return;
 		}
 
 		case F_PRIORITYSWITCHING:
@@ -2443,14 +2437,8 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 
 /*
  * f.move and friends
- *
- * Various cancellation methods set a cursor that tells the user they did
- * so.  We use a false return to signal to the main function handling
- * code that it shouldn't re-set the cursor itself, since that would
- * happen essentially immediately.  The ButtonRelease handler will do it
- * when the user lets go.
  */
-static bool
+static void
 movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
            XEvent *eventp, int context, bool pulldown)
 {
@@ -2678,7 +2666,7 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 				             GrabModeAsync, GrabModeAsync,
 				             Scr->Root, cur, CurrentTime);
 				func_reset_cursor = false;  // Leave cursor alone
-				return false;
+				return;
 			}
 		}
 
@@ -2702,7 +2690,7 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 				UninstallRootColormap();
 			}
 			func_reset_cursor = false;  // Leave cursor alone
-			return false;
+			return;
 		}
 		if(Event.type == releaseEvent) {
 			MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
@@ -2923,7 +2911,7 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 		UninstallRootColormap();
 	}
 
-	return true;
+	return;
 }
 
 
