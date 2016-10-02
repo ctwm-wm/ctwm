@@ -696,7 +696,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					 */
 					bool from3dborder = (eventp->xbutton.window == tmp_win->frame);
 					bool fromtitlebar = !from3dborder &&
-					               belongs_to_twm_window(tmp_win, eventp->xbutton.window);
+					                    belongs_to_twm_window(tmp_win, eventp->xbutton.window);
 
 					/* Save pointer position so we can tell if it was moved or
 					   not during the resize. */
