@@ -170,7 +170,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 	/* Early escape for cutting out of things */
 	if(Cancel) {
 		/*
-		 * Strictly, this could probably be false, since it it's set it
+		 * Strictly, this could probably be false, since if it's set it
 		 * would mean it'll just happen again when we iterate back
 		 * through for the next action.  Once set, it only gets unset in
 		 * the ButtonRelease handler, which I don't think would ever get
