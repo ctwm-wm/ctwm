@@ -95,6 +95,19 @@ int ConstMoveYB;
 bool WindowMoved = false;
 
 /*
+ * Whether the cursor needs to be reset from a way we've altered it in
+ * the process of running functions.  This is used to determine whether
+ * we're ungrabbing the pointer to reset back from setting the WaitCursor
+ * early on in the execution process.  X-ref the XXX comment on that;
+ * it's unclear as to whether we should even be doing this anymore, but
+ * since we are, we use a global to ease tracking whether we need to
+ * unset it.  There are cases deeper down in function handling that may
+ * do their own fudgery and want the pointer left along after they
+ * return.
+ */
+bool func_reset_cursor;
+
+/*
  * Globals used to keep track of whether the mouse has moved during a
  * resize function.
  */
@@ -239,6 +252,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 	 * user feedback before either finishing or doing something that
 	 * gives other user feedback anyway?
 	 */
+	func_reset_cursor = false;
 	switch(func) {
 		case F_UPICONMGR:
 		case F_LEFTICONMGR:
@@ -261,12 +275,14 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_ALTCONTEXT:
 			break;
 
-		default:
+		default: {
 			XGrabPointer(dpy, Scr->Root, True,
 			             ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->WaitCursor, CurrentTime);
+			func_reset_cursor = true;
 			break;
+		}
 	}
 
 
@@ -355,8 +371,9 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 	 * This has a similar XXX to the cursor setting earlier, as to
 	 * whether it ought to exist.
 	 */
-	if(ButtonPressed == -1) {
+	if(func_reset_cursor && ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
+		func_reset_cursor = false;
 	}
 
 	return true;
