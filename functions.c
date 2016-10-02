@@ -216,7 +216,28 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 
 	/*
-	 * Do the meat of running whatever func is being called.
+	 * Is this a function that needs some deferring?  If so, go ahead and
+	 * do that.  Note that this specifically doesn't handle the special
+	 * case of f.function; it has to do its own checking for whether
+	 * there's something to defer.
+	 */
+	if(should_defer(func)) {
+		/* Figure the cursor */
+		Cursor dc = defer_cursor(func);
+		if(dc == None) {
+			dc = Scr->SelectCursor;
+		}
+
+		/* And defer (if we're in a context that needs to) */
+		if(DeferExecution(context, func, dc)) {
+			return true;
+		}
+	}
+
+
+	/*
+	 * Now we know we're ready to actually execute whatever the function
+	 * is, so do the meat of running it.
 	 */
 	switch(func) {
 #ifdef SOUNDS
