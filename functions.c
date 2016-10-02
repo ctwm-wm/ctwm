@@ -121,6 +121,8 @@ typedef enum {
 
 static bool EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
+static bool EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+                    XEvent *eventp, int context, bool pulldown);
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static void ShowIconManager(void);
@@ -263,6 +265,45 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 	}
 
 
+
+	/*
+	 * Main dispatching/executing.
+	 */
+	do_next_action = EF_core(func, action, w, tmp_win, eventp, context,
+	                         pulldown);
+
+
+
+	/*
+	 * Ungrab the pointer.  Sometimes.  This condition apparently means
+	 * we got to the end of the execution (didn't return early due to
+	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
+	 * button.  Note that this is _not_ strictly dual to the
+	 * XGrabPointer() conditionally called in the switch() early on;
+	 * there will be plenty of cases where one executes without the
+	 * other.
+	 *
+	 * XXX It isn't clear that this really belong here...
+	 */
+	if(ButtonPressed == -1) {
+		XUngrabPointer(dpy, CurrentTime);
+	}
+
+	return do_next_action;
+}
+
+
+/*
+ * The core dispatching of the function being called.  The principal
+ * reason this is broken out rather than just being inline in EF_main()
+ * is that this allows us to trivially return; directly from an
+ * individual handler, but still run the post-cleanup that follows the
+ * switch().
+ */
+static bool
+EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+        XEvent *eventp, int context, bool pulldown)
+{
 	/*
 	 * Now we know we're ready to actually execute whatever the function
 	 * is, so do the meat of running it.
@@ -282,7 +323,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_DELTASTOP:
 			if(WindowMoved) {
-				do_next_action = false;
+				return false;
 			}
 			break;
 
@@ -1709,26 +1750,9 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_RESCUEWINDOWS:
 			RescueWindows();
 			break;
-
 	}
 
-
-	/*
-	 * Ungrab the pointer.  Sometimes.  This condition apparently means
-	 * we got to the end of the execution (didn't return early due to
-	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
-	 * button.  Note that this is _not_ strictly dual to the
-	 * XGrabPointer() conditionally called in the switch() early on;
-	 * there will be plenty of cases where one executes without the
-	 * other.
-	 *
-	 * XXX It isn't clear that this really belong here...
-	 */
-	if(ButtonPressed == -1) {
-		XUngrabPointer(dpy, CurrentTime);
-	}
-
-	return do_next_action;
+	return true;
 }
 
 
