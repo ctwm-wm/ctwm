@@ -6,7 +6,7 @@
 #define _CTWM_FUNCTIONS_H
 
 /* All the outside world sees */
-bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
+void ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                      XEvent *eventp, int context, bool pulldown);
 
 

@@ -119,6 +119,9 @@ typedef enum {
 
 
 
+bool ExecuteFunctionInner(int func, void *action, Window w, TwmWindow *tmp_win,
+                          XEvent *eventp, int context, bool pulldown);
+
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static void ShowIconManager(void);
 static void HideIconManager(void);
@@ -157,10 +160,21 @@ static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
  *
  ***********************************************************************
  */
-
-bool
+void
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                 XEvent *eventp, int context, bool pulldown)
+{
+	ExecuteFunctionInner(func, action, w, tmp_win, eventp, context, pulldown);
+}
+
+/*
+ * Inner func; returns true if we should continue a f.function's
+ * progress, false if we should stop.  This is separate because only the
+ * recursive calls in f.function handling care about that return.
+ */
+bool
+ExecuteFunctionInner(int func, void *action, Window w, TwmWindow *tmp_win,
+                     XEvent *eventp, int context, bool pulldown)
 {
 	bool do_next_action = true;
 
@@ -1162,8 +1176,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			else {
 				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
-					if(!ExecuteFunction(mitem->func, mitem->action, w,
-					                    tmp_win, eventp, context, pulldown)) {
+					bool r = ExecuteFunctionInner(mitem->func, mitem->action, w,
+					                              tmp_win, eventp, context,
+					                              pulldown);
+					if(r == false) {
 						/* pebl FIXME: the focus should be updated here,
 						 or the function would operate on the same window */
 						break;
