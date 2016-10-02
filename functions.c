@@ -268,9 +268,57 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 
 	/*
 	 * Main dispatching/executing.
+	 *
+	 * We delegate _most_ handlers to our _core() function, but we keep
+	 * the magic related to f.function/f.deltastop out here to free the
+	 * inner bits from having to care about the magic returns.
 	 */
-	do_next_action = EF_core(func, action, w, tmp_win, eventp, context,
-	                         pulldown);
+	switch(func) {
+		case F_DELTASTOP:
+			if(WindowMoved) {
+				do_next_action = false;
+			}
+			break;
+
+		case F_FUNCTION: {
+			MenuRoot *mroot;
+			MenuItem *mitem;
+			Cursor curs;
+
+			if((mroot = FindMenuRoot(action)) == NULL) {
+				if(!action) {
+					action = "undef";
+				}
+				fprintf(stderr, "%s: couldn't find function \"%s\"\n",
+				        ProgramName, (char *)action);
+				return true;
+			}
+
+			if((curs = NeedToDefer(mroot)) != None
+			                && DeferExecution(context, func, curs)) {
+				return true;
+			}
+			else {
+				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
+					bool r = EF_main(mitem->func, mitem->action, w,
+					                 tmp_win, eventp, context, pulldown);
+					if(r == false) {
+						/* pebl FIXME: the focus should be updated here,
+						 or the function would operate on the same window */
+						break;
+					}
+				}
+			}
+
+			break;
+		}
+
+		/*
+		 * Everything else happens in our inner function.
+		 */
+		default:
+			EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+	}
 
 
 
@@ -319,12 +367,6 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 #endif
 		case F_NOP:
 		case F_TITLE:
-			break;
-
-		case F_DELTASTOP:
-			if(WindowMoved) {
-				return false;
-			}
 			break;
 
 		case F_RESTART: {
@@ -1200,38 +1242,6 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 				/* XXX pressing a second button should cancel and undo this */
 				SetFrameShape(tmp_win);
 			}
-			break;
-		}
-		case F_FUNCTION: {
-			MenuRoot *mroot;
-			MenuItem *mitem;
-			Cursor curs;
-
-			if((mroot = FindMenuRoot(action)) == NULL) {
-				if(!action) {
-					action = "undef";
-				}
-				fprintf(stderr, "%s: couldn't find function \"%s\"\n",
-				        ProgramName, (char *)action);
-				return true;
-			}
-
-			if((curs = NeedToDefer(mroot)) != None
-			                && DeferExecution(context, func, curs)) {
-				return true;
-			}
-			else {
-				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
-					bool r = EF_main(mitem->func, mitem->action, w,
-					                 tmp_win, eventp, context, pulldown);
-					if(r == false) {
-						/* pebl FIXME: the focus should be updated here,
-						 or the function would operate on the same window */
-						break;
-					}
-				}
-			}
-
 			break;
 		}
 
