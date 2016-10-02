@@ -440,21 +440,21 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_SORTICONMGR: {
-				bool save_sort = Scr->SortIconMgr;
+			bool save_sort = Scr->SortIconMgr;
 
-				Scr->SortIconMgr = true;
+			Scr->SortIconMgr = true;
 
-				if(context == C_ICONMGR) {
-					SortIconManager(NULL);
-				}
-				else if(tmp_win->isiconmgr) {
-					SortIconManager(tmp_win->iconmgrp);
-				}
-				else {
-					XBell(dpy, 0);
-				}
+			if(context == C_ICONMGR) {
+				SortIconManager(NULL);
+			}
+			else if(tmp_win->isiconmgr) {
+				SortIconManager(tmp_win->iconmgrp);
+			}
+			else {
+				XBell(dpy, 0);
+			}
 
-				Scr->SortIconMgr = save_sort;
+			Scr->SortIconMgr = save_sort;
 			break;
 		}
 
