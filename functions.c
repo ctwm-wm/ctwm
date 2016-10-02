@@ -160,8 +160,6 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 {
 	Window rootw;
 	bool do_next_action = true;
-	bool fromtitlebar = false;
-	bool from3dborder = false;
 	TwmWindow *t;
 
 	/* This should always start out clear when we come in here */
@@ -685,8 +683,8 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					/*
 					 * see if this is being done from the titlebar
 					 */
-					from3dborder = (eventp->xbutton.window == tmp_win->frame);
-					fromtitlebar = !from3dborder &&
+					bool from3dborder = (eventp->xbutton.window == tmp_win->frame);
+					bool fromtitlebar = !from3dborder &&
 					               belongs_to_twm_window(tmp_win, eventp->xbutton.window);
 
 					/* Save pointer position so we can tell if it was moved or
