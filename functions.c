@@ -88,6 +88,10 @@ int ConstMoveXR;
 int ConstMoveYT;
 int ConstMoveYB;
 
+/*
+ * Track whether a window gets moved by move operations: used for
+ * f.deltastop handling.
+ */
 bool WindowMoved = false;
 
 /*
