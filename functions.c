@@ -199,15 +199,45 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 
 
 	/*
+	 * Is this a function that needs some deferring?  If so, go ahead and
+	 * do that.  Note that this specifically doesn't handle the special
+	 * case of f.function; it has to do its own checking for whether
+	 * there's something to defer.
+	 */
+	if(should_defer(func)) {
+		/* Figure the cursor */
+		Cursor dc = defer_cursor(func);
+		if(dc == None) {
+			dc = Scr->SelectCursor;
+		}
+
+		/* And defer (if we're in a context that needs to) */
+		if(DeferExecution(context, func, dc)) {
+			return true;
+		}
+	}
+
+
+	/*
 	 * For most functions with a few exceptions, grab the pointer.
 	 *
-	 * XXX big XXX.  I have no idea why.  Apart from adding 1 or 2
-	 * functions to the exclusion list, this code comes verbatim from
-	 * twm, which has no history or documentation as to why it's
-	 * happening.
+	 * This is actually not a grab so much to take control of the
+	 * pointer, as to set the cursor.  Apparently, xlib doesn't
+	 * distinguish the two.  The functions that need it in a "take
+	 * control" sense (like the move and resize bits) should all be doing
+	 * their own explicit grabs to handle that.
 	 *
-	 * My best guess is that this is being done solely to set the cursor?
-	 * X-ref the comment on the Ungrab() at the end of the function.
+	 * XXX I have no idea why there's the exclusion list.  Apart from
+	 * adding 1 or 2 functions, this code comes verbatim from twm, which
+	 * has no history or documentation as to why it's happening.
+	 *
+	 * XXX I'm not sure this is even worth doing anymore.  The point of
+	 * the WaitCursor is to let the user know "yeah, I'm working on it",
+	 * during operations that may take a while.  On 1985 hardware, that
+	 * would be "almost anything you do".  But in the 21st century, what
+	 * functions could fall into that category, and need to give some
+	 * user feedback before either finishing or doing something that
+	 * gives other user feedback anyway?
 	 */
 	switch(func) {
 		case F_UPICONMGR:
@@ -238,27 +268,6 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 			             Scr->Root, Scr->WaitCursor, CurrentTime);
 			break;
 	}
-
-
-	/*
-	 * Is this a function that needs some deferring?  If so, go ahead and
-	 * do that.  Note that this specifically doesn't handle the special
-	 * case of f.function; it has to do its own checking for whether
-	 * there's something to defer.
-	 */
-	if(should_defer(func)) {
-		/* Figure the cursor */
-		Cursor dc = defer_cursor(func);
-		if(dc == None) {
-			dc = Scr->SelectCursor;
-		}
-
-		/* And defer (if we're in a context that needs to) */
-		if(DeferExecution(context, func, dc)) {
-			return true;
-		}
-	}
-
 
 
 	/*
@@ -333,21 +342,18 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 
 
 	/*
-	 * Ungrab the pointer.  Sometimes.  This condition apparently means
-	 * we got to the end of the execution (didn't return early due to
-	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
-	 * button.  If we _did_ get here by pressing a mouse button, then
-	 * we'll be holding on to any active grab here; the ButtonRelease
-	 * handler will ungrab as necessary when you let go.
+	 * Release the pointer.  This should mostly mean actually "reset
+	 * cursor", and be the complementary op to setting the cursor earlier
+	 * up top.
 	 *
-	 * Note that this is _not_ strictly dual to the XGrabPointer()
-	 * conditionally called in the switch() early on; there will be
-	 * plenty of cases where one executes without the other.  However, it
-	 * seems that its real purpose is to undo that grab, and since that
-	 * grab apparently is only for setting the cursor, this is really
-	 * meant just to re-set it.
+	 * ButtonPressed == -1 means that we didn't get here via some sort of
+	 * mouse clickery.  If we did, then we presume that has some
+	 * ownership of the pointer we don't want to relinquish yet.  And we
+	 * don't have to, as the ButtonRelease handler will take care of
+	 * things when it fires anyway.
 	 *
-	 * XXX It isn't clear that this really belong here...
+	 * This has a similar XXX to the cursor setting earlier, as to
+	 * whether it ought to exist.
 	 */
 	if(ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
