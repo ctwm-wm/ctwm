@@ -134,7 +134,7 @@ typedef enum {
 
 static bool EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
-static bool EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+static void EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
@@ -346,13 +346,9 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		/*
 		 * Everything else happens in our inner function.
 		 */
-		default: {
-			bool r;
-			r = EF_core(func, action, w, tmp_win, eventp, context, pulldown);
-			if(false && r == false) {
-				return true;
-			}
-		}
+		default:
+			EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+			break;
 	}
 
 
@@ -396,7 +392,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
  * n.b.: this boolean return bears _no_ _relation_ to the boolean that
  * EF_main() itself returns.
  */
-static bool
+static void
 EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
         XEvent *eventp, int context, bool pulldown)
 {
@@ -621,14 +617,14 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			int alt, stat_;
 
 			if(! action) {
-				return false;
+				return;
 			}
 			stat_ = sscanf(action, "%d", &alt);
 			if(stat_ != 1) {
-				return false;
+				return;
 			}
 			if((alt < 1) || (alt > 5)) {
-				return false;
+				return;
 			}
 			AlternateKeymap = Alt1Mask << (alt - 1);
 			XGrabPointer(dpy, Scr->Root, True, ButtonPressMask | ButtonReleaseMask,
@@ -636,7 +632,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			func_reset_cursor = false;  // Leave special cursor alone
 			XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return false;
+			return;
 		}
 
 		case F_ALTCONTEXT: {
@@ -646,7 +642,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			func_reset_cursor = false;  // Leave special cursor alone
 			XGrabKeyboard(dpy, Scr->Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return false;
+			return;
 		}
 		case F_IDENTIFY:
 			Identify(tmp_win);
@@ -1039,7 +1035,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 				 * Did something odd, which means we should leave the
 				 * pointer alone.
 				 */
-				return false;
+				return;
 			}
 			break;
 		}
@@ -1301,7 +1297,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			 * The ButtonRelease handler will have taken care of
 			 * ungrabbing our pointer.
 			 */
-			return true;
+			return;
 		}
 
 		case F_DEICONIFY:
@@ -1821,7 +1817,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 	}
 
-	return true;
+	return;
 }
 
 
