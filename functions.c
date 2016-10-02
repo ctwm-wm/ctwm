@@ -317,7 +317,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 			bool r;
 			r = EF_core(func, action, w, tmp_win, eventp, context, pulldown);
 			if(r == false) {
-				return do_next_action;
+				return true;
 			}
 		}
 	}
