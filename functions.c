@@ -367,7 +367,8 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
  * Returns false if EF_main() shouldn't do the trailing cleanup it
  * normally does.  It's unclear to what extent this is actually desirable
  * or correct, but it preserves the behavior we had when this was all
- * embedded into one function.
+ * embedded into one function.  This magic is expected to be temporary
+ * and to go away once I unwind the specific meanings of things.
  *
  * n.b.: this boolean return bears _no_ _relation_ to the boolean that
  * EF_main() itself returns.
