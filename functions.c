@@ -169,7 +169,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 	/* Early escape for cutting out of things */
 	if(Cancel) {
-		return true;        /* XXX should this be false? */
+		return true;
 	}
 
 
