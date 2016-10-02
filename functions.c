@@ -158,7 +158,6 @@ bool
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                 XEvent *eventp, int context, bool pulldown)
 {
-	Window rootw;
 	bool do_next_action = true;
 	TwmWindow *t;
 
@@ -920,6 +919,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_MOVETITLEBAR: {
 			Window grabwin;
+			Window rootw;
 			int deltax = 0, newx = 0;
 			int origX;
 			int origNum;
