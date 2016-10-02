@@ -439,11 +439,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			MoveToPrevWorkSpaceAndFollow(Scr->currentvs, tmp_win);
 			break;
 
-		case F_SORTICONMGR:
-			{
-				int save_sort;
+		case F_SORTICONMGR: {
+				bool save_sort = Scr->SortIconMgr;
 
-				save_sort = Scr->SortIconMgr;
 				Scr->SortIconMgr = true;
 
 				if(context == C_ICONMGR) {
@@ -457,8 +455,8 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 				}
 
 				Scr->SortIconMgr = save_sort;
-			}
 			break;
+		}
 
 		case F_ALTKEYMAP: {
 			int alt, stat_;
