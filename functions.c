@@ -164,10 +164,14 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 	bool from3dborder = false;
 	TwmWindow *t;
 
+	/* This should always start out clear when we come in here */
 	RootFunction = 0;
+
+	/* Early escape for cutting out of things */
 	if(Cancel) {
 		return true;        /* XXX should this be false? */
 	}
+
 
 	/*
 	 * For most functions with a few exceptions, grab the pointer.
@@ -210,6 +214,10 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 	}
 
+
+	/*
+	 * Do the meat of running whatever func is being called.
+	 */
 	switch(func) {
 #ifdef SOUNDS
 		case F_TOGGLESOUND:
