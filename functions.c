@@ -121,7 +121,7 @@ typedef enum {
 
 static bool EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
-static void EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+static bool EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
@@ -313,8 +313,13 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		/*
 		 * Everything else happens in our inner function.
 		 */
-		default:
-			EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+		default: {
+			bool r;
+			r = EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+			if(r == false) {
+				return do_next_action;
+			}
+		}
 	}
 
 
@@ -350,8 +355,16 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
  * is that this allows us to trivially return; directly from an
  * individual handler, but still run the post-cleanup that follows the
  * switch().
+ *
+ * Returns false if EF_main() shouldn't do the trailing cleanup it
+ * normally does.  It's unclear to what extent this is actually desirable
+ * or correct, but it preserves the behavior we had when this was all
+ * embedded into one function.
+ *
+ * n.b.: this boolean return bears _no_ _relation_ to the boolean that
+ * EF_main() itself returns.
  */
-static void
+static bool
 EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
         XEvent *eventp, int context, bool pulldown)
 {
@@ -576,21 +589,21 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			int alt, stat_;
 
 			if(! action) {
-				return;
+				return false;
 			}
 			stat_ = sscanf(action, "%d", &alt);
 			if(stat_ != 1) {
-				return;
+				return false;
 			}
 			if((alt < 1) || (alt > 5)) {
-				return;
+				return false;
 			}
 			AlternateKeymap = Alt1Mask << (alt - 1);
 			XGrabPointer(dpy, Scr->Root, True, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return;
+			return false;
 		}
 
 		case F_ALTCONTEXT: {
@@ -599,7 +612,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			XGrabKeyboard(dpy, Scr->Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return;
+			return false;
 		}
 		case F_IDENTIFY:
 			Identify(tmp_win);
@@ -837,7 +850,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 
 					}
 					while(!(Event.type == ButtonRelease || Cancel));
-					return;
+					return false;
 				}
 			}
 			break;
@@ -988,7 +1001,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVEPUSH: {
 			/* All in external func */
 			if(movewindow(func, w, tmp_win, eventp, context, pulldown)) {
-				return;
+				return false;
 			}
 			break;
 		}
@@ -1765,7 +1778,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 	}
 
-	return;
+	return true;
 }
 
 
