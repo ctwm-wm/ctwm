@@ -323,10 +323,16 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 	 * Ungrab the pointer.  Sometimes.  This condition apparently means
 	 * we got to the end of the execution (didn't return early due to
 	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
-	 * button.  Note that this is _not_ strictly dual to the
-	 * XGrabPointer() conditionally called in the switch() early on;
-	 * there will be plenty of cases where one executes without the
-	 * other.
+	 * button.  If we _did_ get here by pressing a mouse button, then
+	 * we'll be holding on to any active grab here; the ButtonRelease
+	 * handler will ungrab as necessary when you let go.
+	 *
+	 * Note that this is _not_ strictly dual to the XGrabPointer()
+	 * conditionally called in the switch() early on; there will be
+	 * plenty of cases where one executes without the other.  However, it
+	 * seems that its real purpose is to undo that grab, and since that
+	 * grab apparently is only for setting the cursor, this is really
+	 * meant just to re-set it.
 	 *
 	 * XXX It isn't clear that this really belong here...
 	 */
