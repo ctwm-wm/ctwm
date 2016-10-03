@@ -88,6 +88,10 @@ int ConstMoveXR;
 int ConstMoveYT;
 int ConstMoveYB;
 
+/*
+ * Track whether a window gets moved by move operations: used for
+ * f.deltastop handling.
+ */
 bool WindowMoved = false;
 
 /*
@@ -114,6 +118,11 @@ typedef enum {
 
 
 
+
+static bool EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
+                    XEvent *eventp, int context, bool pulldown);
+static bool EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+                    XEvent *eventp, int context, bool pulldown);
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static void ShowIconManager(void);
@@ -148,28 +157,44 @@ static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
  *      context - the context in which the button was pressed
  *      pulldown- flag indicating execution from pull down menu
  *
- *  Returns:
- *      true if should continue with remaining actions else false to abort
- *
  ***********************************************************************
  */
-
-bool
+void
 ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                 XEvent *eventp, int context, bool pulldown)
 {
-	Window rootw;
-	bool do_next_action = true;
-	bool fromtitlebar = false;
-	bool from3dborder = false;
-	TwmWindow *t;
+	EF_main(func, action, w, tmp_win, eventp, context, pulldown);
+}
 
+/*
+ * Main ExecuteFunction body; returns true if we should continue a
+ * f.function's progress, false if we should stop.
+ *
+ * This is separate because only the recursive calls in f.function
+ * handling care about that return.  The only possible way to get to a
+ * false return is via f.deltastop triggering.  We can't do it just with
+ * a global, since f.function can at least in theory happen recursively;
+ * I don't know how well it would actually work, but it has a chance.
+ */
+static bool
+EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
+        XEvent *eventp, int context, bool pulldown)
+{
 	/* This should always start out clear when we come in here */
 	RootFunction = 0;
 
 	/* Early escape for cutting out of things */
 	if(Cancel) {
-		return true;        /* XXX should this be false? */
+		/*
+		 * Strictly, this could probably be false, since if it's set it
+		 * would mean it'll just happen again when we iterate back
+		 * through for the next action.  Once set, it only gets unset in
+		 * the ButtonRelease handler, which I don't think would ever get
+		 * called in between pieces of a f.function call.  But I can't be
+		 * sure, so just go ahead and return true, and we'll eat a few
+		 * extra loops of function calls and insta-returns if it happens.
+		 */
+		return true;
 	}
 
 
@@ -235,6 +260,123 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 	}
 
 
+
+	/*
+	 * Main dispatching/executing.
+	 *
+	 * We delegate _most_ handlers to our _core() function, but we keep
+	 * the magic related to f.function/f.deltastop out here to free the
+	 * inner bits from having to care about the magic returns.
+	 */
+	switch(func) {
+		case F_DELTASTOP:
+			if(WindowMoved) {
+				/*
+				 * If we're returning false here, it's because we were in
+				 * the midst of a f.function, and we should stop.  That
+				 * means when we return from here it'll be into the false
+				 * case in the F_FUNCTION handler below, which will break
+				 * right out and fall through to the end of this
+				 * function, which will do the post-function cleanup
+				 * bits.  That means we don't need to try and break out
+				 * to them here, we can just return straight off.
+				 */
+				return false;
+			}
+			break;
+
+		case F_FUNCTION: {
+			MenuRoot *mroot;
+			MenuItem *mitem;
+			Cursor curs;
+
+			if((mroot = FindMenuRoot(action)) == NULL) {
+				if(!action) {
+					action = "undef";
+				}
+				fprintf(stderr, "%s: couldn't find function \"%s\"\n",
+				        ProgramName, (char *)action);
+				return true;
+			}
+
+			if((curs = NeedToDefer(mroot)) != None
+			                && DeferExecution(context, func, curs)) {
+				return true;
+			}
+			else {
+				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
+					bool r = EF_main(mitem->func, mitem->action, w,
+					                 tmp_win, eventp, context, pulldown);
+					if(r == false) {
+						/* pebl FIXME: the focus should be updated here,
+						 or the function would operate on the same window */
+						break;
+					}
+				}
+			}
+
+			break;
+		}
+
+		/*
+		 * Everything else happens in our inner function.
+		 */
+		default: {
+			bool r;
+			r = EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+			if(r == false) {
+				return true;
+			}
+		}
+	}
+
+
+
+	/*
+	 * Ungrab the pointer.  Sometimes.  This condition apparently means
+	 * we got to the end of the execution (didn't return early due to
+	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
+	 * button.  If we _did_ get here by pressing a mouse button, then
+	 * we'll be holding on to any active grab here; the ButtonRelease
+	 * handler will ungrab as necessary when you let go.
+	 *
+	 * Note that this is _not_ strictly dual to the XGrabPointer()
+	 * conditionally called in the switch() early on; there will be
+	 * plenty of cases where one executes without the other.  However, it
+	 * seems that its real purpose is to undo that grab, and since that
+	 * grab apparently is only for setting the cursor, this is really
+	 * meant just to re-set it.
+	 *
+	 * XXX It isn't clear that this really belong here...
+	 */
+	if(ButtonPressed == -1) {
+		XUngrabPointer(dpy, CurrentTime);
+	}
+
+	return true;
+}
+
+
+/*
+ * The core dispatching of the function being called.  The principal
+ * reason this is broken out rather than just being inline in EF_main()
+ * is that this allows us to trivially return; directly from an
+ * individual handler, but still run the post-cleanup that follows the
+ * switch().
+ *
+ * Returns false if EF_main() shouldn't do the trailing cleanup it
+ * normally does.  It's unclear to what extent this is actually desirable
+ * or correct, but it preserves the behavior we had when this was all
+ * embedded into one function.  This magic is expected to be temporary
+ * and to go away once I unwind the specific meanings of things.
+ *
+ * n.b.: this boolean return bears _no_ _relation_ to the boolean that
+ * EF_main() itself returns.
+ */
+static bool
+EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+        XEvent *eventp, int context, bool pulldown)
+{
 	/*
 	 * Now we know we're ready to actually execute whatever the function
 	 * is, so do the meat of running it.
@@ -250,12 +392,6 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 #endif
 		case F_NOP:
 		case F_TITLE:
-			break;
-
-		case F_DELTASTOP:
-			if(WindowMoved) {
-				do_next_action = false;
-			}
 			break;
 
 		case F_RESTART: {
@@ -439,46 +575,44 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			MoveToPrevWorkSpaceAndFollow(Scr->currentvs, tmp_win);
 			break;
 
-		case F_SORTICONMGR:
-			{
-				int save_sort;
+		case F_SORTICONMGR: {
+			bool save_sort = Scr->SortIconMgr;
 
-				save_sort = Scr->SortIconMgr;
-				Scr->SortIconMgr = true;
+			Scr->SortIconMgr = true;
 
-				if(context == C_ICONMGR) {
-					SortIconManager(NULL);
-				}
-				else if(tmp_win->isiconmgr) {
-					SortIconManager(tmp_win->iconmgrp);
-				}
-				else {
-					XBell(dpy, 0);
-				}
-
-				Scr->SortIconMgr = save_sort;
+			if(context == C_ICONMGR) {
+				SortIconManager(NULL);
 			}
+			else if(tmp_win->isiconmgr) {
+				SortIconManager(tmp_win->iconmgrp);
+			}
+			else {
+				XBell(dpy, 0);
+			}
+
+			Scr->SortIconMgr = save_sort;
 			break;
+		}
 
 		case F_ALTKEYMAP: {
 			int alt, stat_;
 
 			if(! action) {
-				return true;
+				return false;
 			}
 			stat_ = sscanf(action, "%d", &alt);
 			if(stat_ != 1) {
-				return true;
+				return false;
 			}
 			if((alt < 1) || (alt > 5)) {
-				return true;
+				return false;
 			}
 			AlternateKeymap = Alt1Mask << (alt - 1);
 			XGrabPointer(dpy, Scr->Root, True, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return true;
+			return false;
 		}
 
 		case F_ALTCONTEXT: {
@@ -487,7 +621,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
 			XGrabKeyboard(dpy, Scr->Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return true;
+			return false;
 		}
 		case F_IDENTIFY:
 			Identify(tmp_win);
@@ -687,9 +821,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 					/*
 					 * see if this is being done from the titlebar
 					 */
-					from3dborder = (eventp->xbutton.window == tmp_win->frame);
-					fromtitlebar = !from3dborder &&
-					               belongs_to_twm_window(tmp_win, eventp->xbutton.window);
+					bool from3dborder = (eventp->xbutton.window == tmp_win->frame);
+					bool fromtitlebar = !from3dborder &&
+					                    belongs_to_twm_window(tmp_win, eventp->xbutton.window);
 
 					/* Save pointer position so we can tell if it was moved or
 					   not during the resize. */
@@ -725,7 +859,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 					}
 					while(!(Event.type == ButtonRelease || Cancel));
-					return true;
+					return false;
 				}
 			}
 			break;
@@ -876,7 +1010,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVEPUSH: {
 			/* All in external func */
 			if(movewindow(func, w, tmp_win, eventp, context, pulldown)) {
-				return true;
+				return false;
 			}
 			break;
 		}
@@ -924,6 +1058,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 
 		case F_MOVETITLEBAR: {
 			Window grabwin;
+			Window rootw;
 			int deltax = 0, newx = 0;
 			int origX;
 			int origNum;
@@ -976,6 +1111,23 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			 * the event is always a button event, since key events
 			 * are "weeded out" - although incompletely only
 			 * F_MOVE and F_RESIZE - in HandleKeyPress().
+			 */
+
+			/*
+			 * XXX This var may be actually unnecessary; it's used only
+			 * once as an arg to a later X call, but during that time I
+			 * don't believe anything can mutate eventp or anything near
+			 * the root.  However, due to the union nature of XEvent,
+			 * it's hard to be sure without more investigation, so I
+			 * leave the intermediate var for now.
+			 *
+			 * Note that we're looking inside the XButtonEvent member
+			 * here, but other bits of this code later look at the
+			 * XMotionEvent piece.  This should be further investigated
+			 * and resolved; they can't both be right (though the
+			 * structure of the structs are such that almost all the
+			 * similar elements are in the same place, at least in
+			 * theory).
 			 */
 			rootw = eventp->xbutton.root;
 
@@ -1117,37 +1269,6 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			}
 			break;
 		}
-		case F_FUNCTION: {
-			MenuRoot *mroot;
-			MenuItem *mitem;
-			Cursor curs;
-
-			if((mroot = FindMenuRoot(action)) == NULL) {
-				if(!action) {
-					action = "undef";
-				}
-				fprintf(stderr, "%s: couldn't find function \"%s\"\n",
-				        ProgramName, (char *)action);
-				return true;
-			}
-
-			if((curs = NeedToDefer(mroot)) != None
-			                && DeferExecution(context, func, curs)) {
-				return true;
-			}
-			else {
-				for(mitem = mroot->first; mitem != NULL; mitem = mitem->next) {
-					if(!ExecuteFunction(mitem->func, mitem->action, w,
-					                    tmp_win, eventp, context, pulldown)) {
-						/* pebl FIXME: the focus should be updated here,
-						 or the function would operate on the same window */
-						break;
-					}
-				}
-			}
-
-			break;
-		}
 
 		case F_DEICONIFY:
 		case F_ICONIFY:
@@ -1239,7 +1360,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 
 		case F_RAISEICONS:
-			for(t = Scr->FirstWindow; t != NULL; t = t->next) {
+			for(TwmWindow *t = Scr->FirstWindow; t != NULL; t = t->next) {
 				if(t->icon && t->icon->w) {
 					OtpRaise(t, IconWin);
 				}
@@ -1664,26 +1785,9 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_RESCUEWINDOWS:
 			RescueWindows();
 			break;
-
 	}
 
-
-	/*
-	 * Ungrab the pointer.  Sometimes.  This condition apparently means
-	 * we got to the end of the execution (didn't return early due to
-	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
-	 * button.  Note that this is _not_ strictly dual to the
-	 * XGrabPointer() conditionally called in the switch() early on;
-	 * there will be plenty of cases where one executes without the
-	 * other.
-	 *
-	 * XXX It isn't clear that this really belong here...
-	 */
-	if(ButtonPressed == -1) {
-		XUngrabPointer(dpy, CurrentTime);
-	}
-
-	return do_next_action;
+	return true;
 }
 
 
