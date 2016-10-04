@@ -6,6 +6,7 @@
 #define _CTWM_FUNCTIONS_H
 
 /* All the outside world sees */
+/* x-ref EF_FULLPROTO in functions_internal.h; keep sync */
 void ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                      XEvent *eventp, int context, bool pulldown);
 

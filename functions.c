@@ -42,6 +42,7 @@
 #include "ext/repl_str.h"
 
 #include "functions.h"
+#include "functions_internal.h"
 
 
 /*
@@ -132,10 +133,8 @@ typedef enum {
 
 
 
-static bool EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
-                    XEvent *eventp, int context, bool pulldown);
-static void EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
-                    XEvent *eventp, int context, bool pulldown);
+static bool EF_main(EF_FULLPROTO);
+static void EF_core(EF_FULLPROTO);
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static void ShowIconManager(void);
@@ -173,10 +172,9 @@ static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
  ***********************************************************************
  */
 void
-ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
-                XEvent *eventp, int context, bool pulldown)
+ExecuteFunction(EF_FULLPROTO)
 {
-	EF_main(func, action, w, tmp_win, eventp, context, pulldown);
+	EF_main(EF_ARGS);
 }
 
 /*
@@ -190,8 +188,7 @@ ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
  * I don't know how well it would actually work, but it has a chance.
  */
 static bool
-EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
-        XEvent *eventp, int context, bool pulldown)
+EF_main(EF_FULLPROTO)
 {
 	/* This should always start out clear when we come in here */
 	RootFunction = 0;
@@ -347,7 +344,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		 * Everything else happens in our inner function.
 		 */
 		default:
-			EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+			EF_core(EF_ARGS);
 			break;
 	}
 
@@ -384,8 +381,7 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
  * switch().
  */
 static void
-EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
-        XEvent *eventp, int context, bool pulldown)
+EF_core(EF_FULLPROTO)
 {
 	/*
 	 * Now we know we're ready to actually execute whatever the function
