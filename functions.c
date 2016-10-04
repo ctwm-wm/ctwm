@@ -95,6 +95,19 @@ int ConstMoveYB;
 bool WindowMoved = false;
 
 /*
+ * Whether the cursor needs to be reset from a way we've altered it in
+ * the process of running functions.  This is used to determine whether
+ * we're ungrabbing the pointer to reset back from setting the WaitCursor
+ * early on in the execution process.  X-ref the XXX comment on that;
+ * it's unclear as to whether we should even be doing this anymore, but
+ * since we are, we use a global to ease tracking whether we need to
+ * unset it.  There are cases deeper down in function handling that may
+ * do their own fudgery and want the pointer left along after they
+ * return.
+ */
+bool func_reset_cursor;
+
+/*
  * Globals used to keep track of whether the mouse has moved during a
  * resize function.
  */
@@ -121,7 +134,7 @@ typedef enum {
 
 static bool EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
-static bool EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
+static void EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
                     XEvent *eventp, int context, bool pulldown);
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
@@ -132,7 +145,7 @@ static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
 static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
-static bool movewindow(int func, Window w, TwmWindow *tmp_win,
+static void movewindow(int func, Window w, TwmWindow *tmp_win,
                        XEvent *eventp, int context, bool pulldown);
 static bool should_defer(int func);
 static Cursor defer_cursor(int func);
@@ -199,16 +212,47 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 
 
 	/*
+	 * Is this a function that needs some deferring?  If so, go ahead and
+	 * do that.  Note that this specifically doesn't handle the special
+	 * case of f.function; it has to do its own checking for whether
+	 * there's something to defer.
+	 */
+	if(should_defer(func)) {
+		/* Figure the cursor */
+		Cursor dc = defer_cursor(func);
+		if(dc == None) {
+			dc = Scr->SelectCursor;
+		}
+
+		/* And defer (if we're in a context that needs to) */
+		if(DeferExecution(context, func, dc)) {
+			return true;
+		}
+	}
+
+
+	/*
 	 * For most functions with a few exceptions, grab the pointer.
 	 *
-	 * XXX big XXX.  I have no idea why.  Apart from adding 1 or 2
-	 * functions to the exclusion list, this code comes verbatim from
-	 * twm, which has no history or documentation as to why it's
-	 * happening.
+	 * This is actually not a grab so much to take control of the
+	 * pointer, as to set the cursor.  Apparently, xlib doesn't
+	 * distinguish the two.  The functions that need it in a "take
+	 * control" sense (like the move and resize bits) should all be doing
+	 * their own explicit grabs to handle that.
 	 *
-	 * My best guess is that this is being done solely to set the cursor?
-	 * X-ref the comment on the Ungrab() at the end of the function.
+	 * XXX I have no idea why there's the exclusion list.  Apart from
+	 * adding 1 or 2 functions, this code comes verbatim from twm, which
+	 * has no history or documentation as to why it's happening.
+	 *
+	 * XXX I'm not sure this is even worth doing anymore.  The point of
+	 * the WaitCursor is to let the user know "yeah, I'm working on it",
+	 * during operations that may take a while.  On 1985 hardware, that
+	 * would be "almost anything you do".  But in the 21st century, what
+	 * functions could fall into that category, and need to give some
+	 * user feedback before either finishing or doing something that
+	 * gives other user feedback anyway?
 	 */
+	func_reset_cursor = false;
 	switch(func) {
 		case F_UPICONMGR:
 		case F_LEFTICONMGR:
@@ -231,34 +275,15 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_ALTCONTEXT:
 			break;
 
-		default:
+		default: {
 			XGrabPointer(dpy, Scr->Root, True,
 			             ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->WaitCursor, CurrentTime);
+			func_reset_cursor = true;
 			break;
-	}
-
-
-	/*
-	 * Is this a function that needs some deferring?  If so, go ahead and
-	 * do that.  Note that this specifically doesn't handle the special
-	 * case of f.function; it has to do its own checking for whether
-	 * there's something to defer.
-	 */
-	if(should_defer(func)) {
-		/* Figure the cursor */
-		Cursor dc = defer_cursor(func);
-		if(dc == None) {
-			dc = Scr->SelectCursor;
-		}
-
-		/* And defer (if we're in a context that needs to) */
-		if(DeferExecution(context, func, dc)) {
-			return true;
 		}
 	}
-
 
 
 	/*
@@ -321,36 +346,30 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
 		/*
 		 * Everything else happens in our inner function.
 		 */
-		default: {
-			bool r;
-			r = EF_core(func, action, w, tmp_win, eventp, context, pulldown);
-			if(r == false) {
-				return true;
-			}
-		}
+		default:
+			EF_core(func, action, w, tmp_win, eventp, context, pulldown);
+			break;
 	}
 
 
 
 	/*
-	 * Ungrab the pointer.  Sometimes.  This condition apparently means
-	 * we got to the end of the execution (didn't return early due to
-	 * e.g. a Defer), and didn't come in as a result of pressing a mouse
-	 * button.  If we _did_ get here by pressing a mouse button, then
-	 * we'll be holding on to any active grab here; the ButtonRelease
-	 * handler will ungrab as necessary when you let go.
+	 * Release the pointer.  This should mostly mean actually "reset
+	 * cursor", and be the complementary op to setting the cursor earlier
+	 * up top.
 	 *
-	 * Note that this is _not_ strictly dual to the XGrabPointer()
-	 * conditionally called in the switch() early on; there will be
-	 * plenty of cases where one executes without the other.  However, it
-	 * seems that its real purpose is to undo that grab, and since that
-	 * grab apparently is only for setting the cursor, this is really
-	 * meant just to re-set it.
+	 * ButtonPressed == -1 means that we didn't get here via some sort of
+	 * mouse clickery.  If we did, then we presume that has some
+	 * ownership of the pointer we don't want to relinquish yet.  And we
+	 * don't have to, as the ButtonRelease handler will take care of
+	 * things when it fires anyway.
 	 *
-	 * XXX It isn't clear that this really belong here...
+	 * This has a similar XXX to the cursor setting earlier, as to
+	 * whether it ought to exist.
 	 */
-	if(ButtonPressed == -1) {
+	if(func_reset_cursor && ButtonPressed == -1) {
 		XUngrabPointer(dpy, CurrentTime);
+		func_reset_cursor = false;
 	}
 
 	return true;
@@ -363,17 +382,8 @@ EF_main(int func, void *action, Window w, TwmWindow *tmp_win,
  * is that this allows us to trivially return; directly from an
  * individual handler, but still run the post-cleanup that follows the
  * switch().
- *
- * Returns false if EF_main() shouldn't do the trailing cleanup it
- * normally does.  It's unclear to what extent this is actually desirable
- * or correct, but it preserves the behavior we had when this was all
- * embedded into one function.  This magic is expected to be temporary
- * and to go away once I unwind the specific meanings of things.
- *
- * n.b.: this boolean return bears _no_ _relation_ to the boolean that
- * EF_main() itself returns.
  */
-static bool
+static void
 EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
         XEvent *eventp, int context, bool pulldown)
 {
@@ -598,21 +608,22 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			int alt, stat_;
 
 			if(! action) {
-				return false;
+				return;
 			}
 			stat_ = sscanf(action, "%d", &alt);
 			if(stat_ != 1) {
-				return false;
+				return;
 			}
 			if((alt < 1) || (alt > 5)) {
-				return false;
+				return;
 			}
 			AlternateKeymap = Alt1Mask << (alt - 1);
 			XGrabPointer(dpy, Scr->Root, True, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
+			func_reset_cursor = false;  // Leave special cursor alone
 			XGrabKeyboard(dpy, Scr->Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return false;
+			return;
 		}
 
 		case F_ALTCONTEXT: {
@@ -620,8 +631,9 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			XGrabPointer(dpy, Scr->Root, False, ButtonPressMask | ButtonReleaseMask,
 			             GrabModeAsync, GrabModeAsync,
 			             Scr->Root, Scr->AlterCursor, CurrentTime);
+			func_reset_cursor = false;  // Leave special cursor alone
 			XGrabKeyboard(dpy, Scr->Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			return false;
+			return;
 		}
 		case F_IDENTIFY:
 			Identify(tmp_win);
@@ -831,6 +843,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 					ResizeOrigY = eventp->xbutton.y_root;
 
 					StartResize(eventp, tmp_win, fromtitlebar, from3dborder);
+					func_reset_cursor = false;  // Leave special cursor alone
 
 					do {
 						XMaskEvent(dpy,
@@ -859,7 +872,6 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 
 					}
 					while(!(Event.type == ButtonRelease || Cancel));
-					return false;
 				}
 			}
 			break;
@@ -1009,10 +1021,8 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 		case F_MOVEPACK:
 		case F_MOVEPUSH: {
 			/* All in external func */
-			if(movewindow(func, w, tmp_win, eventp, context, pulldown)) {
-				return false;
-			}
-			break;
+			movewindow(func, w, tmp_win, eventp, context, pulldown);
+			return;
 		}
 
 		case F_PRIORITYSWITCHING:
@@ -1267,7 +1277,12 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 				/* XXX pressing a second button should cancel and undo this */
 				SetFrameShape(tmp_win);
 			}
-			break;
+
+			/*
+			 * The ButtonRelease handler will have taken care of
+			 * ungrabbing our pointer.
+			 */
+			return;
 		}
 
 		case F_DEICONIFY:
@@ -1787,7 +1802,7 @@ EF_core(int func, void *action, Window w, TwmWindow *tmp_win,
 			break;
 	}
 
-	return true;
+	return;
 }
 
 
@@ -2413,16 +2428,8 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 
 /*
  * f.move and friends
- *
- * This code previously sometimes returned early out of the midst of the
- * switch() in ExecuteFunction(), but only ever true (whether
- * meaningfully or not).  So we take that and turn it into a bool
- * function that, when it returns true, the above also return's true
- * right from ExecuteFunction(); otherwise breaks out and falls through
- * like previously.  If we ever revisit the meaning of the return, we'll
- * have to get smarter about that too.
  */
-static bool
+static void
 movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
            XEvent *eventp, int context, bool pulldown)
 {
@@ -2649,7 +2656,8 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 				             ButtonReleaseMask | ButtonPressMask,
 				             GrabModeAsync, GrabModeAsync,
 				             Scr->Root, cur, CurrentTime);
-				return true;
+				func_reset_cursor = false;  // Leave cursor alone
+				return;
 			}
 		}
 
@@ -2672,7 +2680,8 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 			if(!Scr->OpaqueMove) {
 				UninstallRootColormap();
 			}
-			return true;    /* XXX should this be false? */
+			func_reset_cursor = false;  // Leave cursor alone
+			return;
 		}
 		if(Event.type == releaseEvent) {
 			MoveOutline(dragroot, 0, 0, 0, 0, 0, 0);
@@ -2893,7 +2902,7 @@ movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
 		UninstallRootColormap();
 	}
 
-	return false;
+	return;
 }
 
 
