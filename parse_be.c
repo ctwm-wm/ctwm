@@ -616,7 +616,7 @@ kt_compare(const void *lhs, const void *rhs)
 int
 parse_keyword(const char *s, int *nump)
 {
-	TwmKeyword srch = { .name = s };
+	const TwmKeyword srch = { .name = s };
 	TwmKeyword *ret;
 	const TwmKeyword *srchtab;
 	size_t nstab;
