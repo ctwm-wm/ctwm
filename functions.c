@@ -2963,7 +2963,7 @@ typedef enum {
 	DC_MOVE,
 	DC_DESTROY,
 } _dfcs_cursor;
-static _dfcs_cursor dfcs[F_maxfunc + 1] = {
+static _dfcs_cursor dfcs[] = {
 	/* Windowbox related */
 	[F_FITTOCONTENT] = DC_SELECT,
 
@@ -3050,11 +3050,14 @@ static _dfcs_cursor dfcs[F_maxfunc + 1] = {
 	[F_DELETEORDESTROY] = DC_DESTROY,
 };
 
+static size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));
+
+
 static bool
 should_defer(int func)
 {
-	/* Shouldn't ever happen, so "no" is the best response */
-	if(func < 0 || func > F_maxfunc) {
+	/* Outside the table -> "No" */
+	if(func < 0 || func >= dfcs_max) {
 		return false;
 	}
 
@@ -3067,8 +3070,8 @@ should_defer(int func)
 static Cursor
 defer_cursor(int func)
 {
-	/* Shouldn't ever happen, but be safe */
-	if(func < 0 || func > F_maxfunc) {
+	/* Outside the table -> "No" */
+	if(func < 0 || func >= dfcs_max) {
 		return None;
 	}
 
