@@ -144,8 +144,7 @@ static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
 static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
-static void movewindow(int func, Window w, TwmWindow *tmp_win,
-                       XEvent *eventp, int context, bool pulldown);
+static void movewindow(EF_FULLPROTO);
 static bool should_defer(int func);
 static Cursor defer_cursor(int func);
 static Cursor NeedToDefer(MenuRoot *root);
@@ -1017,7 +1016,7 @@ EF_core(EF_FULLPROTO)
 		case F_MOVEPACK:
 		case F_MOVEPUSH: {
 			/* All in external func */
-			movewindow(func, w, tmp_win, eventp, context, pulldown);
+			movewindow(EF_ARGS);
 			return;
 		}
 
@@ -2426,8 +2425,7 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
  * f.move and friends
  */
 static void
-movewindow(int func, /* not void *action */ Window w, TwmWindow *tmp_win,
-           XEvent *eventp, int context, bool pulldown)
+movewindow(EF_FULLPROTO)
 {
 	Window grabwin, dragroot;
 	Window rootw;
