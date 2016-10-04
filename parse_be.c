@@ -600,27 +600,27 @@ static TwmKeyword keytable[] = {
 
 static int numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
 
+static int
+kt_compare(const void *lhs, const void *rhs)
+{
+	const TwmKeyword *l = lhs;
+	const TwmKeyword *r = rhs;
+	return strcasecmp(l->name, r->name);
+}
+
 int
 parse_keyword(const char *s, int *nump)
 {
-	int lower = 0, upper = numkeywords - 1;
+	TwmKeyword srch = { .name = s };
+	TwmKeyword *ret;
 
-	while(lower <= upper) {
-		int middle = (lower + upper) / 2;
-		TwmKeyword *p = &keytable[middle];
-		int res = strcasecmp(p->name, s);
-
-		if(res < 0) {
-			lower = middle + 1;
-		}
-		else if(res == 0) {
-			*nump = p->subnum;
-			return p->value;
-		}
-		else {
-			upper = middle - 1;
-		}
+	/* Find it */
+	ret = bsearch(&srch, keytable, numkeywords, sizeof(TwmKeyword), kt_compare);
+	if(ret) {
+		*nump = ret->subnum;
+		return ret->value;
 	}
+
 	return ERRORTOKEN;
 }
 
