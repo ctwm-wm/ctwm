@@ -210,7 +210,7 @@ typedef struct _TwmKeyword {
  * in lowercase and only contain the letters a-z).  It is fed to a binary
  * search to parse keywords.
  */
-static TwmKeyword keytable[] = {
+static const TwmKeyword keytable[] = {
 	{ "a",                      ALTER, 0 },
 	{ "all",                    ALL, 0 },
 	{ "alter",                  ALTER, 0 },
@@ -466,7 +466,7 @@ static TwmKeyword keytable[] = {
 };
 
 
-static TwmKeyword funckeytable[] = {
+static const TwmKeyword funckeytable[] = {
 	{ "f.addtoworkspace",       FSKEYWORD, F_ADDTOWORKSPACE },
 	{ "f.adoptwindow",          FKEYWORD, F_ADOPTWINDOW },
 	{ "f.altcontext",           FKEYWORD, F_ALTCONTEXT },
@@ -618,7 +618,7 @@ parse_keyword(const char *s, int *nump)
 {
 	TwmKeyword srch = { .name = s };
 	TwmKeyword *ret;
-	TwmKeyword *srchtab;
+	const TwmKeyword *srchtab;
 	size_t nstab;
 
 	/* Guard; nothing can't be a valid keyword */
