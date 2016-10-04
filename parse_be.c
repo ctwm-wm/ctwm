@@ -751,9 +751,30 @@ parse_keyword(const char *s, int *nump)
 {
 	TwmKeyword srch = { .name = s };
 	TwmKeyword *ret;
+	TwmKeyword *srchtab;
+	size_t nstab;
+
+	/* Guard; nothing can't be a valid keyword */
+	if(s == NULL || strlen(s) < 1) {
+		return ERRORTOKEN;
+	}
+
+	/*
+	 * Functions are in their own table, so check for them there.
+	 *
+	 * This is safe as long as (strlen >= 1), which we already checked.
+	 */
+	if(s[0] == 'f' && s[1] == '.') {
+		srchtab = funckeytable;
+		nstab = numfunckeywords;
+	}
+	else {
+		srchtab = keytable;
+		nstab = numkeywords;
+	}
 
 	/* Find it */
-	ret = bsearch(&srch, keytable, numkeywords, sizeof(TwmKeyword), kt_compare);
+	ret = bsearch(&srch, srchtab, nstab, sizeof(TwmKeyword), kt_compare);
 	if(ret) {
 		*nump = ret->subnum;
 		return ret->value;
