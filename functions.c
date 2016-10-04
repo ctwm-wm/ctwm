@@ -3050,7 +3050,7 @@ static _dfcs_cursor dfcs[] = {
 	[F_DELETEORDESTROY] = DC_DESTROY,
 };
 
-static size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));
+static const size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));
 
 
 static bool
