@@ -1,0 +1,59 @@
+# Controls for generating various function (f.whatever) related handling.
+#
+# Each section (delimieted by "START(section)" and "END(section)" has a
+# potentially different format.  But all of them begin with the function
+# name in lowercase (sans leading 'f.').
+#
+# Several have a 'hasfunc' arg defining whether we have a predefined name
+# for the function implementation.  This is intended as a transition
+# device as I move things into that style; it's expected that the column
+# will go away once the transition is complete.
+
+
+# First section: the main meat of functions.  Almost everything should
+# wind up here.
+#
+# Format: "<name> <conftype:[S-]> <ifdef:[<string>-]> <hasfunc:[N-]>"
+# conftype -> for the config file parsing, defining the keyword type.
+#             'S' -> FSKEYWORD    '-' -> FKEYWORD
+# ifdef -> whether the pieces for this function should be hidden behind
+#          an #ifdef.  - for no, otherwise a string of what it should
+#          #ifdef.
+# hasfunc -> Whether there's a predefined named function for the
+#          implementation.  N if not, - if so.  X-ref comment at top.
+#
+# Much of initial fill mechanically done via:
+# awk '/, F_[A-Z]/ {printf "%-21s %s - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c
+# START(main)
+
+# END(main)
+
+
+# Aliases: These are additional names we permit in config files for
+# existing functions.
+# Format: "<name> <aliasfor>"
+# START(aliases)
+hbzoom bottomzoom
+hzoom  horizoom
+vlzoom leftzoom
+vrzoom rightzoom
+htzoom topzoom
+
+twmrc  restart
+# END(aliases)
+
+
+# Synthetic functions; these are things used internally.  Mostly in
+# synthetic magic menus like TwmWindows.  So the dispatcher for executing
+# functions needs to handle them, and we need numbers defined for them.
+# But they can't be in config files or the like, so there's no parsing
+# needed for them.
+# Format: "<name> <hasfunc:[N-]>"
+# hasfunc -> has defined function for implementation
+# START(synthetic)
+popup    N
+winwarp  N
+# END(synthetic)
+
+
+# vim:ft=conf
