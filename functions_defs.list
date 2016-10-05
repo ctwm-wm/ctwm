@@ -13,7 +13,7 @@
 # First section: the main meat of functions.  Almost everything should
 # wind up here.
 #
-# Format: "<name> <conftype:[S-]> <ifdef:[<string>-]> <hasfunc:[N-]>"
+# Format: "<name> <conftype> <ifdef> <hasfunc>"
 # conftype -> for the config file parsing, defining the keyword type.
 #             'S' -> FSKEYWORD    '-' -> FKEYWORD
 # ifdef -> whether the pieces for this function should be hidden behind
