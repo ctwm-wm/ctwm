@@ -13,9 +13,12 @@
 # First section: the main meat of functions.  Almost everything should
 # wind up here.
 #
-# Format: "<name> <conftype> <ifdef> <hasfunc>"
+# Format: "<name> <conftype> <defcursor> <ifdef> <hasfunc>"
 # conftype -> for the config file parsing, defining the keyword type.
 #             'S' -> FSKEYWORD    '-' -> FKEYWORD
+# defcurs -> Deferral cursor for deferring function.  x-ref
+#            should_defer(), defer_cursor(), and related.
+#            - -> DC_NONE, CS -> _SELECT, CM -> _MOVE, CD -> _DESTROY
 # ifdef -> whether the pieces for this function should be hidden behind
 #          an #ifdef.  - for no, otherwise a string of what it should
 #          #ifdef.
@@ -23,7 +26,7 @@
 #          implementation.  N if not, - if so.  X-ref comment at top.
 #
 # Much of initial fill mechanically done via:
-# awk '/, F_[A-Z]/ {printf "%-21s %s - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c
+# awk '/, F_[A-Z]/ {printf "%-21s %s -  - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c
 # START(main)
 
 # END(main)
