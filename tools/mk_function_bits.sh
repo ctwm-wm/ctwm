@@ -60,7 +60,7 @@ gf="${outdir}/function_defs.h"
 	echo "/* Standard functions */"
 	while read func ctype ifdef
 	do
-		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
+		if [ "X${ifdef}" != "X-" ]; then
 			echo "#ifdef ${ifdef}"
 		fi
 
@@ -74,7 +74,7 @@ gf="${outdir}/function_defs.h"
 
 		printf "#define F_%-21s %3d${cmt}\n" "${func}" "${counter}"
 
-		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
+		if [ "X${ifdef}" != "X-" ]; then
 			echo "#endif"
 		fi
 		counter=$((counter+1))
