@@ -59,7 +59,7 @@ gf="${outdir}/function_defs.h"
 
 	echo "/* Standard functions */"
 	getsect main \
-		| awk '{printf "%s %s\n" toupper($1), ($3 == "-" ? "" : $3)}' \
+		| awk '{printf "%s %s\n", toupper($1), ($3 == "-" ? "" : $3)}' \
 		| while read func ifdef
 	do
 		if [ ! -z "${ifdef}" ]; then
