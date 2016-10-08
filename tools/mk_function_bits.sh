@@ -23,6 +23,7 @@ CLEANDAT="-e s/#.*// -e /^[[:space:]]*$/d"
 # Uppercasing
 TOUPPER="tr [:lower:] [:upper:]"
 
+
 # We're all C here
 print_header() {
 	echo "/*"
@@ -32,6 +33,16 @@ print_header() {
 	echo " * during the build process."
 	echo " */"
 	echo
+}
+
+
+# Getting one section out of the input file
+getsect() {
+	# We presume we always want to clear out the comments and blank lines
+	# anyway, so stick that in here.  And I think we always end up
+	# sorting too, so do that as well.
+	sed -e "1,/^# START($1)/d" -e "/^# END($1)/,\$d" \
+		${CLEANDAT} ${infile} | sort
 }
 
 
@@ -47,9 +58,7 @@ gf="${outdir}/function_defs.h"
 	counter=1
 
 	echo "/* Standard functions */"
-	sed -e '1,/^# START(main)/d' -e '/^# END(main)/,$d' \
-		${CLEANDAT} ${infile} \
-		| sort \
+	getsect main \
 		| awk '{printf "%s %s\n" toupper($1), ($3 == "-" ? "" : $3)}' \
 		| while read func ifdef
 	do
@@ -65,9 +74,7 @@ gf="${outdir}/function_defs.h"
 
 	echo
 	echo "/* Synthetic functions */"
-	sed -e '1,/^# START(synthetic)/d' -e '/^# END(synthetic)/,$d' \
-		${CLEANDAT} ${infile} \
-		| sort \
+	getsect synthetic \
 		| awk '{printf "%s\n", toupper($1)}' \
 		| while read func
 	do
