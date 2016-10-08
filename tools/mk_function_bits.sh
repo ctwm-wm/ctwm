@@ -60,17 +60,17 @@ gf="${outdir}/function_defs.h"
 	echo "/* Standard functions */"
 	while read func ifdef
 	do
-		if [ ! -z "${ifdef}" ]; then
+		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
 			echo "#ifdef ${ifdef}"
 		fi
 		printf "#define F_%-21s ${counter}\n" "${func}"
-		if [ ! -z "${ifdef}" ]; then
+		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
 			echo "#endif"
 		fi
 		counter=$((counter+1))
 	done << EOF
 	$(getsect main \
-		| awk '{printf "%s %s\n", toupper($1), ($3 == "-" ? "" : $3)}')
+		| awk '{printf "%s %s\n", toupper($1), $4;}')
 EOF
 
 	echo
