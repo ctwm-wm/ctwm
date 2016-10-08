@@ -72,7 +72,7 @@ gf="${outdir}/function_defs.h"
 			cmt=""
 		fi
 
-		printf "#define F_%-21s ${counter}${cmt}\n" "${func}"
+		printf "#define F_%-21s %3d${cmt}\n" "${func}" "${counter}"
 
 		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
 			echo "#endif"
@@ -87,7 +87,7 @@ EOF
 	echo "/* Synthetic functions */"
 	while read func
 	do
-		printf "#define F_%-21s ${counter}\n" "${func}"
+		printf "#define F_%-21s %3d\n" "${func}" "${counter}"
 		counter=$((counter+1))
 	done << EOF
 	$(getsect synthetic \
