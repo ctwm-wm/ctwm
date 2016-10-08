@@ -58,19 +58,29 @@ gf="${outdir}/function_defs.h"
 	counter=1
 
 	echo "/* Standard functions */"
-	while read func ifdef
+	while read func ctype ifdef
 	do
 		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
 			echo "#ifdef ${ifdef}"
 		fi
-		printf "#define F_%-21s ${counter}\n" "${func}"
+
+		cmt=" //"
+		if [ "X${ctype}" = "XS" ]; then
+			cmt="${cmt} string"
+		fi
+		if [ "X${cmt}" = "X //" ]; then
+			cmt=""
+		fi
+
+		printf "#define F_%-21s ${counter}${cmt}\n" "${func}"
+
 		if [ ! -z "${ifdef}" -a "${ifdef}" != "-" ]; then
 			echo "#endif"
 		fi
 		counter=$((counter+1))
 	done << EOF
 	$(getsect main \
-		| awk '{printf "%s %s\n", toupper($1), $4;}')
+		| awk '{printf "%s %s %s\n", toupper($1), $2, $4;}')
 EOF
 
 	echo
