@@ -58,9 +58,7 @@ gf="${outdir}/function_defs.h"
 	counter=1
 
 	echo "/* Standard functions */"
-	getsect main \
-		| awk '{printf "%s %s\n", toupper($1), ($3 == "-" ? "" : $3)}' \
-		| while read func ifdef
+	while read func ifdef
 	do
 		if [ ! -z "${ifdef}" ]; then
 			echo "#ifdef ${ifdef}"
@@ -70,17 +68,21 @@ gf="${outdir}/function_defs.h"
 			echo "#endif"
 		fi
 		counter=$((counter+1))
-	done
+	done << EOF
+	$(getsect main \
+		| awk '{printf "%s %s\n", toupper($1), ($3 == "-" ? "" : $3)}')
+EOF
 
 	echo
 	echo "/* Synthetic functions */"
-	getsect synthetic \
-		| awk '{printf "%s\n", toupper($1)}' \
-		| while read func
+	while read func
 	do
 		printf "#define F_%-21s ${counter}\n" "${func}"
 		counter=$((counter+1))
-	done
+	done << EOF
+	$(getsect synthetic \
+		| awk '{printf "%s\n", toupper($1)}')
+EOF
 
 ) > ${gf}
 echo "Generated ${gf}"
