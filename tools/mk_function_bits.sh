@@ -47,7 +47,7 @@ getsect() {
 
 
 # First off, creating the F_ defines.
-gf="${outdir}/function_defs.h"
+gf="${outdir}/functions_defs.h"
 (
 	print_header
 	echo "/* Definitions for functions */"
