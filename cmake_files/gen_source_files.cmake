@@ -30,7 +30,10 @@ add_custom_command(OUTPUT ${en_out}
 )
 # Have to manually add this, or cmake won't notice that it's needed in
 # time to make it.
-set_source_files_properties(event_names.c OBJECT_DEPENDS ${en_out})
+#set_source_files_properties(event_names.c OBJECT_DEPENDS ${en_out})
+# This also seems a blessed hackaround, and avoids having to encode the
+# knowledge of what files #include it.
+list(APPEND CTWMSRC ${CMAKE_CURRENT_BINARY_DIR}/event_names_table.h)
 
 
 # Setup config header file
