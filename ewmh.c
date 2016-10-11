@@ -64,7 +64,6 @@
 #include "functions_defs.h"
 #include "icons.h"
 #include "otp.h"
-#include "parse.h"
 #include "resize.h"
 #include "image.h"
 #include "list.h"

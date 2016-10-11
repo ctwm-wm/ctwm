@@ -82,7 +82,6 @@
 #include "functions_defs.h"
 #include "iconmgr.h"
 #include "icons_builtin.h"
-#include "parse.h"
 #include "icons.h"
 #include "add_window.h"
 #include "colormaps.h"
