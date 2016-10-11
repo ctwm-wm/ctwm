@@ -62,6 +62,7 @@
  ***********************************************************************/
 
 #include "ctwm.h"
+#include "functions_defs.h"
 #include "parse.h"
 #include "parse_be.h"
 

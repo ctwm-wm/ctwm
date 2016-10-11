@@ -76,6 +76,7 @@
 #include "icons.h"
 #include "windowbox.h"
 #include "decorations_init.h"
+#include "functions_defs.h"
 #include "list.h"
 #include "util.h"
 #include "occupation.h"

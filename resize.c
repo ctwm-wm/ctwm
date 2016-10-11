@@ -77,6 +77,7 @@
 #include "util.h"
 #include "otp.h"
 #include "resize.h"
+#include "functions_defs.h"
 #include "add_window.h"
 #include "colormaps.h"
 #include "decorations.h"

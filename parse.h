@@ -109,6 +109,7 @@ void TwmOutput(int c);
  * are strictly speaking more config-y than parse-y, but we don't
  * currently make such a distinction in the codebase.
  */
+#if 0
 #define F_NOP                   0
 #define F_BEEP                  1
 #define F_RESTART               2
@@ -242,5 +243,6 @@ void TwmOutput(int c);
 #define F_UNSQUEEZE             156
 #define F_RAISEORSQUEEZE        157
 #define F_RESCUEWINDOWS         158
+#endif
 
 #endif /* _CTWM_PARSE_H */

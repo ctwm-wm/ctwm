@@ -87,6 +87,7 @@
 #include "event_internal.h"
 #include "event_names.h"
 #include "functions.h"
+#include "functions_defs.h"
 #include "gram.tab.h"
 #include "iconmgr.h"
 #include "icons.h"

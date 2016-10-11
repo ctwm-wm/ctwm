@@ -61,6 +61,7 @@
 #include "screen.h"
 #include "events.h"
 #include "event_handlers.h"
+#include "functions_defs.h"
 #include "icons.h"
 #include "otp.h"
 #include "parse.h"
