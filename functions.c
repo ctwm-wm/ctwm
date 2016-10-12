@@ -19,6 +19,7 @@
 #include "decorations.h"
 #include "events.h"
 #include "event_handlers.h"
+#include "functions_defs.h"
 #include "iconmgr.h"
 #include "icons.h"
 #include "list.h" // for match()

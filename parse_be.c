@@ -21,6 +21,7 @@
 #include "screen.h"
 #include "util.h"
 #include "animate.h"
+#include "functions_defs.h"
 #include "image.h"
 #include "list.h"
 #include "occupation.h"

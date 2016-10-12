@@ -1,0 +1,183 @@
+# Controls for generating various function (f.whatever) related handling.
+#
+# Each section (delimieted by "START(section)" and "END(section)" has a
+# potentially different format.  But all of them begin with the function
+# name in lowercase (sans leading 'f.').
+#
+# Several have a 'hasfunc' arg defining whether we have a predefined name
+# for the function implementation.  This is intended as a transition
+# device as I move things into that style; it's expected that the column
+# will go away once the transition is complete.
+
+
+# First section: the main meat of functions.  Almost everything should
+# wind up here.
+#
+# Format: "<name> <conftype> <defcursor> <ifdef> <hasfunc>"
+# conftype -> for the config file parsing, defining the keyword type.
+#             'S' -> FSKEYWORD    '-' -> FKEYWORD
+# defcurs -> Deferral cursor for deferring function.  x-ref
+#            should_defer(), defer_cursor(), and related.
+#            - -> DC_NONE, CS -> _SELECT, CM -> _MOVE, CD -> _DESTROY
+# ifdef -> whether the pieces for this function should be hidden behind
+#          an #ifdef.  - for no, otherwise a string of what it should
+#          #ifdef.
+# hasfunc -> Whether there's a predefined named function for the
+#          implementation.  N if not, - if so.  X-ref comment at top.
+#
+# Much of initial fill mechanically done via:
+# awk '/, F_[A-Z]/ {printf "%-21s %s -  - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c | sort -u
+# START(main)
+addtoworkspace        S -  - N
+adoptwindow           - -  - N
+altcontext            - -  - N
+altkeymap             S -  - N
+autolower             - -  - N
+autoraise             - -  - N
+backiconmgr           - -  - N
+backmapiconmgr        - -  - N
+beep                  - -  - N
+bottomzoom            - -  - N
+changepriority        S -  - N
+changesize            S -  - N
+circledown            - -  - N
+circleup              - -  - N
+colormap              S -  - N
+deiconify             - -  - N
+delete                - -  - N
+deleteordestroy       - -  - N
+deltastop             - -  - N
+destroy               - -  - N
+downiconmgr           - -  - N
+downworkspace         - -  - N
+exec                  S -  - N
+fill                  S -  - N
+fittocontent          - -  - N
+focus                 - -  - N
+forcemove             - -  - N
+forwiconmgr           - -  - N
+forwmapiconmgr        - -  - N
+fullscreenzoom        - -  - N
+fullzoom              - -  - N
+function              S -  - N
+gotoworkspace         S -  - N
+hideiconmgr           - -  - N
+hideworkspacemgr      - -  - N
+horizoom              - -  - N
+hypermove             - -  - N
+iconify               - -  - N
+identify              - -  - N
+initsize              - -  - N
+jumpdown              S -  - N
+jumpleft              S -  - N
+jumpright             S -  - N
+jumpup                S -  - N
+lefticonmgr           - -  - N
+leftworkspace         - -  - N
+leftzoom              - -  - N
+lower                 - -  - N
+menu                  S -  - N
+move                  - -  - N
+movemenu              - -  - N
+movepack              - -  - N
+movepush              - -  - N
+moveresize            S -  - N
+movetitlebar          - -  - N
+movetonextworkspace   - -  - N
+movetonextworkspaceandfollow - -  - N
+movetoprevworkspace   - -  - N
+movetoprevworkspaceandfollow - -  - N
+nexticonmgr           - -  - N
+nextworkspace         - -  - N
+occupy                - -  - N
+occupyall             - -  - N
+pack                  S -  - N
+pin                   - -  - N
+previconmgr           - -  - N
+prevworkspace         - -  - N
+priorityswitching     - -  - N
+quit                  - -  - N
+raise                 - -  - N
+raiseicons            - -  - N
+raiselower            - -  - N
+raiseorsqueeze        - -  - N
+refresh               - -  - N
+removefromworkspace   S -  - N
+rereadsounds          - -  SOUNDS N
+rescuewindows         - -  - N
+resize                - -  - N
+restart               - -  - N
+restoregeometry       - -  - N
+righticonmgr          - -  - N
+rightworkspace        - -  - N
+rightzoom             - -  - N
+ring                  - -  - N
+savegeometry          - -  - N
+saveyourself          - -  - N
+separator             - -  - N
+setbuttonstate        - -  - N
+setmapstate           - -  - N
+setpriority           S -  - N
+showbackground        - -  - N
+showiconmgr           - -  - N
+showworkspacemgr      - -  - N
+slowdownanimation     - -  - N
+sorticonmgr           - -  - N
+speedupanimation      - -  - N
+squeeze               - -  - N
+startanimation        - -  - N
+stopanimation         - -  - N
+switchpriority        - -  - N
+tinylower             - -  - N
+tinyraise             - -  - N
+title                 - -  - N
+toggleoccupation      S -  - N
+togglesound           - -  SOUNDS N
+togglestate           - -  - N
+toggleworkspacemgr    - -  - N
+topzoom               - -  - N
+trace                 S -  - N
+unfocus               - -  - N
+unsqueeze             - -  - N
+upiconmgr             - -  - N
+upworkspace           - -  - N
+vanish                - -  - N
+version               - -  - N
+warphere              S -  - N
+warpring              S -  - N
+warpto                S -  - N
+warptoiconmgr         S -  - N
+warptoscreen          S -  - N
+winrefresh            - -  - N
+zoom                  - -  - N
+# END(main)
+
+
+# Aliases: These are additional names we permit in config files for
+# existing functions.
+# Format: "<name> <aliasfor>"
+# START(aliases)
+hbzoom bottomzoom
+hzoom  horizoom
+vlzoom leftzoom
+vrzoom rightzoom
+htzoom topzoom
+
+twmrc  restart
+# END(aliases)
+
+
+# Synthetic functions; these are things used internally.  Mostly in
+# synthetic magic menus like TwmWindows.  So the dispatcher for executing
+# functions needs to handle them, and we need numbers defined for them.
+# But they can't be in config files or the like, so there's no parsing
+# needed for them.
+# Format: "<name> <hasfunc:[N-]>"
+# hasfunc -> has defined function for implementation
+# START(synthetic)
+popup    N
+winwarp  N
+# END(synthetic)
+
+
+# vim:ft=conf

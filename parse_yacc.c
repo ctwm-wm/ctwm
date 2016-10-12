@@ -12,6 +12,7 @@
 #include <strings.h>
 
 #include "decorations_init.h"
+#include "functions_defs.h"
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
