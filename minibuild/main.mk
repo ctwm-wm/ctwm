@@ -75,6 +75,12 @@ ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 		> ${BDIR}/event_names_table.h
 
 
+# Function generated bits
+GENXTRA+=${BDIR}/functions_defs.h
+${BDIR}/functions_defs.h: ${RTDIR}/functions_defs.list
+	${TOOLS}/mk_function_bits.sh ${RTDIR}/functions_defs.list ${BDIR}
+
+
 # Default config
 GENSRC+=${BDIR}/deftwmrc.c
 ${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc
