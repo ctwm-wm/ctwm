@@ -124,7 +124,7 @@ gf="${outdir}/functions_deferral.h"
 		if [ "X${curs}" = "XCM" ]; then scurs="DC_MOVE"; fi
 		if [ "X${curs}" = "XCD" ]; then scurs="DC_DESTROY"; fi
 
-		if [ "X${curs}" = "X" ]; then
+		if [ "X${scurs}" = "X" ]; then
 			echo "Invalid: unexpected cursor '${curs}' for '${func}'!"
 			exit 1
 		fi
