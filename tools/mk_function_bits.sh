@@ -96,3 +96,41 @@ EOF
 
 ) > ${gf}
 echo "Generated ${gf}"
+
+
+#
+# Next, setup the deferral lookup struct for function execution
+#
+gf="${outdir}/functions_deferral.h"
+(
+	print_header
+	echo "/* Functions deferral lookup */"
+	echo
+	echo "static _dfcs_cursor dfcs[] = {"
+
+	while read func curs
+	do
+		if [ "X${func}" = "X" ]; then
+			echo "Got no function!"
+			exit 1
+		fi
+
+		scurs=""
+		if [ "X${curs}" = "XCS" ]; then scurs="DC_SELECT"; fi
+		if [ "X${curs}" = "XCM" ]; then scurs="DC_MOVE"; fi
+		if [ "X${curs}" = "XCD" ]; then scurs="DC_DESTROY"; fi
+
+		if [ "X${curs}" = "X" ]; then
+			echo "Invalid: unexpected cursor '${curs}' for '${func}'!"
+			exit 1
+		fi
+
+		printf "\t[F_%s] = %s,\n" "${func}" "${scurs}"
+	done << EOF
+	$(getsect main \
+		| awk '{ if ($3 != "-") {printf "%s %s\n", toupper($1), $3;} }')
+EOF
+
+	echo "};"
+) > ${gf}
+echo "Generated ${gf}"
