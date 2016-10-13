@@ -46,7 +46,10 @@ getsect() {
 }
 
 
+
+#
 # First off, creating the F_ defines.
+#
 gf="${outdir}/functions_defs.h"
 (
 	print_header
@@ -96,6 +99,7 @@ EOF
 
 ) > ${gf}
 echo "Generated ${gf}"
+
 
 
 #
