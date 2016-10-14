@@ -51,7 +51,7 @@ destroy               - CD - N
 downiconmgr           - -  - N
 downworkspace         - -  - N
 exec                  S -  - N
-fill                  S CM - N
+fill                  S CS - N
 fittocontent          - CS - N
 focus                 - CS - N
 forcemove             - CM - N
@@ -91,7 +91,7 @@ nexticonmgr           - -  - N
 nextworkspace         - -  - N
 occupy                - CS - N
 occupyall             - CS - N
-pack                  S CM - N
+pack                  S CS - N
 pin                   - -  - N
 previconmgr           - -  - N
 prevworkspace         - -  - N
