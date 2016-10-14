@@ -129,7 +129,7 @@ gf="${outdir}/functions_deferral.h"
 			exit 1
 		fi
 
-		printf "\t[F_%s] = %s,\n" "${func}" "${scurs}"
+		printf "\t%-23s = %s,\n" "[F_${func}]" "${scurs}"
 	done << EOF
 	$(getsect main \
 		| awk '{ if ($3 != "-") {printf "%s %s\n", toupper($1), $3;} }')
