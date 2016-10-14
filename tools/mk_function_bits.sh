@@ -98,7 +98,7 @@ EOF
 EOF
 
 ) > ${gf}
-echo "Generated ${gf}"
+#echo "Generated ${gf}"
 
 
 
@@ -156,4 +156,4 @@ static const size_t fdef_table_max = (sizeof(fdef_table) / sizeof(fdef_table[0])
 EOF
 
 ) > ${gf}
-echo "Generated ${gf}"
+#echo "Generated ${gf}"
