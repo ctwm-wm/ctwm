@@ -108,9 +108,12 @@ echo "Generated ${gf}"
 gf="${outdir}/functions_deferral.h"
 (
 	print_header
-	echo "/* Functions deferral lookup */"
-	echo
 	cat << EOF
+
+#ifndef _CTWM_FUNCTIONS_DEFERRAL_H
+#define _CTWM_FUNCTIONS_DEFERRAL_H
+
+/* Functions deferral lookup */
 typedef enum {
 	DC_NONE = 0,
 	DC_SELECT,
@@ -144,8 +147,13 @@ EOF
 		| awk '{ if ($3 != "-") {printf "%s %s\n", toupper($1), $3;} }')
 EOF
 
-	echo "};"
-	echo
-	echo "static const size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));"
+	cat << EOF
+};
+
+static const size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));
+
+#endif // _CTWM_FUNCTIONS_DEFERRAL_H
+EOF
+
 ) > ${gf}
 echo "Generated ${gf}"
