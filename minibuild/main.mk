@@ -77,7 +77,8 @@ ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 
 # Function generated bits
 GENXTRA+=${BDIR}/functions_defs.h
-${BDIR}/functions_defs.h: ${RTDIR}/functions_defs.list
+GENXTRA+=${BDIR}/functions_deferral.h
+${BDIR}/functions_defs.h ${BDIR}/functions_deferral.h: ${RTDIR}/functions_defs.list
 	${TOOLS}/mk_function_bits.sh ${RTDIR}/functions_defs.list ${BDIR}
 
 
