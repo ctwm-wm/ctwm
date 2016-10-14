@@ -110,7 +110,16 @@ gf="${outdir}/functions_deferral.h"
 	print_header
 	echo "/* Functions deferral lookup */"
 	echo
-	echo "static _dfcs_cursor dfcs[] = {"
+	cat << EOF
+typedef enum {
+	DC_NONE = 0,
+	DC_SELECT,
+	DC_MOVE,
+	DC_DESTROY,
+} _dfcs_cursor;
+
+static _dfcs_cursor dfcs[] = {
+EOF
 
 	while read func curs
 	do
@@ -136,5 +145,7 @@ gf="${outdir}/functions_deferral.h"
 EOF
 
 	echo "};"
+	echo
+	echo "static const size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));"
 ) > ${gf}
 echo "Generated ${gf}"
