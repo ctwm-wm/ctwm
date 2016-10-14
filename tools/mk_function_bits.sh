@@ -119,9 +119,9 @@ typedef enum {
 	DC_SELECT,
 	DC_MOVE,
 	DC_DESTROY,
-} _dfcs_cursor;
+} _fdef_table_cursor;
 
-static _dfcs_cursor dfcs[] = {
+static _fdef_table_cursor fdef_table[] = {
 EOF
 
 	while read func curs
@@ -150,7 +150,7 @@ EOF
 	cat << EOF
 };
 
-static const size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));
+static const size_t fdef_table_max = (sizeof(fdef_table) / sizeof(fdef_table[0]));
 
 #endif // _CTWM_FUNCTIONS_DEFERRAL_H
 EOF

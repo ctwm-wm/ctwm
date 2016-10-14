@@ -2957,18 +2957,18 @@ DeferExecution(int context, int func, Cursor cursor)
  * the ones we don't explicitly set get initialized to 0, which we can
  * then take as a flag saying "we don't defer this func".
  *
- * Table in functions_deferral.h generated from functions_defs.list.
+ * fdef_table in functions_deferral.h generated from functions_defs.list.
  */
 
 static bool
 should_defer(int func)
 {
 	/* Outside the table -> "No" */
-	if(func < 0 || func >= dfcs_max) {
+	if(func < 0 || func >= fdef_table_max) {
 		return false;
 	}
 
-	if(dfcs[func] != DC_NONE) {
+	if(fdef_table[func] != DC_NONE) {
 		return true;
 	}
 	return false;
@@ -2978,11 +2978,11 @@ static Cursor
 defer_cursor(int func)
 {
 	/* Outside the table -> "No" */
-	if(func < 0 || func >= dfcs_max) {
+	if(func < 0 || func >= fdef_table_max) {
 		return None;
 	}
 
-	switch(dfcs[func]) {
+	switch(fdef_table[func]) {
 		case DC_SELECT:
 			return Scr->SelectCursor;
 		case DC_MOVE:
