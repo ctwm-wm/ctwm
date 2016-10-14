@@ -2955,9 +2955,6 @@ DeferExecution(int context, int func, Cursor cursor)
  * an explicit unused DC_NONE value so our real values are all non-zero;
  * the ones we don't explicitly set get initialized to 0, which we can
  * then take as a flag saying "we don't defer this func".
- *
- * XXX And if so, we should use this more directly to defer things as
- * needed instead of hardcoding.
  */
 typedef enum {
 	DC_NONE = 0,
