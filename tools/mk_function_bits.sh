@@ -157,3 +157,79 @@ EOF
 
 ) > ${gf}
 #echo "Generated ${gf}"
+
+
+
+#
+# Now the keyword table for the config file parser.  This is somewhat
+# more involved because it needs the entries from the main as well as
+# alias sections, but it needs to have them together in a single
+# ASCIIbetized list.
+#
+gf="${outdir}/functions_parse_table.h"
+(
+	# So we better start by pulling the main section, and stashing up
+	# its rules.
+	while read func ctype ifdef fdef
+	do
+		eval _STASH_${func}_ctype=\"$ctype\"
+		eval _STASH_${func}_ifdef=\"$ifdef\"
+		eval _STASH_${func}_fdef=\"$fdef\"
+	done << EOF
+	$(getsect main \
+		| awk '{ printf "%s %s %s %s\n", $1, $2, $4, toupper($1) }')
+EOF
+	# Adding and stashing the extra toupper() there instead of calling
+	# tr(1) in the loop below saves more than a quarter of a second
+	# (which is ~quintuple the runtime without it).
+
+
+	# Now run 'em both together and output
+	print_header
+	echo "/* Parser table for functions */"
+	echo "static const TwmKeyword funckeytable[] = {"
+
+	while read func alias
+	do
+		# Look up pieces
+		luf=$func
+		cmt=""
+		if [ "X${alias}" != "X" ]; then
+			luf=$alias
+			cmt=" // -> f.${alias}"
+		fi
+
+		eval _ctype=\$_STASH_${luf}_ctype
+		eval ifdef=\$_STASH_${luf}_ifdef
+		eval fdef=\$_STASH_${luf}_fdef
+
+		ctype="FKEYWORD"
+		if [ "X${_ctype}" = "XS" ]; then
+			ctype="FSKEYWORD"
+		fi
+
+
+		# Output
+		if [ "X${ifdef}" != "X-" ]; then
+			echo "#ifdef ${ifdef}"
+		fi
+
+		printf "\t{ %-24s %10s %s },%s\n" "\"f.${func}\"," "${ctype}," \
+			"${fdef}" "${cmt}"
+
+		if [ "X${ifdef}" != "X-" ]; then
+			echo "#endif"
+		fi
+
+		#echo "${func} -> ${alias}"
+	done << EOF
+	$( ( getsect main    | awk '{printf "%s\n",    $1}' ;
+	     getsect aliases | awk '{printf "%s %s\n", $1, $2}'
+	   ) | sort)
+EOF
+
+	echo
+	echo "static const int numfunckeywords = (sizeof(funckeytable) / " \
+			"sizeof(funckeytable[0]));"
+) > ${gf}
+#echo "Generated ${gf}"
