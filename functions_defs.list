@@ -115,7 +115,7 @@ ring                  - CS - N
 savegeometry          - CS - N
 saveyourself          - CS - N
 separator             - -  - N
-setbuttonstate        - -  - N
+setbuttonsstate       - -  - N
 setmapstate           - -  - N
 setpriority           S CS - N
 showbackground        - -  - N

@@ -494,7 +494,7 @@ EF_core(EF_FULLPROTO)
 			WMgrToggleState(Scr->currentvs);
 			break;
 
-		case F_SETBUTTONSTATE:
+		case F_SETBUTTONSSTATE:
 			WMgrSetButtonsState(Scr->currentvs);
 			break;
 

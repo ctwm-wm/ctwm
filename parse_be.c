@@ -561,7 +561,7 @@ static const TwmKeyword funckeytable[] = {
 	{ "f.savegeometry",         FKEYWORD, F_SAVEGEOMETRY },
 	{ "f.saveyourself",         FKEYWORD, F_SAVEYOURSELF },
 	{ "f.separator",            FKEYWORD, F_SEPARATOR },
-	{ "f.setbuttonsstate",      FKEYWORD, F_SETBUTTONSTATE },
+	{ "f.setbuttonsstate",      FKEYWORD, F_SETBUTTONSSTATE },
 	{ "f.setmapstate",          FKEYWORD, F_SETMAPSTATE },
 	{ "f.setpriority",          FSKEYWORD, F_SETPRIORITY },
 	{ "f.showbackground",       FKEYWORD, F_SHOWBACKGROUND },
