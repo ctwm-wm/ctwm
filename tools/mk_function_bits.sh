@@ -215,7 +215,7 @@ EOF
 		fi
 
 		printf "\t{ %-24s %10s %s },%s\n" "\"f.${func}\"," "${ctype}," \
-			"${fdef}" "${cmt}"
+			"F_${fdef}" "${cmt}"
 
 		if [ "X${ifdef}" != "X-" ]; then
 			echo "#endif"
