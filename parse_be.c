@@ -466,7 +466,7 @@ static const TwmKeyword keytable[] = {
 	{ "zoom",                   ZOOM, 0 },
 };
 
-static int numkeywords     = (sizeof(keytable) / sizeof(keytable[0]));
+static const int numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
 
 
 /*
