@@ -226,6 +226,7 @@ EOF
 	   ) | sort)
 EOF
 
+	echo "};"
 	echo
 	echo "static const int numfunckeywords = (sizeof(funckeytable) / " \
 			"sizeof(funckeytable[0]));"
