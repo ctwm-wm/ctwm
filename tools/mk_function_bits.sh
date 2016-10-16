@@ -220,8 +220,6 @@ EOF
 		if [ "X${ifdef}" != "X-" ]; then
 			echo "#endif"
 		fi
-
-		#echo "${func} -> ${alias}"
 	done << EOF
 	$( ( getsect main    | awk '{printf "%s\n",    $1}' ;
 	     getsect aliases | awk '{printf "%s %s\n", $1, $2}'
