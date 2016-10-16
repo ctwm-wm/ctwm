@@ -55,7 +55,7 @@ gf="${outdir}/functions_defs.h"
 	print_header
 	echo "/* Definitions for functions */"
 	echo
-	echo "#define F_NOP 0    /* Standin */"
+	echo "#define F_NOP 0    /* Hardcoded magic value */"
 	echo
 
 	counter=1
@@ -63,6 +63,15 @@ gf="${outdir}/functions_defs.h"
 	echo "/* Standard functions */"
 	while read func ctype ifdef
 	do
+		# f.nop is special cased to always be 0, so skip it when we
+		# encounter it in here.
+		if [ "X${func}" = "XNOP" ]; then
+			continue;
+		fi
+
+
+		# Output #define, possible guarded by $ifdef's, with a comment to
+		# note the ones that take string args.
 		if [ "X${ifdef}" != "X-" ]; then
 			echo "#ifdef ${ifdef}"
 		fi

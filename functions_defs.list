@@ -89,6 +89,7 @@ movetoprevworkspace   - CS - N
 movetoprevworkspaceandfollow - CS - N
 nexticonmgr           - -  - N
 nextworkspace         - -  - N
+nop                   - -  - N
 occupy                - CS - N
 occupyall             - CS - N
 pack                  S CS - N
