@@ -65,7 +65,7 @@ gf="${outdir}/functions_defs.h"
 		fi
 
 
-		# Output #define, possible guarded by $ifdef's, with a comment to
+		# Output #define, possible guarded by #ifdef's, with a comment to
 		# note the ones that take string args.
 		if [ "X${ifdef}" != "X-" ]; then
 			echo "#ifdef ${ifdef}"
