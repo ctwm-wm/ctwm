@@ -20,9 +20,6 @@ fi
 # Stripping out commands, blank lines, etc.
 CLEANDAT="-e s/#.*// -e /^[[:space:]]*$/d"
 
-# Uppercasing
-TOUPPER="tr [:lower:] [:upper:]"
-
 
 # We're all C here
 print_header() {
