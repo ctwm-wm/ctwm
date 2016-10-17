@@ -17,9 +17,6 @@ if [ -z "${outdir}" -o ! -d "${outdir}" ]; then
 	exit 1
 fi
 
-# Stripping out commands, blank lines, etc.
-CLEANDAT="-e s/#.*// -e /^[[:space:]]*$/d"
-
 
 # We're all C here
 print_header() {
@@ -39,7 +36,8 @@ getsect() {
 	# anyway, so stick that in here.  And I think we always end up
 	# sorting too, so do that as well.
 	sed -e "1,/^# START($1)/d" -e "/^# END($1)/,\$d" \
-		${CLEANDAT} ${infile} | sort
+		-e 's/#.*//' -e '/^[[:space:]]*$/d' \
+		${infile} | sort
 }
 
 
