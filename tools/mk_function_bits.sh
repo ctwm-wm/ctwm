@@ -237,7 +237,7 @@ EOF
 
 	echo "};"
 	echo
-	echo "static const int numfunckeywords = (sizeof(funckeytable) / " \
+	echo "static const size_t numfunckeywords = (sizeof(funckeytable) / " \
 			"sizeof(funckeytable[0]));"
 ) > ${gf}
 #echo "Generated ${gf}"
