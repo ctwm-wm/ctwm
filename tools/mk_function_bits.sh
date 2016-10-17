@@ -125,7 +125,7 @@ typedef enum {
 	DC_DESTROY,
 } _fdef_table_cursor;
 
-static _fdef_table_cursor fdef_table[] = {
+static const _fdef_table_cursor fdef_table[] = {
 EOF
 
 	while read func curs
