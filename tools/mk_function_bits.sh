@@ -200,8 +200,13 @@ EOF
 
 	# Now run 'em both together and output
 	print_header
-	echo "/* Parser table for functions */"
-	echo "static const TwmKeyword funckeytable[] = {"
+	cat << EOF
+#ifndef _CTWM_FUNCTIONS_PARSE_TABLE_H
+#define _CTWM_FUNCTIONS_PARSE_TABLE_H
+
+/* Parser table for functions */
+static const TwmKeyword funckeytable[] = {
+EOF
 
 	while read func alias
 	do
@@ -240,9 +245,13 @@ EOF
 	   ) | sort)
 EOF
 
-	echo "};"
-	echo
-	echo "static const size_t numfunckeywords = (sizeof(funckeytable) / " \
-			"sizeof(funckeytable[0]));"
+	cat << EOF
+};
+	
+static const size_t numfunckeywords = (sizeof(funckeytable) / sizeof(funckeytable[0]));
+
+#endif // _CTWM_FUNCTIONS_PARSE_TABLE_H
+EOF
+
 ) > ${gf}
 #echo "Generated ${gf}"
