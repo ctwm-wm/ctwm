@@ -48,10 +48,15 @@ getsect() {
 gf="${outdir}/functions_defs.h"
 (
 	print_header
-	echo "/* Definitions for functions */"
-	echo
-	echo "#define F_NOP 0    /* Hardcoded magic value */"
-	echo
+	cat << EOF
+#ifndef _CTWM_FUNCTIONS_DEFS_H
+#define _CTWM_FUNCTIONS_DEFS_H
+
+/* Definitions for functions */
+
+#define F_NOP 0    /* Hardcoded magic value */
+
+EOF
 
 	counter=1
 
@@ -99,6 +104,11 @@ EOF
 	done << EOF
 	$(getsect synthetic \
 		| awk '{printf "%s\n", toupper($1)}')
+EOF
+
+	cat << EOF
+
+#endif // _CTWM_FUNCTIONS_DEFS_H
 EOF
 
 ) > ${gf}
