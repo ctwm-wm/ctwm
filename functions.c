@@ -20,6 +20,7 @@
 #include "events.h"
 #include "event_handlers.h"
 #include "functions_defs.h"
+#include "functions_deferral.h"  // Generated deferral table
 #include "iconmgr.h"
 #include "icons.h"
 #include "list.h" // for match()
@@ -493,7 +494,7 @@ EF_core(EF_FULLPROTO)
 			WMgrToggleState(Scr->currentvs);
 			break;
 
-		case F_SETBUTTONSTATE:
+		case F_SETBUTTONSSTATE:
 			WMgrSetButtonsState(Scr->currentvs);
 			break;
 
@@ -2956,114 +2957,18 @@ DeferExecution(int context, int func, Cursor cursor)
  * the ones we don't explicitly set get initialized to 0, which we can
  * then take as a flag saying "we don't defer this func".
  *
- * XXX And if so, we should use this more directly to defer things as
- * needed instead of hardcoding.
+ * fdef_table in functions_deferral.h generated from functions_defs.list.
  */
-typedef enum {
-	DC_NONE = 0,
-	DC_SELECT,
-	DC_MOVE,
-	DC_DESTROY,
-} _dfcs_cursor;
-static _dfcs_cursor dfcs[] = {
-	/* Windowbox related */
-	[F_FITTOCONTENT] = DC_SELECT,
-
-	/* Icon manager related */
-	[F_SORTICONMGR] = DC_SELECT,
-
-	/* Messing with window occupation */
-	[F_ADDTOWORKSPACE]      = DC_SELECT,
-	[F_REMOVEFROMWORKSPACE] = DC_SELECT,
-	[F_MOVETONEXTWORKSPACE] = DC_SELECT,
-	[F_MOVETOPREVWORKSPACE] = DC_SELECT,
-	[F_MOVETONEXTWORKSPACEANDFOLLOW] = DC_SELECT,
-	[F_MOVETOPREVWORKSPACEANDFOLLOW] = DC_SELECT,
-	[F_TOGGLEOCCUPATION] = DC_SELECT,
-	[F_VANISH]    = DC_SELECT,
-	[F_OCCUPY]    = DC_SELECT,
-	[F_OCCUPYALL] = DC_SELECT,
-
-	/* Messing with position */
-	[F_MOVE]      = DC_MOVE,
-	[F_FORCEMOVE] = DC_MOVE,
-	[F_PACK]      = DC_SELECT,
-	[F_FILL]      = DC_SELECT,
-	[F_MOVEPACK]  = DC_MOVE,
-	[F_MOVEPUSH]  = DC_MOVE,
-	[F_JUMPLEFT]  = DC_MOVE,
-	[F_JUMPRIGHT] = DC_MOVE,
-	[F_JUMPDOWN]  = DC_MOVE,
-	[F_JUMPUP]    = DC_MOVE,
-
-	/* Messing with size */
-	[F_INITSIZE]   = DC_SELECT,
-	[F_RESIZE]     = DC_MOVE,
-	[F_CHANGESIZE] = DC_SELECT,
-	[F_ZOOM]       = DC_SELECT,
-	[F_HORIZOOM]   = DC_SELECT,
-	[F_RIGHTZOOM]  = DC_SELECT,
-	[F_LEFTZOOM]   = DC_SELECT,
-	[F_TOPZOOM]    = DC_SELECT,
-	[F_BOTTOMZOOM] = DC_SELECT,
-	[F_FULLZOOM]   = DC_SELECT,
-	[F_FULLSCREENZOOM] = DC_SELECT,
-
-	/* Messing with all sorts of geometry */
-	[F_MOVERESIZE]   = DC_SELECT,
-	[F_SAVEGEOMETRY] = DC_SELECT,
-	[F_RESTOREGEOMETRY] = DC_SELECT,
-
-	/* Special moves */
-	[F_HYPERMOVE] = DC_MOVE,
-
-	/* Window and titlebar squeeze-related */
-	[F_SQUEEZE]   = DC_SELECT,
-	[F_UNSQUEEZE] = DC_SELECT,
-	[F_MOVETITLEBAR] = DC_MOVE,
-
-	/* Stacking */
-	[F_RAISE]     = DC_SELECT,
-	[F_LOWER]     = DC_SELECT,
-	[F_TINYRAISE] = DC_SELECT,
-	[F_TINYLOWER] = DC_SELECT,
-	[F_AUTORAISE] = DC_SELECT,
-	[F_AUTOLOWER] = DC_SELECT,
-	[F_RAISELOWER] = DC_SELECT,
-	[F_SETPRIORITY] = DC_SELECT,
-	[F_CHANGEPRIORITY] = DC_SELECT,
-	[F_SWITCHPRIORITY] = DC_SELECT,
-	[F_PRIORITYSWITCHING] = DC_SELECT,
-
-	/* Combo and misc ops */
-	[F_RAISEORSQUEEZE] = DC_SELECT,
-	[F_IDENTIFY]   = DC_SELECT,
-	[F_DEICONIFY]  = DC_SELECT,
-	[F_ICONIFY]    = DC_SELECT,
-	[F_FOCUS]      = DC_SELECT,
-	[F_RING]       = DC_SELECT,
-	[F_WINREFRESH] = DC_SELECT,
-	/* x-ref comment questioning if F_COLORMAP should be here */
-
-	/* Window deletion related */
-	[F_DELETE]  = DC_DESTROY,
-	[F_DESTROY] = DC_DESTROY,
-	[F_SAVEYOURSELF] = DC_SELECT,
-	[F_DELETEORDESTROY] = DC_DESTROY,
-};
-
-static const size_t dfcs_max = (sizeof(dfcs) / sizeof(dfcs[0]));
-
 
 static bool
 should_defer(int func)
 {
 	/* Outside the table -> "No" */
-	if(func < 0 || func >= dfcs_max) {
+	if(func < 0 || func >= fdef_table_max) {
 		return false;
 	}
 
-	if(dfcs[func] != DC_NONE) {
+	if(fdef_table[func] != DC_NONE) {
 		return true;
 	}
 	return false;
@@ -3073,11 +2978,11 @@ static Cursor
 defer_cursor(int func)
 {
 	/* Outside the table -> "No" */
-	if(func < 0 || func >= dfcs_max) {
+	if(func < 0 || func >= fdef_table_max) {
 		return None;
 	}
 
-	switch(dfcs[func]) {
+	switch(fdef_table[func]) {
 		case DC_SELECT:
 			return Scr->SelectCursor;
 		case DC_MOVE:

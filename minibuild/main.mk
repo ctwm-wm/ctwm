@@ -76,8 +76,11 @@ ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 
 
 # Function generated bits
-GENXTRA+=${BDIR}/functions_defs.h
-${BDIR}/functions_defs.h: ${RTDIR}/functions_defs.list
+_FUNC_GEN=${BDIR}/functions_defs.h
+_FUNC_GEN+=${BDIR}/functions_deferral.h
+_FUNC_GEN+=${BDIR}/functions_parse_table.h
+GENXTRA+=${_FUNC_GEN}
+${_FUNC_GEN}: ${RTDIR}/functions_defs.list
 	${TOOLS}/mk_function_bits.sh ${RTDIR}/functions_defs.list ${BDIR}
 
 
