@@ -29,6 +29,7 @@ set(CTWMSRC
 	event_names.c
 	event_utils.c
 	functions.c
+	functions_icmgr_wsmgr.c
 	gc.c
 	iconmgr.c
 	icons.c

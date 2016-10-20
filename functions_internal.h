@@ -19,4 +19,24 @@ typedef void (ExFunc)(EF_FULLPROTO);
 #define DFHANDLER(func) void f_##func##_impl(EF_FULLPROTO)
 
 
+/*
+ * Various handlers
+ */
+
+/* functions_icmgr_wsmgr.c */
+DFHANDLER(upiconmgr);
+DFHANDLER(downiconmgr);
+DFHANDLER(lefticonmgr);
+DFHANDLER(righticonmgr);
+DFHANDLER(forwiconmgr);
+DFHANDLER(backiconmgr);
+
+DFHANDLER(forwmapiconmgr);
+DFHANDLER(backmapiconmgr);
+
+DFHANDLER(nexticonmgr);
+DFHANDLER(previconmgr);
+
+
+
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */

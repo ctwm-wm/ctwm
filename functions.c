@@ -441,31 +441,6 @@ EF_core(EF_FULLPROTO)
 			DoRestart(eventp->xbutton.time);
 			break;
 		}
-		case F_UPICONMGR:
-		case F_DOWNICONMGR:
-		case F_LEFTICONMGR:
-		case F_RIGHTICONMGR:
-		case F_FORWICONMGR:
-		case F_BACKICONMGR:
-			/*
-			 * XXX This func should be changed not to know
-			 * internals of F_ calls, but have its own sense of
-			 * directionality.
-			 */
-			MoveIconManager(func);
-			break;
-
-		case F_FORWMAPICONMGR:
-		case F_BACKMAPICONMGR:
-			/* XXX x-ref comment above comment re MoveIconManager() */
-			MoveMappedIconManager(func);
-			break;
-
-		case F_NEXTICONMGR:
-		case F_PREVICONMGR:
-			/* XXX x-ref comment above comment re MoveIconManager() */
-			JumpIconManager(func);
-			break;
 
 		case F_SHOWICONMGR:
 			if(Scr->NoIconManagers) {
