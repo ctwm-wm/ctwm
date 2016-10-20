@@ -437,12 +437,6 @@ EF_core(EF_FULLPROTO)
 			reread_sounds();
 			break;
 #endif
-		case F_NOP:
-		case F_TITLE:
-			/* Should no longer be possible to get here */
-			fprintf(stderr, "BUG: f.{nop_title} shouldn't get to %s()\n",
-					__func__);
-			break;
 
 		case F_RESTART: {
 			DoRestart(eventp->xbutton.time);
