@@ -1815,6 +1815,12 @@ EF_core(EF_FULLPROTO)
 		case F_RESCUEWINDOWS:
 			RescueWindows();
 			break;
+
+		default:
+			/* Shouldn't be possible */
+			fprintf(stderr, "Internal error: no handler for function %d\n",
+					func);
+			break;
 	}
 
 	return;
