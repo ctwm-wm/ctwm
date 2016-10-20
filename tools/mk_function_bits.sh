@@ -271,7 +271,7 @@ gf="${outdir}/functions_dispatch_execution.h"
 #define _CTWM_FUNCTIONS_DISPATCH_EXECUTION_H
 
 /* Dispatcher table for executing functions */
-static const ExFunc *func_dispatch[] = {
+static ExFunc * const func_dispatch[] = {
 EOF
 
 	while read func lcfunc ifdef
