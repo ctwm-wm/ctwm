@@ -14,5 +14,7 @@
     /*int */func, /*void **/action, /*Window */w, /*TwmWindow **/tmp_win, \
     /*XEvent **/eventp, /*int */context, /*bool */pulldown
 
+typedef void (ExFunc)(EF_FULLPROTO);
+
 
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */

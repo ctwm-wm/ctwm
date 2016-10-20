@@ -136,7 +136,7 @@ typedef enum {
 
 
 static bool EF_main(EF_FULLPROTO);
-static void EF_core(EF_FULLPROTO);
+static ExFunc EF_core;
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static void ShowIconManager(void);
