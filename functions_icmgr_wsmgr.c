@@ -47,7 +47,7 @@ DFHANDLER(backiconmgr)
 	MoveIconManager(func);
 }
 
-/* XXX These two functions really should be merged... */
+/* XXX These two functions (Move/MoveMapped) really should be merged... */
 DFHANDLER(forwmapiconmgr)
 {
 	MoveMappedIconManager(func);
