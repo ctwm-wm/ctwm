@@ -46,6 +46,15 @@
 #include "functions.h"
 #include "functions_internal.h"
 
+/* Our static implementations in this file (need these before below) */
+static DFHANDLER(nop);
+static DFHANDLER(title);
+static DFHANDLER(deltastop);
+static DFHANDLER(function);
+
+/* The generated dispatch table */
+#include "functions_dispatch_execution.h"
+
 
 /*
  * Various functions can be executed "from the root" (which generally
