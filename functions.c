@@ -3330,3 +3330,44 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 	}
 	return ret;
 }
+
+
+
+/*
+ * Faked up handlers for functions that shouldn't ever really get to
+ * them.  These are handled in various hard-coded ways before we get to
+ * automatic dispatch, so there shouldn't be any way these functions
+ * actually get called.  But, just in case, return instead of dying.
+ *
+ * It's easier to just write these than to try and long-term parameterize
+ * which we expect to exist.
+ */
+#pragma GCC diagnostic ignored "-Wunused-function" // TEMP
+
+/* f.nop and f.title really only exist to make lines in menus */
+static
+DFHANDLER(nop)
+{
+	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}
+static
+DFHANDLER(title)
+{
+	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}
+
+/* f.deltastop and f.function are magic */
+static
+DFHANDLER(deltastop)
+{
+	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}
+static
+DFHANDLER(function)
+{
+	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}

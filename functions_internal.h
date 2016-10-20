@@ -16,5 +16,7 @@
 
 typedef void (ExFunc)(EF_FULLPROTO);
 
+#define DFHANDLER(func) void f_##func##_impl(EF_FULLPROTO)
+
 
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */
