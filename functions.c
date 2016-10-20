@@ -3239,7 +3239,6 @@ DFHANDLER(rereadsounds)
  * It's easier to just write these than to try and long-term parameterize
  * which we expect to exist.
  */
-#pragma GCC diagnostic ignored "-Wunused-function" // TEMP
 
 /* f.nop and f.title really only exist to make lines in menus */
 static
