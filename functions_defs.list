@@ -104,7 +104,7 @@ raiselower            - CS - N
 raiseorsqueeze        - CS - N
 refresh               - -  - N
 removefromworkspace   S CS - N
-rereadsounds          - -  SOUNDS N
+rereadsounds          - -  SOUNDS -
 rescuewindows         - -  - N
 resize                - CM - N
 restart               - -  - N
@@ -133,7 +133,7 @@ tinylower             - CS - N
 tinyraise             - CS - N
 title                 - -  - -
 toggleoccupation      S CS - N
-togglesound           - -  SOUNDS N
+togglesound           - -  SOUNDS -
 togglestate           - -  - N
 toggleworkspacemgr    - -  - N
 topzoom               - CS - N

@@ -31,6 +31,9 @@
 #include "util.h"
 #include "drawing.h"
 #include "occupation.h"
+#ifdef SOUNDS
+#include "sound.h"
+#endif
 #include "version.h"
 #include "win_iconify.h"
 #include "win_ops.h"
@@ -47,6 +50,11 @@
 #include "functions_internal.h"
 
 /* Our static implementations in this file (need these before below) */
+#ifdef SOUNDS
+static DFHANDLER(togglesound);
+static DFHANDLER(rereadsounds);
+#endif
+
 static DFHANDLER(nop);
 static DFHANDLER(title);
 static DFHANDLER(deltastop);
@@ -429,15 +437,6 @@ EF_core(EF_FULLPROTO)
 	 * away as we fill in the dispatch table.
 	 */
 	switch(func) {
-#ifdef SOUNDS
-		case F_TOGGLESOUND:
-			toggle_sound();
-			break;
-		case F_REREADSOUNDS:
-			reread_sounds();
-			break;
-#endif
-
 		case F_RESTART: {
 			DoRestart(eventp->xbutton.time);
 			break;
@@ -3349,6 +3348,27 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 	}
 	return ret;
 }
+
+
+
+/*
+ * Some misc function handlers that are small individually and don't
+ * obviously belong to a larger set, so I just stick 'em here.
+ */
+
+/* Sound-related funcs */
+#ifdef SOUNDS
+static
+DFHANDLER(togglesound)
+{
+	toggle_sound();
+}
+static
+DFHANDLER(rereadsounds)
+{
+	reread_sounds();
+}
+#endif
 
 
 
