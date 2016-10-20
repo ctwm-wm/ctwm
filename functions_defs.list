@@ -123,7 +123,7 @@ showbackground        - -  - N
 showiconmgr           - -  - -
 showworkspacemgr      - -  - N
 slowdownanimation     - -  - N
-sorticonmgr           - CS - N
+sorticonmgr           - CS - -
 speedupanimation      - -  - N
 squeeze               - CS - N
 startanimation        - -  - N

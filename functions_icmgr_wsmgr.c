@@ -127,3 +127,26 @@ HideIconManager(void)
 		}
 	}
 }
+
+
+/*
+ * And sorting
+ */
+DFHANDLER(sorticonmgr)
+{
+	bool save_sort = Scr->SortIconMgr;
+
+	Scr->SortIconMgr = true;
+
+	if(context == C_ICONMGR) {
+		SortIconManager(NULL);
+	}
+	else if(tmp_win->isiconmgr) {
+		SortIconManager(tmp_win->iconmgrp);
+	}
+	else {
+		XBell(dpy, 0);
+	}
+
+	Scr->SortIconMgr = save_sort;
+}

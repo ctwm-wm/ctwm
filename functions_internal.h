@@ -40,6 +40,8 @@ DFHANDLER(previconmgr);
 DFHANDLER(showiconmgr);
 DFHANDLER(hideiconmgr);
 
+DFHANDLER(sorticonmgr);
+
 
 
 /*
