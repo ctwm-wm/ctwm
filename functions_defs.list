@@ -46,7 +46,7 @@ colormap              S -  - N
 deiconify             - CS - N
 delete                - CD - N
 deleteordestroy       - CD - N
-deltastop             - -  - N
+deltastop             - -  - -
 destroy               - CD - N
 downiconmgr           - -  - N
 downworkspace         - -  - N
@@ -59,7 +59,7 @@ forwiconmgr           - -  - N
 forwmapiconmgr        - -  - N
 fullscreenzoom        - CS - N
 fullzoom              - CS - N
-function              S -  - N
+function              S -  - -
 gotoworkspace         S -  - N
 hideiconmgr           - -  - N
 hideworkspacemgr      - -  - N
@@ -89,7 +89,7 @@ movetoprevworkspace   - CS - N
 movetoprevworkspaceandfollow - CS - N
 nexticonmgr           - -  - N
 nextworkspace         - -  - N
-nop                   - -  - N
+nop                   - -  - -
 occupy                - CS - N
 occupyall             - CS - N
 pack                  S CS - N
@@ -131,7 +131,7 @@ stopanimation         - -  - N
 switchpriority        - CS - N
 tinylower             - CS - N
 tinyraise             - CS - N
-title                 - -  - N
+title                 - -  - -
 toggleoccupation      S CS - N
 togglesound           - -  SOUNDS N
 togglestate           - -  - N
