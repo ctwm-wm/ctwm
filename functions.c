@@ -210,6 +210,21 @@ EF_main(EF_FULLPROTO)
 
 
 	/*
+	 * More early escapes; some "functions" don't actually do anything
+	 * when executed, and exist for magical purposes elsewhere.  So just
+	 * skip out early if we try running them.
+	 */
+	switch(func) {
+		case F_NOP:
+		case F_TITLE:
+			return true;
+
+		default:
+			; /* FALLTHRU */
+	}
+
+
+	/*
 	 * Is this a function that needs some deferring?  If so, go ahead and
 	 * do that.  Note that this specifically doesn't handle the special
 	 * case of f.function; it has to do its own checking for whether
@@ -399,6 +414,9 @@ EF_core(EF_FULLPROTO)
 #endif
 		case F_NOP:
 		case F_TITLE:
+			/* Should no longer be possible to get here */
+			fprintf(stderr, "BUG: f.{nop_title} shouldn't get to %s()\n",
+					__func__);
 			break;
 
 		case F_RESTART: {
