@@ -42,12 +42,13 @@ set(fd_mk   ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_function_bits.sh)
 set(fd_h    ${CMAKE_CURRENT_BINARY_DIR}/functions_defs.h)
 set(fdd_h   ${CMAKE_CURRENT_BINARY_DIR}/functions_deferral.h)
 set(fpt_h   ${CMAKE_CURRENT_BINARY_DIR}/functions_parse_table.h)
+set(fde_h   ${CMAKE_CURRENT_BINARY_DIR}/functions_dispatch_execution.h)
 add_custom_command(
-	OUTPUT ${fd_h} ${fdd_h} ${fpt_h}
+	OUTPUT ${fd_h} ${fdd_h} ${fpt_h} ${fde_h}
 	DEPENDS ${fd_list} ${fd_mk}
 	COMMAND ${fd_mk} ${fd_list} ${CMAKE_CURRENT_BINARY_DIR}
 )
-list(APPEND CTWMSRC ${fd_h} ${fdd_h} ${fpt_h})
+list(APPEND CTWMSRC ${fd_h} ${fdd_h} ${fpt_h} ${fde_h})
 
 
 # Setup config header file
