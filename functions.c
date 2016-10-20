@@ -412,6 +412,22 @@ EF_core(EF_FULLPROTO)
 	 * Now we know we're ready to actually execute whatever the function
 	 * is, so do the meat of running it.
 	 */
+
+
+	/*
+	 * First, programmatically dispatch to the functions we have defined
+	 * dispatcher functions for.
+	 */
+	if(func >= 0 && func < num_f_dis && func_dispatch[func] != NULL) {
+		(*func_dispatch[func])(EF_ARGS);
+		return;
+	}
+
+
+	/*
+	 * Else, fallback to our old switch().  This is expected to wither
+	 * away as we fill in the dispatch table.
+	 */
 	switch(func) {
 #ifdef SOUNDS
 		case F_TOGGLESOUND:
