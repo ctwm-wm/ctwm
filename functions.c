@@ -156,8 +156,6 @@ static bool EF_main(EF_FULLPROTO);
 static ExFunc EF_core;
 
 static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
-static void ShowIconManager(void);
-static void HideIconManager(void);
 static bool DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
 static bool belongs_to_twm_window(TwmWindow *t, Window w);
@@ -442,13 +440,6 @@ EF_core(EF_FULLPROTO)
 			break;
 		}
 
-		case F_SHOWICONMGR:
-			if(Scr->NoIconManagers) {
-				break;
-			}
-			ShowIconManager();
-			break;
-
 		case F_STARTANIMATION:
 			StartAnimation();
 			break;
@@ -463,13 +454,6 @@ EF_core(EF_FULLPROTO)
 
 		case F_SLOWDOWNANIMATION:
 			ModifyAnimationSpeed(-1);
-			break;
-
-		case F_HIDEICONMGR:
-			if(Scr->NoIconManagers) {
-				break;
-			}
-			HideIconManager();
 			break;
 
 		case F_SHOWWORKSPACEMGR:
@@ -1908,94 +1892,6 @@ jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action)
 		OtpRaise(tmp_win, WinWin);
 	}
 	SetupWindow(tmp_win, fx, fy, tmp_win->frame_width, tmp_win->frame_height, -1);
-}
-
-
-/*
- * f.showiconmanager
- */
-static void
-ShowIconManager(void)
-{
-	IconMgr   *i;
-	WorkSpace *wl;
-
-	/*
-	 * XXX I don't think this is right; there can still be icon managers
-	 * to show even if we've never set any Workspaces {}.  And
-	 * HideIconManager() doesn't have this extra condition either...
-	 */
-	if(! Scr->workSpaceManagerActive) {
-		return;
-	}
-
-	if(Scr->NoIconManagers) {
-		return;
-	}
-
-	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
-		for(i = wl->iconmgr; i != NULL; i = i->next) {
-			/* Don't show iconmgr's with nothing in 'em */
-			if(i->count == 0) {
-				continue;
-			}
-
-			/* If it oughta be in a vscreen, show it */
-			if(visible(i->twm_win)) {
-				/* IM window */
-				SetMapStateProp(i->twm_win, NormalState);
-				XMapWindow(dpy, i->twm_win->w);
-				OtpRaise(i->twm_win, WinWin);
-				XMapWindow(dpy, i->twm_win->frame);
-
-				/* Hide icon */
-				if(i->twm_win->icon && i->twm_win->icon->w) {
-					XUnmapWindow(dpy, i->twm_win->icon->w);
-				}
-			}
-
-			/* Mark as shown */
-			i->twm_win->mapped = true;
-			i->twm_win->isicon = false;
-		}
-	}
-}
-
-
-/*
- * f.hideiconmanager.  Also called when you f.delete an icon manager.
- *
- * This hides all the icon managers in all the workspaces, and it doesn't
- * leave icons behind, so it's _not_ the same as just iconifying, and
- * thus not implemented by just calling Iconify(), but by doing the
- * hiding manually.
- */
-static void
-HideIconManager(void)
-{
-	IconMgr   *i;
-	WorkSpace *wl;
-
-	if(Scr->NoIconManagers) {
-		return;
-	}
-
-	for(wl = Scr->workSpaceMgr.workSpaceList; wl != NULL; wl = wl->next) {
-		for(i = wl->iconmgr; i != NULL; i = i->next) {
-			/* Hide the IM window */
-			SetMapStateProp(i->twm_win, WithdrawnState);
-			XUnmapWindow(dpy, i->twm_win->frame);
-
-			/* Hide its icon */
-			if(i->twm_win->icon && i->twm_win->icon->w) {
-				XUnmapWindow(dpy, i->twm_win->icon->w);
-			}
-
-			/* Mark as pretend-iconified, even though the icon is hidden */
-			i->twm_win->mapped = false;
-			i->twm_win->isicon = true;
-		}
-	}
 }
 
 

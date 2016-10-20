@@ -37,6 +37,17 @@ DFHANDLER(backmapiconmgr);
 DFHANDLER(nexticonmgr);
 DFHANDLER(previconmgr);
 
+DFHANDLER(showiconmgr);
+DFHANDLER(hideiconmgr);
+
+
+
+/*
+ * Extra exported from functions_icmgr_wsmgr.c for use in
+ * f.delete{,ordestroy}.
+ */
+void HideIconManager(void);
+
 
 
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */

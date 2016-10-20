@@ -61,7 +61,7 @@ fullscreenzoom        - CS - N
 fullzoom              - CS - N
 function              S -  - -
 gotoworkspace         S -  - N
-hideiconmgr           - -  - N
+hideiconmgr           - -  - -
 hideworkspacemgr      - -  - N
 horizoom              - CS - N
 hypermove             - CM - N
@@ -120,7 +120,7 @@ setbuttonsstate       - -  - N
 setmapstate           - -  - N
 setpriority           S CS - N
 showbackground        - -  - N
-showiconmgr           - -  - N
+showiconmgr           - -  - -
 showworkspacemgr      - -  - N
 slowdownanimation     - -  - N
 sorticonmgr           - CS - N
