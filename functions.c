@@ -1784,7 +1784,7 @@ EF_core(EF_FULLPROTO)
 		default:
 			/* Shouldn't be possible */
 			fprintf(stderr, "Internal error: no handler for function %d\n",
-					func);
+			        func);
 			break;
 	}
 

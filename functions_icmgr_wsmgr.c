@@ -22,20 +22,50 @@
  * a bit of a layering violation; they should maybe be changed to have
  * their own idea of directionality...
  */
-DFHANDLER(upiconmgr)    { MoveIconManager(func); }
-DFHANDLER(downiconmgr)  { MoveIconManager(func); }
-DFHANDLER(lefticonmgr)  { MoveIconManager(func); }
-DFHANDLER(righticonmgr) { MoveIconManager(func); }
-DFHANDLER(forwiconmgr)  { MoveIconManager(func); }
-DFHANDLER(backiconmgr)  { MoveIconManager(func); }
+DFHANDLER(upiconmgr)
+{
+	MoveIconManager(func);
+}
+DFHANDLER(downiconmgr)
+{
+	MoveIconManager(func);
+}
+DFHANDLER(lefticonmgr)
+{
+	MoveIconManager(func);
+}
+DFHANDLER(righticonmgr)
+{
+	MoveIconManager(func);
+}
+DFHANDLER(forwiconmgr)
+{
+	MoveIconManager(func);
+}
+DFHANDLER(backiconmgr)
+{
+	MoveIconManager(func);
+}
 
 /* XXX These two functions really should be merged... */
-DFHANDLER(forwmapiconmgr) { MoveMappedIconManager(func); }
-DFHANDLER(backmapiconmgr) { MoveMappedIconManager(func); }
+DFHANDLER(forwmapiconmgr)
+{
+	MoveMappedIconManager(func);
+}
+DFHANDLER(backmapiconmgr)
+{
+	MoveMappedIconManager(func);
+}
 
 /* Moving between icon managers */
-DFHANDLER(nexticonmgr) { JumpIconManager(func); }
-DFHANDLER(previconmgr) { JumpIconManager(func); }
+DFHANDLER(nexticonmgr)
+{
+	JumpIconManager(func);
+}
+DFHANDLER(previconmgr)
+{
+	JumpIconManager(func);
+}
 
 
 /*
@@ -98,7 +128,10 @@ DFHANDLER(showiconmgr)
  * thus not implemented by just calling Iconify(), but by doing the
  * hiding manually.
  */
-DFHANDLER(hideiconmgr) { HideIconManager(); }
+DFHANDLER(hideiconmgr)
+{
+	HideIconManager();
+}
 
 void
 HideIconManager(void)
