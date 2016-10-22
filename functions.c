@@ -125,19 +125,6 @@ int ResizeOrigY;
 Time last_time = 0; // XXX Temp not static?
 
 
-/*
- * MoveFillDir-ectional specifiers, used in jump/pack/fill
- */
-typedef enum {
-	MFD_BOTTOM,
-	MFD_LEFT,
-	MFD_RIGHT,
-	MFD_TOP,
-} MoveFillDir;
-
-
-
-
 static bool EF_main(EF_FULLPROTO);
 static ExFunc EF_core;
 
@@ -150,8 +137,6 @@ static Cursor NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
-int FindConstraint(TwmWindow *tmp_win,
-                   MoveFillDir direction); // XXX temp not static
 
 
 /***********************************************************************
@@ -2047,113 +2032,6 @@ static void
 SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp)
 {
 	send_clientmessage(tmp->w, XA_WM_SAVE_YOURSELF, timestamp);
-}
-
-
-int
-FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
-{
-	TwmWindow  *t;
-	int ret;
-	const int winx = tmp_win->frame_x;
-	const int winy = tmp_win->frame_y;
-	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
-
-	switch(direction) {
-		case MFD_LEFT:
-			if(winx < Scr->BorderLeft) {
-				return -1;
-			}
-			ret = Scr->BorderLeft;
-			break;
-		case MFD_RIGHT:
-			if(winx + winw > Scr->rootw - Scr->BorderRight) {
-				return -1;
-			}
-			ret = Scr->rootw - Scr->BorderRight;
-			break;
-		case MFD_TOP:
-			if(winy < Scr->BorderTop) {
-				return -1;
-			}
-			ret = Scr->BorderTop;
-			break;
-		case MFD_BOTTOM:
-			if(winy + winh > Scr->rooth - Scr->BorderBottom) {
-				return -1;
-			}
-			ret = Scr->rooth - Scr->BorderBottom;
-			break;
-		default:
-			return -1;
-	}
-	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
-		const int w = t->frame_width  + 2 * t->frame_bw;
-		const int h = t->frame_height + 2 * t->frame_bw;
-
-		if(t == tmp_win) {
-			continue;
-		}
-		if(!visible(t)) {
-			continue;
-		}
-		if(!t->mapped) {
-			continue;
-		}
-
-		switch(direction) {
-			case MFD_LEFT:
-				if(winx        <= t->frame_x + w) {
-					continue;
-				}
-				if(winy        >= t->frame_y + h) {
-					continue;
-				}
-				if(winy + winh <= t->frame_y) {
-					continue;
-				}
-				ret = MAX(ret, t->frame_x + w);
-				break;
-			case MFD_RIGHT:
-				if(winx + winw >= t->frame_x) {
-					continue;
-				}
-				if(winy        >= t->frame_y + h) {
-					continue;
-				}
-				if(winy + winh <= t->frame_y) {
-					continue;
-				}
-				ret = MIN(ret, t->frame_x);
-				break;
-			case MFD_TOP:
-				if(winy        <= t->frame_y + h) {
-					continue;
-				}
-				if(winx        >= t->frame_x + w) {
-					continue;
-				}
-				if(winx + winw <= t->frame_x) {
-					continue;
-				}
-				ret = MAX(ret, t->frame_y + h);
-				break;
-			case MFD_BOTTOM:
-				if(winy + winh >= t->frame_y) {
-					continue;
-				}
-				if(winx        >= t->frame_x + w) {
-					continue;
-				}
-				if(winx + winw <= t->frame_x) {
-					continue;
-				}
-				ret = MIN(ret, t->frame_y);
-				break;
-		}
-	}
-	return ret;
 }
 
 
