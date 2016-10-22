@@ -26,8 +26,6 @@
 #include "workspace_manager.h"
 
 
-static void movewindow(EF_FULLPROTO);
-
 /* XXX TEMP */
 bool belongs_to_twm_window(TwmWindow *t, Window w);
 extern Time last_time;
@@ -209,6 +207,7 @@ DFHANDLER(restoregeometry)
 /*
  * Moving windows around
  */
+static void movewindow(EF_FULLPROTO);
 DFHANDLER(move)
 {
 	movewindow(EF_ARGS);
