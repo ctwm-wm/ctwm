@@ -141,7 +141,6 @@ typedef enum {
 static bool EF_main(EF_FULLPROTO);
 static ExFunc EF_core;
 
-static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static bool DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
 bool belongs_to_twm_window(TwmWindow *t, Window w); // XXX temp not static
@@ -624,35 +623,6 @@ EF_core(EF_FULLPROTO)
 				}
 				WarpToWindow(tmp_win, Scr->RaiseOnWarp);
 			}
-			break;
-
-		case F_JUMPLEFT:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			jump(tmp_win, MFD_LEFT, action);
-			break;
-		case F_JUMPRIGHT:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			jump(tmp_win, MFD_RIGHT, action);
-			break;
-		case F_JUMPDOWN:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			jump(tmp_win, MFD_BOTTOM, action);
-			break;
-		case F_JUMPUP:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			jump(tmp_win, MFD_TOP, action);
 			break;
 
 		case F_HYPERMOVE: {
@@ -1513,86 +1483,6 @@ EF_core(EF_FULLPROTO)
 /*
  * Utils
  */
-/* f.jump{down,left,right,up} */
-static void
-jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action)
-{
-	int          fx, fy, px, py, step, status, cons;
-	int          fwidth, fheight;
-	int          junkX, junkY;
-	unsigned int junkK;
-	Window       junkW;
-
-	if(! action) {
-		return;
-	}
-	status = sscanf(action, "%d", &step);
-	if(status != 1) {
-		return;
-	}
-	if(step < 1) {
-		return;
-	}
-
-	fx = tmp_win->frame_x;
-	fy = tmp_win->frame_y;
-	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &px, &py, &junkK);
-	px -= fx;
-	py -= fy;
-
-	fwidth  = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	fheight = tmp_win->frame_height + 2 * tmp_win->frame_bw;
-	switch(direction) {
-		case MFD_LEFT:
-			cons  = FindConstraint(tmp_win, MFD_LEFT);
-			if(cons == -1) {
-				return;
-			}
-			fx -= step * Scr->XMoveGrid;
-			if(fx < cons) {
-				fx = cons;
-			}
-			break;
-		case MFD_RIGHT:
-			cons  = FindConstraint(tmp_win, MFD_RIGHT);
-			if(cons == -1) {
-				return;
-			}
-			fx += step * Scr->XMoveGrid;
-			if(fx + fwidth > cons) {
-				fx = cons - fwidth;
-			}
-			break;
-		case MFD_TOP:
-			cons  = FindConstraint(tmp_win, MFD_TOP);
-			if(cons == -1) {
-				return;
-			}
-			fy -= step * Scr->YMoveGrid;
-			if(fy < cons) {
-				fy = cons;
-			}
-			break;
-		case MFD_BOTTOM:
-			cons  = FindConstraint(tmp_win, MFD_BOTTOM);
-			if(cons == -1) {
-				return;
-			}
-			fy += step * Scr->YMoveGrid;
-			if(fy + fheight > cons) {
-				fy = cons - fheight;
-			}
-			break;
-	}
-	/* Pebl Fixme: don't warp if jump happens through iconmgr */
-	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, fx + px, fy + py);
-	if(!Scr->NoRaiseMove) {
-		OtpRaise(tmp_win, WinWin);
-	}
-	SetupWindow(tmp_win, fx, fy, tmp_win->frame_width, tmp_win->frame_height, -1);
-}
-
-
 
 /*
  * Backend for f.identify and f.version: Fills in the Info array with the

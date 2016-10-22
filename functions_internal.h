@@ -67,6 +67,10 @@ DFHANDLER(bottomzoom);
 DFHANDLER(resize);
 DFHANDLER(pack);
 DFHANDLER(fill);
+DFHANDLER(jumpleft);
+DFHANDLER(jumpright);
+DFHANDLER(jumpdown);
+DFHANDLER(jumpup);
 
 
 

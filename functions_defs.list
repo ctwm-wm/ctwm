@@ -68,10 +68,10 @@ hypermove             - CM - N
 iconify               - CS - N
 identify              - CS - N
 initsize              - CS - -
-jumpdown              S CM - N
-jumpleft              S CM - N
-jumpright             S CM - N
-jumpup                S CM - N
+jumpdown              S CM - -
+jumpleft              S CM - -
+jumpright             S CM - -
+jumpup                S CM - -
 lefticonmgr           - -  - -
 leftworkspace         - -  - N
 leftzoom              - CS - -
