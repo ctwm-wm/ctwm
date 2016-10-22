@@ -145,7 +145,6 @@ static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static bool DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
 bool belongs_to_twm_window(TwmWindow *t, Window w); // XXX temp not static
-static void fillwindow(TwmWindow *tmp_win, const char *direction);
 static bool should_defer(int func);
 static Cursor defer_cursor(int func);
 static Cursor NeedToDefer(MenuRoot *root);
@@ -625,14 +624,6 @@ EF_core(EF_FULLPROTO)
 				}
 				WarpToWindow(tmp_win, Scr->RaiseOnWarp);
 			}
-			break;
-
-		case F_FILL:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			fillwindow(tmp_win, action);
 			break;
 
 		case F_JUMPLEFT:
@@ -1868,128 +1859,6 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 
 	/* Then no */
 	return false;
-}
-
-
-/* f.fill */
-static void
-fillwindow(TwmWindow *tmp_win, const char *direction)
-{
-	int cons, newx, newy, save;
-	unsigned int neww, newh;
-	int i;
-	const int winx = tmp_win->frame_x;
-	const int winy = tmp_win->frame_y;
-	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
-
-	if(!strcmp(direction, "left")) {
-		cons = FindConstraint(tmp_win, MFD_LEFT);
-		if(cons == -1) {
-			return;
-		}
-		newx = cons;
-		newy = tmp_win->frame_y;
-		neww = winw + winx - newx;
-		newh = winh;
-		neww -= 2 * tmp_win->frame_bw;
-		newh -= 2 * tmp_win->frame_bw;
-		ConstrainSize(tmp_win, &neww, &newh);
-	}
-	else if(!strcmp(direction, "right")) {
-		for(i = 0; i < 2; i++) {
-			cons = FindConstraint(tmp_win, MFD_RIGHT);
-			if(cons == -1) {
-				return;
-			}
-			newx = tmp_win->frame_x;
-			newy = tmp_win->frame_y;
-			neww = cons - winx;
-			newh = winh;
-			save = neww;
-			neww -= 2 * tmp_win->frame_bw;
-			newh -= 2 * tmp_win->frame_bw;
-			ConstrainSize(tmp_win, &neww, &newh);
-			if((neww != winw) || (newh != winh) ||
-			                (cons == Scr->rootw - Scr->BorderRight)) {
-				break;
-			}
-			neww = save;
-			SetupWindow(tmp_win, newx, newy, neww, newh, -1);
-		}
-	}
-	else if(!strcmp(direction, "top")) {
-		cons = FindConstraint(tmp_win, MFD_TOP);
-		if(cons == -1) {
-			return;
-		}
-		newx = tmp_win->frame_x;
-		newy = cons;
-		neww = winw;
-		newh = winh + winy - newy;
-		neww -= 2 * tmp_win->frame_bw;
-		newh -= 2 * tmp_win->frame_bw;
-		ConstrainSize(tmp_win, &neww, &newh);
-	}
-	else if(!strcmp(direction, "bottom")) {
-		for(i = 0; i < 2; i++) {
-			cons = FindConstraint(tmp_win, MFD_BOTTOM);
-			if(cons == -1) {
-				return;
-			}
-			newx = tmp_win->frame_x;
-			newy = tmp_win->frame_y;
-			neww = winw;
-			newh = cons - winy;
-			save = newh;
-			neww -= 2 * tmp_win->frame_bw;
-			newh -= 2 * tmp_win->frame_bw;
-			ConstrainSize(tmp_win, &neww, &newh);
-			if((neww != winw) || (newh != winh) ||
-			                (cons == Scr->rooth - Scr->BorderBottom)) {
-				break;
-			}
-			newh = save;
-			SetupWindow(tmp_win, newx, newy, neww, newh, -1);
-		}
-	}
-	else if(!strcmp(direction, "vertical")) {
-		if(tmp_win->zoomed == ZOOM_NONE) {
-			tmp_win->save_frame_height = tmp_win->frame_height;
-			tmp_win->save_frame_width = tmp_win->frame_width;
-			tmp_win->save_frame_y = tmp_win->frame_y;
-			tmp_win->save_frame_x = tmp_win->frame_x;
-			tmp_win->save_otpri = OtpGetPriority(tmp_win);
-
-			tmp_win->frame_y++;
-			newy = FindConstraint(tmp_win, MFD_TOP);
-			tmp_win->frame_y--;
-			newh = FindConstraint(tmp_win, MFD_BOTTOM) - newy;
-			newh -= 2 * tmp_win->frame_bw;
-
-			newx = tmp_win->frame_x;
-			neww = tmp_win->frame_width;
-
-			ConstrainSize(tmp_win, &neww, &newh);
-
-			/* if the bottom of the window has moved up
-			 * it will be pushed down */
-			if(newy + newh < tmp_win->save_frame_y + tmp_win->save_frame_height) {
-				newy = tmp_win->save_frame_y +
-				       tmp_win->save_frame_height - newh;
-			}
-			tmp_win->zoomed = F_ZOOM;
-			SetupWindow(tmp_win, newx, newy, neww, newh, -1);
-		}
-		else {
-			fullzoom(tmp_win, tmp_win->zoomed);
-		}
-		return;
-	}
-	else {
-		return;
-	}
-	SetupWindow(tmp_win, newx, newy, neww, newh, -1);
 }
 
 

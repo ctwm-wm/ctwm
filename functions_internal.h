@@ -66,6 +66,7 @@ DFHANDLER(topzoom);
 DFHANDLER(bottomzoom);
 DFHANDLER(resize);
 DFHANDLER(pack);
+DFHANDLER(fill);
 
 
 
