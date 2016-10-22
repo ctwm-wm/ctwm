@@ -214,9 +214,7 @@ DFHANDLER(movepush)
 }
 
 
-/*
- * f.move and friends
- */
+/* f.move and friends backend */
 static void
 movewindow(EF_FULLPROTO)
 {
@@ -690,4 +688,42 @@ movewindow(EF_FULLPROTO)
 	}
 
 	return;
+}
+
+
+
+/*
+ * f.fullzoom and its siblings
+ */
+DFHANDLER(zoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(horizoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(fullzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(fullscreenzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(leftzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(rightzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(topzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(bottomzoom)
+{
+	fullzoom(tmp_win, func);
 }

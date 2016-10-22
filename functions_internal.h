@@ -56,6 +56,14 @@ DFHANDLER(move);
 DFHANDLER(forcemove);
 DFHANDLER(movepack);
 DFHANDLER(movepush);
+DFHANDLER(zoom);
+DFHANDLER(horizoom);
+DFHANDLER(fullzoom);
+DFHANDLER(fullscreenzoom);
+DFHANDLER(leftzoom);
+DFHANDLER(rightzoom);
+DFHANDLER(topzoom);
+DFHANDLER(bottomzoom);
 
 
 

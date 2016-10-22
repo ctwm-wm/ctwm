@@ -37,7 +37,7 @@ autoraise             - CS - N
 backiconmgr           - -  - -
 backmapiconmgr        - -  - -
 beep                  - -  - N
-bottomzoom            - CS - N
+bottomzoom            - CS - -
 changepriority        S CS - N
 changesize            S CS - -
 circledown            - -  - N
@@ -57,13 +57,13 @@ focus                 - CS - N
 forcemove             - CM - -
 forwiconmgr           - -  - -
 forwmapiconmgr        - -  - -
-fullscreenzoom        - CS - N
-fullzoom              - CS - N
+fullscreenzoom        - CS - -
+fullzoom              - CS - -
 function              S -  - -
 gotoworkspace         S -  - N
 hideiconmgr           - -  - -
 hideworkspacemgr      - -  - -
-horizoom              - CS - N
+horizoom              - CS - -
 hypermove             - CM - N
 iconify               - CS - N
 identify              - CS - N
@@ -74,7 +74,7 @@ jumpright             S CM - N
 jumpup                S CM - N
 lefticonmgr           - -  - -
 leftworkspace         - -  - N
-leftzoom              - CS - N
+leftzoom              - CS - -
 lower                 - CS - N
 menu                  S -  - N
 move                  - CM - -
@@ -111,7 +111,7 @@ restart               - -  - N
 restoregeometry       - CS - -
 righticonmgr          - -  - -
 rightworkspace        - -  - N
-rightzoom             - CS - N
+rightzoom             - CS - -
 ring                  - CS - N
 savegeometry          - CS - -
 saveyourself          - CS - N
@@ -136,7 +136,7 @@ toggleoccupation      S CS - N
 togglesound           - -  SOUNDS -
 togglestate           - -  - -
 toggleworkspacemgr    - -  - -
-topzoom               - CS - N
+topzoom               - CS - -
 trace                 S -  - N
 unfocus               - -  - N
 unsqueeze             - CS - N
@@ -150,7 +150,7 @@ warpto                S -  - N
 warptoiconmgr         S -  - N
 warptoscreen          S -  - N
 winrefresh            - CS - N
-zoom                  - CS - N
+zoom                  - CS - -
 # END(main)
 
 
