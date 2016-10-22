@@ -108,7 +108,7 @@ bool WindowMoved = false;
  * it's unclear as to whether we should even be doing this anymore, but
  * since we are, we use a global to ease tracking whether we need to
  * unset it.  There are cases deeper down in function handling that may
- * do their own fudgery and want the pointer left along after they
+ * do their own fudgery and want the pointer left alone after they
  * return.
  */
 bool func_reset_cursor;
