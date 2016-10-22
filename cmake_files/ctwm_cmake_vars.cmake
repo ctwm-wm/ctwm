@@ -30,6 +30,7 @@ set(CTWMSRC
 	event_utils.c
 	functions.c
 	functions_icmgr_wsmgr.c
+	functions_win_moveresize.c
 	gc.c
 	iconmgr.c
 	icons.c

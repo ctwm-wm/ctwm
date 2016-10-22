@@ -39,7 +39,7 @@ backmapiconmgr        - -  - -
 beep                  - -  - N
 bottomzoom            - CS - N
 changepriority        S CS - N
-changesize            S CS - N
+changesize            S CS - -
 circledown            - -  - N
 circleup              - -  - N
 colormap              S -  - N
@@ -67,7 +67,7 @@ horizoom              - CS - N
 hypermove             - CM - N
 iconify               - CS - N
 identify              - CS - N
-initsize              - CS - N
+initsize              - CS - -
 jumpdown              S CM - N
 jumpleft              S CM - N
 jumpright             S CM - N
@@ -81,7 +81,7 @@ move                  - CM - N
 movemenu              - -  - N
 movepack              - CM - N
 movepush              - CM - N
-moveresize            S CS - N
+moveresize            S CS - -
 movetitlebar          - CM - N
 movetonextworkspace   - CS - N
 movetonextworkspaceandfollow - CS - N

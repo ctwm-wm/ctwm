@@ -46,6 +46,12 @@ DFHANDLER(setbuttonsstate);
 DFHANDLER(setmapstate);
 
 
+/* functions_win_moveresize.c */
+DFHANDLER(initsize);
+DFHANDLER(moveresize);
+DFHANDLER(changesize);
+
+
 
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in
