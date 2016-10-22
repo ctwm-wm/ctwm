@@ -50,6 +50,12 @@ DFHANDLER(setmapstate);
 DFHANDLER(initsize);
 DFHANDLER(moveresize);
 DFHANDLER(changesize);
+DFHANDLER(savegeometry);
+DFHANDLER(restoregeometry);
+DFHANDLER(move);
+DFHANDLER(forcemove);
+DFHANDLER(movepack);
+DFHANDLER(movepush);
 
 
 

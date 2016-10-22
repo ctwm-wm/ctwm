@@ -17,11 +17,12 @@ typedef enum {
 	MOVE_HORIZ,
 } CMoveDir;
 
-/* Needed in event_handlers.c */
+/* From functions_win_moveresize.c: needed in event_handlers.c */
 extern bool ConstMove;
 extern CMoveDir ConstMoveDir;
 extern int ConstMoveX;
 extern int ConstMoveY;
+
 
 void draw_info_window(void);
 

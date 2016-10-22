@@ -54,7 +54,7 @@ exec                  S -  - N
 fill                  S CS - N
 fittocontent          - CS - N
 focus                 - CS - N
-forcemove             - CM - N
+forcemove             - CM - -
 forwiconmgr           - -  - -
 forwmapiconmgr        - -  - -
 fullscreenzoom        - CS - N
@@ -77,10 +77,10 @@ leftworkspace         - -  - N
 leftzoom              - CS - N
 lower                 - CS - N
 menu                  S -  - N
-move                  - CM - N
+move                  - CM - -
 movemenu              - -  - N
-movepack              - CM - N
-movepush              - CM - N
+movepack              - CM - -
+movepush              - CM - -
 moveresize            S CS - -
 movetitlebar          - CM - N
 movetonextworkspace   - CS - N
@@ -108,12 +108,12 @@ rereadsounds          - -  SOUNDS -
 rescuewindows         - -  - N
 resize                - CM - N
 restart               - -  - N
-restoregeometry       - CS - N
+restoregeometry       - CS - -
 righticonmgr          - -  - -
 rightworkspace        - -  - N
 rightzoom             - CS - N
 ring                  - CS - N
-savegeometry          - CS - N
+savegeometry          - CS - -
 saveyourself          - CS - N
 separator             - -  - N
 setbuttonsstate       - -  - -
