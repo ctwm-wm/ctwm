@@ -287,7 +287,10 @@ EOF
 		fi
 	done << EOF
 	$(getsect main \
-		| awk '{ if ($5 != "N") {printf "%s %s %s\n", toupper($1), $1, $4} }')
+		| awk '{ if ($5 != "N") {printf "%s %s %s\n", toupper($1), $1, $4} }'
+	  getsect synthetic \
+		| awk '{ if ($2 != "N") {printf "%s %s -\n",  toupper($1), $1} }'
+	)
 EOF
 
 	cat << EOF
