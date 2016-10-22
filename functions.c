@@ -152,7 +152,8 @@ static Cursor NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
-int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction); // XXX temp not static
+int FindConstraint(TwmWindow *tmp_win,
+                   MoveFillDir direction); // XXX temp not static
 
 
 /***********************************************************************
