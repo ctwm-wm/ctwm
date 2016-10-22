@@ -92,7 +92,7 @@ nextworkspace         - -  - N
 nop                   - -  - -
 occupy                - CS - N
 occupyall             - CS - N
-pack                  S CS - N
+pack                  S CS - -
 pin                   - -  - N
 previconmgr           - -  - -
 prevworkspace         - -  - N

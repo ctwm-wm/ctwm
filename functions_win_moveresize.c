@@ -32,6 +32,14 @@ bool belongs_to_twm_window(TwmWindow *t, Window w);
 extern Time last_time;
 extern bool func_reset_cursor;
 
+typedef enum {
+	MFD_BOTTOM,
+	MFD_LEFT,
+	MFD_RIGHT,
+	MFD_TOP,
+} MoveFillDir;
+int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
+
 
 /*
  * Constrained move variables
@@ -803,4 +811,77 @@ DFHANDLER(resize)
 		}
 	}
 	return;
+}
+
+
+/*
+ * f.pack
+ *
+ * XXX Collapse this down; no need for an extra level of indirection on
+ * the function calling.
+ */
+static void packwindow(TwmWindow *tmp_win, const char *direction);
+DFHANDLER(pack)
+{
+	if(tmp_win->squeezed) {
+		XBell(dpy, 0);
+		return;
+	}
+	packwindow(tmp_win, action);
+}
+
+static void
+packwindow(TwmWindow *tmp_win, const char *direction)
+{
+	int          cons, newx, newy;
+	int          x, y, px, py, junkX, junkY;
+	unsigned int junkK;
+	Window       junkW;
+
+	if(!strcmp(direction,   "left")) {
+		cons  = FindConstraint(tmp_win, MFD_LEFT);
+		if(cons == -1) {
+			return;
+		}
+		newx  = cons;
+		newy  = tmp_win->frame_y;
+	}
+	else if(!strcmp(direction,  "right")) {
+		cons  = FindConstraint(tmp_win, MFD_RIGHT);
+		if(cons == -1) {
+			return;
+		}
+		newx  = cons;
+		newx -= tmp_win->frame_width + 2 * tmp_win->frame_bw;
+		newy  = tmp_win->frame_y;
+	}
+	else if(!strcmp(direction,    "top")) {
+		cons  = FindConstraint(tmp_win, MFD_TOP);
+		if(cons == -1) {
+			return;
+		}
+		newx  = tmp_win->frame_x;
+		newy  = cons;
+	}
+	else if(!strcmp(direction, "bottom")) {
+		cons  = FindConstraint(tmp_win, MFD_BOTTOM);
+		if(cons == -1) {
+			return;
+		}
+		newx  = tmp_win->frame_x;
+		newy  = cons;
+		newy -= tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	}
+	else {
+		return;
+	}
+
+	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &x, &y, &junkK);
+	px = x - tmp_win->frame_x + newx;
+	py = y - tmp_win->frame_y + newy;
+	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, px, py);
+	OtpRaise(tmp_win, WinWin);
+	XMoveWindow(dpy, tmp_win->frame, newx, newy);
+	SetupWindow(tmp_win, newx, newy, tmp_win->frame_width,
+	            tmp_win->frame_height, -1);
 }

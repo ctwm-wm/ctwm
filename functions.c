@@ -145,7 +145,6 @@ static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
 static bool DeferExecution(int context, int func, Cursor cursor);
 static void Identify(TwmWindow *t);
 bool belongs_to_twm_window(TwmWindow *t, Window w); // XXX temp not static
-static void packwindow(TwmWindow *tmp_win, const char *direction);
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
 static bool should_defer(int func);
 static Cursor defer_cursor(int func);
@@ -153,7 +152,7 @@ static Cursor NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
 static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
 static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
-static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
+int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction); // XXX temp not static
 
 
 /***********************************************************************
@@ -625,84 +624,6 @@ EF_core(EF_FULLPROTO)
 				}
 				WarpToWindow(tmp_win, Scr->RaiseOnWarp);
 			}
-			break;
-
-		case F_RESIZE:
-			PopDownMenu();
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			EventHandler[EnterNotify] = HandleUnknown;
-			EventHandler[LeaveNotify] = HandleUnknown;
-
-			OpaqueResizeSize(tmp_win);
-
-			if(pulldown)
-				XWarpPointer(dpy, None, Scr->Root,
-				             0, 0, 0, 0, eventp->xbutton.x_root, eventp->xbutton.y_root);
-
-			if(!tmp_win->icon || (w != tmp_win->icon->w)) {         /* can't resize icons */
-
-				/*        fromMenu = False;  ????? */
-				if((Context == C_FRAME || Context == C_WINDOW || Context == C_TITLE
-				                || Context == C_ROOT)
-				                && cur_fromMenu()) {
-					resizeFromCenter(w, tmp_win);
-				}
-				else {
-					/*
-					 * see if this is being done from the titlebar
-					 */
-					bool from3dborder = (eventp->xbutton.window == tmp_win->frame);
-					bool fromtitlebar = !from3dborder &&
-					                    belongs_to_twm_window(tmp_win, eventp->xbutton.window);
-
-					/* Save pointer position so we can tell if it was moved or
-					   not during the resize. */
-					ResizeOrigX = eventp->xbutton.x_root;
-					ResizeOrigY = eventp->xbutton.y_root;
-
-					StartResize(eventp, tmp_win, fromtitlebar, from3dborder);
-					func_reset_cursor = false;  // Leave special cursor alone
-
-					do {
-						XMaskEvent(dpy,
-						           ButtonPressMask | ButtonReleaseMask |
-						           EnterWindowMask | LeaveWindowMask |
-						           ButtonMotionMask | VisibilityChangeMask | ExposureMask, &Event);
-
-						if(fromtitlebar && Event.type == ButtonPress) {
-							fromtitlebar = false;
-							continue;
-						}
-
-						if(Event.type == MotionNotify) {
-							/* discard any extra motion events before a release */
-							while
-							(XCheckMaskEvent
-							                (dpy, ButtonMotionMask | ButtonReleaseMask, &Event))
-								if(Event.type == ButtonRelease) {
-									break;
-								}
-						}
-
-						if(!DispatchEvent2()) {
-							continue;
-						}
-
-					}
-					while(!(Event.type == ButtonRelease || Cancel));
-				}
-			}
-			break;
-
-		case F_PACK:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			packwindow(tmp_win, action);
 			break;
 
 		case F_FILL:
@@ -1949,64 +1870,6 @@ belongs_to_twm_window(TwmWindow *t, Window w)
 }
 
 
-/* f.pack */
-static void
-packwindow(TwmWindow *tmp_win, const char *direction)
-{
-	int          cons, newx, newy;
-	int          x, y, px, py, junkX, junkY;
-	unsigned int junkK;
-	Window       junkW;
-
-	if(!strcmp(direction,   "left")) {
-		cons  = FindConstraint(tmp_win, MFD_LEFT);
-		if(cons == -1) {
-			return;
-		}
-		newx  = cons;
-		newy  = tmp_win->frame_y;
-	}
-	else if(!strcmp(direction,  "right")) {
-		cons  = FindConstraint(tmp_win, MFD_RIGHT);
-		if(cons == -1) {
-			return;
-		}
-		newx  = cons;
-		newx -= tmp_win->frame_width + 2 * tmp_win->frame_bw;
-		newy  = tmp_win->frame_y;
-	}
-	else if(!strcmp(direction,    "top")) {
-		cons  = FindConstraint(tmp_win, MFD_TOP);
-		if(cons == -1) {
-			return;
-		}
-		newx  = tmp_win->frame_x;
-		newy  = cons;
-	}
-	else if(!strcmp(direction, "bottom")) {
-		cons  = FindConstraint(tmp_win, MFD_BOTTOM);
-		if(cons == -1) {
-			return;
-		}
-		newx  = tmp_win->frame_x;
-		newy  = cons;
-		newy -= tmp_win->frame_height + 2 * tmp_win->frame_bw;
-	}
-	else {
-		return;
-	}
-
-	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &x, &y, &junkK);
-	px = x - tmp_win->frame_x + newx;
-	py = y - tmp_win->frame_y + newy;
-	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, px, py);
-	OtpRaise(tmp_win, WinWin);
-	XMoveWindow(dpy, tmp_win->frame, newx, newy);
-	SetupWindow(tmp_win, newx, newy, tmp_win->frame_width,
-	            tmp_win->frame_height, -1);
-}
-
-
 /* f.fill */
 static void
 fillwindow(TwmWindow *tmp_win, const char *direction)
@@ -2427,7 +2290,7 @@ SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp)
 }
 
 
-static int
+int
 FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 {
 	TwmWindow  *t;
