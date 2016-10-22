@@ -56,6 +56,7 @@ static DFHANDLER(rereadsounds);
 #endif
 
 static DFHANDLER(nop);
+static DFHANDLER(separator);
 static DFHANDLER(title);
 static DFHANDLER(deltastop);
 static DFHANDLER(function);
@@ -2050,9 +2051,15 @@ DFHANDLER(rereadsounds)
  * which we expect to exist.
  */
 
-/* f.nop and f.title really only exist to make lines in menus */
+/* f.nop, f.title, f.separator really only exist to make lines in menus */
 static
 DFHANDLER(nop)
+{
+	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}
+static
+DFHANDLER(separator)
 {
 	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
 	return;

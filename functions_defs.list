@@ -115,7 +115,7 @@ rightzoom             - CS - -
 ring                  - CS - N
 savegeometry          - CS - -
 saveyourself          - CS - N
-separator             - -  - N
+separator             - -  - -
 setbuttonsstate       - -  - -
 setmapstate           - -  - -
 setpriority           S CS - N
