@@ -30,18 +30,13 @@ DFHANDLER(lefticonmgr);
 DFHANDLER(righticonmgr);
 DFHANDLER(forwiconmgr);
 DFHANDLER(backiconmgr);
-
 DFHANDLER(forwmapiconmgr);
 DFHANDLER(backmapiconmgr);
-
 DFHANDLER(nexticonmgr);
 DFHANDLER(previconmgr);
-
 DFHANDLER(showiconmgr);
 DFHANDLER(hideiconmgr);
-
 DFHANDLER(sorticonmgr);
-
 
 DFHANDLER(showworkspacemgr);
 DFHANDLER(hideworkspacemgr);
