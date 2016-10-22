@@ -81,151 +81,17 @@ int ResizeOrigY;
  * Now, on to the actual handlers.
  */
 
+
 /*
- * Resizing to a window's idea of its "normal" size, from WM_NORMAL_HINTS
- * property.
+ *********************************************************
+ *
+ * First, the various methods of moving windows around.
+ *
+ *********************************************************
  */
-DFHANDLER(initsize)
-{
-	int grav, x, y;
-	unsigned int width, height, swidth, sheight;
-
-	grav = ((tmp_win->hints.flags & PWinGravity)
-	        ? tmp_win->hints.win_gravity : NorthWestGravity);
-
-	if(!(tmp_win->hints.flags & USSize) && !(tmp_win->hints.flags & PSize)) {
-		return;
-	}
-
-	width  = tmp_win->hints.width  + 2 * tmp_win->frame_bw3D;
-	height  = tmp_win->hints.height + 2 * tmp_win->frame_bw3D +
-	          tmp_win->title_height;
-	ConstrainSize(tmp_win, &width, &height);
-
-	x  = tmp_win->frame_x;
-	y  = tmp_win->frame_y;
-	swidth = tmp_win->frame_width;
-	sheight = tmp_win->frame_height;
-
-	switch(grav) {
-		case ForgetGravity:
-		case StaticGravity:
-		case NorthWestGravity:
-		case NorthGravity:
-		case WestGravity:
-		case CenterGravity:
-			break;
-
-		case NorthEastGravity:
-		case EastGravity:
-			x += swidth - width;
-			break;
-
-		case SouthWestGravity:
-		case SouthGravity:
-			y += sheight - height;
-			break;
-
-		case SouthEastGravity:
-			x += swidth - width;
-			y += sheight - height;
-			break;
-	}
-
-	SetupWindow(tmp_win, x, y, width, height, -1);
-	return;
-}
-
-
 
 /*
- * Setting a window to a specific specified geometry string.
- */
-DFHANDLER(moveresize)
-{
-	int x, y, mask;
-	unsigned int width, height;
-	int px = 20, py = 30;
-
-	mask = XParseGeometry(action, &x, &y, &width, &height);
-	if(!(mask &  WidthValue)) {
-		width = tmp_win->frame_width;
-	}
-	else {
-		width += 2 * tmp_win->frame_bw3D;
-	}
-	if(!(mask & HeightValue)) {
-		height = tmp_win->frame_height;
-	}
-	else {
-		height += 2 * tmp_win->frame_bw3D + tmp_win->title_height;
-	}
-	ConstrainSize(tmp_win, &width, &height);
-	if(mask & XValue) {
-		if(mask & XNegative) {
-			x += Scr->rootw  - width;
-		}
-	}
-	else {
-		x = tmp_win->frame_x;
-	}
-	if(mask & YValue) {
-		if(mask & YNegative) {
-			y += Scr->rooth - height;
-		}
-	}
-	else {
-		y = tmp_win->frame_y;
-	}
-
-	{
-		int          junkX, junkY;
-		unsigned int junkK;
-		Window       junkW;
-		XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &px, &py, &junkK);
-	}
-	px -= tmp_win->frame_x;
-	if(px > width) {
-		px = width / 2;
-	}
-	py -= tmp_win->frame_y;
-	if(py > height) {
-		px = height / 2;
-	}
-
-	SetupWindow(tmp_win, x, y, width, height, -1);
-	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, x + px, y + py);
-	return;
-}
-
-
-/*
- * Making a specified alteration to a window's size
- */
-DFHANDLER(changesize)
-{
-	/* XXX Only use of this func; should we collapse? */
-	ChangeSize(action, tmp_win);
-}
-
-
-/*
- * Stashing and flipping back to a geometry
- */
-DFHANDLER(savegeometry)
-{
-	savegeometry(tmp_win);
-}
-
-DFHANDLER(restoregeometry)
-{
-	restoregeometry(tmp_win);
-}
-
-
-
-/*
- * Moving windows around
+ * Simple f.move and related
  */
 static void movewindow(EF_FULLPROTO);
 DFHANDLER(move)
@@ -244,7 +110,6 @@ DFHANDLER(movepush)
 {
 	movewindow(EF_ARGS);
 }
-
 
 /* f.move and friends backend */
 static void
@@ -723,47 +588,195 @@ movewindow(EF_FULLPROTO)
 }
 
 
-
 /*
- * f.fullzoom and its siblings
+ * f.pack -- moving until collision
+ *
+ * XXX Collapse this down; no need for an extra level of indirection on
+ * the function calling.
  */
-DFHANDLER(zoom)
+static void packwindow(TwmWindow *tmp_win, const char *direction);
+DFHANDLER(pack)
 {
-	fullzoom(tmp_win, func);
+	if(tmp_win->squeezed) {
+		XBell(dpy, 0);
+		return;
+	}
+	packwindow(tmp_win, action);
 }
-DFHANDLER(horizoom)
+
+static void
+packwindow(TwmWindow *tmp_win, const char *direction)
 {
-	fullzoom(tmp_win, func);
+	int          cons, newx, newy;
+	int          x, y, px, py, junkX, junkY;
+	unsigned int junkK;
+	Window       junkW;
+
+	if(!strcmp(direction,   "left")) {
+		cons  = FindConstraint(tmp_win, MFD_LEFT);
+		if(cons == -1) {
+			return;
+		}
+		newx  = cons;
+		newy  = tmp_win->frame_y;
+	}
+	else if(!strcmp(direction,  "right")) {
+		cons  = FindConstraint(tmp_win, MFD_RIGHT);
+		if(cons == -1) {
+			return;
+		}
+		newx  = cons;
+		newx -= tmp_win->frame_width + 2 * tmp_win->frame_bw;
+		newy  = tmp_win->frame_y;
+	}
+	else if(!strcmp(direction,    "top")) {
+		cons  = FindConstraint(tmp_win, MFD_TOP);
+		if(cons == -1) {
+			return;
+		}
+		newx  = tmp_win->frame_x;
+		newy  = cons;
+	}
+	else if(!strcmp(direction, "bottom")) {
+		cons  = FindConstraint(tmp_win, MFD_BOTTOM);
+		if(cons == -1) {
+			return;
+		}
+		newx  = tmp_win->frame_x;
+		newy  = cons;
+		newy -= tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	}
+	else {
+		return;
+	}
+
+	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &x, &y, &junkK);
+	px = x - tmp_win->frame_x + newx;
+	py = y - tmp_win->frame_y + newy;
+	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, px, py);
+	OtpRaise(tmp_win, WinWin);
+	XMoveWindow(dpy, tmp_win->frame, newx, newy);
+	SetupWindow(tmp_win, newx, newy, tmp_win->frame_width,
+	            tmp_win->frame_height, -1);
 }
-DFHANDLER(fullzoom)
+
+
+/*
+ * f.jump* -- moving incrementally in various directions
+ */
+static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
+DFHANDLER(jumpleft)
 {
-	fullzoom(tmp_win, func);
+	jump(tmp_win, MFD_LEFT, action);
 }
-DFHANDLER(fullscreenzoom)
+DFHANDLER(jumpright)
 {
-	fullzoom(tmp_win, func);
+	jump(tmp_win, MFD_RIGHT, action);
 }
-DFHANDLER(leftzoom)
+DFHANDLER(jumpdown)
 {
-	fullzoom(tmp_win, func);
+	jump(tmp_win, MFD_BOTTOM, action);
 }
-DFHANDLER(rightzoom)
+DFHANDLER(jumpup)
 {
-	fullzoom(tmp_win, func);
+	jump(tmp_win, MFD_TOP, action);
 }
-DFHANDLER(topzoom)
+
+static void
+jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action)
 {
-	fullzoom(tmp_win, func);
-}
-DFHANDLER(bottomzoom)
-{
-	fullzoom(tmp_win, func);
+	int          fx, fy, px, py, step, status, cons;
+	int          fwidth, fheight;
+	int          junkX, junkY;
+	unsigned int junkK;
+	Window       junkW;
+
+	if(tmp_win->squeezed) {
+		XBell(dpy, 0);
+		return;
+	}
+
+	if(! action) {
+		return;
+	}
+	status = sscanf(action, "%d", &step);
+	if(status != 1) {
+		return;
+	}
+	if(step < 1) {
+		return;
+	}
+
+	fx = tmp_win->frame_x;
+	fy = tmp_win->frame_y;
+	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &px, &py, &junkK);
+	px -= fx;
+	py -= fy;
+
+	fwidth  = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
+	fheight = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	switch(direction) {
+		case MFD_LEFT:
+			cons  = FindConstraint(tmp_win, MFD_LEFT);
+			if(cons == -1) {
+				return;
+			}
+			fx -= step * Scr->XMoveGrid;
+			if(fx < cons) {
+				fx = cons;
+			}
+			break;
+		case MFD_RIGHT:
+			cons  = FindConstraint(tmp_win, MFD_RIGHT);
+			if(cons == -1) {
+				return;
+			}
+			fx += step * Scr->XMoveGrid;
+			if(fx + fwidth > cons) {
+				fx = cons - fwidth;
+			}
+			break;
+		case MFD_TOP:
+			cons  = FindConstraint(tmp_win, MFD_TOP);
+			if(cons == -1) {
+				return;
+			}
+			fy -= step * Scr->YMoveGrid;
+			if(fy < cons) {
+				fy = cons;
+			}
+			break;
+		case MFD_BOTTOM:
+			cons  = FindConstraint(tmp_win, MFD_BOTTOM);
+			if(cons == -1) {
+				return;
+			}
+			fy += step * Scr->YMoveGrid;
+			if(fy + fheight > cons) {
+				fy = cons - fheight;
+			}
+			break;
+	}
+	/* Pebl Fixme: don't warp if jump happens through iconmgr */
+	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, fx + px, fy + py);
+	if(!Scr->NoRaiseMove) {
+		OtpRaise(tmp_win, WinWin);
+	}
+	SetupWindow(tmp_win, fx, fy, tmp_win->frame_width, tmp_win->frame_height, -1);
 }
 
 
 
 /*
- * The main f.resize handler
+ *********************************************************
+ *
+ * Next up, straightforward resizing operations
+ *
+ *********************************************************
+ */
+
+/*
+ * Standard f.resize
  */
 DFHANDLER(resize)
 {
@@ -839,83 +852,46 @@ DFHANDLER(resize)
 
 
 /*
- * f.pack
- *
- * XXX Collapse this down; no need for an extra level of indirection on
- * the function calling.
+ * The various zoom resizes
  */
-static void packwindow(TwmWindow *tmp_win, const char *direction);
-DFHANDLER(pack)
+DFHANDLER(zoom)
 {
-	if(tmp_win->squeezed) {
-		XBell(dpy, 0);
-		return;
-	}
-	packwindow(tmp_win, action);
+	fullzoom(tmp_win, func);
 }
-
-static void
-packwindow(TwmWindow *tmp_win, const char *direction)
+DFHANDLER(horizoom)
 {
-	int          cons, newx, newy;
-	int          x, y, px, py, junkX, junkY;
-	unsigned int junkK;
-	Window       junkW;
-
-	if(!strcmp(direction,   "left")) {
-		cons  = FindConstraint(tmp_win, MFD_LEFT);
-		if(cons == -1) {
-			return;
-		}
-		newx  = cons;
-		newy  = tmp_win->frame_y;
-	}
-	else if(!strcmp(direction,  "right")) {
-		cons  = FindConstraint(tmp_win, MFD_RIGHT);
-		if(cons == -1) {
-			return;
-		}
-		newx  = cons;
-		newx -= tmp_win->frame_width + 2 * tmp_win->frame_bw;
-		newy  = tmp_win->frame_y;
-	}
-	else if(!strcmp(direction,    "top")) {
-		cons  = FindConstraint(tmp_win, MFD_TOP);
-		if(cons == -1) {
-			return;
-		}
-		newx  = tmp_win->frame_x;
-		newy  = cons;
-	}
-	else if(!strcmp(direction, "bottom")) {
-		cons  = FindConstraint(tmp_win, MFD_BOTTOM);
-		if(cons == -1) {
-			return;
-		}
-		newx  = tmp_win->frame_x;
-		newy  = cons;
-		newy -= tmp_win->frame_height + 2 * tmp_win->frame_bw;
-	}
-	else {
-		return;
-	}
-
-	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &x, &y, &junkK);
-	px = x - tmp_win->frame_x + newx;
-	py = y - tmp_win->frame_y + newy;
-	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, px, py);
-	OtpRaise(tmp_win, WinWin);
-	XMoveWindow(dpy, tmp_win->frame, newx, newy);
-	SetupWindow(tmp_win, newx, newy, tmp_win->frame_width,
-	            tmp_win->frame_height, -1);
+	fullzoom(tmp_win, func);
 }
-
+DFHANDLER(fullzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(fullscreenzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(leftzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(rightzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(topzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(bottomzoom)
+{
+	fullzoom(tmp_win, func);
+}
 
 
 /*
- * f.fill handling.
+ * f.fill - resizing until collision
  *
- * XXX Similar to above, collapse away this extra level of function.
+ * XXX Similar to f.pack's, collapse away this extra level of function.
  */
 static void fillwindow(TwmWindow *tmp_win, const char *direction);
 DFHANDLER(fill)
@@ -1050,112 +1026,166 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 
 
 /*
- * f.jump*
+ *********************************************************
+ *
+ * Resizing/moving to specified geometries
+ *
+ *********************************************************
  */
-static void jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action);
-DFHANDLER(jumpleft)
-{
-	jump(tmp_win, MFD_LEFT, action);
-}
-DFHANDLER(jumpright)
-{
-	jump(tmp_win, MFD_RIGHT, action);
-}
-DFHANDLER(jumpdown)
-{
-	jump(tmp_win, MFD_BOTTOM, action);
-}
-DFHANDLER(jumpup)
-{
-	jump(tmp_win, MFD_TOP, action);
-}
 
-static void
-jump(TwmWindow *tmp_win, MoveFillDir direction, const char *action)
+/*
+ * Resizing to a window's idea of its "normal" size, from WM_NORMAL_HINTS
+ * property.
+ */
+DFHANDLER(initsize)
 {
-	int          fx, fy, px, py, step, status, cons;
-	int          fwidth, fheight;
-	int          junkX, junkY;
-	unsigned int junkK;
-	Window       junkW;
+	int grav, x, y;
+	unsigned int width, height, swidth, sheight;
 
-	if(tmp_win->squeezed) {
-		XBell(dpy, 0);
+	grav = ((tmp_win->hints.flags & PWinGravity)
+	        ? tmp_win->hints.win_gravity : NorthWestGravity);
+
+	if(!(tmp_win->hints.flags & USSize) && !(tmp_win->hints.flags & PSize)) {
 		return;
 	}
 
-	if(! action) {
-		return;
-	}
-	status = sscanf(action, "%d", &step);
-	if(status != 1) {
-		return;
-	}
-	if(step < 1) {
-		return;
+	width  = tmp_win->hints.width  + 2 * tmp_win->frame_bw3D;
+	height  = tmp_win->hints.height + 2 * tmp_win->frame_bw3D +
+	          tmp_win->title_height;
+	ConstrainSize(tmp_win, &width, &height);
+
+	x  = tmp_win->frame_x;
+	y  = tmp_win->frame_y;
+	swidth = tmp_win->frame_width;
+	sheight = tmp_win->frame_height;
+
+	switch(grav) {
+		case ForgetGravity:
+		case StaticGravity:
+		case NorthWestGravity:
+		case NorthGravity:
+		case WestGravity:
+		case CenterGravity:
+			break;
+
+		case NorthEastGravity:
+		case EastGravity:
+			x += swidth - width;
+			break;
+
+		case SouthWestGravity:
+		case SouthGravity:
+			y += sheight - height;
+			break;
+
+		case SouthEastGravity:
+			x += swidth - width;
+			y += sheight - height;
+			break;
 	}
 
-	fx = tmp_win->frame_x;
-	fy = tmp_win->frame_y;
-	XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &px, &py, &junkK);
-	px -= fx;
-	py -= fy;
-
-	fwidth  = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	fheight = tmp_win->frame_height + 2 * tmp_win->frame_bw;
-	switch(direction) {
-		case MFD_LEFT:
-			cons  = FindConstraint(tmp_win, MFD_LEFT);
-			if(cons == -1) {
-				return;
-			}
-			fx -= step * Scr->XMoveGrid;
-			if(fx < cons) {
-				fx = cons;
-			}
-			break;
-		case MFD_RIGHT:
-			cons  = FindConstraint(tmp_win, MFD_RIGHT);
-			if(cons == -1) {
-				return;
-			}
-			fx += step * Scr->XMoveGrid;
-			if(fx + fwidth > cons) {
-				fx = cons - fwidth;
-			}
-			break;
-		case MFD_TOP:
-			cons  = FindConstraint(tmp_win, MFD_TOP);
-			if(cons == -1) {
-				return;
-			}
-			fy -= step * Scr->YMoveGrid;
-			if(fy < cons) {
-				fy = cons;
-			}
-			break;
-		case MFD_BOTTOM:
-			cons  = FindConstraint(tmp_win, MFD_BOTTOM);
-			if(cons == -1) {
-				return;
-			}
-			fy += step * Scr->YMoveGrid;
-			if(fy + fheight > cons) {
-				fy = cons - fheight;
-			}
-			break;
-	}
-	/* Pebl Fixme: don't warp if jump happens through iconmgr */
-	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, fx + px, fy + py);
-	if(!Scr->NoRaiseMove) {
-		OtpRaise(tmp_win, WinWin);
-	}
-	SetupWindow(tmp_win, fx, fy, tmp_win->frame_width, tmp_win->frame_height, -1);
+	SetupWindow(tmp_win, x, y, width, height, -1);
+	return;
 }
 
 
 /*
- * Util used in the various move/fill/pack/etc bits
+ * Setting a window to a specific specified geometry string.
+ */
+DFHANDLER(moveresize)
+{
+	int x, y, mask;
+	unsigned int width, height;
+	int px = 20, py = 30;
+
+	mask = XParseGeometry(action, &x, &y, &width, &height);
+	if(!(mask &  WidthValue)) {
+		width = tmp_win->frame_width;
+	}
+	else {
+		width += 2 * tmp_win->frame_bw3D;
+	}
+	if(!(mask & HeightValue)) {
+		height = tmp_win->frame_height;
+	}
+	else {
+		height += 2 * tmp_win->frame_bw3D + tmp_win->title_height;
+	}
+	ConstrainSize(tmp_win, &width, &height);
+	if(mask & XValue) {
+		if(mask & XNegative) {
+			x += Scr->rootw  - width;
+		}
+	}
+	else {
+		x = tmp_win->frame_x;
+	}
+	if(mask & YValue) {
+		if(mask & YNegative) {
+			y += Scr->rooth - height;
+		}
+	}
+	else {
+		y = tmp_win->frame_y;
+	}
+
+	{
+		int          junkX, junkY;
+		unsigned int junkK;
+		Window       junkW;
+		XQueryPointer(dpy, Scr->Root, &junkW, &junkW, &junkX, &junkY, &px, &py, &junkK);
+	}
+	px -= tmp_win->frame_x;
+	if(px > width) {
+		px = width / 2;
+	}
+	py -= tmp_win->frame_y;
+	if(py > height) {
+		px = height / 2;
+	}
+
+	SetupWindow(tmp_win, x, y, width, height, -1);
+	XWarpPointer(dpy, Scr->Root, Scr->Root, 0, 0, 0, 0, x + px, y + py);
+	return;
+}
+
+
+/*
+ * Making a specified alteration to a window's size
+ */
+DFHANDLER(changesize)
+{
+	/* XXX Only use of this func; should we collapse? */
+	ChangeSize(action, tmp_win);
+}
+
+
+/*
+ * Stashing and flipping back to a geometry
+ */
+DFHANDLER(savegeometry)
+{
+	savegeometry(tmp_win);
+}
+
+DFHANDLER(restoregeometry)
+{
+	restoregeometry(tmp_win);
+}
+
+
+
+
+/*
+ *********************************************************
+ *
+ * Misc utils used in the above
+ *
+ *********************************************************
+ */
+
+/*
+ * Used in the various move/fill/pack/etc bits
  */
 static int
 FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
