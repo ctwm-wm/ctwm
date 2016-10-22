@@ -697,22 +697,6 @@ EF_core(EF_FULLPROTO)
 			}
 			break;
 
-
-		case F_ZOOM:
-		case F_HORIZOOM:
-		case F_FULLZOOM:
-		case F_FULLSCREENZOOM:
-		case F_LEFTZOOM:
-		case F_RIGHTZOOM:
-		case F_TOPZOOM:
-		case F_BOTTOMZOOM:
-			if(tmp_win->squeezed) {
-				XBell(dpy, 0);
-				break;
-			}
-			fullzoom(tmp_win, func);
-			break;
-
 		case F_PACK:
 			if(tmp_win->squeezed) {
 				XBell(dpy, 0);
