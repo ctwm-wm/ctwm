@@ -456,47 +456,6 @@ EF_core(EF_FULLPROTO)
 			ModifyAnimationSpeed(-1);
 			break;
 
-		case F_SHOWWORKSPACEMGR:
-			if(! Scr->workSpaceManagerActive) {
-				break;
-			}
-			DeIconify(Scr->currentvs->wsw->twm_win);
-			OtpRaise(Scr->currentvs->wsw->twm_win, WinWin);
-			break;
-
-		case F_HIDEWORKSPACEMGR:
-			if(! Scr->workSpaceManagerActive) {
-				break;
-			}
-			Iconify(Scr->currentvs->wsw->twm_win, eventp->xbutton.x_root - 5,
-			        eventp->xbutton.y_root - 5);
-			break;
-
-		case F_TOGGLEWORKSPACEMGR:
-			if(! Scr->workSpaceManagerActive) {
-				break;
-			}
-			if(Scr->currentvs->wsw->twm_win->mapped)
-				Iconify(Scr->currentvs->wsw->twm_win, eventp->xbutton.x_root - 5,
-				        eventp->xbutton.y_root - 5);
-			else {
-				DeIconify(Scr->currentvs->wsw->twm_win);
-				OtpRaise(Scr->currentvs->wsw->twm_win, WinWin);
-			}
-			break;
-
-		case F_TOGGLESTATE:
-			WMgrToggleState(Scr->currentvs);
-			break;
-
-		case F_SETBUTTONSSTATE:
-			WMgrSetButtonsState(Scr->currentvs);
-			break;
-
-		case F_SETMAPSTATE:
-			WMgrSetMapState(Scr->currentvs);
-			break;
-
 		case F_PIN:
 			if(! ActiveMenu) {
 				break;

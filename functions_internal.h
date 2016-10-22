@@ -43,6 +43,14 @@ DFHANDLER(hideiconmgr);
 DFHANDLER(sorticonmgr);
 
 
+DFHANDLER(showworkspacemgr);
+DFHANDLER(hideworkspacemgr);
+DFHANDLER(toggleworkspacemgr);
+DFHANDLER(togglestate);
+DFHANDLER(setbuttonsstate);
+DFHANDLER(setmapstate);
+
+
 
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in

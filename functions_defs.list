@@ -62,7 +62,7 @@ fullzoom              - CS - N
 function              S -  - -
 gotoworkspace         S -  - N
 hideiconmgr           - -  - -
-hideworkspacemgr      - -  - N
+hideworkspacemgr      - -  - -
 horizoom              - CS - N
 hypermove             - CM - N
 iconify               - CS - N
@@ -116,12 +116,12 @@ ring                  - CS - N
 savegeometry          - CS - N
 saveyourself          - CS - N
 separator             - -  - N
-setbuttonsstate       - -  - N
-setmapstate           - -  - N
+setbuttonsstate       - -  - -
+setmapstate           - -  - -
 setpriority           S CS - N
 showbackground        - -  - N
 showiconmgr           - -  - -
-showworkspacemgr      - -  - N
+showworkspacemgr      - -  - -
 slowdownanimation     - -  - N
 sorticonmgr           - CS - -
 speedupanimation      - -  - N
@@ -134,8 +134,8 @@ tinyraise             - CS - N
 title                 - -  - -
 toggleoccupation      S CS - N
 togglesound           - -  SOUNDS -
-togglestate           - -  - N
-toggleworkspacemgr    - -  - N
+togglestate           - -  - -
+toggleworkspacemgr    - -  - -
 topzoom               - CS - N
 trace                 S -  - N
 unfocus               - -  - N

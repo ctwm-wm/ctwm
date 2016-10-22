@@ -9,9 +9,10 @@
 #include "icons.h"
 #include "otp.h"
 #include "screen.h"
-//#include "win_iconify.h"
+#include "vscreen.h"
+#include "win_iconify.h"
 #include "win_utils.h"
-//#include "workspace_manager.h"
+#include "workspace_manager.h"
 //#include "workspace_utils.h"
 
 
@@ -182,4 +183,68 @@ DFHANDLER(sorticonmgr)
 	}
 
 	Scr->SortIconMgr = save_sort;
+}
+
+
+
+/*
+ * Now functions related to the workspace manager
+ */
+
+/*
+ * Showing/hiding it
+ */
+DFHANDLER(showworkspacemgr)
+{
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+
+	DeIconify(Scr->currentvs->wsw->twm_win);
+	OtpRaise(Scr->currentvs->wsw->twm_win, WinWin);
+}
+
+DFHANDLER(hideworkspacemgr)
+{
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+
+	Iconify(Scr->currentvs->wsw->twm_win, eventp->xbutton.x_root - 5,
+	        eventp->xbutton.y_root - 5);
+}
+
+DFHANDLER(toggleworkspacemgr)
+{
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+
+	if(Scr->currentvs->wsw->twm_win->mapped) {
+		Iconify(Scr->currentvs->wsw->twm_win, eventp->xbutton.x_root - 5,
+		        eventp->xbutton.y_root - 5);
+	}
+	else {
+		DeIconify(Scr->currentvs->wsw->twm_win);
+		OtpRaise(Scr->currentvs->wsw->twm_win, WinWin);
+	}
+}
+
+
+/*
+ * Flipping around map/button state
+ */
+DFHANDLER(togglestate)
+{
+	WMgrToggleState(Scr->currentvs);
+}
+
+DFHANDLER(setbuttonsstate)
+{
+	WMgrSetButtonsState(Scr->currentvs);
+}
+
+DFHANDLER(setmapstate)
+{
+	WMgrSetMapState(Scr->currentvs);
 }
