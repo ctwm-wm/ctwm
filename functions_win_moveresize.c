@@ -727,3 +727,80 @@ DFHANDLER(bottomzoom)
 {
 	fullzoom(tmp_win, func);
 }
+
+
+
+/*
+ * The main f.resize handler
+ */
+DFHANDLER(resize)
+{
+	PopDownMenu();
+	if(tmp_win->squeezed) {
+		XBell(dpy, 0);
+		return;
+	}
+	EventHandler[EnterNotify] = HandleUnknown;
+	EventHandler[LeaveNotify] = HandleUnknown;
+
+	OpaqueResizeSize(tmp_win);
+
+	if(pulldown)
+		XWarpPointer(dpy, None, Scr->Root,
+		             0, 0, 0, 0, eventp->xbutton.x_root, eventp->xbutton.y_root);
+
+	if(!tmp_win->icon || (w != tmp_win->icon->w)) {         /* can't resize icons */
+
+		/*        fromMenu = False;  ????? */
+		if((Context == C_FRAME || Context == C_WINDOW || Context == C_TITLE
+		                || Context == C_ROOT)
+		                && cur_fromMenu()) {
+			resizeFromCenter(w, tmp_win);
+		}
+		else {
+			/*
+			 * see if this is being done from the titlebar
+			 */
+			bool from3dborder = (eventp->xbutton.window == tmp_win->frame);
+			bool fromtitlebar = !from3dborder &&
+			                    belongs_to_twm_window(tmp_win, eventp->xbutton.window);
+
+			/* Save pointer position so we can tell if it was moved or
+			   not during the resize. */
+			ResizeOrigX = eventp->xbutton.x_root;
+			ResizeOrigY = eventp->xbutton.y_root;
+
+			StartResize(eventp, tmp_win, fromtitlebar, from3dborder);
+			func_reset_cursor = false;  // Leave special cursor alone
+
+			do {
+				XMaskEvent(dpy,
+				           ButtonPressMask | ButtonReleaseMask |
+				           EnterWindowMask | LeaveWindowMask |
+				           ButtonMotionMask | VisibilityChangeMask | ExposureMask, &Event);
+
+				if(fromtitlebar && Event.type == ButtonPress) {
+					fromtitlebar = false;
+					continue;
+				}
+
+				if(Event.type == MotionNotify) {
+					/* discard any extra motion events before a release */
+					while
+					(XCheckMaskEvent
+					                (dpy, ButtonMotionMask | ButtonReleaseMask, &Event))
+						if(Event.type == ButtonRelease) {
+							break;
+						}
+				}
+
+				if(!DispatchEvent2()) {
+					continue;
+				}
+
+			}
+			while(!(Event.type == ButtonRelease || Cancel));
+		}
+	}
+	return;
+}

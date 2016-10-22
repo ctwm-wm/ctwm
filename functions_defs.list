@@ -106,7 +106,7 @@ refresh               - -  - N
 removefromworkspace   S CS - N
 rereadsounds          - -  SOUNDS -
 rescuewindows         - -  - N
-resize                - CM - N
+resize                - CM - -
 restart               - -  - N
 restoregeometry       - CS - -
 righticonmgr          - -  - -
