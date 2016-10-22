@@ -47,15 +47,16 @@ DFHANDLER(setmapstate);
 
 
 /* functions_win_moveresize.c */
-DFHANDLER(initsize);
-DFHANDLER(moveresize);
-DFHANDLER(changesize);
-DFHANDLER(savegeometry);
-DFHANDLER(restoregeometry);
 DFHANDLER(move);
 DFHANDLER(forcemove);
 DFHANDLER(movepack);
 DFHANDLER(movepush);
+DFHANDLER(pack);
+DFHANDLER(jumpleft);
+DFHANDLER(jumpright);
+DFHANDLER(jumpdown);
+DFHANDLER(jumpup);
+DFHANDLER(resize);
 DFHANDLER(zoom);
 DFHANDLER(horizoom);
 DFHANDLER(fullzoom);
@@ -64,13 +65,12 @@ DFHANDLER(leftzoom);
 DFHANDLER(rightzoom);
 DFHANDLER(topzoom);
 DFHANDLER(bottomzoom);
-DFHANDLER(resize);
-DFHANDLER(pack);
 DFHANDLER(fill);
-DFHANDLER(jumpleft);
-DFHANDLER(jumpright);
-DFHANDLER(jumpdown);
-DFHANDLER(jumpup);
+DFHANDLER(initsize);
+DFHANDLER(moveresize);
+DFHANDLER(changesize);
+DFHANDLER(savegeometry);
+DFHANDLER(restoregeometry);
 
 
 
