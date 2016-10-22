@@ -79,15 +79,6 @@ static DFHANDLER(function);
  */
 int RootFunction = 0;
 
-/*
- * Which move-ish function is in progress.  This is _almost_ really a
- * local var in the movewindow() function, but we also reference it in
- * the HandleButtonRelease() event handler because that has to know
- * which move variant we're doing to figure out whether it has to
- * constrain the final coordinates in various ways.
- */
-int MoveFunction;
-
 /* Building the f.identify window.  The events code grubs in these. */
 #define INFO_LINES 30
 #define INFO_SIZE 200
@@ -112,14 +103,6 @@ bool WindowMoved = false;
  * return.
  */
 bool func_reset_cursor;
-
-/*
- * Globals used to keep track of whether the mouse has moved during a
- * resize function.
- */
-int ResizeOrigX;
-int ResizeOrigY;
-
 
 /* Time of various actions */
 Time last_time = 0; // XXX Temp not static?

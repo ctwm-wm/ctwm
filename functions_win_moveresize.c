@@ -59,7 +59,27 @@ int ConstMoveXR;
 int ConstMoveYT;
 int ConstMoveYB;
 
+/*
+ * Which move-ish function is in progress.  This is _almost_ really a
+ * local var in the movewindow() function, but we also reference it in
+ * the HandleButtonRelease() event handler because that has to know
+ * which move variant we're doing to figure out whether it has to
+ * constrain the final coordinates in various ways.
+ */
+int MoveFunction;
 
+/*
+ * Globals used to keep track of whether the mouse has moved during a
+ * resize function.
+ */
+int ResizeOrigX;
+int ResizeOrigY;
+
+
+
+/*
+ * Now, on to the actual handlers.
+ */
 
 /*
  * Resizing to a window's idea of its "normal" size, from WM_NORMAL_HINTS
