@@ -8,6 +8,7 @@
 #include "functions_internal.h"
 #include "screen.h"
 #include "occupation.h"
+#include "workspace_utils.h"
 
 
 DFHANDLER(vanish)
@@ -55,3 +56,48 @@ DFHANDLER(movetoprevworkspaceandfollow)
 	MoveToPrevWorkSpaceAndFollow(Scr->currentvs, tmp_win);
 }
 
+
+DFHANDLER(occupy)
+{
+	Occupy(tmp_win);
+}
+
+DFHANDLER(occupyall)
+{
+	OccupyAll(tmp_win);
+}
+
+DFHANDLER(gotoworkspace)
+{
+	GotoWorkSpaceByName(Scr->currentvs, action);
+}
+
+DFHANDLER(prevworkspace)
+{
+	GotoPrevWorkSpace(Scr->currentvs);
+}
+
+DFHANDLER(nextworkspace)
+{
+	GotoNextWorkSpace(Scr->currentvs);
+}
+
+DFHANDLER(rightworkspace)
+{
+	GotoRightWorkSpace(Scr->currentvs);
+}
+
+DFHANDLER(leftworkspace)
+{
+	GotoLeftWorkSpace(Scr->currentvs);
+}
+
+DFHANDLER(upworkspace)
+{
+	GotoUpWorkSpace(Scr->currentvs);
+}
+
+DFHANDLER(downworkspace)
+{
+	GotoDownWorkSpace(Scr->currentvs);
+}

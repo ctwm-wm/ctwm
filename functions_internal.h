@@ -83,6 +83,15 @@ DFHANDLER(movetonextworkspace);
 DFHANDLER(movetoprevworkspace);
 DFHANDLER(movetonextworkspaceandfollow);
 DFHANDLER(movetoprevworkspaceandfollow);
+DFHANDLER(occupy);
+DFHANDLER(occupyall);
+DFHANDLER(gotoworkspace);
+DFHANDLER(prevworkspace);
+DFHANDLER(nextworkspace);
+DFHANDLER(rightworkspace);
+DFHANDLER(leftworkspace);
+DFHANDLER(upworkspace);
+DFHANDLER(downworkspace);
 
 
 

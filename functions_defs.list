@@ -49,7 +49,7 @@ deleteordestroy       - CD - N
 deltastop             - -  - -
 destroy               - CD - N
 downiconmgr           - -  - -
-downworkspace         - -  - N
+downworkspace         - -  - -
 exec                  S -  - N
 fill                  S CS - -
 fittocontent          - CS - N
@@ -60,7 +60,7 @@ forwmapiconmgr        - -  - -
 fullscreenzoom        - CS - -
 fullzoom              - CS - -
 function              S -  - -
-gotoworkspace         S -  - N
+gotoworkspace         S -  - -
 hideiconmgr           - -  - -
 hideworkspacemgr      - -  - -
 horizoom              - CS - -
@@ -73,7 +73,7 @@ jumpleft              S CM - -
 jumpright             S CM - -
 jumpup                S CM - -
 lefticonmgr           - -  - -
-leftworkspace         - -  - N
+leftworkspace         - -  - -
 leftzoom              - CS - -
 lower                 - CS - N
 menu                  S -  - N
@@ -88,14 +88,14 @@ movetonextworkspaceandfollow - CS - -
 movetoprevworkspace   - CS - -
 movetoprevworkspaceandfollow - CS - -
 nexticonmgr           - -  - -
-nextworkspace         - -  - N
+nextworkspace         - -  - -
 nop                   - -  - -
-occupy                - CS - N
-occupyall             - CS - N
+occupy                - CS - -
+occupyall             - CS - -
 pack                  S CS - -
 pin                   - -  - N
 previconmgr           - -  - -
-prevworkspace         - -  - N
+prevworkspace         - -  - -
 priorityswitching     - CS - N
 quit                  - -  - N
 raise                 - CS - N
@@ -110,7 +110,7 @@ resize                - CM - -
 restart               - -  - N
 restoregeometry       - CS - -
 righticonmgr          - -  - -
-rightworkspace        - -  - N
+rightworkspace        - -  - -
 rightzoom             - CS - -
 ring                  - CS - N
 savegeometry          - CS - -
@@ -141,7 +141,7 @@ trace                 S -  - N
 unfocus               - -  - N
 unsqueeze             - CS - N
 upiconmgr             - -  - -
-upworkspace           - -  - N
+upworkspace           - -  - -
 vanish                - CS - -
 version               - -  - N
 warphere              S -  - -

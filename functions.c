@@ -1311,42 +1311,6 @@ EF_core(EF_FULLPROTO)
 			break;
 		}
 
-		case F_OCCUPY:
-			Occupy(tmp_win);
-			break;
-
-		case F_OCCUPYALL:
-			OccupyAll(tmp_win);
-			break;
-
-		case F_GOTOWORKSPACE:
-			GotoWorkSpaceByName(Scr->currentvs, action);
-			break;
-
-		case F_PREVWORKSPACE:
-			GotoPrevWorkSpace(Scr->currentvs);
-			break;
-
-		case F_NEXTWORKSPACE:
-			GotoNextWorkSpace(Scr->currentvs);
-			break;
-
-		case F_RIGHTWORKSPACE:
-			GotoRightWorkSpace(Scr->currentvs);
-			break;
-
-		case F_LEFTWORKSPACE:
-			GotoLeftWorkSpace(Scr->currentvs);
-			break;
-
-		case F_UPWORKSPACE:
-			GotoUpWorkSpace(Scr->currentvs);
-			break;
-
-		case F_DOWNWORKSPACE:
-			GotoDownWorkSpace(Scr->currentvs);
-			break;
-
 		case F_MENU:
 			if(action && ! strncmp(action, "WGOTO : ", 8)) {
 				GotoWorkSpaceByName(/* XXXXX */ Scr->currentvs,
