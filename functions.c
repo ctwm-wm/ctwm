@@ -183,6 +183,7 @@ EF_main(EF_FULLPROTO)
 	 */
 	switch(func) {
 		case F_NOP:
+		case F_SEPARATOR:
 		case F_TITLE:
 			return true;
 
