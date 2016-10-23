@@ -460,42 +460,6 @@ EF_core(EF_FULLPROTO)
 			fittocontent(tmp_win);
 			break;
 
-		case F_VANISH:
-			WMgrRemoveFromCurrentWorkSpace(Scr->currentvs, tmp_win);
-			break;
-
-		case F_WARPHERE:
-			WMgrAddToCurrentWorkSpaceAndWarp(Scr->currentvs, action);
-			break;
-
-		case F_ADDTOWORKSPACE:
-			AddToWorkSpace(action, tmp_win);
-			break;
-
-		case F_REMOVEFROMWORKSPACE:
-			RemoveFromWorkSpace(action, tmp_win);
-			break;
-
-		case F_TOGGLEOCCUPATION:
-			ToggleOccupation(action, tmp_win);
-			break;
-
-		case F_MOVETONEXTWORKSPACE:
-			MoveToNextWorkSpace(Scr->currentvs, tmp_win);
-			break;
-
-		case F_MOVETOPREVWORKSPACE:
-			MoveToPrevWorkSpace(Scr->currentvs, tmp_win);
-			break;
-
-		case F_MOVETONEXTWORKSPACEANDFOLLOW:
-			MoveToNextWorkSpaceAndFollow(Scr->currentvs, tmp_win);
-			break;
-
-		case F_MOVETOPREVWORKSPACEANDFOLLOW:
-			MoveToPrevWorkSpaceAndFollow(Scr->currentvs, tmp_win);
-			break;
-
 		case F_ALTKEYMAP: {
 			int alt, stat_;
 

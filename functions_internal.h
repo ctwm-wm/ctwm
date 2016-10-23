@@ -73,6 +73,18 @@ DFHANDLER(savegeometry);
 DFHANDLER(restoregeometry);
 
 
+/* functions_workspaces.c */
+DFHANDLER(vanish);
+DFHANDLER(warphere);
+DFHANDLER(addtoworkspace);
+DFHANDLER(removefromworkspace);
+DFHANDLER(toggleoccupation);
+DFHANDLER(movetonextworkspace);
+DFHANDLER(movetoprevworkspace);
+DFHANDLER(movetonextworkspaceandfollow);
+DFHANDLER(movetoprevworkspaceandfollow);
+
+
 
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in

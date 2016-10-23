@@ -28,7 +28,7 @@
 # Much of initial fill mechanically done via:
 # awk '/, F_[A-Z]/ {printf "%-21s %s -  - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c | sort -u
 # START(main)
-addtoworkspace        S CS - N
+addtoworkspace        S CS - -
 adoptwindow           - -  - N
 altcontext            - -  - N
 altkeymap             S -  - N
@@ -83,10 +83,10 @@ movepack              - CM - -
 movepush              - CM - -
 moveresize            S CS - -
 movetitlebar          - CM - N
-movetonextworkspace   - CS - N
-movetonextworkspaceandfollow - CS - N
-movetoprevworkspace   - CS - N
-movetoprevworkspaceandfollow - CS - N
+movetonextworkspace   - CS - -
+movetonextworkspaceandfollow - CS - -
+movetoprevworkspace   - CS - -
+movetoprevworkspaceandfollow - CS - -
 nexticonmgr           - -  - -
 nextworkspace         - -  - N
 nop                   - -  - -
@@ -103,7 +103,7 @@ raiseicons            - -  - N
 raiselower            - CS - N
 raiseorsqueeze        - CS - N
 refresh               - -  - N
-removefromworkspace   S CS - N
+removefromworkspace   S CS - -
 rereadsounds          - -  SOUNDS -
 rescuewindows         - -  - N
 resize                - CM - -
@@ -132,7 +132,7 @@ switchpriority        - CS - N
 tinylower             - CS - N
 tinyraise             - CS - N
 title                 - -  - -
-toggleoccupation      S CS - N
+toggleoccupation      S CS - -
 togglesound           - -  SOUNDS -
 togglestate           - -  - -
 toggleworkspacemgr    - -  - -
@@ -142,9 +142,9 @@ unfocus               - -  - N
 unsqueeze             - CS - N
 upiconmgr             - -  - -
 upworkspace           - -  - N
-vanish                - CS - N
+vanish                - CS - -
 version               - -  - N
-warphere              S -  - N
+warphere              S -  - -
 warpring              S -  - N
 warpto                S -  - N
 warptoiconmgr         S -  - N
