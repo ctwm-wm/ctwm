@@ -99,6 +99,11 @@ DFHANDLER(adoptwindow);
 DFHANDLER(hypermove);
 
 
+/* functions_identify.c */
+DFHANDLER(identify);
+DFHANDLER(version);
+
+
 
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in

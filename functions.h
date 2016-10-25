@@ -24,6 +24,7 @@ extern int ConstMoveX;
 extern int ConstMoveY;
 
 
+/* From functions_identify.c: needed in event_handlers.c */
 void draw_info_window(void);
 
 
