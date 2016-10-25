@@ -450,6 +450,10 @@ EF_core(EF_FULLPROTO)
 			break;
 
 		case F_MOVEMENU:
+			/*
+			 * This was added in ctwm 2.1, has never been documented, and
+			 * has never done anything.  ???
+			 */
 			break;
 
 		case F_FITTOCONTENT:
