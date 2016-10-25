@@ -113,8 +113,6 @@ static bool should_defer(int func);
 static Cursor defer_cursor(int func);
 static Cursor NeedToDefer(MenuRoot *root);
 static void Execute(const char *_s);
-static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
-static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
 
 
 /***********************************************************************
@@ -490,26 +488,6 @@ EF_core(EF_FULLPROTO)
 			return;
 		}
 
-		case F_AUTORAISE:
-			tmp_win->auto_raise = !tmp_win->auto_raise;
-			if(tmp_win->auto_raise) {
-				++(Scr->NumAutoRaises);
-			}
-			else {
-				--(Scr->NumAutoRaises);
-			}
-			break;
-
-		case F_AUTOLOWER:
-			tmp_win->auto_lower = !tmp_win->auto_lower;
-			if(tmp_win->auto_lower) {
-				++(Scr->NumAutoLowers);
-			}
-			else {
-				--(Scr->NumAutoLowers);
-			}
-			break;
-
 		case F_BEEP:
 			XBell(dpy, 0);
 			break;
@@ -550,353 +528,8 @@ EF_core(EF_FULLPROTO)
 			}
 			break;
 
-		case F_PRIORITYSWITCHING:
-		case F_SWITCHPRIORITY:
-		case F_SETPRIORITY:
-		case F_CHANGEPRIORITY: {
-			WinType wintype;
-			int pri;
-			char *endp;
-
-			if(tmp_win->icon && w == tmp_win->icon->w) {
-				wintype = IconWin;
-			}
-			else {
-				wintype = WinWin;
-			}
-			switch(func) {
-				case F_PRIORITYSWITCHING:
-					OtpToggleSwitching(tmp_win, wintype);
-					break;
-				case F_SETPRIORITY:
-					pri = (int)strtol(action, &endp, 10);
-					OtpSetPriority(tmp_win, wintype, pri,
-					               (*endp == '<' || *endp == 'b') ? Below : Above);
-					break;
-				case F_CHANGEPRIORITY:
-					OtpChangePriority(tmp_win, wintype, atoi(action));
-					break;
-				case F_SWITCHPRIORITY:
-					OtpSwitchPriority(tmp_win, wintype);
-					break;
-			}
-#ifdef EWMH
-			EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_ABOVE);
-#endif /* EWMH */
-			/* Update saved priority, if any */
-			if(wintype == WinWin && tmp_win->zoomed != ZOOM_NONE) {
-				tmp_win->save_otpri = OtpGetPriority(tmp_win);
-			}
-
-			break;
-		}
-
-		case F_MOVETITLEBAR: {
-			Window grabwin;
-			Window rootw;
-			int deltax = 0, newx = 0;
-			int origX;
-			int origNum;
-			SqueezeInfo *si;
-
-			PopDownMenu();
-			if(tmp_win->squeezed ||
-			                !tmp_win->squeeze_info ||
-			                !tmp_win->title_w ||
-			                context == C_ICON) {
-				XBell(dpy, 0);
-				break;
-			}
-
-			/* If the SqueezeInfo isn't copied yet, do it now */
-			if(!tmp_win->squeeze_info_copied) {
-				SqueezeInfo *s = malloc(sizeof(SqueezeInfo));
-				if(!s) {
-					break;
-				}
-				*s = *tmp_win->squeeze_info;
-				tmp_win->squeeze_info = s;
-				tmp_win->squeeze_info_copied = 1;
-			}
-			si = tmp_win->squeeze_info;
-
-			if(si->denom != 0) {
-				int target_denom = tmp_win->frame_width;
-				/*
-				 * If not pixel based, scale the denominator to equal the
-				 * window width, so the numerator equals pixels.
-				 * That way we can just modify it by pixel units, just
-				 * like the other case.
-				 */
-
-				if(si->denom != target_denom) {
-					float scale = (float)target_denom / si->denom;
-					si->num *= scale;
-					si->denom = target_denom; /* s->denom *= scale; */
-				}
-			}
-
-			/* now move the mouse */
-			if(tmp_win->winbox) {
-				XTranslateCoordinates(dpy, Scr->Root, tmp_win->winbox->window,
-				                      eventp->xbutton.x_root, eventp->xbutton.y_root,
-				                      &eventp->xbutton.x_root, &eventp->xbutton.y_root, &JunkChild);
-			}
-			/*
-			 * the event is always a button event, since key events
-			 * are "weeded out" - although incompletely only
-			 * F_MOVE and F_RESIZE - in HandleKeyPress().
-			 */
-
-			/*
-			 * XXX This var may be actually unnecessary; it's used only
-			 * once as an arg to a later X call, but during that time I
-			 * don't believe anything can mutate eventp or anything near
-			 * the root.  However, due to the union nature of XEvent,
-			 * it's hard to be sure without more investigation, so I
-			 * leave the intermediate var for now.
-			 *
-			 * Note that we're looking inside the XButtonEvent member
-			 * here, but other bits of this code later look at the
-			 * XMotionEvent piece.  This should be further investigated
-			 * and resolved; they can't both be right (though the
-			 * structure of the structs are such that almost all the
-			 * similar elements are in the same place, at least in
-			 * theory).
-			 */
-			rootw = eventp->xbutton.root;
-
-			EventHandler[EnterNotify] = HandleUnknown;
-			EventHandler[LeaveNotify] = HandleUnknown;
-
-			if(!Scr->NoGrabServer) {
-				XGrabServer(dpy);
-			}
-
-			grabwin = Scr->Root;
-			if(tmp_win->winbox) {
-				grabwin = tmp_win->winbox->window;
-			}
-			XGrabPointer(dpy, grabwin, True,
-			             ButtonPressMask | ButtonReleaseMask |
-			             ButtonMotionMask | PointerMotionMask, /* PointerMotionHintMask */
-			             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor, CurrentTime);
-
-#if 0   /* what's this for ? */
-			if(! tmp_win->icon || w != tmp_win->icon->w) {
-				XTranslateCoordinates(dpy, w, tmp_win->frame,
-				                      eventp->xbutton.x,
-				                      eventp->xbutton.y,
-				                      &DragX, &DragY, &JunkChild);
-
-				w = tmp_win->frame;
-			}
-#endif
-
-			DragWindow = None;
-
-			XGetGeometry(dpy, tmp_win->title_w, &JunkRoot, &origDragX, &origDragY,
-			             &DragWidth, &DragHeight, &DragBW,
-			             &JunkDepth);
-
-			origX = eventp->xbutton.x_root;
-			origNum = si->num;
-
-			if(menuFromFrameOrWindowOrTitlebar) {
-				/* warp the pointer to the middle of the window */
-				XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0,
-				             origDragX + DragWidth / 2,
-				             origDragY + DragHeight / 2);
-				XFlush(dpy);
-			}
-
-			while(1) {
-				long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
-				                    ButtonPress : ButtonRelease;
-				long movementMask = menuFromFrameOrWindowOrTitlebar ?
-				                    PointerMotionMask : ButtonMotionMask;
-
-				/* block until there is an interesting event */
-				XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-				           EnterWindowMask | LeaveWindowMask |
-				           ExposureMask | movementMask |
-				           VisibilityChangeMask, &Event);
-
-				/* throw away enter and leave events until release */
-				if(Event.xany.type == EnterNotify ||
-				                Event.xany.type == LeaveNotify) {
-					continue;
-				}
-
-				if(Event.type == MotionNotify) {
-					/* discard any extra motion events before a logical release */
-					while(XCheckMaskEvent(dpy,
-					                      movementMask | releaseEvent, &Event)) {
-						if(Event.type == releaseEvent) {
-							break;
-						}
-					}
-				}
-
-				if(!DispatchEvent2()) {
-					continue;
-				}
-
-				if(Event.type == releaseEvent) {
-					break;
-				}
-
-				/* something left to do only if the pointer moved */
-				if(Event.type != MotionNotify) {
-					continue;
-				}
-
-				/* get current pointer pos, useful when there is lag */
-				XQueryPointer(dpy, rootw, &eventp->xmotion.root, &JunkChild,
-				              &eventp->xmotion.x_root, &eventp->xmotion.y_root,
-				              &JunkX, &JunkY, &JunkMask);
-
-				FixRootEvent(eventp);
-				if(tmp_win->winbox) {
-					XTranslateCoordinates(dpy, Scr->Root, tmp_win->winbox->window,
-					                      eventp->xmotion.x_root, eventp->xmotion.y_root,
-					                      &eventp->xmotion.x_root, &eventp->xmotion.y_root, &JunkChild);
-				}
-
-				if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
-					OtpRaise(tmp_win, WinWin);
-				}
-
-				deltax = eventp->xmotion.x_root - origX;
-				newx = origNum + deltax;
-
-				/*
-				 * Clamp to left and right.
-				 * If we're in pixel size, keep within [ 0, frame_width >.
-				 * If we're proportional, don't cross the 0.
-				 * Also don't let the nominator get bigger than the denominator.
-				 * Keep within [ -denom, -1] or [ 0, denom >.
-				 */
-				{
-					int wtmp = tmp_win->frame_width; /* or si->denom; if it were != 0 */
-					if(origNum < 0) {
-						if(newx >= 0) {
-							newx = -1;
-						}
-						else if(newx < -wtmp) {
-							newx = -wtmp;
-						}
-					}
-					else if(origNum >= 0) {
-						if(newx < 0) {
-							newx = 0;
-						}
-						else if(newx >= wtmp) {
-							newx = wtmp - 1;
-						}
-					}
-				}
-
-				si->num = newx;
-				/* This, finally, actually moves the title bar */
-				/* XXX pressing a second button should cancel and undo this */
-				SetFrameShape(tmp_win);
-			}
-
-			/*
-			 * The ButtonRelease handler will have taken care of
-			 * ungrabbing our pointer.
-			 */
-			return;
-		}
-
-		case F_DEICONIFY:
-		case F_ICONIFY:
-			if(tmp_win->isicon) {
-				DeIconify(tmp_win);
-			}
-			else if(func == F_ICONIFY) {
-				Iconify(tmp_win, eventp->xbutton.x_root - 5,
-				        eventp->xbutton.y_root - 5);
-			}
-			break;
-
-		case F_SQUEEZE:
-			Squeeze(tmp_win);
-			break;
-
-		case F_UNSQUEEZE:
-			if(tmp_win->squeezed) {
-				Squeeze(tmp_win);
-			}
-			break;
-
 		case F_SHOWBACKGROUND:
 			ShowBackground(Scr->currentvs, -1);
-			break;
-
-		case F_RAISELOWER:
-			if(!WindowMoved) {
-				if(tmp_win->icon && w == tmp_win->icon->w) {
-					OtpRaiseLower(tmp_win, IconWin);
-				}
-				else {
-					OtpRaiseLower(tmp_win, WinWin);
-					WMapRaiseLower(tmp_win);
-				}
-			}
-			break;
-
-		case F_TINYRAISE:
-			/* check to make sure raise is not from the WindowFunction */
-			if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT) {
-				OtpTinyRaise(tmp_win, IconWin);
-			}
-			else {
-				OtpTinyRaise(tmp_win, WinWin);
-				WMapRaise(tmp_win);
-			}
-			break;
-
-		case F_TINYLOWER:
-			/* check to make sure raise is not from the WindowFunction */
-			if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT) {
-				OtpTinyLower(tmp_win, IconWin);
-			}
-			else {
-				OtpTinyLower(tmp_win, WinWin);
-				WMapLower(tmp_win);
-			}
-			break;
-
-		case F_RAISEORSQUEEZE:
-			/* FIXME using the same double-click ConstrainedMoveTime here */
-			if((eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
-				Squeeze(tmp_win);
-				break;
-			}
-			last_time = eventp->xbutton.time;
-		/* intentional fall-thru into F_RAISE */
-
-		case F_RAISE:
-			/* check to make sure raise is not from the WindowFunction */
-			if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT)  {
-				OtpRaise(tmp_win, IconWin);
-			}
-			else {
-				OtpRaise(tmp_win, WinWin);
-				WMapRaise(tmp_win);
-			}
-			break;
-
-		case F_LOWER:
-			if(tmp_win->icon && (w == tmp_win->icon->w)) {
-				OtpLower(tmp_win, IconWin);
-			}
-			else {
-				OtpLower(tmp_win, WinWin);
-				WMapLower(tmp_win);
-			}
 			break;
 
 		case F_RAISEICONS:
@@ -905,110 +538,6 @@ EF_core(EF_FULLPROTO)
 					OtpRaise(t, IconWin);
 				}
 			}
-			break;
-
-		case F_FOCUS:
-			if(!tmp_win->isicon) {
-				if(!Scr->FocusRoot && Scr->Focus == tmp_win) {
-					FocusOnRoot();
-				}
-				else {
-					InstallWindowColormaps(0, tmp_win);
-					SetFocus(tmp_win, eventp->xbutton.time);
-					Scr->FocusRoot = false;
-				}
-			}
-			break;
-
-		case F_DESTROY:
-			if(tmp_win->isiconmgr || tmp_win->iswinbox || tmp_win->iswspmgr
-			                || (Scr->workSpaceMgr.occupyWindow
-			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
-				XBell(dpy, 0);
-				break;
-			}
-			XKillClient(dpy, tmp_win->w);
-			if(ButtonPressed != -1) {
-				XEvent kev;
-
-				XMaskEvent(dpy, ButtonReleaseMask, &kev);
-				if(kev.xbutton.window == tmp_win->w) {
-					kev.xbutton.window = Scr->Root;
-				}
-				XPutBackEvent(dpy, &kev);
-			}
-			break;
-
-		case F_DELETE:
-			if(tmp_win->isiconmgr) {     /* don't send ourself a message */
-				HideIconManager();
-				break;
-			}
-			if(tmp_win->iswinbox || tmp_win->iswspmgr
-			                || (Scr->workSpaceMgr.occupyWindow
-			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
-				XBell(dpy, 0);
-				break;
-			}
-			if(tmp_win->protocols & DoesWmDeleteWindow) {
-				SendDeleteWindowMessage(tmp_win, EventTime);
-				if(ButtonPressed != -1) {
-					XEvent kev;
-
-					XMaskEvent(dpy, ButtonReleaseMask, &kev);
-					if(kev.xbutton.window == tmp_win->w) {
-						kev.xbutton.window = Scr->Root;
-					}
-					XPutBackEvent(dpy, &kev);
-				}
-				break;
-			}
-			XBell(dpy, 0);
-			break;
-
-		case F_DELETEORDESTROY:
-			if(tmp_win->isiconmgr) {
-				HideIconManager();
-				break;
-			}
-			if(tmp_win->iswinbox || tmp_win->iswspmgr
-			                || (Scr->workSpaceMgr.occupyWindow
-			                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
-				XBell(dpy, 0);
-				break;
-			}
-			if(tmp_win->protocols & DoesWmDeleteWindow) {
-				SendDeleteWindowMessage(tmp_win, EventTime);
-			}
-			else {
-				XKillClient(dpy, tmp_win->w);
-			}
-			if(ButtonPressed != -1) {
-				XEvent kev;
-
-				XMaskEvent(dpy, ButtonReleaseMask, &kev);
-				if(kev.xbutton.window == tmp_win->w) {
-					kev.xbutton.window = Scr->Root;
-				}
-				XPutBackEvent(dpy, &kev);
-			}
-			break;
-
-		case F_SAVEYOURSELF:
-			if(tmp_win->protocols & DoesWmSaveYourself) {
-				SendSaveYourselfMessage(tmp_win, EventTime);
-			}
-			else {
-				XBell(dpy, 0);
-			}
-			break;
-
-		case F_CIRCLEUP:
-			OtpCirculateSubwindows(Scr->currentvs, RaiseLowest);
-			break;
-
-		case F_CIRCLEDOWN:
-			OtpCirculateSubwindows(Scr->currentvs, LowerHighest);
 			break;
 
 		case F_EXEC:
@@ -1020,10 +549,6 @@ EF_core(EF_FULLPROTO)
 			XUngrabPointer(dpy, CurrentTime);
 			XSync(dpy, 0);
 			Execute(action);
-			break;
-
-		case F_UNFOCUS:
-			FocusOnRoot();
 			break;
 
 		case F_WARPTOSCREEN: {
@@ -1038,21 +563,6 @@ EF_core(EF_FULLPROTO)
 			}
 			else {
 				WarpToScreen(atoi(action), 0);
-			}
-
-			break;
-		}
-
-		case F_COLORMAP: {
-			/* XXX Window targetting; should this be on the Defer list? */
-			if(strcmp(action, COLORMAP_NEXT) == 0) {
-				BumpWindowColormap(tmp_win, 1);
-			}
-			else if(strcmp(action, COLORMAP_PREV) == 0) {
-				BumpWindowColormap(tmp_win, -1);
-			}
-			else {
-				BumpWindowColormap(tmp_win, 0);
 			}
 
 			break;
@@ -1209,28 +719,6 @@ EF_core(EF_FULLPROTO)
 			}
 			break;
 
-		case F_REFRESH: {
-			XSetWindowAttributes attributes;
-			unsigned long valuemask;
-
-			valuemask = (CWBackPixel | CWBackingStore | CWSaveUnder);
-			attributes.background_pixel = Scr->Black;
-			attributes.backing_store = NotUseful;
-			attributes.save_under = False;
-			w = XCreateWindow(dpy, Scr->Root, 0, 0,
-			                  Scr->rootw,
-			                  Scr->rooth,
-			                  0,
-			                  CopyFromParent, CopyFromParent,
-			                  CopyFromParent, valuemask,
-			                  &attributes);
-			XMapWindow(dpy, w);
-			XDestroyWindow(dpy, w);
-			XFlush(dpy);
-
-			break;
-		}
-
 		case F_MENU:
 			if(action && ! strncmp(action, "WGOTO : ", 8)) {
 				GotoWorkSpaceByName(/* XXXXX */ Scr->currentvs,
@@ -1255,19 +743,6 @@ EF_core(EF_FULLPROTO)
 					                w, tmp_win, eventp, context, pulldown);
 				}
 			}
-			break;
-
-		case F_WINREFRESH:
-			if(context == C_ICON && tmp_win->icon && tmp_win->icon->w)
-				w = XCreateSimpleWindow(dpy, tmp_win->icon->w,
-				                        0, 0, 9999, 9999, 0, Scr->Black, Scr->Black);
-			else
-				w = XCreateSimpleWindow(dpy, tmp_win->frame,
-				                        0, 0, 9999, 9999, 0, Scr->Black, Scr->Black);
-
-			XMapWindow(dpy, w);
-			XDestroyWindow(dpy, w);
-			XFlush(dpy);
 			break;
 
 		case F_TRACE:
@@ -1621,19 +1096,6 @@ Execute(const char *_s)
 end_execute:
 	free(s);
 	return;
-}
-
-
-static void
-SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp)
-{
-	send_clientmessage(tmp->w, XA_WM_DELETE_WINDOW, timestamp);
-}
-
-static void
-SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp)
-{
-	send_clientmessage(tmp->w, XA_WM_SAVE_YOURSELF, timestamp);
 }
 
 

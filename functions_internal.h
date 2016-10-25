@@ -104,6 +104,37 @@ DFHANDLER(identify);
 DFHANDLER(version);
 
 
+/* functions_win.c */
+DFHANDLER(autoraise);
+DFHANDLER(autolower);
+DFHANDLER(priorityswitching);
+DFHANDLER(switchpriority);
+DFHANDLER(setpriority);
+DFHANDLER(changepriority);
+DFHANDLER(movetitlebar);
+DFHANDLER(deiconify);
+DFHANDLER(iconify);
+DFHANDLER(squeeze);
+DFHANDLER(unsqueeze);
+DFHANDLER(raiselower);
+DFHANDLER(tinyraise);
+DFHANDLER(tinylower);
+DFHANDLER(raiseorsqueeze);
+DFHANDLER(raise);
+DFHANDLER(lower);
+DFHANDLER(focus);
+DFHANDLER(destroy);
+DFHANDLER(delete);
+DFHANDLER(deleteordestroy);
+DFHANDLER(saveyourself);
+DFHANDLER(circleup);
+DFHANDLER(circledown);
+DFHANDLER(unfocus);
+DFHANDLER(colormap);
+DFHANDLER(refresh);
+DFHANDLER(winrefresh);
+
+
 
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in
