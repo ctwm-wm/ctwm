@@ -30,10 +30,6 @@
 #include "workspace_manager.h"
 
 
-/* XXX TEMP */
-extern Time last_time;
-
-
 
 DFHANDLER(autoraise)
 {

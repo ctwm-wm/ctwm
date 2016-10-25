@@ -28,7 +28,6 @@
 
 /* XXX TEMP */
 bool belongs_to_twm_window(TwmWindow *t, Window w);
-extern Time last_time;
 extern bool func_reset_cursor;
 
 

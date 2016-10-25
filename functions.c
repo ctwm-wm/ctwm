@@ -100,8 +100,11 @@ bool WindowMoved = false;
  */
 bool func_reset_cursor;
 
-/* Time of various actions */
-Time last_time = 0; // XXX Temp not static?
+/*
+ * Time of various actions: used in ConstrainedMoveTime related bits in
+ * some window moving/resizing.
+ */
+Time last_time = 0;
 
 
 static bool EF_main(EF_FULLPROTO);

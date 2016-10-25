@@ -143,5 +143,8 @@ DFHANDLER(winrefresh);
 void HideIconManager(void);
 
 
+/* Several different sections of window handling need this */
+extern Time last_time;
+
 
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */
