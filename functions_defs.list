@@ -29,7 +29,7 @@
 # awk '/, F_[A-Z]/ {printf "%-21s %s -  - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c | sort -u
 # START(main)
 addtoworkspace        S CS - -
-adoptwindow           - -  - N
+adoptwindow           - -  - -
 altcontext            - -  - N
 altkeymap             S -  - N
 autolower             - CS - N
@@ -64,7 +64,7 @@ gotoworkspace         S -  - -
 hideiconmgr           - -  - -
 hideworkspacemgr      - -  - -
 horizoom              - CS - -
-hypermove             - CM - N
+hypermove             - CM - -
 iconify               - CS - N
 identify              - CS - N
 initsize              - CS - -

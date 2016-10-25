@@ -94,6 +94,11 @@ DFHANDLER(upworkspace);
 DFHANDLER(downworkspace);
 
 
+/* functions_captive.c */
+DFHANDLER(adoptwindow);
+DFHANDLER(hypermove);
+
+
 
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in

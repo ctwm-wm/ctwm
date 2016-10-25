@@ -29,6 +29,7 @@ set(CTWMSRC
 	event_names.c
 	event_utils.c
 	functions.c
+	functions_captive.c
 	functions_icmgr_wsmgr.c
 	functions_win_moveresize.c
 	functions_workspaces.c
