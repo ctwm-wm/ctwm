@@ -74,17 +74,17 @@ DFHANDLER(restoregeometry);
 
 
 /* functions_workspaces.c */
-DFHANDLER(vanish);
-DFHANDLER(warphere);
+DFHANDLER(occupy);
+DFHANDLER(occupyall);
 DFHANDLER(addtoworkspace);
 DFHANDLER(removefromworkspace);
 DFHANDLER(toggleoccupation);
+DFHANDLER(vanish);
+DFHANDLER(warphere);
 DFHANDLER(movetonextworkspace);
 DFHANDLER(movetoprevworkspace);
 DFHANDLER(movetonextworkspaceandfollow);
 DFHANDLER(movetoprevworkspaceandfollow);
-DFHANDLER(occupy);
-DFHANDLER(occupyall);
 DFHANDLER(gotoworkspace);
 DFHANDLER(prevworkspace);
 DFHANDLER(nextworkspace);

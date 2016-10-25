@@ -11,16 +11,25 @@
 #include "workspace_utils.h"
 
 
-DFHANDLER(vanish)
+
+/*
+ * Setting occupation on a specific window.
+ */
+DFHANDLER(occupy)
 {
-	WMgrRemoveFromCurrentWorkSpace(Scr->currentvs, tmp_win);
+	Occupy(tmp_win);
 }
 
-DFHANDLER(warphere)
+DFHANDLER(occupyall)
 {
-	WMgrAddToCurrentWorkSpaceAndWarp(Scr->currentvs, action);
+	OccupyAll(tmp_win);
 }
 
+
+/*
+ * Selecting a window and passing a specific workspace as the function
+ * arg.
+ */
 DFHANDLER(addtoworkspace)
 {
 	AddToWorkSpace(action, tmp_win);
@@ -36,6 +45,24 @@ DFHANDLER(toggleoccupation)
 	ToggleOccupation(action, tmp_win);
 }
 
+
+/*
+ * Pushing a window away from / pulling it to "here".
+ */
+DFHANDLER(vanish)
+{
+	WMgrRemoveFromCurrentWorkSpace(Scr->currentvs, tmp_win);
+}
+
+DFHANDLER(warphere)
+{
+	WMgrAddToCurrentWorkSpaceAndWarp(Scr->currentvs, action);
+}
+
+
+/*
+ * Pushing a window away somewhere and potentially following it.
+ */
 DFHANDLER(movetonextworkspace)
 {
 	MoveToNextWorkSpace(Scr->currentvs, tmp_win);
@@ -57,16 +84,10 @@ DFHANDLER(movetoprevworkspaceandfollow)
 }
 
 
-DFHANDLER(occupy)
-{
-	Occupy(tmp_win);
-}
 
-DFHANDLER(occupyall)
-{
-	OccupyAll(tmp_win);
-}
-
+/*
+ * Switching to other workspaces.
+ */
 DFHANDLER(gotoworkspace)
 {
 	GotoWorkSpaceByName(Scr->currentvs, action);
