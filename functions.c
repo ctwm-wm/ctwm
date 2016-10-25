@@ -83,7 +83,7 @@ int RootFunction = 0;
 /* Building the f.identify window.  The events code grubs in these. */
 #define INFO_LINES 30
 #define INFO_SIZE 200
-char Info[INFO_LINES][INFO_SIZE];
+static char Info[INFO_LINES][INFO_SIZE];
 
 
 /*
