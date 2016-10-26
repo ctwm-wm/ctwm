@@ -112,7 +112,7 @@ restoregeometry       - CS - -
 righticonmgr          - -  - -
 rightworkspace        - -  - -
 rightzoom             - CS - -
-ring                  - CS - N
+ring                  - CS - -
 savegeometry          - CS - -
 saveyourself          - CS - -
 separator             - -  - -
@@ -145,9 +145,9 @@ upworkspace           - -  - -
 vanish                - CS - -
 version               - -  - -
 warphere              S -  - -
-warpring              S -  - N
-warpto                S -  - N
-warptoiconmgr         S -  - N
+warpring              S -  - -
+warpto                S -  - -
+warptoiconmgr         S -  - -
 warptoscreen          S -  - N
 winrefresh            - CS - -
 zoom                  - CS - -
@@ -177,7 +177,7 @@ twmrc  restart
 # hasfunc -> has defined function for implementation
 # START(synthetic)
 popup    N
-winwarp  N
+winwarp  -
 # END(synthetic)
 
 

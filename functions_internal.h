@@ -135,6 +135,14 @@ DFHANDLER(unsqueeze);
 DFHANDLER(movetitlebar);
 
 
+/* functions_warp.c */
+DFHANDLER(warpto);
+DFHANDLER(warptoiconmgr);
+DFHANDLER(ring);
+DFHANDLER(warpring);
+DFHANDLER(winwarp);
+
+
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in
  * f.delete{,ordestroy}.

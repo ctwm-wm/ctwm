@@ -32,6 +32,7 @@ set(CTWMSRC
 	functions_captive.c
 	functions_icmgr_wsmgr.c
 	functions_identify.c
+	functions_warp.c
 	functions_win.c
 	functions_win_moveresize.c
 	functions_workspaces.c
