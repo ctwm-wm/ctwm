@@ -31,6 +31,13 @@
 
 
 
+/*
+ *************************************************************
+ *
+ * Moving windows on/off the AutoRaise/AutoLower lists
+ *
+ *************************************************************
+ */
 DFHANDLER(autoraise)
 {
 	tmp_win->auto_raise = !tmp_win->auto_raise;
@@ -55,25 +62,276 @@ DFHANDLER(autolower)
 
 
 
-static void otp_priority_handler(EF_FULLPROTO);
 
-DFHANDLER(priorityswitching)
+/*
+ *************************************************************
+ *
+ * Raising and lowering
+ *
+ *************************************************************
+ */
+
+/* Separate function because raise and raiseorsqueeze can both need it */
+static void
+raise_handler(EF_FULLPROTO)
 {
-	otp_priority_handler(EF_ARGS);
-}
-DFHANDLER(switchpriority)
-{
-	otp_priority_handler(EF_ARGS);
-}
-DFHANDLER(setpriority)
-{
-	otp_priority_handler(EF_ARGS);
-}
-DFHANDLER(changepriority)
-{
-	otp_priority_handler(EF_ARGS);
+	/* check to make sure raise is not from the WindowFunction */
+	if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT)  {
+		OtpRaise(tmp_win, IconWin);
+	}
+	else {
+		OtpRaise(tmp_win, WinWin);
+		WMapRaise(tmp_win);
+	}
 }
 
+DFHANDLER(raise)
+{
+	raise_handler(EF_ARGS);
+}
+
+DFHANDLER(raiseorsqueeze)
+{
+	/* FIXME using the same double-click ConstrainedMoveTime here */
+	if((eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
+		Squeeze(tmp_win);
+		return;
+	}
+	last_time = eventp->xbutton.time;
+
+	/* intentional fall-thru into F_RAISE */
+	raise_handler(EF_ARGS);
+}
+
+DFHANDLER(lower)
+{
+	if(tmp_win->icon && (w == tmp_win->icon->w)) {
+		OtpLower(tmp_win, IconWin);
+	}
+	else {
+		OtpLower(tmp_win, WinWin);
+		WMapLower(tmp_win);
+	}
+}
+
+DFHANDLER(raiselower)
+{
+	if(!WindowMoved) {
+		if(tmp_win->icon && w == tmp_win->icon->w) {
+			OtpRaiseLower(tmp_win, IconWin);
+		}
+		else {
+			OtpRaiseLower(tmp_win, WinWin);
+			WMapRaiseLower(tmp_win);
+		}
+	}
+}
+
+
+/*
+ * Smaller raise/lower
+ */
+DFHANDLER(tinyraise)
+{
+	/* check to make sure raise is not from the WindowFunction */
+	if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT) {
+		OtpTinyRaise(tmp_win, IconWin);
+	}
+	else {
+		OtpTinyRaise(tmp_win, WinWin);
+		WMapRaise(tmp_win);
+	}
+}
+
+DFHANDLER(tinylower)
+{
+	/* check to make sure raise is not from the WindowFunction */
+	if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT) {
+		OtpTinyLower(tmp_win, IconWin);
+	}
+	else {
+		OtpTinyLower(tmp_win, WinWin);
+		WMapLower(tmp_win);
+	}
+}
+
+
+/*
+ * Raising/lowering a non-targetted window
+ */
+DFHANDLER(circleup)
+{
+	OtpCirculateSubwindows(Scr->currentvs, RaiseLowest);
+}
+
+DFHANDLER(circledown)
+{
+	OtpCirculateSubwindows(Scr->currentvs, LowerHighest);
+}
+
+
+
+
+/*
+ *************************************************************
+ *
+ * Iconification and its inverse.
+ *
+ *************************************************************
+ */
+static void
+iconify_handler(EF_FULLPROTO)
+{
+	if(tmp_win->isicon) {
+		DeIconify(tmp_win);
+	}
+	else if(func == F_ICONIFY) {
+		Iconify(tmp_win, eventp->xbutton.x_root - 5,
+		        eventp->xbutton.y_root - 5);
+	}
+}
+
+DFHANDLER(deiconify)
+{
+	iconify_handler(EF_ARGS);
+}
+DFHANDLER(iconify)
+{
+	iconify_handler(EF_ARGS);
+}
+
+
+
+
+/*
+ *************************************************************
+ *
+ * Focus locking
+ *
+ *************************************************************
+ */
+DFHANDLER(focus)
+{
+	if(!tmp_win->isicon) {
+		if(!Scr->FocusRoot && Scr->Focus == tmp_win) {
+			FocusOnRoot();
+		}
+		else {
+			InstallWindowColormaps(0, tmp_win);
+			SetFocus(tmp_win, eventp->xbutton.time);
+			Scr->FocusRoot = false;
+		}
+	}
+}
+
+DFHANDLER(unfocus)
+{
+	FocusOnRoot();
+}
+
+
+
+
+/*
+ *************************************************************
+ *
+ * Window destruction
+ *
+ *************************************************************
+ */
+static void
+SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp)
+{
+	send_clientmessage(tmp->w, XA_WM_DELETE_WINDOW, timestamp);
+}
+
+DFHANDLER(delete)
+{
+	if(tmp_win->isiconmgr) {     /* don't send ourself a message */
+		HideIconManager();
+		return;
+	}
+	if(tmp_win->iswinbox || tmp_win->iswspmgr
+	                || (Scr->workSpaceMgr.occupyWindow
+	                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
+		XBell(dpy, 0);
+		return;
+	}
+	if(tmp_win->protocols & DoesWmDeleteWindow) {
+		SendDeleteWindowMessage(tmp_win, EventTime);
+		if(ButtonPressed != -1) {
+			XEvent kev;
+
+			XMaskEvent(dpy, ButtonReleaseMask, &kev);
+			if(kev.xbutton.window == tmp_win->w) {
+				kev.xbutton.window = Scr->Root;
+			}
+			XPutBackEvent(dpy, &kev);
+		}
+		return;
+	}
+	XBell(dpy, 0);
+}
+
+DFHANDLER(destroy)
+{
+	if(tmp_win->isiconmgr || tmp_win->iswinbox || tmp_win->iswspmgr
+	                || (Scr->workSpaceMgr.occupyWindow
+	                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
+		XBell(dpy, 0);
+		return;
+	}
+	XKillClient(dpy, tmp_win->w);
+	if(ButtonPressed != -1) {
+		XEvent kev;
+
+		XMaskEvent(dpy, ButtonReleaseMask, &kev);
+		if(kev.xbutton.window == tmp_win->w) {
+			kev.xbutton.window = Scr->Root;
+		}
+		XPutBackEvent(dpy, &kev);
+	}
+}
+
+DFHANDLER(deleteordestroy)
+{
+	if(tmp_win->isiconmgr) {
+		HideIconManager();
+		return;
+	}
+	if(tmp_win->iswinbox || tmp_win->iswspmgr
+	                || (Scr->workSpaceMgr.occupyWindow
+	                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
+		XBell(dpy, 0);
+		return;
+	}
+	if(tmp_win->protocols & DoesWmDeleteWindow) {
+		SendDeleteWindowMessage(tmp_win, EventTime);
+	}
+	else {
+		XKillClient(dpy, tmp_win->w);
+	}
+	if(ButtonPressed != -1) {
+		XEvent kev;
+
+		XMaskEvent(dpy, ButtonReleaseMask, &kev);
+		if(kev.xbutton.window == tmp_win->w) {
+			kev.xbutton.window = Scr->Root;
+		}
+		XPutBackEvent(dpy, &kev);
+	}
+}
+
+
+
+
+/*
+ *************************************************************
+ *
+ * Messing with OnTopPriority bits
+ *
+ *************************************************************
+ */
 static void
 otp_priority_handler(EF_FULLPROTO)
 {
@@ -110,9 +368,115 @@ otp_priority_handler(EF_FULLPROTO)
 	if(wintype == WinWin && tmp_win->zoomed != ZOOM_NONE) {
 		tmp_win->save_otpri = OtpGetPriority(tmp_win);
 	}
+}
+DFHANDLER(priorityswitching)
+{
+	otp_priority_handler(EF_ARGS);
+}
+DFHANDLER(switchpriority)
+{
+	otp_priority_handler(EF_ARGS);
+}
+DFHANDLER(setpriority)
+{
+	otp_priority_handler(EF_ARGS);
+}
+DFHANDLER(changepriority)
+{
+	otp_priority_handler(EF_ARGS);
+}
+
+
+
+
+/*
+ *************************************************************
+ *
+ * Some misc utilities
+ *
+ *************************************************************
+ */
+DFHANDLER(saveyourself)
+{
+	if(tmp_win->protocols & DoesWmSaveYourself) {
+		send_clientmessage(tmp_win->w, XA_WM_SAVE_YOURSELF, EventTime);
+	}
+	else {
+		XBell(dpy, 0);
+	}
+}
+
+DFHANDLER(colormap)
+{
+	/* XXX Window targetting; should this be on the Defer list? */
+	if(strcmp(action, COLORMAP_NEXT) == 0) {
+		BumpWindowColormap(tmp_win, 1);
+	}
+	else if(strcmp(action, COLORMAP_PREV) == 0) {
+		BumpWindowColormap(tmp_win, -1);
+	}
+	else {
+		BumpWindowColormap(tmp_win, 0);
+	}
+}
+
+DFHANDLER(refresh)
+{
+	XSetWindowAttributes attributes;
+	unsigned long valuemask;
+
+	valuemask = (CWBackPixel | CWBackingStore | CWSaveUnder);
+	attributes.background_pixel = Scr->Black;
+	attributes.backing_store = NotUseful;
+	attributes.save_under = False;
+	w = XCreateWindow(dpy, Scr->Root, 0, 0,
+	                  Scr->rootw,
+	                  Scr->rooth,
+	                  0,
+	                  CopyFromParent, CopyFromParent,
+	                  CopyFromParent, valuemask,
+	                  &attributes);
+	XMapWindow(dpy, w);
+	XDestroyWindow(dpy, w);
+	XFlush(dpy);
 
 }
 
+DFHANDLER(winrefresh)
+{
+	if(context == C_ICON && tmp_win->icon && tmp_win->icon->w)
+		w = XCreateSimpleWindow(dpy, tmp_win->icon->w,
+		                        0, 0, 9999, 9999, 0, Scr->Black, Scr->Black);
+	else
+		w = XCreateSimpleWindow(dpy, tmp_win->frame,
+		                        0, 0, 9999, 9999, 0, Scr->Black, Scr->Black);
+
+	XMapWindow(dpy, w);
+	XDestroyWindow(dpy, w);
+	XFlush(dpy);
+}
+
+
+
+
+/*
+ *************************************************************
+ *
+ * Window squeezing related bits
+ *
+ *************************************************************
+ */
+DFHANDLER(squeeze)
+{
+	Squeeze(tmp_win);
+}
+
+DFHANDLER(unsqueeze)
+{
+	if(tmp_win->squeezed) {
+		Squeeze(tmp_win);
+	}
+}
 
 
 DFHANDLER(movetitlebar)
@@ -333,312 +697,4 @@ DFHANDLER(movetitlebar)
 	 * ungrabbing our pointer.
 	 */
 	return;
-}
-
-
-
-static void iconify_handler(EF_FULLPROTO);
-
-DFHANDLER(deiconify)
-{
-	iconify_handler(EF_ARGS);
-}
-DFHANDLER(iconify)
-{
-	iconify_handler(EF_ARGS);
-}
-
-static void
-iconify_handler(EF_FULLPROTO)
-{
-	if(tmp_win->isicon) {
-		DeIconify(tmp_win);
-	}
-	else if(func == F_ICONIFY) {
-		Iconify(tmp_win, eventp->xbutton.x_root - 5,
-		        eventp->xbutton.y_root - 5);
-	}
-}
-
-
-DFHANDLER(squeeze)
-{
-	Squeeze(tmp_win);
-}
-
-DFHANDLER(unsqueeze)
-{
-	if(tmp_win->squeezed) {
-		Squeeze(tmp_win);
-	}
-}
-
-DFHANDLER(raiselower)
-{
-	if(!WindowMoved) {
-		if(tmp_win->icon && w == tmp_win->icon->w) {
-			OtpRaiseLower(tmp_win, IconWin);
-		}
-		else {
-			OtpRaiseLower(tmp_win, WinWin);
-			WMapRaiseLower(tmp_win);
-		}
-	}
-}
-
-DFHANDLER(tinyraise)
-{
-	/* check to make sure raise is not from the WindowFunction */
-	if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT) {
-		OtpTinyRaise(tmp_win, IconWin);
-	}
-	else {
-		OtpTinyRaise(tmp_win, WinWin);
-		WMapRaise(tmp_win);
-	}
-}
-
-DFHANDLER(tinylower)
-{
-	/* check to make sure raise is not from the WindowFunction */
-	if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT) {
-		OtpTinyLower(tmp_win, IconWin);
-	}
-	else {
-		OtpTinyLower(tmp_win, WinWin);
-		WMapLower(tmp_win);
-	}
-}
-
-
-
-static void raise_handler(EF_FULLPROTO);
-
-DFHANDLER(raiseorsqueeze)
-{
-	/* FIXME using the same double-click ConstrainedMoveTime here */
-	if((eventp->xbutton.time - last_time) < ConstrainedMoveTime) {
-		Squeeze(tmp_win);
-		return;
-	}
-	last_time = eventp->xbutton.time;
-
-	/* intentional fall-thru into F_RAISE */
-	raise_handler(EF_ARGS);
-}
-
-DFHANDLER(raise)
-{
-	raise_handler(EF_ARGS);
-}
-
-static void
-raise_handler(EF_FULLPROTO)
-{
-	/* check to make sure raise is not from the WindowFunction */
-	if(tmp_win->icon && (w == tmp_win->icon->w) && Context != C_ROOT)  {
-		OtpRaise(tmp_win, IconWin);
-	}
-	else {
-		OtpRaise(tmp_win, WinWin);
-		WMapRaise(tmp_win);
-	}
-}
-
-
-
-DFHANDLER(lower)
-{
-	if(tmp_win->icon && (w == tmp_win->icon->w)) {
-		OtpLower(tmp_win, IconWin);
-	}
-	else {
-		OtpLower(tmp_win, WinWin);
-		WMapLower(tmp_win);
-	}
-}
-
-DFHANDLER(focus)
-{
-	if(!tmp_win->isicon) {
-		if(!Scr->FocusRoot && Scr->Focus == tmp_win) {
-			FocusOnRoot();
-		}
-		else {
-			InstallWindowColormaps(0, tmp_win);
-			SetFocus(tmp_win, eventp->xbutton.time);
-			Scr->FocusRoot = false;
-		}
-	}
-}
-
-
-static void SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp);
-
-DFHANDLER(destroy)
-{
-	if(tmp_win->isiconmgr || tmp_win->iswinbox || tmp_win->iswspmgr
-	                || (Scr->workSpaceMgr.occupyWindow
-	                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
-		XBell(dpy, 0);
-		return;
-	}
-	XKillClient(dpy, tmp_win->w);
-	if(ButtonPressed != -1) {
-		XEvent kev;
-
-		XMaskEvent(dpy, ButtonReleaseMask, &kev);
-		if(kev.xbutton.window == tmp_win->w) {
-			kev.xbutton.window = Scr->Root;
-		}
-		XPutBackEvent(dpy, &kev);
-	}
-}
-
-DFHANDLER(delete)
-{
-	if(tmp_win->isiconmgr) {     /* don't send ourself a message */
-		HideIconManager();
-		return;
-	}
-	if(tmp_win->iswinbox || tmp_win->iswspmgr
-	                || (Scr->workSpaceMgr.occupyWindow
-	                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
-		XBell(dpy, 0);
-		return;
-	}
-	if(tmp_win->protocols & DoesWmDeleteWindow) {
-		SendDeleteWindowMessage(tmp_win, EventTime);
-		if(ButtonPressed != -1) {
-			XEvent kev;
-
-			XMaskEvent(dpy, ButtonReleaseMask, &kev);
-			if(kev.xbutton.window == tmp_win->w) {
-				kev.xbutton.window = Scr->Root;
-			}
-			XPutBackEvent(dpy, &kev);
-		}
-		return;
-	}
-	XBell(dpy, 0);
-}
-
-DFHANDLER(deleteordestroy)
-{
-	if(tmp_win->isiconmgr) {
-		HideIconManager();
-		return;
-	}
-	if(tmp_win->iswinbox || tmp_win->iswspmgr
-	                || (Scr->workSpaceMgr.occupyWindow
-	                    && tmp_win == Scr->workSpaceMgr.occupyWindow->twm_win)) {
-		XBell(dpy, 0);
-		return;
-	}
-	if(tmp_win->protocols & DoesWmDeleteWindow) {
-		SendDeleteWindowMessage(tmp_win, EventTime);
-	}
-	else {
-		XKillClient(dpy, tmp_win->w);
-	}
-	if(ButtonPressed != -1) {
-		XEvent kev;
-
-		XMaskEvent(dpy, ButtonReleaseMask, &kev);
-		if(kev.xbutton.window == tmp_win->w) {
-			kev.xbutton.window = Scr->Root;
-		}
-		XPutBackEvent(dpy, &kev);
-	}
-}
-
-static void
-SendDeleteWindowMessage(TwmWindow *tmp, Time timestamp)
-{
-	send_clientmessage(tmp->w, XA_WM_DELETE_WINDOW, timestamp);
-}
-
-
-static void SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp);
-
-DFHANDLER(saveyourself)
-{
-	if(tmp_win->protocols & DoesWmSaveYourself) {
-		SendSaveYourselfMessage(tmp_win, EventTime);
-	}
-	else {
-		XBell(dpy, 0);
-	}
-}
-
-static void
-SendSaveYourselfMessage(TwmWindow *tmp, Time timestamp)
-{
-	send_clientmessage(tmp->w, XA_WM_SAVE_YOURSELF, timestamp);
-}
-
-
-DFHANDLER(circleup)
-{
-	OtpCirculateSubwindows(Scr->currentvs, RaiseLowest);
-}
-
-DFHANDLER(circledown)
-{
-	OtpCirculateSubwindows(Scr->currentvs, LowerHighest);
-}
-
-DFHANDLER(unfocus)
-{
-	FocusOnRoot();
-}
-
-DFHANDLER(colormap)
-{
-	/* XXX Window targetting; should this be on the Defer list? */
-	if(strcmp(action, COLORMAP_NEXT) == 0) {
-		BumpWindowColormap(tmp_win, 1);
-	}
-	else if(strcmp(action, COLORMAP_PREV) == 0) {
-		BumpWindowColormap(tmp_win, -1);
-	}
-	else {
-		BumpWindowColormap(tmp_win, 0);
-	}
-}
-
-DFHANDLER(refresh)
-{
-	XSetWindowAttributes attributes;
-	unsigned long valuemask;
-
-	valuemask = (CWBackPixel | CWBackingStore | CWSaveUnder);
-	attributes.background_pixel = Scr->Black;
-	attributes.backing_store = NotUseful;
-	attributes.save_under = False;
-	w = XCreateWindow(dpy, Scr->Root, 0, 0,
-	                  Scr->rootw,
-	                  Scr->rooth,
-	                  0,
-	                  CopyFromParent, CopyFromParent,
-	                  CopyFromParent, valuemask,
-	                  &attributes);
-	XMapWindow(dpy, w);
-	XDestroyWindow(dpy, w);
-	XFlush(dpy);
-
-}
-
-DFHANDLER(winrefresh)
-{
-	if(context == C_ICON && tmp_win->icon && tmp_win->icon->w)
-		w = XCreateSimpleWindow(dpy, tmp_win->icon->w,
-		                        0, 0, 9999, 9999, 0, Scr->Black, Scr->Black);
-	else
-		w = XCreateSimpleWindow(dpy, tmp_win->frame,
-		                        0, 0, 9999, 9999, 0, Scr->Black, Scr->Black);
-
-	XMapWindow(dpy, w);
-	XDestroyWindow(dpy, w);
-	XFlush(dpy);
 }
