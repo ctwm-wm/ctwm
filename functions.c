@@ -379,16 +379,12 @@ EF_core(EF_FULLPROTO)
 
 
 	/*
-	 * Else, fallback to our old switch().  This is expected to wither
-	 * away as we fill in the dispatch table.
+	 * We shouldn't get here unless some function we've made no provision
+	 * to handle gets called, which presumably means programmer error.
 	 */
-	switch(func) {
-		default:
-			/* Shouldn't be possible */
-			fprintf(stderr, "Internal error: no handler for function %d\n",
-			        func);
-			break;
-	}
+	fprintf(stderr, "Internal error: no handler for function %d\n",
+	        func);
+
 
 	return;
 }
