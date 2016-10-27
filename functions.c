@@ -60,6 +60,7 @@ static DFHANDLER(separator);
 static DFHANDLER(title);
 static DFHANDLER(deltastop);
 static DFHANDLER(function);
+static DFHANDLER(movemenu);
 
 /* The generated dispatch table */
 #include "functions_dispatch_execution.h"
@@ -442,13 +443,6 @@ EF_core(EF_FULLPROTO)
 				menu->mapped = MRM_MAPPED;
 			}
 			PopDownMenu();
-			break;
-
-		case F_MOVEMENU:
-			/*
-			 * This was added in ctwm 2.1, has never been documented, and
-			 * has never done anything.  ???
-			 */
 			break;
 
 		case F_FITTOCONTENT:
@@ -999,5 +993,18 @@ static
 DFHANDLER(function)
 {
 	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}
+
+
+/*
+ * f.movemenu does nothing, never has, and never has been documented
+ * since it silently came in in ctmw 2.1.  On the chopping block, but
+ * left during the dispatch conversion.
+ */
+static
+DFHANDLER(movemenu)
+{
+	fprintf(stderr, "%s(): meaningless function, to be reaped.\n", __func__);
 	return;
 }

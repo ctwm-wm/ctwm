@@ -78,7 +78,7 @@ leftzoom              - CS - -
 lower                 - CS - -
 menu                  S -  - N
 move                  - CM - -
-movemenu              - -  - N
+movemenu              - -  - -
 movepack              - CM - -
 movepush              - CM - -
 moveresize            S CS - -
