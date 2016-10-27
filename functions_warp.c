@@ -178,9 +178,13 @@ DFHANDLER(warpring)
 	}
 }
 
+
+/*
+ * Synthetic function: this is used internally as the action in some
+ * magic menus like the TwmWindows et al.
+ */
 DFHANDLER(winwarp)
 {
-	/* Synthetic function; x-ref comment on F_POPUP */
 	tmp_win = (TwmWindow *)action;
 
 	if(! tmp_win) {
