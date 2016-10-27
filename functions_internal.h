@@ -143,6 +143,28 @@ DFHANDLER(warpring);
 DFHANDLER(winwarp);
 
 
+/* functions_misc.c */
+DFHANDLER(restart);
+DFHANDLER(startanimation);
+DFHANDLER(stopanimation);
+DFHANDLER(speedupanimation);
+DFHANDLER(slowdownanimation);
+DFHANDLER(pin);
+DFHANDLER(fittocontent);
+DFHANDLER(altkeymap);
+DFHANDLER(altcontext);
+DFHANDLER(beep);
+DFHANDLER(popup);
+DFHANDLER(showbackground);
+DFHANDLER(raiseicons);
+DFHANDLER(exec);
+DFHANDLER(warptoscreen);
+DFHANDLER(menu);
+DFHANDLER(trace);
+DFHANDLER(quit);
+DFHANDLER(rescuewindows);
+
+
 /*
  * Extra exported from functions_icmgr_wsmgr.c for use in
  * f.delete{,ordestroy}.

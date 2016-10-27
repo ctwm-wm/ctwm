@@ -30,13 +30,13 @@
 # START(main)
 addtoworkspace        S CS - -
 adoptwindow           - -  - -
-altcontext            - -  - N
-altkeymap             S -  - N
+altcontext            - -  - -
+altkeymap             S -  - -
 autolower             - CS - -
 autoraise             - CS - -
 backiconmgr           - -  - -
 backmapiconmgr        - -  - -
-beep                  - -  - N
+beep                  - -  - -
 bottomzoom            - CS - -
 changepriority        S CS - -
 changesize            S CS - -
@@ -50,9 +50,9 @@ deltastop             - -  - -
 destroy               - CD - -
 downiconmgr           - -  - -
 downworkspace         - -  - -
-exec                  S -  - N
+exec                  S -  - -
 fill                  S CS - -
-fittocontent          - CS - N
+fittocontent          - CS - -
 focus                 - CS - -
 forcemove             - CM - -
 forwiconmgr           - -  - -
@@ -76,7 +76,7 @@ lefticonmgr           - -  - -
 leftworkspace         - -  - -
 leftzoom              - CS - -
 lower                 - CS - -
-menu                  S -  - N
+menu                  S -  - -
 move                  - CM - -
 movemenu              - -  - -
 movepack              - CM - -
@@ -93,21 +93,21 @@ nop                   - -  - -
 occupy                - CS - -
 occupyall             - CS - -
 pack                  S CS - -
-pin                   - -  - N
+pin                   - -  - -
 previconmgr           - -  - -
 prevworkspace         - -  - -
 priorityswitching     - CS - -
-quit                  - -  - N
+quit                  - -  - -
 raise                 - CS - -
-raiseicons            - -  - N
+raiseicons            - -  - -
 raiselower            - CS - -
 raiseorsqueeze        - CS - -
 refresh               - -  - -
 removefromworkspace   S CS - -
 rereadsounds          - -  SOUNDS -
-rescuewindows         - -  - N
+rescuewindows         - -  - -
 resize                - CM - -
-restart               - -  - N
+restart               - -  - -
 restoregeometry       - CS - -
 righticonmgr          - -  - -
 rightworkspace        - -  - -
@@ -119,15 +119,15 @@ separator             - -  - -
 setbuttonsstate       - -  - -
 setmapstate           - -  - -
 setpriority           S CS - -
-showbackground        - -  - N
+showbackground        - -  - -
 showiconmgr           - -  - -
 showworkspacemgr      - -  - -
-slowdownanimation     - -  - N
+slowdownanimation     - -  - -
 sorticonmgr           - CS - -
-speedupanimation      - -  - N
+speedupanimation      - -  - -
 squeeze               - CS - -
-startanimation        - -  - N
-stopanimation         - -  - N
+startanimation        - -  - -
+stopanimation         - -  - -
 switchpriority        - CS - -
 tinylower             - CS - -
 tinyraise             - CS - -
@@ -137,7 +137,7 @@ togglesound           - -  SOUNDS -
 togglestate           - -  - -
 toggleworkspacemgr    - -  - -
 topzoom               - CS - -
-trace                 S -  - N
+trace                 S -  - -
 unfocus               - -  - -
 unsqueeze             - CS - -
 upiconmgr             - -  - -
@@ -148,7 +148,7 @@ warphere              S -  - -
 warpring              S -  - -
 warpto                S -  - -
 warptoiconmgr         S -  - -
-warptoscreen          S -  - N
+warptoscreen          S -  - -
 winrefresh            - CS - -
 zoom                  - CS - -
 # END(main)
@@ -176,7 +176,7 @@ twmrc  restart
 # Format: "<name> <hasfunc:[N-]>"
 # hasfunc -> has defined function for implementation
 # START(synthetic)
-popup    N
+popup    -
 winwarp  -
 # END(synthetic)
 
