@@ -145,24 +145,24 @@ DFHANDLER(winwarp);
 
 
 /* functions_misc.c */
-DFHANDLER(restart);
 DFHANDLER(startanimation);
 DFHANDLER(stopanimation);
 DFHANDLER(speedupanimation);
 DFHANDLER(slowdownanimation);
+DFHANDLER(menu);
 DFHANDLER(pin);
-DFHANDLER(fittocontent);
 DFHANDLER(altkeymap);
 DFHANDLER(altcontext);
+DFHANDLER(quit);
+DFHANDLER(restart);
 DFHANDLER(beep);
+DFHANDLER(trace);
+DFHANDLER(fittocontent);
 DFHANDLER(showbackground);
 DFHANDLER(raiseicons);
-DFHANDLER(exec);
-DFHANDLER(warptoscreen);
-DFHANDLER(menu);
-DFHANDLER(trace);
-DFHANDLER(quit);
 DFHANDLER(rescuewindows);
+DFHANDLER(warptoscreen);
+DFHANDLER(exec);
 
 
 /*
