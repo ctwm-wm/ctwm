@@ -201,6 +201,34 @@ DFHANDLER(iconify)
 }
 
 
+/*
+ * This is a synthetic function; it only exists as an action in some
+ * magic menus like TwmWindows (x-ref f.winwarp as well).  It acts as a
+ * sort of deiconify, so I've stuck it here.
+ */
+DFHANDLER(popup)
+{
+	/*
+	 * This is a synthetic function; it exists only to be called
+	 * internally from the various magic menus like TwmWindows
+	 * etc.
+	 */
+	tmp_win = (TwmWindow *)action;
+	if(! tmp_win) {
+		return;
+	}
+	if(Scr->WindowFunction.func != 0) {
+		ExecuteFunction(Scr->WindowFunction.func,
+		                Scr->WindowFunction.item->action,
+		                w, tmp_win, eventp, C_FRAME, false);
+	}
+	else {
+		DeIconify(tmp_win);
+		OtpRaise(tmp_win, WinWin);
+	}
+}
+
+
 
 
 /*

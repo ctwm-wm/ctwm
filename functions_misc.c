@@ -146,28 +146,6 @@ DFHANDLER(beep)
 	XBell(dpy, 0);
 }
 
-DFHANDLER(popup)
-{
-	/*
-	 * This is a synthetic function; it exists only to be called
-	 * internally from the various magic menus like TwmWindows
-	 * etc.
-	 */
-	tmp_win = (TwmWindow *)action;
-	if(! tmp_win) {
-		return;
-	}
-	if(Scr->WindowFunction.func != 0) {
-		ExecuteFunction(Scr->WindowFunction.func,
-		                Scr->WindowFunction.item->action,
-		                w, tmp_win, eventp, C_FRAME, false);
-	}
-	else {
-		DeIconify(tmp_win);
-		OtpRaise(tmp_win, WinWin);
-	}
-}
-
 DFHANDLER(showbackground)
 {
 	ShowBackground(Scr->currentvs, -1);
