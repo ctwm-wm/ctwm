@@ -26,17 +26,14 @@
 #include "ext/repl_str.h"
 
 
-static void Execute(const char *_s);
 
 /* XXX TEMP */
 extern bool func_reset_cursor;
 
 
-DFHANDLER(restart)
-{
-	DoRestart(eventp->xbutton.time);
-}
-
+/*
+ * Animation-related
+ */
 DFHANDLER(startanimation)
 {
 	StartAnimation();
@@ -56,6 +53,39 @@ DFHANDLER(slowdownanimation)
 {
 	ModifyAnimationSpeed(-1);
 }
+
+
+
+/*
+ * Menu-related
+ */
+DFHANDLER(menu)
+{
+	if(action && ! strncmp(action, "WGOTO : ", 8)) {
+		GotoWorkSpaceByName(/* XXXXX */ Scr->currentvs,
+		                                ((char *)action) + 8);
+	}
+	else {
+		MenuItem *item;
+
+		item = ActiveItem;
+		while(item && item->sub) {
+			if(!item->sub->defaultitem) {
+				break;
+			}
+			if(item->sub->defaultitem->func != F_MENU) {
+				break;
+			}
+			item = item->sub->defaultitem;
+		}
+		if(item && item->sub && item->sub->defaultitem) {
+			ExecuteFunction(item->sub->defaultitem->func,
+			                item->sub->defaultitem->action,
+			                w, tmp_win, eventp, context, pulldown);
+		}
+	}
+}
+
 
 DFHANDLER(pin)
 {
@@ -98,15 +128,11 @@ DFHANDLER(pin)
 	PopDownMenu();
 }
 
-DFHANDLER(fittocontent)
-{
-	if(!tmp_win->iswinbox) {
-		XBell(dpy, 0);
-		return;
-	}
-	fittocontent(tmp_win);
-}
 
+
+/*
+ * Alternate keymaps/contexts
+ */
 DFHANDLER(altkeymap)
 {
 	int alt, stat_;
@@ -141,11 +167,51 @@ DFHANDLER(altcontext)
 	return;
 }
 
+
+
+/*
+ * A few trivial ctwm-control-ish meta-functions
+ */
+DFHANDLER(quit)
+{
+	Done(0);
+}
+
+DFHANDLER(restart)
+{
+	DoRestart(eventp->xbutton.time);
+}
+
 DFHANDLER(beep)
 {
 	XBell(dpy, 0);
 }
 
+DFHANDLER(trace)
+{
+	DebugTrace(action);
+}
+
+
+
+/*
+ * Special windowbox-related
+ */
+DFHANDLER(fittocontent)
+{
+	if(!tmp_win->iswinbox) {
+		XBell(dpy, 0);
+		return;
+	}
+	fittocontent(tmp_win);
+}
+
+
+
+/*
+ * A few things that are sorta windows/icons related, but don't really
+ * fit with the window-targetted things in functions_win.
+ */
 DFHANDLER(showbackground)
 {
 	ShowBackground(Scr->currentvs, -1);
@@ -160,18 +226,18 @@ DFHANDLER(raiseicons)
 	}
 }
 
-DFHANDLER(exec)
+DFHANDLER(rescuewindows)
 {
-	PopDownMenu();
-	if(!Scr->NoGrabServer) {
-		XUngrabServer(dpy);
-		XSync(dpy, 0);
-	}
-	XUngrabPointer(dpy, CurrentTime);
-	XSync(dpy, 0);
-	Execute(action);
+	RescueWindows();
 }
 
+
+
+/*
+ * Despite the name, this is more like 'gotoworkspace' than the other
+ * 'warpto*' funcs, as it's just about switching your view, not anything
+ * going to a window.
+ */
 DFHANDLER(warptoscreen)
 {
 	if(strcmp(action, WARPSCREEN_NEXT) == 0) {
@@ -188,60 +254,26 @@ DFHANDLER(warptoscreen)
 	}
 }
 
-DFHANDLER(menu)
-{
-	if(action && ! strncmp(action, "WGOTO : ", 8)) {
-		GotoWorkSpaceByName(/* XXXXX */ Scr->currentvs,
-		                                ((char *)action) + 8);
-	}
-	else {
-		MenuItem *item;
-
-		item = ActiveItem;
-		while(item && item->sub) {
-			if(!item->sub->defaultitem) {
-				break;
-			}
-			if(item->sub->defaultitem->func != F_MENU) {
-				break;
-			}
-			item = item->sub->defaultitem;
-		}
-		if(item && item->sub && item->sub->defaultitem) {
-			ExecuteFunction(item->sub->defaultitem->func,
-			                item->sub->defaultitem->action,
-			                w, tmp_win, eventp, context, pulldown);
-		}
-	}
-}
-
-DFHANDLER(trace)
-{
-	DebugTrace(action);
-}
-
-DFHANDLER(quit)
-{
-	Done(0);
-}
-
-DFHANDLER(rescuewindows)
-{
-	RescueWindows();
-}
 
 
-
-/***********************************************************************
- *
- *  Procedure:
- *      Execute - execute the string by /bin/sh
- *
- *  Inputs:
- *      s       - the string containing the command
- *
- ***********************************************************************
+/*
+ * And executing an external program
  */
+static void Execute(const char *_s);
+
+DFHANDLER(exec)
+{
+	PopDownMenu();
+	if(!Scr->NoGrabServer) {
+		XUngrabServer(dpy);
+		XSync(dpy, 0);
+	}
+	XUngrabPointer(dpy, CurrentTime);
+	XSync(dpy, 0);
+	Execute(action);
+}
+
+
 static void
 Execute(const char *_s)
 {
