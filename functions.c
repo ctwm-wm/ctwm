@@ -6,45 +6,13 @@
 #include "ctwm.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
-#include <X11/Xatom.h>
-
-#include "add_window.h"
-#include "animate.h"
-#include "colormaps.h"
-#include "ctopts.h"
-#include "ctwm_atoms.h"
-#include "cursor.h"
-#include "decorations.h"
 #include "events.h"
-#include "event_handlers.h"
+#include "functions.h"
 #include "functions_defs.h"
 #include "functions_deferral.h"  // Generated deferral table
-#include "iconmgr.h"
-#include "icons.h"
-#include "list.h" // for match()
-#include "otp.h"
-#include "parse.h"
-#include "resize.h"
-#include "screen.h"
-#include "util.h"
-#include "drawing.h"
-#include "occupation.h"
-#include "version.h"
-#include "win_iconify.h"
-#include "win_ops.h"
-#include "win_utils.h"
-#include "windowbox.h"
-#include "captive.h"
-#include "vscreen.h"
-#include "workspace_manager.h"
-#include "workspace_utils.h"
-
-#include "ext/repl_str.h"
-
-#include "functions.h"
 #include "functions_internal.h"
+#include "screen.h"
 
 
 static DFHANDLER(nop);
