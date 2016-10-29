@@ -18,8 +18,6 @@
 #          an #ifdef.  - for no, otherwise a string of what it should
 #          #ifdef.
 #
-# Much of initial fill mechanically done via:
-# awk '/, F_[A-Z]/ {printf "%-21s %s -  - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c | sort -u
 # START(main)
 addtoworkspace        S CS -
 adoptwindow           - -  -
