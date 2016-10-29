@@ -26,10 +26,6 @@
 #include "workspace_manager.h"
 
 
-/* XXX TEMP */
-bool belongs_to_twm_window(TwmWindow *t, Window w);
-
-
 /*
  * MoveFillDir-ectional specifiers, used in jump/pack/fill
  */
@@ -40,6 +36,9 @@ typedef enum {
 	MFD_TOP,
 } MoveFillDir;
 static int FindConstraint(TwmWindow *tmp_win, MoveFillDir direction);
+
+/* Internal util */
+static bool belongs_to_twm_window(TwmWindow *t, Window w);
 
 
 /*
@@ -1289,4 +1288,44 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 		}
 	}
 	return ret;
+}
+
+
+/*
+ * Is Window w part of the conglomerate of metawindows we put around the
+ * real window for TwmWindow t?  Note that this does _not_ check if w is
+ * the actual window we built the TwmWindow t around.
+ */
+static bool
+belongs_to_twm_window(TwmWindow *t, Window w)
+{
+	/* Safety */
+	if(!t) {
+		return false;
+	}
+
+	/* Part of the framing we put around the window? */
+	if(w == t->frame || w == t->title_w
+	                || w == t->hilite_wl || w == t->hilite_wr) {
+		return true;
+	}
+
+	/* Part of the icon bits? */
+	if(t->icon && (w == t->icon->w || w == t->icon->bm_w)) {
+		return true;
+	}
+
+	/* One of the title button windows? */
+	if(t->titlebuttons) {
+		TBWindow *tbw;
+		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
+		for(tbw = t->titlebuttons ; nb > 0 ; tbw++, nb--) {
+			if(tbw->window == w) {
+				return true;
+			}
+		}
+	}
+
+	/* Then no */
+	return false;
 }

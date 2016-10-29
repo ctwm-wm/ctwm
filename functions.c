@@ -112,7 +112,6 @@ static bool EF_main(EF_FULLPROTO);
 static ExFunc EF_core;
 
 static bool DeferExecution(int context, int func, Cursor cursor);
-bool belongs_to_twm_window(TwmWindow *t, Window w); // XXX temp not static
 static bool should_defer(int func);
 static Cursor defer_cursor(int func);
 static Cursor NeedToDefer(MenuRoot *root);
@@ -394,47 +393,6 @@ EF_core(EF_FULLPROTO)
 /*
  * Utils
  */
-
-/*
- * Is Window w part of the conglomerate of metawindows we put around the
- * real window for TwmWindow t?  Note that this does _not_ check if w is
- * the actual window we built the TwmWindow t around.
- */
-/* XXX Temp not static */
-bool
-belongs_to_twm_window(TwmWindow *t, Window w)
-{
-	/* Safety */
-	if(!t) {
-		return false;
-	}
-
-	/* Part of the framing we put around the window? */
-	if(w == t->frame || w == t->title_w
-	                || w == t->hilite_wl || w == t->hilite_wr) {
-		return true;
-	}
-
-	/* Part of the icon bits? */
-	if(t->icon && (w == t->icon->w || w == t->icon->bm_w)) {
-		return true;
-	}
-
-	/* One of the title button windows? */
-	if(t->titlebuttons) {
-		TBWindow *tbw;
-		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
-		for(tbw = t->titlebuttons ; nb > 0 ; tbw++, nb--) {
-			if(tbw->window == w) {
-				return true;
-			}
-		}
-	}
-
-	/* Then no */
-	return false;
-}
-
 
 /*
  * Check to see if a function (implicitly, a window-targetting function)
