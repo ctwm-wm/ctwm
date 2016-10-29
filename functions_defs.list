@@ -3,17 +3,12 @@
 # Each section (delimieted by "START(section)" and "END(section)" has a
 # potentially different format.  But all of them begin with the function
 # name in lowercase (sans leading 'f.').
-#
-# Several have a 'hasfunc' arg defining whether we have a predefined name
-# for the function implementation.  This is intended as a transition
-# device as I move things into that style; it's expected that the column
-# will go away once the transition is complete.
 
 
 # First section: the main meat of functions.  Almost everything should
 # wind up here.
 #
-# Format: "<name> <conftype> <defcursor> <ifdef> <hasfunc>"
+# Format: "<name> <conftype> <defcursor> <ifdef>"
 # conftype -> for the config file parsing, defining the keyword type.
 #             'S' -> FSKEYWORD    '-' -> FKEYWORD
 # defcurs -> Deferral cursor for deferring function.  x-ref
@@ -22,135 +17,133 @@
 # ifdef -> whether the pieces for this function should be hidden behind
 #          an #ifdef.  - for no, otherwise a string of what it should
 #          #ifdef.
-# hasfunc -> Whether there's a predefined named function for the
-#          implementation.  N if not, - if so.  X-ref comment at top.
 #
 # Much of initial fill mechanically done via:
 # awk '/, F_[A-Z]/ {printf "%-21s %s -  - N\n", tolower(substr($4, 3)), ($3 == "FKEYWORD," ? "-" : "S")}' parse_be.c | sort -u
 # START(main)
-addtoworkspace        S CS - -
-adoptwindow           - -  - -
-altcontext            - -  - -
-altkeymap             S -  - -
-autolower             - CS - -
-autoraise             - CS - -
-backiconmgr           - -  - -
-backmapiconmgr        - -  - -
-beep                  - -  - -
-bottomzoom            - CS - -
-changepriority        S CS - -
-changesize            S CS - -
-circledown            - -  - -
-circleup              - -  - -
-colormap              S -  - -
-deiconify             - CS - -
-delete                - CD - -
-deleteordestroy       - CD - -
-deltastop             - -  - -
-destroy               - CD - -
-downiconmgr           - -  - -
-downworkspace         - -  - -
-exec                  S -  - -
-fill                  S CS - -
-fittocontent          - CS - -
-focus                 - CS - -
-forcemove             - CM - -
-forwiconmgr           - -  - -
-forwmapiconmgr        - -  - -
-fullscreenzoom        - CS - -
-fullzoom              - CS - -
-function              S -  - -
-gotoworkspace         S -  - -
-hideiconmgr           - -  - -
-hideworkspacemgr      - -  - -
-horizoom              - CS - -
-hypermove             - CM - -
-iconify               - CS - -
-identify              - CS - -
-initsize              - CS - -
-jumpdown              S CM - -
-jumpleft              S CM - -
-jumpright             S CM - -
-jumpup                S CM - -
-lefticonmgr           - -  - -
-leftworkspace         - -  - -
-leftzoom              - CS - -
-lower                 - CS - -
-menu                  S -  - -
-move                  - CM - -
-movemenu              - -  - -
-movepack              - CM - -
-movepush              - CM - -
-moveresize            S CS - -
-movetitlebar          - CM - -
-movetonextworkspace   - CS - -
-movetonextworkspaceandfollow - CS - -
-movetoprevworkspace   - CS - -
-movetoprevworkspaceandfollow - CS - -
-nexticonmgr           - -  - -
-nextworkspace         - -  - -
-nop                   - -  - -
-occupy                - CS - -
-occupyall             - CS - -
-pack                  S CS - -
-pin                   - -  - -
-previconmgr           - -  - -
-prevworkspace         - -  - -
-priorityswitching     - CS - -
-quit                  - -  - -
-raise                 - CS - -
-raiseicons            - -  - -
-raiselower            - CS - -
-raiseorsqueeze        - CS - -
-refresh               - -  - -
-removefromworkspace   S CS - -
-rereadsounds          - -  SOUNDS -
-rescuewindows         - -  - -
-resize                - CM - -
-restart               - -  - -
-restoregeometry       - CS - -
-righticonmgr          - -  - -
-rightworkspace        - -  - -
-rightzoom             - CS - -
-ring                  - CS - -
-savegeometry          - CS - -
-saveyourself          - CS - -
-separator             - -  - -
-setbuttonsstate       - -  - -
-setmapstate           - -  - -
-setpriority           S CS - -
-showbackground        - -  - -
-showiconmgr           - -  - -
-showworkspacemgr      - -  - -
-slowdownanimation     - -  - -
-sorticonmgr           - CS - -
-speedupanimation      - -  - -
-squeeze               - CS - -
-startanimation        - -  - -
-stopanimation         - -  - -
-switchpriority        - CS - -
-tinylower             - CS - -
-tinyraise             - CS - -
-title                 - -  - -
-toggleoccupation      S CS - -
-togglesound           - -  SOUNDS -
-togglestate           - -  - -
-toggleworkspacemgr    - -  - -
-topzoom               - CS - -
-trace                 S -  - -
-unfocus               - -  - -
-unsqueeze             - CS - -
-upiconmgr             - -  - -
-upworkspace           - -  - -
-vanish                - CS - -
-version               - -  - -
-warphere              S -  - -
-warpring              S -  - -
-warpto                S -  - -
-warptoiconmgr         S -  - -
-warptoscreen          S -  - -
-winrefresh            - CS - -
-zoom                  - CS - -
+addtoworkspace        S CS -
+adoptwindow           - -  -
+altcontext            - -  -
+altkeymap             S -  -
+autolower             - CS -
+autoraise             - CS -
+backiconmgr           - -  -
+backmapiconmgr        - -  -
+beep                  - -  -
+bottomzoom            - CS -
+changepriority        S CS -
+changesize            S CS -
+circledown            - -  -
+circleup              - -  -
+colormap              S -  -
+deiconify             - CS -
+delete                - CD -
+deleteordestroy       - CD -
+deltastop             - -  -
+destroy               - CD -
+downiconmgr           - -  -
+downworkspace         - -  -
+exec                  S -  -
+fill                  S CS -
+fittocontent          - CS -
+focus                 - CS -
+forcemove             - CM -
+forwiconmgr           - -  -
+forwmapiconmgr        - -  -
+fullscreenzoom        - CS -
+fullzoom              - CS -
+function              S -  -
+gotoworkspace         S -  -
+hideiconmgr           - -  -
+hideworkspacemgr      - -  -
+horizoom              - CS -
+hypermove             - CM -
+iconify               - CS -
+identify              - CS -
+initsize              - CS -
+jumpdown              S CM -
+jumpleft              S CM -
+jumpright             S CM -
+jumpup                S CM -
+lefticonmgr           - -  -
+leftworkspace         - -  -
+leftzoom              - CS -
+lower                 - CS -
+menu                  S -  -
+move                  - CM -
+movemenu              - -  -
+movepack              - CM -
+movepush              - CM -
+moveresize            S CS -
+movetitlebar          - CM -
+movetonextworkspace   - CS -
+movetonextworkspaceandfollow - CS -
+movetoprevworkspace   - CS -
+movetoprevworkspaceandfollow - CS -
+nexticonmgr           - -  -
+nextworkspace         - -  -
+nop                   - -  -
+occupy                - CS -
+occupyall             - CS -
+pack                  S CS -
+pin                   - -  -
+previconmgr           - -  -
+prevworkspace         - -  -
+priorityswitching     - CS -
+quit                  - -  -
+raise                 - CS -
+raiseicons            - -  -
+raiselower            - CS -
+raiseorsqueeze        - CS -
+refresh               - -  -
+removefromworkspace   S CS -
+rereadsounds          - -  SOUNDS
+rescuewindows         - -  -
+resize                - CM -
+restart               - -  -
+restoregeometry       - CS -
+righticonmgr          - -  -
+rightworkspace        - -  -
+rightzoom             - CS -
+ring                  - CS -
+savegeometry          - CS -
+saveyourself          - CS -
+separator             - -  -
+setbuttonsstate       - -  -
+setmapstate           - -  -
+setpriority           S CS -
+showbackground        - -  -
+showiconmgr           - -  -
+showworkspacemgr      - -  -
+slowdownanimation     - -  -
+sorticonmgr           - CS -
+speedupanimation      - -  -
+squeeze               - CS -
+startanimation        - -  -
+stopanimation         - -  -
+switchpriority        - CS -
+tinylower             - CS -
+tinyraise             - CS -
+title                 - -  -
+toggleoccupation      S CS -
+togglesound           - -  SOUNDS
+togglestate           - -  -
+toggleworkspacemgr    - -  -
+topzoom               - CS -
+trace                 S -  -
+unfocus               - -  -
+unsqueeze             - CS -
+upiconmgr             - -  -
+upworkspace           - -  -
+vanish                - CS -
+version               - -  -
+warphere              S -  -
+warpring              S -  -
+warpto                S -  -
+warptoiconmgr         S -  -
+warptoscreen          S -  -
+winrefresh            - CS -
+zoom                  - CS -
 # END(main)
 
 
@@ -173,11 +166,10 @@ twmrc  restart
 # functions needs to handle them, and we need numbers defined for them.
 # But they can't be in config files or the like, so there's no parsing
 # needed for them.
-# Format: "<name> <hasfunc:[N-]>"
-# hasfunc -> has defined function for implementation
+# Format: "<name>"
 # START(synthetic)
-popup    -
-winwarp  -
+popup
+winwarp
 # END(synthetic)
 
 
