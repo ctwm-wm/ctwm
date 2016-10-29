@@ -255,3 +255,51 @@ EOF
 
 ) > ${gf}
 #echo "Generated ${gf}"
+
+
+
+#
+# And finally, the dispatch table for executing functions.
+#
+gf="${outdir}/functions_dispatch_execution.h"
+(
+	# Everything we need for this is in the main section.
+	# Now run 'em both together and output
+	print_header
+	cat << EOF
+#ifndef _CTWM_FUNCTIONS_DISPATCH_EXECUTION_H
+#define _CTWM_FUNCTIONS_DISPATCH_EXECUTION_H
+
+/* Dispatcher table for executing functions */
+static ExFunc * const func_dispatch[] = {
+EOF
+
+	while read func lcfunc ifdef
+	do
+		if [ "X${ifdef}" != "X-" ]; then
+			echo "#ifdef ${ifdef}"
+		fi
+
+		printf "\t%-23s = %s,\n" "[F_${func}]" "f_${lcfunc}_impl"
+
+		if [ "X${ifdef}" != "X-" ]; then
+			echo "#endif"
+		fi
+	done << EOF
+	$(getsect main \
+		| awk '{ if ($5 != "N") {printf "%s %s %s\n", toupper($1), $1, $4} }'
+	  getsect synthetic \
+		| awk '{ if ($2 != "N") {printf "%s %s -\n",  toupper($1), $1} }'
+	)
+EOF
+
+	cat << EOF
+};
+	
+static const size_t num_f_dis = (sizeof(func_dispatch) / sizeof(func_dispatch[0]));
+
+#endif // _CTWM_FUNCTIONS_DISPATCH_EXECUTION_H
+EOF
+
+) > ${gf}
+#echo "Generated ${gf}"

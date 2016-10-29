@@ -79,6 +79,7 @@ ${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
 _FUNC_GEN=${BDIR}/functions_defs.h
 _FUNC_GEN+=${BDIR}/functions_deferral.h
 _FUNC_GEN+=${BDIR}/functions_parse_table.h
+_FUNC_GEN+=${BDIR}/functions_dispatch_execution.h
 GENXTRA+=${_FUNC_GEN}
 ${_FUNC_GEN}: ${RTDIR}/functions_defs.list
 	${TOOLS}/mk_function_bits.sh ${RTDIR}/functions_defs.list ${BDIR}

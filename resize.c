@@ -958,6 +958,17 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	int tmpX, tmpY, tmpW, tmpH;
 
 
+	/*
+	 * All our callers [need to] do this, so moving it here saves a few
+	 * lines in some places around the calling, and when redundant it
+	 * just wastes a comparison, so it's cheap.
+	 */
+	if(tmp_win->squeezed) {
+		XBell(dpy, 0);
+		return;
+	}
+
+
 	XGetGeometry(dpy, (Drawable) tmp_win->frame, &junkRoot,
 	             &dragx, &dragy, (unsigned int *)&dragWidth, (unsigned int *)&dragHeight,
 	             &junkbw,
