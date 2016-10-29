@@ -162,6 +162,10 @@ DFHANDLER(showbackground);
 DFHANDLER(raiseicons);
 DFHANDLER(rescuewindows);
 DFHANDLER(warptoscreen);
+#ifdef SOUNDS
+DFHANDLER(togglesound);
+DFHANDLER(rereadsounds);
+#endif
 DFHANDLER(exec);
 
 

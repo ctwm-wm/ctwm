@@ -31,9 +31,6 @@
 #include "util.h"
 #include "drawing.h"
 #include "occupation.h"
-#ifdef SOUNDS
-#include "sound.h"
-#endif
 #include "version.h"
 #include "win_iconify.h"
 #include "win_ops.h"
@@ -49,11 +46,6 @@
 #include "functions.h"
 #include "functions_internal.h"
 
-/* Our static implementations in this file (need these before below) */
-#ifdef SOUNDS
-static DFHANDLER(togglesound);
-static DFHANDLER(rereadsounds);
-#endif
 
 static DFHANDLER(nop);
 static DFHANDLER(separator);
@@ -514,27 +506,6 @@ NeedToDefer(MenuRoot *root)
 	}
 	return None;
 }
-
-
-
-/*
- * Some misc function handlers that are small individually and don't
- * obviously belong to a larger set, so I just stick 'em here.
- */
-
-/* Sound-related funcs */
-#ifdef SOUNDS
-static
-DFHANDLER(togglesound)
-{
-	toggle_sound();
-}
-static
-DFHANDLER(rereadsounds)
-{
-	reread_sounds();
-}
-#endif
 
 
 

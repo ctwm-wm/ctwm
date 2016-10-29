@@ -18,6 +18,9 @@
 #include "menus.h"
 #include "otp.h"
 #include "screen.h"
+#ifdef SOUNDS
+#include "sound.h"
+#endif
 #include "util.h"
 #include "win_iconify.h"
 #include "windowbox.h"
@@ -249,6 +252,24 @@ DFHANDLER(warptoscreen)
 		WarpToScreen(atoi(action), 0);
 	}
 }
+
+
+
+/*
+ * Sound-related
+ */
+#ifdef SOUNDS
+static
+DFHANDLER(togglesound)
+{
+	toggle_sound();
+}
+static
+DFHANDLER(rereadsounds)
+{
+	reread_sounds();
+}
+#endif
 
 
 
