@@ -263,8 +263,9 @@ EOF
 #
 gf="${outdir}/functions_dispatch_execution.h"
 (
-	# Everything we need for this is in the main section.
-	# Now run 'em both together and output
+	# Functions in the main and synthetic sections need dispatching.
+	# Order doesn't matter in defining this, so we can just run 'em
+	# together without worrying about sorting.
 	print_header
 	cat << EOF
 #ifndef _CTWM_FUNCTIONS_DISPATCH_EXECUTION_H
