@@ -259,12 +259,11 @@ DFHANDLER(warptoscreen)
  * Sound-related
  */
 #ifdef SOUNDS
-static
 DFHANDLER(togglesound)
 {
 	toggle_sound();
 }
-static
+
 DFHANDLER(rereadsounds)
 {
 	reread_sounds();
