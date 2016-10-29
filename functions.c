@@ -383,7 +383,7 @@ EF_core(EF_FULLPROTO)
 
 
 /*
- * Utils
+ * Implementation of function deferral
  */
 
 /*
