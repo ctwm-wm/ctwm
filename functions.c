@@ -227,9 +227,10 @@ EF_main(EF_FULLPROTO)
 	/*
 	 * Main dispatching/executing.
 	 *
-	 * We delegate _most_ handlers to our _core() function, but we keep
-	 * the magic related to f.function/f.deltastop out here to free the
-	 * inner bits from having to care about the magic returns.
+	 * _Most_ f.things are dispatched to individual handler functions,
+	 * but we keep the magic related to f.function/f.deltastop out here
+	 * to free the inner bits from having to care about the magic
+	 * returns.
 	 */
 	switch(func) {
 		case F_DELTASTOP:
