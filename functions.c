@@ -22,7 +22,11 @@ static DFHANDLER(deltastop);
 static DFHANDLER(function);
 static DFHANDLER(movemenu);
 
-/* The generated dispatch table */
+/*
+ * The generated dispatch table.  Have to do this after the preceeding
+ * prototypes for the handers in this file, since those funcs are ref'd
+ * in this table.
+ */
 #include "functions_dispatch_execution.h"
 
 
