@@ -27,10 +27,6 @@
 
 
 
-/* XXX TEMP */
-extern bool func_reset_cursor;
-
-
 /*
  * Animation-related
  */
