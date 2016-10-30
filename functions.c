@@ -73,7 +73,6 @@ Time last_time = 0;
 
 
 static bool EF_main(EF_FULLPROTO);
-static ExFunc EF_core;
 
 static bool DeferExecution(int context, int func, Cursor cursor);
 static bool should_defer(int func);
@@ -228,9 +227,10 @@ EF_main(EF_FULLPROTO)
 	/*
 	 * Main dispatching/executing.
 	 *
-	 * We delegate _most_ handlers to our _core() function, but we keep
-	 * the magic related to f.function/f.deltastop out here to free the
-	 * inner bits from having to care about the magic returns.
+	 * _Most_ f.things are dispatched to individual handler functions,
+	 * but we keep the magic related to f.function/f.deltastop out here
+	 * to free the inner bits from having to care about the magic
+	 * returns.
 	 */
 	switch(func) {
 		case F_DELTASTOP:
@@ -282,12 +282,25 @@ EF_main(EF_FULLPROTO)
 			break;
 		}
 
+
 		/*
-		 * Everything else happens in our inner function.
+		 * Everything else is programmatically dispatched.
 		 */
-		default:
-			EF_core(EF_ARGS);
+		default: {
+			if(func >= 0 && func < num_f_dis && func_dispatch[func] != NULL) {
+				(*func_dispatch[func])(EF_ARGS);
+				break;
+			}
+
+			/*
+			 * Getting here means somehow it wasn't in the dispatch
+			 * table, which shouldn't be possible without a big bug
+			 * somewhere...
+			 */
+			fprintf(stderr, "Internal error: no handler for function %d\n",
+			        func);
 			break;
+		}
 	}
 
 
@@ -312,44 +325,6 @@ EF_main(EF_FULLPROTO)
 	}
 
 	return true;
-}
-
-
-/*
- * The core dispatching of the function being called.  The principal
- * reason this is broken out rather than just being inline in EF_main()
- * is that this allows us to trivially return; directly from an
- * individual handler, but still run the post-cleanup that follows the
- * switch().
- */
-static void
-EF_core(EF_FULLPROTO)
-{
-	/*
-	 * Now we know we're ready to actually execute whatever the function
-	 * is, so do the meat of running it.
-	 */
-
-
-	/*
-	 * First, programmatically dispatch to the functions we have defined
-	 * dispatcher functions for.
-	 */
-	if(func >= 0 && func < num_f_dis && func_dispatch[func] != NULL) {
-		(*func_dispatch[func])(EF_ARGS);
-		return;
-	}
-
-
-	/*
-	 * We shouldn't get here unless some function we've made no provision
-	 * to handle gets called, which presumably means programmer error.
-	 */
-	fprintf(stderr, "Internal error: no handler for function %d\n",
-	        func);
-
-
-	return;
 }
 
 
