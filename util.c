@@ -101,7 +101,7 @@
 #include "cursor.h"
 #include "resize.h"
 #include "image.h"
-#include "decorations.h"
+#include "win_decorations.h"
 #include "drawing.h"
 #include "vscreen.h"
 

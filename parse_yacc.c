@@ -11,13 +11,13 @@
 #include <string.h>
 #include <strings.h>
 
-#include "decorations_init.h"
 #include "functions_defs.h"
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
+#include "win_decorations_init.h"
 
 #include "gram.tab.h"
 

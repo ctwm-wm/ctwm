@@ -75,7 +75,6 @@
 #include "iconmgr.h"
 #include "icons.h"
 #include "windowbox.h"
-#include "decorations_init.h"
 #include "functions_defs.h"
 #include "list.h"
 #include "util.h"
@@ -85,6 +84,7 @@
 #include "parse_be.h"
 #include "parse_yacc.h"
 #include "cursor.h"
+#include "win_decorations_init.h"
 #include "win_regions.h"
 #include "workspace_config.h"
 #ifdef SOUNDS

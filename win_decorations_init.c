@@ -16,7 +16,7 @@
 #include "image.h"
 #include "screen.h"
 
-#include "decorations_init.h"
+#include "win_decorations_init.h"
 
 
 /*

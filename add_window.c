@@ -93,10 +93,10 @@
 #include "mwmhints.h"
 #include "image.h"
 #include "functions.h"  // Only for RootFunction
-#include "decorations.h"
 #include "captive.h"
 #include "occupation.h"
 #include "vscreen.h"
+#include "win_decorations.h"
 #include "win_ops.h"
 #include "win_regions.h"
 #include "win_utils.h"

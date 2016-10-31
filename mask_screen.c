@@ -8,7 +8,6 @@
 
 #include <sys/select.h>
 
-#include "decorations.h"
 #include "screen.h"
 #include "icons.h"
 #include "cursor.h"
@@ -16,6 +15,7 @@
 #include "gram.tab.h"
 #include "list.h"
 #include "vscreen.h"
+#include "win_decorations.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 

@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include "colormaps.h"
-#include "decorations.h"
 #include "events.h"
 #include "event_handlers.h"
 #include "functions.h"
@@ -21,6 +20,7 @@
 #include "screen.h"
 #include "util.h"
 #include "vscreen.h"
+#include "win_decorations.h"
 #include "win_ops.h"
 #include "win_utils.h"
 #include "workspace_manager.h"

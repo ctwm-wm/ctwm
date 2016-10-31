@@ -73,7 +73,6 @@
 #include "iconmgr.h"
 #include "icons_builtin.h"
 #include "screen.h"
-#include "decorations.h"
 #include "drawing.h"
 #include "functions_defs.h"
 #include "list.h"
@@ -82,6 +81,7 @@
 #include "otp.h"
 #include "add_window.h"
 #include "gram.tab.h"
+#include "win_decorations.h"
 #include "win_utils.h"
 
 

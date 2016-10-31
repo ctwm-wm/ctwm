@@ -11,11 +11,11 @@
 
 #include "add_window.h" // NoName
 #include "ctwm_atoms.h"
-#include "decorations.h"
 #include "drawing.h"
 #include "icons.h"
 #include "screen.h"
 #include "util.h"
+#include "win_decorations.h"
 #include "win_utils.h"
 
 
