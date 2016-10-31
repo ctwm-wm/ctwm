@@ -99,9 +99,9 @@
 #include "iconmgr.h"
 #include "icons.h"
 #include "cursor.h"
-#include "resize.h"
 #include "image.h"
 #include "win_decorations.h"
+#include "win_resize.h"
 #include "drawing.h"
 #include "vscreen.h"
 

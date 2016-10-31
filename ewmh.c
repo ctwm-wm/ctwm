@@ -64,7 +64,6 @@
 #include "functions_defs.h"
 #include "icons.h"
 #include "otp.h"
-#include "resize.h"
 #include "image.h"
 #include "list.h"
 #include "functions.h"
@@ -72,6 +71,7 @@
 #include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
+#include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_utils.h"
 
