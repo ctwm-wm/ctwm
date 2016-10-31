@@ -20,7 +20,6 @@ static DFHANDLER(separator);
 static DFHANDLER(title);
 static DFHANDLER(deltastop);
 static DFHANDLER(function);
-static DFHANDLER(movemenu);
 
 /*
  * The generated dispatch table.  Have to do this after the preceeding
@@ -497,18 +496,5 @@ static
 DFHANDLER(function)
 {
 	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
-	return;
-}
-
-
-/*
- * f.movemenu does nothing, never has, and never has been documented
- * since it silently came in in ctmw 2.1.  On the chopping block, but
- * left during the dispatch conversion.
- */
-static
-DFHANDLER(movemenu)
-{
-	fprintf(stderr, "%s(): meaningless function, to be reaped.\n", __func__);
 	return;
 }

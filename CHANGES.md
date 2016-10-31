@@ -52,6 +52,9 @@ remnants of special-case VMS support have been removed.
 1. The `f.source` function has been removed.  It's never done anything
    (except beep) as far back as 1.1 and has never been documented.
 
+1. The `f.movemenu` function has been removed.  It was added silently in
+   2.1, has never done anything, and has never been documented.
+
 1. The NoVersion config parameter has been removed.  It's been
    undocumented, obsoleted, and done absolutely nothing since 1.1.
 
