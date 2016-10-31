@@ -52,7 +52,6 @@ set(CTWMSRC
 	parse.c
 	parse_be.c
 	parse_yacc.c
-	resize.c
 	session.c
 	util.c
 	vscreen.c
@@ -61,6 +60,7 @@ set(CTWMSRC
 	win_iconify.c
 	win_ops.c
 	win_regions.c
+	win_resize.c
 	win_utils.c
 	windowbox.c
 	workspace_config.c
