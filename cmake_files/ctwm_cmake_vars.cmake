@@ -21,8 +21,6 @@ set(CTWMSRC
 	ctopts.c
 	ctwm.c
 	cursor.c
-	decorations.c
-	decorations_init.c
 	drawing.c
 	event_core.c
 	event_handlers.c
@@ -58,6 +56,8 @@ set(CTWMSRC
 	session.c
 	util.c
 	vscreen.c
+	win_decorations.c
+	win_decorations_init.c
 	win_iconify.c
 	win_ops.c
 	win_regions.c
