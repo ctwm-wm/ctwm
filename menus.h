@@ -206,7 +206,6 @@ void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
 void MoveMenu(XEvent *eventp);
-void send_clientmessage(Window w, Atom a, Time timestamp);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);
 

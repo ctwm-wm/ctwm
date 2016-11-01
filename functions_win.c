@@ -23,6 +23,7 @@
 #include "otp.h"
 #include "parse.h"
 #include "screen.h"
+#include "util.h"
 #include "win_decorations.h"
 #include "win_iconify.h"
 #include "win_ops.h"

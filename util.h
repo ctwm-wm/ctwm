@@ -105,6 +105,7 @@ void DebugTrace(char *file);
 
 
 void safe_strncpy(char *dest, const char *src, size_t size);
+void send_clientmessage(Window w, Atom a, Time timestamp);
 
 extern FILE *tracefile;
 
