@@ -333,6 +333,25 @@ EF_main(EF_FULLPROTO)
  */
 
 /*
+ * Setting a last cursor and re-grabbing to it.  This is used in the
+ * AddWindow() process.  It might grab the mouse and re-set the
+ * cursor away from us, and so it needs a way to set it back.
+ *
+ * XXX This begs for renaming...
+ */
+static Cursor LastCursor;
+
+void
+ReGrab(void)
+{
+	XGrabPointer(dpy, Scr->Root, True,
+	             ButtonPressMask | ButtonReleaseMask,
+	             GrabModeAsync, GrabModeAsync,
+	             Scr->Root, LastCursor, CurrentTime);
+}
+
+
+/*
  * Check to see if a function (implicitly, a window-targetting function)
  * is happening in a context away from an actual window, and if so stash
  * up info about what's in progress and return true to tell the caller to
@@ -348,7 +367,7 @@ static bool
 DeferExecution(int context, int func, Cursor cursor)
 {
 	if((context == C_ROOT) || (context == C_ALTERNATE)) {
-		SetLastCursor(cursor);
+		LastCursor = cursor;
 		XGrabPointer(dpy,
 		             Scr->Root,
 		             True,

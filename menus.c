@@ -115,7 +115,6 @@ static struct {
 	int x;
 	int y;
 } MenuOrigins[MAXMENUDEPTH];
-static Cursor LastCursor;
 static bool addingdefaults = false;
 
 
@@ -1626,27 +1625,6 @@ MenuRoot *FindMenuRoot(char *name)
 	return NULL;
 }
 
-
-
-/*
- * Setting a last cursor and re-grabbing to it.
- *
- * XXX Really not "menus.c" fodder...
- */
-void
-ReGrab(void)
-{
-	XGrabPointer(dpy, Scr->Root, True,
-	             ButtonPressMask | ButtonReleaseMask,
-	             GrabModeAsync, GrabModeAsync,
-	             Scr->Root, LastCursor, CurrentTime);
-}
-
-void
-SetLastCursor(Cursor newcur)
-{
-	LastCursor = newcur;
-}
 
 
 int WarpToScreen(int n, int inc)

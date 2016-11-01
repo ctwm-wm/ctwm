@@ -197,8 +197,6 @@ void AddFuncButton(int num, int cont, int mods, int func,
 void AddDefaultFuncButtons(void);
 void PopDownMenu(void);
 void HideMenu(MenuRoot *menu);
-void ReGrab(void);
-void SetLastCursor(Cursor newcur);
 void PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 void PaintMenu(MenuRoot *mr, XEvent *e);
 bool cur_fromMenu(void);
