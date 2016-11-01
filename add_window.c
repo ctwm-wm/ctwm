@@ -1448,12 +1448,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	XUngrabServer(dpy);
 
-	/* if we were in the middle of a menu activated function, regrab
-	 * the pointer
+	/*
+	 * If we were in the middle of a menu activated function that was
+	 * deferred (x-ref comments on DeferExecution()), re-grab to re-set
+	 * the special cursor, since we may have reset it above.
+	 *
+	 * Why could that possibly happen?  It would require a window coming
+	 * up and needing to be Add'd in the middle of selecting a window to
+	 * apply a function to, which is a pretty rare case, but I s'pose not
+	 * impossible...
 	 */
 	if(RootFunction) {
 		ReGrab();
 	}
+
 	if(!tmp_win->iswspmgr) {
 		WMapAddWindow(tmp_win);
 	}
