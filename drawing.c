@@ -6,7 +6,7 @@
  * left in various places through the codebase; some are only used in one
  * file, and are left there for internal linkage, while others are
  * part of a more abstract subdivision (e.g., the window decoration bits
- * in decorations.c) and so belong there.
+ * in win_decorations.c) and so belong there.
  */
 
 #include "ctwm.h"

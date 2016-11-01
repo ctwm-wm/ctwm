@@ -13,7 +13,6 @@
 
 #include "colormaps.h"
 #include "ctwm_atoms.h"
-#include "decorations.h"
 #include "events.h"
 #include "event_handlers.h"
 #include "functions.h"
@@ -24,6 +23,7 @@
 #include "otp.h"
 #include "parse.h"
 #include "screen.h"
+#include "win_decorations.h"
 #include "win_iconify.h"
 #include "win_ops.h"
 #include "win_utils.h"

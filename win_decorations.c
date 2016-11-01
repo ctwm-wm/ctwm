@@ -20,7 +20,7 @@
 #include "win_utils.h"
 #include "workspace_manager.h"
 
-#include "decorations.h"
+#include "win_decorations.h"
 
 
 /* Internal bits */

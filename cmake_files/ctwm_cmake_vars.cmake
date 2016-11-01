@@ -21,8 +21,6 @@ set(CTWMSRC
 	ctopts.c
 	ctwm.c
 	cursor.c
-	decorations.c
-	decorations_init.c
 	drawing.c
 	event_core.c
 	event_handlers.c
@@ -54,13 +52,15 @@ set(CTWMSRC
 	parse.c
 	parse_be.c
 	parse_yacc.c
-	resize.c
 	session.c
 	util.c
 	vscreen.c
+	win_decorations.c
+	win_decorations_init.c
 	win_iconify.c
 	win_ops.c
 	win_regions.c
+	win_resize.c
 	win_utils.c
 	windowbox.c
 	workspace_config.c

@@ -34,10 +34,10 @@
 
 #include "screen.h"
 #include "add_window.h"
-#include "decorations.h"
 #include "list.h"
-#include "resize.h"
 #include "windowbox.h"
+#include "win_decorations.h"
+#include "win_resize.h"
 #include "win_utils.h"
 
 name_list **addWindowBox(char *boxname, char *geometry)

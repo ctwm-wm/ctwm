@@ -82,7 +82,6 @@
 #include "windowbox.h"
 #include "util.h"
 #include "otp.h"
-#include "resize.h"
 #include "parse.h"
 #include "list.h"
 #include "events.h"
@@ -93,12 +92,13 @@
 #include "mwmhints.h"
 #include "image.h"
 #include "functions.h"  // Only for RootFunction
-#include "decorations.h"
 #include "captive.h"
 #include "occupation.h"
 #include "vscreen.h"
+#include "win_decorations.h"
 #include "win_ops.h"
 #include "win_regions.h"
+#include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 
