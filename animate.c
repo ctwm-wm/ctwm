@@ -11,6 +11,7 @@
 
 #include <X11/extensions/shape.h>
 
+#include "ctwm_atoms.h"
 #include "events.h"
 #include "icons.h"
 #include "image.h"
@@ -222,7 +223,8 @@ Animate(void)
 	MaybeAnimate |= AnimateRoot();
 	if(MaybeAnimate) {
 		Animating++;
-		SendEndAnimationMessage(scr->currentvs->wsw->w, EventTime);
+		send_clientmessage(scr->currentvs->wsw->w, XA_WM_END_OF_ANIMATION,
+				EventTime);
 	}
 	XFlush(dpy);
 	return;
