@@ -74,7 +74,6 @@
 #include <string.h>
 #include <strings.h>
 
-#include "ctwm_atoms.h"
 #include "events.h"
 #include "util.h"
 #include "drawing.h"
