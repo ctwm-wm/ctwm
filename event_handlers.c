@@ -118,6 +118,8 @@ static void HandleFocusOut(void);
 static char *Action;            /* XXX This may be narrowable */
 static TwmWindow *ButtonWindow; /* button press window structure */
 
+static void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
+
 
 static unsigned int set_mask_ignore(unsigned int modifier)
 {
@@ -3687,4 +3689,12 @@ static void flush_expose(Window w)
 	while(XCheckTypedWindowEvent(dpy, w, Expose, &dummy)) {
 		/* nada */;
 	}
+}
+
+
+/* Util func used a few times above */
+static void
+SendTakeFocusMessage(TwmWindow *tmp, Time timestamp)
+{
+	send_clientmessage(tmp->w, XA_WM_TAKE_FOCUS, timestamp);
 }
