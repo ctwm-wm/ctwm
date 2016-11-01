@@ -1628,21 +1628,20 @@ MenuRoot *FindMenuRoot(char *name)
 
 
 
-/***********************************************************************
+/*
+ * Setting a last cursor and re-grabbing to it.
  *
- *  Procedure:
- *      ReGrab - regrab the pointer with the LastCursor;
- *
- ***********************************************************************
+ * XXX Really not "menus.c" fodder...
  */
-
-void ReGrab(void)
+void
+ReGrab(void)
 {
 	XGrabPointer(dpy, Scr->Root, True,
 	             ButtonPressMask | ButtonReleaseMask,
 	             GrabModeAsync, GrabModeAsync,
 	             Scr->Root, LastCursor, CurrentTime);
 }
+
 void
 SetLastCursor(Cursor newcur)
 {
