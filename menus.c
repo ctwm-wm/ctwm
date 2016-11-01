@@ -1627,50 +1627,6 @@ MenuRoot *FindMenuRoot(char *name)
 
 
 
-int WarpToScreen(int n, int inc)
-{
-	Window dumwin;
-	int x, y, dumint;
-	unsigned int dummask;
-	ScreenInfo *newscr = NULL;
-
-	while(!newscr) {
-		/* wrap around */
-		if(n < 0) {
-			n = NumScreens - 1;
-		}
-		else if(n >= NumScreens) {
-			n = 0;
-		}
-
-		newscr = ScreenList[n];
-		if(!newscr) {                   /* make sure screen is managed */
-			if(inc) {                   /* walk around the list */
-				n += inc;
-				continue;
-			}
-			fprintf(stderr, "%s:  unable to warp to unmanaged screen %d\n",
-			        ProgramName, n);
-			XBell(dpy, 0);
-			return (1);
-		}
-	}
-
-	if(Scr->screen == n) {
-		return (0);        /* already on that screen */
-	}
-
-	PreviousScreen = Scr->screen;
-	XQueryPointer(dpy, Scr->Root, &dumwin, &dumwin, &x, &y,
-	              &dumint, &dumint, &dummask);
-
-	XWarpPointer(dpy, None, newscr->Root, 0, 0, 0, 0, x, y);
-	Scr = newscr;
-	return (0);
-}
-
-
-
 static void DestroyMenu(MenuRoot *menu)
 {
 	MenuItem *item;

@@ -209,6 +209,5 @@ void WarpToWindow(TwmWindow *t, bool must_raise);
 
 /* To move soonish? */
 void WarpAlongRing(XButtonEvent *ev, bool forward);
-int WarpToScreen(int n, int inc);
 
 #endif /* _CTWM_MENUS_H */
