@@ -74,21 +74,25 @@
 #include <string.h>
 #include <strings.h>
 
-#include "events.h"
-#include "util.h"
+#include "add_window.h"
+#include "colormaps.h"
 #include "drawing.h"
+#include "events.h"
+#include "functions.h"
 #include "functions_defs.h"
+#include "gram.tab.h"
 #include "iconmgr.h"
 #include "icons_builtin.h"
 #include "icons.h"
-#include "add_window.h"
-#include "colormaps.h"
-#include "otp.h"
 #include "image.h"
 #include "list.h"
-#include "functions.h"
-#include "screen.h"
 #include "occupation.h"
+#include "otp.h"
+#include "screen.h"
+#ifdef SOUNDS
+#  include "sound.h"
+#endif
+#include "util.h"
 #include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
@@ -96,11 +100,6 @@
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
-#ifdef SOUNDS
-#  include "sound.h"
-#endif
-
-#include "gram.tab.h"
 
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */

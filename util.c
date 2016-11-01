@@ -84,20 +84,20 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include "ctwm_atoms.h"
-#include "util.h"
 #include "animate.h"
 #include "add_window.h"
+#include "ctwm_atoms.h"
+#include "cursor.h"
+#include "drawing.h"
 #include "gram.tab.h"
-#include "screen.h"
 #include "iconmgr.h"
 #include "icons.h"
-#include "cursor.h"
 #include "image.h"
+#include "screen.h"
+#include "util.h"
+#include "vscreen.h"
 #include "win_decorations.h"
 #include "win_resize.h"
-#include "drawing.h"
-#include "vscreen.h"
 
 
 /* Handle for debug tracing */
