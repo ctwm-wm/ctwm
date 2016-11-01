@@ -224,7 +224,7 @@ Animate(void)
 	if(MaybeAnimate) {
 		Animating++;
 		send_clientmessage(scr->currentvs->wsw->w, XA_WM_END_OF_ANIMATION,
-				EventTime);
+		                   EventTime);
 	}
 	XFlush(dpy);
 	return;
