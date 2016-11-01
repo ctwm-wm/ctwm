@@ -237,7 +237,7 @@ DFHANDLER(rescuewindows)
  * 'warpto*' funcs, as it's just about switching your view, not anything
  * going to a window.
  */
-static int
+static void
 WarpToScreen(int n, int inc)
 {
 	Window dumwin;
@@ -263,12 +263,12 @@ WarpToScreen(int n, int inc)
 			fprintf(stderr, "%s:  unable to warp to unmanaged screen %d\n",
 			        ProgramName, n);
 			XBell(dpy, 0);
-			return (1);
+			return;
 		}
 	}
 
 	if(Scr->screen == n) {
-		return (0);        /* already on that screen */
+		return;        /* already on that screen */
 	}
 
 	PreviousScreen = Scr->screen;
@@ -277,7 +277,7 @@ WarpToScreen(int n, int inc)
 
 	XWarpPointer(dpy, None, newscr->Root, 0, 0, 0, 0, x, y);
 	Scr = newscr;
-	return (0);
+	return;
 }
 
 DFHANDLER(warptoscreen)
