@@ -1911,11 +1911,6 @@ void send_clientmessage(Window w, Atom a, Time timestamp)
 	XSendEvent(dpy, w, False, 0L, (XEvent *) &ev);
 }
 
-void SendEndAnimationMessage(Window w, Time timestamp)
-{
-	send_clientmessage(w, XA_WM_END_OF_ANIMATION, timestamp);
-}
-
 void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp)
 {
 	send_clientmessage(tmp->w, XA_WM_TAKE_FOCUS, timestamp);
