@@ -91,7 +91,7 @@
 #include "session.h"
 #include "mwmhints.h"
 #include "image.h"
-#include "functions.h"  // Only for RootFunction
+#include "functions.h"
 #include "captive.h"
 #include "occupation.h"
 #include "vscreen.h"
