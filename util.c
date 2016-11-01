@@ -81,18 +81,11 @@
 #include <string.h>
 #include <strings.h>
 
-#include <X11/Xatom.h>
-#include <X11/Xmu/WinUtil.h>
-
-
 #include <signal.h>
 #include <sys/time.h>
 
-
-#include "ctwm_atoms.h"
 #include "util.h"
 #include "animate.h"
-#include "events.h"
 #include "add_window.h"
 #include "gram.tab.h"
 #include "screen.h"

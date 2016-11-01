@@ -11,7 +11,6 @@
 #include "events.h"
 #include "functions_internal.h"
 #include "screen.h"
-#include "util.h"
 
 
 /*
