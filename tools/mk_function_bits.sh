@@ -18,6 +18,17 @@ if [ -z "${outdir}" -o ! -d "${outdir}" ]; then
 fi
 
 
+# We need an awk(1) that supports toupper().  Which is to say, any awk
+# less than 30 years old.  Which means 'awk' on every system on the
+# planet back to AIX 3 and beyond.  Except for the most modern
+# Solarishes, because they're [elided]s.
+NAWK=`command -v nawk`
+AWK="awk"
+if [ "X${NAWK}" != 'X' ]; then
+	AWK=${NAWK}
+fi
+
+
 # We're all C here
 print_header() {
 	echo "/*"
@@ -92,7 +103,7 @@ EOF
 		counter=$((counter+1))
 	done << EOF
 	$(getsect main \
-		| awk '{printf "%s %s %s\n", toupper($1), $2, $4;}')
+		| ${AWK} '{printf "%s %s %s\n", toupper($1), $2, $4;}')
 EOF
 
 	echo
@@ -103,7 +114,7 @@ EOF
 		counter=$((counter+1))
 	done << EOF
 	$(getsect synthetic \
-		| awk '{printf "%s\n", toupper($1)}')
+		| ${AWK} '{printf "%s\n", toupper($1)}')
 EOF
 
 	cat << EOF
@@ -158,7 +169,7 @@ EOF
 		printf "\t%-23s = %s,\n" "[F_${func}]" "${scurs}"
 	done << EOF
 	$(getsect main \
-		| awk '{ if ($3 != "-") {printf "%s %s\n", toupper($1), $3;} }')
+		| ${AWK} '{ if ($3 != "-") {printf "%s %s\n", toupper($1), $3;} }')
 EOF
 
 	cat << EOF
@@ -191,7 +202,7 @@ gf="${outdir}/functions_parse_table.h"
 		eval _STASH_${func}_fdef=\"$fdef\"
 	done << EOF
 	$(getsect main \
-		| awk '{ printf "%s %s %s %s\n", $1, $2, $4, toupper($1) }')
+		| ${AWK} '{ printf "%s %s %s %s\n", $1, $2, $4, toupper($1) }')
 EOF
 	# Adding and stashing the extra toupper() there instead of calling
 	# tr(1) in the loop below saves more than a quarter of a second
@@ -240,8 +251,8 @@ EOF
 			echo "#endif"
 		fi
 	done << EOF
-	$( ( getsect main    | awk '{printf "%s\n",    $1}' ;
-	     getsect aliases | awk '{printf "%s %s\n", $1, $2}'
+	$( ( getsect main    | ${AWK} '{printf "%s\n",    $1}' ;
+	     getsect aliases | ${AWK} '{printf "%s %s\n", $1, $2}'
 	   ) | sort)
 EOF
 
@@ -287,8 +298,8 @@ EOF
 			echo "#endif"
 		fi
 	done << EOF
-	$(getsect main      | awk '{printf "%s %s %s\n", toupper($1), $1, $4}'
-	  getsect synthetic | awk '{printf "%s %s -\n",  toupper($1), $1}'
+	$(getsect main      | ${AWK} '{printf "%s %s %s\n", toupper($1), $1, $4}'
+	  getsect synthetic | ${AWK} '{printf "%s %s -\n",  toupper($1), $1}'
 	)
 EOF
 
