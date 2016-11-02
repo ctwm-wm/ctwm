@@ -49,19 +49,19 @@ ${BDIR}/ctwm_config.h:
 # Atom lists are script-generated
 GENSRC+=${BDIR}/ctwm_atoms.c
 ${BDIR}/ctwm_atoms.o: ${BDIR}/ctwm_atoms.c
-${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in
+${BDIR}/ctwm_atoms.c: ${RTDIR}/ctwm_atoms.in ${TOOLS}/mk_atoms.sh
 	${TOOLS}/mk_atoms.sh ${RTDIR}/ctwm_atoms.in ${BDIR}/ctwm_atoms CTWM
 
 # Only needed when EWMH (but doesn't hurt anything to have around if not)
 ${BDIR}/ewmh_atoms.o: ${BDIR}/ewmh_atoms.c
-${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in
+${BDIR}/ewmh_atoms.c: ${RTDIR}/ewmh_atoms.in ${TOOLS}/mk_atoms.sh
 	${TOOLS}/mk_atoms.sh ${RTDIR}/ewmh_atoms.in ${BDIR}/ewmh_atoms EWMH
 
 
 # Just make null version file
 GENSRC+=${BDIR}/version.c
 ${BDIR}/version.o: ${BDIR}/version.c
-${BDIR}/version.c.in: ${RTDIR}/version.c.in ${RTDIR}/VERSION
+${BDIR}/version.c.in: ${RTDIR}/version.c.in ${RTDIR}/VERSION ${TOOLS}/mk_version_in.sh
 	${TOOLS}/mk_version_in.sh ${RTDIR}/version.c.in > ${BDIR}/version.c.in
 ${BDIR}/version.c: ${BDIR}/version.c.in
 	sed -e "s/%%[A-Z]*%%/NULL/" \
@@ -70,7 +70,7 @@ ${BDIR}/version.c: ${BDIR}/version.c.in
 
 # Table of event names
 GENXTRA+=${BDIR}/event_names_table.h
-${BDIR}/event_names_table.h: ${RTDIR}/event_names.list
+${BDIR}/event_names_table.h: ${RTDIR}/event_names.list ${TOOLS}/mk_event_names.sh
 	${TOOLS}/mk_event_names.sh ${RTDIR}/event_names.list \
 		> ${BDIR}/event_names_table.h
 
@@ -81,13 +81,13 @@ _FUNC_GEN+=${BDIR}/functions_deferral.h
 _FUNC_GEN+=${BDIR}/functions_parse_table.h
 _FUNC_GEN+=${BDIR}/functions_dispatch_execution.h
 GENXTRA+=${_FUNC_GEN}
-${_FUNC_GEN}: ${RTDIR}/functions_defs.list
+${_FUNC_GEN}: ${RTDIR}/functions_defs.list ${TOOLS}/mk_function_bits.sh
 	${TOOLS}/mk_function_bits.sh ${RTDIR}/functions_defs.list ${BDIR}
 
 
 # Default config
 GENSRC+=${BDIR}/deftwmrc.c
-${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc
+${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc ${TOOLS}/mk_deftwmrc.sh
 	${TOOLS}/mk_deftwmrc.sh ${RTDIR}/system.ctwmrc > ${BDIR}/deftwmrc.c
 
 
@@ -107,14 +107,32 @@ ${BDIR}/gram.y: ${RTDIR}/gram.y
 
 
 ## Main build
+
+# Rewriting dependancy info.  The various 'make depend' implementations
+# don't know where the .o file is going to go, and there's no portable
+# way to tell them, so just give a target to rewrite the Makefile with
+# them.
+#
+# gccmakedep always just calls it "whatever.o", while makedepend assumes
+# the .o will be at the same path as the .c, so we need to deal with both
+# variants.  Fortunately for us, all the .o's are always in ${BDIR}.
+rwdepend:
+	sed -E \
+		-e 's#^([a-z0-9_./-]*/)?([a-z0-9_./-]*\.o): #$${BDIR}/\2: #' \
+		Makefile > .Makefile.tmp
+	mv .Makefile.tmp Makefile
+
+# Generated files
 GENFILES=${GENSRC} ${GENXTRA}
 gen: ${GENFILES}
 
 # Finalize LFLAGS like CFLAGS
 _LFLAGS+=${LFLAGS}
 
+# Build final output
 ctwm: ${BDIR} ${GENFILES} ${OFILES}
 	cc -o ctwm ${OFILES} ${_LFLAGS}
 
+# Need extra transform rule for the generated .c files
 .c.o:
 	${CC} ${_CFLAGS} -c -o ${@} ${<}

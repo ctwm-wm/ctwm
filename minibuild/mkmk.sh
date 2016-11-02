@@ -117,6 +117,7 @@ for i in gccmakedep makedepend; do
 		echo
 		echo "depend: \${BDIR} \${GENFILES}"
 		echo "	${mkdep} -- \${_CFLAGS} -- \${STDSRC} \${GENSRC}"
+		echo "	${MAKE} rwdepend"
 		echo
 		echo
 		break
