@@ -21,6 +21,10 @@
 #include "otp.h"
 #include "screen.h"
 #include "win_iconify.h"
+#include "win_utils.h"
+
+
+static void WarpAlongRing(XButtonEvent *ev, bool forward);
 
 
 DFHANDLER(warpto)
@@ -195,5 +199,71 @@ DFHANDLER(winwarp)
 			DeIconify(tmp_win);
 		}
 		WarpToWindow(tmp_win, Scr->RaiseOnWarp);
+	}
+}
+
+
+/*
+ * Backend util for f.warpring
+ */
+static void
+WarpAlongRing(XButtonEvent *ev, bool forward)
+{
+	TwmWindow *r, *head;
+
+	if(Scr->RingLeader) {
+		head = Scr->RingLeader;
+	}
+	else if(!(head = Scr->Ring)) {
+		return;
+	}
+
+	if(forward) {
+		for(r = head->ring.next; r != head; r = r->ring.next) {
+			if(!r) {
+				break;
+			}
+			if(r->mapped && (Scr->WarpRingAnyWhere || visible(r))) {
+				break;
+			}
+		}
+	}
+	else {
+		for(r = head->ring.prev; r != head; r = r->ring.prev) {
+			if(!r) {
+				break;
+			}
+			if(r->mapped && (Scr->WarpRingAnyWhere || visible(r))) {
+				break;
+			}
+		}
+	}
+
+	/* Note: (Scr->Focus != r) is necessary when we move to a workspace that
+	   has a single window and we want warping to warp to it. */
+	if(r && (r != head || Scr->Focus != r)) {
+		TwmWindow *p = Scr->RingLeader, *t;
+
+		Scr->RingLeader = r;
+		WarpToWindow(r, true);
+
+		if(p && p->mapped &&
+		                (t = GetTwmWindow(ev->window)) &&
+		                p == t) {
+			p->ring.cursor_valid = true;
+			p->ring.curs_x = ev->x_root - t->frame_x;
+			p->ring.curs_y = ev->y_root - t->frame_y;
+#ifdef DEBUG
+			/* XXX This is the Tmp_win [now] internal to the event code? */
+			fprintf(stderr,
+			        "WarpAlongRing: cursor_valid := true; x := %d (%d-%d), y := %d (%d-%d)\n",
+			        Tmp_win->ring.curs_x, ev->x_root, t->frame_x, Tmp_win->ring.curs_y, ev->y_root,
+			        t->frame_y);
+#endif
+			/*
+			 * The check if the cursor position is inside the window is now
+			 * done in WarpToWindow().
+			 */
+		}
 	}
 }

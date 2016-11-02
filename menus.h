@@ -207,7 +207,4 @@ void MoveMenu(XEvent *eventp);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 void WarpToWindow(TwmWindow *t, bool must_raise);
 
-/* To move soonish? */
-void WarpAlongRing(XButtonEvent *ev, bool forward);
-
 #endif /* _CTWM_MENUS_H */
