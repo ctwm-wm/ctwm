@@ -197,8 +197,6 @@ void AddFuncButton(int num, int cont, int mods, int func,
 void AddDefaultFuncButtons(void);
 void PopDownMenu(void);
 void HideMenu(MenuRoot *menu);
-void ReGrab(void);
-void SetLastCursor(Cursor newcur);
 void PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 void PaintMenu(MenuRoot *mr, XEvent *e);
 bool cur_fromMenu(void);
@@ -206,14 +204,6 @@ void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
 void MoveMenu(XEvent *eventp);
-void send_clientmessage(Window w, Atom a, Time timestamp);
-void SendEndAnimationMessage(Window w, Time timestamp);
-void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
-void WarpToWindow(TwmWindow *t, bool must_raise);
-
-/* To move soonish? */
-void WarpAlongRing(XButtonEvent *ev, bool forward);
-int WarpToScreen(int n, int inc);
 
 #endif /* _CTWM_MENUS_H */

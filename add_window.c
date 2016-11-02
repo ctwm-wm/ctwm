@@ -78,31 +78,30 @@
 #include <X11/extensions/shape.h>
 
 #include "add_window.h"
+#include "captive.h"
 #include "colormaps.h"
-#include "windowbox.h"
-#include "util.h"
-#include "otp.h"
-#include "parse.h"
-#include "list.h"
+#include "functions.h"
 #include "events.h"
-#include "screen.h"
+#include "gram.tab.h"
 #include "icons.h"
 #include "iconmgr.h"
-#include "session.h"
-#include "mwmhints.h"
 #include "image.h"
-#include "functions.h"  // Only for RootFunction
-#include "captive.h"
+#include "list.h"
+#include "mwmhints.h"
 #include "occupation.h"
+#include "otp.h"
+#include "parse.h"
+#include "screen.h"
+#include "session.h"
+#include "util.h"
 #include "vscreen.h"
+#include "windowbox.h"
 #include "win_decorations.h"
 #include "win_ops.h"
 #include "win_regions.h"
 #include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
-
-#include "gram.tab.h"
 
 
 int AddingX;
@@ -1448,12 +1447,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	XUngrabServer(dpy);
 
-	/* if we were in the middle of a menu activated function, regrab
-	 * the pointer
+	/*
+	 * If we were in the middle of a menu activated function that was
+	 * deferred (x-ref comments on DeferExecution()), re-grab to re-set
+	 * the special cursor, since we may have reset it above.
+	 *
+	 * Why could that possibly happen?  It would require a window coming
+	 * up and needing to be Add'd in the middle of selecting a window to
+	 * apply a function to, which is a pretty rare case, but I s'pose not
+	 * impossible...
 	 */
 	if(RootFunction) {
 		ReGrab();
 	}
+
 	if(!tmp_win->iswspmgr) {
 		WMapAddWindow(tmp_win);
 	}

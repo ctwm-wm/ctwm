@@ -24,6 +24,8 @@ void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void ConstrainByBorders1(int *left, int width, int *top, int height);
 void ConstrainByBorders(TwmWindow *twmwin, int *left, int width,
                         int *top, int height);
+void WarpToWindow(TwmWindow *t, bool must_raise);
+void send_clientmessage(Window w, Atom a, Time timestamp);
 
 
 #endif /* _CTWM_WIN_UTILS_H */

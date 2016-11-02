@@ -19,6 +19,7 @@ void SetPropsIfCaptiveCtwm(TwmWindow *win);
 CaptiveCTWM GetCaptiveCTWMUnderPointer(void);
 void SetNoRedirect(Window window);
 void ConfigureCaptiveRootWindow(XEvent *ev);
+void AdoptWindow(void);
 
 
 #endif //_CTWM_CAPTIVE_H

@@ -12,11 +12,14 @@
 #include "add_window.h" // NoName
 #include "ctwm_atoms.h"
 #include "drawing.h"
+#include "events.h"
 #include "icons.h"
 #include "screen.h"
 #include "util.h"
 #include "win_decorations.h"
+#include "win_ops.h"
 #include "win_utils.h"
+#include "workspace_utils.h"
 
 
 /*
@@ -726,4 +729,135 @@ ConstrainRightBottom(int *value, int size1, int border, int size2)
 			*value = *value - Scr->MoveOffResistance;
 		}
 	}
+}
+
+
+/*
+ * Zoom over to a particular window.
+ */
+void
+WarpToWindow(TwmWindow *t, bool must_raise)
+{
+	int x, y;
+
+	if(t->ring.cursor_valid) {
+		x = t->ring.curs_x;
+		y = t->ring.curs_y;
+#ifdef DEBUG
+		fprintf(stderr, "WarpToWindow: cursor_valid; x == %d, y == %d\n", x, y);
+#endif
+
+		/*
+		 * XXX is this correct with 3D borders? Easier check possible?
+		 * frame_bw is for the left border.
+		 */
+		if(x < t->frame_bw) {
+			x = t->frame_bw;
+		}
+		if(x >= t->frame_width + t->frame_bw) {
+			x  = t->frame_width + t->frame_bw - 1;
+		}
+		if(y < t->title_height + t->frame_bw) {
+			y = t->title_height + t->frame_bw;
+		}
+		if(y >= t->frame_height + t->frame_bw) {
+			y  = t->frame_height + t->frame_bw - 1;
+		}
+#ifdef DEBUG
+		fprintf(stderr, "WarpToWindow: adjusted    ; x := %d, y := %d\n", x, y);
+#endif
+	}
+	else {
+		x = t->frame_width / 2;
+		y = t->frame_height / 2;
+#ifdef DEBUG
+		fprintf(stderr, "WarpToWindow: middle; x := %d, y := %d\n", x, y);
+#endif
+	}
+#if 0
+	int dest_x, dest_y;
+	Window child;
+
+	/*
+	 * Check if the proposed position actually is visible. If not, raise the window.
+	 * "If the coordinates are contained in a mapped
+	 * child of dest_w, that child is returned to child_return."
+	 * We'll need to check for the right child window; the frame probably.
+	 * (What about XXX window boxes?)
+	 *
+	 * Alternatively, use XQueryPointer() which returns the root window
+	 * the pointer is in, but XXX that won't work for VirtualScreens.
+	 */
+	if(XTranslateCoordinates(dpy, t->frame, Scr->Root, x, y, &dest_x, &dest_y,
+	                         &child)) {
+		if(child != t->frame) {
+			must_raise = true;
+		}
+	}
+#endif
+	if(t->auto_raise || must_raise) {
+		AutoRaiseWindow(t);
+	}
+	if(! visible(t)) {
+		WorkSpace *wlist;
+
+		for(wlist = Scr->workSpaceMgr.workSpaceList; wlist != NULL;
+		                wlist = wlist->next) {
+			if(OCCUPY(t, wlist)) {
+				break;
+			}
+		}
+		if(wlist != NULL) {
+			GotoWorkSpace(Scr->currentvs, wlist);
+		}
+	}
+
+	XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0, x + t->frame_x, y + t->frame_y);
+	SetFocus(t, EventTime);
+
+#ifdef DEBUG
+	{
+		Window root_return;
+		Window child_return;
+		int root_x_return;
+		int root_y_return;
+		int win_x_return;
+		int win_y_return;
+		unsigned int mask_return;
+
+		if(XQueryPointer(dpy, t->frame, &root_return, &child_return, &root_x_return,
+		                 &root_y_return, &win_x_return, &win_y_return, &mask_return)) {
+			fprintf(stderr,
+			        "XQueryPointer: root_return=%x, child_return=%x, root_x_return=%d, root_y_return=%d, win_x_return=%d, win_y_return=%d\n",
+			        root_return, child_return, root_x_return, root_y_return, win_x_return,
+			        win_y_return);
+		}
+	}
+#endif
+}
+
+
+/*
+ * ICCCM Client Messages - Section 4.2.8 of the ICCCM dictates that all
+ * client messages will have the following form:
+ *
+ *     event type       ClientMessage
+ *     message type     XA_WM_PROTOCOLS
+ *     window           tmp->w
+ *     format           32
+ *     data[0]          message atom
+ *     data[1]          time stamp
+ */
+void
+send_clientmessage(Window w, Atom a, Time timestamp)
+{
+	XClientMessageEvent ev;
+
+	ev.type = ClientMessage;
+	ev.window = w;
+	ev.message_type = XA_WM_PROTOCOLS;
+	ev.format = 32;
+	ev.data.l[0] = a;
+	ev.data.l[1] = timestamp;
+	XSendEvent(dpy, w, False, 0L, (XEvent *) &ev);
 }

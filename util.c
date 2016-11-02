@@ -81,29 +81,22 @@
 #include <string.h>
 #include <strings.h>
 
-#include <X11/Xatom.h>
-#include <X11/Xmu/WinUtil.h>
-
-
 #include <signal.h>
 #include <sys/time.h>
 
-
-#include "ctwm_atoms.h"
-#include "util.h"
 #include "animate.h"
-#include "events.h"
 #include "add_window.h"
+#include "cursor.h"
+#include "drawing.h"
 #include "gram.tab.h"
-#include "screen.h"
 #include "iconmgr.h"
 #include "icons.h"
-#include "cursor.h"
 #include "image.h"
+#include "screen.h"
+#include "util.h"
+#include "vscreen.h"
 #include "win_decorations.h"
 #include "win_resize.h"
-#include "drawing.h"
-#include "vscreen.h"
 
 
 /* Handle for debug tracing */
@@ -445,102 +438,6 @@ void move_to_after(TwmWindow *t, TwmWindow *after)
 }
 #endif
 
-
-void AdoptWindow(void)
-{
-	unsigned long       data [2];
-	Window              localroot, w;
-	unsigned char       *prop;
-	unsigned long       bytesafter;
-	unsigned long       len;
-	Atom                actual_type;
-	int                 actual_format;
-	XEvent              event;
-	Window              root, parent, child, *children;
-	unsigned int        nchildren, key_buttons;
-	int                 root_x, root_y, win_x, win_y;
-	int                 ret;
-	bool                savedRestartPreviousState;
-
-	localroot = w = RootWindow(dpy, Scr->screen);
-	XGrabPointer(dpy, localroot, False,
-	             ButtonPressMask | ButtonReleaseMask,
-	             GrabModeAsync, GrabModeAsync,
-	             None, Scr->SelectCursor, CurrentTime);
-
-	XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask, &event);
-	child = event.xbutton.subwindow;
-	while(1) {
-		if(child == (Window) 0) {
-			break;
-		}
-
-		w = XmuClientWindow(dpy, child);
-		ret = XGetWindowProperty(dpy, w, XA_WM_WORKSPACESLIST, 0L, 512,
-		                         False, XA_STRING, &actual_type, &actual_format, &len,
-		                         &bytesafter, &prop);
-		XFree(prop);  /* Don't ever do anything with it */
-		if(ret != Success) {
-			break;
-		}
-		if(len == 0) { /* it is not a local root window */
-			break;        /* it is not a local root window */
-		}
-		localroot = w;
-		XQueryPointer(dpy, localroot, &root, &child, &root_x, &root_y,
-		              &win_x, &win_y, &key_buttons);
-	}
-	XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask, &event);
-	XUngrabPointer(dpy, CurrentTime);
-
-	if(localroot == Scr->Root) {
-		return;
-	}
-	if(w == localroot) {   /* try to not adopt an ancestor */
-		XQueryTree(dpy, Scr->Root, &root, &parent, &children, &nchildren);
-		while(parent != (Window) 0) {
-			XFree(children);
-			if(w == parent) {
-				return;
-			}
-			XQueryTree(dpy, parent, &root, &parent, &children, &nchildren);
-		}
-		XFree(children);
-		if(w == root) {
-			return;
-		}
-	}
-	if(localroot == RootWindow(dpy, Scr->screen)) {
-		XWithdrawWindow(dpy, w, Scr->screen);
-	}
-	else {
-		XUnmapWindow(dpy, w);
-	}
-	XReparentWindow(dpy, w, Scr->Root, 0, 0);
-
-	data [0] = (unsigned long) NormalState;
-	data [1] = (unsigned long) None;
-
-	XChangeProperty(dpy, w, XA_WM_STATE, XA_WM_STATE, 32,
-	                PropModeReplace, (unsigned char *) data, 2);
-	XFlush(dpy);
-	/*
-	 * We don't want to "restore" the occupation that the window had
-	 * in its former environment. For one, the names of the workspaces
-	 * may be different. And if not, the window will initially be
-	 * shown in the current workspace, which may be at odds with that
-	 * occupation (and confusion ensues).
-	 *
-	 * Hypermove has the same problem, but that is a "push" operation
-	 * (initiated by the originating window manager) so we don't know
-	 * when it happens...
-	 */
-	savedRestartPreviousState = RestartPreviousState;
-	RestartPreviousState = false;
-	SimulateMapRequest(w);
-	RestartPreviousState = savedRestartPreviousState;
-	return;
-}
 
 void RescueWindows(void)
 {

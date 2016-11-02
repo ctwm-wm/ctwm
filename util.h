@@ -100,7 +100,6 @@ bool UpdateFont(MyFont *font, int height);
 #if 0
 void move_to_after(TwmWindow *t, TwmWindow *after);
 #endif
-void AdoptWindow(void);
 void RescueWindows(void);
 void DebugTrace(char *file);
 
