@@ -108,6 +108,14 @@ ${BDIR}/gram.y: ${RTDIR}/gram.y
 
 ## Main build
 
+# Rewriting dependancy info.  The various 'make depend' implementations
+# don't know where the .o file is going to go, and there's no portable
+# way to tell them, so just give a target to rewrite the Makefile with
+# them.
+rwdepend:
+	sed -E -e 's/^([a-z0-9_.-]*\.o): /$${BDIR}\/\1: /' Makefile > .Makefile.tmp
+	mv .Makefile.tmp Makefile
+
 # Generated files
 GENFILES=${GENSRC} ${GENXTRA}
 gen: ${GENFILES}
