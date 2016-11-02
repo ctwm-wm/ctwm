@@ -1649,7 +1649,6 @@ static void DestroyMenu(MenuRoot *menu)
 
 
 void MoveMenu(XEvent *eventp)
-
 {
 	int    XW, YW, newX, newY;
 	bool   cont;
