@@ -107,14 +107,18 @@ ${BDIR}/gram.y: ${RTDIR}/gram.y
 
 
 ## Main build
+
+# Generated files
 GENFILES=${GENSRC} ${GENXTRA}
 gen: ${GENFILES}
 
 # Finalize LFLAGS like CFLAGS
 _LFLAGS+=${LFLAGS}
 
+# Build final output
 ctwm: ${BDIR} ${GENFILES} ${OFILES}
 	cc -o ctwm ${OFILES} ${_LFLAGS}
 
+# Need extra transform rule for the generated .c files
 .c.o:
 	${CC} ${_CFLAGS} -c -o ${@} ${<}
