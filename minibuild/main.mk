@@ -112,8 +112,14 @@ ${BDIR}/gram.y: ${RTDIR}/gram.y
 # don't know where the .o file is going to go, and there's no portable
 # way to tell them, so just give a target to rewrite the Makefile with
 # them.
+#
+# gccmakedep always just calls it "whatever.o", while makedepend assumes
+# the .o will be at the same path as the .c, so we need to deal with both
+# variants.  Fortunately for us, all the .o's are always in ${BDIR}.
 rwdepend:
-	sed -E -e 's/^([a-z0-9_.-]*\.o): /$${BDIR}\/\1: /' Makefile > .Makefile.tmp
+	sed -E \
+		-e 's#^([a-z0-9_./-]*/)?([a-z0-9_./-]*\.o): #$${BDIR}/\2: #' \
+		Makefile > .Makefile.tmp
 	mv .Makefile.tmp Makefile
 
 # Generated files
