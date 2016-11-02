@@ -205,6 +205,5 @@ void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
 void MoveMenu(XEvent *eventp);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
-void WarpToWindow(TwmWindow *t, bool must_raise);
 
 #endif /* _CTWM_MENUS_H */
