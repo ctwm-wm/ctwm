@@ -79,7 +79,7 @@ if(IS_BZR_CO AND HAS_BZR)
 elseif(IS_GIT_CO AND HAS_GIT)
 	set(rw_ver_git "${TOOLS}/rewrite_version_git.sh")
 	add_custom_command(OUTPUT ${version_c}
-		DEPENDS ${version_c_in} ${GIT_INDEX_FILE} ${rw_ver_bzr}
+		DEPENDS ${version_c_in} ${GIT_INDEX_FILE} ${rw_ver_git}
 		COMMAND ${rw_ver_git} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current git state."
 	)
