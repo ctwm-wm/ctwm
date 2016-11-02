@@ -86,7 +86,6 @@
 
 #include "animate.h"
 #include "add_window.h"
-#include "ctwm_atoms.h"
 #include "cursor.h"
 #include "drawing.h"
 #include "gram.tab.h"
