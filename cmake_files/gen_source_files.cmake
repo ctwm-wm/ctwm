@@ -15,7 +15,7 @@ add_custom_command(OUTPUT ${defc}
 # Hand-build ctwm_atoms.[ch]
 set(ctwm_atoms ctwm_atoms.h ctwm_atoms.c)
 add_custom_command(OUTPUT ${ctwm_atoms}
-	DEPENDS ctwm_atoms.in
+	DEPENDS ctwm_atoms.in ${TOOLS}/mk_atoms.sh
 	COMMAND ${TOOLS}/mk_atoms.sh ${CMAKE_CURRENT_SOURCE_DIR}/ctwm_atoms.in ctwm_atoms CTWM
 )
 
@@ -111,6 +111,7 @@ endif(IS_BZR_CO AND HAS_BZR)
 # but we have a pregen'd gen/version.c to use" case.
 add_custom_command(OUTPUT ${version_c_in}
 	DEPENDS ${version_c_src} ${CMAKE_CURRENT_SOURCE_DIR}/VERSION
+	DEPENDS ${TOOLS}/mk_version_in.sh
 	COMMAND ${TOOLS}/mk_version_in.sh ${version_c_src} > ${version_c_in}
 	COMMENT "Writing version info into version.c.in"
 )
