@@ -95,11 +95,9 @@
 #include "util.h"
 #include "vscreen.h"
 #include "win_iconify.h"
-#include "win_ops.h"
 #include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
-#include "workspace_utils.h"
 
 MenuRoot *ActiveMenu = NULL;            /* the active menu */
 MenuItem *ActiveItem = NULL;            /* the active menu item */
