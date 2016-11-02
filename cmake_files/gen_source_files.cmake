@@ -5,7 +5,7 @@
 
 # Hand-build deftwmrc.c
 set(defc ${CMAKE_CURRENT_BINARY_DIR}/deftwmrc.c)
-set(mkdefc ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_deftwmrc.sh)
+set(mkdefc ${TOOLS}/mk_deftwmrc.sh)
 add_custom_command(OUTPUT ${defc}
 	DEPENDS system.ctwmrc ${mkdefc}
 	COMMAND ${mkdefc} ${CMAKE_CURRENT_SOURCE_DIR}/system.ctwmrc > ${defc}
@@ -16,14 +16,14 @@ add_custom_command(OUTPUT ${defc}
 set(ctwm_atoms ctwm_atoms.h ctwm_atoms.c)
 add_custom_command(OUTPUT ${ctwm_atoms}
 	DEPENDS ctwm_atoms.in
-	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_atoms.sh ${CMAKE_CURRENT_SOURCE_DIR}/ctwm_atoms.in ctwm_atoms CTWM
+	COMMAND ${TOOLS}/mk_atoms.sh ${CMAKE_CURRENT_SOURCE_DIR}/ctwm_atoms.in ctwm_atoms CTWM
 )
 
 
 # Generate up the event names lookup source
 set(en_list ${CMAKE_CURRENT_SOURCE_DIR}/event_names.list)
 set(en_out  ${CMAKE_CURRENT_BINARY_DIR}/event_names_table.h)
-set(en_mk   ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_event_names.sh)
+set(en_mk   ${TOOLS}/mk_event_names.sh)
 add_custom_command(OUTPUT ${en_out}
 	DEPENDS ${en_list} ${en_mk}
 	COMMAND ${en_mk} ${en_list} > ${en_out}
@@ -38,7 +38,7 @@ list(APPEND CTWMSRC ${CMAKE_CURRENT_BINARY_DIR}/event_names_table.h)
 
 # Create function bits
 set(fd_list ${CMAKE_CURRENT_SOURCE_DIR}/functions_defs.list)
-set(fd_mk   ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_function_bits.sh)
+set(fd_mk   ${TOOLS}/mk_function_bits.sh)
 set(fd_h    ${CMAKE_CURRENT_BINARY_DIR}/functions_defs.h)
 set(fdd_h   ${CMAKE_CURRENT_BINARY_DIR}/functions_deferral.h)
 set(fpt_h   ${CMAKE_CURRENT_BINARY_DIR}/functions_parse_table.h)
@@ -70,14 +70,14 @@ set(version_c     ${CMAKE_CURRENT_BINARY_DIR}/version.c)
 # If we've got a bzr checkout we can figure the revid from, fill it in.
 # Else just copy.
 if(IS_BZR_CO AND HAS_BZR)
-	set(rw_ver_bzr "${CMAKE_SOURCE_DIR}/tools/rewrite_version_bzr.sh")
+	set(rw_ver_bzr "${TOOLS}/rewrite_version_bzr.sh")
 	add_custom_command(OUTPUT ${version_c}
 		DEPENDS ${version_c_in} ${BZR_DIRSTATE_FILE} ${rw_ver_bzr}
 		COMMAND ${rw_ver_bzr} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current WT state."
 	)
 elseif(IS_GIT_CO AND HAS_GIT)
-	set(rw_ver_git "${CMAKE_SOURCE_DIR}/tools/rewrite_version_git.sh")
+	set(rw_ver_git "${TOOLS}/rewrite_version_git.sh")
 	add_custom_command(OUTPUT ${version_c}
 		DEPENDS ${version_c_in} ${GIT_INDEX_FILE} ${rw_ver_bzr}
 		COMMAND ${rw_ver_git} < ${version_c_in} > ${version_c}
@@ -111,7 +111,7 @@ endif(IS_BZR_CO AND HAS_BZR)
 # but we have a pregen'd gen/version.c to use" case.
 add_custom_command(OUTPUT ${version_c_in}
 	DEPENDS ${version_c_src} ${CMAKE_CURRENT_SOURCE_DIR}/VERSION
-	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/mk_version_in.sh ${version_c_src} > ${version_c_in}
+	COMMAND ${TOOLS}/mk_version_in.sh ${version_c_src} > ${version_c_in}
 	COMMENT "Writing version info into version.c.in"
 )
 
