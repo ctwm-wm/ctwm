@@ -17,7 +17,6 @@
 #include "functions_internal.h"
 #include "iconmgr.h"
 #include "list.h"
-#include "menus.h"
 #include "otp.h"
 #include "screen.h"
 #include "win_iconify.h"

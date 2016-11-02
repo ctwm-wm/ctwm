@@ -15,7 +15,6 @@
 #include "functions_defs.h"
 #include "functions_internal.h"
 #include "icons.h"
-#include "menus.h"
 #include "otp.h"
 #include "screen.h"
 #ifdef SOUNDS
