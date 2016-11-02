@@ -87,7 +87,7 @@ ${_FUNC_GEN}: ${RTDIR}/functions_defs.list ${TOOLS}/mk_function_bits.sh
 
 # Default config
 GENSRC+=${BDIR}/deftwmrc.c
-${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc
+${BDIR}/deftwmrc.c: ${RTDIR}/system.ctwmrc ${TOOLS}/mk_deftwmrc.sh
 	${TOOLS}/mk_deftwmrc.sh ${RTDIR}/system.ctwmrc > ${BDIR}/deftwmrc.c
 
 
