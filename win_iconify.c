@@ -5,6 +5,7 @@
 #include "ctwm.h"
 
 #include <stdlib.h>
+#include <sys/time.h>
 
 #include <X11/extensions/shape.h>
 
