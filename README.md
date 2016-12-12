@@ -143,6 +143,16 @@ directly:
     funny prompt> ( cd build ; cmake -DUSE_XPM=OFF -DM4_CMD=superm4 .. )
     funny prompt> make
 
+### Required Libs
+
+ctwm requires various X11 libraries to be present.  That list will
+generally include libX11, libXext, libXmu, libXt, libSM, and libICE.
+Depending on your configuration, you may require extra libs as discussed
+above (libXpm and libjpeg are included in the default config).  If you're
+on a system that separates header files etc. from the shared lib itself
+(many Linux dists do), you'll probably need -devel or similarly named
+packages installed for each of them as well.
+
 
 
 ## Installation
