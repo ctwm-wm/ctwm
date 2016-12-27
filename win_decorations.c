@@ -348,7 +348,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * If there's a titlebar, we may have hilight/lolight windows in it
 	 * to fix up.
 	 *
-	 * The sizing/positioning is all wonked up.  In particularly, the
+	 * The sizing/positioning is all wonked up.  In particular, the
 	 * left-side hi/lolite windows don't work out right because they
 	 * extend from the left side (after buttons) until name_x, which is
 	 * the start of the title, which means they jam right up against the
