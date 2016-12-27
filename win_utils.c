@@ -217,7 +217,7 @@ GetWMPropertyString(Window w, Atom prop)
 	unsigned char       *stringptr;
 	int                 status, len = -1;
 
-	(void)XGetTextProperty(dpy, w, &text_prop, prop);
+	XGetTextProperty(dpy, w, &text_prop, prop);
 	if(text_prop.value != NULL) {
 		if(text_prop.encoding == XA_STRING
 		                || text_prop.encoding == XA_COMPOUND_TEXT) {

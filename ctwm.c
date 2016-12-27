@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 
-	(void)setlocale(LC_ALL, "");
+	setlocale(LC_ALL, "");
 
 	ProgramName = argv[0];
 	Argc = argc;
