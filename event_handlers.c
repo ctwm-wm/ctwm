@@ -989,7 +989,6 @@ static void free_window_names(TwmWindow *tmp,
 
 void HandlePropertyNotify(void)
 {
-	unsigned char *prop = NULL;
 	Atom actual = None;
 	int actual_format;
 	unsigned long nitems, bytesafter;
@@ -1007,6 +1006,7 @@ void HandlePropertyNotify(void)
 	if(Event.xproperty.window == Scr->Root) {
 
 		if(Event.xproperty.atom == XA_WM_CURRENTWORKSPACE) {
+			unsigned char *prop;
 			switch(Event.xproperty.state) {
 				case PropertyNewValue:
 					if(XGetWindowProperty(dpy, Scr->Root, XA_WM_CURRENTWORKSPACE,
@@ -1050,13 +1050,13 @@ void HandlePropertyNotify(void)
 #define MAX_NAME_LEN 200L               /* truncate to this many */
 
 	switch(Event.xproperty.atom) {
-		case XA_WM_NAME:
-			prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
+		case XA_WM_NAME: {
+			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
 			if(prop == NULL) {
 				return;
 			}
 
-			name_change = strcmp((char *)Tmp_win->full_name, (char *)prop);
+			name_change = strcmp((char *)Tmp_win->full_name, prop);
 			icon_change = false;
 
 #ifdef CLAUDE
@@ -1069,8 +1069,8 @@ void HandlePropertyNotify(void)
 #endif
 			free_window_names(Tmp_win, true, true, false);
 
-			Tmp_win->full_name = (char *) prop;
-			Tmp_win->name = (char *) prop;
+			Tmp_win->full_name = prop;
+			Tmp_win->name = prop;
 			Tmp_win->nameChanged = true;
 			XmbTextExtents(Scr->TitleBarFont.font_set,
 			               Tmp_win->name, strlen(Tmp_win->name),
@@ -1139,9 +1139,10 @@ void HandlePropertyNotify(void)
 				AutoPopupMaybe(Tmp_win);
 			}
 			break;
+		}
 
-		case XA_WM_ICON_NAME:
-			prop = GetWMPropertyString(Tmp_win->w, XA_WM_ICON_NAME);
+		case XA_WM_ICON_NAME: {
+			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_ICON_NAME);
 			if(prop == NULL) {
 				return;
 			}
@@ -1162,6 +1163,7 @@ void HandlePropertyNotify(void)
 				AutoPopupMaybe(Tmp_win);
 			}
 			break;
+		}
 
 		case XA_WM_HINTS:
 			if(Tmp_win->wmhints) {
@@ -1380,6 +1382,7 @@ void HandlePropertyNotify(void)
 				break;
 			}
 			else if(Event.xproperty.atom == XA_WM_OCCUPATION) {
+				unsigned char *prop;
 				if(XGetWindowProperty(dpy, Tmp_win->w, Event.xproperty.atom, 0L, MAX_NAME_LEN,
 				                      False,
 				                      XA_STRING, &actual, &actual_format, &nitems,
