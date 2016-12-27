@@ -289,7 +289,7 @@ GetWMPropertyString(Window w, Atom prop)
 void
 FreeWMPropertyString(char *prop)
 {
-	if(prop && (char *)prop != NoName) {
+	if(prop && prop != NoName) {
 		free(prop);
 	}
 }
