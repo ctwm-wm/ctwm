@@ -24,17 +24,6 @@
  * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
  */
 
-
-/**********************************************************************
- *
- * $XConsortium: add_window.h,v 1.7 90/04/17 14:04:33 jim Exp $
- *
- * AddWindow include file
- *
- * 31-Mar-88 Tom LaStrange        Initial Version.
- *
- **********************************************************************/
-
 #ifndef _CTWM_WINDOWBOX_H
 #define _CTWM_WINDOWBOX_H
 
@@ -47,4 +36,3 @@ void ConstrainedToWinBox(TwmWindow *twmwin,
 void fittocontent(TwmWindow *twmwin);
 
 #endif /* _CTWM_WINDOWBOX_H */
-
