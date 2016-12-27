@@ -259,8 +259,7 @@ GetWMPropertyString(Window w, Atom prop)
 				*/
 			}
 			else {
-				size_t len = strlen(text_list[0]);
-				stringptr = memcpy(malloc(len + 1), text_list[0], len + 1);
+				stringptr = strdup(text_list[0]);
 				XFreeStringList(text_list);
 			}
 		}
