@@ -1092,7 +1092,8 @@ void HandlePropertyNotify(void)
 				WmgrRedoOccupation(Tmp_win);
 			}
 
-			/* Experimental, not yet working.
+#if 0
+			/* Experimental, not yet working. */
 			{
 			    ColorPair cp;
 			    int f, b;
@@ -1123,7 +1124,8 @@ void HandlePropertyNotify(void)
 			        Tmp_win->border_tile = cp;
 			    }
 			}
-			*/
+#endif
+
 			/*
 			 * if the icon name is NoName, set the name of the icon to be
 			 * the same as the window
