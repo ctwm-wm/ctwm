@@ -208,13 +208,13 @@ GetTwmWindow(Window w)
  *
  * Formerly in util.c
  */
-unsigned char *
+char *
 GetWMPropertyString(Window w, Atom prop)
 {
 	XTextProperty       text_prop;
 	char                **text_list;
 	int                 text_list_count;
-	unsigned char       *stringptr;
+	char                *stringptr;
 	int                 status, len = -1;
 
 	XGetTextProperty(dpy, w, &text_prop, prop);

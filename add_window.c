@@ -203,7 +203,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
-	tmp_win->name = (char *) GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
 	tmp_win->class = NoClass;
 	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
 	FetchWmProtocols(tmp_win);
@@ -1145,7 +1145,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	tmp_win->title_width = tmp_win->attr.width;
 
-	tmp_win->icon_name = (char *) GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
+	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
 	if(!tmp_win->icon_name) {
 		tmp_win->icon_name = tmp_win->name;
 	}
