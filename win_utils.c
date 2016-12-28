@@ -208,22 +208,22 @@ GetTwmWindow(Window w)
  *
  * Formerly in util.c
  */
-unsigned char *
+char *
 GetWMPropertyString(Window w, Atom prop)
 {
 	XTextProperty       text_prop;
-	char                **text_list;
-	int                 text_list_count;
-	unsigned char       *stringptr;
-	int                 status, len = -1;
+	char                *stringptr;
 
-	(void)XGetTextProperty(dpy, w, &text_prop, prop);
+	XGetTextProperty(dpy, w, &text_prop, prop);
 	if(text_prop.value != NULL) {
+		char **text_list;
+		int  text_list_count;
+
 		if(text_prop.encoding == XA_STRING
 		                || text_prop.encoding == XA_COMPOUND_TEXT) {
 			/* property is encoded as compound text - convert to locale string */
-			status = XmbTextPropertyToTextList(dpy, &text_prop,
-			                                   &text_list, &text_list_count);
+			int status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
+			                                       &text_list_count);
 			if(text_list_count == 0) {
 				stringptr = NULL;
 			}
@@ -259,8 +259,7 @@ GetWMPropertyString(Window w, Atom prop)
 				*/
 			}
 			else {
-				len = strlen(text_list[0]);
-				stringptr = memcpy(malloc(len + 1), text_list[0], len + 1);
+				stringptr = strdup(text_list[0]);
 				XFreeStringList(text_list);
 			}
 		}
@@ -289,7 +288,7 @@ GetWMPropertyString(Window w, Atom prop)
 void
 FreeWMPropertyString(char *prop)
 {
-	if(prop && (char *)prop != NoName) {
+	if(prop && prop != NoName) {
 		free(prop);
 	}
 }
