@@ -2997,7 +2997,8 @@ windows in the current workspace.  Selecting an entry will cause the
 `WindowFunction` to be executed on that window.  If `WindowFunction`
 hasn't been set, the window will be deiconified and raised.
 
-`TwmVisible` lists those windows which are currently deiconified.
+`TwmVisible` lists those windows which are currently deiconified (first
+appeared in 3.7).
 `TwmIcons` lists only those which are currently iconified.
 
 `TwmAllWindows` and `TwmAllIcons` act similarly to the non-All variants
@@ -3010,7 +3011,7 @@ the names of all windows occupying this workspace, selecting such an
 entry executes `f.warpto` on this window.
 
 `TwmKeys` lists all the keybindings in the root context that invoke
-`f.exec`.
+`f.exec`.  First appeared in 3.7.
 
 
 == ICONS
