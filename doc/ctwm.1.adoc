@@ -2663,17 +2663,17 @@ f.pack `string`::
   an obstacle (either another window, or the screen border). The pointer
   follows the window.
 
+f.pin::
+  Valid only in a root menu. Make a menu permanent on the screen. This is a toggle
+  function, if you select it while the menu is already permanent, it becomes
+  non-permanent.
+
 f.previconmgr::
   This function warps the pointer to the previous icon manager containing any
   windows on the current or preceding screens.
 
 f.prevworkspace::
   Goto the previous workspace in the list, using the order given in the `.ctwmrc` file.
-
-f.pin::
-  Valid only in a root menu. Make a menu permanent on the screen. This is a toggle
-  function, if you select it while the menu is already permanent, it becomes
-  non-permanent.
 
 f.priorityswitching::
   Toggle the window's switching ability.
@@ -2685,11 +2685,11 @@ f.quit::
   ctwm is the first client invoked from `xdm`, this will result in a
   server reset.
 
-f.raiseicons::
-  This function raises all the icons in the current workspace.
-
 f.raise::
   This function raises the selected window.
+
+f.raiseicons::
+  This function raises all the icons in the current workspace.
 
 f.raiselower::
   This function raises the selected window to the top of the stacking order if
@@ -2700,12 +2700,12 @@ f.raiseorsqueeze::
 +
 First appeared in %%NEXT%%.
 
+f.refresh::
+  This function causes all windows to be refreshed.
+
 f.removefromworkspace `string`::
   This function removes the selected window from the workspace whose name
   is `string`.
-
-f.refresh::
-  This function causes all windows to be refreshed.
 
 f.rereadsounds::
   This function causes the `.ctwm-sounds` file to be re-read.  Note that
@@ -2784,23 +2784,23 @@ f.setpriority "`value`"::
 +
 First appeared in %%NEXT%%.
 
-f.showiconmgr::
-  This function maps the current icon manager.
-
-f.sorticonmgr::
-  This function sorts the entries in the current icon manager alphabetically.
-  See the variable `SortIconManager`.
-
 f.showbackground::
   This function unmaps all windows in the current workspace. This is a toggle
   function, if all windows are unmapped, they are all remapped. Better bind this
   function in the root context.
+
+f.showiconmgr::
+  This function maps the current icon manager.
 
 f.showworkspacemgr::
   Map the WorkSpace manager.
 
 f.slowdownanimation::
   Decrease `AnimationSpeed` by 1.
+
+f.sorticonmgr::
+  This function sorts the entries in the current icon manager alphabetically.
+  See the variable `SortIconManager`.
 
 f.speedupanimation::
   Increase `AnimationSpeed` by 1.
