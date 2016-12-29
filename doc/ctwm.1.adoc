@@ -2916,12 +2916,12 @@ f.warptoiconmgr `string`::
 
 f.warptoscreen `string`::
   This function warps the pointer to the screen specified by the
-  argument `string`.  `String` may be a number (e.g. `"0"` or
+  argument `string`.  The argument may be a number (e.g. `"0"` or
   `"1"`), the word `"next"` (indicating the current screen plus 1,
   skipping over any unmanaged screens),
   the word `"back"` (indicating the current screen minus 1, skipping over
   any unmanaged screens), or the word
-  `"prev"` (indicating the last screen visited.
+  `"prev"` (indicating the last screen visited).
 
 f.winrefresh::
   This function is similar to the `f.refresh` function except that only the
