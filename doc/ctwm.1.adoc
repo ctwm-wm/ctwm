@@ -2630,16 +2630,14 @@ Button1 = m1 : title : f.movetitlebar
   (see `SqueezeTitle`).
 
 f.movetonextworkspace::
-  Move the window to the next workspace.
+f.movetonextworkspaceandfollow::
+  Move the window to the next workspace, and optionally switch view over
+  to that workspace.
 
 f.movetoprevworkspace::
-  Move the window to the previous workspace.
-
-f.movetonextworkspaceandfollow::
-  Move the window to the next workspace and go to that workspace.
-
 f.movetoprevworkspaceandfollow::
-  Move the window to the previous workspace and go to that workspace.
+  Move the window to the previous workspace, and optionally switch view
+  over to that workspace.
 
 f.nexticonmgr::
   This function warps the pointer to the next icon manager containing any windows
