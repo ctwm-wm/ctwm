@@ -697,11 +697,17 @@ Color
 
 ConstrainedMoveTime `milliseconds`::
   This variable specifies the length of time between button clicks needed to
-  begin
-  a constrained move operation.  Double clicking within this amount
-  of time when invoking `f.move` will cause the window only be moved
-  in a horizontal or vertical direction.  Setting this value to 0 will disable
-  constrained moves.  The default is 400 milliseconds.
+  begin a constrained move operation.
+  Double clicking within this amount of time when invoking `f.move` or
+  other similar moving functions will cause the window only be moved in a
+  horizontal or vertical direction.
+  Setting this value to 0 will disable constrained moves.  The default is
+  400 milliseconds.
++
+[normal]
+  Note that this also affects double clicking in `f.raiseorsqueeze`, and
+  potentially other places that need to track double clicks.  It should
+  probably be renamed.
 
 Cursors { `cursor-list` }::
   This variable specifies the glyphs that ctwm should use for various
@@ -2696,7 +2702,8 @@ f.raiselower::
   it is occluded by any windows, otherwise the window will be lowered.
 
 f.raiseorsqueeze::
-  Raise the window or squeeze it if it's a double click.
+  Raise the window or squeeze it if it's a double click.  The time that
+  defines a double click is given by the `ConstrainedMoveTime` variable.
 +
 First appeared in %%NEXT%%.
 
