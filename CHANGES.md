@@ -88,6 +88,9 @@ remnants of special-case VMS support have been removed.
 1. The default install locations have been changed.  See the README for
     details about where things are installed and how to change them.
 
+1. Added DontShowWelcomeWindow config option to not show welcome
+    splashscreen image.
+
 1. Selected a number of cleanups from Stefan Monnier
     <<monnier@IRO.UMontreal.CA>>, including rate-limiting of animations
     using a new `_XA_WM_END_OF_ANIMATION` message.  Font height is
