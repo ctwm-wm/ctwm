@@ -2862,6 +2862,15 @@ f.topzoom::
   This variable is similar to the `f.bottomzoom` function except that
   the selected window is only resized to the top half of the display.
 
+f.trace `string`::
+  Used for handling dumping debug output.  If a filename is given in
+  `string`, begins writing output to that file; if `string` is `"stderr"`
+  writes to stderr.  If debug file is already open, calling f.trace again
+  closes it.
++
+[normal]
+  This is probably only useful if you're doing development on ctwm.
+
 f.twmrc::
   Alias for +f.restart+.
 
