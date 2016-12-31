@@ -30,6 +30,8 @@ docs_clean doc_clean:
 # asciidoc files
 adocs:
 	(cd doc && make all_set_version)
+adocs_pregen:
+	(cd doc && make all)
 adoc_clean:
 	(cd doc && make clean)
 
@@ -42,12 +44,12 @@ ${GEN}:
 	mkdir -p ${GEN}
 
 # All the generated source files
-_RELEASE_FILES=gram.tab.c gram.tab.h lex.c version.c.in
+_RELEASE_FILES=gram.tab.c gram.tab.h lex.c version.c.in ctwm.1 ctwm.1.html
 RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
 # Build those, the .html versions of the above docs, and the HTML/man
 # versions of the manual
-release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES} ${DOC_FILES} adocs
+release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES} ${DOC_FILES}
 release_clean: doc_clean adoc_clean
 	rm -rf ${GEN}
 
@@ -66,3 +68,11 @@ ${GEN}/lex.c: ${GEN} lex.l build/MKTAR_GENFILES
 # Setup version file
 ${GEN}/version.c.in: ${GEN} version.c.in .bzr/checkout/dirstate
 	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c.in
+
+# Generate pregen'd manuals
+${GEN}/ctwm.1: doc/ctwm.1
+${GEN}/ctwm.1.html: doc/ctwm.1.html
+${GEN}/ctwm.1 ${GEN}/ctwm.1.html:
+	cp doc/ctwm.1 doc/ctwm.1.html ${GEN}/
+doc/ctwm.1 doc/ctwm.1.html:
+	(cd doc && make clean all)

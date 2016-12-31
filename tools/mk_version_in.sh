@@ -7,8 +7,8 @@ src=$1
 # numbers from VERSION sub'd in.  The destination is still a .in because
 # it [potentially] gets VCS info sub'd in as well.
 
-# Assume VERSION is in the same dir as the source
-vfile="$(dirname ${src})/VERSION"
+# Assume VERSION is in the dir above us
+vfile="$(dirname ${0})/../VERSION"
 
 # Split the version bits out
 vstr=`sed -E -e 's/([0-9]+)\.([0-9]+)\.([0-9]+)(.*)/\1 \2 \3 \4/' ${vfile}`

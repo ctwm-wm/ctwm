@@ -41,8 +41,8 @@ set(MANSED_CMD sed -e \"s,\@ETCDIR@,${ETCDIR},\"
 
 # Pregen'd doc file paths we might have, in case we can't build them
 # ourselves.
-set(MAN_PRESRC ${SRCDOCDIR}/ctwm.1)
-set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
+set(MAN_PRESRC ${GENSRCDIR}/ctwm.1)
+set(HTML_PRESRC ${GENSRCDIR}/ctwm.1.html)
 
 
 
@@ -92,6 +92,14 @@ endif()
 set(MANUAL_BUILD_PDF)
 if(DBLATEX AND DBLATEX_CAN_PDF AND MANUAL_BUILD_DBXML)
 	set(MANUAL_BUILD_PDF dblatex)
+endif()
+
+
+# Override: allow forcing use of pregen'd files.
+if(FORCE_PREGEN_FILES)
+	set(MANUAL_BUILD_HTML)
+	set(MANUAL_BUILD_MANPAGE)
+	set(MANUAL_BUILD_DBXML)
 endif()
 
 

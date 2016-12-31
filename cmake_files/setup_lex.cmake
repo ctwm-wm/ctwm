@@ -10,7 +10,9 @@
 # own if you have flex).  If neither of those hit, not much we can do but
 # bomb...
 
-find_package(FLEX)
+if(NOT FORCE_PREGEN_FILES)
+	find_package(FLEX)
+endif()
 if(FLEX_FOUND)
 	FLEX_TARGET(ctwm_lexer lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.c)
 else()
