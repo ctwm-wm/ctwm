@@ -30,6 +30,8 @@ docs_clean doc_clean:
 # asciidoc files
 adocs:
 	(cd doc && make all_set_version)
+adocs_pregen:
+	(cd doc && make all)
 adoc_clean:
 	(cd doc && make clean)
 
@@ -47,7 +49,8 @@ RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
 # Build those, the .html versions of the above docs, and the HTML/man
 # versions of the manual
-release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES} ${DOC_FILES} adocs
+release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES}
+release_files: ${DOC_FILES} adocs_pregen
 release_clean: doc_clean adoc_clean
 	rm -rf ${GEN}
 
