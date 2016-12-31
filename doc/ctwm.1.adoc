@@ -2371,7 +2371,7 @@ f.bottomzoom::
 f.changepriority `rel-value`::
   Change the priority of a window by `rel-value` (enclosed within double
   quotes). For instance, to bury a window one level down, you would use
-  f.changepriority "-1".
+  f.changepriority "-1".  See `OnTopPriority` variable.
 +
 First appeared in %%NEXT%%.
 
@@ -2682,7 +2682,7 @@ f.prevworkspace::
   Goto the previous workspace in the list, using the order given in the `.ctwmrc` file.
 
 f.priorityswitching::
-  Toggle the window's switching ability.
+  Toggle the window's switching ability.  X-ref `OnTopPriority` variable.
 +
 First appeared in %%NEXT%%.
 
@@ -2787,7 +2787,7 @@ f.setpriority "`value`"::
   Set the window's priority to `value` (enclosed between double quotes).
   If `value` is directly followed by `<` or `b`, the window is
   placed below other windows of the given priority. Otherwise it is placed
-  above.
+  above.  See `OnTopPriority` variable for details.
 +
 First appeared in %%NEXT%%.
 
@@ -2825,7 +2825,8 @@ f.stopanimation::
 
 f.switchpriority::
   Switch the window's priority, independently of its ability to switch
-  automatically.
+  automatically.  X-ref `OnTopPriority` and `PrioritySwitching`
+  variables.
 +
 First appeared in %%NEXT%%.
 
