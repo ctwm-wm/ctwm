@@ -41,8 +41,8 @@ set(MANSED_CMD sed -e \"s,\@ETCDIR@,${ETCDIR},\"
 
 # Pregen'd doc file paths we might have, in case we can't build them
 # ourselves.
-set(MAN_PRESRC ${SRCDOCDIR}/ctwm.1)
-set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
+set(MAN_PRESRC ${GENSRCDIR}/ctwm.1)
+set(HTML_PRESRC ${GENSRCDIR}/ctwm.1.html)
 
 
 
