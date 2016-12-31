@@ -1554,11 +1554,12 @@ ResizeFont `string`::
   resizing windows.  The default is ``fixed''.
 
 RestartPreviousState::
-  This variable indicates that
-  ctwm should attempt to use the `WM_STATE` property on client windows
-  to tell which windows should be iconified and which should be left visible.
-  This is typically used to try to regenerate the state that the screen
-  was in before the previous window manager was shutdown.
+  This variable indicates that properties on client windows to attempt to
+  regenerate the state that the screen was in before the previous window
+  manager was shutdown.  This includes using the `WM_STATE` property to
+  tell which windows should be iconified and which should be left
+  visible, and the `WM_OCCUPATION` property to determine in which
+  workspaces a window should be visible.
 
 ReverseCurrentWorkspace::
   This variable tells ctwm to reverse the background and
