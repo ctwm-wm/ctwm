@@ -29,7 +29,7 @@ mkdir -m755 $dir
 bzr branch --use-existing-dir . $dir
 
 # Generate the appropriate files for it
-( cd $dir && make release_files allclean )
+( cd $dir && make release_files allclean adoc_clean )
 
 # Blow away the bzr metastuff, we don't need to package that
 ( cd $dir && rm -rf .bzr )
