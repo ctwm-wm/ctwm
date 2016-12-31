@@ -20,8 +20,15 @@ if(DO_DEBUGPARSER)
 	message(STATUS "Enabling config parser debug.")
 endif(DO_DEBUGPARSER)
 
-# This only finds bison, not yacc.
-find_package(BISON)
+# Override for forcing use of pregen'd source files
+if(NOT FORCE_PREGEN_FILES)
+	# This only finds bison, not yacc.
+	find_package(BISON)
+	# There doesn't seem to be a standard module for yacc, so hand-code
+	# it.
+	find_program(YACC yacc)
+endif()
+
 if(BISON_FOUND)
 	# What a stupid way to spell 'stringify'...
 	string(REPLACE ";" " " _YFSTR "${YFLAGS}")
@@ -30,7 +37,6 @@ if(BISON_FOUND)
 else()
 	# There doesn't seem to be a standard module for yacc, so hand-code
 	# it.
-	find_program(YACC yacc)
 	if(YACC)
 		# Got yacc(1), use it
 		message(STATUS "Found yacc: ${YACC}")

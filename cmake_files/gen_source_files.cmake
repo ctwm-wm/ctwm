@@ -67,6 +67,15 @@ set(version_c_src ${CMAKE_CURRENT_SOURCE_DIR}/version.c.in)
 set(version_c_in  ${CMAKE_CURRENT_BINARY_DIR}/version.c.in)
 set(version_c     ${CMAKE_CURRENT_BINARY_DIR}/version.c)
 
+# Maybe a pregen'd
+set(version_c_gen ${GENSRCDIR}/version.c.in)
+
+# Override
+if(FORCE_PREGEN_FILES)
+	set(HAS_BZR 0)
+	set(HAS_GIT 0)
+endif()
+
 # If we've got a bzr checkout we can figure the revid from, fill it in.
 # Else just copy.
 if(IS_BZR_CO AND HAS_BZR)
@@ -85,10 +94,10 @@ elseif(IS_GIT_CO AND HAS_GIT)
 	)
 else()
 	# Is there a prebuilt one to use?
-	if(EXISTS ${GENSRCDIR}/version.c)
+	if(EXISTS ${version_c_gen})
 		# Yep, switch to using it as the source for building
 		# ${version_c_in}.
-		set(version_c_src ${GENSRCDIR}/version.c)
+		set(version_c_src ${version_c_gen})
 
 		# And just copy to the final
 		add_custom_command(OUTPUT ${version_c}
@@ -104,7 +113,7 @@ else()
 				< ${version_c_in} > ${version_c}
 			COMMENT "Using null version.c."
 		)
-	endif(EXISTS ${GENSRCDIR}/version.c)
+	endif(EXISTS ${version_c_gen})
 endif(IS_BZR_CO AND HAS_BZR)
 
 # Note that the above may be rewriting version_c_src in the "no VCS info,

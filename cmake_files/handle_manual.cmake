@@ -95,6 +95,14 @@ if(DBLATEX AND DBLATEX_CAN_PDF AND MANUAL_BUILD_DBXML)
 endif()
 
 
+# Override: allow forcing use of pregen'd files.
+if(FORCE_PREGEN_FILES)
+	set(MANUAL_BUILD_HTML)
+	set(MANUAL_BUILD_MANPAGE)
+	set(MANUAL_BUILD_DBXML)
+endif()
+
+
 # If we can build stuff, prepare bits for it.  Technically unnecessary if
 # we're not building stuff, but doesn't do anything bad to define it in
 # those cases, and it's easier than listing every MANUAL_BUILD_* in the
