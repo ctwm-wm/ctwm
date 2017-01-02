@@ -1095,34 +1095,40 @@ void HandlePropertyNotify(void)
 #if 0
 			/* Experimental, not yet working. */
 			{
-			    ColorPair cp;
-			    int f, b;
+				ColorPair cp;
+				int f, b;
 
-			    f = GetColorFromList (Scr->TitleForegroundL, Tmp_win->full_name,
-			                                                &Tmp_win->class, &cp.fore);
-			    b = GetColorFromList (Scr->TitleBackgroundL, Tmp_win->full_name,
-			                                                &Tmp_win->class, &cp.back);
-			    if (f || b) {
-			        if (Scr->use3Dtitles  && !Scr->BeNiceToColormap) GetShadeColors (&cp);
-			        Tmp_win->title = cp;
-			    }
-			    f = GetColorFromList (Scr->BorderColorL, Tmp_win->full_name,
-			                                            &Tmp_win->class, &cp.fore);
-			    b = GetColorFromList (Scr->BorderColorL, Tmp_win->full_name,
-			                                            &Tmp_win->class, &cp.back);
-			    if (f || b) {
-			        if (Scr->use3Dborders && !Scr->BeNiceToColormap) GetShadeColors (&cp);
-			        Tmp_win->borderC = cp;
-			    }
+				f = GetColorFromList(Scr->TitleForegroundL, Tmp_win->full_name,
+				                     &Tmp_win->class, &cp.fore);
+				b = GetColorFromList(Scr->TitleBackgroundL, Tmp_win->full_name,
+				                     &Tmp_win->class, &cp.back);
+				if(f || b) {
+					if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
+						GetShadeColors(&cp);
+					}
+					Tmp_win->title = cp;
+				}
+				f = GetColorFromList(Scr->BorderColorL, Tmp_win->full_name,
+				                     &Tmp_win->class, &cp.fore);
+				b = GetColorFromList(Scr->BorderColorL, Tmp_win->full_name,
+				                     &Tmp_win->class, &cp.back);
+				if(f || b) {
+					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+						GetShadeColors(&cp);
+					}
+					Tmp_win->borderC = cp;
+				}
 
-			    f = GetColorFromList (Scr->BorderTileForegroundL, Tmp_win->full_name,
-			                                                     &Tmp_win->class, &cp.fore);
-			    b = GetColorFromList (Scr->BorderTileBackgroundL, Tmp_win->full_name,
-			                                                     &Tmp_win->class, &cp.back);
-			    if (f || b) {
-			        if (Scr->use3Dborders && !Scr->BeNiceToColormap) GetShadeColors (&cp);
-			        Tmp_win->border_tile = cp;
-			    }
+				f = GetColorFromList(Scr->BorderTileForegroundL, Tmp_win->full_name,
+				                     &Tmp_win->class, &cp.fore);
+				b = GetColorFromList(Scr->BorderTileBackgroundL, Tmp_win->full_name,
+				                     &Tmp_win->class, &cp.back);
+				if(f || b) {
+					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+						GetShadeColors(&cp);
+					}
+					Tmp_win->border_tile = cp;
+				}
 			}
 #endif
 
