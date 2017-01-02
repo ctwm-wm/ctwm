@@ -450,7 +450,7 @@ DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y)
 	FB(Scr->DefaultC.fore, Scr->DefaultC.back);
 	XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
 	                   Scr->NormalGC, Scr->SizeStringOffset,
-	                   Scr->SizeFont.ascent + SIZE_VINDENT , str, 13);
+	                   Scr->SizeFont.ascent + SIZE_VINDENT, str, 13);
 }
 
 

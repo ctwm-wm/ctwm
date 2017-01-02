@@ -1093,7 +1093,7 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		}
 	}
 #endif
-	SetupWindow(tmp_win, dragx , dragy , dragWidth, dragHeight, -1);
+	SetupWindow(tmp_win, dragx, dragy, dragWidth, dragHeight, -1);
 	/* I don't understand the reason of this. Claude.
 	    XUngrabPointer (dpy, CurrentTime);
 	*/
@@ -1214,7 +1214,7 @@ void ChangeSize(char *in_string, TwmWindow *tmp_win)
 			}
 
 			SetupWindow(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-			            tmp_win->frame_width, size ,
+			            tmp_win->frame_width, size,
 			            -1);
 
 			XQueryPointer(dpy, tmp_win->w, &rr, &cr, &rx, &ry, &wx, &wy,
