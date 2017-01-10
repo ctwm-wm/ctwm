@@ -1531,20 +1531,20 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	XMoveWindow(dpy, menu->w, x, y);
 	XMapRaised(dpy, menu->w);
 
-	/* Move mouse pointer if we're supposed to */
-	if(!Scr->NoWarpToMenuTitle && clipped && center) {
-		const int xl = x + (menu->width      / 2);
-		const int yt = y + (Scr->EntryHeight / 2);
-		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y,
-		             menu->width, menu->height, xl, yt);
-	}
-
 	/*
 	 * Now map the shadow, after the menu over it is mapped (to avoid
 	 * unnecessary drawing of the covered bits).
 	 */
 	if(Scr->Shadow) {
 		XMapWindow(dpy, menu->shadow);
+	}
+
+	/* Move mouse pointer if we're supposed to */
+	if(!Scr->NoWarpToMenuTitle && clipped && center) {
+		const int xl = x + (menu->width      / 2);
+		const int yt = y + (Scr->EntryHeight / 2);
+		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y,
+		             menu->width, menu->height, xl, yt);
 	}
 
 
