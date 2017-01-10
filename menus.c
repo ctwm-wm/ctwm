@@ -1516,25 +1516,21 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 
 	/*
-	 * If we're showing a shadow, position the shadow window and raise it
-	 * up above everything else on the screen.
+	 * Position and display the menu, and its shadow if it has one.  We
+	 * start by positioning and raising (above everything else on screen)
+	 * the shadow.  Then position the menu itself, raise it up above
+	 * that, and map it.  Then map the shadow; doing that after raising
+	 * and mapping the menu avoids spending time drawing the bulk of the
+	 * window which the menu covers up anyway.
 	 */
 	if(Scr->Shadow) {
 		XMoveWindow(dpy, menu->shadow, x + SHADOWWIDTH, y + SHADOWWIDTH);
 		XRaiseWindow(dpy, menu->shadow);
 	}
 
-	/*
-	 * Now move the menu to where it should be, raise over the shadow and
-	 * everything else, and map it.
-	 */
 	XMoveWindow(dpy, menu->w, x, y);
 	XMapRaised(dpy, menu->w);
 
-	/*
-	 * Now map the shadow, after the menu over it is mapped (to avoid
-	 * unnecessary drawing of the covered bits).
-	 */
 	if(Scr->Shadow) {
 		XMapWindow(dpy, menu->shadow);
 	}
