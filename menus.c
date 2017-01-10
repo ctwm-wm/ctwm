@@ -1515,11 +1515,11 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	MenuOrigins[MenuDepth].y = y;
 	MenuDepth++;
 
-	XMoveWindow(dpy, menu->w, x, y);
 	if(Scr->Shadow) {
 		XMoveWindow(dpy, menu->shadow, x + SHADOWWIDTH, y + SHADOWWIDTH);
 		XRaiseWindow(dpy, menu->shadow);
 	}
+	XMoveWindow(dpy, menu->w, x, y);
 	XMapRaised(dpy, menu->w);
 	if(!Scr->NoWarpToMenuTitle && clipped && center) {
 		xl = x + (menu->width      / 2);
