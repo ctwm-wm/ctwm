@@ -1535,8 +1535,8 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	if(!Scr->NoWarpToMenuTitle && clipped && center) {
 		const int xl = x + (menu->width      / 2);
 		const int yt = y + (Scr->EntryHeight / 2);
-		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y, menu->width, menu->height, xl,
-		             yt);
+		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y,
+		             menu->width, menu->height, xl, yt);
 	}
 
 	/*
