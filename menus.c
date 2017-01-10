@@ -1177,7 +1177,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	TwmWindow **WindowNames;
 	TwmWindow *tmp_win2, *tmp_win3;
 	int i;
-	int xl, yt;
 	bool clipped;
 #ifdef CLAUDE
 	char tmpname3 [256], tmpname4 [256];
@@ -1515,27 +1514,36 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	MenuOrigins[MenuDepth].y = y;
 	MenuDepth++;
 
-	if(Scr->Root != Scr->CaptiveRoot) {
-		XReparentWindow(dpy, menu->shadow, Scr->Root, x, y);
-		XReparentWindow(dpy, menu->w, Scr->Root, x, y);
-	}
-	else {
-		XMoveWindow(dpy, menu->w, x, y);
-	}
+
+	/*
+	 * Position and display the menu, and its shadow if it has one.  We
+	 * start by positioning and raising (above everything else on screen)
+	 * the shadow.  Then position the menu itself, raise it up above
+	 * that, and map it.  Then map the shadow; doing that after raising
+	 * and mapping the menu avoids spending time drawing the bulk of the
+	 * window which the menu covers up anyway.
+	 */
 	if(Scr->Shadow) {
 		XMoveWindow(dpy, menu->shadow, x + SHADOWWIDTH, y + SHADOWWIDTH);
 		XRaiseWindow(dpy, menu->shadow);
 	}
+
+	XMoveWindow(dpy, menu->w, x, y);
 	XMapRaised(dpy, menu->w);
-	if(!Scr->NoWarpToMenuTitle && clipped && center) {
-		xl = x + (menu->width      / 2);
-		yt = y + (Scr->EntryHeight / 2);
-		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y, menu->width, menu->height, xl,
-		             yt);
-	}
+
 	if(Scr->Shadow) {
 		XMapWindow(dpy, menu->shadow);
 	}
+
+	/* Move mouse pointer if we're supposed to */
+	if(!Scr->NoWarpToMenuTitle && clipped && center) {
+		const int xl = x + (menu->width      / 2);
+		const int yt = y + (Scr->EntryHeight / 2);
+		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y,
+		             menu->width, menu->height, xl, yt);
+	}
+
+
 	XSync(dpy, 0);
 	return true;
 }
