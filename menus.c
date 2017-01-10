@@ -1515,13 +1515,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	MenuOrigins[MenuDepth].y = y;
 	MenuDepth++;
 
-	if(Scr->Root != Scr->CaptiveRoot) {
-		XReparentWindow(dpy, menu->shadow, Scr->Root, x, y);
-		XReparentWindow(dpy, menu->w, Scr->Root, x, y);
-	}
-	else {
-		XMoveWindow(dpy, menu->w, x, y);
-	}
+	XMoveWindow(dpy, menu->w, x, y);
 	if(Scr->Shadow) {
 		XMoveWindow(dpy, menu->shadow, x + SHADOWWIDTH, y + SHADOWWIDTH);
 		XRaiseWindow(dpy, menu->shadow);
