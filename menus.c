@@ -1177,7 +1177,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	TwmWindow **WindowNames;
 	TwmWindow *tmp_win2, *tmp_win3;
 	int i;
-	int xl, yt;
 	bool clipped;
 #ifdef CLAUDE
 	char tmpname3 [256], tmpname4 [256];
@@ -1534,8 +1533,8 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 	/* Move mouse pointer if we're supposed to */
 	if(!Scr->NoWarpToMenuTitle && clipped && center) {
-		xl = x + (menu->width      / 2);
-		yt = y + (Scr->EntryHeight / 2);
+		const int xl = x + (menu->width      / 2);
+		const int yt = y + (Scr->EntryHeight / 2);
 		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y, menu->width, menu->height, xl,
 		             yt);
 	}
