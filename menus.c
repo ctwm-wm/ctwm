@@ -1515,21 +1515,40 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	MenuOrigins[MenuDepth].y = y;
 	MenuDepth++;
 
+
+	/*
+	 * If we're showing a shadow, position the shadow window and raise it
+	 * up above everything else on the screen.
+	 */
 	if(Scr->Shadow) {
 		XMoveWindow(dpy, menu->shadow, x + SHADOWWIDTH, y + SHADOWWIDTH);
 		XRaiseWindow(dpy, menu->shadow);
 	}
+
+	/*
+	 * Now move the menu to where it should be, raise over the shadow and
+	 * everything else, and map it.
+	 */
 	XMoveWindow(dpy, menu->w, x, y);
 	XMapRaised(dpy, menu->w);
+
+	/* Move mouse pointer if we're supposed to */
 	if(!Scr->NoWarpToMenuTitle && clipped && center) {
 		xl = x + (menu->width      / 2);
 		yt = y + (Scr->EntryHeight / 2);
 		XWarpPointer(dpy, Scr->Root, Scr->Root, x, y, menu->width, menu->height, xl,
 		             yt);
 	}
+
+	/*
+	 * Now map the shadow, after the menu over it is mapped (to avoid
+	 * unnecessary drawing of the covered bits).
+	 */
 	if(Scr->Shadow) {
 		XMapWindow(dpy, menu->shadow);
 	}
+
+
 	XSync(dpy, 0);
 	return true;
 }
