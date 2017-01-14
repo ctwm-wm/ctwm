@@ -1522,7 +1522,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 2.2  (date unknown)
+## 2.2  (1993-02-05)
 
 1. Bugs:
 
