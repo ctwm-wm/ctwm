@@ -1117,7 +1117,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.3  (1995-02-11 or earlier)
+## 3.3  (pre-1995-02-11 or 1995-05-04)
 
 1. Better 3D borders with SqueezeTitle.
 
@@ -1313,7 +1313,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.1  (date unknown)
+## 3.1  (1994-01-28)
 
 1. Ctwm is moving. You can now have animated images for icons, root
     backgrounds, title buttons and focus window title image. This adds
@@ -1408,7 +1408,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.0  (date unknown)
+## 3.0  (1993-07-21)
 
 1. A few bugs fixes.
 
@@ -1522,7 +1522,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 2.2  (date unknown)
+## 2.2  (1993-02-05)
 
 1. Bugs:
 
@@ -1694,7 +1694,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 2.1  (date unknown)
+## 2.1  (1992-12-22)
 
 1. Cleanup code to make gcc happy.
 
@@ -1838,7 +1838,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 1.3  (date unknown)
+## 1.3  (1992-09-16)
 
 1. Many bugs fixed:
 
@@ -1909,7 +1909,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 1.1  (1992-06-24)
+## 1.1  (1992-06-24 or 26)
 
 1. Correction of a few bugs
 
