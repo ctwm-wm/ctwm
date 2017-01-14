@@ -1408,7 +1408,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.0  (date unknown)
+## 3.0  (1993-07-21)
 
 1. A few bugs fixes.
 
