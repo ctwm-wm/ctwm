@@ -1694,7 +1694,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 2.1  (date unknown)
+## 2.1  (1992-12-22)
 
 1. Cleanup code to make gcc happy.
 
