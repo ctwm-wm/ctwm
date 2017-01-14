@@ -1838,7 +1838,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 1.3  (date unknown)
+## 1.3  (1992-09-16)
 
 1. Many bugs fixed:
 
