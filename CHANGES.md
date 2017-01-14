@@ -1909,7 +1909,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 1.1  (1992-06-24)
+## 1.1  (1992-06-24 or 26)
 
 1. Correction of a few bugs
 
