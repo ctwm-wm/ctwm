@@ -1313,7 +1313,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.1  (date unknown)
+## 3.1  (1994-01-28)
 
 1. Ctwm is moving. You can now have animated images for icons, root
     backgrounds, title buttons and focus window title image. This adds
