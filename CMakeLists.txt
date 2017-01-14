@@ -60,11 +60,22 @@ if(NOT X11_FOUND)
 	# This just isn't feasible...
 	message(FATAL_ERROR "Can't find X libs.")
 endif(NOT X11_FOUND)
+if(NOT X11_INCLUDE_DIR)
+	message(FATAL_ERROR "Can't find X includes.")
+endif(NOT X11_INCLUDE_DIR)
 
 include_directories(${X11_INCLUDE_DIR})
-list(APPEND CTWMLIBS ${X11_LIBRARIES})
-list(APPEND CTWMLIBS ${X11_Xmu_LIB})
-list(APPEND CTWMLIBS ${X11_Xt_LIB})
+
+# Need to link in at least these; double check that we found 'em before
+# blindly applying them.  We can seemingly get through the above just
+# fine, even if it didn't find all the bits...
+foreach(VEXT LIBRARIES Xmu_LIB Xt_LIB)
+	if(NOT X11_${VEXT})
+		message(FATAL_ERROR "Can't find X11_${VEXT}; missing lib or "
+			"-devel package?")
+	endif()
+	list(APPEND CTWMLIBS ${X11_${VEXT}})
+endforeach()
 
 
 #
