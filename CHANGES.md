@@ -1117,7 +1117,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.3  (1995-02-11 or earlier)
+## 3.3  (pre-1995-02-11 or 1995-05-04)
 
 1. Better 3D borders with SqueezeTitle.
 
