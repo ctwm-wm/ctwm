@@ -7,10 +7,7 @@ separate license (e.g., files in ext/).
 /*
  * [ ctwm ]
  *
- * Copyright 1992 Claude Lecommandeur  [ lecom@sic.epfl.ch ]
- * Copyright 1992-2007 Stefan Monnier  [ monnier@lia.di.epfl.ch ]
- * Copyright 2004 Richard Levitte  [ richard@levitte.org ]
- * Copyright 2014 Olaf Seibert  [ rhialto@falu.nl ]
+ * Copyright 1992-2017 Claude Lecommandeur and ctwm contributors
  *
  * Permission to use, copy, modify and distribute this software and its
  * documentation for any purpose is hereby granted without fee, provided
