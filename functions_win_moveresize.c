@@ -117,10 +117,18 @@ movewindow(EF_FULLPROTO)
 	unsigned int brdw;
 	int origX, origY;
 	bool moving_icon = false;
-	bool fromtitlebar = false;
+	bool fromtitlebar;
 	TwmWindow *t;
 
+	/* Better not be a menu open */
 	PopDownMenu();
+
+	/*
+	 * Figure whether we're moving opaquely.
+	 *
+	 * XXX This should probably get the infinity treatment like the
+	 * OpaqueResize bits.
+	 */
 	if(tmp_win->OpaqueMove) {
 		int sw, ss;
 		float sf;
@@ -139,20 +147,33 @@ movewindow(EF_FULLPROTO)
 		Scr->OpaqueMove = false;
 	}
 
-	dragroot = Scr->XineramaRoot;
+	dragroot = Scr->XineramaRoot; // const
 
+	/* If it's in a WindowBox, adjust coordinates as necessary */
 	if(tmp_win->winbox) {
 		XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
 		                      eventp->xbutton.x_root, eventp->xbutton.y_root,
 		                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
 	}
+
 	rootw = eventp->xbutton.root;
 	MoveFunction = func;
 
+	/*
+	 * XXX pulldown=true only when we're triggering from a ButtonRelease
+	 * in a menu, and this warp should only be going somewhere if we hit
+	 * the winbox case above and had to translate the coordinates?  But,
+	 * in that case, the coordinates would be changed to be relative to
+	 * the winbox window, and here we're positioning relative to Root?
+	 */
 	if(pulldown)
 		XWarpPointer(dpy, None, Scr->Root,
 		             0, 0, 0, 0, eventp->xbutton.x_root, eventp->xbutton.y_root);
 
+	/*
+	 * Stub out handlers for enter/leave notifications while we do stuff.
+	 * They get reset toward the end of the ButtonRelease handler.
+	 */
 	EventHandler[EnterNotify] = HandleUnknown;
 	EventHandler[LeaveNotify] = HandleUnknown;
 
@@ -160,12 +181,21 @@ movewindow(EF_FULLPROTO)
 		XGrabServer(dpy);
 	}
 
+	/*
+	 * Setup size for the window showing current location as we move it.
+	 * The same window is used for resize ops too, where it might be a
+	 * different size.
+	 */
 	Scr->SizeStringOffset = SIZE_HINDENT;
 	XResizeWindow(dpy, Scr->SizeWindow,
 	              Scr->SizeStringWidth + SIZE_HINDENT * 2,
 	              Scr->SizeFont.height + SIZE_VINDENT * 2);
 	XMapRaised(dpy, Scr->SizeWindow);
 
+	/*
+	 * Use XGrabPointer() to configure how we get events locations
+	 * reported relative to what root.
+	 */
 	grabwin = Scr->XineramaRoot;
 	if(tmp_win->winbox) {
 		grabwin = tmp_win->winbox->window;
@@ -173,8 +203,14 @@ movewindow(EF_FULLPROTO)
 	XGrabPointer(dpy, grabwin, True,
 	             ButtonPressMask | ButtonReleaseMask |
 	             ButtonMotionMask | PointerMotionMask, /* PointerMotionHintMask */
-	             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor, CurrentTime);
+	             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor,
+	             CurrentTime);
 
+	/*
+	 * Set w to what we're actually moving.  If it's an icon, we always
+	 * move it opaquely anyway.  If it's a window (that's not iconofied),
+	 * we move the frame.
+	 */
 	if(context == C_ICON && tmp_win->icon && tmp_win->icon->w) {
 		w = tmp_win->icon->w;
 		DragX = eventp->xbutton.x;
@@ -184,7 +220,6 @@ movewindow(EF_FULLPROTO)
 			Scr->OpaqueMove = true;
 		}
 	}
-
 	else if(! tmp_win->icon || w != tmp_win->icon->w) {
 		XTranslateCoordinates(dpy, w, tmp_win->frame,
 		                      eventp->xbutton.x,
@@ -205,14 +240,18 @@ movewindow(EF_FULLPROTO)
 	             &DragWidth, &DragHeight, &DragBW,
 	             &JunkDepth);
 
-	brdw = DragBW;
+	brdw = DragBW; // const
 	origX = eventp->xbutton.x_root;
 	origY = eventp->xbutton.y_root;
 	CurrentDragX = origDragX;
 	CurrentDragY = origDragY;
 
 	/*
-	 * only do the constrained move if timer is set; need to check it
+	 * Setup ConstrainedMove if this is a double-click.  That means
+	 * setting the flags, and moving the pointer off to the middle of the
+	 * window.
+	 *
+	 * Only do the constrained move if timer is set; need to check it
 	 * in case of stupid or wicked fast servers
 	 */
 	if(ConstrainedMoveTime &&
@@ -238,6 +277,7 @@ movewindow(EF_FULLPROTO)
 	}
 	last_time = eventp->xbutton.time;
 
+	/* If not moving opaquely, setup the outline bits */
 	if(!Scr->OpaqueMove) {
 		InstallRootColormap();
 		if(!Scr->MoveDelta) {
@@ -278,7 +318,12 @@ movewindow(EF_FULLPROTO)
 		XFlush(dpy);
 	}
 
+	/* Fill in the position window with where we're starting */
 	DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
+
+	/*
+	 * Internal event loop for doing the moving.
+	 */
 	while(1) {
 		long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
 		                    ButtonPress : ButtonRelease;
@@ -575,8 +620,11 @@ movewindow(EF_FULLPROTO)
 		}
 		DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
 	}
+
+	/* Done, so hide away the position display window */
 	XUnmapWindow(dpy, Scr->SizeWindow);
 
+	/* Restore colormap if we replaced it */
 	if(!Scr->OpaqueMove && DragWindow == None) {
 		UninstallRootColormap();
 	}
