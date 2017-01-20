@@ -114,6 +114,7 @@ movewindow(EF_FULLPROTO)
 {
 	int origX, origY;
 	bool moving_icon;
+	bool fromtitlebar;
 	const Window dragroot = Scr->XineramaRoot;
 	const Window rootw = eventp->xbutton.root;
 
@@ -301,6 +302,14 @@ movewindow(EF_FULLPROTO)
 		}
 	}
 
+	/*
+	 * Init whether triggered from something on the titlebar (e.g., a
+	 * TitleButton bound to f.move).  We need to keep this var in a scope
+	 * outside the event loop below because the resetting of it in there
+	 * is supposed to have effect on future loops.
+	 */
+	fromtitlebar = belongs_to_twm_window(tmp_win, eventp->xbutton.window);
+
 	if(menuFromFrameOrWindowOrTitlebar) {
 		/* warp the pointer to the middle of the window */
 		XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0,
@@ -320,8 +329,6 @@ movewindow(EF_FULLPROTO)
 		                          ButtonPress : ButtonRelease;
 		const long movementMask = menuFromFrameOrWindowOrTitlebar ?
 		                          PointerMotionMask : ButtonMotionMask;
-		bool fromtitlebar = belongs_to_twm_window(tmp_win,
-		                    eventp->xbutton.window);
 
 		/* block until there is an interesting event */
 		XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
