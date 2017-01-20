@@ -112,13 +112,14 @@ DFHANDLER(movepush)
 static void
 movewindow(EF_FULLPROTO)
 {
-	Window grabwin, dragroot;
+	Window grabwin;
 	Window rootw;
 	unsigned int brdw;
 	int origX, origY;
 	bool moving_icon = false;
 	bool fromtitlebar;
 	TwmWindow *t;
+	const Window dragroot = Scr->XineramaRoot;
 
 	/* Better not be a menu open */
 	PopDownMenu();
@@ -146,8 +147,6 @@ movewindow(EF_FULLPROTO)
 	else {
 		Scr->OpaqueMove = false;
 	}
-
-	dragroot = Scr->XineramaRoot; // const
 
 	/* If it's in a WindowBox, adjust coordinates as necessary */
 	if(tmp_win->winbox) {
