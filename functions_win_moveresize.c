@@ -208,6 +208,7 @@ movewindow(EF_FULLPROTO)
 	 * move it opaquely anyway.  If it's a window (that's not iconofied),
 	 * we move the frame.
 	 */
+	moving_icon = false;
 	if(context == C_ICON && tmp_win->icon && tmp_win->icon->w) {
 		w = tmp_win->icon->w;
 		DragX = eventp->xbutton.x;
@@ -224,7 +225,6 @@ movewindow(EF_FULLPROTO)
 		                      &DragX, &DragY, &JunkChild);
 
 		w = tmp_win->frame;
-		moving_icon = false;
 	}
 
 	DragWindow = None;
