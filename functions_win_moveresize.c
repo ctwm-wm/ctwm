@@ -335,8 +335,8 @@ movewindow(EF_FULLPROTO)
 			continue;
 		}
 
+		/* discard any extra motion events before a logical release */
 		if(Event.type == MotionNotify) {
-			/* discard any extra motion events before a logical release */
 			while(XCheckMaskEvent(dpy,
 			                      movementMask | releaseEvent, &Event))
 				if(Event.type == releaseEvent) {
