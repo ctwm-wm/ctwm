@@ -578,19 +578,19 @@ movewindow(EF_FULLPROTO)
 			}
 		}
 		else if(DragWindow != None) {
-			/* There's a non-constrained move to process */
-			int xroot, yroot;
-			int xl, yt, width, height;
-
-
 			/*
-			 * this is split out for virtual screens.  In that case, it's
+			 * There's a non-constrained move to process
+			 *
+			 * This is split out for virtual screens.  In that case, it's
 			 * possible to drag windows from one workspace to another, and
 			 * as such, these need to be adjusted to the root, rather
 			 * than this virtual screen...
 			 */
-			xroot = eventp->xmotion.x_root;
-			yroot = eventp->xmotion.y_root;
+			const int xroot = eventp->xmotion.x_root;
+			const int yroot = eventp->xmotion.y_root;
+			const int width  = DragWidth + 2 * DragBW;
+			const int height = DragHeight + 2 * DragBW;
+			int xl, yt;
 
 			if(!menuFromFrameOrWindowOrTitlebar) {
 				xl = xroot - DragX - DragBW;
@@ -600,8 +600,6 @@ movewindow(EF_FULLPROTO)
 				xl = xroot - (DragWidth / 2);
 				yt = yroot - (DragHeight / 2);
 			}
-			width = DragWidth + 2 * DragBW;
-			height = DragHeight + 2 * DragBW;
 
 			if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 				TryToGrid(tmp_win, &xl, &yt);
