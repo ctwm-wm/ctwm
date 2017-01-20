@@ -771,7 +771,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	/*
 	 * ...but hide away the hilite's, since they'll only show up when we
 	 * give the window focus.  And when we do (even if that when is
-	 * "right now", the focus handler will handle mapping them for us).
+	 * "right now"), the focus handler will handle mapping them for us.
 	 */
 	if(tmp_win->hilite_wl) {
 		XUnmapWindow(dpy, tmp_win->hilite_wl);
