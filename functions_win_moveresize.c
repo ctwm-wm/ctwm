@@ -120,6 +120,9 @@ movewindow(EF_FULLPROTO)
 	/* Better not be a menu open */
 	PopDownMenu();
 
+	/* Stash up just which f.move* variant we are */
+	MoveFunction = func;
+
 	/*
 	 * Figure whether we're moving opaquely.
 	 *
@@ -150,8 +153,6 @@ movewindow(EF_FULLPROTO)
 		                      eventp->xbutton.x_root, eventp->xbutton.y_root,
 		                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
 	}
-
-	MoveFunction = func;
 
 	/*
 	 * XXX pulldown=true only when we're triggering from a ButtonRelease
