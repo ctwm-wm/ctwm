@@ -112,7 +112,6 @@ DFHANDLER(movepush)
 static void
 movewindow(EF_FULLPROTO)
 {
-	Window grabwin;
 	Window rootw;
 	int origX, origY;
 	bool moving_icon = false;
@@ -193,15 +192,16 @@ movewindow(EF_FULLPROTO)
 	 * Use XGrabPointer() to configure how we get events locations
 	 * reported relative to what root.
 	 */
-	grabwin = Scr->XineramaRoot;
-	if(tmp_win->winbox) {
-		grabwin = tmp_win->winbox->window;
+	{
+		const Window grabwin = (tmp_win->winbox ? tmp_win->winbox->window
+		                        : Scr->XineramaRoot);
+
+		XGrabPointer(dpy, grabwin, True,
+		             ButtonPressMask | ButtonReleaseMask |
+		             ButtonMotionMask | PointerMotionMask,
+		             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor,
+		             CurrentTime);
 	}
-	XGrabPointer(dpy, grabwin, True,
-	             ButtonPressMask | ButtonReleaseMask |
-	             ButtonMotionMask | PointerMotionMask, /* PointerMotionHintMask */
-	             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor,
-	             CurrentTime);
 
 	/*
 	 * Set w to what we're actually moving.  If it's an icon, we always
