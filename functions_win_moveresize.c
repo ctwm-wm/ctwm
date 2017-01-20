@@ -337,8 +337,7 @@ movewindow(EF_FULLPROTO)
 
 		/* discard any extra motion events before a logical release */
 		if(Event.type == MotionNotify) {
-			while(XCheckMaskEvent(dpy,
-			                      movementMask | releaseEvent, &Event))
+			while(XCheckMaskEvent(dpy, movementMask | releaseEvent, &Event))
 				if(Event.type == releaseEvent) {
 					break;
 				}
