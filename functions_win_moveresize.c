@@ -116,7 +116,6 @@ movewindow(EF_FULLPROTO)
 	Window rootw;
 	int origX, origY;
 	bool moving_icon = false;
-	bool fromtitlebar;
 	TwmWindow *t;
 	const Window dragroot = Scr->XineramaRoot;
 
@@ -302,11 +301,6 @@ movewindow(EF_FULLPROTO)
 		}
 	}
 
-	/*
-	 * see if this is being done from the titlebar
-	 */
-	fromtitlebar = belongs_to_twm_window(tmp_win, eventp->xbutton.window);
-
 	if(menuFromFrameOrWindowOrTitlebar) {
 		/* warp the pointer to the middle of the window */
 		XWarpPointer(dpy, None, Scr->Root, 0, 0, 0, 0,
@@ -326,6 +320,8 @@ movewindow(EF_FULLPROTO)
 		                    ButtonPress : ButtonRelease;
 		long movementMask = menuFromFrameOrWindowOrTitlebar ?
 		                    PointerMotionMask : ButtonMotionMask;
+		bool fromtitlebar = belongs_to_twm_window(tmp_win,
+		                                          eventp->xbutton.window);
 
 		/* block until there is an interesting event */
 		XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
