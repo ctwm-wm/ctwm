@@ -114,7 +114,6 @@ movewindow(EF_FULLPROTO)
 {
 	Window grabwin;
 	Window rootw;
-	unsigned int brdw;
 	int origX, origY;
 	bool moving_icon = false;
 	bool fromtitlebar;
@@ -239,7 +238,6 @@ movewindow(EF_FULLPROTO)
 	             &DragWidth, &DragHeight, &DragBW,
 	             &JunkDepth);
 
-	brdw = DragBW; // const
 	origX = eventp->xbutton.x_root;
 	origY = eventp->xbutton.y_root;
 	CurrentDragX = origDragX;
@@ -259,10 +257,10 @@ movewindow(EF_FULLPROTO)
 
 		ConstMove = true;
 		ConstMoveDir = MOVE_NONE;
-		ConstMoveX = eventp->xbutton.x_root - DragX - brdw;
-		ConstMoveY = eventp->xbutton.y_root - DragY - brdw;
-		width = DragWidth + 2 * brdw;
-		height = DragHeight + 2 * brdw;
+		ConstMoveX = eventp->xbutton.x_root - DragX - DragBW;
+		ConstMoveY = eventp->xbutton.y_root - DragY - DragBW;
+		width = DragWidth + 2 * DragBW;
+		height = DragHeight + 2 * DragBW;
 		ConstMoveXL = ConstMoveX + width / 3;
 		ConstMoveXR = ConstMoveX + 2 * (width / 3);
 		ConstMoveYT = ConstMoveY + height / 3;
@@ -287,9 +285,9 @@ movewindow(EF_FULLPROTO)
 			 * MoveOutline's below.
 			 */
 			MoveOutline(dragroot,
-			            origDragX - brdw + Scr->currentvs->x,
-			            origDragY - brdw + Scr->currentvs->y,
-			            DragWidth + 2 * brdw, DragHeight + 2 * brdw,
+			            origDragX - DragBW + Scr->currentvs->x,
+			            origDragY - DragBW + Scr->currentvs->y,
+			            DragWidth + 2 * DragBW, DragHeight + 2 * DragBW,
 			            tmp_win->frame_bw,
 			            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
 			/*
@@ -496,11 +494,11 @@ movewindow(EF_FULLPROTO)
 					break;
 
 				case MOVE_VERT:
-					ConstMoveY = eventp->xmotion.y_root - DragY - brdw;
+					ConstMoveY = eventp->xmotion.y_root - DragY - DragBW;
 					break;
 
 				case MOVE_HORIZ:
-					ConstMoveX = eventp->xmotion.x_root - DragX - brdw;
+					ConstMoveX = eventp->xmotion.x_root - DragX - DragBW;
 					break;
 			}
 
@@ -509,8 +507,8 @@ movewindow(EF_FULLPROTO)
 
 				xl = ConstMoveX;
 				yt = ConstMoveY;
-				width = DragWidth + 2 * brdw;
-				height = DragHeight + 2 * brdw;
+				width = DragWidth + 2 * DragBW;
+				height = DragHeight + 2 * DragBW;
 
 				if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 					TryToGrid(tmp_win, &xl, &yt);
@@ -566,15 +564,15 @@ movewindow(EF_FULLPROTO)
 			yroot = eventp->xmotion.y_root;
 
 			if(!menuFromFrameOrWindowOrTitlebar) {
-				xl = xroot - DragX - brdw;
-				yt = yroot - DragY - brdw;
+				xl = xroot - DragX - DragBW;
+				yt = yroot - DragY - DragBW;
 			}
 			else {
 				xl = xroot - (DragWidth / 2);
 				yt = yroot - (DragHeight / 2);
 			}
-			width = DragWidth + 2 * brdw;
-			height = DragHeight + 2 * brdw;
+			width = DragWidth + 2 * DragBW;
+			height = DragHeight + 2 * DragBW;
 
 			if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 				TryToGrid(tmp_win, &xl, &yt);
