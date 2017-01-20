@@ -470,27 +470,46 @@ movewindow(EF_FULLPROTO)
 		/* Raise when the move starts if we should */
 		if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
 			TwmWindow *t;
+
+			/*
+			 * XXX In several of the error cases listed in here, it's
+			 * seems almost that we should just abort the whole move
+			 * process immediately if any of them are hit, because things
+			 * get nonsensical.
+			 */
+
+			/* Find TwmWindow bits related to what we're dragging */
 			if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
-				fprintf(stderr, "ERROR: menus.c:2822\n");
+				fprintf(stderr, "%s(): Can't find TwmWindow.\n", __func__);
+				/* XXX abort? */
+				t = NULL;
 			}
 
 			if(t != tmp_win) {
-				fprintf(stderr, "DragWindow isn't tmp_win!\n");
+				fprintf(stderr, "%s(): DragWindow isn't tmp_win!\n", __func__);
+				/* XXX abort? */
 			}
-			if(DragWindow == t->frame) {
+
+			if(t == NULL) {
+				/* Don't try doing this stuff... */
+			}
+			else if(DragWindow == t->frame) {
 				if(moving_icon) {
-					fprintf(stderr, "moving_icon is true incorrectly!\n");
+					fprintf(stderr, "%s(): moving_icon is true incorrectly!\n",
+					        __func__);
 				}
 				OtpRaise(t, WinWin);
 			}
 			else if(t->icon && DragWindow == t->icon->w) {
 				if(!moving_icon) {
-					fprintf(stderr, "moving_icon is false incorrectly!\n");
+					fprintf(stderr, "%s(): moving_icon is false incorrectly!\n",
+					        __func__);
 				}
 				OtpRaise(t, IconWin);
 			}
 			else {
-				fprintf(stderr, "ERROR: menus.c:2838\n");
+				fprintf(stderr, "%s(): Couldn't figure what to raise.\n",
+				        __func__);
 			}
 		}
 
