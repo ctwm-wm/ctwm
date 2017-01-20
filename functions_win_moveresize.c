@@ -433,24 +433,41 @@ movewindow(EF_FULLPROTO)
 			continue;
 		}
 
+		/* Get info about where the pointer is */
 		XQueryPointer(dpy, rootw, &(eventp->xmotion.root), &JunkChild,
 		              &(eventp->xmotion.x_root), &(eventp->xmotion.y_root),
 		              &JunkX, &JunkY, &JunkMask);
 
+		/*
+		 * Tweak up for root.  XXX Is this even right?  There are too
+		 * many Root's, and this corrects for a specific one, but I'm not
+		 * sure it's the right one...
+		 */
 		FixRootEvent(eventp);
+
+		/* Tweak for window box, if this is in one */
 		if(tmp_win->winbox) {
 			XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
 			                      eventp->xmotion.x_root, eventp->xmotion.y_root,
 			                      &(eventp->xmotion.x_root), &(eventp->xmotion.y_root), &JunkChild);
 		}
+
+		/*
+		 * If we haven't moved MoveDelta yet, we're not yet sure we're
+		 * doing anything, so just loop back around.
+		 */
 		if(DragWindow == None &&
 		                abs(eventp->xmotion.x_root - origX) < Scr->MoveDelta &&
 		                abs(eventp->xmotion.y_root - origY) < Scr->MoveDelta) {
 			continue;
 		}
 
+		/*
+		 * Now we know we're moving whatever the window is.
+		 */
 		DragWindow = w;
 
+		/* Raise when the move starts if we should */
 		if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
 			TwmWindow *t;
 			if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
@@ -479,9 +496,14 @@ movewindow(EF_FULLPROTO)
 
 		WindowMoved = true;
 
+		/*
+		 * Handle moving the step
+		 */
 		if(ConstMove) {
+			/* Did we already decide it's constrained?  Do that. */
 			switch(ConstMoveDir) {
-				case MOVE_NONE:
+				case MOVE_NONE: {
+					/* Haven't figured direction yet, so do so */
 					if(eventp->xmotion.x_root < ConstMoveXL ||
 					                eventp->xmotion.x_root > ConstMoveXR) {
 						ConstMoveDir = MOVE_HORIZ;
@@ -495,7 +517,9 @@ movewindow(EF_FULLPROTO)
 					XQueryPointer(dpy, DragWindow, &JunkRoot, &JunkChild,
 					              &JunkX, &JunkY, &DragX, &DragY, &JunkMask);
 					break;
+				}
 
+				/* We know which dir it's contrained to, so figure amount */
 				case MOVE_VERT:
 					ConstMoveY = eventp->xmotion.y_root - DragY - DragBW;
 					break;
@@ -505,6 +529,7 @@ movewindow(EF_FULLPROTO)
 					break;
 			}
 
+			/* We've got a move to do, so do it */
 			if(ConstMoveDir != MOVE_NONE) {
 				int xl, yt, width, height;
 
@@ -553,6 +578,7 @@ movewindow(EF_FULLPROTO)
 			}
 		}
 		else if(DragWindow != None) {
+			/* There's a non-constrained move to process */
 			int xroot, yroot;
 			int xl, yt, width, height;
 
@@ -618,6 +644,8 @@ movewindow(EF_FULLPROTO)
 				            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
 			}
 		}
+
+		/* We've moved a step, so update the displayed position */
 		DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
 	}
 
