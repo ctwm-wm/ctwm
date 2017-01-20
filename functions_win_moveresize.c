@@ -316,10 +316,10 @@ movewindow(EF_FULLPROTO)
 	 * Internal event loop for doing the moving.
 	 */
 	while(1) {
-		long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
-		                    ButtonPress : ButtonRelease;
-		long movementMask = menuFromFrameOrWindowOrTitlebar ?
-		                    PointerMotionMask : ButtonMotionMask;
+		const long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
+		                          ButtonPress : ButtonRelease;
+		const long movementMask = menuFromFrameOrWindowOrTitlebar ?
+		                          PointerMotionMask : ButtonMotionMask;
 		bool fromtitlebar = belongs_to_twm_window(tmp_win,
 		                    eventp->xbutton.window);
 
