@@ -114,7 +114,6 @@ movewindow(EF_FULLPROTO)
 {
 	int origX, origY;
 	bool moving_icon = false;
-	TwmWindow *t;
 	const Window dragroot = Scr->XineramaRoot;
 	const Window rootw = eventp->xbutton.root;
 
@@ -445,6 +444,7 @@ movewindow(EF_FULLPROTO)
 		DragWindow = w;
 
 		if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
+			TwmWindow *t;
 			if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
 				fprintf(stderr, "ERROR: menus.c:2822\n");
 			}
