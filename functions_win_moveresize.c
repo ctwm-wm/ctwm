@@ -113,7 +113,7 @@ static void
 movewindow(EF_FULLPROTO)
 {
 	int origX, origY;
-	bool moving_icon = false;
+	bool moving_icon;
 	const Window dragroot = Scr->XineramaRoot;
 	const Window rootw = eventp->xbutton.root;
 
@@ -222,6 +222,7 @@ movewindow(EF_FULLPROTO)
 		                      &DragX, &DragY, &JunkChild);
 
 		w = tmp_win->frame;
+		moving_icon = false;
 	}
 
 	DragWindow = None;
