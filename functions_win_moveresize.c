@@ -321,7 +321,7 @@ movewindow(EF_FULLPROTO)
 		long movementMask = menuFromFrameOrWindowOrTitlebar ?
 		                    PointerMotionMask : ButtonMotionMask;
 		bool fromtitlebar = belongs_to_twm_window(tmp_win,
-		                                          eventp->xbutton.window);
+		                    eventp->xbutton.window);
 
 		/* block until there is an interesting event */
 		XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
