@@ -112,11 +112,11 @@ DFHANDLER(movepush)
 static void
 movewindow(EF_FULLPROTO)
 {
-	Window rootw;
 	int origX, origY;
 	bool moving_icon = false;
 	TwmWindow *t;
 	const Window dragroot = Scr->XineramaRoot;
+	const Window rootw = eventp->xbutton.root;
 
 	/* Better not be a menu open */
 	PopDownMenu();
@@ -152,7 +152,6 @@ movewindow(EF_FULLPROTO)
 		                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
 	}
 
-	rootw = eventp->xbutton.root;
 	MoveFunction = func;
 
 	/*
