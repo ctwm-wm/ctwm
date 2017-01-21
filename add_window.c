@@ -160,6 +160,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
 
+	/* Look up saved X Session info for the window if we have it */
 	{
 		short saved_x, saved_y;
 		unsigned short saved_width, saved_height;
