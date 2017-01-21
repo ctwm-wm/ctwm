@@ -275,10 +275,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->group = 0;
 	}
 
-	/*
-	 * The July 27, 1988 draft of the ICCCM ignores the size and position
-	 * fields in the WM_NORMAL_HINTS property.
-	 */
 
 	tmp_win->istransient = Transient(tmp_win->w, &tmp_win->transientfor);
 
