@@ -124,12 +124,19 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	fprintf(stderr, "AddWindow: w = 0x%x\n", w);
 #endif
 
+	/*
+	 * Possibly this window should be in a captive sub-ctwm?  If so, we
+	 * shouldn't mess with it at all.
+	 */
 	if(!CLarg.is_captive && RedirectToCaptive(w)) {
 		/* XXX x-ref comment by SetNoRedirect() */
 		return (NULL);
 	}
 
-	/* allocate space for the twm window */
+
+	/*
+	 * Allocate and initialize our tracking struct
+	 */
 	tmp_win = calloc(1, sizeof(TwmWindow));
 	if(tmp_win == NULL) {
 		fprintf(stderr, "%s: Unable to allocate memory to manage window ID %lx.\n",
@@ -137,6 +144,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		return NULL;
 	}
 
+	/*
+	 * Some of these initializations are strictly unnecessary, since they
+	 * evaluate out to 0, and calloc() gives us an already zero'd buffer.
+	 * I'm leaving them anyway because a couple unnecessary stores are
+	 * near enough to free considering everything we're doing, that the
+	 * value as documentation stupendously outweighs the cost.
+	 */
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
 	tmp_win->isiconmgr = (wtype == AWT_ICON_MANAGER);
@@ -152,6 +166,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->widthEverChangedByUser = false;
 	tmp_win->heightEverChangedByUser = false;
 
+
+	/*
+	 * Fetch a few bits of info about the window from the server, and
+	 * tell the server to tell us about property changes; we'll need to
+	 * know what happens.
+	 */
 	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
 	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
@@ -160,7 +180,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
 
-	/* Look up saved X Session info for the window if we have it */
+
+	/*
+	 * Look up saved X Session info for the window if we have it.
+	 */
 	{
 		short saved_x, saved_y;
 		unsigned short saved_width, saved_height;
@@ -192,6 +215,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			}
 		}
 	}
+
 
 	/*
 	 * do initial clip; should look at window gravity
