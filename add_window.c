@@ -149,6 +149,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->savevs = NULL;
 	tmp_win->cmaps.number_cwins = 0;
 	tmp_win->savegeometry.width = -1;
+	tmp_win->widthEverChangedByUser = false;
+	tmp_win->heightEverChangedByUser = false;
 
 	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
@@ -188,11 +190,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				tmp_win->attr.height = saved_height;
 			}
 		}
-	}
-
-	if(!restoredFromPrevSession) {
-		tmp_win->widthEverChangedByUser = false;
-		tmp_win->heightEverChangedByUser = false;
 	}
 
 	/*
