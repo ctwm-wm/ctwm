@@ -114,7 +114,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	unsigned short saved_width, saved_height;
 	bool restore_iconified = false;
 	bool restore_icon_info_present = false;
-	int restoredFromPrevSession;
+	bool restoredFromPrevSession;
 	bool width_ever_changed_by_user;
 	bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
@@ -182,13 +182,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->attr.height = saved_height;
 		}
 
-		restoredFromPrevSession = 1;
+		restoredFromPrevSession = true;
 	}
 	else {
 		tmp_win->widthEverChangedByUser = false;
 		tmp_win->heightEverChangedByUser = false;
 
-		restoredFromPrevSession = 0;
+		restoredFromPrevSession = false;
 	}
 
 	/*
