@@ -110,13 +110,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	int gravx, gravy;                   /* gravity signs for positioning */
 	int namelen;
 	int bw2;
-	short saved_x, saved_y, restore_icon_x, restore_icon_y;
-	unsigned short saved_width, saved_height;
+	short restore_icon_x, restore_icon_y;
 	bool restore_iconified = false;
 	bool restore_icon_info_present = false;
 	bool restoredFromPrevSession = false;
-	bool width_ever_changed_by_user;
-	bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
 	XRectangle ink_rect;
@@ -163,6 +160,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	FetchWmColormapWindows(tmp_win);
 
 	{
+		short saved_x, saved_y;
+		unsigned short saved_width, saved_height;
+		bool width_ever_changed_by_user;
+		bool height_ever_changed_by_user;
+
 		if(GetWindowConfig(tmp_win,
 		                   &saved_x, &saved_y, &saved_width, &saved_height,
 		                   &restore_iconified, &restore_icon_info_present,
