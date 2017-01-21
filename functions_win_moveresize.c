@@ -112,15 +112,24 @@ DFHANDLER(movepush)
 static void
 movewindow(EF_FULLPROTO)
 {
-	Window grabwin, dragroot;
-	Window rootw;
-	unsigned int brdw;
 	int origX, origY;
-	bool moving_icon = false;
-	bool fromtitlebar = false;
-	TwmWindow *t;
+	bool moving_icon;
+	bool fromtitlebar;
+	const Window dragroot = Scr->XineramaRoot;
+	const Window rootw = eventp->xbutton.root;
 
+	/* Better not be a menu open */
 	PopDownMenu();
+
+	/* Stash up just which f.move* variant we are */
+	MoveFunction = func;
+
+	/*
+	 * Figure whether we're moving opaquely.
+	 *
+	 * XXX This should probably get the infinity treatment like the
+	 * OpaqueResize bits.
+	 */
 	if(tmp_win->OpaqueMove) {
 		int sw, ss;
 		float sf;
@@ -139,20 +148,28 @@ movewindow(EF_FULLPROTO)
 		Scr->OpaqueMove = false;
 	}
 
-	dragroot = Scr->XineramaRoot;
-
+	/* If it's in a WindowBox, adjust coordinates as necessary */
 	if(tmp_win->winbox) {
 		XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
 		                      eventp->xbutton.x_root, eventp->xbutton.y_root,
 		                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
 	}
-	rootw = eventp->xbutton.root;
-	MoveFunction = func;
 
+	/*
+	 * XXX pulldown=true only when we're triggering from a ButtonRelease
+	 * in a menu, and this warp should only be going somewhere if we hit
+	 * the winbox case above and had to translate the coordinates?  But,
+	 * in that case, the coordinates would be changed to be relative to
+	 * the winbox window, and here we're positioning relative to Root?
+	 */
 	if(pulldown)
 		XWarpPointer(dpy, None, Scr->Root,
 		             0, 0, 0, 0, eventp->xbutton.x_root, eventp->xbutton.y_root);
 
+	/*
+	 * Stub out handlers for enter/leave notifications while we do stuff.
+	 * They get reset toward the end of the ButtonRelease handler.
+	 */
 	EventHandler[EnterNotify] = HandleUnknown;
 	EventHandler[LeaveNotify] = HandleUnknown;
 
@@ -160,21 +177,38 @@ movewindow(EF_FULLPROTO)
 		XGrabServer(dpy);
 	}
 
+	/*
+	 * Setup size for the window showing current location as we move it.
+	 * The same window is used for resize ops too, where it might be a
+	 * different size.
+	 */
 	Scr->SizeStringOffset = SIZE_HINDENT;
 	XResizeWindow(dpy, Scr->SizeWindow,
 	              Scr->SizeStringWidth + SIZE_HINDENT * 2,
 	              Scr->SizeFont.height + SIZE_VINDENT * 2);
 	XMapRaised(dpy, Scr->SizeWindow);
 
-	grabwin = Scr->XineramaRoot;
-	if(tmp_win->winbox) {
-		grabwin = tmp_win->winbox->window;
-	}
-	XGrabPointer(dpy, grabwin, True,
-	             ButtonPressMask | ButtonReleaseMask |
-	             ButtonMotionMask | PointerMotionMask, /* PointerMotionHintMask */
-	             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor, CurrentTime);
+	/*
+	 * Use XGrabPointer() to configure how we get events locations
+	 * reported relative to what root.
+	 */
+	{
+		const Window grabwin = (tmp_win->winbox ? tmp_win->winbox->window
+		                        : Scr->XineramaRoot);
 
+		XGrabPointer(dpy, grabwin, True,
+		             ButtonPressMask | ButtonReleaseMask |
+		             ButtonMotionMask | PointerMotionMask,
+		             GrabModeAsync, GrabModeAsync, grabwin, Scr->MoveCursor,
+		             CurrentTime);
+	}
+
+	/*
+	 * Set w to what we're actually moving.  If it's an icon, we always
+	 * move it opaquely anyway.  If it's a window (that's not iconofied),
+	 * we move the frame.
+	 */
+	moving_icon = false;
 	if(context == C_ICON && tmp_win->icon && tmp_win->icon->w) {
 		w = tmp_win->icon->w;
 		DragX = eventp->xbutton.x;
@@ -184,7 +218,6 @@ movewindow(EF_FULLPROTO)
 			Scr->OpaqueMove = true;
 		}
 	}
-
 	else if(! tmp_win->icon || w != tmp_win->icon->w) {
 		XTranslateCoordinates(dpy, w, tmp_win->frame,
 		                      eventp->xbutton.x,
@@ -205,14 +238,17 @@ movewindow(EF_FULLPROTO)
 	             &DragWidth, &DragHeight, &DragBW,
 	             &JunkDepth);
 
-	brdw = DragBW;
 	origX = eventp->xbutton.x_root;
 	origY = eventp->xbutton.y_root;
 	CurrentDragX = origDragX;
 	CurrentDragY = origDragY;
 
 	/*
-	 * only do the constrained move if timer is set; need to check it
+	 * Setup ConstrainedMove if this is a double-click.  That means
+	 * setting the flags, and moving the pointer off to the middle of the
+	 * window.
+	 *
+	 * Only do the constrained move if timer is set; need to check it
 	 * in case of stupid or wicked fast servers
 	 */
 	if(ConstrainedMoveTime &&
@@ -221,10 +257,10 @@ movewindow(EF_FULLPROTO)
 
 		ConstMove = true;
 		ConstMoveDir = MOVE_NONE;
-		ConstMoveX = eventp->xbutton.x_root - DragX - brdw;
-		ConstMoveY = eventp->xbutton.y_root - DragY - brdw;
-		width = DragWidth + 2 * brdw;
-		height = DragHeight + 2 * brdw;
+		ConstMoveX = eventp->xbutton.x_root - DragX - DragBW;
+		ConstMoveY = eventp->xbutton.y_root - DragY - DragBW;
+		width = DragWidth + 2 * DragBW;
+		height = DragHeight + 2 * DragBW;
 		ConstMoveXL = ConstMoveX + width / 3;
 		ConstMoveXR = ConstMoveX + 2 * (width / 3);
 		ConstMoveYT = ConstMoveY + height / 3;
@@ -238,6 +274,7 @@ movewindow(EF_FULLPROTO)
 	}
 	last_time = eventp->xbutton.time;
 
+	/* If not moving opaquely, setup the outline bits */
 	if(!Scr->OpaqueMove) {
 		InstallRootColormap();
 		if(!Scr->MoveDelta) {
@@ -248,9 +285,9 @@ movewindow(EF_FULLPROTO)
 			 * MoveOutline's below.
 			 */
 			MoveOutline(dragroot,
-			            origDragX - brdw + Scr->currentvs->x,
-			            origDragY - brdw + Scr->currentvs->y,
-			            DragWidth + 2 * brdw, DragHeight + 2 * brdw,
+			            origDragX - DragBW + Scr->currentvs->x,
+			            origDragY - DragBW + Scr->currentvs->y,
+			            DragWidth + 2 * DragBW, DragHeight + 2 * DragBW,
 			            tmp_win->frame_bw,
 			            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
 			/*
@@ -266,7 +303,10 @@ movewindow(EF_FULLPROTO)
 	}
 
 	/*
-	 * see if this is being done from the titlebar
+	 * Init whether triggered from something on the titlebar (e.g., a
+	 * TitleButton bound to f.move).  We need to keep this var in a scope
+	 * outside the event loop below because the resetting of it in there
+	 * is supposed to have effect on future loops.
 	 */
 	fromtitlebar = belongs_to_twm_window(tmp_win, eventp->xbutton.window);
 
@@ -278,12 +318,17 @@ movewindow(EF_FULLPROTO)
 		XFlush(dpy);
 	}
 
+	/* Fill in the position window with where we're starting */
 	DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
+
+	/*
+	 * Internal event loop for doing the moving.
+	 */
 	while(1) {
-		long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
-		                    ButtonPress : ButtonRelease;
-		long movementMask = menuFromFrameOrWindowOrTitlebar ?
-		                    PointerMotionMask : ButtonMotionMask;
+		const long releaseEvent = menuFromFrameOrWindowOrTitlebar ?
+		                          ButtonPress : ButtonRelease;
+		const long movementMask = menuFromFrameOrWindowOrTitlebar ?
+		                          PointerMotionMask : ButtonMotionMask;
 
 		/* block until there is an interesting event */
 		XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
@@ -297,10 +342,9 @@ movewindow(EF_FULLPROTO)
 			continue;
 		}
 
+		/* discard any extra motion events before a logical release */
 		if(Event.type == MotionNotify) {
-			/* discard any extra motion events before a logical release */
-			while(XCheckMaskEvent(dpy,
-			                      movementMask | releaseEvent, &Event))
+			while(XCheckMaskEvent(dpy, movementMask | releaseEvent, &Event))
 				if(Event.type == releaseEvent) {
 					break;
 				}
@@ -389,54 +433,96 @@ movewindow(EF_FULLPROTO)
 			continue;
 		}
 
+		/* Get info about where the pointer is */
 		XQueryPointer(dpy, rootw, &(eventp->xmotion.root), &JunkChild,
 		              &(eventp->xmotion.x_root), &(eventp->xmotion.y_root),
 		              &JunkX, &JunkY, &JunkMask);
 
+		/*
+		 * Tweak up for root.  XXX Is this even right?  There are too
+		 * many Root's, and this corrects for a specific one, but I'm not
+		 * sure it's the right one...
+		 */
 		FixRootEvent(eventp);
+
+		/* Tweak for window box, if this is in one */
 		if(tmp_win->winbox) {
 			XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
 			                      eventp->xmotion.x_root, eventp->xmotion.y_root,
 			                      &(eventp->xmotion.x_root), &(eventp->xmotion.y_root), &JunkChild);
 		}
+
+		/*
+		 * If we haven't moved MoveDelta yet, we're not yet sure we're
+		 * doing anything, so just loop back around.
+		 */
 		if(DragWindow == None &&
 		                abs(eventp->xmotion.x_root - origX) < Scr->MoveDelta &&
 		                abs(eventp->xmotion.y_root - origY) < Scr->MoveDelta) {
 			continue;
 		}
 
+		/*
+		 * Now we know we're moving whatever the window is.
+		 */
 		DragWindow = w;
 
+		/* Raise when the move starts if we should */
 		if(!Scr->NoRaiseMove && Scr->OpaqueMove && !WindowMoved) {
+			TwmWindow *t;
+
+			/*
+			 * XXX In several of the error cases listed in here, it's
+			 * seems almost that we should just abort the whole move
+			 * process immediately if any of them are hit, because things
+			 * get nonsensical.
+			 */
+
+			/* Find TwmWindow bits related to what we're dragging */
 			if(XFindContext(dpy, DragWindow, TwmContext, (XPointer *) &t) == XCNOENT) {
-				fprintf(stderr, "ERROR: menus.c:2822\n");
+				fprintf(stderr, "%s(): Can't find TwmWindow.\n", __func__);
+				/* XXX abort? */
+				t = NULL;
 			}
 
 			if(t != tmp_win) {
-				fprintf(stderr, "DragWindow isn't tmp_win!\n");
+				fprintf(stderr, "%s(): DragWindow isn't tmp_win!\n", __func__);
+				/* XXX abort? */
 			}
-			if(DragWindow == t->frame) {
+
+			if(t == NULL) {
+				/* Don't try doing this stuff... */
+			}
+			else if(DragWindow == t->frame) {
 				if(moving_icon) {
-					fprintf(stderr, "moving_icon is true incorrectly!\n");
+					fprintf(stderr, "%s(): moving_icon is true incorrectly!\n",
+					        __func__);
 				}
 				OtpRaise(t, WinWin);
 			}
 			else if(t->icon && DragWindow == t->icon->w) {
 				if(!moving_icon) {
-					fprintf(stderr, "moving_icon is false incorrectly!\n");
+					fprintf(stderr, "%s(): moving_icon is false incorrectly!\n",
+					        __func__);
 				}
 				OtpRaise(t, IconWin);
 			}
 			else {
-				fprintf(stderr, "ERROR: menus.c:2838\n");
+				fprintf(stderr, "%s(): Couldn't figure what to raise.\n",
+				        __func__);
 			}
 		}
 
 		WindowMoved = true;
 
+		/*
+		 * Handle moving the step
+		 */
 		if(ConstMove) {
+			/* Did we already decide it's constrained?  Do that. */
 			switch(ConstMoveDir) {
-				case MOVE_NONE:
+				case MOVE_NONE: {
+					/* Haven't figured direction yet, so do so */
 					if(eventp->xmotion.x_root < ConstMoveXL ||
 					                eventp->xmotion.x_root > ConstMoveXR) {
 						ConstMoveDir = MOVE_HORIZ;
@@ -450,23 +536,26 @@ movewindow(EF_FULLPROTO)
 					XQueryPointer(dpy, DragWindow, &JunkRoot, &JunkChild,
 					              &JunkX, &JunkY, &DragX, &DragY, &JunkMask);
 					break;
+				}
 
+				/* We know which dir it's contrained to, so figure amount */
 				case MOVE_VERT:
-					ConstMoveY = eventp->xmotion.y_root - DragY - brdw;
+					ConstMoveY = eventp->xmotion.y_root - DragY - DragBW;
 					break;
 
 				case MOVE_HORIZ:
-					ConstMoveX = eventp->xmotion.x_root - DragX - brdw;
+					ConstMoveX = eventp->xmotion.x_root - DragX - DragBW;
 					break;
 			}
 
+			/* We've got a move to do, so do it */
 			if(ConstMoveDir != MOVE_NONE) {
 				int xl, yt, width, height;
 
 				xl = ConstMoveX;
 				yt = ConstMoveY;
-				width = DragWidth + 2 * brdw;
-				height = DragHeight + 2 * brdw;
+				width = DragWidth + 2 * DragBW;
+				height = DragHeight + 2 * DragBW;
 
 				if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 					TryToGrid(tmp_win, &xl, &yt);
@@ -508,29 +597,28 @@ movewindow(EF_FULLPROTO)
 			}
 		}
 		else if(DragWindow != None) {
-			int xroot, yroot;
-			int xl, yt, width, height;
-
-
 			/*
-			 * this is split out for virtual screens.  In that case, it's
+			 * There's a non-constrained move to process
+			 *
+			 * This is split out for virtual screens.  In that case, it's
 			 * possible to drag windows from one workspace to another, and
 			 * as such, these need to be adjusted to the root, rather
 			 * than this virtual screen...
 			 */
-			xroot = eventp->xmotion.x_root;
-			yroot = eventp->xmotion.y_root;
+			const int xroot = eventp->xmotion.x_root;
+			const int yroot = eventp->xmotion.y_root;
+			const int width  = DragWidth + 2 * DragBW;
+			const int height = DragHeight + 2 * DragBW;
+			int xl, yt;
 
 			if(!menuFromFrameOrWindowOrTitlebar) {
-				xl = xroot - DragX - brdw;
-				yt = yroot - DragY - brdw;
+				xl = xroot - DragX - DragBW;
+				yt = yroot - DragY - DragBW;
 			}
 			else {
 				xl = xroot - (DragWidth / 2);
 				yt = yroot - (DragHeight / 2);
 			}
-			width = DragWidth + 2 * brdw;
-			height = DragHeight + 2 * brdw;
 
 			if(Scr->DontMoveOff && MoveFunction != F_FORCEMOVE) {
 				TryToGrid(tmp_win, &xl, &yt);
@@ -573,10 +661,15 @@ movewindow(EF_FULLPROTO)
 				            moving_icon ? 0 : tmp_win->title_height + tmp_win->frame_bw3D);
 			}
 		}
+
+		/* We've moved a step, so update the displayed position */
 		DisplayPosition(tmp_win, CurrentDragX, CurrentDragY);
 	}
+
+	/* Done, so hide away the position display window */
 	XUnmapWindow(dpy, Scr->SizeWindow);
 
+	/* Restore colormap if we replaced it */
 	if(!Scr->OpaqueMove && DragWindow == None) {
 		UninstallRootColormap();
 	}
