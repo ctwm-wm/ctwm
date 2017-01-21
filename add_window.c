@@ -162,27 +162,30 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
 
-	if(GetWindowConfig(tmp_win,
-	                   &saved_x, &saved_y, &saved_width, &saved_height,
-	                   &restore_iconified, &restore_icon_info_present,
-	                   &restore_icon_x, &restore_icon_y,
-	                   &width_ever_changed_by_user, &height_ever_changed_by_user,
-	                   &saved_occupation)) { /* <== [ Matthew McNeill Feb 1997 ] == */
-		/* Got saved info, use it */
-		restoredFromPrevSession = true;
+	{
+		if(GetWindowConfig(tmp_win,
+		                   &saved_x, &saved_y, &saved_width, &saved_height,
+		                   &restore_iconified, &restore_icon_info_present,
+		                   &restore_icon_x, &restore_icon_y,
+		                   &width_ever_changed_by_user,
+		                   &height_ever_changed_by_user,
+		                   &saved_occupation)) {
+			/* Got saved info, use it */
+			restoredFromPrevSession = true;
 
-		tmp_win->attr.x = saved_x;
-		tmp_win->attr.y = saved_y;
+			tmp_win->attr.x = saved_x;
+			tmp_win->attr.y = saved_y;
 
-		tmp_win->widthEverChangedByUser = width_ever_changed_by_user;
-		tmp_win->heightEverChangedByUser = height_ever_changed_by_user;
+			tmp_win->widthEverChangedByUser = width_ever_changed_by_user;
+			tmp_win->heightEverChangedByUser = height_ever_changed_by_user;
 
-		if(width_ever_changed_by_user) {
-			tmp_win->attr.width = saved_width;
-		}
+			if(width_ever_changed_by_user) {
+				tmp_win->attr.width = saved_width;
+			}
 
-		if(height_ever_changed_by_user) {
-			tmp_win->attr.height = saved_height;
+			if(height_ever_changed_by_user) {
+				tmp_win->attr.height = saved_height;
+			}
 		}
 	}
 
