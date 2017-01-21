@@ -69,7 +69,6 @@ static int PlaceX = -1;
 static int PlaceY = -1;
 static void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
                 TwmWindow *tmp_win);
-static bool Transient(Window w, Window *propw);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
 bool resizeWhenAdd;
@@ -276,7 +275,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
-	tmp_win->istransient = Transient(tmp_win->w, &tmp_win->transientfor);
+	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
+	                       &tmp_win->transientfor);
 
 	tmp_win->nameChanged = false;
 	if(tmp_win->name == NULL) {
@@ -1731,18 +1731,4 @@ DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
 	else {
 	}
 
-}
-
-
-/*
- * Figure out if a window is a transient, and stash what it's transient
- * for.
- *
- * Previously in events.c.  Strictly win_utils-ish, but only used in
- * AddWindow(), so might as well leave it here and static for now.
- */
-static bool
-Transient(Window w, Window *propw)
-{
-	return (bool)XGetTransientForHint(dpy, w, propw);
 }
