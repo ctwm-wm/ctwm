@@ -119,9 +119,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	bool height_ever_changed_by_user;
 	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
-	fd_set      mask;
-	int         fd;
-	struct timeval timeout;
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 	WindowBox *winbox;
@@ -885,8 +882,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				/*SetFocus (NULL, CurrentTime);*/
 				while(1) {
 					if(Scr->OpenWindowTimeout) {
-						fd = ConnectionNumber(dpy);
+						const int fd = ConnectionNumber(dpy);
 						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
+							fd_set mask;
+							struct timeval timeout;
+
 							FD_ZERO(&mask);
 							FD_SET(fd, &mask);
 							timeout.tv_sec  = Scr->OpenWindowTimeout;
