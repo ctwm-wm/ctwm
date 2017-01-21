@@ -101,7 +101,6 @@ TwmWindow *
 AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 {
 	TwmWindow *tmp_win;                 /* new twm window structure */
-	int stat;
 	XEvent event;
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
@@ -788,6 +787,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				while(1) {
 					unsigned int qpmask;
 					Window qproot;
+					int stat;
 
 					XUngrabServer(dpy);
 					XSync(dpy, 0);
