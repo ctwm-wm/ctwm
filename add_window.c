@@ -164,6 +164,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->savegeometry.width = -1;
 	tmp_win->widthEverChangedByUser = false;
 	tmp_win->heightEverChangedByUser = false;
+	tmp_win->nameChanged = false;
 
 
 	/*
@@ -178,6 +179,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
+	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
+	                       &tmp_win->transientfor);
 
 
 	/*
@@ -275,10 +278,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
-	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
-	                       &tmp_win->transientfor);
-
-	tmp_win->nameChanged = false;
 	if(tmp_win->name == NULL) {
 		tmp_win->name = NoName;
 	}
