@@ -227,6 +227,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->attr.height = Scr->MaxWindowHeight;
 	}
 
+
+	/*
+	 * Setup WM_HINTS bits
+	 */
 	tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 
 	if(tmp_win->wmhints) {
