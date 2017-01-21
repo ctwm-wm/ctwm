@@ -885,12 +885,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 						const int fd = ConnectionNumber(dpy);
 						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
 							fd_set mask;
-							struct timeval timeout;
+							struct timeval timeout = {
+								.tv_sec  = Scr->OpenWindowTimeout,
+								.tv_usec = 0,
+							};
 
 							FD_ZERO(&mask);
 							FD_SET(fd, &mask);
-							timeout.tv_sec  = Scr->OpenWindowTimeout;
-							timeout.tv_usec = 0;
 							found = select(fd + 1, &mask, NULL, NULL, &timeout);
 							if(found == 0) {
 								break;
