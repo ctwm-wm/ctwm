@@ -174,13 +174,42 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 */
 	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
-	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
-	tmp_win->class = NoClass;
-	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
 	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
 	                       &tmp_win->transientfor);
+
+	/* Setup window name bits */
+	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	if(tmp_win->name == NULL) {
+		tmp_win->name = NoName;
+	}
+	namelen = strlen(tmp_win->name);
+
+	/*
+	 * XXX I don't think full_name does anything useful at all.  I can't
+	 * find anywhere in the code that it's anything but a copy of name.
+	 * It seems like it might be used to see the original name before the
+	 * conditional code below mangles it, but it's the same pointer, so
+	 * it wouldn't even accomplish that.
+	 */
+	tmp_win->full_name = tmp_win->name;
+#ifdef CLAUDE
+	if(strstr(tmp_win->name, " - Mozilla")) {
+		char *moz = strstr(tmp_win->name, " - Mozilla");
+		*moz = '\0';
+	}
+#endif
+
+	/* Setup class */
+	tmp_win->class = NoClass;
+	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
+	if(tmp_win->class.res_name == NULL) {
+		tmp_win->class.res_name = NoName;
+	}
+	if(tmp_win->class.res_class == NULL) {
+		tmp_win->class.res_class = NoName;
+	}
 
 
 	/*
@@ -277,30 +306,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->group = 0;
 	}
 
-
-	if(tmp_win->name == NULL) {
-		tmp_win->name = NoName;
-	}
-	if(tmp_win->class.res_name == NULL) {
-		tmp_win->class.res_name = NoName;
-	}
-	if(tmp_win->class.res_class == NULL) {
-		tmp_win->class.res_class = NoName;
-	}
-
-	/*
-	 * full_name seems to exist only because in the conditional code below,
-	 * name is sometimes changed. In all other cases, name and full_name
-	 * seem to be identical. Is that worth it?
-	 */
-	tmp_win->full_name = tmp_win->name;
-#ifdef CLAUDE
-	if(strstr(tmp_win->name, " - Mozilla")) {
-		char *moz = strstr(tmp_win->name, " - Mozilla");
-		*moz = '\0';
-	}
-#endif
-	namelen = strlen(tmp_win->name);
 
 	if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name, &tmp_win->class)) {
 		tmp_win->istransient = false;
