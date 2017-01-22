@@ -224,6 +224,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->class.res_class = NoName;
 	}
 
+
 	/* Is it a transient?  Or should we ignore that it is? */
 	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
 	                       &tmp_win->transientfor);
@@ -273,7 +274,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * do initial clip; should look at window gravity
+	 * Clip window to maximum size (either built-in ceiling, or
+	 * config MaxWindowSize).
+	 *
+	 * Should look at window gravity?
 	 */
 	if(tmp_win->attr.width > Scr->MaxWindowWidth) {
 		tmp_win->attr.width = Scr->MaxWindowWidth;
