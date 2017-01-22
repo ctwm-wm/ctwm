@@ -171,6 +171,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Fetch a few bits of info about the window from the server, and
 	 * tell the server to tell us about property changes; we'll need to
 	 * know what happens.
+	 *
+	 * It's important that these remain relatively disconnected "early"
+	 * bits; generally, they shouldn't rely on anything but the X Window
+	 * in tmp_win->w to do their stuff.  e.g., anything that relies on
+	 * other values in our ctwm TwmWindow tmp_win (window name, various
+	 * flags, etc) has to come later.
 	 */
 	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
@@ -180,7 +186,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	EwmhGetProperties(tmp_win);
 #endif /* EWMH */
 
-	/* Setup window name bits */
+
+	/*
+	 * Setup window name and class bits.  A lot of following code starts
+	 * to care about this; in particular, anything looking in our
+	 * name_lists generally goes by the name/class, so we need to get
+	 * these set pretty early in the process.
+	 */
 	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
 	if(tmp_win->name == NULL) {
 		tmp_win->name = NoName;
