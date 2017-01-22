@@ -27,6 +27,7 @@ void AddToList(name_list **list_head, const char *name, void *ptr);
 void *LookInList(name_list *list_head, const char *name,
                  XClassHint *class);
 void *LookInNameList(name_list *list_head, const char *name);
+bool IsInList(name_list *list_head, TwmWindow *twin);
 void *LookPatternInList(name_list *list_head, const char *name,
                         XClassHint *class);
 void *LookPatternInNameList(name_list *list_head, const char *name);
