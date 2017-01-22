@@ -176,8 +176,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
-	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
-	                       &tmp_win->transientfor);
 
 	/* Setup window name bits */
 	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
@@ -209,6 +207,17 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 	if(tmp_win->class.res_class == NULL) {
 		tmp_win->class.res_class = NoName;
+	}
+
+	/* Is it a transient?  Or should we ignore that it is? */
+	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
+	                       &tmp_win->transientfor);
+	if(tmp_win->istransient) {
+		/* XXX Should this been looking up transientfor instead? */
+		if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name,
+		                &tmp_win->class)) {
+			tmp_win->istransient = false;
+		}
 	}
 
 
@@ -306,10 +315,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->group = 0;
 	}
 
-
-	if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->istransient = false;
-	}
 
 	tmp_win->highlight = Scr->Highlight &&
 	                     (!LookInList(Scr->NoHighlight, tmp_win->full_name,
