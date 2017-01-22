@@ -224,6 +224,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->class.res_class = NoName;
 	}
 
+	/* Convenience macro */
+#define CHKL(lst) IsInList(Scr->lst, tmp_win)
+
 
 	/* Is it a transient?  Or should we ignore that it is? */
 	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
@@ -335,28 +338,17 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
-	tmp_win->highlight = Scr->Highlight &&
-	                     (!LookInList(Scr->NoHighlight, tmp_win->full_name,
-	                                  &tmp_win->class));
+	/* Various flags that may be screen-wide or window specific */
+	tmp_win->highlight = Scr->Highlight && !CHKL(NoHighlight);
+	tmp_win->stackmode = Scr->StackMode && !CHKL(NoStackModeL);
+	tmp_win->titlehighlight = Scr->TitleHighlight && !CHKL(NoTitleHighlight);
 
-	tmp_win->stackmode = Scr->StackMode &&
-	                     (!LookInList(Scr->NoStackModeL, tmp_win->full_name,
-	                                  &tmp_win->class));
-
-	tmp_win->titlehighlight = Scr->TitleHighlight &&
-	                          (!LookInList(Scr->NoTitleHighlight, tmp_win->full_name,
-	                                       &tmp_win->class));
-
-	tmp_win->auto_raise = Scr->AutoRaiseDefault ||
-	                      LookInList(Scr->AutoRaise, tmp_win->full_name,
-	                                 &tmp_win->class);
+	tmp_win->auto_raise = Scr->AutoRaiseDefault || CHKL(AutoRaise);
 	if(tmp_win->auto_raise) {
 		Scr->NumAutoRaises++;
 	}
 
-	tmp_win->auto_lower = Scr->AutoLowerDefault ||
-	                      LookInList(Scr->AutoLower, tmp_win->full_name,
-	                                 &tmp_win->class);
+	tmp_win->auto_lower = Scr->AutoLowerDefault || CHKL(AutoLower);
 	if(tmp_win->auto_lower) {
 		Scr->NumAutoLowers++;
 	}
