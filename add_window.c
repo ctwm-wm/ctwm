@@ -176,6 +176,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
 	FetchWmProtocols(tmp_win);
 	FetchWmColormapWindows(tmp_win);
+#ifdef EWMH
+	EwmhGetProperties(tmp_win);
+#endif /* EWMH */
 
 	/* Setup window name bits */
 	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
@@ -364,10 +367,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	else {
 		tmp_win->DontSetInactive = false;
 	}
-
-#ifdef EWMH
-	EwmhGetProperties(tmp_win);
-#endif /* EWMH */
 
 	if(LookInList(Scr->AutoSqueeze, tmp_win->full_name, &tmp_win->class)) {
 		tmp_win->AutoSqueeze = true;
