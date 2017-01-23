@@ -452,23 +452,24 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * get the squeeze information; note that this does not have to be freed
-	 * since it is coming from the screen list
+	 * Setup squeezing info.  We don't bother unless the server has Shape
+	 * available, or the window is in our DontSqueezeTitle list.  Else,
+	 * we do/not based on the SqueezeTitle setting.
+	 *
+	 * Note that this does not have to be freed yet since it is coming
+	 * from the screen list or from default_squeeze.  Places that change
+	 * it [re]set squeeze_info_copied, and then the destroy handler looks
+	 * at that to determine whether to gree squeeze_info.
 	 */
-	if(HasShape) {
-		if(!LookInList(Scr->DontSqueezeTitleL, tmp_win->full_name,
-		                &tmp_win->class)) {
-			tmp_win->squeeze_info = (SqueezeInfo *)
-			                        LookInList(Scr->SqueezeTitleL, tmp_win->full_name,
-			                                   &tmp_win->class);
-			if(!tmp_win->squeeze_info) {
-				static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
-				if(Scr->SqueezeTitle) {
-					tmp_win->squeeze_info = &default_squeeze;
-				}
-			}
+	if(HasShape && !CHKL(DontSqueezeTitleL)) {
+		tmp_win->squeeze_info = LookInList(Scr->SqueezeTitleL, tmp_win->full_name,
+		                                   &tmp_win->class);
+		if(!tmp_win->squeeze_info && Scr->SqueezeTitle) {
+			static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
+			tmp_win->squeeze_info = &default_squeeze;
 		}
 	}
+
 
 	tmp_win->old_bw = tmp_win->attr.border_width;
 
