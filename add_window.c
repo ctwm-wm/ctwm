@@ -724,6 +724,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
+
+	/* Figure up what root window we should be working in */
 	if(tmp_win->parent_vs) {
 		vroot = tmp_win->parent_vs->window;
 	}
@@ -735,10 +737,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		vroot = winbox->window;
 	}
 
-	/*
-	 * do any prompting for position
-	 */
 
+	/*
+	 * Handle positioning of the window.  If we're very early in startup
+	 * (setting up ctwm's own windows, taking over windows already on the
+	 * screen), or restoring defined session stuff, or otherwise
+	 * ask_user=false'd above, we just take the already set position
+	 * info.  Otherwise, we handle it via RandomPlacement or user outline
+	 * setting.
+	 *
+	 * XXX Somebody should go through these blocks in more detail,
+	 * they're sure to need further cleaning and commenting.  IWBNI they
+	 * could be encapsulated well enough to move out into separate
+	 * functions, for extra readability...
+	 */
 	if(HandlingEvents && ask_user && !restoredFromPrevSession) {
 		if((Scr->RandomPlacement == RP_ALL) ||
 		                ((Scr->RandomPlacement == RP_UNMAPPED) &&
@@ -1225,6 +1237,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->attr.y -= gravy * tmp_win->title_height;
 		}
 	}
+
 
 #ifdef DEBUG
 	fprintf(stderr, "  position window  %d, %d  %dx%d\n",
