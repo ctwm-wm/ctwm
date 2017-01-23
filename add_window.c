@@ -707,21 +707,21 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Maybe we have WindowGeometries {} set for it?  If so, we'll take
 	 * that as our specifics too.
 	 */
-	if(LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class)) {
-		char *geom;
-		int mask_;
-		geom = LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class);
-		mask_ = XParseGeometry(geom, &tmp_win->attr.x, &tmp_win->attr.y,
-		                       (unsigned int *) &tmp_win->attr.width,
-		                       (unsigned int *) &tmp_win->attr.height);
+	{
+		char *geom = LookInListWin(Scr->WindowGeometries, tmp_win);
+		if(geom) {
+			int mask = XParseGeometry(geom, &tmp_win->attr.x, &tmp_win->attr.y,
+			                          (unsigned int *) &tmp_win->attr.width,
+			                          (unsigned int *) &tmp_win->attr.height);
 
-		if(mask_ & XNegative) {
-			tmp_win->attr.x += Scr->rootw - tmp_win->attr.width;
+			if(mask & XNegative) {
+				tmp_win->attr.x += Scr->rootw - tmp_win->attr.width;
+			}
+			if(mask & YNegative) {
+				tmp_win->attr.y += Scr->rooth - tmp_win->attr.height;
+			}
+			ask_user = false;
 		}
-		if(mask_ & YNegative) {
-			tmp_win->attr.y += Scr->rooth - tmp_win->attr.height;
-		}
-		ask_user = false;
 	}
 
 	vs = tmp_win->parent_vs;
