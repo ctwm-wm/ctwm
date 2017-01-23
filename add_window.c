@@ -724,9 +724,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
-	vs = tmp_win->parent_vs;
-	if(vs) {
-		vroot = vs->window;
+	if(tmp_win->parent_vs) {
+		vroot = tmp_win->parent_vs->window;
 	}
 	else {
 		vroot = Scr->Root;      /* never */
