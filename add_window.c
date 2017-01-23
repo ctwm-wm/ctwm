@@ -454,7 +454,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * Setup squeezing info.  We don't bother unless the server has Shape
 	 * available, or the window is in our DontSqueezeTitle list.  Else,
-	 * we do/not based on the SqueezeTitle setting.
+	 * we do/not based on the SqueezeTitle setting.  Note that
+	 * "SqueezeTitle" being specified at all squeezes everything; its
+	 * argument list lets you set specific squeeze params for specific
+	 * windows, but other windows still get the default.
 	 *
 	 * Note that this does not have to be freed yet since it is coming
 	 * from the screen list or from default_squeeze.  Places that change
