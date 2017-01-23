@@ -367,6 +367,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->titlehighlight = Scr->TitleHighlight && !CHKL(NoTitleHighlight);
 	tmp_win->AlwaysSqueezeToGravity = Scr->AlwaysSqueezeToGravity
 	                                  || CHKL(AlwaysSqueezeToGravityL);
+	tmp_win->DontSetInactive = CHKL(DontSetInactive);
+	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
 	tmp_win->StartSqueezed =
 #ifdef EWMH
 	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
@@ -398,9 +400,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	else if(CHKL(NoOpaqueResizeList)) {
 		tmp_win->OpaqueResize = false;
 	}
-
-	tmp_win->DontSetInactive = CHKL(DontSetInactive);
-	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
 
 
 	/*
