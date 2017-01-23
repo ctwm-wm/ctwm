@@ -1280,13 +1280,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->title_width = tmp_win->attr.width;
 
 
+	/*
+	 * Figure initial screen size of writing out the window name.  The
+	 * event handler updates this when it changes.
+	 */
 	XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen, &ink_rect,
 	               &logical_rect);
 	tmp_win->name_width = logical_rect.width;
 
+
+	/* Remove original border if these is one; we make our own now */
 	if(tmp_win->old_bw) {
 		XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 	}
+
 
 	XGrabServer(dpy);
 
