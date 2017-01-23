@@ -1247,13 +1247,24 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	        tmp_win->attr.height);
 #endif
 
-	if(!Scr->ClientBorderWidth) {       /* need to adjust for twm borders */
+
+	/*
+	 * Possibly need to tweak what it thinks of as its position to
+	 * account for borders.  XXX Verify conditionalization and math.
+	 */
+	if(!Scr->ClientBorderWidth) {
 		int delta = tmp_win->attr.border_width - tmp_win->frame_bw -
 		            tmp_win->frame_bw3D;
 		tmp_win->attr.x += gravx * delta;
 		tmp_win->attr.y += gravy * delta;
 	}
 
+
+	/*
+	 * Init the title width to the window's width.  This will be right as
+	 * long as you're not SqueezeTitle'ing; if you are, we rejigger it in
+	 * SetupFrame().
+	 */
 	tmp_win->title_width = tmp_win->attr.width;
 
 	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
