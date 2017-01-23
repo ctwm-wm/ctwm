@@ -376,7 +376,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		Scr->NumAutoLowers++;
 	}
 
-	tmp_win->UnmapByMovingFarAway = CHKL(UnmapByMovingFarAway);
 	tmp_win->DontSetInactive = CHKL(DontSetInactive);
 	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
 
@@ -401,6 +400,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+	/*
+	 * For transient windows or group members, we copy in UBMFA from its
+	 * parent/leader/etc if we can find it.  Otherwise, it's just whether
+	 * it's in the config list.
+	 */
+	tmp_win->UnmapByMovingFarAway = CHKL(UnmapByMovingFarAway);
 	if(tmp_win->istransient || tmp_win->group) {
 		TwmWindow *t = NULL;
 		if(tmp_win->istransient) {
@@ -413,6 +418,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->UnmapByMovingFarAway = t->UnmapByMovingFarAway;
 		}
 	}
+
 
 	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !tmp_win->isiconmgr &&
 #ifdef EWMH
