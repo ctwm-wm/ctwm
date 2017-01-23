@@ -1289,7 +1289,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->name_width = logical_rect.width;
 
 
-	/* Remove original border if these is one; we make our own now */
+	/* Remove original border if there is one; we make our own now */
 	if(tmp_win->old_bw) {
 		XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 	}
