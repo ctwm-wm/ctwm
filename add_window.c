@@ -463,6 +463,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * from the screen list or from default_squeeze.  Places that change
 	 * it [re]set squeeze_info_copied, and then the destroy handler looks
 	 * at that to determine whether to gree squeeze_info.
+	 *
+	 * XXX Technically, the HasShape test is redundant, since the config
+	 * file parsing would never set Scr->SqueezeTitle unless HasShape
+	 * were true anyway...
 	 */
 	if(HasShape && Scr->SqueezeTitle && !CHKL(DontSqueezeTitleL)) {
 		tmp_win->squeeze_info = LookInListWin(Scr->SqueezeTitleL, tmp_win);
