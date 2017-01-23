@@ -169,6 +169,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->iconified = false;
 	tmp_win->isicon = false;
 	tmp_win->icon_on = false;
+	tmp_win->ring.cursor_valid = false;
+	tmp_win->squeeze_info = NULL;
+	tmp_win->squeeze_info_copied = 0;
 
 
 
@@ -420,10 +423,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	else {
 		tmp_win->ring.next = tmp_win->ring.prev = NULL;
 	}
-	tmp_win->ring.cursor_valid = false;
 
-	tmp_win->squeeze_info = NULL;
-	tmp_win->squeeze_info_copied = 0;
 	/*
 	 * get the squeeze information; note that this does not have to be freed
 	 * since it is coming from the screen list
