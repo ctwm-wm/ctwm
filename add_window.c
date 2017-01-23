@@ -112,7 +112,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	bool restore_iconified = false;
 	bool restore_icon_info_present = false;
 	bool restoredFromPrevSession = false;
-	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
+	int saved_occupation = 0; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
 	XRectangle ink_rect;
 	XRectangle logical_rect;
@@ -666,19 +666,19 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * Note, this may update tmp_win->{parent_,}vs if needed to make the
-	 * window visible in another vscreen.
-	 * It may set tmp_win->vs to NULL if it has no occupation in the
-	 * current workspace.
+	 * Set the window occupation.  If we pulled previous Session info,
+	 * saved_occupation may have data from it that will be used;
+	 * otherwise it's already zeroed and has no effect.  X-ref XXX
+	 * comment on head of the function for notes on order of application
+	 * of various sources for occupation.
+	 *
+	 * Note that SetupOccupation() may update tmp_win->{parent_,}vs if
+	 * needed to make the window visible in another vscreen.  It may also
+	 * set tmp_win->vs to NULL if it has no occupation in the current
+	 * workspace.
 	 */
+	SetupOccupation(tmp_win, saved_occupation);
 
-	if(restoredFromPrevSession) {
-		SetupOccupation(tmp_win, saved_occupation);
-	}
-	else {
-		SetupOccupation(tmp_win, 0);
-	}
-	/*=================================================================*/
 
 	tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
 	tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D +
