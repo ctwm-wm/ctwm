@@ -398,6 +398,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->UnmapByMovingFarAway = t->UnmapByMovingFarAway;
 		}
 	}
+
 	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !tmp_win->isiconmgr &&
 #ifdef EWMH
 	                EwmhOnWindowRing(tmp_win) &&
