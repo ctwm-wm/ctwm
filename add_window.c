@@ -563,8 +563,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		 * titlebar".  We only care about adding frame_bw, since the 3d
 		 * case interprets all the inner coordinates differently (x-ref
 		 * above x-ref).
+		 *
+		 * Transients may not be decorated regardless of the above
+		 * figuring, so handle that here too.
 		 */
-		if(have_title) {
+		if(tmp_win->istransient && !Scr->DecorateTransients) {
+			tmp_win->title_height = 0;
+		}
+		else if(have_title) {
 			tmp_win->title_height = Scr->TitleHeight + tmp_win->frame_bw;
 		}
 		else {
@@ -588,11 +594,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	else if(LookInList(Scr->NoOpaqueResizeList, tmp_win->full_name,
 	                   &tmp_win->class)) {
 		tmp_win->OpaqueResize = false;
-	}
-
-	/* if it is a transient window, don't put a title on it */
-	if(tmp_win->istransient && !Scr->DecorateTransients) {
-		tmp_win->title_height = 0;
 	}
 
 	if(LookInList(Scr->StartIconified, tmp_win->full_name, &tmp_win->class)) {
