@@ -680,14 +680,33 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	SetupOccupation(tmp_win, saved_occupation);
 
 
+	/* Does it go in a window box? */
+	winbox = findWindowBox(tmp_win);
+
+
+	/* Start figuring frame sizes */
 	tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
 	tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D +
 	                        tmp_win->title_height;
 	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
-	winbox = findWindowBox(tmp_win);
+
+
+	/*
+	 * See if there's a WindowRegion we should honor.  If so, it'll set
+	 * the X/Y coords, and we'll want to accept them instead of doing our
+	 * own (or the user's) positioning.
+	 *
+	 * This needs the frame_{width,height}.
+	 */
 	if(PlaceWindowInRegion(tmp_win, &(tmp_win->attr.x), &(tmp_win->attr.y))) {
 		ask_user = false;
 	}
+
+
+	/*
+	 * Maybe we have WindowGeometries {} set for it?  If so, we'll take
+	 * that as our specifics too.
+	 */
 	if(LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class)) {
 		char *geom;
 		int mask_;
