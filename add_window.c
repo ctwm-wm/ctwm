@@ -379,14 +379,23 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
 
 
-	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
-	if(Scr->IconifyByUnmapping) {
-		tmp_win->iconify_by_unmapping = tmp_win->isiconmgr ? false :
-		                                !LookInList(Scr->DontIconify, tmp_win->full_name,
-		                                                &tmp_win->class);
+	/*
+	 * If a window is listed in IconifyByUnmapping {}, we always iconify
+	 * by unmapping.  Else, if it's DontIconifyByUnmapping or is an icon
+	 * manager, we don't i_b_u.  Else, we go with the Scr-wide default.
+	 */
+	{
+		bool ibum = CHKL(IconifyByUn);
+		if(!ibum) {
+			if(tmp_win->isiconmgr || CHKL(DontIconify)) {
+				ibum = false; // redundant
+			}
+			else {
+				ibum = Scr->IconifyByUnmapping;
+			}
+		}
+		tmp_win->iconify_by_unmapping = ibum;
 	}
-	tmp_win->iconify_by_unmapping = tmp_win->iconify_by_unmapping ||
-	                                LookInList(Scr->IconifyByUn, tmp_win->full_name, &tmp_win->class);
 
 
 	if(tmp_win->istransient || tmp_win->group) {
