@@ -342,6 +342,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->highlight = Scr->Highlight && !CHKL(NoHighlight);
 	tmp_win->stackmode = Scr->StackMode && !CHKL(NoStackModeL);
 	tmp_win->titlehighlight = Scr->TitleHighlight && !CHKL(NoTitleHighlight);
+	tmp_win->AlwaysSqueezeToGravity = Scr->AlwaysSqueezeToGravity
+	                                  || CHKL(AlwaysSqueezeToGravityL);
+	tmp_win->StartSqueezed =
+#ifdef EWMH
+	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
+#endif /* EWMH */
+	        CHKL(StartSqueezed);
 
 	tmp_win->auto_raise = Scr->AutoRaiseDefault || CHKL(AutoRaise);
 	if(tmp_win->auto_raise) {
@@ -357,6 +364,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->DontSetInactive = CHKL(DontSetInactive);
 	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
 
+
 	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
 	if(Scr->IconifyByUnmapping) {
 		tmp_win->iconify_by_unmapping = tmp_win->isiconmgr ? false :
@@ -366,26 +374,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->iconify_by_unmapping = tmp_win->iconify_by_unmapping ||
 	                                LookInList(Scr->IconifyByUn, tmp_win->full_name, &tmp_win->class);
 
-
-	if(
-#ifdef EWMH
-	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
-#endif /* EWMH */
-	        LookInList(Scr->StartSqueezed, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->StartSqueezed = true;
-	}
-	else {
-		tmp_win->StartSqueezed = false;
-	}
-
-	if(Scr->AlwaysSqueezeToGravity
-	                || LookInList(Scr->AlwaysSqueezeToGravityL, tmp_win->full_name,
-	                              &tmp_win->class)) {
-		tmp_win->AlwaysSqueezeToGravity = true;
-	}
-	else {
-		tmp_win->AlwaysSqueezeToGravity = false;
-	}
 
 	if(tmp_win->istransient || tmp_win->group) {
 		TwmWindow *t = NULL;
