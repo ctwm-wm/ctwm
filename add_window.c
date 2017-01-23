@@ -381,8 +381,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	/*
 	 * If a window is listed in IconifyByUnmapping {}, we always iconify
-	 * by unmapping.  Else, if it's DontIconifyByUnmapping or is an icon
-	 * manager, we don't i_b_u.  Else, we go with the Scr-wide default.
+	 * by unmapping.  Else, if it's DontIconifyByUnmapping {} or is an
+	 * icon manager, we don't i_b_u.  Else, we go with the Scr-wide
+	 * default.
 	 */
 	{
 		bool ibum = CHKL(IconifyByUn);
