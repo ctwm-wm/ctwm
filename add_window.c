@@ -464,9 +464,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * it [re]set squeeze_info_copied, and then the destroy handler looks
 	 * at that to determine whether to gree squeeze_info.
 	 */
-	if(HasShape && !CHKL(DontSqueezeTitleL)) {
+	if(HasShape && Scr->SqueezeTitle && !CHKL(DontSqueezeTitleL)) {
 		tmp_win->squeeze_info = LookInListWin(Scr->SqueezeTitleL, tmp_win);
-		if(!tmp_win->squeeze_info && Scr->SqueezeTitle) {
+		if(!tmp_win->squeeze_info) {
 			static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
 			tmp_win->squeeze_info = &default_squeeze;
 		}
