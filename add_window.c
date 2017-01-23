@@ -518,6 +518,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->flags |= StateHint;
 	}
 
+	/*
+	 * Has to stay after GetWindowAttributes() call and setting ->old_bw
+	 * and ->frame_bw3D.
+	 */
 	GetWindowSizeHints(tmp_win);
 
 	if(restoredFromPrevSession) {
