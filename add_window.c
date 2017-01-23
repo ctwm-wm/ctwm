@@ -239,6 +239,18 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->class.res_class = NoName;
 	}
 
+	/* Grab the icon name too */
+	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
+	if(!tmp_win->icon_name) {
+		tmp_win->icon_name = tmp_win->name;
+	}
+#ifdef CLAUDE
+	if(strstr(tmp_win->icon_name, " - Mozilla")) {
+		char *moz = strstr(tmp_win->icon_name, " - Mozilla");
+		*moz = '\0';
+	}
+#endif
+
 	/* Convenience macro */
 #define CHKL(lst) IsInList(Scr->lst, tmp_win)
 
@@ -1267,17 +1279,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 */
 	tmp_win->title_width = tmp_win->attr.width;
 
-	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
-	if(!tmp_win->icon_name) {
-		tmp_win->icon_name = tmp_win->name;
-	}
-
-#ifdef CLAUDE
-	if(strstr(tmp_win->icon_name, " - Mozilla")) {
-		char *moz = strstr(tmp_win->icon_name, " - Mozilla");
-		*moz = '\0';
-	}
-#endif
 
 	XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen, &ink_rect,
 	               &logical_rect);
