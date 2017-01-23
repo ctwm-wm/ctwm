@@ -613,35 +613,55 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+	/*
+	 * Figure gravity bits.  When restoring from a previous session, we
+	 * always use NorthWest gravity.
+	 */
 	if(restoredFromPrevSession) {
-		/*
-		 * When restoring window positions from the previous session,
-		 * we always use NorthWest gravity.
-		 */
-
 		gravx = gravy = -1;
 	}
 	else {
 		GetGravityOffsets(tmp_win, &gravx, &gravy);
 	}
 
+
+
 	/*
-	 * Don't bother user if:
+	 * Now we start getting more into the active bits of things.  Start
+	 * figuring out how we'll decide where to position it.  ask_user is
+	 * slightly misnamed, as it doesn't actually mean ask the user, but
+	 * rather whether the user/WM gets to choose or whether the
+	 * application does.  That is, we only case about whether or not
+	 * RandomPlacement if(ask_user==true) anyway.  ask_user=false means
+	 * we just go with what's in the window's XWindowAttributes bits.
 	 *
-	 *     o  the window is a transient, or
+	 * We don't even consider overriding the window if:
 	 *
-	 *     o  a USPosition was requested, or
+	 * - It's a transient, or
+	 * - the WM_NORMAL_HINTS property gave us a user-specified position
+	 *   (USPosition), or
+	 * - the hints gave us a a program-specific position (PPosition), and
+	 *   the UsePPosition config param specifies we should use it.
 	 *
-	 *     o  a PPosition was requested and UsePPosition is ON or
-	 *        NON_ZERO if the window is at other than (0,0)
+	 * x-ref ICCCM discussion of WM_NORMAL_HINTS for some details on the
+	 * flags
+	 * (https://www.x.org/releases/X11R7.7/doc/xorg-docs/icccm/icccm.html#Client_Properties)
 	 */
 	ask_user = true;
-	if(tmp_win->istransient ||
-	                (tmp_win->hints.flags & USPosition) ||
-	                ((tmp_win->hints.flags & PPosition) && Scr->UsePPosition &&
-	                 (Scr->UsePPosition == PPOS_ON ||
-	                  tmp_win->attr.x != 0 || tmp_win->attr.y != 0))) {
+	if(tmp_win->istransient) {
 		ask_user = false;
+	}
+	else if(tmp_win->hints.flags & USPosition) {
+		ask_user = false;
+	}
+	else if(tmp_win->hints.flags & PPosition) {
+		if(Scr->UsePPosition == PPOS_ON) {
+			ask_user = false;
+		}
+		else if(Scr->UsePPosition == PPOS_NON_ZERO
+		                && (tmp_win->attr.x != 0 || tmp_win->attr.y != 0)) {
+			ask_user = false;
+		}
 	}
 
 	/*===============[ Matthew McNeill 1997 ]==========================*
