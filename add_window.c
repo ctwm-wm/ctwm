@@ -165,6 +165,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->widthEverChangedByUser = false;
 	tmp_win->heightEverChangedByUser = false;
 	tmp_win->nameChanged = false;
+	tmp_win->squeezed = false;
+	tmp_win->iconified = false;
+	tmp_win->isicon = false;
+	tmp_win->icon_on = false;
+
 
 
 	/*
@@ -1140,11 +1145,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	if(tmp_win->old_bw) {
 		XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 	}
-
-	tmp_win->squeezed = false;
-	tmp_win->iconified = false;
-	tmp_win->isicon = false;
-	tmp_win->icon_on = false;
 
 	XGrabServer(dpy);
 
