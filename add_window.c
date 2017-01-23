@@ -484,51 +484,73 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+	/*
+	 * Motif WM hints are used in setting up border and titlebar bits, so
+	 * put them in a block here to scope the MWM var.
+	 */
 	{
 		MotifWmHints mwmHints;
 		bool have_title;
 
 		GetMWMHints(tmp_win->w, &mwmHints);
 
+		/* Figure border bits */
 		tmp_win->frame_bw3D = Scr->ThreeDBorderWidth;
 		if(
 #ifdef EWMH
 		        !EwmhHasBorder(tmp_win) ||
 #endif /* EWMH */
 		        (mwm_has_border(&mwmHints) == 0) ||
-		        LookInList(Scr->NoBorder, tmp_win->full_name, &tmp_win->class)) {
+		        CHKL(NoBorder)) {
+			/* Reliably informed there should be no border */
 			tmp_win->frame_bw = 0;
 			tmp_win->frame_bw3D = 0;
 		}
 		else if(tmp_win->frame_bw3D != 0) {
+			/* ThreeDBorderWidth set, so no non-3d border */
 			tmp_win->frame_bw = 0;
 		}
 		else if(Scr->ClientBorderWidth) {
+			/*
+			 * If ClientBorderWidth, use the border from the
+			 * XWindowAttributes.
+			 */
 			tmp_win->frame_bw = tmp_win->old_bw;
 		}
 		else {
+			/* Otherwise, whatever BorderWidth was set to */
 			tmp_win->frame_bw = Scr->BorderWidth;
 		}
-		bw2 = tmp_win->frame_bw * 2;
+		bw2 = tmp_win->frame_bw * 2;  // Used repeatedly later
 
 
+		/* Now, what about the titlebar?  Default to true... */
 		have_title = true;
 #ifdef EWMH
+		/* ... but EWMH can override to false. */
 		have_title = EwmhHasTitle(tmp_win);
 #endif /* EWMH */
 		if(mwm_sets_title(&mwmHints)) {
+			/* MWM can override either */
 			have_title = mwm_has_title(&mwmHints);
 		}
 		if(Scr->NoTitlebar) {
+			/* NoTitlebar overrides all that... */
 			have_title = false;
 		}
-		if(LookInList(Scr->MakeTitle, tmp_win->full_name, &tmp_win->class)) {
+		if(CHKL(MakeTitle)) {
+			/* MakeTitle overrides that... */
 			have_title = true;
 		}
-		if(LookInList(Scr->NoTitle, tmp_win->full_name, &tmp_win->class)) {
+		if(CHKL(NoTitle)) {
+			/* And then NoTitle wins over everything */
 			have_title = false;
 		}
 
+		/*
+		 * Now we know how big to make it.  title_height sets how big the
+		 * titlebar is, with magic treating 0 as "don't make a titlebar".
+		 */
 		if(have_title) {
 			tmp_win->title_height = Scr->TitleHeight + tmp_win->frame_bw;
 		}
