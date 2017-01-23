@@ -352,7 +352,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
-	/* Various flags that may be screen-wide or window specific */
+	/*
+	 * Various flags that may be screen-wide or window specific.
+	 */
 	tmp_win->highlight = Scr->Highlight && !CHKL(NoHighlight);
 	tmp_win->stackmode = Scr->StackMode && !CHKL(NoStackModeL);
 	tmp_win->titlehighlight = Scr->TitleHighlight && !CHKL(NoTitleHighlight);
