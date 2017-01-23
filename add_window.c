@@ -462,8 +462,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * at that to determine whether to gree squeeze_info.
 	 */
 	if(HasShape && !CHKL(DontSqueezeTitleL)) {
-		tmp_win->squeeze_info = LookInList(Scr->SqueezeTitleL, tmp_win->full_name,
-		                                   &tmp_win->class);
+		tmp_win->squeeze_info = LookInListWin(Scr->SqueezeTitleL, tmp_win);
 		if(!tmp_win->squeeze_info && Scr->SqueezeTitle) {
 			static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
 			tmp_win->squeeze_info = &default_squeeze;
