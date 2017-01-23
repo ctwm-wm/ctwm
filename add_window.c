@@ -420,12 +420,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
-	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !tmp_win->isiconmgr &&
+	/*
+	 * Link it up into the window ring if we should.  If it's in
+	 * WindowRing {}, we should.  Otherwise, we shouldn't unless
+	 * WindowRingAll is set.  If it is, we still exclude several special
+	 * ctwm windows, stuff in WindowRingExclude {}, and some special EWMH
+	 * settings.
+	 */
+	if(CHKL(WindowRingL) ||
+	                (Scr->WindowRingAll && !tmp_win->iswspmgr
+	                 && !tmp_win->isiconmgr
 #ifdef EWMH
-	                EwmhOnWindowRing(tmp_win) &&
+	                 && EwmhOnWindowRing(tmp_win)
 #endif /* EWMH */
-	                !LookInList(Scr->WindowRingExcludeL, tmp_win->full_name, &tmp_win->class)) ||
-	                LookInList(Scr->WindowRingL, tmp_win->full_name, &tmp_win->class)) {
+	                 && !CHKL(WindowRingExcludeL))) {
 		if(Scr->Ring) {
 			tmp_win->ring.next = Scr->Ring->ring.next;
 			if(Scr->Ring->ring.next->ring.prev) {
@@ -441,6 +449,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	else {
 		tmp_win->ring.next = tmp_win->ring.prev = NULL;
 	}
+
 
 	/*
 	 * get the squeeze information; note that this does not have to be freed
