@@ -558,8 +558,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 
 		/*
-		 * Now we know how big to make it.  title_height sets how big the
-		 * titlebar is, with magic treating 0 as "don't make a titlebar".
+		 * Now mark up how big to make it.  title_height sets how tall
+		 * the titlebar is, with magic treating 0 as "don't make a
+		 * titlebar".  We only care about adding frame_bw, since the 3d
+		 * case interprets all the inner coordinates differently (x-ref
+		 * above x-ref).
 		 */
 		if(have_title) {
 			tmp_win->title_height = Scr->TitleHeight + tmp_win->frame_bw;
