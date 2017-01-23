@@ -664,11 +664,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
-	/*===============[ Matthew McNeill 1997 ]==========================*
-	 * added the occupation parameter to this function call so that the
-	 * occupation can be set up in a specific state if desired
-	 * (restore session for example)
-	 */
 
 	/*
 	 * Note, this may update tmp_win->{parent_,}vs if needed to make the
