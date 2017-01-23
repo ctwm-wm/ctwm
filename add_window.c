@@ -383,6 +383,22 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		Scr->NumAutoLowers++;
 	}
 
+	tmp_win->OpaqueMove = Scr->DoOpaqueMove;
+	if(CHKL(OpaqueMoveList)) {
+		tmp_win->OpaqueMove = true;
+	}
+	else if(CHKL(NoOpaqueMoveList)) {
+		tmp_win->OpaqueMove = false;
+	}
+
+	tmp_win->OpaqueResize = Scr->DoOpaqueResize;
+	if(CHKL(OpaqueResizeList)) {
+		tmp_win->OpaqueResize = true;
+	}
+	else if(CHKL(NoOpaqueResizeList)) {
+		tmp_win->OpaqueResize = false;
+	}
+
 	tmp_win->DontSetInactive = CHKL(DontSetInactive);
 	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
 
@@ -578,23 +594,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
-	tmp_win->OpaqueMove = Scr->DoOpaqueMove;
-	if(LookInList(Scr->OpaqueMoveList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueMove = true;
-	}
-	else if(LookInList(Scr->NoOpaqueMoveList, tmp_win->full_name,
-	                   &tmp_win->class)) {
-		tmp_win->OpaqueMove = false;
-	}
-
-	tmp_win->OpaqueResize = Scr->DoOpaqueResize;
-	if(LookInList(Scr->OpaqueResizeList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueResize = true;
-	}
-	else if(LookInList(Scr->NoOpaqueResizeList, tmp_win->full_name,
-	                   &tmp_win->class)) {
-		tmp_win->OpaqueResize = false;
-	}
 
 	if(LookInList(Scr->StartIconified, tmp_win->full_name, &tmp_win->class)) {
 		if(!tmp_win->wmhints) {
