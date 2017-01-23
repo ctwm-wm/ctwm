@@ -196,6 +196,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
+	 * Some other simple early initialization that has to follow those
+	 * bits.
+	 */
+	tmp_win->old_bw = tmp_win->attr.border_width;
+
+
+	/*
 	 * Setup window name and class bits.  A lot of following code starts
 	 * to care about this; in particular, anything looking in our
 	 * name_lists generally goes by the name/class, so we need to get
@@ -476,8 +483,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
-
-	tmp_win->old_bw = tmp_win->attr.border_width;
 
 	{
 		MotifWmHints mwmHints;
