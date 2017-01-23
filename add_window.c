@@ -353,6 +353,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		Scr->NumAutoLowers++;
 	}
 
+	tmp_win->UnmapByMovingFarAway = CHKL(UnmapByMovingFarAway);
+	tmp_win->DontSetInactive = CHKL(DontSetInactive);
+	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
+
 	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
 	if(Scr->IconifyByUnmapping) {
 		tmp_win->iconify_by_unmapping = tmp_win->isiconmgr ? false :
@@ -362,26 +366,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->iconify_by_unmapping = tmp_win->iconify_by_unmapping ||
 	                                LookInList(Scr->IconifyByUn, tmp_win->full_name, &tmp_win->class);
 
-	if(LookInList(Scr->UnmapByMovingFarAway, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->UnmapByMovingFarAway = true;
-	}
-	else {
-		tmp_win->UnmapByMovingFarAway = false;
-	}
-
-	if(LookInList(Scr->DontSetInactive, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->DontSetInactive = true;
-	}
-	else {
-		tmp_win->DontSetInactive = false;
-	}
-
-	if(LookInList(Scr->AutoSqueeze, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->AutoSqueeze = true;
-	}
-	else {
-		tmp_win->AutoSqueeze = false;
-	}
 
 	if(
 #ifdef EWMH
