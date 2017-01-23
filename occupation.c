@@ -71,6 +71,10 @@ static XrmOptionDescRec table [] = {
 /*
  * Setup the occupation of a TwmWindow.  Called as part of the
  * AddWindow() process.
+ *
+ * XXX The logic flow in this is kinda weird, and it's not at all clear
+ * to what extent it's really doing the right on on what should override
+ * what, or which things should expand/contract on others...
  */
 void
 SetupOccupation(TwmWindow *twm_win, int occupation_hint)
