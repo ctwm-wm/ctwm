@@ -594,7 +594,16 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
-	if(LookInList(Scr->StartIconified, tmp_win->full_name, &tmp_win->class)) {
+	/*
+	 * Need the GetWindowAttributes() call and setting ->old_bw and
+	 * ->frame_bw3D for some of the math in looking up the
+	 *  WM_NORMAL_HINTS bits, so now we can do that.
+	 */
+	GetWindowSizeHints(tmp_win);
+
+
+	/* Maybe we're ordering it to start off iconified? */
+	if(CHKL(StartIconified)) {
 		if(!tmp_win->wmhints) {
 			tmp_win->wmhints = malloc(sizeof(XWMHints));
 			tmp_win->wmhints->flags = 0;
@@ -603,11 +612,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->flags |= StateHint;
 	}
 
-	/*
-	 * Has to stay after GetWindowAttributes() call and setting ->old_bw
-	 * and ->frame_bw3D.
-	 */
-	GetWindowSizeHints(tmp_win);
 
 	if(restoredFromPrevSession) {
 		/*
