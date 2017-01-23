@@ -237,9 +237,15 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
 	                       &tmp_win->transientfor);
 	if(tmp_win->istransient) {
-		/* XXX Should this been looking up transientfor instead? */
-		if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name,
-		                &tmp_win->class)) {
+		/*
+		 * XXX Should this been looking up transientfor instead of
+		 * tmp_win?  It seems like IgnoreTransient {} would list the
+		 * windows that have transients we should ignore, while this
+		 * condition makes it list the transient window names we should
+		 * ignore.  Probably not trivial to fix if that's right, since it
+		 * might b0rk existing configs...
+		 */
+		if(CHKL(IgnoreTransientL)) {
 			tmp_win->istransient = false;
 		}
 	}
