@@ -1321,6 +1321,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			Scr->RingLeader = Scr->Ring;
 		}
 
+		/* XXX Leaky as all hell */
 		free(tmp_win);
 		XUngrabServer(dpy);
 		return(NULL);
