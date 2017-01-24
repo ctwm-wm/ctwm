@@ -1295,6 +1295,44 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+	/*
+	 * Setup various color bits
+	 */
+#define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->full_name, \
+		&tmp_win->class, &tmp_win->save)
+
+	/* No distinction fore/back for borders in the lists */
+	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
+	tmp_win->borderC.back     = Scr->BorderColorC.back;
+	SETC(BorderColorL, borderC.fore);
+	SETC(BorderColorL, borderC.back);
+
+	tmp_win->border_tile.fore = Scr->BorderTileC.fore;
+	tmp_win->border_tile.back = Scr->BorderTileC.back;
+	SETC(BorderTileForegroundL, border_tile.fore);
+	SETC(BorderTileBackgroundL, border_tile.back);
+
+	tmp_win->title.fore       = Scr->TitleC.fore;
+	tmp_win->title.back       = Scr->TitleC.back;
+	SETC(TitleForegroundL, title.fore);
+	SETC(TitleBackgroundL, title.fore);
+
+#undef SETC
+
+	/* Shading on 3d bits */
+	if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
+		GetShadeColors(&tmp_win->title);
+	}
+	if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+		GetShadeColors(&tmp_win->borderC);
+		GetShadeColors(&tmp_win->border_tile);
+	}
+
+
+	/*
+	 * Following bits are more active, and we want to make sure nothing
+	 * else gets to do anything with the server while we're doing it.
+	 */
 	XGrabServer(dpy);
 
 	/*
@@ -1334,39 +1372,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 	tmp_win->prev = NULL;
 	Scr->FirstWindow = tmp_win;
-
-	/*
-	 * Setup various color bits
-	 */
-#define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->full_name, \
-		&tmp_win->class, &tmp_win->save)
-
-	/* No distinction fore/back for borders in the lists */
-	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
-	tmp_win->borderC.back     = Scr->BorderColorC.back;
-	SETC(BorderColorL, borderC.fore);
-	SETC(BorderColorL, borderC.back);
-
-	tmp_win->border_tile.fore = Scr->BorderTileC.fore;
-	tmp_win->border_tile.back = Scr->BorderTileC.back;
-	SETC(BorderTileForegroundL, border_tile.fore);
-	SETC(BorderTileBackgroundL, border_tile.back);
-
-	tmp_win->title.fore       = Scr->TitleC.fore;
-	tmp_win->title.back       = Scr->TitleC.back;
-	SETC(TitleForegroundL, title.fore);
-	SETC(TitleBackgroundL, title.fore);
-
-#undef SETC
-
-	/* Shading on 3d bits */
-	if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
-		GetShadeColors(&tmp_win->title);
-	}
-	if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-		GetShadeColors(&tmp_win->borderC);
-		GetShadeColors(&tmp_win->border_tile);
-	}
 
 
 	/* create windows */
