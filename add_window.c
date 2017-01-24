@@ -1335,28 +1335,31 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->prev = NULL;
 	Scr->FirstWindow = tmp_win;
 
-	/* get all the colors for the window */
+	/*
+	 * Setup various color bits
+	 */
+#define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->full_name, \
+		&tmp_win->class, &tmp_win->save)
 
+	/* No distinction fore/back for borders in the lists */
 	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
 	tmp_win->borderC.back     = Scr->BorderColorC.back;
+	SETC(BorderColorL, borderC.fore);
+	SETC(BorderColorL, borderC.back);
+
 	tmp_win->border_tile.fore = Scr->BorderTileC.fore;
 	tmp_win->border_tile.back = Scr->BorderTileC.back;
+	SETC(BorderTileForegroundL, border_tile.fore);
+	SETC(BorderTileBackgroundL, border_tile.back);
+
 	tmp_win->title.fore       = Scr->TitleC.fore;
 	tmp_win->title.back       = Scr->TitleC.back;
+	SETC(TitleForegroundL, title.fore);
+	SETC(TitleBackgroundL, title.fore);
 
-	GetColorFromList(Scr->BorderColorL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->borderC.fore);
-	GetColorFromList(Scr->BorderColorL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->borderC.back);
-	GetColorFromList(Scr->BorderTileForegroundL, tmp_win->full_name,
-	                 &tmp_win->class, &tmp_win->border_tile.fore);
-	GetColorFromList(Scr->BorderTileBackgroundL, tmp_win->full_name,
-	                 &tmp_win->class, &tmp_win->border_tile.back);
-	GetColorFromList(Scr->TitleForegroundL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->title.fore);
-	GetColorFromList(Scr->TitleBackgroundL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->title.back);
+#undef SETC
 
+	/* Shading on 3d bits */
 	if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
 		GetShadeColors(&tmp_win->title);
 	}
@@ -1364,6 +1367,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		GetShadeColors(&tmp_win->borderC);
 		GetShadeColors(&tmp_win->border_tile);
 	}
+
+
 	/* create windows */
 
 	tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->frame_bw
@@ -1378,6 +1383,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	if(random_placed)
 		ConstrainByBorders(tmp_win, &tmp_win->frame_x, tmp_win->frame_width,
 		                   &tmp_win->frame_y, tmp_win->frame_height);
+
 
 	valuemask = CWBackPixmap | CWBorderPixel | CWCursor | CWEventMask | CWBackPixel;
 	attributes.background_pixmap = None;
