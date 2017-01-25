@@ -1519,7 +1519,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");
 	}
 	else {
-		tmp_win->title_w = 0;
+		tmp_win->title_w = None;
 		tmp_win->squeeze_info = NULL;
 	}
 
