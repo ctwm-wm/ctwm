@@ -1493,23 +1493,29 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	if(tmp_win->title_height) {
 		unsigned long valuemask;
 		XSetWindowAttributes attributes;
+		int x, y;
 
-		valuemask = (CWEventMask | CWDontPropagate | CWBorderPixel | CWBackPixel);
-		attributes.event_mask = (KeyPressMask | ButtonPressMask |
-		                         ButtonReleaseMask | ExposureMask);
+		/*
+		 * We need to know about keys/buttons and exposure of the
+		 * titlebar, for bindings and repaining.  And leave to X server
+		 * bits about border/background.
+		 */
+		valuemask = (CWEventMask | CWDontPropagate
+		             | CWBorderPixel | CWBackPixel);
+		attributes.event_mask = (KeyPressMask | ButtonPressMask
+		                         | ButtonReleaseMask | ExposureMask);
 		attributes.do_not_propagate_mask = PointerMotionMask;
 		attributes.border_pixel = tmp_win->borderC.back;
 		attributes.background_pixel = tmp_win->title.back;
-		tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
-		                                 tmp_win->frame_bw3D - tmp_win->frame_bw,
-		                                 tmp_win->frame_bw3D - tmp_win->frame_bw,
+
+
+		/* Create */
+		x = y = tmp_win->frame_bw3D - tmp_win->frame_bw;
+		tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame, x, y,
 		                                 tmp_win->attr.width,
-		                                 Scr->TitleHeight,
-		                                 tmp_win->frame_bw,
-		                                 Scr->d_depth,
-		                                 CopyFromParent,
-		                                 Scr->d_visual, valuemask,
-		                                 &attributes);
+		                                 Scr->TitleHeight, tmp_win->frame_bw,
+		                                 Scr->d_depth, CopyFromParent,
+		                                 Scr->d_visual, valuemask, &attributes);
 		XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");
 	}
 	else {
