@@ -1715,7 +1715,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	SETCTXS(tmp_win->w);
 	SETCTXS(tmp_win->frame);
 
-	/* Cram that all info any titlebar [sub]windows too */
+	/* Cram that all into any titlebar [sub]windows too */
 	if(tmp_win->title_height) {
 		int i;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
