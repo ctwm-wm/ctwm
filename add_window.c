@@ -85,11 +85,8 @@ bool resizeWhenAdd;
  *
  *  Inputs:
  *      w       - the window id of the window to add
- *      iconm   - flag to tell if this is an icon manager window
- *              0 --> normal window.
- *              1 --> icon manager.
- *              2 --> window box;
- *              else --> iconmgr;
+ *      wtype   - flag to tell if this is a normal window or some ctwm
+ *                internal one.
  *
  *      iconp   - pointer to icon manager struct
  *
