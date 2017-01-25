@@ -1297,7 +1297,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Setup various color bits
 	 */
 #define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->full_name, \
-		&tmp_win->class, &tmp_win->save)
+                &tmp_win->class, &tmp_win->save)
 
 	/* No distinction fore/back for borders in the lists */
 	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
@@ -1638,9 +1638,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * the real window and our frame.  This is how we find out what
 	 * TwmWindow things like events are happening in.
 	 */
-	XSaveContext(dpy, tmp_win->w, TwmContext,    (XPointer) tmp_win);
+	XSaveContext(dpy, tmp_win->w, TwmContext, (XPointer) tmp_win);
 	XSaveContext(dpy, tmp_win->w, ScreenContext, (XPointer) Scr);
-	XSaveContext(dpy, tmp_win->frame, TwmContext,    (XPointer) tmp_win);
+	XSaveContext(dpy, tmp_win->frame, TwmContext, (XPointer) tmp_win);
 	XSaveContext(dpy, tmp_win->frame, ScreenContext, (XPointer) Scr);
 
 	/* Cram that all info any titlebar [sub]windows too */
