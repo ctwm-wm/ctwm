@@ -1785,7 +1785,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * And that's it; we created all the bits!
 	 */
-	return (tmp_win);
+	return tmp_win;
 }
 
 
