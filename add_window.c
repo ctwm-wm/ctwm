@@ -1396,58 +1396,64 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * First, the frame
 	 */
-	tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->frame_bw
-	                   - tmp_win->frame_bw3D;
-	tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height +
-	                   tmp_win->old_bw - tmp_win->frame_bw - tmp_win->frame_bw3D;
-	tmp_win->frame_width = tmp_win->attr.width + 2 * tmp_win->frame_bw3D;
-	tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height +
-	                        2 * tmp_win->frame_bw3D;
+	{
+		tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw
+		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
+		tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height
+		                   + tmp_win->old_bw
+		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
+		tmp_win->frame_width = tmp_win->attr.width + 2 * tmp_win->frame_bw3D;
+		tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height
+		                        + 2 * tmp_win->frame_bw3D;
 
-	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
-	if(random_placed)
-		ConstrainByBorders(tmp_win, &tmp_win->frame_x, tmp_win->frame_width,
-		                   &tmp_win->frame_y, tmp_win->frame_height);
+		ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
+		if(random_placed) {
+			ConstrainByBorders(tmp_win, &tmp_win->frame_x, tmp_win->frame_width,
+			                   &tmp_win->frame_y, tmp_win->frame_height);
+		}
 
 
-	valuemask = CWBackPixmap | CWBorderPixel | CWCursor | CWEventMask | CWBackPixel;
-	attributes.background_pixmap = None;
-	attributes.border_pixel = tmp_win->border_tile.back;
-	attributes.background_pixel = tmp_win->border_tile.back;
-	attributes.cursor = Scr->FrameCursor;
-	attributes.event_mask = (SubstructureRedirectMask |
-	                         ButtonPressMask | ButtonReleaseMask |
-	                         EnterWindowMask | LeaveWindowMask | ExposureMask);
-	if(Scr->BorderCursors) {
-		attributes.event_mask |= PointerMotionMask;
+		valuemask = CWBackPixmap | CWBorderPixel | CWBackPixel
+		            | CWCursor | CWEventMask;
+		attributes.background_pixmap = None;
+		attributes.border_pixel = tmp_win->border_tile.back;
+		attributes.background_pixel = tmp_win->border_tile.back;
+		attributes.cursor = Scr->FrameCursor;
+		attributes.event_mask = (SubstructureRedirectMask
+		                         | ButtonPressMask | ButtonReleaseMask
+		                         | EnterWindowMask | LeaveWindowMask
+		                         | ExposureMask);
+		if(Scr->BorderCursors) {
+			attributes.event_mask |= PointerMotionMask;
+		}
+		if(tmp_win->attr.save_under) {
+			attributes.save_under = True;
+			valuemask |= CWSaveUnder;
+		}
+		if(tmp_win->hints.flags & PWinGravity) {
+			attributes.win_gravity = tmp_win->hints.win_gravity;
+			valuemask |= CWWinGravity;
+		}
+
+		if((tmp_win->frame_x > Scr->rootw) ||
+		                (tmp_win->frame_y > Scr->rooth) ||
+		                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
+		                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
+			tmp_win->frame_x = 0;
+			tmp_win->frame_y = 0;
+		}
+
+		DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
+
+		tmp_win->frame = XCreateWindow(dpy, vroot,
+		                               tmp_win->frame_x, tmp_win->frame_y,
+		                               tmp_win->frame_width,
+		                               tmp_win->frame_height,
+		                               tmp_win->frame_bw,
+		                               Scr->d_depth, CopyFromParent,
+		                               Scr->d_visual, valuemask, &attributes);
+		XStoreName(dpy, tmp_win->frame, "CTWM frame");
 	}
-	if(tmp_win->attr.save_under) {
-		attributes.save_under = True;
-		valuemask |= CWSaveUnder;
-	}
-	if(tmp_win->hints.flags & PWinGravity) {
-		attributes.win_gravity = tmp_win->hints.win_gravity;
-		valuemask |= CWWinGravity;
-	}
-
-	if((tmp_win->frame_x > Scr->rootw) ||
-	                (tmp_win->frame_y > Scr->rooth) ||
-	                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
-	                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
-		tmp_win->frame_x = 0;
-		tmp_win->frame_y = 0;
-	}
-
-	DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
-
-	tmp_win->frame = XCreateWindow(dpy, vroot, tmp_win->frame_x, tmp_win->frame_y,
-	                               tmp_win->frame_width,
-	                               tmp_win->frame_height,
-	                               tmp_win->frame_bw,
-	                               Scr->d_depth,
-	                               CopyFromParent,
-	                               Scr->d_visual, valuemask, &attributes);
-	XStoreName(dpy, tmp_win->frame, "CTWM frame");
 
 
 	/*
