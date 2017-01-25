@@ -1416,9 +1416,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height
 		                   + tmp_win->old_bw
 		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
-		tmp_win->frame_width = tmp_win->attr.width + 2 * tmp_win->frame_bw3D;
-		tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height
-		                        + 2 * tmp_win->frame_bw3D;
+		tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
+		tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D
+		                        + tmp_win->title_height;
 
 		/* Adjust based on hints */
 		ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
