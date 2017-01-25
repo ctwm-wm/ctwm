@@ -1732,6 +1732,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 }
 
 
+
+
 /*
  * XXX GrabButtons() and GrabKeys() are in a slightly odd state.  They're
  * almost strictly a piece of the window-adding process, which is why
