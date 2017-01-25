@@ -628,6 +628,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+	/* So far that's the end of where we're using this */
+#undef CHKL
+
 
 	/*
 	 * Now we start getting more into the active bits of things.  Start
