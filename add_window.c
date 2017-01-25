@@ -98,8 +98,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 {
 	TwmWindow *tmp_win;                 /* new twm window structure */
 	XEvent event;
-	unsigned long valuemask;            /* mask for create windows */
-	XSetWindowAttributes attributes;    /* attributes for create windows */
 	int width, height;                  /* tmp variable */
 	bool ask_user;               /* don't know where to put the window */
 	int gravx, gravy;                   /* gravity signs for positioning */
@@ -1397,6 +1395,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * First, the frame
 	 */
 	{
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+
 		tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw
 		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
 		tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height
@@ -1460,6 +1461,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Next, the titlebar, if we have one
 	 */
 	if(tmp_win->title_height) {
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+
 		valuemask = (CWEventMask | CWDontPropagate | CWBorderPixel | CWBackPixel);
 		attributes.event_mask = (KeyPressMask | ButtonPressMask |
 		                         ButtonReleaseMask | ExposureMask);
@@ -1540,6 +1544,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Setup various events we want to hear about related to this window.
 	 */
 	{
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+
 		valuemask = (CWEventMask | CWDontPropagate);
 		attributes.event_mask = (StructureNotifyMask | PropertyChangeMask
 		                         | ColormapChangeMask | VisibilityChangeMask
