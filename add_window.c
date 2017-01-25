@@ -97,7 +97,6 @@ TwmWindow *
 AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 {
 	TwmWindow *tmp_win;                 /* new twm window structure */
-	XEvent event;
 	bool ask_user;               /* don't know where to put the window */
 	int gravx, gravy;                   /* gravity signs for positioning */
 	int namelen;
@@ -933,6 +932,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				bool firsttime = true;
 				int found = 0;
 				int width, height;
+				XEvent event;
 
 				/* better wait until all the mouse buttons have been
 				 * released.
