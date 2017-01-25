@@ -1401,6 +1401,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		unsigned long valuemask;
 		XSetWindowAttributes attributes;
 
+		/*
+		 * Figure size/position.
+		 */
 		tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw
 		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
 		tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height
@@ -1410,13 +1413,35 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height
 		                        + 2 * tmp_win->frame_bw3D;
 
+		/* Adjust based on hints */
 		ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
+
+		/*
+		 * Adjust as necessary to keep things on-screen.  If we [ctwm]
+		 * chose the position, CBB() involves checking things like
+		 * MoveOffResistance etc to keep it on.
+		 */
 		if(random_placed) {
 			ConstrainByBorders(tmp_win, &tmp_win->frame_x, tmp_win->frame_width,
 			                   &tmp_win->frame_y, tmp_win->frame_height);
 		}
 
+		/* No matter what, make sure SOME part of the window is on-screen */
+		if((tmp_win->frame_x > Scr->rootw) ||
+		                (tmp_win->frame_y > Scr->rooth) ||
+		                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
+		                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
+			tmp_win->frame_x = 0;
+			tmp_win->frame_y = 0;
+		}
 
+		/* May need adjusting for vscreens too */
+		DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
+
+
+		/*
+		 * Setup the X attributes for the frame.
+		 */
 		valuemask = CWBackPixmap | CWBorderPixel | CWBackPixel
 		            | CWCursor | CWEventMask;
 		attributes.background_pixmap = None;
@@ -1427,9 +1452,19 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		                         | ButtonPressMask | ButtonReleaseMask
 		                         | EnterWindowMask | LeaveWindowMask
 		                         | ExposureMask);
+
+		/*
+		 * If we have BorderResizeCursors, we need to know about motions
+		 * in the window to know when to change (e.g., for corners).
+		 */
 		if(Scr->BorderCursors) {
 			attributes.event_mask |= PointerMotionMask;
 		}
+
+		/*
+		 * If the real window specified save_under or a specific gravity,
+		 * set them on the frame too.
+		 */
 		if(tmp_win->attr.save_under) {
 			attributes.save_under = True;
 			valuemask |= CWSaveUnder;
@@ -1439,16 +1474,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			valuemask |= CWWinGravity;
 		}
 
-		if((tmp_win->frame_x > Scr->rootw) ||
-		                (tmp_win->frame_y > Scr->rooth) ||
-		                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
-		                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
-			tmp_win->frame_x = 0;
-			tmp_win->frame_y = 0;
-		}
 
-		DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
-
+		/* And create */
 		tmp_win->frame = XCreateWindow(dpy, vroot,
 		                               tmp_win->frame_x, tmp_win->frame_y,
 		                               tmp_win->frame_width,
