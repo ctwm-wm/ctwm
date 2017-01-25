@@ -1539,14 +1539,16 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * Setup various events we want to hear about related to this window.
 	 */
-	valuemask = (CWEventMask | CWDontPropagate);
-	attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
-	                         ColormapChangeMask | VisibilityChangeMask |
-	                         FocusChangeMask |
-	                         EnterWindowMask | LeaveWindowMask);
-	attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask |
-	                                   PointerMotionMask;
-	XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
+	{
+		valuemask = (CWEventMask | CWDontPropagate);
+		attributes.event_mask = (StructureNotifyMask | PropertyChangeMask
+		                         | ColormapChangeMask | VisibilityChangeMask
+		                         | FocusChangeMask
+		                         | EnterWindowMask | LeaveWindowMask);
+		attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask
+		                                   | PointerMotionMask;
+		XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
+	}
 
 	/*
 	 * If it's using Shape, we want to know about changes from that too.
