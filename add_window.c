@@ -1335,6 +1335,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 */
 	XGrabServer(dpy);
 
+
 	/*
 	 * Make sure the client window still exists.  We don't want to leave an
 	 * orphan frame window if it doesn't.  Since we now have the server
@@ -1365,7 +1366,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		return(NULL);
 	}
 
-	/* add the window into the twm list */
+
+	/* Link the window into our list of all the TwmWindow's */
 	tmp_win->next = Scr->FirstWindow;
 	if(Scr->FirstWindow != NULL) {
 		Scr->FirstWindow->prev = tmp_win;
@@ -1374,8 +1376,19 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	Scr->FirstWindow = tmp_win;
 
 
-	/* create windows */
 
+	/*
+	 * Start creating the other X windows we wrap around it for
+	 * decorations.  X-ref discussion in win_decorations.c for the
+	 * details of what they all are and why they're there.
+	 *
+	 * XXX Good candidate for moving out into a helper function...
+	 */
+
+
+	/*
+	 * First, the frame
+	 */
 	tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->frame_bw
 	                   - tmp_win->frame_bw3D;
 	tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height +
@@ -1429,6 +1442,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	                               Scr->d_visual, valuemask, &attributes);
 	XStoreName(dpy, tmp_win->frame, "CTWM frame");
 
+
+	/*
+	 * Next, the titlebar, if we have one
+	 */
 	if(tmp_win->title_height) {
 		valuemask = (CWEventMask | CWDontPropagate | CWBorderPixel | CWBackPixel);
 		attributes.event_mask = (KeyPressMask | ButtonPressMask |
@@ -1453,6 +1470,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->squeeze_info = NULL;
 	}
 
+
+	/*
+	 * If we're highlighting borders on focus, we need the pixmap to do
+	 * it.
+	 *
+	 * XXX I'm not at all sure this can't just be global and shared, so
+	 * we don't have to create one per window...
+	 */
 	if(tmp_win->highlight) {
 		char *which;
 
@@ -1473,8 +1498,18 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->gray = None;
 	}
 
+
+	/*
+	 * Setup OTP bits for stacking
+	 */
 	OtpAdd(tmp_win, WinWin);
 
+
+	/*
+	 * Setup the stuff inside the titlebar window, if we have it.  If we
+	 * don't, fake up the coordinates where the titlebar would be for
+	 * <reasons>.
+	 */
 	if(tmp_win->title_w) {
 		ComputeTitleLocation(tmp_win);
 		CreateWindowTitlebarButtons(tmp_win);
@@ -1487,6 +1522,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->title_y = tmp_win->frame_bw3D - tmp_win->frame_bw;
 	}
 
+
+	/*
+	 * Setup various events we want to hear about related to this window.
+	 */
 	valuemask = (CWEventMask | CWDontPropagate);
 	attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
 	                         ColormapChangeMask | VisibilityChangeMask |
@@ -1496,14 +1535,32 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	                                   PointerMotionMask;
 	XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
 
+	/*
+	 * If it's using Shape, we want to know about changes from that too.
+	 *
+	 * XXX We're doing this again below?
+	 */
 	if(HasShape) {
 		XShapeSelectInput(dpy, tmp_win->w, ShapeNotifyMask);
 	}
 
+
+	/*
+	 * Map up the title window if we have one.  As a sub-window of the
+	 * frame, it'll only actually show up in the screen if the frame
+	 * does, of course.
+	 */
 	if(tmp_win->title_w) {
 		XMapWindow(dpy, tmp_win->title_w);
 	}
 
+
+	/*
+	 * If it's got Shape, look up info about that shaping, and subscribe
+	 * to notifications about changes in it.
+	 *
+	 * XXX x-ref above XXX about doing the SelectInput twice.
+	 */
 	if(HasShape) {
 		int xws, yws, xbs, ybs;
 		unsigned wws, hws, wbs, hbs;
@@ -1516,42 +1573,79 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wShaped = boundingShaped;
 	}
 
+
+	/*
+	 * If it's a normal window (i.e., not one of ctwm's internal ones),
+	 * add it to the "save set", which means that even if ctwm disappears
+	 * without doing any cleanup, it'll still show back up on the screen
+	 * like normal.  Otherwise, if you kill or segfault ctwm, all the
+	 * other things you're running get their windows lost.
+	 */
 	if(!tmp_win->isiconmgr && ! tmp_win->iswspmgr &&
 	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
 
+
+	/*
+	 * Now reparent the real window into our frame.
+	 */
 	XReparentWindow(dpy, tmp_win->w, tmp_win->frame, tmp_win->frame_bw3D,
 	                tmp_win->title_height + tmp_win->frame_bw3D);
+
 	/*
-	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
-	 * Set the map state to false to prevent a transition back to
-	 * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
-	 * again in HandleMapNotify.
+	 * Reparenting generates an UnmapNotify event, followed by a
+	 * MapNotify.  Set the map state to false to prevent a transition
+	 * back to WithdrawnState in HandleUnmapNotify.  ->mapped gets set
+	 * correctly again in HandleMapNotify.
 	 */
 	tmp_win->mapped = false;
 
+
+	/*
+	 * Call SetupFrame() which does all sorta of magic figuring to set
+	 * the various coordinates and offsets and whatnot for all the pieces
+	 * inside our frame.
+	 */
 	SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
 	           tmp_win->frame_width, tmp_win->frame_height, -1, true);
 
-	/* wait until the window is iconified and the icon window is mapped
-	 * before creating the icon window
-	 */
-	tmp_win->icon = NULL;
-	tmp_win->iconslist = NULL;
 
+	/*
+	 * Don't setup the icon window and its bits; when the window is
+	 * iconified the first time, that handler will do what needs to be
+	 * done for it, so we don't have to.
+	 */
+
+
+	/*
+	 * If it's anything other than our own icon manager, setup button/key
+	 * bindings for it.  For icon managers, this is done for them at the
+	 * end of CreateIconManagers(), not here.  X-ref comments there and
+	 * on the function defs below for some discussion about whether it
+	 * _should_ work this way.
+	 */
 	if(!tmp_win->isiconmgr) {
 		GrabButtons(tmp_win);
 		GrabKeys(tmp_win);
 	}
 
+
+	/* Add this window to the appropriate icon manager[s] */
 	AddIconManager(tmp_win);
 
-	XSaveContext(dpy, tmp_win->w, TwmContext, (XPointer) tmp_win);
+
+	/*
+	 * Stash up info about this TwmWindow and its screen in contexts on
+	 * the real window and our frame.  This is how we find out what
+	 * TwmWindow things like events are happening in.
+	 */
+	XSaveContext(dpy, tmp_win->w, TwmContext,    (XPointer) tmp_win);
 	XSaveContext(dpy, tmp_win->w, ScreenContext, (XPointer) Scr);
-	XSaveContext(dpy, tmp_win->frame, TwmContext, (XPointer) tmp_win);
+	XSaveContext(dpy, tmp_win->frame, TwmContext,    (XPointer) tmp_win);
 	XSaveContext(dpy, tmp_win->frame, ScreenContext, (XPointer) Scr);
 
+	/* Cram that all info any titlebar [sub]windows too */
 	if(tmp_win->title_height) {
 		int i;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
@@ -1582,7 +1676,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
+
+	/*
+	 * OK, that's all we need to do while the server's grabbed.  After
+	 * this point, other clients might sneak in stuff between our
+	 * actions, so they can't be considered atomic anymore.
+	 */
 	XUngrabServer(dpy);
+
 
 	/*
 	 * If we were in the middle of a menu activated function that was
@@ -1598,11 +1699,35 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		ReGrab();
 	}
 
+
+	/*
+	 * Add to the workspace manager.  Unless this IS the workspace
+	 * manager, in which case that would just be silly.
+	 */
 	if(!tmp_win->iswspmgr) {
 		WMapAddWindow(tmp_win);
 	}
+
+
+	/*
+	 * If ths window being created is a new captive [sub-]ctwm, we setup
+	 * a property on it for unclear reasons.  x-ref comments on the
+	 * function.
+	 */
 	SetPropsIfCaptiveCtwm(tmp_win);
+
+
+	/*
+	 * Init saved geometry with the current, as if f.savegeometry was
+	 * called on the window right away.  That way f.restoregeometry can't
+	 * get confuzzled.
+	 */
 	savegeometry(tmp_win);
+
+
+	/*
+	 * And that's it; we created all the bits!
+	 */
 	return (tmp_win);
 }
 
