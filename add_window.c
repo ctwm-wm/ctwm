@@ -1010,8 +1010,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				               &ink_rect, &logical_rect);
 				width = SIZE_HINDENT + ink_rect.width;
 				height = logical_rect.height + SIZE_VINDENT * 2;
+
 				XmbTextExtents(Scr->SizeFont.font_set,
-				               ": ", 2,  &logical_rect, &logical_rect);
+				               ": ", 2,  NULL, &logical_rect);
 				Scr->SizeStringOffset = width + logical_rect.width;
 
 				XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
@@ -1117,7 +1118,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 						int lastx, lasty;
 
 						XmbTextExtents(Scr->SizeFont.font_set,
-						               ": ", 2,  &logical_rect, &logical_rect);
+						               ": ", 2,  NULL, &logical_rect);
 						Scr->SizeStringOffset = width + logical_rect.width;
 
 						XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
@@ -1281,7 +1282,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Figure initial screen size of writing out the window name.  The
 	 * event handler updates this when it changes.
 	 */
-	XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen, &ink_rect,
+	XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen, NULL,
 	               &logical_rect);
 	tmp_win->name_width = logical_rect.width;
 
