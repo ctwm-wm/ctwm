@@ -695,7 +695,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 *
 	 * XXX These get redone down below when we create the frame.  So why
 	 * bother here?  I think there's some code in the middle that needs
-	 * at least a reasonable guess onhand...
+	 * at least a reasonable guess onhand; should double check that and
+	 * update this comment (or GC the code) as necessary.
 	 */
 	tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
 	tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D +
