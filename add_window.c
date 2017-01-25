@@ -111,8 +111,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	bool restoredFromPrevSession = false;
 	int saved_occupation = 0; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
-	XRectangle ink_rect;
-	XRectangle logical_rect;
 	WindowBox *winbox;
 	Window vroot;
 
@@ -1005,15 +1003,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					}
 				}
 
-				XmbTextExtents(Scr->SizeFont.font_set,
-				               tmp_win->name, namelen,
-				               &ink_rect, &logical_rect);
-				width = SIZE_HINDENT + ink_rect.width;
-				height = logical_rect.height + SIZE_VINDENT * 2;
+				{
+					XRectangle ink_rect;
+					XRectangle logical_rect;
 
-				XmbTextExtents(Scr->SizeFont.font_set,
-				               ": ", 2,  NULL, &logical_rect);
-				Scr->SizeStringOffset = width + logical_rect.width;
+					XmbTextExtents(Scr->SizeFont.font_set,
+					               tmp_win->name, namelen,
+					               &ink_rect, &logical_rect);
+					width = SIZE_HINDENT + ink_rect.width;
+					height = logical_rect.height + SIZE_VINDENT * 2;
+
+					XmbTextExtents(Scr->SizeFont.font_set,
+					               ": ", 2,  NULL, &logical_rect);
+					Scr->SizeStringOffset = width + logical_rect.width;
+				}
 
 				XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
 				              Scr->SizeStringWidth + SIZE_HINDENT, height);
@@ -1116,6 +1119,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				if(found) {
 					if(event.xbutton.button == Button2) {
 						int lastx, lasty;
+						XRectangle logical_rect;
 
 						XmbTextExtents(Scr->SizeFont.font_set,
 						               ": ", 2,  NULL, &logical_rect);
@@ -1282,9 +1286,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Figure initial screen size of writing out the window name.  The
 	 * event handler updates this when it changes.
 	 */
-	XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen, NULL,
-	               &logical_rect);
-	tmp_win->name_width = logical_rect.width;
+	{
+		XRectangle logical_rect;
+		XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen,
+		               NULL, &logical_rect);
+		tmp_win->name_width = logical_rect.width;
+	}
 
 
 	/* Remove original border if there is one; we make our own now */
