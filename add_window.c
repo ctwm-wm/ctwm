@@ -1283,8 +1283,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * Figure initial screen size of writing out the window name.  The
-	 * event handler updates this when it changes.
+	 * Figure initial screen size of writing out the window name.  This
+	 * is needed when laying out titlebar bits (down in the call chain
+	 * inside SetupFrame()).  The event handler updates this when it
+	 * changes.
 	 */
 	{
 		XRectangle logical_rect;
