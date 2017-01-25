@@ -1662,45 +1662,44 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	/*
 	 * Stash up info about this TwmWindow and its screen in contexts on
-	 * the real window and our frame.  This is how we find out what
-	 * TwmWindow things like events are happening in.
+	 * the real window and our various decorations around it.  This is
+	 * how we find out what TwmWindow things like events are happening
+	 * in.
 	 */
-	XSaveContext(dpy, tmp_win->w, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, tmp_win->w, ScreenContext, (XPointer) Scr);
-	XSaveContext(dpy, tmp_win->frame, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, tmp_win->frame, ScreenContext, (XPointer) Scr);
+#define SETCTXS(win) do { \
+                XSaveContext(dpy, win, TwmContext, (XPointer) tmp_win); \
+                XSaveContext(dpy, win, ScreenContext, (XPointer) Scr); \
+        } while(0)
+
+	/* The real window and our frame */
+	SETCTXS(tmp_win->w);
+	SETCTXS(tmp_win->frame);
 
 	/* Cram that all info any titlebar [sub]windows too */
 	if(tmp_win->title_height) {
 		int i;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 
-		XSaveContext(dpy, tmp_win->title_w, TwmContext, (XPointer) tmp_win);
-		XSaveContext(dpy, tmp_win->title_w, ScreenContext, (XPointer) Scr);
+		SETCTXS(tmp_win->title_w);
+
 		for(i = 0; i < nb; i++) {
-			XSaveContext(dpy, tmp_win->titlebuttons[i].window, TwmContext,
-			             (XPointer) tmp_win);
-			XSaveContext(dpy, tmp_win->titlebuttons[i].window, ScreenContext,
-			             (XPointer) Scr);
+			SETCTXS(tmp_win->titlebuttons[i].window);
 		}
 		if(tmp_win->hilite_wl) {
-			XSaveContext(dpy, tmp_win->hilite_wl, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->hilite_wl, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->hilite_wl);
 		}
 		if(tmp_win->hilite_wr) {
-			XSaveContext(dpy, tmp_win->hilite_wr, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->hilite_wr, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->hilite_wr);
 		}
 		if(tmp_win->lolite_wl) {
-			XSaveContext(dpy, tmp_win->lolite_wl, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->lolite_wl, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->lolite_wl);
 		}
 		if(tmp_win->lolite_wr) {
-			XSaveContext(dpy, tmp_win->lolite_wr, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->lolite_wr, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->lolite_wr);
 		}
 	}
 
+#undef SETCTXS
 
 	/*
 	 * OK, that's all we need to do while the server's grabbed.  After
