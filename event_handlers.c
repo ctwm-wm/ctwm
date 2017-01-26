@@ -1130,21 +1130,22 @@ void HandlePropertyNotify(void)
 		}
 
 		case XA_WM_HINTS: {
-			XFree(Tmp_win->wmhints);
-			Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
-
-			if(!Tmp_win->wmhints) {
-				Tmp_win->wmhints = gen_synthetic_wmhints(Tmp_win);
-			}
-			if(!Tmp_win->wmhints) {
-				/*
-				 * Uhhh....   trouble.  Biiiig trouble.  Probably a
-				 * segfault coming down the pipe...
-				 */
-				fprintf(stderr, "Couldn't allocate hints for win 0x%lx (%s)!\n"
-				                "ctwm is probably going to die soon...\n",
-				                Tmp_win->w, Tmp_win->full_name);
-				break;
+			{
+				XWMHints *nhints = XGetWMHints(dpy, Event.xany.window);
+				if(!nhints) {
+					/*
+					 * I guess this means that window removed the
+					 * property completely.  Just keep using what we
+					 * already have for it though; we gotta have
+					 * something, and whatever it last said is probably
+					 * more reasonable than getting completely new
+					 * synthetic hints anyway.
+					 */
+					break;
+				}
+	
+				XFree(Tmp_win->wmhints);
+				Tmp_win->wmhints = nhints;
 			}
 
 			if(Tmp_win->wmhints->flags & WindowGroupHint) {
