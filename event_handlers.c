@@ -1129,7 +1129,7 @@ void HandlePropertyNotify(void)
 			break;
 		}
 
-		case XA_WM_HINTS:
+		case XA_WM_HINTS: {
 			XFree(Tmp_win->wmhints);
 			Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
 
@@ -1339,6 +1339,7 @@ void HandlePropertyNotify(void)
 			}
 
 			break;
+		}
 
 		case XA_WM_NORMAL_HINTS: {
 			GetWindowSizeHints(Tmp_win);
