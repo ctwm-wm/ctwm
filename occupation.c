@@ -253,7 +253,7 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 		                && GetWMState(twm_win->w, &state, &icon)
 		                && (state == NormalState || state == IconicState
 		                    || state == InactiveState))) {
-			if(twm_win->wmhints && (twm_win->wmhints->flags & StateHint)) {
+			if(twm_win->wmhints->flags & StateHint) {
 				state = twm_win->wmhints->initial_state;
 			}
 		}

@@ -361,7 +361,7 @@ HandleFocusChange(void)
 static void
 HandleFocusIn(void)
 {
-	if(Tmp_win->wmhints && ! Tmp_win->wmhints->input) {
+	if(! Tmp_win->wmhints->input) {
 		return;
 	}
 	if(Scr->Focus == Tmp_win) {
@@ -1130,12 +1130,11 @@ void HandlePropertyNotify(void)
 		}
 
 		case XA_WM_HINTS:
-			if(Tmp_win->wmhints) {
-				XFree(Tmp_win->wmhints);
-			}
+			XFree(Tmp_win->wmhints);
 			Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
 
 			if(!Tmp_win->wmhints) {
+				/* XXX Create fake */
 				break;
 			}
 
@@ -1714,9 +1713,7 @@ void HandleDestroyNotify(void)
 	}
 
 	free_window_names(Tmp_win, true, true, true);               /* 1, 2, 3 */
-	if(Tmp_win->wmhints) {                                      /* 4 */
-		XFree(Tmp_win->wmhints);
-	}
+	XFree(Tmp_win->wmhints);                                    /* 4 */
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */
 		XFree(Tmp_win->class.res_name);
 	}
@@ -1823,7 +1820,7 @@ void HandleMapRequest(void)
 		/* use WM_STATE if enabled */
 		if(!(RestartPreviousState && GetWMState(Tmp_win->w, &state, &icon) &&
 		                (state == NormalState || state == IconicState || state == InactiveState))) {
-			if(Tmp_win->wmhints && (Tmp_win->wmhints->flags & StateHint)) {
+			if(Tmp_win->wmhints->flags & StateHint) {
 				state = Tmp_win->wmhints->initial_state;
 			}
 		}
@@ -1841,15 +1838,12 @@ void HandleMapRequest(void)
 				SetMapStateProp(Tmp_win, NormalState);
 				SetRaiseWindow(Tmp_win);
 				Tmp_win->mapped = true;
-				if(Scr->ClickToFocus &&
-				                Tmp_win->wmhints  &&
-				                Tmp_win->wmhints->input) {
+				if(Scr->ClickToFocus && Tmp_win->wmhints->input) {
 					SetFocus(Tmp_win, CurrentTime);
 				}
 				/* kai */
 				if(Scr->AutoFocusToTransients &&
 				                Tmp_win->istransient &&
-				                Tmp_win->wmhints   &&
 				                Tmp_win->wmhints->input) {
 					SetFocus(Tmp_win, CurrentTime);
 				}
@@ -2018,7 +2012,7 @@ void HandleUnmapNotify(void)
 			if(Tmp_win->old_bw) XSetWindowBorderWidth(dpy,
 				                Event.xunmap.window,
 				                Tmp_win->old_bw);
-			if(Tmp_win->wmhints && (Tmp_win->wmhints->flags & IconWindowHint)) {
+			if(Tmp_win->wmhints->flags & IconWindowHint) {
 				XUnmapWindow(dpy, Tmp_win->wmhints->icon_window);
 			}
 		}
@@ -2593,18 +2587,14 @@ void HandleButtonPress(void)
 		}
 #endif
 		else if(Event.xany.window == Tmp_win->title_w) {
-			if(Scr->ClickToFocus &&
-			                Tmp_win->wmhints &&
-			                Tmp_win->wmhints->input) {
+			if(Scr->ClickToFocus && Tmp_win->wmhints->input) {
 				SetFocus(Tmp_win, CurrentTime);
 			}
 			Context = C_TITLE;
 		}
 		else if(Event.xany.window == Tmp_win->w) {
 			if(Scr->ClickToFocus || Scr->RaiseOnClick) {
-				if(Scr->ClickToFocus &&
-				                Tmp_win->wmhints &&
-				                Tmp_win->wmhints->input) {
+				if(Scr->ClickToFocus && Tmp_win->wmhints->input) {
 					SetFocus(Tmp_win, CurrentTime);
 				}
 				if(Scr->RaiseOnClick) {
@@ -2662,9 +2652,7 @@ void HandleButtonPress(void)
 			else {
 				Context = C_FRAME;
 			}
-			if(Scr->ClickToFocus &&
-			                Tmp_win->wmhints &&
-			                Tmp_win->wmhints->input) {
+			if(Scr->ClickToFocus && Tmp_win->wmhints->input) {
 				SetFocus(Tmp_win, CurrentTime);
 			}
 		}
@@ -3035,7 +3023,7 @@ void HandleEnterNotify(void)
 					CurrentIconManagerEntry(Tmp_win->iconmanagerlist);
 				}
 
-				accinput = Tmp_win->mapped && Tmp_win->wmhints && Tmp_win->wmhints->input;
+				accinput = Tmp_win->mapped && Tmp_win->wmhints->input;
 				if(Tmp_win->iconmanagerlist &&
 				                ewp->window == Tmp_win->iconmanagerlist->w &&
 				                !accinput &&
@@ -3088,7 +3076,7 @@ void HandleEnterNotify(void)
 						 */
 
 						/* If the window takes input... */
-						if(Tmp_win->wmhints && Tmp_win->wmhints->input) {
+						if(Tmp_win->wmhints->input) {
 
 							/* if 4 or 4a, focus on the window */
 							if(Scr->TitleFocus ||
@@ -3105,7 +3093,6 @@ void HandleEnterNotify(void)
 							SendTakeFocusMessage(Tmp_win, ewp->time);
 						}
 						else if(!Scr->TitleFocus
-						                && Tmp_win->wmhints
 						                && Tmp_win->wmhints->input
 						                && Event.xcrossing.focus) {
 							SynthesiseFocusIn(Tmp_win->w);
@@ -3137,8 +3124,7 @@ void HandleEnterNotify(void)
 							/* locally active clients need help from WM
 							   to get the input focus */
 
-							if(Tmp_win->wmhints &&
-							                Tmp_win->wmhints->input) {
+							if(Tmp_win->wmhints->input) {
 								SetFocus(Tmp_win, ewp->time);
 							}
 
@@ -3148,8 +3134,7 @@ void HandleEnterNotify(void)
 						}
 					}
 				}                       /* end if Tmp_win->mapped */
-				if(Tmp_win->wmhints != NULL &&
-				                ewp->window == Tmp_win->wmhints->icon_window &&
+				if(ewp->window == Tmp_win->wmhints->icon_window &&
 				                (!scanArgs.leaves || scanArgs.inferior)) {
 					InstallWindowColormaps(EnterNotify, Tmp_win);
 				}
@@ -3377,9 +3362,7 @@ void HandleLeaveNotify(void)
 					}
 				}
 				else if(Scr->IconManagerFocus && inicon) {
-					if(! Tmp_win->mapped ||
-					                ! Tmp_win->wmhints ||
-					                ! Tmp_win->wmhints->input) {
+					if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
 						return;
 					}
 					if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {

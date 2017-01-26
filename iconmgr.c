@@ -187,8 +187,7 @@ void CreateIconManagers(void)
 
 			p->twm_win->mapped = false;
 			SetMapStateProp(p->twm_win, WithdrawnState);
-			if(p->twm_win && p->twm_win->wmhints &&
-			                (p->twm_win->wmhints->initial_state == IconicState)) {
+			if(p->twm_win && (p->twm_win->wmhints->initial_state == IconicState)) {
 				p->twm_win->isicon = true;
 			}
 			else if(!Scr->NoIconManagers && Scr->ShowIconManager) {

@@ -510,8 +510,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	 * that could mean that ForceIcon was not set, or that the window
 	 * was not in the Icons list, now check the WM hints for an icon
 	 */
-	if(image == NULL && tmp_win->wmhints &&
-	                tmp_win->wmhints->flags & IconPixmapHint) {
+	if(image == NULL && tmp_win->wmhints->flags & IconPixmapHint) {
 		unsigned int IconDepth, IconWidth, IconHeight;
 
 		if(XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap,
@@ -619,7 +618,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	}
 
 	event_mask = 0;
-	if(tmp_win->wmhints && tmp_win->wmhints->flags & IconWindowHint) {
+	if(tmp_win->wmhints->flags & IconWindowHint) {
 		icon->w = tmp_win->wmhints->icon_window;
 		if(tmp_win->forced ||
 		                XGetGeometry(dpy, icon->w, &JunkRoot, &JunkX, &JunkY,
@@ -644,7 +643,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 
 	if((image != NULL) &&
 	                image->mask != None &&
-	                (!(tmp_win->wmhints && tmp_win->wmhints->flags & IconWindowHint))) {
+	                !(tmp_win->wmhints->flags & IconWindowHint)) {
 		icon->border_width = 0;
 	}
 	if(icon->w == None) {
@@ -674,7 +673,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		icon->width = icon->w_width;
 	}
 	icon->bm_w = None;
-	if(image && (!(tmp_win->wmhints && tmp_win->wmhints->flags & IconWindowHint))) {
+	if(image && !(tmp_win->wmhints->flags & IconWindowHint)) {
 		XRectangle rect;
 
 		x = GetIconOffset(icon);
@@ -726,8 +725,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	 * getting here means that I am going to make the icon visible
 	 */
 	final_x = final_y = 0;
-	if(tmp_win->wmhints &&
-	                tmp_win->wmhints->flags & IconPositionHint) {
+	if(tmp_win->wmhints->flags & IconPositionHint) {
 		final_x = tmp_win->wmhints->icon_x;
 		final_y = tmp_win->wmhints->icon_y;
 	}
@@ -737,8 +735,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 		}
 	}
 
-	if(visible(tmp_win) ||
-	                (tmp_win->wmhints && tmp_win->wmhints->flags & IconPositionHint)) {
+	if(visible(tmp_win) || (tmp_win->wmhints->flags & IconPositionHint)) {
 		if(final_x > Scr->rootw) {
 			final_x = Scr->rootw - icon->w_width - (2 * Scr->IconBorderWidth);
 		}
@@ -867,7 +864,7 @@ IconUp(TwmWindow *tmp_win)
 	 * want to be an option at some point).  Otherwise, try to fit within the
 	 * icon region.
 	 */
-	if(tmp_win->wmhints && (tmp_win->wmhints->flags & IconPositionHint)) {
+	if(tmp_win->wmhints->flags & IconPositionHint) {
 		return;
 	}
 
