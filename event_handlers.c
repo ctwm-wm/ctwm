@@ -1143,7 +1143,7 @@ void HandlePropertyNotify(void)
 					 */
 					break;
 				}
-	
+
 				XFree(Tmp_win->wmhints);
 				Tmp_win->wmhints = nhints;
 			}
