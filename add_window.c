@@ -320,21 +320,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 */
 	tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 	if(!tmp_win->wmhints) {
-		tmp_win->wmhints = XAllocWMHints();
+		tmp_win->wmhints = gen_synthetic_wmhints(tmp_win);
 		if(!tmp_win->wmhints) {
 			fprintf(stderr, "Failed allocating memory for hints!\n");
 			free(tmp_win); // XXX leaky
 			return NULL;
 		}
-
-		/*
-		 * Reasonable defaults.  Takes input, in normal state.
-		 *
-		 * XXX Make configurable?
-		 */
-		tmp_win->wmhints->flags = InputHint | StateHint;
-		tmp_win->wmhints->input = True;
-		tmp_win->wmhints->initial_state = NormalState;
 	}
 
 	if(restore_iconified) {
