@@ -69,7 +69,6 @@ static int PlaceX = -1;
 static int PlaceY = -1;
 static void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
                 TwmWindow *tmp_win);
-static bool Transient(Window w, Window *propw);
 
 char NoName[] = "Untitled"; /* name if no name is specified */
 bool resizeWhenAdd;
@@ -86,11 +85,8 @@ bool resizeWhenAdd;
  *
  *  Inputs:
  *      w       - the window id of the window to add
- *      iconm   - flag to tell if this is an icon manager window
- *              0 --> normal window.
- *              1 --> icon manager.
- *              2 --> window box;
- *              else --> iconmgr;
+ *      wtype   - flag to tell if this is a normal window or some ctwm
+ *                internal one.
  *
  *      iconp   - pointer to icon manager struct
  *
@@ -101,29 +97,16 @@ TwmWindow *
 AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 {
 	TwmWindow *tmp_win;                 /* new twm window structure */
-	int stat;
-	XEvent event;
-	unsigned long valuemask;            /* mask for create windows */
-	XSetWindowAttributes attributes;    /* attributes for create windows */
-	int width, height;                  /* tmp variable */
 	bool ask_user;               /* don't know where to put the window */
 	int gravx, gravy;                   /* gravity signs for positioning */
 	int namelen;
 	int bw2;
-	short saved_x, saved_y, restore_icon_x, restore_icon_y;
-	unsigned short saved_width, saved_height;
+	short restore_icon_x, restore_icon_y;
 	bool restore_iconified = false;
 	bool restore_icon_info_present = false;
-	int restoredFromPrevSession;
-	bool width_ever_changed_by_user;
-	bool height_ever_changed_by_user;
-	int saved_occupation; /* <== [ Matthew McNeill Feb 1997 ] == */
+	bool restoredFromPrevSession = false;
+	int saved_occupation = 0; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
-	fd_set      mask;
-	int         fd;
-	struct timeval timeout;
-	XRectangle ink_rect;
-	XRectangle logical_rect;
 	WindowBox *winbox;
 	Window vroot;
 
@@ -131,19 +114,33 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	fprintf(stderr, "AddWindow: w = 0x%x\n", w);
 #endif
 
+	/*
+	 * Possibly this window should be in a captive sub-ctwm?  If so, we
+	 * shouldn't mess with it at all.
+	 */
 	if(!CLarg.is_captive && RedirectToCaptive(w)) {
 		/* XXX x-ref comment by SetNoRedirect() */
 		return (NULL);
 	}
 
-	/* allocate space for the twm window */
+
+	/*
+	 * Allocate and initialize our tracking struct
+	 */
 	tmp_win = calloc(1, sizeof(TwmWindow));
-	if(tmp_win == 0) {
+	if(tmp_win == NULL) {
 		fprintf(stderr, "%s: Unable to allocate memory to manage window ID %lx.\n",
 		        ProgramName, w);
 		return NULL;
 	}
 
+	/*
+	 * Some of these initializations are strictly unnecessary, since they
+	 * evaluate out to 0, and calloc() gives us an already zero'd buffer.
+	 * I'm leaving them anyway because a couple unnecessary stores are
+	 * near enough to free considering everything we're doing, that the
+	 * value as documentation stupendously outweighs the cost.
+	 */
 	tmp_win->w = w;
 	tmp_win->zoomed = ZOOM_NONE;
 	tmp_win->isiconmgr = (wtype == AWT_ICON_MANAGER);
@@ -156,46 +153,158 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->savevs = NULL;
 	tmp_win->cmaps.number_cwins = 0;
 	tmp_win->savegeometry.width = -1;
+	tmp_win->widthEverChangedByUser = false;
+	tmp_win->heightEverChangedByUser = false;
+	tmp_win->nameChanged = false;
+	tmp_win->squeezed = false;
+	tmp_win->iconified = false;
+	tmp_win->isicon = false;
+	tmp_win->icon_on = false;
+	tmp_win->ring.cursor_valid = false;
+	tmp_win->squeeze_info = NULL;
+	tmp_win->squeeze_info_copied = 0;
 
-	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
-	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
-	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
-	tmp_win->class = NoClass;
-	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
-	FetchWmProtocols(tmp_win);
-	FetchWmColormapWindows(tmp_win);
 
-	if(GetWindowConfig(tmp_win,
-	                   &saved_x, &saved_y, &saved_width, &saved_height,
-	                   &restore_iconified, &restore_icon_info_present,
-	                   &restore_icon_x, &restore_icon_y,
-	                   &width_ever_changed_by_user, &height_ever_changed_by_user,
-	                   &saved_occupation)) { /* <== [ Matthew McNeill Feb 1997 ] == */
-		tmp_win->attr.x = saved_x;
-		tmp_win->attr.y = saved_y;
-
-		tmp_win->widthEverChangedByUser = width_ever_changed_by_user;
-		tmp_win->heightEverChangedByUser = height_ever_changed_by_user;
-
-		if(width_ever_changed_by_user) {
-			tmp_win->attr.width = saved_width;
-		}
-
-		if(height_ever_changed_by_user) {
-			tmp_win->attr.height = saved_height;
-		}
-
-		restoredFromPrevSession = 1;
-	}
-	else {
-		tmp_win->widthEverChangedByUser = false;
-		tmp_win->heightEverChangedByUser = false;
-
-		restoredFromPrevSession = 0;
-	}
 
 	/*
-	 * do initial clip; should look at window gravity
+	 * Fetch a few bits of info about the window from the server, and
+	 * tell the server to tell us about property changes; we'll need to
+	 * know what happens.
+	 *
+	 * It's important that these remain relatively disconnected "early"
+	 * bits; generally, they shouldn't rely on anything but the X Window
+	 * in tmp_win->w to do their stuff.  e.g., anything that relies on
+	 * other values in our ctwm TwmWindow tmp_win (window name, various
+	 * flags, etc) has to come later.
+	 */
+	XSelectInput(dpy, tmp_win->w, PropertyChangeMask);
+	XGetWindowAttributes(dpy, tmp_win->w, &tmp_win->attr);
+	FetchWmProtocols(tmp_win);
+	FetchWmColormapWindows(tmp_win);
+#ifdef EWMH
+	EwmhGetProperties(tmp_win);
+#endif /* EWMH */
+
+
+	/*
+	 * Some other simple early initialization that has to follow those
+	 * bits.
+	 */
+	tmp_win->old_bw = tmp_win->attr.border_width;
+
+
+	/*
+	 * Setup window name and class bits.  A lot of following code starts
+	 * to care about this; in particular, anything looking in our
+	 * name_lists generally goes by the name/class, so we need to get
+	 * these set pretty early in the process.
+	 */
+	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	if(tmp_win->name == NULL) {
+		tmp_win->name = NoName;
+	}
+	namelen = strlen(tmp_win->name);
+
+	/*
+	 * XXX I don't think full_name does anything useful at all.  I can't
+	 * find anywhere in the code that it's anything but a copy of name.
+	 * It seems like it might be used to see the original name before the
+	 * conditional code below mangles it, but it's the same pointer, so
+	 * it wouldn't even accomplish that.
+	 */
+	tmp_win->full_name = tmp_win->name;
+#ifdef CLAUDE
+	if(strstr(tmp_win->name, " - Mozilla")) {
+		char *moz = strstr(tmp_win->name, " - Mozilla");
+		*moz = '\0';
+	}
+#endif
+
+	/* Setup class */
+	tmp_win->class = NoClass;
+	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
+	if(tmp_win->class.res_name == NULL) {
+		tmp_win->class.res_name = NoName;
+	}
+	if(tmp_win->class.res_class == NULL) {
+		tmp_win->class.res_class = NoName;
+	}
+
+	/* Grab the icon name too */
+	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
+	if(!tmp_win->icon_name) {
+		tmp_win->icon_name = tmp_win->name;
+	}
+#ifdef CLAUDE
+	if(strstr(tmp_win->icon_name, " - Mozilla")) {
+		char *moz = strstr(tmp_win->icon_name, " - Mozilla");
+		*moz = '\0';
+	}
+#endif
+
+	/* Convenience macro */
+#define CHKL(lst) IsInList(Scr->lst, tmp_win)
+
+
+	/* Is it a transient?  Or should we ignore that it is? */
+	tmp_win->istransient = XGetTransientForHint(dpy, tmp_win->w,
+	                       &tmp_win->transientfor);
+	if(tmp_win->istransient) {
+		/*
+		 * XXX Should this been looking up transientfor instead of
+		 * tmp_win?  It seems like IgnoreTransient {} would list the
+		 * windows that have transients we should ignore, while this
+		 * condition makes it list the transient window names we should
+		 * ignore.  Probably not trivial to fix if that's right, since it
+		 * might b0rk existing configs...
+		 */
+		if(CHKL(IgnoreTransientL)) {
+			tmp_win->istransient = false;
+		}
+	}
+
+
+	/*
+	 * Look up saved X Session info for the window if we have it.
+	 */
+	{
+		short saved_x, saved_y;
+		unsigned short saved_width, saved_height;
+		bool width_ever_changed_by_user;
+		bool height_ever_changed_by_user;
+
+		if(GetWindowConfig(tmp_win,
+		                   &saved_x, &saved_y, &saved_width, &saved_height,
+		                   &restore_iconified, &restore_icon_info_present,
+		                   &restore_icon_x, &restore_icon_y,
+		                   &width_ever_changed_by_user,
+		                   &height_ever_changed_by_user,
+		                   &saved_occupation)) {
+			/* Got saved info, use it */
+			restoredFromPrevSession = true;
+
+			tmp_win->attr.x = saved_x;
+			tmp_win->attr.y = saved_y;
+
+			tmp_win->widthEverChangedByUser = width_ever_changed_by_user;
+			tmp_win->heightEverChangedByUser = height_ever_changed_by_user;
+
+			if(width_ever_changed_by_user) {
+				tmp_win->attr.width = saved_width;
+			}
+
+			if(height_ever_changed_by_user) {
+				tmp_win->attr.height = saved_height;
+			}
+		}
+	}
+
+
+	/*
+	 * Clip window to maximum size (either built-in ceiling, or
+	 * config MaxWindowSize).
+	 *
+	 * Should look at window gravity?
 	 */
 	if(tmp_win->attr.width > Scr->MaxWindowWidth) {
 		tmp_win->attr.width = Scr->MaxWindowWidth;
@@ -204,6 +313,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->attr.height = Scr->MaxWindowHeight;
 	}
 
+
+	/*
+	 * Setup WM_HINTS bits
+	 */
 	tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 
 	if(tmp_win->wmhints) {
@@ -248,122 +361,76 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->group = 0;
 	}
 
-	/*
-	 * The July 27, 1988 draft of the ICCCM ignores the size and position
-	 * fields in the WM_NORMAL_HINTS property.
-	 */
-
-	tmp_win->istransient = Transient(tmp_win->w, &tmp_win->transientfor);
-
-	tmp_win->nameChanged = false;
-	if(tmp_win->name == NULL) {
-		tmp_win->name = NoName;
-	}
-	if(tmp_win->class.res_name == NULL) {
-		tmp_win->class.res_name = NoName;
-	}
-	if(tmp_win->class.res_class == NULL) {
-		tmp_win->class.res_class = NoName;
-	}
 
 	/*
-	 * full_name seems to exist only because in the conditional code below,
-	 * name is sometimes changed. In all other cases, name and full_name
-	 * seem to be identical. Is that worth it?
+	 * Various flags that may be screen-wide or window specific.
 	 */
-	tmp_win->full_name = tmp_win->name;
-#ifdef CLAUDE
-	if(strstr(tmp_win->name, " - Mozilla")) {
-		char *moz = strstr(tmp_win->name, " - Mozilla");
-		*moz = '\0';
-	}
-#endif
-	namelen = strlen(tmp_win->name);
+	tmp_win->highlight = Scr->Highlight && !CHKL(NoHighlight);
+	tmp_win->stackmode = Scr->StackMode && !CHKL(NoStackModeL);
+	tmp_win->titlehighlight = Scr->TitleHighlight && !CHKL(NoTitleHighlight);
+	tmp_win->AlwaysSqueezeToGravity = Scr->AlwaysSqueezeToGravity
+	                                  || CHKL(AlwaysSqueezeToGravityL);
+	tmp_win->DontSetInactive = CHKL(DontSetInactive);
+	tmp_win->AutoSqueeze = CHKL(AutoSqueeze);
+	tmp_win->StartSqueezed =
+#ifdef EWMH
+	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
+#endif /* EWMH */
+	        CHKL(StartSqueezed);
 
-	if(LookInList(Scr->IgnoreTransientL, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->istransient = false;
-	}
-
-	tmp_win->highlight = Scr->Highlight &&
-	                     (!LookInList(Scr->NoHighlight, tmp_win->full_name,
-	                                  &tmp_win->class));
-
-	tmp_win->stackmode = Scr->StackMode &&
-	                     (!LookInList(Scr->NoStackModeL, tmp_win->full_name,
-	                                  &tmp_win->class));
-
-	tmp_win->titlehighlight = Scr->TitleHighlight &&
-	                          (!LookInList(Scr->NoTitleHighlight, tmp_win->full_name,
-	                                       &tmp_win->class));
-
-	tmp_win->auto_raise = Scr->AutoRaiseDefault ||
-	                      LookInList(Scr->AutoRaise, tmp_win->full_name,
-	                                 &tmp_win->class);
+	tmp_win->auto_raise = Scr->AutoRaiseDefault || CHKL(AutoRaise);
 	if(tmp_win->auto_raise) {
 		Scr->NumAutoRaises++;
 	}
 
-	tmp_win->auto_lower = Scr->AutoLowerDefault ||
-	                      LookInList(Scr->AutoLower, tmp_win->full_name,
-	                                 &tmp_win->class);
+	tmp_win->auto_lower = Scr->AutoLowerDefault || CHKL(AutoLower);
 	if(tmp_win->auto_lower) {
 		Scr->NumAutoLowers++;
 	}
 
-	tmp_win->iconify_by_unmapping = Scr->IconifyByUnmapping;
-	if(Scr->IconifyByUnmapping) {
-		tmp_win->iconify_by_unmapping = tmp_win->isiconmgr ? false :
-		                                !LookInList(Scr->DontIconify, tmp_win->full_name,
-		                                                &tmp_win->class);
+	tmp_win->OpaqueMove = Scr->DoOpaqueMove;
+	if(CHKL(OpaqueMoveList)) {
+		tmp_win->OpaqueMove = true;
 	}
-	tmp_win->iconify_by_unmapping = tmp_win->iconify_by_unmapping ||
-	                                LookInList(Scr->IconifyByUn, tmp_win->full_name, &tmp_win->class);
-
-	if(LookInList(Scr->UnmapByMovingFarAway, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->UnmapByMovingFarAway = true;
-	}
-	else {
-		tmp_win->UnmapByMovingFarAway = false;
+	else if(CHKL(NoOpaqueMoveList)) {
+		tmp_win->OpaqueMove = false;
 	}
 
-	if(LookInList(Scr->DontSetInactive, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->DontSetInactive = true;
+	tmp_win->OpaqueResize = Scr->DoOpaqueResize;
+	if(CHKL(OpaqueResizeList)) {
+		tmp_win->OpaqueResize = true;
 	}
-	else {
-		tmp_win->DontSetInactive = false;
-	}
-
-#ifdef EWMH
-	EwmhGetProperties(tmp_win);
-#endif /* EWMH */
-
-	if(LookInList(Scr->AutoSqueeze, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->AutoSqueeze = true;
-	}
-	else {
-		tmp_win->AutoSqueeze = false;
+	else if(CHKL(NoOpaqueResizeList)) {
+		tmp_win->OpaqueResize = false;
 	}
 
-	if(
-#ifdef EWMH
-	        (tmp_win->ewmhFlags & EWMH_STATE_SHADED) ||
-#endif /* EWMH */
-	        LookInList(Scr->StartSqueezed, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->StartSqueezed = true;
-	}
-	else {
-		tmp_win->StartSqueezed = false;
+
+	/*
+	 * If a window is listed in IconifyByUnmapping {}, we always iconify
+	 * by unmapping.  Else, if it's DontIconifyByUnmapping {} or is an
+	 * icon manager, we don't i_b_u.  Else, we go with the Scr-wide
+	 * default.
+	 */
+	{
+		bool ibum = CHKL(IconifyByUn);
+		if(!ibum) {
+			if(tmp_win->isiconmgr || CHKL(DontIconify)) {
+				ibum = false; // redundant
+			}
+			else {
+				ibum = Scr->IconifyByUnmapping;
+			}
+		}
+		tmp_win->iconify_by_unmapping = ibum;
 	}
 
-	if(Scr->AlwaysSqueezeToGravity
-	                || LookInList(Scr->AlwaysSqueezeToGravityL, tmp_win->full_name,
-	                              &tmp_win->class)) {
-		tmp_win->AlwaysSqueezeToGravity = true;
-	}
-	else {
-		tmp_win->AlwaysSqueezeToGravity = false;
-	}
 
+	/*
+	 * For transient windows or group members, we copy in UBMFA from its
+	 * parent/leader/etc if we can find it.  Otherwise, it's just whether
+	 * it's in the config list.
+	 */
+	tmp_win->UnmapByMovingFarAway = CHKL(UnmapByMovingFarAway);
 	if(tmp_win->istransient || tmp_win->group) {
 		TwmWindow *t = NULL;
 		if(tmp_win->istransient) {
@@ -376,12 +443,22 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			tmp_win->UnmapByMovingFarAway = t->UnmapByMovingFarAway;
 		}
 	}
-	if((Scr->WindowRingAll && !tmp_win->iswspmgr && !tmp_win->isiconmgr &&
+
+
+	/*
+	 * Link it up into the window ring if we should.  If it's in
+	 * WindowRing {}, we should.  Otherwise, we shouldn't unless
+	 * WindowRingAll is set.  If it is, we still exclude several special
+	 * ctwm windows, stuff in WindowRingExclude {}, and some special EWMH
+	 * settings.
+	 */
+	if(CHKL(WindowRingL) ||
+	                (Scr->WindowRingAll && !tmp_win->iswspmgr
+	                 && !tmp_win->isiconmgr
 #ifdef EWMH
-	                EwmhOnWindowRing(tmp_win) &&
+	                 && EwmhOnWindowRing(tmp_win)
 #endif /* EWMH */
-	                !LookInList(Scr->WindowRingExcludeL, tmp_win->full_name, &tmp_win->class)) ||
-	                LookInList(Scr->WindowRingL, tmp_win->full_name, &tmp_win->class)) {
+	                 && !CHKL(WindowRingExcludeL))) {
 		if(Scr->Ring) {
 			tmp_win->ring.next = Scr->Ring->ring.next;
 			if(Scr->Ring->ring.next->ring.prev) {
@@ -397,44 +474,65 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	else {
 		tmp_win->ring.next = tmp_win->ring.prev = NULL;
 	}
-	tmp_win->ring.cursor_valid = false;
 
-	tmp_win->squeeze_info = NULL;
-	tmp_win->squeeze_info_copied = 0;
+
 	/*
-	 * get the squeeze information; note that this does not have to be freed
-	 * since it is coming from the screen list
+	 * Setup squeezing info.  We don't bother unless the server has Shape
+	 * available, or the window is in our DontSqueezeTitle list.  Else,
+	 * we do/not based on the SqueezeTitle setting.  Note that
+	 * "SqueezeTitle" being specified at all squeezes everything; its
+	 * argument list lets you set specific squeeze params for specific
+	 * windows, but other windows still get the default.
+	 *
+	 * Note that this does not have to be freed yet since it is coming
+	 * from the screen list or from default_squeeze.  Places that change
+	 * it [re]set squeeze_info_copied, and then the destroy handler looks
+	 * at that to determine whether to gree squeeze_info.
+	 *
+	 * XXX Technically, the HasShape test is redundant, since the config
+	 * file parsing would never set Scr->SqueezeTitle unless HasShape
+	 * were true anyway...
 	 */
-	if(HasShape) {
-		if(!LookInList(Scr->DontSqueezeTitleL, tmp_win->full_name,
-		                &tmp_win->class)) {
-			tmp_win->squeeze_info = (SqueezeInfo *)
-			                        LookInList(Scr->SqueezeTitleL, tmp_win->full_name,
-			                                   &tmp_win->class);
-			if(!tmp_win->squeeze_info) {
-				static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
-				if(Scr->SqueezeTitle) {
-					tmp_win->squeeze_info = &default_squeeze;
-				}
-			}
+	if(HasShape && Scr->SqueezeTitle && !CHKL(DontSqueezeTitleL)) {
+		tmp_win->squeeze_info = LookInListWin(Scr->SqueezeTitleL, tmp_win);
+		if(!tmp_win->squeeze_info) {
+			static SqueezeInfo default_squeeze = { SIJ_LEFT, 0, 0 };
+			tmp_win->squeeze_info = &default_squeeze;
 		}
 	}
 
-	tmp_win->old_bw = tmp_win->attr.border_width;
 
+	/*
+	 * Motif WM hints are used in setting up border and titlebar bits, so
+	 * put them in a block here to scope the MWM var.
+	 */
 	{
 		MotifWmHints mwmHints;
 		bool have_title;
 
 		GetMWMHints(tmp_win->w, &mwmHints);
 
+		/*
+		 * Figure border bits.  These are all exclusive cases, so it
+		 * winds up being first-match.
+		 *
+		 * - EWMH, MWM hints, and NoBorder{} can tell us to use none.
+		 * - ThreeDBorderWidth means use it and no regular 2d frame_bw.
+		 * - ClientBorderWidth tells us to use the XWindowAttributes
+		 *   border size rather than ours.
+		 * - Else, our BorderWidth is the [2d] border size.
+		 *
+		 * X-ref comments in win_decorations.c:SetBorderCursor() about
+		 * the somewhat differing treatment of 3d vs non-3d border widths
+		 * and their effects on the window coordinates.
+		 */
 		tmp_win->frame_bw3D = Scr->ThreeDBorderWidth;
 		if(
 #ifdef EWMH
 		        !EwmhHasBorder(tmp_win) ||
 #endif /* EWMH */
 		        (mwm_has_border(&mwmHints) == 0) ||
-		        LookInList(Scr->NoBorder, tmp_win->full_name, &tmp_win->class)) {
+		        CHKL(NoBorder)) {
 			tmp_win->frame_bw = 0;
 			tmp_win->frame_bw3D = 0;
 		}
@@ -447,9 +545,19 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		else {
 			tmp_win->frame_bw = Scr->BorderWidth;
 		}
-		bw2 = tmp_win->frame_bw * 2;
+		bw2 = tmp_win->frame_bw * 2;  // Used repeatedly later
 
 
+		/*
+		 * Now, what about the titlebar?
+		 *
+		 * - Default to showing,
+		 * - Then EWMH gets to say no in some special cases,
+		 * - Then MWM can say yes/no (or refuse to say anything),
+		 * - NoTitle (general setting) gets to override all of that,
+		 * - Specific MakeTitle beats general NoTitle,
+		 * - And specific NoTitle overrides MakeTitle.
+		 */
 		have_title = true;
 #ifdef EWMH
 		have_title = EwmhHasTitle(tmp_win);
@@ -460,14 +568,27 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		if(Scr->NoTitlebar) {
 			have_title = false;
 		}
-		if(LookInList(Scr->MakeTitle, tmp_win->full_name, &tmp_win->class)) {
+		if(CHKL(MakeTitle)) {
 			have_title = true;
 		}
-		if(LookInList(Scr->NoTitle, tmp_win->full_name, &tmp_win->class)) {
+		if(CHKL(NoTitle)) {
 			have_title = false;
 		}
 
-		if(have_title) {
+		/*
+		 * Now mark up how big to make it.  title_height sets how tall
+		 * the titlebar is, with magic treating 0 as "don't make a
+		 * titlebar".  We only care about adding frame_bw and never
+		 * frame_bw3D, since the 3d case interprets all the inner
+		 * coordinates differently (x-ref above x-ref).
+		 *
+		 * Transients may not be decorated regardless of the above
+		 * figuring, so handle that here too.
+		 */
+		if(tmp_win->istransient && !Scr->DecorateTransients) {
+			tmp_win->title_height = 0;
+		}
+		else if(have_title) {
 			tmp_win->title_height = Scr->TitleHeight + tmp_win->frame_bw;
 		}
 		else {
@@ -475,30 +596,17 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
-	tmp_win->OpaqueMove = Scr->DoOpaqueMove;
-	if(LookInList(Scr->OpaqueMoveList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueMove = true;
-	}
-	else if(LookInList(Scr->NoOpaqueMoveList, tmp_win->full_name,
-	                   &tmp_win->class)) {
-		tmp_win->OpaqueMove = false;
-	}
 
-	tmp_win->OpaqueResize = Scr->DoOpaqueResize;
-	if(LookInList(Scr->OpaqueResizeList, tmp_win->full_name, &tmp_win->class)) {
-		tmp_win->OpaqueResize = true;
-	}
-	else if(LookInList(Scr->NoOpaqueResizeList, tmp_win->full_name,
-	                   &tmp_win->class)) {
-		tmp_win->OpaqueResize = false;
-	}
+	/*
+	 * Need the GetWindowAttributes() call and setting ->old_bw and
+	 * ->frame_bw3D for some of the math in looking up the
+	 *  WM_NORMAL_HINTS bits, so now we can do that.
+	 */
+	GetWindowSizeHints(tmp_win);
 
-	/* if it is a transient window, don't put a title on it */
-	if(tmp_win->istransient && !Scr->DecorateTransients) {
-		tmp_win->title_height = 0;
-	}
 
-	if(LookInList(Scr->StartIconified, tmp_win->full_name, &tmp_win->class)) {
+	/* Maybe we're ordering it to start off iconified? */
+	if(CHKL(StartIconified)) {
 		if(!tmp_win->wmhints) {
 			tmp_win->wmhints = malloc(sizeof(XWMHints));
 			tmp_win->wmhints->flags = 0;
@@ -507,88 +615,132 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->flags |= StateHint;
 	}
 
-	GetWindowSizeHints(tmp_win);
 
+	/*
+	 * Figure gravity bits.  When restoring from a previous session, we
+	 * always use NorthWest gravity.
+	 */
 	if(restoredFromPrevSession) {
-		/*
-		 * When restoring window positions from the previous session,
-		 * we always use NorthWest gravity.
-		 */
-
 		gravx = gravy = -1;
 	}
 	else {
 		GetGravityOffsets(tmp_win, &gravx, &gravy);
 	}
 
+
+	/* So far that's the end of where we're using this */
+#undef CHKL
+
+
 	/*
-	 * Don't bother user if:
+	 * Now we start getting more into the active bits of things.  Start
+	 * figuring out how we'll decide where to position it.  ask_user is
+	 * slightly misnamed, as it doesn't actually mean ask the user, but
+	 * rather whether the user/WM gets to choose or whether the
+	 * application does.  That is, we only case about whether or not
+	 * RandomPlacement if(ask_user==true) anyway.  ask_user=false means
+	 * we just go with what's in the window's XWindowAttributes bits.
 	 *
-	 *     o  the window is a transient, or
+	 * We don't even consider overriding the window if:
 	 *
-	 *     o  a USPosition was requested, or
+	 * - It's a transient, or
+	 * - the WM_NORMAL_HINTS property gave us a user-specified position
+	 *   (USPosition), or
+	 * - the hints gave us a a program-specific position (PPosition), and
+	 *   the UsePPosition config param specifies we should use it.
 	 *
-	 *     o  a PPosition was requested and UsePPosition is ON or
-	 *        NON_ZERO if the window is at other than (0,0)
+	 * x-ref ICCCM discussion of WM_NORMAL_HINTS for some details on the
+	 * flags
+	 * (https://www.x.org/releases/X11R7.7/doc/xorg-docs/icccm/icccm.html#Client_Properties)
 	 */
 	ask_user = true;
-	if(tmp_win->istransient ||
-	                (tmp_win->hints.flags & USPosition) ||
-	                ((tmp_win->hints.flags & PPosition) && Scr->UsePPosition &&
-	                 (Scr->UsePPosition == PPOS_ON ||
-	                  tmp_win->attr.x != 0 || tmp_win->attr.y != 0))) {
+	if(tmp_win->istransient) {
 		ask_user = false;
 	}
+	else if(tmp_win->hints.flags & USPosition) {
+		ask_user = false;
+	}
+	else if(tmp_win->hints.flags & PPosition) {
+		if(Scr->UsePPosition == PPOS_ON) {
+			ask_user = false;
+		}
+		else if(Scr->UsePPosition == PPOS_NON_ZERO
+		                && (tmp_win->attr.x != 0 || tmp_win->attr.y != 0)) {
+			ask_user = false;
+		}
+	}
 
-	/*===============[ Matthew McNeill 1997 ]==========================*
-	 * added the occupation parameter to this function call so that the
-	 * occupation can be set up in a specific state if desired
-	 * (restore session for example)
-	 */
 
 	/*
-	 * Note, this may update tmp_win->{parent_,}vs if needed to make the
-	 * window visible in another vscreen.
-	 * It may set tmp_win->vs to NULL if it has no occupation in the
-	 * current workspace.
+	 * Set the window occupation.  If we pulled previous Session info,
+	 * saved_occupation may have data from it that will be used;
+	 * otherwise it's already zeroed and has no effect.  X-ref XXX
+	 * comment on head of the function for notes on order of application
+	 * of various sources for occupation.
+	 *
+	 * Note that SetupOccupation() may update tmp_win->{parent_,}vs if
+	 * needed to make the window visible in another vscreen.  It may also
+	 * set tmp_win->vs to NULL if it has no occupation in the current
+	 * workspace.
 	 */
+	SetupOccupation(tmp_win, saved_occupation);
 
-	if(restoredFromPrevSession) {
-		SetupOccupation(tmp_win, saved_occupation);
-	}
-	else {
-		SetupOccupation(tmp_win, 0);
-	}
-	/*=================================================================*/
 
+	/* Does it go in a window box? */
+	winbox = findWindowBox(tmp_win);
+
+
+	/*
+	 * Set some plausible values for the frame size.
+	 *
+	 * XXX These get redone down below when we create the frame.  So why
+	 * bother here?  I think there's some code in the middle that needs
+	 * at least a reasonable guess onhand; should double check that and
+	 * update this comment (or GC the code) as necessary.
+	 */
 	tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
 	tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D +
 	                        tmp_win->title_height;
 	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
-	winbox = findWindowBox(tmp_win);
+
+
+	/*
+	 * See if there's a WindowRegion we should honor.  If so, it'll set
+	 * the X/Y coords, and we'll want to accept them instead of doing our
+	 * own (or the user's) positioning.
+	 *
+	 * This needs the frame_{width,height}.
+	 */
 	if(PlaceWindowInRegion(tmp_win, &(tmp_win->attr.x), &(tmp_win->attr.y))) {
 		ask_user = false;
 	}
-	if(LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class)) {
-		char *geom;
-		int mask_;
-		geom = LookInList(Scr->WindowGeometries, tmp_win->full_name, &tmp_win->class);
-		mask_ = XParseGeometry(geom, &tmp_win->attr.x, &tmp_win->attr.y,
-		                       (unsigned int *) &tmp_win->attr.width,
-		                       (unsigned int *) &tmp_win->attr.height);
 
-		if(mask_ & XNegative) {
-			tmp_win->attr.x += Scr->rootw - tmp_win->attr.width;
+
+	/*
+	 * Maybe we have WindowGeometries {} set for it?  If so, we'll take
+	 * that as our specifics too.
+	 */
+	{
+		char *geom = LookInListWin(Scr->WindowGeometries, tmp_win);
+		if(geom) {
+			int mask = XParseGeometry(geom, &tmp_win->attr.x, &tmp_win->attr.y,
+			                          (unsigned int *) &tmp_win->attr.width,
+			                          (unsigned int *) &tmp_win->attr.height);
+
+			if(mask & XNegative) {
+				tmp_win->attr.x += Scr->rootw - tmp_win->attr.width;
+			}
+			if(mask & YNegative) {
+				tmp_win->attr.y += Scr->rooth - tmp_win->attr.height;
+			}
+			ask_user = false;
 		}
-		if(mask_ & YNegative) {
-			tmp_win->attr.y += Scr->rooth - tmp_win->attr.height;
-		}
-		ask_user = false;
 	}
 
-	vs = tmp_win->parent_vs;
-	if(vs) {
-		vroot = vs->window;
+
+	/* Figure up what root window we should be working in */
+	if(tmp_win->parent_vs) {
+		vroot = tmp_win->parent_vs->window;
 	}
 	else {
 		vroot = Scr->Root;      /* never */
@@ -598,10 +750,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		vroot = winbox->window;
 	}
 
-	/*
-	 * do any prompting for position
-	 */
 
+	/*
+	 * Handle positioning of the window.  If we're very early in startup
+	 * (setting up ctwm's own windows, taking over windows already on the
+	 * screen), or restoring defined session stuff, or otherwise
+	 * ask_user=false'd above, we just take the already set position
+	 * info.  Otherwise, we handle it via RandomPlacement or user outline
+	 * setting.
+	 *
+	 * XXX Somebody should go through these blocks in more detail,
+	 * they're sure to need further cleaning and commenting.  IWBNI they
+	 * could be encapsulated well enough to move out into separate
+	 * functions, for extra readability...
+	 */
 	if(HandlingEvents && ask_user && !restoredFromPrevSession) {
 		if((Scr->RandomPlacement == RP_ALL) ||
 		                ((Scr->RandomPlacement == RP_UNMAPPED) &&
@@ -779,6 +941,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			                tmp_win->wmhints->initial_state == IconicState)) {
 				bool firsttime = true;
 				int found = 0;
+				int width, height;
+				XEvent event;
 
 				/* better wait until all the mouse buttons have been
 				 * released.
@@ -786,6 +950,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				while(1) {
 					unsigned int qpmask;
 					Window qproot;
+					int stat;
 
 					XUngrabServer(dpy);
 					XSync(dpy, 0);
@@ -846,14 +1011,20 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					}
 				}
 
-				XmbTextExtents(Scr->SizeFont.font_set,
-				               tmp_win->name, namelen,
-				               &ink_rect, &logical_rect);
-				width = SIZE_HINDENT + ink_rect.width;
-				height = logical_rect.height + SIZE_VINDENT * 2;
-				XmbTextExtents(Scr->SizeFont.font_set,
-				               ": ", 2,  &logical_rect, &logical_rect);
-				Scr->SizeStringOffset = width + logical_rect.width;
+				{
+					XRectangle ink_rect;
+					XRectangle logical_rect;
+
+					XmbTextExtents(Scr->SizeFont.font_set,
+					               tmp_win->name, namelen,
+					               &ink_rect, &logical_rect);
+					width = SIZE_HINDENT + ink_rect.width;
+					height = logical_rect.height + SIZE_VINDENT * 2;
+
+					XmbTextExtents(Scr->SizeFont.font_set,
+					               ": ", 2,  NULL, &logical_rect);
+					Scr->SizeStringOffset = width + logical_rect.width;
+				}
 
 				XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
 				              Scr->SizeStringWidth + SIZE_HINDENT, height);
@@ -885,12 +1056,16 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				/*SetFocus (NULL, CurrentTime);*/
 				while(1) {
 					if(Scr->OpenWindowTimeout) {
-						fd = ConnectionNumber(dpy);
+						const int fd = ConnectionNumber(dpy);
 						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
+							fd_set mask;
+							struct timeval timeout = {
+								.tv_sec  = Scr->OpenWindowTimeout,
+								.tv_usec = 0,
+							};
+
 							FD_ZERO(&mask);
 							FD_SET(fd, &mask);
-							timeout.tv_sec  = Scr->OpenWindowTimeout;
-							timeout.tv_usec = 0;
 							found = select(fd + 1, &mask, NULL, NULL, &timeout);
 							if(found == 0) {
 								break;
@@ -952,9 +1127,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				if(found) {
 					if(event.xbutton.button == Button2) {
 						int lastx, lasty;
+						XRectangle logical_rect;
 
 						XmbTextExtents(Scr->SizeFont.font_set,
-						               ": ", 2,  &logical_rect, &logical_rect);
+						               ": ", 2,  NULL, &logical_rect);
 						Scr->SizeStringOffset = width + logical_rect.width;
 
 						XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
@@ -1084,6 +1260,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
+
 #ifdef DEBUG
 	fprintf(stderr, "  position window  %d, %d  %dx%d\n",
 	        tmp_win->attr.x,
@@ -1092,41 +1269,87 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	        tmp_win->attr.height);
 #endif
 
-	if(!Scr->ClientBorderWidth) {       /* need to adjust for twm borders */
+
+	/*
+	 * Possibly need to tweak what it thinks of as its position to
+	 * account for borders.  XXX Verify conditionalization and math.
+	 */
+	if(!Scr->ClientBorderWidth) {
 		int delta = tmp_win->attr.border_width - tmp_win->frame_bw -
 		            tmp_win->frame_bw3D;
 		tmp_win->attr.x += gravx * delta;
 		tmp_win->attr.y += gravy * delta;
 	}
 
+
+	/*
+	 * Init the title width to the window's width.  This will be right as
+	 * long as you're not SqueezeTitle'ing; if you are, we rejigger it in
+	 * SetupFrame().
+	 */
 	tmp_win->title_width = tmp_win->attr.width;
 
-	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
-	if(!tmp_win->icon_name) {
-		tmp_win->icon_name = tmp_win->name;
+
+	/*
+	 * Figure initial screen size of writing out the window name.  This
+	 * is needed when laying out titlebar bits (down in the call chain
+	 * inside SetupFrame()).  The event handler updates this when it
+	 * changes.
+	 */
+	{
+		XRectangle logical_rect;
+		XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen,
+		               NULL, &logical_rect);
+		tmp_win->name_width = logical_rect.width;
 	}
 
-#ifdef CLAUDE
-	if(strstr(tmp_win->icon_name, " - Mozilla")) {
-		char *moz = strstr(tmp_win->icon_name, " - Mozilla");
-		*moz = '\0';
-	}
-#endif
 
-	XmbTextExtents(Scr->TitleBarFont.font_set, tmp_win->name, namelen, &ink_rect,
-	               &logical_rect);
-	tmp_win->name_width = logical_rect.width;
-
+	/* Remove original border if there is one; we make our own now */
 	if(tmp_win->old_bw) {
 		XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 	}
 
-	tmp_win->squeezed = false;
-	tmp_win->iconified = false;
-	tmp_win->isicon = false;
-	tmp_win->icon_on = false;
 
+	/*
+	 * Setup various color bits
+	 */
+#define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->full_name, \
+                &tmp_win->class, &tmp_win->save)
+
+	/* No distinction fore/back for borders in the lists */
+	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
+	tmp_win->borderC.back     = Scr->BorderColorC.back;
+	SETC(BorderColorL, borderC.fore);
+	SETC(BorderColorL, borderC.back);
+
+	tmp_win->border_tile.fore = Scr->BorderTileC.fore;
+	tmp_win->border_tile.back = Scr->BorderTileC.back;
+	SETC(BorderTileForegroundL, border_tile.fore);
+	SETC(BorderTileBackgroundL, border_tile.back);
+
+	tmp_win->title.fore       = Scr->TitleC.fore;
+	tmp_win->title.back       = Scr->TitleC.back;
+	SETC(TitleForegroundL, title.fore);
+	SETC(TitleBackgroundL, title.fore);
+
+#undef SETC
+
+	/* Shading on 3d bits */
+	if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
+		GetShadeColors(&tmp_win->title);
+	}
+	if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+		GetShadeColors(&tmp_win->borderC);
+		GetShadeColors(&tmp_win->border_tile);
+	}
+
+
+	/*
+	 * Following bits are more active, and we want to make sure nothing
+	 * else gets to do anything with the server while we're doing it.
+	 */
 	XGrabServer(dpy);
+
 
 	/*
 	 * Make sure the client window still exists.  We don't want to leave an
@@ -1152,12 +1375,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			Scr->RingLeader = Scr->Ring;
 		}
 
+		/* XXX Leaky as all hell */
 		free(tmp_win);
 		XUngrabServer(dpy);
 		return(NULL);
 	}
 
-	/* add the window into the twm list */
+
+	/* Link the window into our list of all the TwmWindow's */
 	tmp_win->next = Scr->FirstWindow;
 	if(Scr->FirstWindow != NULL) {
 		Scr->FirstWindow->prev = tmp_win;
@@ -1165,113 +1390,154 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->prev = NULL;
 	Scr->FirstWindow = tmp_win;
 
-	/* get all the colors for the window */
 
-	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
-	tmp_win->borderC.back     = Scr->BorderColorC.back;
-	tmp_win->border_tile.fore = Scr->BorderTileC.fore;
-	tmp_win->border_tile.back = Scr->BorderTileC.back;
-	tmp_win->title.fore       = Scr->TitleC.fore;
-	tmp_win->title.back       = Scr->TitleC.back;
 
-	GetColorFromList(Scr->BorderColorL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->borderC.fore);
-	GetColorFromList(Scr->BorderColorL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->borderC.back);
-	GetColorFromList(Scr->BorderTileForegroundL, tmp_win->full_name,
-	                 &tmp_win->class, &tmp_win->border_tile.fore);
-	GetColorFromList(Scr->BorderTileBackgroundL, tmp_win->full_name,
-	                 &tmp_win->class, &tmp_win->border_tile.back);
-	GetColorFromList(Scr->TitleForegroundL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->title.fore);
-	GetColorFromList(Scr->TitleBackgroundL, tmp_win->full_name, &tmp_win->class,
-	                 &tmp_win->title.back);
+	/*
+	 * Start creating the other X windows we wrap around it for
+	 * decorations.  X-ref discussion in win_decorations.c for the
+	 * details of what they all are and why they're there.
+	 *
+	 * XXX Good candidate for moving out into a helper function...
+	 */
 
-	if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
-		GetShadeColors(&tmp_win->title);
+
+	/*
+	 * First, the frame
+	 */
+	{
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+
+		/*
+		 * Figure size/position.
+		 */
+		tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw
+		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
+		tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height
+		                   + tmp_win->old_bw
+		                   - tmp_win->frame_bw - tmp_win->frame_bw3D;
+		tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
+		tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D
+		                        + tmp_win->title_height;
+
+		/* Adjust based on hints */
+		ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
+
+		/*
+		 * Adjust as necessary to keep things on-screen.  If we [ctwm]
+		 * chose the position, CBB() involves checking things like
+		 * MoveOffResistance etc to keep it on.
+		 */
+		if(random_placed) {
+			ConstrainByBorders(tmp_win, &tmp_win->frame_x, tmp_win->frame_width,
+			                   &tmp_win->frame_y, tmp_win->frame_height);
+		}
+
+		/* No matter what, make sure SOME part of the window is on-screen */
+		if((tmp_win->frame_x > Scr->rootw) ||
+		                (tmp_win->frame_y > Scr->rooth) ||
+		                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
+		                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
+			tmp_win->frame_x = 0;
+			tmp_win->frame_y = 0;
+		}
+
+		/* May need adjusting for vscreens too */
+		DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
+
+
+		/*
+		 * Setup the X attributes for the frame.
+		 */
+		valuemask = CWBackPixmap | CWBorderPixel | CWBackPixel
+		            | CWCursor | CWEventMask;
+		attributes.background_pixmap = None;
+		attributes.border_pixel = tmp_win->border_tile.back;
+		attributes.background_pixel = tmp_win->border_tile.back;
+		attributes.cursor = Scr->FrameCursor;
+		attributes.event_mask = (SubstructureRedirectMask
+		                         | ButtonPressMask | ButtonReleaseMask
+		                         | EnterWindowMask | LeaveWindowMask
+		                         | ExposureMask);
+
+		/*
+		 * If we have BorderResizeCursors, we need to know about motions
+		 * in the window to know when to change (e.g., for corners).
+		 */
+		if(Scr->BorderCursors) {
+			attributes.event_mask |= PointerMotionMask;
+		}
+
+		/*
+		 * If the real window specified save_under or a specific gravity,
+		 * set them on the frame too.
+		 */
+		if(tmp_win->attr.save_under) {
+			attributes.save_under = True;
+			valuemask |= CWSaveUnder;
+		}
+		if(tmp_win->hints.flags & PWinGravity) {
+			attributes.win_gravity = tmp_win->hints.win_gravity;
+			valuemask |= CWWinGravity;
+		}
+
+
+		/* And create */
+		tmp_win->frame = XCreateWindow(dpy, vroot,
+		                               tmp_win->frame_x, tmp_win->frame_y,
+		                               tmp_win->frame_width,
+		                               tmp_win->frame_height,
+		                               tmp_win->frame_bw,
+		                               Scr->d_depth, CopyFromParent,
+		                               Scr->d_visual, valuemask, &attributes);
+		XStoreName(dpy, tmp_win->frame, "CTWM frame");
 	}
-	if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-		GetShadeColors(&tmp_win->borderC);
-		GetShadeColors(&tmp_win->border_tile);
-	}
-	/* create windows */
 
-	tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->frame_bw
-	                   - tmp_win->frame_bw3D;
-	tmp_win->frame_y = tmp_win->attr.y - tmp_win->title_height +
-	                   tmp_win->old_bw - tmp_win->frame_bw - tmp_win->frame_bw3D;
-	tmp_win->frame_width = tmp_win->attr.width + 2 * tmp_win->frame_bw3D;
-	tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height +
-	                        2 * tmp_win->frame_bw3D;
 
-	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
-	if(random_placed)
-		ConstrainByBorders(tmp_win, &tmp_win->frame_x, tmp_win->frame_width,
-		                   &tmp_win->frame_y, tmp_win->frame_height);
-
-	valuemask = CWBackPixmap | CWBorderPixel | CWCursor | CWEventMask | CWBackPixel;
-	attributes.background_pixmap = None;
-	attributes.border_pixel = tmp_win->border_tile.back;
-	attributes.background_pixel = tmp_win->border_tile.back;
-	attributes.cursor = Scr->FrameCursor;
-	attributes.event_mask = (SubstructureRedirectMask |
-	                         ButtonPressMask | ButtonReleaseMask |
-	                         EnterWindowMask | LeaveWindowMask | ExposureMask);
-	if(Scr->BorderCursors) {
-		attributes.event_mask |= PointerMotionMask;
-	}
-	if(tmp_win->attr.save_under) {
-		attributes.save_under = True;
-		valuemask |= CWSaveUnder;
-	}
-	if(tmp_win->hints.flags & PWinGravity) {
-		attributes.win_gravity = tmp_win->hints.win_gravity;
-		valuemask |= CWWinGravity;
-	}
-
-	if((tmp_win->frame_x > Scr->rootw) ||
-	                (tmp_win->frame_y > Scr->rooth) ||
-	                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
-	                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
-		tmp_win->frame_x = 0;
-		tmp_win->frame_y = 0;
-	}
-
-	DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
-
-	tmp_win->frame = XCreateWindow(dpy, vroot, tmp_win->frame_x, tmp_win->frame_y,
-	                               tmp_win->frame_width,
-	                               tmp_win->frame_height,
-	                               tmp_win->frame_bw,
-	                               Scr->d_depth,
-	                               CopyFromParent,
-	                               Scr->d_visual, valuemask, &attributes);
-	XStoreName(dpy, tmp_win->frame, "CTWM frame");
-
+	/*
+	 * Next, the titlebar, if we have one
+	 */
 	if(tmp_win->title_height) {
-		valuemask = (CWEventMask | CWDontPropagate | CWBorderPixel | CWBackPixel);
-		attributes.event_mask = (KeyPressMask | ButtonPressMask |
-		                         ButtonReleaseMask | ExposureMask);
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+		int x, y;
+
+		/*
+		 * We need to know about keys/buttons and exposure of the
+		 * titlebar, for bindings and repaining.  And leave to X server
+		 * bits about border/background.
+		 */
+		valuemask = (CWEventMask | CWDontPropagate
+		             | CWBorderPixel | CWBackPixel);
+		attributes.event_mask = (KeyPressMask | ButtonPressMask
+		                         | ButtonReleaseMask | ExposureMask);
 		attributes.do_not_propagate_mask = PointerMotionMask;
 		attributes.border_pixel = tmp_win->borderC.back;
 		attributes.background_pixel = tmp_win->title.back;
-		tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
-		                                 tmp_win->frame_bw3D - tmp_win->frame_bw,
-		                                 tmp_win->frame_bw3D - tmp_win->frame_bw,
+
+
+		/* Create */
+		x = y = tmp_win->frame_bw3D - tmp_win->frame_bw;
+		tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame, x, y,
 		                                 tmp_win->attr.width,
-		                                 Scr->TitleHeight,
-		                                 tmp_win->frame_bw,
-		                                 Scr->d_depth,
-		                                 CopyFromParent,
-		                                 Scr->d_visual, valuemask,
-		                                 &attributes);
+		                                 Scr->TitleHeight, tmp_win->frame_bw,
+		                                 Scr->d_depth, CopyFromParent,
+		                                 Scr->d_visual, valuemask, &attributes);
 		XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");
 	}
 	else {
-		tmp_win->title_w = 0;
+		tmp_win->title_w = None;
 		tmp_win->squeeze_info = NULL;
 	}
 
+
+	/*
+	 * If we're highlighting borders on focus, we need the pixmap to do
+	 * it.
+	 *
+	 * XXX I'm not at all sure this can't just be global and shared, so
+	 * we don't have to create one per window...
+	 */
 	if(tmp_win->highlight) {
 		char *which;
 
@@ -1292,8 +1558,18 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->gray = None;
 	}
 
+
+	/*
+	 * Setup OTP bits for stacking
+	 */
 	OtpAdd(tmp_win, WinWin);
 
+
+	/*
+	 * Setup the stuff inside the titlebar window, if we have it.  If we
+	 * don't, fake up the coordinates where the titlebar would be for
+	 * <reasons>.
+	 */
 	if(tmp_win->title_w) {
 		ComputeTitleLocation(tmp_win);
 		CreateWindowTitlebarButtons(tmp_win);
@@ -1306,23 +1582,50 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->title_y = tmp_win->frame_bw3D - tmp_win->frame_bw;
 	}
 
-	valuemask = (CWEventMask | CWDontPropagate);
-	attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
-	                         ColormapChangeMask | VisibilityChangeMask |
-	                         FocusChangeMask |
-	                         EnterWindowMask | LeaveWindowMask);
-	attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask |
-	                                   PointerMotionMask;
-	XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
 
+	/*
+	 * Setup various events we want to hear about related to this window.
+	 */
+	{
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+
+		valuemask = (CWEventMask | CWDontPropagate);
+		attributes.event_mask = (StructureNotifyMask | PropertyChangeMask
+		                         | ColormapChangeMask | VisibilityChangeMask
+		                         | FocusChangeMask
+		                         | EnterWindowMask | LeaveWindowMask);
+		attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask
+		                                   | PointerMotionMask;
+		XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
+	}
+
+	/*
+	 * If it's using Shape, we want to know about changes from that too.
+	 *
+	 * XXX We're doing this again below?
+	 */
 	if(HasShape) {
 		XShapeSelectInput(dpy, tmp_win->w, ShapeNotifyMask);
 	}
 
+
+	/*
+	 * Map up the title window if we have one.  As a sub-window of the
+	 * frame, it'll only actually show up in the screen if the frame
+	 * does, of course.
+	 */
 	if(tmp_win->title_w) {
 		XMapWindow(dpy, tmp_win->title_w);
 	}
 
+
+	/*
+	 * If it's got Shape, look up info about that shaping, and subscribe
+	 * to notifications about changes in it.
+	 *
+	 * XXX x-ref above XXX about doing the SelectInput twice.
+	 */
 	if(HasShape) {
 		int xws, yws, xbs, ybs;
 		unsigned wws, hws, wbs, hbs;
@@ -1335,73 +1638,116 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wShaped = boundingShaped;
 	}
 
+
+	/*
+	 * If it's a normal window (i.e., not one of ctwm's internal ones),
+	 * add it to the "save set", which means that even if ctwm disappears
+	 * without doing any cleanup, it'll still show back up on the screen
+	 * like normal.  Otherwise, if you kill or segfault ctwm, all the
+	 * other things you're running get their windows lost.
+	 */
 	if(!tmp_win->isiconmgr && ! tmp_win->iswspmgr &&
 	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
 
+
+	/*
+	 * Now reparent the real window into our frame.
+	 */
 	XReparentWindow(dpy, tmp_win->w, tmp_win->frame, tmp_win->frame_bw3D,
 	                tmp_win->title_height + tmp_win->frame_bw3D);
+
 	/*
-	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
-	 * Set the map state to false to prevent a transition back to
-	 * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
-	 * again in HandleMapNotify.
+	 * Reparenting generates an UnmapNotify event, followed by a
+	 * MapNotify.  Set the map state to false to prevent a transition
+	 * back to WithdrawnState in HandleUnmapNotify.  ->mapped gets set
+	 * correctly again in HandleMapNotify.
 	 */
 	tmp_win->mapped = false;
 
+
+	/*
+	 * Call SetupFrame() which does all sorta of magic figuring to set
+	 * the various coordinates and offsets and whatnot for all the pieces
+	 * inside our frame.
+	 */
 	SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
 	           tmp_win->frame_width, tmp_win->frame_height, -1, true);
 
-	/* wait until the window is iconified and the icon window is mapped
-	 * before creating the icon window
-	 */
-	tmp_win->icon = NULL;
-	tmp_win->iconslist = NULL;
 
+	/*
+	 * Don't setup the icon window and its bits; when the window is
+	 * iconified the first time, that handler will do what needs to be
+	 * done for it, so we don't have to.
+	 */
+
+
+	/*
+	 * If it's anything other than our own icon manager, setup button/key
+	 * bindings for it.  For icon managers, this is done for them at the
+	 * end of CreateIconManagers(), not here.  X-ref comments there and
+	 * on the function defs below for some discussion about whether it
+	 * _should_ work this way.
+	 */
 	if(!tmp_win->isiconmgr) {
 		GrabButtons(tmp_win);
 		GrabKeys(tmp_win);
 	}
 
+
+	/* Add this window to the appropriate icon manager[s] */
 	AddIconManager(tmp_win);
 
-	XSaveContext(dpy, tmp_win->w, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, tmp_win->w, ScreenContext, (XPointer) Scr);
-	XSaveContext(dpy, tmp_win->frame, TwmContext, (XPointer) tmp_win);
-	XSaveContext(dpy, tmp_win->frame, ScreenContext, (XPointer) Scr);
 
+	/*
+	 * Stash up info about this TwmWindow and its screen in contexts on
+	 * the real window and our various decorations around it.  This is
+	 * how we find out what TwmWindow things like events are happening
+	 * in.
+	 */
+#define SETCTXS(win) do { \
+                XSaveContext(dpy, win, TwmContext, (XPointer) tmp_win); \
+                XSaveContext(dpy, win, ScreenContext, (XPointer) Scr); \
+        } while(0)
+
+	/* The real window and our frame */
+	SETCTXS(tmp_win->w);
+	SETCTXS(tmp_win->frame);
+
+	/* Cram that all into any titlebar [sub]windows too */
 	if(tmp_win->title_height) {
 		int i;
 		int nb = Scr->TBInfo.nleft + Scr->TBInfo.nright;
 
-		XSaveContext(dpy, tmp_win->title_w, TwmContext, (XPointer) tmp_win);
-		XSaveContext(dpy, tmp_win->title_w, ScreenContext, (XPointer) Scr);
+		SETCTXS(tmp_win->title_w);
+
 		for(i = 0; i < nb; i++) {
-			XSaveContext(dpy, tmp_win->titlebuttons[i].window, TwmContext,
-			             (XPointer) tmp_win);
-			XSaveContext(dpy, tmp_win->titlebuttons[i].window, ScreenContext,
-			             (XPointer) Scr);
+			SETCTXS(tmp_win->titlebuttons[i].window);
 		}
 		if(tmp_win->hilite_wl) {
-			XSaveContext(dpy, tmp_win->hilite_wl, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->hilite_wl, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->hilite_wl);
 		}
 		if(tmp_win->hilite_wr) {
-			XSaveContext(dpy, tmp_win->hilite_wr, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->hilite_wr, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->hilite_wr);
 		}
 		if(tmp_win->lolite_wl) {
-			XSaveContext(dpy, tmp_win->lolite_wl, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->lolite_wl, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->lolite_wl);
 		}
 		if(tmp_win->lolite_wr) {
-			XSaveContext(dpy, tmp_win->lolite_wr, TwmContext, (XPointer)tmp_win);
-			XSaveContext(dpy, tmp_win->lolite_wr, ScreenContext, (XPointer)Scr);
+			SETCTXS(tmp_win->lolite_wr);
 		}
 	}
 
+#undef SETCTXS
+
+	/*
+	 * OK, that's all we need to do while the server's grabbed.  After
+	 * this point, other clients might sneak in stuff between our
+	 * actions, so they can't be considered atomic anymore.
+	 */
 	XUngrabServer(dpy);
+
 
 	/*
 	 * If we were in the middle of a menu activated function that was
@@ -1417,13 +1763,39 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		ReGrab();
 	}
 
+
+	/*
+	 * Add to the workspace manager.  Unless this IS the workspace
+	 * manager, in which case that would just be silly.
+	 */
 	if(!tmp_win->iswspmgr) {
 		WMapAddWindow(tmp_win);
 	}
+
+
+	/*
+	 * If ths window being created is a new captive [sub-]ctwm, we setup
+	 * a property on it for unclear reasons.  x-ref comments on the
+	 * function.
+	 */
 	SetPropsIfCaptiveCtwm(tmp_win);
+
+
+	/*
+	 * Init saved geometry with the current, as if f.savegeometry was
+	 * called on the window right away.  That way f.restoregeometry can't
+	 * get confuzzled.
+	 */
 	savegeometry(tmp_win);
-	return (tmp_win);
+
+
+	/*
+	 * And that's it; we created all the bits!
+	 */
+	return tmp_win;
 }
+
+
 
 
 /*
@@ -1703,18 +2075,4 @@ DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
 	else {
 	}
 
-}
-
-
-/*
- * Figure out if a window is a transient, and stash what it's transient
- * for.
- *
- * Previously in events.c.  Strictly win_utils-ish, but only used in
- * AddWindow(), so might as well leave it here and static for now.
- */
-static bool
-Transient(Window w, Window *propw)
-{
-	return (bool)XGetTransientForHint(dpy, w, propw);
 }

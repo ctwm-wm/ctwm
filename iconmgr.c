@@ -214,9 +214,9 @@ void CreateIconManagers(void)
 	 * for icon managers.  It's not at all clear why GrabButtons() would
 	 * do so; I don't think it needs to.  GrabKeys() does do some looping
 	 * over the Scr->iconmgr list at the end though, so it's possible we
-	 * need to delay calling it until now when they list is all filled
-	 * up.  This needs further investigation; it may be that the special
-	 * case and this code can be removed.  X-ref comments in add_window.c
+	 * need to delay calling it until now when the list is all filled up.
+	 * This needs further investigation; it may be that the special case
+	 * and this code can be removed.  X-ref comments in add_window.c
 	 * about it.
 	 */
 	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
