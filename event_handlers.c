@@ -1134,7 +1134,16 @@ void HandlePropertyNotify(void)
 			Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
 
 			if(!Tmp_win->wmhints) {
-				/* XXX Create fake */
+				Tmp_win->wmhints = gen_synthetic_wmhints(Tmp_win);
+			}
+			if(!Tmp_win->wmhints) {
+				/*
+				 * Uhhh....   trouble.  Biiiig trouble.  Probably a
+				 * segfault coming down the pipe...
+				 */
+				fprintf(stderr, "Couldn't allocate hints for win 0x%lx (%s)!\n"
+				                "ctwm is probably going to die soon...\n",
+				                Tmp_win->w, Tmp_win->full_name);
 				break;
 			}
 
