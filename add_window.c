@@ -315,34 +315,43 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * Setup WM_HINTS bits
+	 * Setup WM_HINTS bits.  If we get nothing, we hardcode an
+	 * assumption.
 	 */
 	tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
-
-	if(tmp_win->wmhints) {
-		if(restore_iconified) {
-			tmp_win->wmhints->initial_state = IconicState;
-			tmp_win->wmhints->flags |= StateHint;
-		}
-
-		if(restore_icon_info_present) {
-			tmp_win->wmhints->icon_x = restore_icon_x;
-			tmp_win->wmhints->icon_y = restore_icon_y;
-			tmp_win->wmhints->flags |= IconPositionHint;
+	if(!tmp_win->wmhints) {
+		tmp_win->wmhints = gen_synthetic_wmhints(tmp_win);
+		if(!tmp_win->wmhints) {
+			fprintf(stderr, "Failed allocating memory for hints!\n");
+			free(tmp_win); // XXX leaky
+			return NULL;
 		}
 	}
 
-	if(tmp_win->wmhints) {
-		tmp_win->wmhints->input = True;
+	if(restore_iconified) {
+		tmp_win->wmhints->initial_state = IconicState;
+		tmp_win->wmhints->flags |= StateHint;
 	}
+
+	if(restore_icon_info_present) {
+		tmp_win->wmhints->icon_x = restore_icon_x;
+		tmp_win->wmhints->icon_y = restore_icon_y;
+		tmp_win->wmhints->flags |= IconPositionHint;
+	}
+
+	/* XXX Forcing input true?  Revisit. */
+	tmp_win->wmhints->input = True;
+
 	/* CL: Having with not willing focus
 	cause problems with AutoSqueeze and a few others
 	things. So I suppress it. And the whole focus thing
 	is buggy anyway */
-	if(tmp_win->wmhints && !(tmp_win->wmhints->flags & InputHint)) {
+	if(!(tmp_win->wmhints->flags & InputHint)) {
 		tmp_win->wmhints->input = True;
 	}
-	if(tmp_win->wmhints && (tmp_win->wmhints->flags & WindowGroupHint)) {
+
+	/* Setup group bits */
+	if(tmp_win->wmhints->flags & WindowGroupHint) {
 		tmp_win->group = tmp_win->wmhints->window_group;
 		if(tmp_win->group) {
 			/*
@@ -607,10 +616,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	/* Maybe we're ordering it to start off iconified? */
 	if(CHKL(StartIconified)) {
-		if(!tmp_win->wmhints) {
-			tmp_win->wmhints = malloc(sizeof(XWMHints));
-			tmp_win->wmhints->flags = 0;
-		}
 		tmp_win->wmhints->initial_state = IconicState;
 		tmp_win->wmhints->flags |= StateHint;
 	}
@@ -767,7 +772,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	if(HandlingEvents && ask_user && !restoredFromPrevSession) {
 		if((Scr->RandomPlacement == RP_ALL) ||
 		                ((Scr->RandomPlacement == RP_UNMAPPED) &&
-		                 ((tmp_win->wmhints && (tmp_win->wmhints->initial_state == IconicState)) ||
+		                 ((tmp_win->wmhints->initial_state == IconicState) ||
 		                  (! visible(tmp_win))))) {  /* just stick it somewhere */
 
 #ifdef DEBUG
@@ -937,7 +942,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			random_placed = true;
 		}
 		else {                            /* else prompt */
-			if(!(tmp_win->wmhints && tmp_win->wmhints->flags & StateHint &&
+			if(!(tmp_win->wmhints->flags & StateHint &&
 			                tmp_win->wmhints->initial_state == IconicState)) {
 				bool firsttime = true;
 				int found = 0;

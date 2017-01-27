@@ -145,6 +145,10 @@ remnants of special-case VMS support have been removed.
     Occupy window no longer loses it and leaves you unable to pull it up
     again.  Minor undersizing in some cases fixed.
 
+1. Windows which fail to use the WM_HINTS property to tell us things like
+    whether they want us to give them focus are now explicitly given
+    focus anyway.  This should fix focus problems with some apps.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted

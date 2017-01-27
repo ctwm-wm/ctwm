@@ -860,3 +860,45 @@ send_clientmessage(Window w, Atom a, Time timestamp)
 	ev.data.l[1] = timestamp;
 	XSendEvent(dpy, w, False, 0L, (XEvent *) &ev);
 }
+
+
+/*
+ * Create synthetic WM_HINTS info for windows.  When a window specifies
+ * stuff, we should probably pay attention to it (though we don't
+ * always; x-ref comments in AddWindow() especially about focus).
+ * However, when it doesn't tell us anything at all, we should assume
+ * something useful.  "Window managers are free to assume convenient
+ * values for all fields of the WM_HINTS property if a window is mapped
+ * without one."  (ICCCM Ch. 4,
+ * <https://www.x.org/releases/X11R7.7/doc/xorg-docs/icccm/icccm.html#Client_Properties>).
+ *
+ * Specifically, we assume it wants us to give it focus.  It's fairly
+ * bogus for a window not to tell us anything, but e.g current versions
+ * of Chrome do (don't do) just that.  So we better make up something
+ * useful.
+ *
+ * Should probably be some configurability for this, so make the func
+ * take the window, even though we don't currently do anything useful
+ * with it...
+ */
+XWMHints *
+gen_synthetic_wmhints(TwmWindow *win)
+{
+	XWMHints *hints;
+
+	hints = XAllocWMHints();
+	if(!hints) {
+		return NULL;
+	}
+
+	/*
+	 * Reasonable defaults.  Takes input, in normal state.
+	 *
+	 * XXX Make configurable?
+	 */
+	hints->flags = InputHint | StateHint;
+	hints->input = True;
+	hints->initial_state = NormalState;
+
+	return hints;
+}

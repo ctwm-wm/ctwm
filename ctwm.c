@@ -1118,7 +1118,7 @@ void RestoreWithdrawnLocation(TwmWindow *tmp)
 		}
 		XConfigureWindow(dpy, tmp->w, mask, &xwc);
 
-		if(tmp->wmhints && (tmp->wmhints->flags & IconWindowHint)) {
+		if(tmp->wmhints->flags & IconWindowHint) {
 			XUnmapWindow(dpy, tmp->wmhints->icon_window);
 		}
 
