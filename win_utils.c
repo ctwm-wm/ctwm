@@ -872,12 +872,14 @@ send_clientmessage(Window w, Atom a, Time timestamp)
  * without one."  (ICCCM Ch. 4,
  * <https://www.x.org/releases/X11R7.7/doc/xorg-docs/icccm/icccm.html#Client_Properties>).
  *
- * Specifically, we assume it wants us to give it focus.  It's bogus for
- * a window not to tell us that, but e.g current versions of Chrome do
- * (don't do) just that.
+ * Specifically, we assume it wants us to give it focus.  It's fairly
+ * bogus for a window not to tell us anything, but e.g current versions
+ * of Chrome do (don't do) just that.  So we better make up something
+ * useful.
  *
- * Should probably be some configurability for this, so make it take the
- * window, even though we don't currently do anything useful with it...
+ * Should probably be some configurability for this, so make the func
+ * take the window, even though we don't currently do anything useful
+ * with it...
  */
 XWMHints *
 gen_synthetic_wmhints(TwmWindow *win)
