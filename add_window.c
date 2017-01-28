@@ -1326,8 +1326,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
                 &tmp_win->class, &tmp_win->save)
 
 	/* No distinction fore/back for borders in the lists */
-	tmp_win->borderC.fore     = Scr->BorderColorC.fore;
-	tmp_win->borderC.back     = Scr->BorderColorC.back;
+	tmp_win->borderC.fore = Scr->BorderColorC.fore;
+	tmp_win->borderC.back = Scr->BorderColorC.back;
 	SETC(BorderColorL, borderC.fore);
 	SETC(BorderColorL, borderC.back);
 
@@ -1336,8 +1336,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	SETC(BorderTileForegroundL, border_tile.fore);
 	SETC(BorderTileBackgroundL, border_tile.back);
 
-	tmp_win->title.fore       = Scr->TitleC.fore;
-	tmp_win->title.back       = Scr->TitleC.back;
+	tmp_win->title.fore = Scr->TitleC.fore;
+	tmp_win->title.back = Scr->TitleC.back;
 	SETC(TitleForegroundL, title.fore);
 	SETC(TitleBackgroundL, title.fore);
 
