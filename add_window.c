@@ -680,8 +680,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Set the window occupation.  If we pulled previous Session info,
 	 * saved_occupation may have data from it that will be used;
 	 * otherwise it's already zeroed and has no effect.  X-ref XXX
-	 * comment on head of the function for notes on order of application
-	 * of various sources for occupation.
+	 * comment on SetupOccupation() for notes on order of application of
+	 * various sources for occupation.
 	 *
 	 * Note that SetupOccupation() may update tmp_win->{parent_,}vs if
 	 * needed to make the window visible in another vscreen.  It may also
