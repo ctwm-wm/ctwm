@@ -773,7 +773,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		if((Scr->RandomPlacement == RP_ALL) ||
 		                ((Scr->RandomPlacement == RP_UNMAPPED) &&
 		                 ((tmp_win->wmhints->initial_state == IconicState) ||
-		                  (! visible(tmp_win))))) {  /* just stick it somewhere */
+		                  (! visible(tmp_win))))) {
+		    /* just stick it somewhere */
 
 #ifdef DEBUG
 			fprintf(stderr,
@@ -1258,8 +1259,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			}
 		}
 	}
-	else {                            /* put it where asked, mod title bar */
-		/* if the gravity is towards the top, move it by the title height */
+	else {
+		/*
+		 * Put it where asked, mod title bar.  If the gravity is towards
+		 * the top, move it by the title height.
+		 */
 		if(gravy < 0) {
 			tmp_win->attr.y -= gravy * tmp_win->title_height;
 		}
