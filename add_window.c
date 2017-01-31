@@ -251,12 +251,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	                       &tmp_win->transientfor);
 	if(tmp_win->istransient) {
 		/*
-		 * XXX Should this been looking up transientfor instead of
-		 * tmp_win?  It seems like IgnoreTransient {} would list the
-		 * windows that have transients we should ignore, while this
-		 * condition makes it list the transient window names we should
-		 * ignore.  Probably not trivial to fix if that's right, since it
-		 * might b0rk existing configs...
+		 * XXX Should this be looking up transientfor instead of tmp_win?
+		 * It seems like IgnoreTransient {} would list the windows that
+		 * have transients we should ignore, while this condition makes
+		 * it list the transient window names we should ignore.  Probably
+		 * not trivial to fix if that's right, since it might b0rk
+		 * existing configs...
 		 */
 		if(CHKL(IgnoreTransientL)) {
 			tmp_win->istransient = false;
