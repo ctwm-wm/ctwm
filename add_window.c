@@ -496,7 +496,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * Note that this does not have to be freed yet since it is coming
 	 * from the screen list or from default_squeeze.  Places that change
 	 * it [re]set squeeze_info_copied, and then the destroy handler looks
-	 * at that to determine whether to gree squeeze_info.
+	 * at that to determine whether to free squeeze_info.
 	 *
 	 * XXX Technically, the HasShape test is redundant, since the config
 	 * file parsing would never set Scr->SqueezeTitle unless HasShape
