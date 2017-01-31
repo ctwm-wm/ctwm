@@ -1624,8 +1624,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * If it's got Shape, look up info about that shaping, and subscribe
 	 * to notifications about changes in it.
-	 *
-	 * XXX x-ref above XXX about doing the SelectInput twice.
 	 */
 	if(HasShape) {
 		int xws, yws, xbs, ybs;
