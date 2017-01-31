@@ -1339,7 +1339,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->title.fore = Scr->TitleC.fore;
 	tmp_win->title.back = Scr->TitleC.back;
 	SETC(TitleForegroundL, title.fore);
-	SETC(TitleBackgroundL, title.fore);
+	SETC(TitleBackgroundL, title.back);
 
 #undef SETC
 
