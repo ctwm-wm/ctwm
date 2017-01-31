@@ -1610,15 +1610,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
 	}
 
-	/*
-	 * If it's using Shape, we want to know about changes from that too.
-	 *
-	 * XXX We're doing this again below?
-	 */
-	if(HasShape) {
-		XShapeSelectInput(dpy, tmp_win->w, ShapeNotifyMask);
-	}
-
 
 	/*
 	 * Map up the title window if we have one.  As a sub-window of the
