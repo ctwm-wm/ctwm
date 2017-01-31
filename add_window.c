@@ -1356,6 +1356,13 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * Following bits are more active, and we want to make sure nothing
 	 * else gets to do anything with the server while we're doing it.
+	 *
+	 * Minor investigations seems to suggest we could pull a number of
+	 * these things out (mostly to later, but probably some to earlier)
+	 * so we keep the server grabbed for a shorter period of time.  I'm
+	 * not putting significant effort into finding out what we could pull
+	 * out because it's already plenty fast, but there is probably fruit
+	 * that could be plucked if somebody finds it not so.
 	 */
 	XGrabServer(dpy);
 
