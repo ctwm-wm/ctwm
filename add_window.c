@@ -696,19 +696,23 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * Set some plausible values for the frame size.
+	 * Set some values for the frame size.
 	 *
-	 * XXX These get redone down below when we create the frame.  So why
-	 * bother here?  I think there's some code in the middle that needs
-	 * at least a reasonable guess onhand; should double check that and
-	 * update this comment (or GC the code) as necessary.
-	 *
-	 * Checked all but positioning block.
+	 * These get redone down below when we create the frame, when they're
+	 * actually useful.  So why bother here?  There is some code down in
+	 * the block where we prompt for a window position that calls some
+	 * functions that need plausible values in them.  However, those code
+	 * blocks calculate and set values themselves, so there shouldn't be
+	 * any actual need for them here.  Left #if'd out for the present in
+	 * case something turns up; this should be GC'd at some point if
+	 * nothing does.
 	 */
+#if 0
 	tmp_win->frame_width  = tmp_win->attr.width  + 2 * tmp_win->frame_bw3D;
 	tmp_win->frame_height = tmp_win->attr.height + 2 * tmp_win->frame_bw3D +
 	                        tmp_win->title_height;
 	ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
+#endif
 
 
 	/*
@@ -1059,6 +1063,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			                   SIZE_VINDENT + Scr->SizeFont.ascent, ": ", 2);
 			DisplayPosition(tmp_win, AddingX, AddingY);
 
+			/*
+			 * The TryTo*() and DoResize() calls below rely on having
+			 * frame_{width,height} set, so set them.
+			 */
 			tmp_win->frame_width  = AddingW;
 			tmp_win->frame_height = AddingH;
 			/*SetFocus (NULL, CurrentTime);*/
