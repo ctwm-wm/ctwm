@@ -1106,7 +1106,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 							TryToPack(tmp_win, &AddingX, &AddingY);
 						}
 
-						/* DontMoveOff prohibits user form off-screen placement */
+						/* DontMoveOff prohibits user from off-screen placement */
 						if(Scr->DontMoveOff) {
 							ConstrainByBorders(tmp_win, &AddingX, AddingW, &AddingY, AddingH);
 						}
