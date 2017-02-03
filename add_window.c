@@ -944,7 +944,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 			random_placed = true;
 		}
-		else {                            /* else prompt */
+		else {
+			/* else prompt */
 			if(!(tmp_win->wmhints->flags & StateHint &&
 			                tmp_win->wmhints->initial_state == IconicState)) {
 				bool firsttime = true;
