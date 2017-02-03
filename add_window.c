@@ -776,7 +776,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		                ((Scr->RandomPlacement == RP_UNMAPPED) &&
 		                 ((tmp_win->wmhints->initial_state == IconicState) ||
 		                  (! visible(tmp_win))))) {
-		    /* just stick it somewhere */
+			/* just stick it somewhere */
 
 #ifdef DEBUG
 			fprintf(stderr,
