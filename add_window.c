@@ -1100,6 +1100,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 						AddingX = event.xbutton.x_root;
 						AddingY = event.xbutton.y_root;
 
+						/* TryTo*() need tmp_win->frame_{width,height} */
 						TryToGrid(tmp_win, &AddingX, &AddingY);
 						if(Scr->PackNewWindows) {
 							TryToPack(tmp_win, &AddingX, &AddingY);
@@ -1214,6 +1215,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 							if(lastx != AddingX || lasty != AddingY) {
 								resizeWhenAdd = true;
+								/*
+								 * DR() calls SetupWindow(), which uses
+								 * frame_{width,height}.
+								 */
 								DoResize(AddingX, AddingY, tmp_win);
 								resizeWhenAdd = false;
 
