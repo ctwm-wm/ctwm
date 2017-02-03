@@ -944,10 +944,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 			random_placed = true;
 		}
-		else {
-			/* else prompt */
-			if(!(tmp_win->wmhints->flags & StateHint &&
+		else if(!(tmp_win->wmhints->flags & StateHint &&
 			                tmp_win->wmhints->initial_state == IconicState)) {
+			/* else prompt */
 				bool firsttime = true;
 				int found = 0;
 				int width, height;
@@ -1264,7 +1263,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				                       bw2 - 2 * tmp_win->frame_bw3D;
 
 				XUngrabServer(dpy);
-			}
 		}
 	}
 	else {
