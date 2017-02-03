@@ -945,324 +945,324 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			random_placed = true;
 		}
 		else if(!(tmp_win->wmhints->flags & StateHint &&
-			                tmp_win->wmhints->initial_state == IconicState)) {
+		                tmp_win->wmhints->initial_state == IconicState)) {
 			/* else prompt */
-				bool firsttime = true;
-				int found = 0;
-				int width, height;
-				XEvent event;
+			bool firsttime = true;
+			int found = 0;
+			int width, height;
+			XEvent event;
 
-				/* better wait until all the mouse buttons have been
-				 * released.
-				 */
-				while(1) {
-					unsigned int qpmask;
-					Window qproot;
-					int stat;
+			/* better wait until all the mouse buttons have been
+			 * released.
+			 */
+			while(1) {
+				unsigned int qpmask;
+				Window qproot;
+				int stat;
 
-					XUngrabServer(dpy);
-					XSync(dpy, 0);
-					XGrabServer(dpy);
+				XUngrabServer(dpy);
+				XSync(dpy, 0);
+				XGrabServer(dpy);
 
+				qpmask = 0;
+				if(!XQueryPointer(dpy, Scr->Root, &qproot,
+				                  &JunkChild, &JunkX, &JunkY,
+				                  &AddingX, &AddingY, &qpmask)) {
 					qpmask = 0;
-					if(!XQueryPointer(dpy, Scr->Root, &qproot,
-					                  &JunkChild, &JunkX, &JunkY,
-					                  &AddingX, &AddingY, &qpmask)) {
-						qpmask = 0;
-					}
-
-					/* Clear out any but the Button bits */
-					qpmask &= (Button1Mask | Button2Mask | Button3Mask |
-					           Button4Mask | Button5Mask);
-
-					/*
-					 * watch out for changing screens
-					 */
-					if(firsttime) {
-						if(qproot != Scr->Root) {
-							int scrnum;
-							for(scrnum = 0; scrnum < NumScreens; scrnum++) {
-								if(qproot == RootWindow(dpy, scrnum)) {
-									break;
-								}
-							}
-							if(scrnum != NumScreens) {
-								PreviousScreen = scrnum;
-							}
-						}
-						if(Scr->currentvs) {
-							vroot = Scr->currentvs->window;
-						}
-						firsttime = false;
-					}
-					if(winbox) {
-						vroot = winbox->window;
-					}
-
-					/*
-					 * wait for buttons to come up; yuck
-					 */
-					if(qpmask != 0) {
-						continue;
-					}
-
-					/*
-					 * this will cause a warp to the indicated root
-					 */
-					stat = XGrabPointer(dpy, vroot, False,
-					                    ButtonPressMask | ButtonReleaseMask |
-					                    PointerMotionMask | PointerMotionHintMask,
-					                    GrabModeAsync, GrabModeAsync,
-					                    vroot, UpperLeftCursor, CurrentTime);
-					if(stat == GrabSuccess) {
-						break;
-					}
 				}
 
-				{
-					XRectangle ink_rect;
-					XRectangle logical_rect;
+				/* Clear out any but the Button bits */
+				qpmask &= (Button1Mask | Button2Mask | Button3Mask |
+				           Button4Mask | Button5Mask);
 
-					XmbTextExtents(Scr->SizeFont.font_set,
-					               tmp_win->name, namelen,
-					               &ink_rect, &logical_rect);
-					width = SIZE_HINDENT + ink_rect.width;
-					height = logical_rect.height + SIZE_VINDENT * 2;
-
-					XmbTextExtents(Scr->SizeFont.font_set,
-					               ": ", 2,  NULL, &logical_rect);
-					Scr->SizeStringOffset = width + logical_rect.width;
-				}
-
-				XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
-				              Scr->SizeStringWidth + SIZE_HINDENT, height);
-				XMapRaised(dpy, Scr->SizeWindow);
-				InstallRootColormap();
-				FB(Scr->DefaultC.fore, Scr->DefaultC.back);
-				XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
-				                   Scr->NormalGC, SIZE_HINDENT,
-				                   SIZE_VINDENT + Scr->SizeFont.ascent,
-				                   tmp_win->name, namelen);
-
-				if(winbox) {
-					ConstrainedToWinBox(tmp_win, AddingX, AddingY, &AddingX, &AddingY);
-				}
-
-				AddingW = tmp_win->attr.width + bw2 + 2 * tmp_win->frame_bw3D;
-				AddingH = tmp_win->attr.height + tmp_win->title_height +
-				          bw2 + 2 * tmp_win->frame_bw3D;
-				MoveOutline(vroot, AddingX, AddingY, AddingW, AddingH,
-				            tmp_win->frame_bw, tmp_win->title_height + tmp_win->frame_bw3D);
-
-				XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
-				                   Scr->NormalGC, width,
-				                   SIZE_VINDENT + Scr->SizeFont.ascent, ": ", 2);
-				DisplayPosition(tmp_win, AddingX, AddingY);
-
-				tmp_win->frame_width  = AddingW;
-				tmp_win->frame_height = AddingH;
-				/*SetFocus (NULL, CurrentTime);*/
-				while(1) {
-					if(Scr->OpenWindowTimeout) {
-						const int fd = ConnectionNumber(dpy);
-						while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
-							fd_set mask;
-							struct timeval timeout = {
-								.tv_sec  = Scr->OpenWindowTimeout,
-								.tv_usec = 0,
-							};
-
-							FD_ZERO(&mask);
-							FD_SET(fd, &mask);
-							found = select(fd + 1, &mask, NULL, NULL, &timeout);
-							if(found == 0) {
+				/*
+				 * watch out for changing screens
+				 */
+				if(firsttime) {
+					if(qproot != Scr->Root) {
+						int scrnum;
+						for(scrnum = 0; scrnum < NumScreens; scrnum++) {
+							if(qproot == RootWindow(dpy, scrnum)) {
 								break;
 							}
 						}
+						if(scrnum != NumScreens) {
+							PreviousScreen = scrnum;
+						}
+					}
+					if(Scr->currentvs) {
+						vroot = Scr->currentvs->window;
+					}
+					firsttime = false;
+				}
+				if(winbox) {
+					vroot = winbox->window;
+				}
+
+				/*
+				 * wait for buttons to come up; yuck
+				 */
+				if(qpmask != 0) {
+					continue;
+				}
+
+				/*
+				 * this will cause a warp to the indicated root
+				 */
+				stat = XGrabPointer(dpy, vroot, False,
+				                    ButtonPressMask | ButtonReleaseMask |
+				                    PointerMotionMask | PointerMotionHintMask,
+				                    GrabModeAsync, GrabModeAsync,
+				                    vroot, UpperLeftCursor, CurrentTime);
+				if(stat == GrabSuccess) {
+					break;
+				}
+			}
+
+			{
+				XRectangle ink_rect;
+				XRectangle logical_rect;
+
+				XmbTextExtents(Scr->SizeFont.font_set,
+				               tmp_win->name, namelen,
+				               &ink_rect, &logical_rect);
+				width = SIZE_HINDENT + ink_rect.width;
+				height = logical_rect.height + SIZE_VINDENT * 2;
+
+				XmbTextExtents(Scr->SizeFont.font_set,
+				               ": ", 2,  NULL, &logical_rect);
+				Scr->SizeStringOffset = width + logical_rect.width;
+			}
+
+			XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
+			              Scr->SizeStringWidth + SIZE_HINDENT, height);
+			XMapRaised(dpy, Scr->SizeWindow);
+			InstallRootColormap();
+			FB(Scr->DefaultC.fore, Scr->DefaultC.back);
+			XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
+			                   Scr->NormalGC, SIZE_HINDENT,
+			                   SIZE_VINDENT + Scr->SizeFont.ascent,
+			                   tmp_win->name, namelen);
+
+			if(winbox) {
+				ConstrainedToWinBox(tmp_win, AddingX, AddingY, &AddingX, &AddingY);
+			}
+
+			AddingW = tmp_win->attr.width + bw2 + 2 * tmp_win->frame_bw3D;
+			AddingH = tmp_win->attr.height + tmp_win->title_height +
+			          bw2 + 2 * tmp_win->frame_bw3D;
+			MoveOutline(vroot, AddingX, AddingY, AddingW, AddingH,
+			            tmp_win->frame_bw, tmp_win->title_height + tmp_win->frame_bw3D);
+
+			XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
+			                   Scr->NormalGC, width,
+			                   SIZE_VINDENT + Scr->SizeFont.ascent, ": ", 2);
+			DisplayPosition(tmp_win, AddingX, AddingY);
+
+			tmp_win->frame_width  = AddingW;
+			tmp_win->frame_height = AddingH;
+			/*SetFocus (NULL, CurrentTime);*/
+			while(1) {
+				if(Scr->OpenWindowTimeout) {
+					const int fd = ConnectionNumber(dpy);
+					while(!XCheckMaskEvent(dpy, ButtonMotionMask | ButtonPressMask, &event)) {
+						fd_set mask;
+						struct timeval timeout = {
+							.tv_sec  = Scr->OpenWindowTimeout,
+							.tv_usec = 0,
+						};
+
+						FD_ZERO(&mask);
+						FD_SET(fd, &mask);
+						found = select(fd + 1, &mask, NULL, NULL, &timeout);
 						if(found == 0) {
 							break;
 						}
 					}
-					else {
-						found = 1;
-						XMaskEvent(dpy, ButtonPressMask | PointerMotionMask, &event);
-					}
-					if(event.type == MotionNotify) {
-						/* discard any extra motion events before a release */
-						while(XCheckMaskEvent(dpy,
-						                      ButtonMotionMask | ButtonPressMask, &event))
-							if(event.type == ButtonPress) {
-								break;
-							}
-					}
-					FixRootEvent(&event);
-					if(event.type == ButtonPress) {
-						AddingX = event.xbutton.x_root;
-						AddingY = event.xbutton.y_root;
-
-						/* TryTo*() need tmp_win->frame_{width,height} */
-						TryToGrid(tmp_win, &AddingX, &AddingY);
-						if(Scr->PackNewWindows) {
-							TryToPack(tmp_win, &AddingX, &AddingY);
-						}
-
-						/* DontMoveOff prohibits user from off-screen placement */
-						if(Scr->DontMoveOff) {
-							ConstrainByBorders(tmp_win, &AddingX, AddingW, &AddingY, AddingH);
-						}
+					if(found == 0) {
 						break;
 					}
+				}
+				else {
+					found = 1;
+					XMaskEvent(dpy, ButtonPressMask | PointerMotionMask, &event);
+				}
+				if(event.type == MotionNotify) {
+					/* discard any extra motion events before a release */
+					while(XCheckMaskEvent(dpy,
+					                      ButtonMotionMask | ButtonPressMask, &event))
+						if(event.type == ButtonPress) {
+							break;
+						}
+				}
+				FixRootEvent(&event);
+				if(event.type == ButtonPress) {
+					AddingX = event.xbutton.x_root;
+					AddingY = event.xbutton.y_root;
 
-					if(event.type != MotionNotify) {
-						continue;
-					}
-
-					XQueryPointer(dpy, vroot, &JunkRoot, &JunkChild,
-					              &JunkX, &JunkY, &AddingX, &AddingY, &JunkMask);
-
+					/* TryTo*() need tmp_win->frame_{width,height} */
 					TryToGrid(tmp_win, &AddingX, &AddingY);
 					if(Scr->PackNewWindows) {
 						TryToPack(tmp_win, &AddingX, &AddingY);
 					}
+
+					/* DontMoveOff prohibits user from off-screen placement */
 					if(Scr->DontMoveOff) {
 						ConstrainByBorders(tmp_win, &AddingX, AddingW, &AddingY, AddingH);
 					}
-					MoveOutline(vroot, AddingX, AddingY, AddingW, AddingH,
-					            tmp_win->frame_bw, tmp_win->title_height + tmp_win->frame_bw3D);
-
-					DisplayPosition(tmp_win, AddingX, AddingY);
+					break;
 				}
 
-				if(found) {
-					if(event.xbutton.button == Button2) {
-						int lastx, lasty;
-						XRectangle logical_rect;
+				if(event.type != MotionNotify) {
+					continue;
+				}
 
-						XmbTextExtents(Scr->SizeFont.font_set,
-						               ": ", 2,  NULL, &logical_rect);
-						Scr->SizeStringOffset = width + logical_rect.width;
+				XQueryPointer(dpy, vroot, &JunkRoot, &JunkChild,
+				              &JunkX, &JunkY, &AddingX, &AddingY, &JunkMask);
 
-						XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
-						              Scr->SizeStringWidth + SIZE_HINDENT, height);
+				TryToGrid(tmp_win, &AddingX, &AddingY);
+				if(Scr->PackNewWindows) {
+					TryToPack(tmp_win, &AddingX, &AddingY);
+				}
+				if(Scr->DontMoveOff) {
+					ConstrainByBorders(tmp_win, &AddingX, AddingW, &AddingY, AddingH);
+				}
+				MoveOutline(vroot, AddingX, AddingY, AddingW, AddingH,
+				            tmp_win->frame_bw, tmp_win->title_height + tmp_win->frame_bw3D);
 
-						XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
-						                   Scr->NormalGC, width,
-						                   SIZE_VINDENT + Scr->SizeFont.ascent, ": ", 2);
+				DisplayPosition(tmp_win, AddingX, AddingY);
+			}
 
-						if(0/*Scr->AutoRelativeResize*/) {
-							int dx = (tmp_win->attr.width / 4);
-							int dy = (tmp_win->attr.height / 4);
+			if(found) {
+				if(event.xbutton.button == Button2) {
+					int lastx, lasty;
+					XRectangle logical_rect;
+
+					XmbTextExtents(Scr->SizeFont.font_set,
+					               ": ", 2,  NULL, &logical_rect);
+					Scr->SizeStringOffset = width + logical_rect.width;
+
+					XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
+					              Scr->SizeStringWidth + SIZE_HINDENT, height);
+
+					XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
+					                   Scr->NormalGC, width,
+					                   SIZE_VINDENT + Scr->SizeFont.ascent, ": ", 2);
+
+					if(0/*Scr->AutoRelativeResize*/) {
+						int dx = (tmp_win->attr.width / 4);
+						int dy = (tmp_win->attr.height / 4);
 
 #define HALF_AVE_CURSOR_SIZE 8          /* so that it is visible */
-							if(dx < HALF_AVE_CURSOR_SIZE + Scr->BorderLeft) {
-								dx = HALF_AVE_CURSOR_SIZE + Scr->BorderLeft;
-							}
-							if(dy < HALF_AVE_CURSOR_SIZE + Scr->BorderTop) {
-								dy = HALF_AVE_CURSOR_SIZE + Scr->BorderTop;
-							}
+						if(dx < HALF_AVE_CURSOR_SIZE + Scr->BorderLeft) {
+							dx = HALF_AVE_CURSOR_SIZE + Scr->BorderLeft;
+						}
+						if(dy < HALF_AVE_CURSOR_SIZE + Scr->BorderTop) {
+							dy = HALF_AVE_CURSOR_SIZE + Scr->BorderTop;
+						}
 #undef HALF_AVE_CURSOR_SIZE
-							dx += (tmp_win->frame_bw + 1);
-							dy += (bw2 + tmp_win->title_height + 1);
-							if(AddingX + dx >= Scr->rootw - Scr->BorderRight) {
-								dx = Scr->rootw - Scr->BorderRight - AddingX - 1;
-							}
-							if(AddingY + dy >= Scr->rooth - Scr->BorderBottom) {
-								dy = Scr->rooth - Scr->BorderBottom - AddingY - 1;
-							}
-							if(dx > 0 && dy > 0) {
-								XWarpPointer(dpy, None, None, 0, 0, 0, 0, dx, dy);
-							}
+						dx += (tmp_win->frame_bw + 1);
+						dy += (bw2 + tmp_win->title_height + 1);
+						if(AddingX + dx >= Scr->rootw - Scr->BorderRight) {
+							dx = Scr->rootw - Scr->BorderRight - AddingX - 1;
 						}
-						else {
-							XWarpPointer(dpy, None, vroot, 0, 0, 0, 0,
-							             AddingX + AddingW / 2, AddingY + AddingH / 2);
+						if(AddingY + dy >= Scr->rooth - Scr->BorderBottom) {
+							dy = Scr->rooth - Scr->BorderBottom - AddingY - 1;
 						}
-						AddStartResize(tmp_win, AddingX, AddingY, AddingW, AddingH);
-
-						lastx = -10000;
-						lasty = -10000;
-						while(1) {
-							XMaskEvent(dpy,
-							           ButtonReleaseMask | ButtonMotionMask, &event);
-
-							if(event.type == MotionNotify) {
-								/* discard any extra motion events before a release */
-								while(XCheckMaskEvent(dpy,
-								                      ButtonMotionMask | ButtonReleaseMask, &event))
-									if(event.type == ButtonRelease) {
-										break;
-									}
-							}
-							FixRootEvent(&event);
-
-							if(event.type == ButtonRelease) {
-								AddEndResize(tmp_win);
-								break;
-							}
-
-							if(event.type != MotionNotify) {
-								continue;
-							}
-
-							/*
-							 * XXX - if we are going to do a loop, we ought to consider
-							 * using multiple GXxor lines so that we don't need to
-							 * grab the server.
-							 */
-							XQueryPointer(dpy, vroot, &JunkRoot, &JunkChild,
-							              &JunkX, &JunkY, &AddingX, &AddingY,
-							              &JunkMask);
-
-							if(lastx != AddingX || lasty != AddingY) {
-								resizeWhenAdd = true;
-								/*
-								 * DR() calls SetupWindow(), which uses
-								 * frame_{width,height}.
-								 */
-								DoResize(AddingX, AddingY, tmp_win);
-								resizeWhenAdd = false;
-
-								lastx = AddingX;
-								lasty = AddingY;
-							}
-
+						if(dx > 0 && dy > 0) {
+							XWarpPointer(dpy, None, None, 0, 0, 0, 0, dx, dy);
 						}
-					}
-					else if(event.xbutton.button == Button3) {
-						int maxw = Scr->rootw - Scr->BorderRight  - AddingX - bw2;
-						int maxh = Scr->rooth - Scr->BorderBottom - AddingY - bw2;
-
-						/*
-						 * Make window go to bottom of screen, and clip to right edge.
-						 * This is useful when popping up large windows and fixed
-						 * column text windows.
-						 */
-						if(AddingW > maxw) {
-							AddingW = maxw;
-						}
-						AddingH = maxh;
-
-						ConstrainSize(tmp_win, &AddingW, &AddingH);   /* w/o borders */
-						AddingW += bw2;
-						AddingH += bw2;
-						XMaskEvent(dpy, ButtonReleaseMask, &event);
 					}
 					else {
-						XMaskEvent(dpy, ButtonReleaseMask, &event);
+						XWarpPointer(dpy, None, vroot, 0, 0, 0, 0,
+						             AddingX + AddingW / 2, AddingY + AddingH / 2);
+					}
+					AddStartResize(tmp_win, AddingX, AddingY, AddingW, AddingH);
+
+					lastx = -10000;
+					lasty = -10000;
+					while(1) {
+						XMaskEvent(dpy,
+						           ButtonReleaseMask | ButtonMotionMask, &event);
+
+						if(event.type == MotionNotify) {
+							/* discard any extra motion events before a release */
+							while(XCheckMaskEvent(dpy,
+							                      ButtonMotionMask | ButtonReleaseMask, &event))
+								if(event.type == ButtonRelease) {
+									break;
+								}
+						}
+						FixRootEvent(&event);
+
+						if(event.type == ButtonRelease) {
+							AddEndResize(tmp_win);
+							break;
+						}
+
+						if(event.type != MotionNotify) {
+							continue;
+						}
+
+						/*
+						 * XXX - if we are going to do a loop, we ought to consider
+						 * using multiple GXxor lines so that we don't need to
+						 * grab the server.
+						 */
+						XQueryPointer(dpy, vroot, &JunkRoot, &JunkChild,
+						              &JunkX, &JunkY, &AddingX, &AddingY,
+						              &JunkMask);
+
+						if(lastx != AddingX || lasty != AddingY) {
+							resizeWhenAdd = true;
+							/*
+							 * DR() calls SetupWindow(), which uses
+							 * frame_{width,height}.
+							 */
+							DoResize(AddingX, AddingY, tmp_win);
+							resizeWhenAdd = false;
+
+							lastx = AddingX;
+							lasty = AddingY;
+						}
+
 					}
 				}
-				MoveOutline(vroot, 0, 0, 0, 0, 0, 0);
-				XUnmapWindow(dpy, Scr->SizeWindow);
-				UninstallRootColormap();
-				XUngrabPointer(dpy, CurrentTime);
+				else if(event.xbutton.button == Button3) {
+					int maxw = Scr->rootw - Scr->BorderRight  - AddingX - bw2;
+					int maxh = Scr->rooth - Scr->BorderBottom - AddingY - bw2;
 
-				tmp_win->attr.x = AddingX;
-				tmp_win->attr.y = AddingY + tmp_win->title_height;
-				tmp_win->attr.width = AddingW - bw2 - 2 * tmp_win->frame_bw3D;
-				tmp_win->attr.height = AddingH - tmp_win->title_height -
-				                       bw2 - 2 * tmp_win->frame_bw3D;
+					/*
+					 * Make window go to bottom of screen, and clip to right edge.
+					 * This is useful when popping up large windows and fixed
+					 * column text windows.
+					 */
+					if(AddingW > maxw) {
+						AddingW = maxw;
+					}
+					AddingH = maxh;
 
-				XUngrabServer(dpy);
+					ConstrainSize(tmp_win, &AddingW, &AddingH);   /* w/o borders */
+					AddingW += bw2;
+					AddingH += bw2;
+					XMaskEvent(dpy, ButtonReleaseMask, &event);
+				}
+				else {
+					XMaskEvent(dpy, ButtonReleaseMask, &event);
+				}
+			}
+			MoveOutline(vroot, 0, 0, 0, 0, 0, 0);
+			XUnmapWindow(dpy, Scr->SizeWindow);
+			UninstallRootColormap();
+			XUngrabPointer(dpy, CurrentTime);
+
+			tmp_win->attr.x = AddingX;
+			tmp_win->attr.y = AddingY + tmp_win->title_height;
+			tmp_win->attr.width = AddingW - bw2 - 2 * tmp_win->frame_bw3D;
+			tmp_win->attr.height = AddingH - tmp_win->title_height -
+			                       bw2 - 2 * tmp_win->frame_bw3D;
+
+			XUngrabServer(dpy);
 		}
 	}
 	else {
