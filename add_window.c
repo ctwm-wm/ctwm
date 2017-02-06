@@ -1643,7 +1643,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	/*
 	 * If the server's got Shape, look up info about the window's
-	 * Shape'ing , and subscribe to notifications about changes in it.
+	 * Shape'ing, and subscribe to notifications about changes in it.
+	 * Actually, it's only the bounding we care about; the rest is
+	 * thrown away.
 	 */
 	if(HasShape) {
 		int xws, yws, xbs, ybs;
