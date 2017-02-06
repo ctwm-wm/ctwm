@@ -1666,9 +1666,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * without doing any cleanup, it'll still show back up on the screen
 	 * like normal.  Otherwise, if you kill or segfault ctwm, all the
 	 * other things you're running get their windows lost.
+	 *
+	 * XXX Conditional may be a little on the short side; I'm not sure it
+	 * catches all of our internals...
 	 */
-	if(!tmp_win->isiconmgr && ! tmp_win->iswspmgr &&
-	                (tmp_win->w != Scr->workSpaceMgr.occupyWindow->w)) {
+	if(!(tmp_win->isiconmgr || tmp_win->iswspmgr || tmp_win->isoccupy)) {
 		XAddToSaveSet(dpy, tmp_win->w);
 	}
 
