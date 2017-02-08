@@ -208,9 +208,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * XXX I don't think full_name does anything useful at all.  I can't
 	 * find anywhere in the code that it's anything but a copy of name.
-	 * It seems like it might be used to see the original name before the
-	 * conditional code below mangles it, but it's the same pointer, so
-	 * it wouldn't even accomplish that.
+	 * It seemed like it was vaguely intended to be a stash of the
+	 * original name before some now-reaped conditional code changed it,
+	 * but it's the same pointer, so it wouldn't even accomplish that.
+	 *
+	 * This should be further investigated and possibly removed.
 	 */
 	tmp_win->full_name = tmp_win->name;
 
