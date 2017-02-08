@@ -1015,14 +1015,6 @@ void HandlePropertyNotify(void)
 			name_change = strcmp((char *)Tmp_win->full_name, prop);
 			icon_change = false;
 
-#ifdef CLAUDE
-			{
-				char *moz = strstr(prop, " - Mozilla");
-				if(moz) {
-					*moz = '\0';
-				}
-			}
-#endif
 			free_window_names(Tmp_win, true, true, false);
 
 			Tmp_win->full_name = prop;
@@ -1110,14 +1102,6 @@ void HandlePropertyNotify(void)
 			if(prop == NULL) {
 				return;
 			}
-#ifdef CLAUDE
-			{
-				char *moz = strstr(prop, " - Mozilla");
-				if(moz) {
-					*moz = '\0';
-				}
-			}
-#endif
 			icon_change = strcmp(Tmp_win->icon_name, (char *) prop);
 			free_window_names(Tmp_win, false, false, true);
 			Tmp_win->icon_name = (char *) prop;

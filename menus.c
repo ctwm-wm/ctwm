@@ -1134,10 +1134,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	TwmWindow *tmp_win2, *tmp_win3;
 	int i;
 	bool clipped;
-#ifdef CLAUDE
-	char tmpname3 [256], tmpname4 [256];
-	int hasmoz = 0;
-#endif
 	if(!menu) {
 		return false;
 	}
@@ -1268,35 +1264,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 				char *tmpname1, *tmpname2;
 				tmpname1 = tmp_win2->name;
 				tmpname2 = WindowNames[i]->name;
-#ifdef CLAUDE
-				if(strlen(tmpname1) == 1) {
-					tmpname1 = " No title";
-				}
-				if(strlen(tmpname2) == 1) {
-					tmpname2 = " No title";
-				}
-
-				if(!strncasecmp(tmp_win2->class.res_class, "navigator", 9) ||
-				                !strncasecmp(tmp_win2->class.res_class, "mozilla",   7)) {
-					tmpname3 [0] = ' ';
-					tmpname3 [1] = '\0';
-					strcat(tmpname3, tmpname1);
-				}
-				else {
-					strcpy(tmpname3, tmpname1);
-				}
-				if(!strncasecmp(WindowNames[i]->class.res_class, "navigator", 9) ||
-				                !strncasecmp(WindowNames[i]->class.res_class, "mozilla",   7)) {
-					tmpname4 [0] = ' ';
-					tmpname4 [1] = '\0';
-					strcat(tmpname4, tmpname2);
-				}
-				else {
-					strcpy(tmpname4, tmpname2);
-				}
-				tmpname1 = tmpname3;
-				tmpname2 = tmpname4;
-#endif
 				if(Scr->CaseSensitive) {
 					compresult = strcmp(tmpname1, tmpname2);
 				}
@@ -1317,21 +1284,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		for(i = 0; i < WindowNameCount; i++) {
 			char *tmpname;
 			tmpname = WindowNames[i]->name;
-#ifdef CLAUDE
-			if(!strncasecmp(WindowNames[i]->class.res_class, "navigator", 9) ||
-			                !strncasecmp(WindowNames[i]->class.res_class, "mozilla",   7) ||
-			                !strncasecmp(WindowNames[i]->class.res_class, "netscape",  8) ||
-			                !strncasecmp(WindowNames[i]->class.res_class, "konqueror", 9)) {
-				hasmoz = 1;
-			}
-			if(hasmoz && strncasecmp(WindowNames[i]->class.res_class, "navigator", 9) &&
-			                strncasecmp(WindowNames[i]->class.res_class, "mozilla",   7) &&
-			                strncasecmp(WindowNames[i]->class.res_class, "netscape",  8) &&
-			                strncasecmp(WindowNames[i]->class.res_class, "konqueror", 9)) {
-				menu->last->separated = true;
-				hasmoz = 0;
-			}
-#endif
 			AddToMenu(menu, tmpname, (char *)WindowNames[i],
 			          NULL, func, NULL, NULL);
 		}

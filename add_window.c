@@ -213,12 +213,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * it wouldn't even accomplish that.
 	 */
 	tmp_win->full_name = tmp_win->name;
-#ifdef CLAUDE
-	if(strstr(tmp_win->name, " - Mozilla")) {
-		char *moz = strstr(tmp_win->name, " - Mozilla");
-		*moz = '\0';
-	}
-#endif
 
 	/* Setup class */
 	tmp_win->class = NoClass;
@@ -235,12 +229,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	if(!tmp_win->icon_name) {
 		tmp_win->icon_name = tmp_win->name;
 	}
-#ifdef CLAUDE
-	if(strstr(tmp_win->icon_name, " - Mozilla")) {
-		char *moz = strstr(tmp_win->icon_name, " - Mozilla");
-		*moz = '\0';
-	}
-#endif
 
 	/* Convenience macro */
 #define CHKL(lst) IsInList(Scr->lst, tmp_win)
