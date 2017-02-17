@@ -162,7 +162,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->icon_on = false;
 	tmp_win->ring.cursor_valid = false;
 	tmp_win->squeeze_info = NULL;
-	tmp_win->squeeze_info_copied = 0;
+	tmp_win->squeeze_info_copied = false;
 
 
 

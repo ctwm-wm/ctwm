@@ -533,7 +533,7 @@ DFHANDLER(movetitlebar)
 		}
 		*s = *tmp_win->squeeze_info;
 		tmp_win->squeeze_info = s;
-		tmp_win->squeeze_info_copied = 1;
+		tmp_win->squeeze_info_copied = true;
 	}
 	si = tmp_win->squeeze_info;
 
