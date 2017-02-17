@@ -891,39 +891,12 @@ static void free_window_names(TwmWindow *tmp,
 	 * XXX - are we sure that nobody ever sets these to another constant (check
 	 * twm windows)?
 	 */
-	if((tmp->name == tmp->full_name) && (tmp->name == tmp->icon_name)) {
-		if(nukefull && nukename && nukeicon) {
-			FreeWMPropertyString(tmp->name);
-		}
-	}
-	else if(tmp->name == tmp->full_name) {
-		if(nukename && nukefull) {
-			FreeWMPropertyString(tmp->name);
-		}
-		if(nukeicon) {
-			FreeWMPropertyString(tmp->icon_name);
-		}
-	}
-	else if(tmp->name == tmp->icon_name) {
+	if(tmp->name == tmp->icon_name) {
 		if(nukename && nukeicon) {
-			FreeWMPropertyString(tmp->name);
-		}
-		if(nukefull) {
-			FreeWMPropertyString(tmp->full_name);
-		}
-	}
-	else if(tmp->icon_name == tmp->full_name) {
-		if(nukeicon && nukefull) {
-			FreeWMPropertyString(tmp->icon_name);
-		}
-		if(nukename) {
 			FreeWMPropertyString(tmp->name);
 		}
 	}
 	else {
-		if(nukefull) {
-			FreeWMPropertyString(tmp->full_name);
-		}
 		if(nukename) {
 			FreeWMPropertyString(tmp->name);
 		}
