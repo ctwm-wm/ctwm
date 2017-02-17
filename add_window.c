@@ -205,17 +205,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 	namelen = strlen(tmp_win->name);
 
-	/*
-	 * XXX I don't think full_name does anything useful at all.  I can't
-	 * find anywhere in the code that it's anything but a copy of name.
-	 * It seemed like it was vaguely intended to be a stash of the
-	 * original name before some now-reaped conditional code changed it,
-	 * but it's the same pointer, so it wouldn't even accomplish that.
-	 *
-	 * This should be further investigated and possibly removed.
-	 */
-	tmp_win->full_name = tmp_win->name;
-
 	/* Setup class */
 	tmp_win->class = NoClass;
 	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
