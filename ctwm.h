@@ -335,7 +335,6 @@ struct TwmWindow {
 	int title_y;
 	unsigned int title_height;  /* height of the title bar */
 	unsigned int title_width;   /* width of the title bar */
-	char *full_name;            /* full name of the window */
 	char *name;                 /* name of the window */
 	char *icon_name;            /* name of the icon */
 	int name_x;                 /* start x of name text */
