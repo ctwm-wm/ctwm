@@ -1017,7 +1017,6 @@ void HandlePropertyNotify(void)
 
 			free_window_names(Tmp_win, true, true, false);
 
-			Tmp_win->full_name = prop;
 			Tmp_win->name = prop;
 			Tmp_win->nameChanged = true;
 			XmbTextExtents(Scr->TitleBarFont.font_set,
