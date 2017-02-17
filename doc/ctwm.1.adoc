@@ -1689,7 +1689,7 @@ SqueezeTitle
   The `DontSqueezeTitle` list can be used to turn off squeezing on
   certain titles.
 
-StartIconified [{ `win-list` }]::
+StartIconified { `win-list` }::
   This variable indicates that client windows should initially be left as
   icons until explicitly deiconified by the user.  If the optional `win-list`
   is given, only those windows will be started iconic.  This is useful for
@@ -1777,7 +1777,7 @@ UnknownIcon `string`::
   clients which do not provide an icon bitmap and are not listed
   in the `Icons` list.
 
-UnmapByMovingFarAway [{ `win-list` }]::
+UnmapByMovingFarAway { `win-list` }::
   These windows will be moved out of the screen instead of being unmapped
   when they become invisible due to a change workspace. This has been
   added because some ill-behaved clients (Frame5) don't like to be unmapped.
@@ -1914,7 +1914,7 @@ WindowBox "xloadbox" "320x100+0-0" {
 ------
 +
 
-WindowGeometries [{ `win-list` }]::
+WindowGeometries { `win-list` }::
   Used to give a default geometry to some clients :
 +
 ------
