@@ -103,7 +103,7 @@ WindowBox *findWindowBox(TwmWindow *twmwin)
 		return NULL;
 	}
 	for(winbox = Scr->FirstWindowBox; winbox; winbox = winbox->next) {
-		if(LookInList(winbox->winlist, twmwin->full_name, &twmwin->class)) {
+		if(LookInList(winbox->winlist, twmwin->name, &twmwin->class)) {
 			if(visible(winbox->twmwin)) {
 				twmwin->winbox = winbox;
 				return winbox;

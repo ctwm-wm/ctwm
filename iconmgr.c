@@ -689,16 +689,16 @@ WList *AddIconManager(TwmWindow *tmp_win)
 	}
 
 	/* Config could declare not to IMify this type of window in two ways */
-	if(LookInList(Scr->IconMgrNoShow, tmp_win->full_name, &tmp_win->class)) {
+	if(LookInList(Scr->IconMgrNoShow, tmp_win->name, &tmp_win->class)) {
 		return NULL;
 	}
 	if(Scr->IconManagerDontShow
-	                && !LookInList(Scr->IconMgrShow, tmp_win->full_name, &tmp_win->class)) {
+	                && !LookInList(Scr->IconMgrShow, tmp_win->name, &tmp_win->class)) {
 		return NULL;
 	}
 
 	/* Dredge up the appropriate IM */
-	if((ip = (IconMgr *)LookInList(Scr->IconMgrs, tmp_win->full_name,
+	if((ip = (IconMgr *)LookInList(Scr->IconMgrs, tmp_win->name,
 	                               &tmp_win->class)) == NULL) {
 		if(Scr->workSpaceManagerActive) {
 			ip = Scr->workSpaceMgr.workSpaceList->iconmgr;
@@ -735,11 +735,11 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		tmp->cp.back   = Scr->IconManagerC.back;
 		tmp->highlight = Scr->IconManagerHighlight;
 
-		GetColorFromList(Scr->IconManagerFL, tmp_win->full_name,
+		GetColorFromList(Scr->IconManagerFL, tmp_win->name,
 		                 &tmp_win->class, &tmp->cp.fore);
-		GetColorFromList(Scr->IconManagerBL, tmp_win->full_name,
+		GetColorFromList(Scr->IconManagerBL, tmp_win->name,
 		                 &tmp_win->class, &tmp->cp.back);
-		GetColorFromList(Scr->IconManagerHighlightL, tmp_win->full_name,
+		GetColorFromList(Scr->IconManagerHighlightL, tmp_win->name,
 		                 &tmp_win->class, &tmp->highlight);
 
 		/*

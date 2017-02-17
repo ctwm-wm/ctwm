@@ -365,7 +365,7 @@ int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
 
 	/* ...unless the config file says otherwise. */
 	if(LookInList(Scr == NULL ? ScreenList [0]->DontSave : Scr->DontSave,
-	                theWindow->full_name, &theWindow->class)) {
+	                theWindow->name, &theWindow->class)) {
 		return 1;
 	}
 

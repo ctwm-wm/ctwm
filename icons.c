@@ -230,7 +230,7 @@ PlaceIcon(TwmWindow *tmp_win, int def_x, int def_y,
 	 */
 	ie = NULL;
 	for(ir = Scr->FirstRegion; ir; ir = ir->next) {
-		if(LookInList(ir->clientlist, tmp_win->full_name, &tmp_win->class)) {
+		if(LookInList(ir->clientlist, tmp_win->name, &tmp_win->class)) {
 			/*
 			 * Found one that claims it.  Figure the necessary local
 			 * size, based on the icon's side itself and the grid for
@@ -462,11 +462,11 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	icon->iconc.back    = Scr->IconC.back;
 	icon->title_shrunk  = false;
 
-	GetColorFromList(Scr->IconBorderColorL, tmp_win->full_name, &tmp_win->class,
+	GetColorFromList(Scr->IconBorderColorL, tmp_win->name, &tmp_win->class,
 	                 &icon->border);
-	GetColorFromList(Scr->IconForegroundL, tmp_win->full_name, &tmp_win->class,
+	GetColorFromList(Scr->IconForegroundL, tmp_win->name, &tmp_win->class,
 	                 &icon->iconc.fore);
-	GetColorFromList(Scr->IconBackgroundL, tmp_win->full_name, &tmp_win->class,
+	GetColorFromList(Scr->IconBackgroundL, tmp_win->name, &tmp_win->class,
 	                 &icon->iconc.back);
 	if(Scr->use3Diconmanagers && !Scr->BeNiceToColormap) {
 		GetShadeColors(&icon->iconc);
@@ -580,7 +580,7 @@ CreateIconWindow(TwmWindow *tmp_win, int def_x, int def_y)
 	icon->border_width = Scr->IconBorderWidth;
 	if(Scr->NoIconTitlebar ||
 	                LookInNameList(Scr->NoIconTitle, tmp_win->icon_name) ||
-	                LookInList(Scr->NoIconTitle, tmp_win->full_name, &tmp_win->class)) {
+	                LookInList(Scr->NoIconTitle, tmp_win->name, &tmp_win->class)) {
 		icon->w_width  = icon->width;
 		icon->w_height = icon->height;
 		icon->x = 0;
@@ -1170,10 +1170,10 @@ RedoIcon(TwmWindow *win)
 	if((pattern = LookPatternInNameList(Scr->IconNames, win->icon_name))) {
 		icon = LookInNameList(win->iconslist, pattern);
 	}
-	else if((pattern = LookPatternInNameList(Scr->IconNames, win->full_name))) {
+	else if((pattern = LookPatternInNameList(Scr->IconNames, win->name))) {
 		icon = LookInNameList(win->iconslist, pattern);
 	}
-	else if((pattern = LookPatternInList(Scr->IconNames, win->full_name,
+	else if((pattern = LookPatternInList(Scr->IconNames, win->name,
 	                                     &win->class))) {
 		icon = LookInNameList(win->iconslist, pattern);
 	}
@@ -1247,7 +1247,7 @@ RedoIconName(TwmWindow *win)
 
 	if(Scr->NoIconTitlebar ||
 	                LookInNameList(Scr->NoIconTitle, win->icon_name) ||
-	                LookInList(Scr->NoIconTitle, win->full_name, &win->class)) {
+	                LookInList(Scr->NoIconTitle, win->name, &win->class)) {
 		WMapUpdateIconName(win);
 		return;
 	}
@@ -1386,17 +1386,17 @@ LookupIconNameOrClass(TwmWindow *tmp_win, Icon *icon, char **pattern)
 	}
 
 	if(matched == match_none) {
-		icon_name = LookInNameList(Scr->IconNames, tmp_win->full_name);
+		icon_name = LookInNameList(Scr->IconNames, tmp_win->name);
 		if(icon_name != NULL) {
-			*pattern = LookPatternInNameList(Scr->IconNames, tmp_win->full_name);
+			*pattern = LookPatternInNameList(Scr->IconNames, tmp_win->name);
 			matched = match_list;
 		}
 	}
 
 	if(matched == match_none) {
-		icon_name = LookInList(Scr->IconNames, tmp_win->full_name, &tmp_win->class);
+		icon_name = LookInList(Scr->IconNames, tmp_win->name, &tmp_win->class);
 		if(icon_name != NULL) {
-			*pattern = LookPatternInList(Scr->IconNames, tmp_win->full_name,
+			*pattern = LookPatternInList(Scr->IconNames, tmp_win->name,
 			                             &tmp_win->class);
 			matched = match_list;
 		}

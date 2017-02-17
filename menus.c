@@ -1230,7 +1230,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		for(tmp_win = Scr->FirstWindow;
 		                tmp_win != NULL;
 		                tmp_win = tmp_win->next) {
-			if(LookInList(Scr->IconMenuDontShow, tmp_win->full_name, &tmp_win->class)) {
+			if(LookInList(Scr->IconMenuDontShow, tmp_win->name, &tmp_win->class)) {
 				continue;
 			}
 

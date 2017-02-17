@@ -124,7 +124,7 @@ PlaceWindowInRegion(TwmWindow *tmp_win, int *final_x, int *final_y)
 	h = tmp_win->frame_height;
 	we = NULL;
 	for(wr = wl->FirstWindowRegion; wr; wr = wr->next) {
-		if(LookInList(wr->clientlist, tmp_win->full_name, &tmp_win->class)) {
+		if(LookInList(wr->clientlist, tmp_win->name, &tmp_win->class)) {
 			for(we = wr->entries; we; we = we->next) {
 				if(we->used) {
 					continue;

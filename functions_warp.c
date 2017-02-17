@@ -40,10 +40,10 @@ DFHANDLER(warpto)
 	}
 #endif /* #ifdef WARPTO_FROM_ICONMGR */
 	for(tw = Scr->FirstWindow; tw != NULL; tw = tw->next) {
-		if(!strncmp(action, tw->full_name, len)) {
+		if(!strncmp(action, tw->name, len)) {
 			break;
 		}
-		if(match(action, tw->full_name)) {
+		if(match(action, tw->name)) {
 			break;
 		}
 	}

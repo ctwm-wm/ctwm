@@ -1315,7 +1315,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * Setup various color bits
 	 */
-#define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->full_name, \
+#define SETC(lst, save) GetColorFromList(Scr->lst, tmp_win->name, \
                 &tmp_win->class, &tmp_win->save)
 
 	/* No distinction fore/back for borders in the lists */

@@ -254,7 +254,7 @@ PaintAllDecoration(void)
 		                tmp_win->icon           &&
 		                tmp_win->icon->w        &&
 		                !tmp_win->icon->w_not_ours &&
-		                ! LookInList(Scr->NoIconTitle, tmp_win->full_name, &tmp_win->class)) {
+		                ! LookInList(Scr->NoIconTitle, tmp_win->name, &tmp_win->class)) {
 			PaintIcon(tmp_win);
 		}
 	}

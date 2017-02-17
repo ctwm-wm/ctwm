@@ -133,12 +133,12 @@ void *LookInNameList(name_list *list_head, const char *name)
 
 void *LookInListWin(name_list *list_head, TwmWindow *twin)
 {
-	return LookInList(list_head, twin->full_name, &(twin->class));
+	return LookInList(list_head, twin->name, &(twin->class));
 }
 
 bool IsInList(name_list *list_head, TwmWindow *twin)
 {
-	return (bool)LookInList(list_head, twin->full_name, &(twin->class));
+	return (bool)LookInList(list_head, twin->name, &(twin->class));
 }
 
 void *LookPatternInList(name_list *list_head, const char *name,

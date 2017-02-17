@@ -109,7 +109,7 @@ Identify(TwmWindow *t)
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                      &x, &y, &junk);
 		snprintf(Info[n++], INFO_SIZE, "Name               = \"%s\"",
-		         t->full_name);
+		         t->name);
 		CHKN;
 		snprintf(Info[n++], INFO_SIZE, "Class.res_name     = \"%s\"",
 		         t->class.res_name);

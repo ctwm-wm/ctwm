@@ -1558,7 +1558,7 @@ void EwmhUnmapNotify(TwmWindow *twm_win)
  * Newer windows are always added at the end.
  *
  * Look at new_win->iconmanagerlist as an optimization for
- * !LookInList(Scr->IconMgrNoShow, new_win->full_name, &new_win->class)).
+ * !LookInList(Scr->IconMgrNoShow, new_win->name, &new_win->class)).
  */
 void EwmhAddClientWindow(TwmWindow *new_win)
 {

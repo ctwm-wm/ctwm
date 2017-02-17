@@ -236,7 +236,7 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 		        priority, (unsigned int)WindowOfOwl(owl), stack);
 		if(twm_win) {
 			fprintf(stderr, " title=%s occupation=%x ",
-			        twm_win->full_name,
+			        twm_win->name,
 			        (unsigned int)twm_win->occupation);
 			if(owl->twm_win->vs) {
 				fprintf(stderr, " vs:(x,y)=(%d,%d)",
@@ -935,14 +935,14 @@ static void ApplyPreferences(OtpPreferences *prefs, OtpWinList *owl)
 	TwmWindow *twm_win = owl->twm_win;
 
 	/* check PrioritySwitch */
-	if(LookInList(prefs->switchingL, twm_win->full_name, &twm_win->class)) {
+	if(LookInList(prefs->switchingL, twm_win->name, &twm_win->class)) {
 		owl->switching = !prefs->switching;
 	}
 
 	/* check OnTopPriority */
 	for(i = 0; i <= OTP_MAX; i++) {
 		if(LookInList(prefs->priorityL[i],
-		                twm_win->full_name, &twm_win->class)) {
+		                twm_win->name, &twm_win->class)) {
 			owl->priority = i;
 		}
 	}
