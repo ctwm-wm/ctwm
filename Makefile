@@ -10,6 +10,12 @@ allclean distclean:
 	rm -rf build/*
 
 
+
+#
+# The below targets are mostly only of interest to developers
+#
+
+
 # Reindent files
 indent:
 	astyle -n --options=tools/ctwm.astyle *.h *.c
