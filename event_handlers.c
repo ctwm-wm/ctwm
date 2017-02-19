@@ -1074,12 +1074,18 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			if(strcmp(Tmp_win->icon_name, prop) != 0) {
-				free_window_names(Tmp_win, false, false, true);
-				Tmp_win->icon_name = prop;
-				RedoIcon(Tmp_win);
-				AutoPopupMaybe(Tmp_win);
+			/* No change?  Nothing to do. */
+			if(strcmp(Tmp_win->icon_name, prop) == 0) {
+				free(prop);
+				break;
 			}
+
+			/* Else, free the old one and set it */
+			free_window_names(Tmp_win, false, false, true);
+			Tmp_win->icon_name = prop;
+			RedoIcon(Tmp_win);
+			AutoPopupMaybe(Tmp_win);
+
 			break;
 		}
 
