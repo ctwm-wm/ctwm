@@ -924,7 +924,6 @@ void HandlePropertyNotify(void)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	Pixmap pm;
-	bool name_change;
 	XRectangle inc_rect;
 	XRectangle logical_rect;
 	Icon *icon;
@@ -981,6 +980,7 @@ void HandlePropertyNotify(void)
 		case XA_WM_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
 			bool icon_change = false;
+			bool name_change;
 			if(prop == NULL) {
 				return;
 			}
