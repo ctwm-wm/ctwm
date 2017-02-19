@@ -884,29 +884,6 @@ void HandleKeyPress(void)
 }
 
 
-static void free_window_names(TwmWindow *tmp,
-                              bool nukefull, bool nukename, bool nukeicon)
-{
-	/*
-	 * XXX - are we sure that nobody ever sets these to another constant (check
-	 * twm windows)?
-	 */
-	if(tmp->name == tmp->icon_name) {
-		if(nukename && nukeicon) {
-			FreeWMPropertyString(tmp->name);
-		}
-	}
-	else {
-		if(nukename) {
-			FreeWMPropertyString(tmp->name);
-		}
-		if(nukeicon) {
-			FreeWMPropertyString(tmp->icon_name);
-		}
-	}
-	return;
-}
-
 
 /***********************************************************************
  *
