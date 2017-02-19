@@ -82,3 +82,8 @@ ${GEN}/ctwm.1 ${GEN}/ctwm.1.html:
 	cp doc/ctwm.1 doc/ctwm.1.html ${GEN}/
 doc/ctwm.1 doc/ctwm.1.html:
 	(cd doc && make clean all)
+
+
+# Thunk through to gen'ing tarball
+tar:
+	tools/mk_tar.sh
