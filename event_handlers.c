@@ -1055,7 +1055,7 @@ void HandlePropertyNotify(void)
 			 * if the icon name is NoName, set the name of the icon to be
 			 * the same as the window
 			 */
-			if(Tmp_win->icon_name == NoName && Tmp_win->name != NoName) {
+			if(Tmp_win->icon_name == NoName) {
 				Tmp_win->icon_name = strdup(Tmp_win->name);
 				icon_change = true;
 			}
