@@ -980,12 +980,15 @@ void HandlePropertyNotify(void)
 		case XA_WM_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
 			bool icon_change = false;
-			bool name_change;
 			if(prop == NULL) {
 				return;
 			}
 
-			name_change = strcmp(Tmp_win->name, prop);
+			if(strcmp(Tmp_win->name, prop) == 0) {
+				/* No change, just free and skip out */
+				free(prop);
+				return;
+			}
 
 			free_window_names(Tmp_win, true, true, false);
 
@@ -997,7 +1000,7 @@ void HandlePropertyNotify(void)
 			Tmp_win->name_width = logical_rect.width;
 
 			/* recompute the priority if necessary */
-			if(name_change && Scr->AutoPriority) {
+			if(Scr->AutoPriority) {
 				OtpRecomputeValues(Tmp_win);
 			}
 
@@ -1059,12 +1062,11 @@ void HandlePropertyNotify(void)
 				Tmp_win->icon_name = strdup(Tmp_win->name);
 				icon_change = true;
 			}
-			if(name_change || icon_change) {
-				if(icon_change) {
-					RedoIcon(Tmp_win);
-				}
-				AutoPopupMaybe(Tmp_win);
+			if(icon_change) {
+				RedoIcon(Tmp_win);
 			}
+			AutoPopupMaybe(Tmp_win);
+
 			break;
 		}
 
