@@ -985,7 +985,7 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			name_change = strcmp((char *)Tmp_win->name, prop);
+			name_change = strcmp(Tmp_win->name, prop);
 			icon_change = false;
 
 			free_window_names(Tmp_win, true, true, false);
@@ -1625,7 +1625,7 @@ void HandleDestroyNotify(void)
 	/*
 	 * TwmWindows contain the following pointers
 	 *
-	 *     1.  name
+	 *     1.  (obsolete)
 	 *     2.  name
 	 *     3.  icon_name
 	 *     4.  wmhints
