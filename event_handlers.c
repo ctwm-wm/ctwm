@@ -1074,7 +1074,7 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			if(strcmp(Tmp_win->icon_name, (char *) prop) != 0) {
+			if(strcmp(Tmp_win->icon_name, prop) != 0) {
 				free_window_names(Tmp_win, false, false, true);
 				Tmp_win->icon_name = prop;
 				RedoIcon(Tmp_win);
