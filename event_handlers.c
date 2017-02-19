@@ -884,29 +884,6 @@ void HandleKeyPress(void)
 }
 
 
-static void free_window_names(TwmWindow *tmp,
-                              bool nukefull, bool nukename, bool nukeicon)
-{
-	/*
-	 * XXX - are we sure that nobody ever sets these to another constant (check
-	 * twm windows)?
-	 */
-	if(tmp->name == tmp->icon_name) {
-		if(nukename && nukeicon) {
-			FreeWMPropertyString(tmp->name);
-		}
-	}
-	else {
-		if(nukename) {
-			FreeWMPropertyString(tmp->name);
-		}
-		if(nukeicon) {
-			FreeWMPropertyString(tmp->icon_name);
-		}
-	}
-	return;
-}
-
 
 /***********************************************************************
  *
@@ -924,8 +901,6 @@ void HandlePropertyNotify(void)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	Pixmap pm;
-	bool icon_change;
-	bool name_change;
 	XRectangle inc_rect;
 	XRectangle logical_rect;
 	Icon *icon;
@@ -985,10 +960,14 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			name_change = strcmp(Tmp_win->name, prop);
-			icon_change = false;
+			if(strcmp(Tmp_win->name, prop) == 0) {
+				/* No change, just free and skip out */
+				free(prop);
+				return;
+			}
 
-			free_window_names(Tmp_win, true, true, false);
+			/* It's changing, free the old */
+			FreeWMPropertyString(Tmp_win->name);
 
 			Tmp_win->name = prop;
 			Tmp_win->nameChanged = true;
@@ -998,7 +977,7 @@ void HandlePropertyNotify(void)
 			Tmp_win->name_width = logical_rect.width;
 
 			/* recompute the priority if necessary */
-			if(name_change && Scr->AutoPriority) {
+			if(Scr->AutoPriority) {
 				OtpRecomputeValues(Tmp_win);
 			}
 
@@ -1057,15 +1036,11 @@ void HandlePropertyNotify(void)
 			 * the same as the window
 			 */
 			if(Tmp_win->icon_name == NoName) {
-				Tmp_win->icon_name = Tmp_win->name;
-				icon_change = true;
+				Tmp_win->icon_name = strdup(Tmp_win->name);
+				RedoIcon(Tmp_win);
 			}
-			if(name_change || icon_change) {
-				if(icon_change) {
-					RedoIcon(Tmp_win);
-				}
-				AutoPopupMaybe(Tmp_win);
-			}
+			AutoPopupMaybe(Tmp_win);
+
 			break;
 		}
 
@@ -1074,14 +1049,19 @@ void HandlePropertyNotify(void)
 			if(prop == NULL) {
 				return;
 			}
-			icon_change = strcmp(Tmp_win->icon_name, (char *) prop);
-			free_window_names(Tmp_win, false, false, true);
-			Tmp_win->icon_name = (char *) prop;
 
-			if(icon_change) {
-				RedoIcon(Tmp_win);
-				AutoPopupMaybe(Tmp_win);
+			/* No change?  Nothing to do. */
+			if(strcmp(Tmp_win->icon_name, prop) == 0) {
+				free(prop);
+				break;
 			}
+
+			/* Else, free the old one and set it */
+			FreeWMPropertyString(Tmp_win->icon_name);
+			Tmp_win->icon_name = prop;
+			RedoIcon(Tmp_win);
+			AutoPopupMaybe(Tmp_win);
+
 			break;
 		}
 
@@ -1679,7 +1659,9 @@ void HandleDestroyNotify(void)
 		Scr->NumAutoLowers--;
 	}
 
-	free_window_names(Tmp_win, true, true, true);               /* 1, 2, 3 */
+	FreeWMPropertyString(Tmp_win->name);        // 2
+	FreeWMPropertyString(Tmp_win->icon_name);   // 3
+
 	XFree(Tmp_win->wmhints);                                    /* 4 */
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */
 		XFree(Tmp_win->class.res_name);
