@@ -218,7 +218,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/* Grab the icon name too */
 	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
 	if(!tmp_win->icon_name) {
-		tmp_win->icon_name = tmp_win->name;
+		if(tmp_win->name == NoName) {
+			tmp_win->icon_name = NoName;
+		}
+		else {
+			tmp_win->icon_name = strdup(tmp_win->name);
+		}
 	}
 
 	/* Convenience macro */
