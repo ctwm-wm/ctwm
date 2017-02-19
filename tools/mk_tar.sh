@@ -17,16 +17,18 @@ elif echo -n $version | grep -q '[^0-9\.]'; then
 fi
 
 # Setup the dir
-dir="ctwm-$version"
+tmpdir=`mktemp -d "${rtdir}/ctwm-mktar.XXXXXX"`
+dirname="ctwm-$version"
+dir="${tmpdir}/ctwm-$version"
 if [ -d $dir ] ; then
 	echo "Dir '$dir' already exists!"
 	exit;
 fi
-if [ -r $dir.tar ] ; then
-	echo "Tarball '$dir.tar' already exists!"
+if [ -r $rtdir/$dirname.tar ] ; then
+	echo "Tarball '$dirname.tar' already exists!"
 	exit;
 fi
-mkdir -m755 $dir
+mkdir -pm755 $dir
 
 # Create a totally fresh branch in it
 bzr branch --use-existing-dir $rtdir $dir
@@ -38,10 +40,11 @@ bzr branch --use-existing-dir $rtdir $dir
 ( cd $dir && rm -rf .bzr )
 
 # Tar it up
-tar \
-	--uid 0 --uname ctwm --gid 0 --gname ctwm \
-	-cvf $dir.tar $dir
+( cd $tmpdir && tar \
+		--uid 0 --uname ctwm --gid 0 --gname ctwm \
+		-cvf $rtdir/$dirname.tar $dirname
+)
 
 # Cleanup
-rm -rf $dir
-ls -l $dir.tar
+rm -rf $tmpdir
+ls -l $dirname.tar
