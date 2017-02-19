@@ -3,42 +3,54 @@
 # Setup and generate a release tarball
 
 # Make sure we're in the expected root of the tree
-cd `dirname $0`/..
+rtdir=`bzr root $0`
+cd $rtdir
 
 # Figure out version
 version=`head -n1 VERSION`
-
-# If it's a non-release, append date
-if echo -n $version | grep -q '[^0-9\.]'; then
+if [ ! -z "$1" ]; then
+	# Completely override from the command line
+	version=$1
+elif echo -n $version | grep -q '[^0-9\.]'; then
+	# If it's a non-release, append date
     version="$version.`date '+%Y%m%d'`"
 fi
 
 # Setup the dir
-dir="ctwm-$version"
+tmpdir=`mktemp -d "${rtdir}/ctwm-mktar.XXXXXX"`
+dirname="ctwm-$version"
+dir="${tmpdir}/ctwm-$version"
 if [ -d $dir ] ; then
 	echo "Dir '$dir' already exists!"
 	exit;
 fi
-if [ -r $dir.tar ] ; then
-	echo "Tarball '$dir.tar' already exists!"
+if [ -r $rtdir/$dirname.tar ] ; then
+	echo "Tarball '$dirname.tar' already exists!"
 	exit;
 fi
-mkdir -m755 $dir
+mkdir -pm755 $dir
 
 # Create a totally fresh branch in it
-bzr branch --use-existing-dir . $dir
+bzr branch --use-existing-dir $rtdir $dir
 
-# Generate the appropriate files for it
-( cd $dir && make release_files allclean adoc_clean )
+# Do various setup in the branch to prepare
+(
+	cd $dir
 
-# Blow away the bzr metastuff, we don't need to package that
-( cd $dir && rm -rf .bzr )
+	# Generate the appropriate files for it, and clean up intermediate
+	# products.
+	make release_files allclean adoc_clean
+
+	# Blow away the bzr metastuff, we don't need to package that
+	rm -rf .bzr
+)
 
 # Tar it up
-tar \
-	--uid 0 --uname ctwm --gid 0 --gname ctwm \
-	-cvf $dir.tar $dir
+( cd $tmpdir && tar \
+		--uid 0 --uname ctwm --gid 0 --gname ctwm \
+		-cvf $rtdir/$dirname.tar $dirname
+)
 
 # Cleanup
-rm -rf $dir
-ls -l $dir.tar
+rm -rf $tmpdir
+ls -l $dirname.tar
