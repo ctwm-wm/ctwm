@@ -989,7 +989,8 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			free_window_names(Tmp_win, true, true, false);
+			/* It's changing, free the old */
+			FreeWMPropertyString(Tmp_win->name);
 
 			Tmp_win->name = prop;
 			Tmp_win->nameChanged = true;
@@ -1079,7 +1080,7 @@ void HandlePropertyNotify(void)
 			}
 
 			/* Else, free the old one and set it */
-			free_window_names(Tmp_win, false, false, true);
+			FreeWMPropertyString(Tmp_win->icon_name);
 			Tmp_win->icon_name = prop;
 			RedoIcon(Tmp_win);
 			AutoPopupMaybe(Tmp_win);
