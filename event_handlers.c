@@ -891,39 +891,12 @@ static void free_window_names(TwmWindow *tmp,
 	 * XXX - are we sure that nobody ever sets these to another constant (check
 	 * twm windows)?
 	 */
-	if((tmp->name == tmp->full_name) && (tmp->name == tmp->icon_name)) {
-		if(nukefull && nukename && nukeicon) {
-			FreeWMPropertyString(tmp->name);
-		}
-	}
-	else if(tmp->name == tmp->full_name) {
-		if(nukename && nukefull) {
-			FreeWMPropertyString(tmp->name);
-		}
-		if(nukeicon) {
-			FreeWMPropertyString(tmp->icon_name);
-		}
-	}
-	else if(tmp->name == tmp->icon_name) {
+	if(tmp->name == tmp->icon_name) {
 		if(nukename && nukeicon) {
-			FreeWMPropertyString(tmp->name);
-		}
-		if(nukefull) {
-			FreeWMPropertyString(tmp->full_name);
-		}
-	}
-	else if(tmp->icon_name == tmp->full_name) {
-		if(nukeicon && nukefull) {
-			FreeWMPropertyString(tmp->icon_name);
-		}
-		if(nukename) {
 			FreeWMPropertyString(tmp->name);
 		}
 	}
 	else {
-		if(nukefull) {
-			FreeWMPropertyString(tmp->full_name);
-		}
 		if(nukename) {
 			FreeWMPropertyString(tmp->name);
 		}
@@ -1012,12 +985,11 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			name_change = strcmp((char *)Tmp_win->full_name, prop);
+			name_change = strcmp((char *)Tmp_win->name, prop);
 			icon_change = false;
 
 			free_window_names(Tmp_win, true, true, false);
 
-			Tmp_win->full_name = prop;
 			Tmp_win->name = prop;
 			Tmp_win->nameChanged = true;
 			XmbTextExtents(Scr->TitleBarFont.font_set,
@@ -1046,9 +1018,9 @@ void HandlePropertyNotify(void)
 				ColorPair cp;
 				int f, b;
 
-				f = GetColorFromList(Scr->TitleForegroundL, Tmp_win->full_name,
+				f = GetColorFromList(Scr->TitleForegroundL, Tmp_win->name,
 				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->TitleBackgroundL, Tmp_win->full_name,
+				b = GetColorFromList(Scr->TitleBackgroundL, Tmp_win->name,
 				                     &Tmp_win->class, &cp.back);
 				if(f || b) {
 					if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
@@ -1056,9 +1028,9 @@ void HandlePropertyNotify(void)
 					}
 					Tmp_win->title = cp;
 				}
-				f = GetColorFromList(Scr->BorderColorL, Tmp_win->full_name,
+				f = GetColorFromList(Scr->BorderColorL, Tmp_win->name,
 				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->BorderColorL, Tmp_win->full_name,
+				b = GetColorFromList(Scr->BorderColorL, Tmp_win->name,
 				                     &Tmp_win->class, &cp.back);
 				if(f || b) {
 					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
@@ -1067,9 +1039,9 @@ void HandlePropertyNotify(void)
 					Tmp_win->borderC = cp;
 				}
 
-				f = GetColorFromList(Scr->BorderTileForegroundL, Tmp_win->full_name,
+				f = GetColorFromList(Scr->BorderTileForegroundL, Tmp_win->name,
 				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->BorderTileBackgroundL, Tmp_win->full_name,
+				b = GetColorFromList(Scr->BorderTileBackgroundL, Tmp_win->name,
 				                     &Tmp_win->class, &cp.back);
 				if(f || b) {
 					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
@@ -1448,7 +1420,7 @@ void HandleExpose(void)
 		}
 		else if(Tmp_win->icon && (Event.xany.window == Tmp_win->icon->w) &&
 		                ! Scr->NoIconTitlebar &&
-		                ! LookInList(Scr->NoIconTitle, Tmp_win->full_name, &Tmp_win->class)) {
+		                ! LookInList(Scr->NoIconTitle, Tmp_win->name, &Tmp_win->class)) {
 			PaintIcon(Tmp_win);
 			flush_expose(Event.xany.window);
 			return;
@@ -1653,7 +1625,7 @@ void HandleDestroyNotify(void)
 	/*
 	 * TwmWindows contain the following pointers
 	 *
-	 *     1.  full_name
+	 *     1.  name
 	 *     2.  name
 	 *     3.  icon_name
 	 *     4.  wmhints
@@ -1847,7 +1819,7 @@ void HandleMapRequest(void)
 			case InactiveState:
 				if(!OCCUPY(Tmp_win, Scr->currentvs->wsw->currentwspc) &&
 				                HandlingEvents && /* to avoid warping during startup */
-				                LookInList(Scr->WarpOnDeIconify, Tmp_win->full_name, &Tmp_win->class)) {
+				                LookInList(Scr->WarpOnDeIconify, Tmp_win->name, &Tmp_win->class)) {
 					if(!Scr->NoRaiseDeicon) {
 						OtpRaise(Tmp_win, WinWin);
 					}
@@ -1875,7 +1847,7 @@ void HandleMapRequest(void)
 	/* If no hints, or currently an icon, just "deiconify" */
 	else {
 		if(!OCCUPY(Tmp_win, Scr->currentvs->wsw->currentwspc) &&
-		                LookInList(Scr->WarpOnDeIconify, Tmp_win->full_name, &Tmp_win->class)) {
+		                LookInList(Scr->WarpOnDeIconify, Tmp_win->name, &Tmp_win->class)) {
 			AddToWorkSpace(Scr->currentvs->wsw->currentwspc->name, Tmp_win);
 		}
 		if(1/*OCCUPY (Tmp_win, Scr->workSpaceMgr.activeWSPC)*/) {

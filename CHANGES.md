@@ -156,6 +156,9 @@ remnants of special-case VMS support have been removed.
     [Artistic Style](http://astyle.sourceforge.net/)
     to generate the proper output are in the source tree.
 
+1. The `full_name` element of the TwmWindow structure has been removed.
+    Consumers should just use the `name` element instead.
+
 
 
 ## 3.8.2  (2014-05-18)

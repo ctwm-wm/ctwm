@@ -2153,10 +2153,10 @@ WMapAddWindowToWorkspace(TwmWindow *win, WorkSpace *ws)
 	if(Scr->workSpaceMgr.windowcpgiven) {
 		cp.back = Scr->workSpaceMgr.windowcp.back;
 		GetColorFromList(Scr->workSpaceMgr.windowBackgroundL,
-		                 win->full_name, &win->class, &cp.back);
+		                 win->name, &win->class, &cp.back);
 		cp.fore = Scr->workSpaceMgr.windowcp.fore;
 		GetColorFromList(Scr->workSpaceMgr.windowForegroundL,
-		                 win->full_name, &win->class, &cp.fore);
+		                 win->name, &win->class, &cp.fore);
 	}
 	if(Scr->use3Dwmap && !Scr->BeNiceToColormap) {
 		GetShadeColors(&cp);

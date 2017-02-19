@@ -53,7 +53,7 @@ SetRaiseWindow(TwmWindow *tmp)
 void
 AutoPopupMaybe(TwmWindow *tmp)
 {
-	if(LookInList(Scr->AutoPopupL, tmp->full_name, &tmp->class)
+	if(LookInList(Scr->AutoPopupL, tmp->name, &tmp->class)
 	                || Scr->AutoPopup) {
 		if(OCCUPY(tmp, Scr->currentvs->wsw->currentwspc)) {
 			if(!tmp->mapped) {

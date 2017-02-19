@@ -198,7 +198,7 @@ DeIconify(TwmWindow *tmp_win)
 
 	if(isicon &&
 	                (Scr->WarpCursor ||
-	                 LookInList(Scr->WarpCursorL, tmp_win->full_name, &tmp_win->class))) {
+	                 LookInList(Scr->WarpCursorL, tmp_win->name, &tmp_win->class))) {
 		WarpToWindow(tmp_win, false);
 	}
 

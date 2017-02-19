@@ -101,13 +101,13 @@ SetupOccupation(TwmWindow *twm_win, int occupation_hint)
 
 	/* Specified in any Occupy{} config params? */
 	for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-		if(LookInList(ws->clientlist, twm_win->full_name, &twm_win->class)) {
+		if(LookInList(ws->clientlist, twm_win->name, &twm_win->class)) {
 			twm_win->occupation |= 1 << ws->number;
 		}
 	}
 
 	/* OccupyAll{} */
-	if(LookInList(Scr->OccupyAll, twm_win->full_name, &twm_win->class)) {
+	if(LookInList(Scr->OccupyAll, twm_win->name, &twm_win->class)) {
 		twm_win->occupation = fullOccupation;
 	}
 
@@ -442,13 +442,13 @@ WmgrRedoOccupation(TwmWindow *win)
 	WorkSpace *ws;
 	int       newoccupation;
 
-	if(LookInList(Scr->OccupyAll, win->full_name, &win->class)) {
+	if(LookInList(Scr->OccupyAll, win->name, &win->class)) {
 		newoccupation = fullOccupation;
 	}
 	else {
 		newoccupation = 0;
 		for(ws = Scr->workSpaceMgr.workSpaceList; ws != NULL; ws = ws->next) {
-			if(LookInList(ws->clientlist, win->full_name, &win->class)) {
+			if(LookInList(ws->clientlist, win->name, &win->class)) {
 				newoccupation |= 1 << ws->number;
 			}
 		}
@@ -493,7 +493,7 @@ WMgrAddToCurrentWorkSpaceAndWarp(VirtualScreen *vs, char *winname)
 
 	/* Find named window on this screen */
 	for(tw = Scr->FirstWindow; tw != NULL; tw = tw->next) {
-		if(match(winname, tw->full_name)) {
+		if(match(winname, tw->name)) {
 			break;
 		}
 	}
