@@ -3,7 +3,8 @@
 # Setup and generate a release tarball
 
 # Make sure we're in the expected root of the tree
-cd `dirname $0`/..
+rtdir=`bzr root $0`
+cd $rtdir
 
 # Figure out version
 version=`head -n1 VERSION`
