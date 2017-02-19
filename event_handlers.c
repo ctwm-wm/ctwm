@@ -1056,7 +1056,7 @@ void HandlePropertyNotify(void)
 			 * the same as the window
 			 */
 			if(Tmp_win->icon_name == NoName) {
-				Tmp_win->icon_name = Tmp_win->name;
+				Tmp_win->icon_name = strdup(Tmp_win->name);
 				icon_change = true;
 			}
 			if(name_change || icon_change) {
