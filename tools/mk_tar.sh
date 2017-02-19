@@ -29,7 +29,7 @@ fi
 mkdir -m755 $dir
 
 # Create a totally fresh branch in it
-bzr branch --use-existing-dir . $dir
+bzr branch --use-existing-dir $rtdir $dir
 
 # Generate the appropriate files for it
 ( cd $dir && make release_files allclean adoc_clean )
