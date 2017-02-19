@@ -8,9 +8,11 @@ cd $rtdir
 
 # Figure out version
 version=`head -n1 VERSION`
-
-# If it's a non-release, append date
-if echo -n $version | grep -q '[^0-9\.]'; then
+if [ ! -z "$1" ]; then
+	# Completely override from the command line
+	version=$1
+elif echo -n $version | grep -q '[^0-9\.]'; then
+	# If it's a non-release, append date
     version="$version.`date '+%Y%m%d'`"
 fi
 
