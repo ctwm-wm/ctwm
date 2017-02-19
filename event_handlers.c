@@ -979,7 +979,6 @@ void HandlePropertyNotify(void)
 	switch(Event.xproperty.atom) {
 		case XA_WM_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
-			bool icon_change = false;
 			if(prop == NULL) {
 				return;
 			}
@@ -1060,9 +1059,6 @@ void HandlePropertyNotify(void)
 			 */
 			if(Tmp_win->icon_name == NoName) {
 				Tmp_win->icon_name = strdup(Tmp_win->name);
-				icon_change = true;
-			}
-			if(icon_change) {
 				RedoIcon(Tmp_win);
 			}
 			AutoPopupMaybe(Tmp_win);
