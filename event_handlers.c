@@ -1682,7 +1682,9 @@ void HandleDestroyNotify(void)
 		Scr->NumAutoLowers--;
 	}
 
-	free_window_names(Tmp_win, true, true, true);               /* 1, 2, 3 */
+	FreeWMPropertyString(Tmp_win->name);        // 2
+	FreeWMPropertyString(Tmp_win->icon_name);   // 3
+
 	XFree(Tmp_win->wmhints);                                    /* 4 */
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */
 		XFree(Tmp_win->class.res_name);
