@@ -1069,16 +1069,14 @@ void HandlePropertyNotify(void)
 		}
 
 		case XA_WM_ICON_NAME: {
-			bool icon_change;
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_ICON_NAME);
 			if(prop == NULL) {
 				return;
 			}
-			icon_change = strcmp(Tmp_win->icon_name, (char *) prop);
-			free_window_names(Tmp_win, false, false, true);
-			Tmp_win->icon_name = (char *) prop;
 
-			if(icon_change) {
+			if(strcmp(Tmp_win->icon_name, (char *) prop) != 0) {
+				free_window_names(Tmp_win, false, false, true);
+				Tmp_win->icon_name = prop;
 				RedoIcon(Tmp_win);
 				AutoPopupMaybe(Tmp_win);
 			}
