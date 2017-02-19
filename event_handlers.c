@@ -1625,7 +1625,7 @@ void HandleDestroyNotify(void)
 	/*
 	 * TwmWindows contain the following pointers
 	 *
-	 *     1.  name
+	 *     1.  (obsolete)
 	 *     2.  name
 	 *     3.  icon_name
 	 *     4.  wmhints
