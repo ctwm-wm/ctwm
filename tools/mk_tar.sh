@@ -33,11 +33,17 @@ mkdir -pm755 $dir
 # Create a totally fresh branch in it
 bzr branch --use-existing-dir $rtdir $dir
 
-# Generate the appropriate files for it
-( cd $dir && make release_files allclean adoc_clean )
+# Do various setup in the branch to prepare
+(
+	cd $dir
 
-# Blow away the bzr metastuff, we don't need to package that
-( cd $dir && rm -rf .bzr )
+	# Generate the appropriate files for it, and clean up intermediate
+	# products.
+	make release_files allclean adoc_clean
+
+	# Blow away the bzr metastuff, we don't need to package that
+	rm -rf .bzr
+)
 
 # Tar it up
 ( cd $tmpdir && tar \
