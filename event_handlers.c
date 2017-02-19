@@ -985,7 +985,7 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			name_change = strcmp((char *)Tmp_win->name, prop);
+			name_change = strcmp(Tmp_win->name, prop);
 			icon_change = false;
 
 			free_window_names(Tmp_win, true, true, false);
