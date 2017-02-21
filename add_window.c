@@ -327,16 +327,27 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->flags |= IconPositionHint;
 	}
 
-	/* XXX Forcing input true?  Revisit. */
-	tmp_win->wmhints->input = True;
 
-	/* CL: Having with not willing focus
-	cause problems with AutoSqueeze and a few others
-	things. So I suppress it. And the whole focus thing
-	is buggy anyway */
+	/*
+	 * Various overriding of focus handling.  This is currently in flux,
+	 * so the redundancies in the extant code are ignored for the moment.
+	 */
+
+	/*
+	 * If we have WM_HINTS, but they don't tell us anything about focus,
+	 * force it to true for our purposes.
+	 *
+	 * CL: Having with not willing focus cause problems with AutoSqueeze
+	 * and a few others things. So I suppress it. And the whole focus
+	 * thing is buggy anyway.
+	 */
 	if(!(tmp_win->wmhints->flags & InputHint)) {
 		tmp_win->wmhints->input = True;
 	}
+
+	/* XXX Hard-forcing input true everywhere */
+	tmp_win->wmhints->input = True;
+
 
 	/* Setup group bits */
 	if(tmp_win->wmhints->flags & WindowGroupHint) {
