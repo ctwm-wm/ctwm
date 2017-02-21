@@ -312,6 +312,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
+	/*
+	 * Override a few bits with saved stuff from previous session, if we
+	 * have it.
+	 */
 	if(restore_iconified) {
 		tmp_win->wmhints->initial_state = IconicState;
 		tmp_win->wmhints->flags |= StateHint;
