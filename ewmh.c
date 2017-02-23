@@ -1279,24 +1279,43 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		case _NET_WM_MOVERESIZE_MOVE:
 		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD: {
 			XEvent xevent;
-			/* synthesize a button event */
-			xevent.xbutton.root = twm_win->parent_vs->window;
-			xevent.xbutton.window = (Window) - 1; /* force fromtitlebar = False */
-			xevent.xbutton.x_root = twm_win->frame_x;
-			xevent.xbutton.y_root = twm_win->frame_y;
-			xevent.xbutton.x = 0;
-			xevent.xbutton.y = 0;
+			Window root = twm_win->parent_vs->window;
+			Window child = w;
+			int x_root = twm_win->frame_x;
+			int y_root = twm_win->frame_y;
+			int x_win  = 0;
+			int y_win  = 0;
+			unsigned int dMask; // Dummy
+
+			/* Find the pointer */
+			XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
+			              &x_win, &y_win, &dMask);
+
+			/* Synthesize a button event */
+			xevent.type = ButtonPress;
+			xevent.xbutton.root = root;
+			xevent.xbutton.window = child;
+			xevent.xbutton.x_root = x_root;
+			xevent.xbutton.y_root = y_root;
+			xevent.xbutton.x = x_win;
+			xevent.xbutton.y = y_win;
 			xevent.xbutton.time = EventTime;
-			menuFromFrameOrWindowOrTitlebar = true;
+
+			/*
+			 * Pretend we're calling f.move from a menu, which would
+			 * defer execution.  x-ref DeferExecution() and the stuff
+			 * around it.
+			 */
+			RootFunction = F_MOVE;
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
 			                &xevent, C_TITLE, false);
-			menuFromFrameOrWindowOrTitlebar = false;
+
 			/*
-			 * This should probably happen in HandleButtonRelease...
-			 * no idea why it doesn't.
+			 * Call our button release handler to clean up as if it were
+			 * a normal f.move.
 			 */
-			EventHandler[EnterNotify] = HandleEnterNotify;
-			EventHandler[LeaveNotify] = HandleLeaveNotify;
+			HandleButtonRelease();
+
 			break;
 		}
 		case _NET_WM_MOVERESIZE_CANCEL:
