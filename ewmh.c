@@ -1242,7 +1242,6 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 {
 	Window w = msg->window;
 	TwmWindow *twm_win;
-	XEvent xevent;
 
 	twm_win = GetTwmWindow(w);
 
@@ -1263,7 +1262,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
 		case _NET_WM_MOVERESIZE_SIZE_LEFT:
-		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD:
+		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD: {
 			/* all implemented the same */
 			EventHandler[EnterNotify] = HandleUnknown;
 			EventHandler[LeaveNotify] = HandleUnknown;
@@ -1276,8 +1275,10 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			EventHandler[EnterNotify] = HandleEnterNotify;
 			EventHandler[LeaveNotify] = HandleLeaveNotify;
 			break;
+		}
 		case _NET_WM_MOVERESIZE_MOVE:
-		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
+		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD: {
+			XEvent xevent;
 			/* synthesize a button event */
 			xevent.xbutton.root = twm_win->parent_vs->window;
 			xevent.xbutton.window = (Window) - 1; /* force fromtitlebar = False */
@@ -1297,6 +1298,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			EventHandler[EnterNotify] = HandleEnterNotify;
 			EventHandler[LeaveNotify] = HandleLeaveNotify;
 			break;
+		}
 		case _NET_WM_MOVERESIZE_CANCEL:
 			/*
 			 * TODO: check if the twm_win is the same.
