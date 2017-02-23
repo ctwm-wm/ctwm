@@ -79,6 +79,7 @@ static void EwmhClientMessage_NET_WM_DESKTOP(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_STATE(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_ACTIVE_WINDOW(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg);
+static XEvent synth_btnevent_for_moveresize(TwmWindow *twm_win);
 static unsigned long EwmhGetWindowProperty(Window w, Atom name, Atom type);
 static void EwmhGetStrut(TwmWindow *twm_win, bool update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
@@ -1263,28 +1264,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
 		case _NET_WM_MOVERESIZE_SIZE_LEFT:
 		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD: {
-			XEvent xevent;
-			Window root = twm_win->parent_vs->window;
-			Window child = w;
-			int x_root = twm_win->frame_x;
-			int y_root = twm_win->frame_y;
-			int x_win  = 0;
-			int y_win  = 0;
-			unsigned int dMask; // Dummy
-
-			/* Find the pointer */
-			XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
-			              &x_win, &y_win, &dMask);
-
-			/* Synthesize a button event */
-			xevent.type = ButtonPress;
-			xevent.xbutton.root = root;
-			xevent.xbutton.window = child;
-			xevent.xbutton.x_root = x_root;
-			xevent.xbutton.y_root = y_root;
-			xevent.xbutton.x = x_win;
-			xevent.xbutton.y = y_win;
-			xevent.xbutton.time = EventTime;
+			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
 
 			/*
 			 * Pretend we're calling f.resize from a menu, which would
@@ -1305,28 +1285,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		}
 		case _NET_WM_MOVERESIZE_MOVE:
 		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD: {
-			XEvent xevent;
-			Window root = twm_win->parent_vs->window;
-			Window child = w;
-			int x_root = twm_win->frame_x;
-			int y_root = twm_win->frame_y;
-			int x_win  = 0;
-			int y_win  = 0;
-			unsigned int dMask; // Dummy
-
-			/* Find the pointer */
-			XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
-			              &x_win, &y_win, &dMask);
-
-			/* Synthesize a button event */
-			xevent.type = ButtonPress;
-			xevent.xbutton.root = root;
-			xevent.xbutton.window = child;
-			xevent.xbutton.x_root = x_root;
-			xevent.xbutton.y_root = y_root;
-			xevent.xbutton.x = x_win;
-			xevent.xbutton.y = y_win;
-			xevent.xbutton.time = EventTime;
+			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
 
 			/*
 			 * Pretend we're calling f.move from a menu, which would
@@ -1353,6 +1312,36 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			break;
 	}
 }
+
+static XEvent
+synth_btnevent_for_moveresize(TwmWindow *twm_win)
+{
+	XEvent xevent;
+	Window root = twm_win->parent_vs->window;
+	Window child = twm_win->w;
+	int x_root = twm_win->frame_x;
+	int y_root = twm_win->frame_y;
+	int x_win  = 0;
+	int y_win  = 0;
+	unsigned int dMask; // Dummy
+
+	/* Find the pointer */
+	XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
+			      &x_win, &y_win, &dMask);
+
+	/* Synthesize a button event */
+	xevent.type = ButtonPress;
+	xevent.xbutton.root = root;
+	xevent.xbutton.window = child;
+	xevent.xbutton.x_root = x_root;
+	xevent.xbutton.y_root = y_root;
+	xevent.xbutton.x = x_win;
+	xevent.xbutton.y = y_win;
+	xevent.xbutton.time = EventTime;
+
+	return xevent;
+}
+
 
 /*
  * Handle any PropertyNotify.
