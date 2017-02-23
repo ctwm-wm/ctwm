@@ -1327,11 +1327,11 @@ synth_btnevent_for_moveresize(TwmWindow *twm_win)
 	int y_root = twm_win->frame_y;
 	int x_win  = 0;
 	int y_win  = 0;
-	unsigned int dMask; // Dummy
+	unsigned int dummy_mask;
 
 	/* Find the pointer */
 	XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
-	              &x_win, &y_win, &dMask);
+	              &x_win, &y_win, &dummy_mask);
 
 	/* Synthesize a button event */
 	xevent.type = ButtonPress;
