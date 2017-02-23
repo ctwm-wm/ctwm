@@ -1266,6 +1266,12 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
 
 			/*
+			 * XXX The resize won't actually start until we cross the
+			 * cursor over a border.  Perhaps we should find the nearest
+			 * corner, and pre-warp the cursor there?
+			 */
+
+			/*
 			 * Pretend we're calling f.resize from a menu, which would
 			 * defer execution.  x-ref DeferExecution() and the stuff
 			 * around it.
