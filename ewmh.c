@@ -1312,6 +1312,10 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			/*
 			 * TODO: check if the twm_win is the same.
 			 * TODO: check how to make this actually work.
+			 *
+			 * As currently implemented, I don't believe we ever need to
+			 * do anything here.  All the needed cleanup should happen in
+			 * our ButtonRelease handler.
 			 */
 			break;
 	}
