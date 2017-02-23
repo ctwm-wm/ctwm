@@ -1281,10 +1281,14 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			                &xevent, C_WINDOW, false);
 
 			/*
-			 * Call our button release handler to clean up as if it were
-			 * a normal f.move.
+			 * It's not guaranteed that this actually began as a button
+			 * press, but our implementation is expecting the button to
+			 * be held down all through the move, so that
+			 * ExecuteFunction() won't actually end until there's a
+			 * button release of some kind, which will trigger
+			 * HandleButtonRelease() properly.  So we don't need to call
+			 * it ourselves.
 			 */
-			HandleButtonRelease();
 
 			break;
 		}
@@ -1301,12 +1305,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
 			                &xevent, C_WINDOW, false);
 
-			/*
-			 * Call our button release handler to clean up as if it were
-			 * a normal f.move.
-			 */
-			HandleButtonRelease();
-
+			/* X-ref HandleButtonRelease() discussion above */
 			break;
 		}
 		case _NET_WM_MOVERESIZE_CANCEL:
