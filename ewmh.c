@@ -1263,17 +1263,44 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
 		case _NET_WM_MOVERESIZE_SIZE_LEFT:
 		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD: {
-			/* all implemented the same */
-			EventHandler[EnterNotify] = HandleUnknown;
-			EventHandler[LeaveNotify] = HandleUnknown;
-			OpaqueResizeSize(twm_win);
-			resizeFromCenter(twm_win->frame, twm_win);
+			XEvent xevent;
+			Window root = twm_win->parent_vs->window;
+			Window child = w;
+			int x_root = twm_win->frame_x;
+			int y_root = twm_win->frame_y;
+			int x_win  = 0;
+			int y_win  = 0;
+			unsigned int dMask; // Dummy
+
+			/* Find the pointer */
+			XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
+			              &x_win, &y_win, &dMask);
+
+			/* Synthesize a button event */
+			xevent.type = ButtonPress;
+			xevent.xbutton.root = root;
+			xevent.xbutton.window = child;
+			xevent.xbutton.x_root = x_root;
+			xevent.xbutton.y_root = y_root;
+			xevent.xbutton.x = x_win;
+			xevent.xbutton.y = y_win;
+			xevent.xbutton.time = EventTime;
+
 			/*
-			 * This should probably happen in HandleButtonRelease...
-			 * no idea why it doesn't.
+			 * Pretend we're calling f.resize from a menu, which would
+			 * defer execution.  x-ref DeferExecution() and the stuff
+			 * around it.
 			 */
-			EventHandler[EnterNotify] = HandleEnterNotify;
-			EventHandler[LeaveNotify] = HandleLeaveNotify;
+			RootFunction = F_RESIZE;
+			ExecuteFunction(F_RESIZE, "", twm_win->frame, twm_win,
+			                &xevent, C_TITLE, false);
+
+			/*
+			 * Call our button release handler to clean up as if it were
+			 * a normal f.move.
+			 */
+			HandleButtonRelease();
+
 			break;
 		}
 		case _NET_WM_MOVERESIZE_MOVE:
