@@ -1293,7 +1293,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			 */
 			RootFunction = F_RESIZE;
 			ExecuteFunction(F_RESIZE, "", twm_win->frame, twm_win,
-			                &xevent, C_TITLE, false);
+			                &xevent, C_WINDOW, false);
 
 			/*
 			 * Call our button release handler to clean up as if it were
@@ -1335,7 +1335,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			 */
 			RootFunction = F_MOVE;
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
-			                &xevent, C_TITLE, false);
+			                &xevent, C_WINDOW, false);
 
 			/*
 			 * Call our button release handler to clean up as if it were
