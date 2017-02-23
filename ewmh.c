@@ -1241,10 +1241,9 @@ static void EwmhClientMessage_NET_ACTIVE_WINDOW(XClientMessageEvent *msg)
  */
 static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 {
-	Window w = msg->window;
 	TwmWindow *twm_win;
 
-	twm_win = GetTwmWindow(w);
+	twm_win = GetTwmWindow(msg->window);
 
 	if(twm_win == NULL) {
 		return;
