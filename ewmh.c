@@ -1263,6 +1263,7 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
 		case _NET_WM_MOVERESIZE_SIZE_LEFT:
 		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD: {
+			/* Fake up as if we triggered f.resize on it */
 			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
 
 			/*
@@ -1270,13 +1271,6 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			 * cursor over a border.  Perhaps we should find the nearest
 			 * corner, and pre-warp the cursor there?
 			 */
-
-			/*
-			 * Pretend we're calling f.resize from a menu, which would
-			 * defer execution.  x-ref DeferExecution() and the stuff
-			 * around it.
-			 */
-			RootFunction = F_RESIZE;
 			ExecuteFunction(F_RESIZE, "", twm_win->frame, twm_win,
 			                &xevent, C_WINDOW, false);
 
@@ -1294,14 +1288,8 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		}
 		case _NET_WM_MOVERESIZE_MOVE:
 		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD: {
+			/* Fake up as if we triggered f.move on it */
 			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
-
-			/*
-			 * Pretend we're calling f.move from a menu, which would
-			 * defer execution.  x-ref DeferExecution() and the stuff
-			 * around it.
-			 */
-			RootFunction = F_MOVE;
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
 			                &xevent, C_WINDOW, false);
 
