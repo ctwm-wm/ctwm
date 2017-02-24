@@ -1267,9 +1267,12 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
 
 			/*
-			 * XXX The resize won't actually start until we cross the
-			 * cursor over a border.  Perhaps we should find the nearest
-			 * corner, and pre-warp the cursor there?
+			 * The resize won't actually start until we cross the cursor
+			 * over a border.  Perhaps we should find the nearest corner,
+			 * and pre-warp the cursor there?  That may be less friendly
+			 * for the user, since it might not be as predictable, and
+			 * having the cursor zoom off without warning is probably a
+			 * little surprising...
 			 */
 			ExecuteFunction(F_RESIZE, "", twm_win->frame, twm_win,
 			                &xevent, C_WINDOW, false);
