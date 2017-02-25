@@ -818,7 +818,7 @@ DontWarpCursorInWMap::
   Tells ctwm not to warp the cursor to the corresponding actual window
   when you click in a small window in the workspace map.
 
-EWMHIgnore::
+EWMHIgnore { `message-types` }::
   Sets EWMH message types that ctwm will ignore.  This is only valid
   if built with `USE_EWMH` (currently on by default).  The following
   example shows all the valid options:
