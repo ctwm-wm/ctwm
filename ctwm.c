@@ -1014,6 +1014,9 @@ static void InitVariables(void)
 #endif
 	FreeList(&Scr->MWMIgnore);
 
+	Scr->ForceFocus = false;
+	FreeList(&Scr->ForceFocusL);
+
 	Scr->BorderTop    = 0;
 	Scr->BorderBottom = 0;
 	Scr->BorderLeft   = 0;

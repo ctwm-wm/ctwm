@@ -93,6 +93,7 @@ int yylex(void);
 %token <num> EWMH_IGNORE
 %token <num> MWM_IGNORE
 %token <num> RPLAY_SOUNDS
+%token <num> FORCE_FOCUS
 %token <ptr> STRING
 
 %type <ptr> string
@@ -425,6 +426,9 @@ stmt		: error
 		  mwm_ignore_list
 		| RPLAY_SOUNDS { }
 		  rplay_sounds_list
+		| FORCE_FOCUS { Scr->ForceFocus = true; }
+		| FORCE_FOCUS { curplist = &Scr->ForceFocusL; }
+		  win_list
 		;
 
 noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
