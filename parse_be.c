@@ -271,6 +271,7 @@ static const TwmKeyword keytable[] = {
 	{ "east",                   GRAVITY, GRAV_EAST },
 	{ "ewmhignore",             EWMH_IGNORE, 0 },
 	{ "f",                      FRAME, 0 },
+	{ "forcefocus",             FORCE_FOCUS, 0 },
 	{ "forceicons",             KEYWORD, kw0_ForceIcons },
 	{ "frame",                  FRAME, 0 },
 	{ "framepadding",           NKEYWORD, kwn_FramePadding },

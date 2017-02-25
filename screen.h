@@ -417,6 +417,10 @@ struct ScreenInfo {
 	bool  DontToggleWorkspaceManagerState;
 	bool  ShowWelcomeWindow;
 
+	/* Forcing focus-setting on windows */
+	bool      ForceFocus;
+	name_list *ForceFocusL;
+
 	FuncKey FuncKeyRoot;
 	FuncButton FuncButtonRoot;
 

@@ -312,6 +312,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
+	/*
+	 * Override a few bits with saved stuff from previous session, if we
+	 * have it.
+	 */
 	if(restore_iconified) {
 		tmp_win->wmhints->initial_state = IconicState;
 		tmp_win->wmhints->flags |= StateHint;
@@ -323,16 +327,30 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->flags |= IconPositionHint;
 	}
 
-	/* XXX Forcing input true?  Revisit. */
-	tmp_win->wmhints->input = True;
 
-	/* CL: Having with not willing focus
-	cause problems with AutoSqueeze and a few others
-	things. So I suppress it. And the whole focus thing
-	is buggy anyway */
+	/*
+	 * If we have WM_HINTS, but they don't tell us anything about focus,
+	 * force it to true for our purposes.
+	 *
+	 * CL: Having with not willing focus cause problems with AutoSqueeze
+	 * and a few others things. So I suppress it. And the whole focus
+	 * thing is buggy anyway.
+	 */
 	if(!(tmp_win->wmhints->flags & InputHint)) {
 		tmp_win->wmhints->input = True;
 	}
+
+	/*
+	 * Now we're expecting to give the window focus if it asked for it
+	 * via WM_HINTS, if it didn't say anything one way or the other in
+	 * WM_HINTS, or if it didn't give us any WM_HINTS at all.  But if it
+	 * explicitly asked not to, we don't give it unless overridden by
+	 * config.
+	 */
+	if(Scr->ForceFocus || CHKL(ForceFocusL)) {
+		tmp_win->wmhints->input = True;
+	}
+
 
 	/* Setup group bits */
 	if(tmp_win->wmhints->flags & WindowGroupHint) {

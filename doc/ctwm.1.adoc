@@ -838,6 +838,16 @@ EWMHIgnore
 +
 First appeared in %%NEXT%%.
 
+ForceFocus [{ `win-list` }]::
+  Give focus to windows whether they asked for it or not.  This may
+  occasionally be useful with windows that tell us not to give them
+  focus, but still need it and fail to work right without us doing so.
+  The optional window list allows specifying which windows will get such
+  treatment.
++
+First appeared in %%NEXT%%.  In prior versions, a variant of this
+functionality was unconditionally enabled.
+
 ForceIcons::
   This variable indicates that icon pixmaps specified in the `Icons`
   variable should override any client-supplied pixmaps.
