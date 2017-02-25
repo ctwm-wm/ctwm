@@ -329,11 +329,6 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 
 	/*
-	 * Various overriding of focus handling.  This is currently in flux,
-	 * so the redundancies in the extant code are ignored for the moment.
-	 */
-
-	/*
 	 * If we have WM_HINTS, but they don't tell us anything about focus,
 	 * force it to true for our purposes.
 	 *
