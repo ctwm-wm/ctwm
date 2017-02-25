@@ -149,6 +149,12 @@ remnants of special-case VMS support have been removed.
     whether they want us to give them focus are now explicitly given
     focus anyway.  This should fix focus problems with some apps.
 
+1. Added ForceFocus {} config option to forcibly give focus to all (or
+    specified) windows, whether they request it or not.  Previously the
+    code did this unconditionally (except when no `WM_HINTS` were
+    provided; x-ref previous), but this causes problems with at least
+    some programs that tell us they don't want focus, and mean it.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
