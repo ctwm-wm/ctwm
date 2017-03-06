@@ -742,8 +742,10 @@ int main(int argc, char **argv)
 			if(Scr->CenterFeedbackWindow) {
 				sx = (Scr->rootw / 2) - (Scr->SizeStringWidth / 2);
 				sy = (Scr->rooth / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
-				attributes.save_under = True;
-				valuemask |= CWSaveUnder;
+				if(Scr->SaveUnder) {
+					attributes.save_under = True;
+					valuemask |= CWSaveUnder;
+				}
 			}
 			else {
 				sx = 0;
