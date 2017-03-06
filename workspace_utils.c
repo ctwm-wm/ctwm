@@ -70,9 +70,6 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 		return;
 	}
 
-	attr.backing_store = NotUseful;
-	attr.save_under    = False;
-
 	/* XXX X-ref CTAG_BGDRAW in CreateWorkSpaceManager() and below */
 	if(useBackgroundInfo && ! Scr->DontPaintRootWindow) {
 		if(newws->image == NULL) {
