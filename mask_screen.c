@@ -42,9 +42,7 @@ MaskScreen(char *file)
 
 	NewFontCursor(&waitcursor, "watch");
 
-	valuemask = (CWSaveUnder | CWBackPixel |
-	             CWOverrideRedirect | CWEventMask | CWCursor);
-	attributes.save_under        = False;
+	valuemask = (CWBackPixel | CWOverrideRedirect | CWEventMask | CWCursor);
 	attributes.override_redirect = True;
 	attributes.event_mask        = ExposureMask;
 	attributes.cursor            = waitcursor;
