@@ -108,12 +108,11 @@ Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 		XSetWindowAttributes attr;
 
 		XGetWindowAttributes(dpy, tmp_win->frame, &winattrs);
-		attr.backing_store = NotUseful;
 		attr.save_under    = False;
 		blanket = XCreateWindow(dpy, Scr->Root, winattrs.x, winattrs.y,
 		                        winattrs.width, winattrs.height, 0,
 		                        CopyFromParent, CopyFromParent,
-		                        CopyFromParent, CWBackingStore | CWSaveUnder, &attr);
+		                        CopyFromParent, CWSaveUnder, &attr);
 		XMapWindow(dpy, blanket);
 	}
 

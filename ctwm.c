@@ -721,10 +721,8 @@ int main(int argc, char **argv)
 		attributes.background_pixel = Scr->DefaultC.back;
 		attributes.event_mask = (ExposureMask | ButtonPressMask |
 		                         KeyPressMask | ButtonReleaseMask);
-		attributes.backing_store = NotUseful;
 		NewFontCursor(&attributes.cursor, "hand2");
-		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
-		             CWBackingStore | CWCursor);
+		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask | CWCursor);
 		Scr->InfoWindow.win =
 		        XCreateWindow(dpy, Scr->Root, 0, 0,
 		                      5, 5,

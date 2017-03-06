@@ -453,9 +453,8 @@ DFHANDLER(refresh)
 	XSetWindowAttributes attributes;
 	unsigned long valuemask;
 
-	valuemask = (CWBackPixel | CWBackingStore | CWSaveUnder);
+	valuemask = (CWBackPixel | CWSaveUnder);
 	attributes.background_pixel = Scr->Black;
-	attributes.backing_store = NotUseful;
 	attributes.save_under = False;
 	w = XCreateWindow(dpy, Scr->Root, 0, 0,
 	                  Scr->rootw,

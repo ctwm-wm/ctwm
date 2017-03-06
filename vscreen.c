@@ -62,9 +62,8 @@ void InitVirtualScreens(ScreenInfo *scr)
 	            SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
 	            ButtonReleaseMask;
 
-	valuemask = CWBackingStore | CWSaveUnder | CWBackPixel | CWOverrideRedirect |
+	valuemask = CWSaveUnder | CWBackPixel | CWOverrideRedirect |
 	            CWEventMask | CWCursor;
-	attributes.backing_store     = NotUseful;
 	attributes.save_under        = False;
 	attributes.override_redirect = True;
 	attributes.event_mask        = attrmask;

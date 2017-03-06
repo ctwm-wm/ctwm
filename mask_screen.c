@@ -42,9 +42,8 @@ MaskScreen(char *file)
 
 	NewFontCursor(&waitcursor, "watch");
 
-	valuemask = (CWBackingStore | CWSaveUnder | CWBackPixel |
+	valuemask = (CWSaveUnder | CWBackPixel |
 	             CWOverrideRedirect | CWEventMask | CWCursor);
-	attributes.backing_store     = NotUseful;
 	attributes.save_under        = False;
 	attributes.override_redirect = True;
 	attributes.event_mask        = ExposureMask;
