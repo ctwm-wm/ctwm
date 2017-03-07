@@ -1720,7 +1720,7 @@ try to use the same few already used in the example icons.
 
     * Workaround a bug on HP7xx/8.07 servers for RaiseLower in Map
         window. The stacking order in the MapWindow was not correct on
-        those servers. Use 
+        those servers. Use
 
             EXTRA_DEFINES = -DBUGGY_HP700_SERVER
 
