@@ -133,7 +133,7 @@ movewindow(EF_FULLPROTO)
 		}
 		else {
 			const unsigned long sw = tmp_win->frame_width
-			                       * tmp_win->frame_height;
+			                         * tmp_win->frame_height;
 			const unsigned long ss = Scr->rootw  * Scr->rooth;
 			const float sf = Scr->OpaqueMoveThreshold / 100.0;
 
