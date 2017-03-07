@@ -155,6 +155,9 @@ remnants of special-case VMS support have been removed.
     provided; x-ref previous), but this causes problems with at least
     some programs that tell us they don't want focus, and mean it.
 
+1. OpaqueMoveThreshold values >= 200 (the default) are now treated as
+    infinite, and so will always cause opaque moving.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
