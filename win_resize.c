@@ -147,9 +147,9 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
 			 * scrsz will hold the number of pixels in your resolution,
 			 * which can get big.  [signed] int may not cut it.
 			 */
-			unsigned long winsz, scrsz;
-			winsz = tmp_win->frame_width * tmp_win->frame_height;
-			scrsz = Scr->rootw  * Scr->rooth;
+			const unsigned long winsz = tmp_win->frame_width
+			                            * tmp_win->frame_height;
+			const unsigned long scrsz = Scr->rootw  * Scr->rooth;
 			if(winsz > (scrsz * (Scr->OpaqueResizeThreshold / 100.0))) {
 				Scr->OpaqueResize = false;
 			}
