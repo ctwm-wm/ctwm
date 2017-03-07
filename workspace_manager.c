@@ -1071,14 +1071,19 @@ WMgrHandleButtonEvent(VirtualScreen *vs, XEvent *event)
 	 * XXX Really?
 	 */
 	if(win->OpaqueMove) {
-		const unsigned long winsz = win->frame_width * win->frame_height;
-		const unsigned long scrsz = vs->w * vs->h;
-		const float sf = Scr->OpaqueMoveThreshold / 100.0;
-		if(winsz > (scrsz * sf)) {
-			Scr->OpaqueMove = false;
+		if(Scr->OpaqueMoveThreshold >= 200) {
+			Scr->OpaqueMove = true;
 		}
 		else {
-			Scr->OpaqueMove = true;
+			const unsigned long winsz = win->frame_width * win->frame_height;
+			const unsigned long scrsz = vs->w * vs->h;
+			const float sf = Scr->OpaqueMoveThreshold / 100.0;
+			if(winsz > (scrsz * sf)) {
+				Scr->OpaqueMove = false;
+			}
+			else {
+				Scr->OpaqueMove = true;
+			}
 		}
 	}
 	else {
