@@ -131,12 +131,10 @@ movewindow(EF_FULLPROTO)
 	 * OpaqueResize bits.
 	 */
 	if(tmp_win->OpaqueMove) {
-		int sw, ss;
-		float sf;
+		const unsigned long sw = tmp_win->frame_width * tmp_win->frame_height;
+		const unsigned long ss = Scr->rootw  * Scr->rooth;
+		const float sf = Scr->OpaqueMoveThreshold / 100.0;
 
-		sw = tmp_win->frame_width * tmp_win->frame_height;
-		ss = Scr->rootw  * Scr->rooth;
-		sf = Scr->OpaqueMoveThreshold / 100.0;
 		if(sw > (ss * sf)) {
 			Scr->OpaqueMove = false;
 		}
