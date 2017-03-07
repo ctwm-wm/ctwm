@@ -126,22 +126,23 @@ movewindow(EF_FULLPROTO)
 
 	/*
 	 * Figure whether we're moving opaquely.
-	 *
-	 * XXX This should probably get the infinity treatment like the
-	 * OpaqueResize bits.
 	 */
 	if(tmp_win->OpaqueMove) {
-		int sw, ss;
-		float sf;
-
-		sw = tmp_win->frame_width * tmp_win->frame_height;
-		ss = Scr->rootw  * Scr->rooth;
-		sf = Scr->OpaqueMoveThreshold / 100.0;
-		if(sw > (ss * sf)) {
-			Scr->OpaqueMove = false;
+		if(Scr->OpaqueMoveThreshold >= 200) {
+			Scr->OpaqueMove = true;
 		}
 		else {
-			Scr->OpaqueMove = true;
+			const unsigned long sw = tmp_win->frame_width
+			                         * tmp_win->frame_height;
+			const unsigned long ss = Scr->rootw  * Scr->rooth;
+			const float sf = Scr->OpaqueMoveThreshold / 100.0;
+
+			if(sw > (ss * sf)) {
+				Scr->OpaqueMove = false;
+			}
+			else {
+				Scr->OpaqueMove = true;
+			}
 		}
 	}
 	else {

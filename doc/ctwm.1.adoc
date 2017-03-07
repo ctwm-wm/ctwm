@@ -1443,9 +1443,12 @@ OpaqueMove [{ `window-list` }]::
   be moved in opaque mode. The `NoOpaqueMove` counterpart is also available.
 
 OpaqueMoveThreshold `threshold`::
-  The integer parameter is a percentage and indicates that only windows (elligible
-  for opaque moving) with a surface smaller than this percentage of the surface
-  of the screen should actually be moved in opaque mode.
+  The integer parameter is a percentage and indicates that only windows
+  (elligible for opaque moving) with a surface smaller than this
+  percentage of the surface of the screen should actually be moved in
+  opaque mode.  The default is 200.  Since %%NEXT%%, values >= 200 are
+  treated as infinity, causing windows to always `OpaqueMove` if
+  eligible.
 
 OpaqueResize [{ `window-list` }]::
   The opaque version of resize. Extremely resource intensive,
@@ -1454,8 +1457,8 @@ OpaqueResize [{ `window-list` }]::
 
 OpaqueResizeThreshold `threshold`::
   The resize version of `OpaqueMoveThreshold`.  The default is 1000.
-  Since 3.8.1, values >= 1000 are treated as infinity, causing all
-  windows to always `OpaqueResize` if eligible.
+  Since 3.8.1, values >= 1000 are treated as infinity, causing windows to
+  always `OpaqueResize` if eligible.
 
 OpenWindowTimeout `seconds`::
   seconds is an integer representing a number of second. When a window
