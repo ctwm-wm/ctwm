@@ -541,6 +541,10 @@ AutoSqueeze { `win-list` }::
   unsqueezed when they get focus, and squeezed when they loose it. Useful for
   the workspace manager. Not authorized for icon managers.
 
+BackingStore::
+  Enable usage of backing store on menus and workspace map windows.  See
+  also `NoBackingStore`.  Added in %%NEXT%%.
+
 BeNiceToColormap::
   By defaults new colors are allocated for shadows when a 3D look is used,
   but when you specify `BeNiceToColormap` ctwm uses stipling instead of
@@ -856,6 +860,11 @@ FramePadding `pixels`::
   This variable specifies the distance between the titlebar decorations (the
   button and text) and the window frame.  The default is 2 pixels if `UseThreeDTitles` is
   not set, 0 if it is set.
+
+GrabServer::
+  Specifies that ctwm should grab the X server (blocking all events other
+  than ours) when popping up menus and moving opaque windows.  See also
+  `NoGrabServer`.  Added in %%NEXT%%.
 
 IconBackground `string` [{ `win-list` }]::
   This variable specifies the background color of icons, and may
@@ -1224,8 +1233,9 @@ First appeared in %%NEXT%%.
 
 NoBackingStore::
   This variable indicates that ctwm's menus should not request backing
-  store to minimize repainting of menus.  This is typically
-  used with servers that can repaint faster than they can handle backing store.
+  store to minimize repainting of menus.  This is typically used with
+  servers that can repaint faster than they can handle backing store.
+  See also `BackingStore`.
 
 NoBorder { `win-list` }::
   These windows won't have borders. If you want no borders on all windows,
@@ -1235,6 +1245,11 @@ NoCaseSensitive::
   This variable indicates that case should be ignored when sorting icon names
   in an icon manager.  This option is typically used with applications that
   capitalize the first letter of their icon name.
+
+NoDecorateTransients::
+  Specify that transient windows (i.e., windows with a `WM_TRANSIENT_FOR`
+  property set) should be ignored (not given decorations) by ctwm.  See
+  also `DecorateTransients`.  Added in %%NEXT%%.
 
 NoDefaults::
   This variable indicates that ctwm should not supply the default
@@ -1302,6 +1317,11 @@ NoRaiseOnWarp::
   occluding window instead the desired window (which causes unexpected behavior
   with `f.warpring`).
 
+NoRestartPreviousState::
+  Don't attempt to regenerate the state the screen was in before the
+  previous window manager was shut down.  See `RestartPreviousState` for
+  details.  Added in %%NEXT%%.
+
 NoSaveUnders::
   This variable indicates that menus should not request save-unders to minimize
   window repainting following menu selection.  It is typically used with displays
@@ -1310,6 +1330,10 @@ NoSaveUnders::
 NoShowOccupyAll::
   This variable specifies that OccupyAll windows won't be displayed in the
   WorkSpaceMap window.
+
+NoSortIconManager::
+  Specifies that entries in the icon manager should be appended in the
+  order they show up.  See also `SortIconManager`.  Added in %%NEXT%%.
 
 NoStackMode [{ `win-list` }]::
   This variable indicates that client window requests to change stacking order
@@ -1709,9 +1733,13 @@ StartIconified { `win-list` }::
   programs that do not support an `-iconic` command line option or
   resource.
 
+StartInButtonState::
+  Start the WorkSpaceManage in button form.  See also `StartInMapState`.
+  Added in %%NEXT%%.
+
 StartInMapState::
   This variable specifies that the WorkSpaceManager should be started
-  in its map form when created.
+  in its map form when created.  See also `StartInButtonState`.
 
 StartSqueezed { `win-list` }::
   These windows will first show up squeezed (see f.squeeze).

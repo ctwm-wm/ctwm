@@ -120,6 +120,12 @@ typedef struct _TwmKeyword {
 #define kw0_DontShowWelcomeWindow       68
 #define kw0_AutoPriority                69
 #define kw0_DontToggleWorkspacemanagerState 70
+#define kw0_BackingStore                71
+#define kw0_StartInButtonState          72
+#define kw0_NoSortIconManager           73
+#define kw0_NoRestartPreviousState      74
+#define kw0_NoDecorateTransients        75
+#define kw0_GrabServer                  76
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -228,6 +234,7 @@ static const TwmKeyword keytable[] = {
 	{ "autoraiseicons",         KEYWORD, kw0_AutoRaiseIcons },
 	{ "autorelativeresize",     KEYWORD, kw0_AutoRelativeResize },
 	{ "autosqueeze",            AUTOSQUEEZE, 0 },
+	{ "backingstore",           KEYWORD, kw0_BackingStore },
 	{ "benicetocolormap",       KEYWORD, kw0_BeNiceToColormap },
 	{ "borderbottom",           NKEYWORD, kwn_BorderBottom },
 	{ "bordercolor",            CLKEYWORD, kwcl_BorderColor },
@@ -276,6 +283,7 @@ static const TwmKeyword keytable[] = {
 	{ "frame",                  FRAME, 0 },
 	{ "framepadding",           NKEYWORD, kwn_FramePadding },
 	{ "function",               FUNCTION, 0 },
+	{ "grabserver",             KEYWORD, kw0_GrabServer },
 	{ "i",                      ICON, 0 },
 	{ "icon",                   ICON, 0 },
 	{ "iconbackground",         CLKEYWORD, kwcl_IconBackground },
@@ -340,6 +348,7 @@ static const TwmKeyword keytable[] = {
 	{ "nobackingstore",         KEYWORD, kw0_NoBackingStore },
 	{ "noborder",               NO_BORDER, 0 },
 	{ "nocasesensitive",        KEYWORD, kw0_NoCaseSensitive },
+	{ "nodecoratetransients",   KEYWORD, kw0_NoDecorateTransients },
 	{ "nodefaults",             KEYWORD, kw0_NoDefaults },
 	{ "nograbserver",           KEYWORD, kw0_NoGrabServer },
 	{ "nohighlight",            NO_HILITE, 0 },
@@ -354,9 +363,11 @@ static const TwmKeyword keytable[] = {
 	{ "noraiseonmove",          KEYWORD, kw0_NoRaiseOnMove },
 	{ "noraiseonresize",        KEYWORD, kw0_NoRaiseOnResize },
 	{ "noraiseonwarp",          KEYWORD, kw0_NoRaiseOnWarp },
+	{ "norestartpreviousstate", KEYWORD, kw0_NoRestartPreviousState },
 	{ "north",                  GRAVITY, GRAV_NORTH },
 	{ "nosaveunders",           KEYWORD, kw0_NoSaveUnders },
 	{ "noshowoccupyall",        KEYWORD, kw0_NoShowOccupyAll },
+	{ "nosorticonmanager",      KEYWORD, kw0_NoSortIconManager },
 	{ "nostackmode",            NO_STACKMODE, 0 },
 	{ "notitle",                NO_TITLE, 0 },
 	{ "notitlefocus",           KEYWORD, kw0_NoTitleFocus },
@@ -408,6 +419,7 @@ static const TwmKeyword keytable[] = {
 	{ "south",                  GRAVITY, GRAV_SOUTH },
 	{ "squeezetitle",           SQUEEZE_TITLE, 0 },
 	{ "starticonified",         START_ICONIFIED, 0 },
+	{ "startinbuttonstate",     KEYWORD, kw0_StartInButtonState },
 	{ "startinmapstate",        KEYWORD, kw0_StartInMapState },
 	{ "startsqueezed",          STARTSQUEEZED, 0 },
 	{ "stayupmenus",            KEYWORD, kw0_StayUpMenus },
@@ -588,6 +600,16 @@ do_single_keyword(int keyword)
 			}
 			return true;
 
+		case kw0_NoSortIconManager:
+			if(Scr->FirstTime) {
+				Scr->SortIconMgr = false;
+			}
+			return true;
+
+		case kw0_GrabServer:
+			Scr->NoGrabServer = false;
+			return true;
+
 		case kw0_NoGrabServer:
 			Scr->NoGrabServer = true;
 			return true;
@@ -624,12 +646,20 @@ do_single_keyword(int keyword)
 			Scr->BackingStore = false;
 			return true;
 
+		case kw0_BackingStore:
+			Scr->BackingStore = true;
+			return true;
+
 		case kw0_NoSaveUnders:
 			Scr->SaveUnder = false;
 			return true;
 
 		case kw0_RestartPreviousState:
 			RestartPreviousState = true;
+			return true;
+
+		case kw0_NoRestartPreviousState:
+			RestartPreviousState = false;
 			return true;
 
 		case kw0_ClientBorderWidth:
@@ -646,12 +676,20 @@ do_single_keyword(int keyword)
 			Scr->DecorateTransients = true;
 			return true;
 
+		case kw0_NoDecorateTransients:
+			Scr->DecorateTransients = false;
+			return true;
+
 		case kw0_ShowIconManager:
 			Scr->ShowIconManager = true;
 			return true;
 
 		case kw0_ShowWorkspaceManager:
 			Scr->ShowWorkspaceManager = true;
+			return true;
+
+		case kw0_StartInButtonState:
+			Scr->workSpaceMgr.initialstate = WMS_buttons;
 			return true;
 
 		case kw0_StartInMapState:
