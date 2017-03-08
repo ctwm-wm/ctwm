@@ -124,6 +124,7 @@ typedef struct _TwmKeyword {
 #define kw0_StartInButtonState          72
 #define kw0_NoSortIconManager           73
 #define kw0_NoRestartPreviousState      74
+#define kw0_NoDecorateTransients        75
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -345,6 +346,7 @@ static const TwmKeyword keytable[] = {
 	{ "nobackingstore",         KEYWORD, kw0_NoBackingStore },
 	{ "noborder",               NO_BORDER, 0 },
 	{ "nocasesensitive",        KEYWORD, kw0_NoCaseSensitive },
+	{ "nodecoratetransients",   KEYWORD, kw0_NoDecorateTransients },
 	{ "nodefaults",             KEYWORD, kw0_NoDefaults },
 	{ "nograbserver",           KEYWORD, kw0_NoGrabServer },
 	{ "nohighlight",            NO_HILITE, 0 },
@@ -666,6 +668,10 @@ do_single_keyword(int keyword)
 
 		case kw0_DecorateTransients:
 			Scr->DecorateTransients = true;
+			return true;
+
+		case kw0_NoDecorateTransients:
+			Scr->DecorateTransients = false;
 			return true;
 
 		case kw0_ShowIconManager:

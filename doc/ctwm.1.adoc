@@ -1241,6 +1241,11 @@ NoCaseSensitive::
   in an icon manager.  This option is typically used with applications that
   capitalize the first letter of their icon name.
 
+NoDecorateTransients::
+  Specify that transient windows (i.e., windows with a `WM_TRANSIENT_FOR`
+  property set) should be ignored (not given decorations) by ctwm.  See
+  also `DecorateTransients`.  Added in %%NEXT%%.
+
 NoDefaults::
   This variable indicates that ctwm should not supply the default
   titlebuttons and bindings.  This option should only be used if the startup

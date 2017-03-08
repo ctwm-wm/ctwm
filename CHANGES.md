@@ -170,6 +170,9 @@ remnants of special-case VMS support have been removed.
 1. Added `NoRestartPreviousState` config variable as the inverse of
    `RestartPreviousState`.
 
+1. Added `NoDecorateTransients` config variable as the inverse of
+   `DecorateTransients`.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
