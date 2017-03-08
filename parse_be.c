@@ -122,6 +122,7 @@ typedef struct _TwmKeyword {
 #define kw0_DontToggleWorkspacemanagerState 70
 #define kw0_BackingStore                71
 #define kw0_StartInButtonState          72
+#define kw0_NoSortIconManager           73
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -360,6 +361,7 @@ static const TwmKeyword keytable[] = {
 	{ "north",                  GRAVITY, GRAV_NORTH },
 	{ "nosaveunders",           KEYWORD, kw0_NoSaveUnders },
 	{ "noshowoccupyall",        KEYWORD, kw0_NoShowOccupyAll },
+	{ "nosorticonmanager",      KEYWORD, kw0_NoSortIconManager },
 	{ "nostackmode",            NO_STACKMODE, 0 },
 	{ "notitle",                NO_TITLE, 0 },
 	{ "notitlefocus",           KEYWORD, kw0_NoTitleFocus },
@@ -589,6 +591,12 @@ do_single_keyword(int keyword)
 		case kw0_SortIconManager:
 			if(Scr->FirstTime) {
 				Scr->SortIconMgr = true;
+			}
+			return true;
+
+		case kw0_NoSortIconManager:
+			if(Scr->FirstTime) {
+				Scr->SortIconMgr = false;
 			}
 			return true;
 

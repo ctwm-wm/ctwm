@@ -1316,6 +1316,10 @@ NoShowOccupyAll::
   This variable specifies that OccupyAll windows won't be displayed in the
   WorkSpaceMap window.
 
+NoSortIconManager::
+  Specifies that entries in the icon manager should be appended in the
+  order they show up.  See also `SortIconManager`.  Added in %%NEXT%%.
+
 NoStackMode [{ `win-list` }]::
   This variable indicates that client window requests to change stacking order
   should be ignored.  If the optional `win-list` is given, only requests on

@@ -164,6 +164,9 @@ remnants of special-case VMS support have been removed.
 1. Added `StartInButtonState` config variable as the inverse of
    `StartInMapState`.
 
+1. Added `NoSortIconManager` config variable as the inverse of
+   `SortIconManager`.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
