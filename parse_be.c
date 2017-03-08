@@ -121,6 +121,7 @@ typedef struct _TwmKeyword {
 #define kw0_AutoPriority                69
 #define kw0_DontToggleWorkspacemanagerState 70
 #define kw0_BackingStore                71
+#define kw0_StartInButtonState          72
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -410,6 +411,7 @@ static const TwmKeyword keytable[] = {
 	{ "south",                  GRAVITY, GRAV_SOUTH },
 	{ "squeezetitle",           SQUEEZE_TITLE, 0 },
 	{ "starticonified",         START_ICONIFIED, 0 },
+	{ "startinbuttonstate",     KEYWORD, kw0_StartInButtonState },
 	{ "startinmapstate",        KEYWORD, kw0_StartInMapState },
 	{ "startsqueezed",          STARTSQUEEZED, 0 },
 	{ "stayupmenus",            KEYWORD, kw0_StayUpMenus },
@@ -658,6 +660,10 @@ do_single_keyword(int keyword)
 
 		case kw0_ShowWorkspaceManager:
 			Scr->ShowWorkspaceManager = true;
+			return true;
+
+		case kw0_StartInButtonState:
+			Scr->workSpaceMgr.initialstate = WMS_buttons;
 			return true;
 
 		case kw0_StartInMapState:
