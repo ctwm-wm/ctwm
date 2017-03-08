@@ -541,6 +541,10 @@ AutoSqueeze { `win-list` }::
   unsqueezed when they get focus, and squeezed when they loose it. Useful for
   the workspace manager. Not authorized for icon managers.
 
+BackingStore::
+  Enable usage of backing store on menus and workspace map windows.  See
+  `NoBackingStore`.  Added in %%NEXT%%.
+
 BeNiceToColormap::
   By defaults new colors are allocated for shadows when a 3D look is used,
   but when you specify `BeNiceToColormap` ctwm uses stipling instead of
