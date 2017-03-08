@@ -158,23 +158,14 @@ remnants of special-case VMS support have been removed.
 1. OpaqueMoveThreshold values >= 200 (the default) are now treated as
     infinite, and so will always cause opaque moving.
 
-1. Added `BackingStore` config variable as the inverse of
-   `NoBackingStore`.
-
-1. Added `StartInButtonState` config variable as the inverse of
-   `StartInMapState`.
-
-1. Added `NoSortIconManager` config variable as the inverse of
-   `SortIconManager`.
-
-1. Added `NoRestartPreviousState` config variable as the inverse of
-   `RestartPreviousState`.
-
-1. Added `NoDecorateTransients` config variable as the inverse of
-   `DecorateTransients`.
-
-1. Added `GrabServer` config variable as the inverse of
-   `NoGrabServer`.
+1. Added various config parameters as inverses of existing params.  New
+   params (with existing param they invert in parens):
+    * `BackingStore` (`NoBackingStore`)
+    * `GrabServer` (`NoGrabServer`)
+    * `StartInButtonState` (`StartInMapState`)
+    * `NoSortIconManager` (`SortIconManager`)
+    * `NoRestartPreviousState` (`RestartPreviousState`)
+    * `NoDecorateTransients` (`DecorateTransients`)
 
 ### Internals
 
