@@ -123,6 +123,7 @@ typedef struct _TwmKeyword {
 #define kw0_BackingStore                71
 #define kw0_StartInButtonState          72
 #define kw0_NoSortIconManager           73
+#define kw0_NoRestartPreviousState      74
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -358,6 +359,7 @@ static const TwmKeyword keytable[] = {
 	{ "noraiseonmove",          KEYWORD, kw0_NoRaiseOnMove },
 	{ "noraiseonresize",        KEYWORD, kw0_NoRaiseOnResize },
 	{ "noraiseonwarp",          KEYWORD, kw0_NoRaiseOnWarp },
+	{ "norestartpreviousstate", KEYWORD, kw0_NoRestartPreviousState },
 	{ "north",                  GRAVITY, GRAV_NORTH },
 	{ "nosaveunders",           KEYWORD, kw0_NoSaveUnders },
 	{ "noshowoccupyall",        KEYWORD, kw0_NoShowOccupyAll },
@@ -646,6 +648,10 @@ do_single_keyword(int keyword)
 
 		case kw0_RestartPreviousState:
 			RestartPreviousState = true;
+			return true;
+
+		case kw0_NoRestartPreviousState:
+			RestartPreviousState = false;
 			return true;
 
 		case kw0_ClientBorderWidth:

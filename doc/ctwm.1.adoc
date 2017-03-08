@@ -1307,6 +1307,11 @@ NoRaiseOnWarp::
   occluding window instead the desired window (which causes unexpected behavior
   with `f.warpring`).
 
+NoRestartPreviousState::
+  Don't attempt to regenerate the state the screen was in before the
+  previous window manager was shut down.  See `RestartPreviousState` for
+  details.  Added in %%NEXT%%.
+
 NoSaveUnders::
   This variable indicates that menus should not request save-unders to minimize
   window repainting following menu selection.  It is typically used with displays
