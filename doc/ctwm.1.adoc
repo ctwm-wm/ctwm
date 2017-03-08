@@ -1714,9 +1714,12 @@ StartIconified { `win-list` }::
   programs that do not support an `-iconic` command line option or
   resource.
 
+StartInButtonState::
+  Start the WorkSpaceManage in button form.  See also `StartInMapState`.
+
 StartInMapState::
   This variable specifies that the WorkSpaceManager should be started
-  in its map form when created.
+  in its map form when created.  See also `StartInButtonState`.
 
 StartSqueezed { `win-list` }::
   These windows will first show up squeezed (see f.squeeze).
