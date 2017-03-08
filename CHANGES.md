@@ -158,6 +158,9 @@ remnants of special-case VMS support have been removed.
 1. OpaqueMoveThreshold values >= 200 (the default) are now treated as
     infinite, and so will always cause opaque moving.
 
+1. Added `BackingStore` config variable as the inverse of
+   `NoBackingStore`.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
