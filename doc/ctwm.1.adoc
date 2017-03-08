@@ -1716,6 +1716,7 @@ StartIconified { `win-list` }::
 
 StartInButtonState::
   Start the WorkSpaceManage in button form.  See also `StartInMapState`.
+  Added in %%NEXT%%.
 
 StartInMapState::
   This variable specifies that the WorkSpaceManager should be started
