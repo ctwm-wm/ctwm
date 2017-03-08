@@ -161,6 +161,9 @@ remnants of special-case VMS support have been removed.
 1. Added `BackingStore` config variable as the inverse of
    `NoBackingStore`.
 
+1. Added `StartInButtonState` config variable as the inverse of
+   `StartInMapState`.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
