@@ -543,7 +543,7 @@ AutoSqueeze { `win-list` }::
 
 BackingStore::
   Enable usage of backing store on menus and workspace map windows.  See
-  `NoBackingStore`.  Added in %%NEXT%%.
+  also `NoBackingStore`.  Added in %%NEXT%%.
 
 BeNiceToColormap::
   By defaults new colors are allocated for shadows when a 3D look is used,
@@ -1228,8 +1228,9 @@ First appeared in %%NEXT%%.
 
 NoBackingStore::
   This variable indicates that ctwm's menus should not request backing
-  store to minimize repainting of menus.  This is typically
-  used with servers that can repaint faster than they can handle backing store.
+  store to minimize repainting of menus.  This is typically used with
+  servers that can repaint faster than they can handle backing store.
+  See also `BackingStore`.
 
 NoBorder { `win-list` }::
   These windows won't have borders. If you want no borders on all windows,
