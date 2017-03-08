@@ -125,6 +125,7 @@ typedef struct _TwmKeyword {
 #define kw0_NoSortIconManager           73
 #define kw0_NoRestartPreviousState      74
 #define kw0_NoDecorateTransients        75
+#define kw0_GrabServer                  76
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -282,6 +283,7 @@ static const TwmKeyword keytable[] = {
 	{ "frame",                  FRAME, 0 },
 	{ "framepadding",           NKEYWORD, kwn_FramePadding },
 	{ "function",               FUNCTION, 0 },
+	{ "grabserver",             KEYWORD, kw0_GrabServer },
 	{ "i",                      ICON, 0 },
 	{ "icon",                   ICON, 0 },
 	{ "iconbackground",         CLKEYWORD, kwcl_IconBackground },
@@ -602,6 +604,10 @@ do_single_keyword(int keyword)
 			if(Scr->FirstTime) {
 				Scr->SortIconMgr = false;
 			}
+			return true;
+
+		case kw0_GrabServer:
+			Scr->NoGrabServer = false;
 			return true;
 
 		case kw0_NoGrabServer:

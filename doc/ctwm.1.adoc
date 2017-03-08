@@ -861,6 +861,11 @@ FramePadding `pixels`::
   button and text) and the window frame.  The default is 2 pixels if `UseThreeDTitles` is
   not set, 0 if it is set.
 
+GrabServer::
+  Specifies that ctwm should grab the X server (blocking all events other
+  than ours) when popping up menus and moving opaque windows.  See also
+  `NoGrabServer`.  Added in %%NEXT%%.
+
 IconBackground `string` [{ `win-list` }]::
   This variable specifies the background color of icons, and may
   only be specified inside of a `Color` or `Monochrome` list.

@@ -173,6 +173,9 @@ remnants of special-case VMS support have been removed.
 1. Added `NoDecorateTransients` config variable as the inverse of
    `DecorateTransients`.
 
+1. Added `GrabServer` config variable as the inverse of
+   `NoGrabServer`.
+
 ### Internals
 
 1. A new code style has been chosen and the entire codebase reformatted
