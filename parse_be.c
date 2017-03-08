@@ -120,6 +120,7 @@ typedef struct _TwmKeyword {
 #define kw0_DontShowWelcomeWindow       68
 #define kw0_AutoPriority                69
 #define kw0_DontToggleWorkspacemanagerState 70
+#define kw0_BackingStore                71
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -228,6 +229,7 @@ static const TwmKeyword keytable[] = {
 	{ "autoraiseicons",         KEYWORD, kw0_AutoRaiseIcons },
 	{ "autorelativeresize",     KEYWORD, kw0_AutoRelativeResize },
 	{ "autosqueeze",            AUTOSQUEEZE, 0 },
+	{ "backingstore",           KEYWORD, kw0_BackingStore },
 	{ "benicetocolormap",       KEYWORD, kw0_BeNiceToColormap },
 	{ "borderbottom",           NKEYWORD, kwn_BorderBottom },
 	{ "bordercolor",            CLKEYWORD, kwcl_BorderColor },
@@ -622,6 +624,10 @@ do_single_keyword(int keyword)
 
 		case kw0_NoBackingStore:
 			Scr->BackingStore = false;
+			return true;
+
+		case kw0_BackingStore:
+			Scr->BackingStore = true;
 			return true;
 
 		case kw0_NoSaveUnders:
