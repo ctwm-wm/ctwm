@@ -72,7 +72,7 @@ InitWorkSpaceManager(void)
 {
 	Scr->workSpaceMgr.count         = 0;
 	Scr->workSpaceMgr.workSpaceList = NULL;
-	Scr->workSpaceMgr.initialstate  = WMS_buttons;
+	Scr->workSpaceMgr.initialstate  = WMS_map;
 	Scr->workSpaceMgr.geometry      = NULL;
 	Scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
 	Scr->workSpaceMgr.windowcp.back = Scr->White;
