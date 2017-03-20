@@ -543,7 +543,8 @@ AutoSqueeze { `win-list` }::
 
 BackingStore::
   Enable usage of backing store on menus and workspace map windows.  See
-  also `NoBackingStore`.  Added in %%NEXT%%.
+  also `NoBackingStore`.  Added in %%NEXT%%; in previous versions this
+  was the default.
 
 BeNiceToColormap::
   By defaults new colors are allocated for shadows when a 3D look is used,
@@ -771,8 +772,8 @@ DarkShadowContrast `contrast`::
 
 DecorateTransients::
   This variable indicates that transient windows (those containing a
-  `WM_TRANSIENT_FOR` property) should have titlebars.  By default, transients
-  are not reparented.
+  `WM_TRANSIENT_FOR` property) should have titlebars.  As of %%NEXT%%
+  this is the default.
 
 DefaultBackground `string`::
   This variable specifies the background color to be used for sizing and
@@ -864,7 +865,8 @@ FramePadding `pixels`::
 GrabServer::
   Specifies that ctwm should grab the X server (blocking all events other
   than ours) when popping up menus and moving opaque windows.  See also
-  `NoGrabServer`.  Added in %%NEXT%%.
+  `NoGrabServer`.  Added in %%NEXT%%; in previous versions this was the
+  default.
 
 IconBackground `string` [{ `win-list` }]::
   This variable specifies the background color of icons, and may
@@ -1235,7 +1237,7 @@ NoBackingStore::
   This variable indicates that ctwm's menus should not request backing
   store to minimize repainting of menus.  This is typically used with
   servers that can repaint faster than they can handle backing store.
-  See also `BackingStore`.
+  See also `BackingStore`.  As of %%NEXT%% this is the default.
 
 NoBorder { `win-list` }::
   These windows won't have borders. If you want no borders on all windows,
@@ -1249,7 +1251,8 @@ NoCaseSensitive::
 NoDecorateTransients::
   Specify that transient windows (i.e., windows with a `WM_TRANSIENT_FOR`
   property set) should be ignored (not given decorations) by ctwm.  See
-  also `DecorateTransients`.  Added in %%NEXT%%.
+  also `DecorateTransients`.  Added in %%NEXT%%; in previous versions
+  this was the default.
 
 NoDefaults::
   This variable indicates that ctwm should not supply the default
@@ -1258,7 +1261,8 @@ NoDefaults::
 
 NoGrabServer::
   This variable indicates that ctwm should not grab the server
-  when popping up menus and moving opaque windows.
+  when popping up menus and moving opaque windows.  As of %%NEXT%% this
+  is the default.
 
 NoHighlight [{ `win-list` }]::
   This variable indicates that borders should not be highlighted to track the
@@ -1320,7 +1324,7 @@ NoRaiseOnWarp::
 NoRestartPreviousState::
   Don't attempt to regenerate the state the screen was in before the
   previous window manager was shut down.  See `RestartPreviousState` for
-  details.  Added in %%NEXT%%.
+  details.  Added in %%NEXT%%; in previous versions this was the default.
 
 NoSaveUnders::
   This variable indicates that menus should not request save-unders to minimize
@@ -1333,7 +1337,8 @@ NoShowOccupyAll::
 
 NoSortIconManager::
   Specifies that entries in the icon manager should be appended in the
-  order they show up.  See also `SortIconManager`.  Added in %%NEXT%%.
+  order they show up.  See also `SortIconManager`.  Added in %%NEXT%%; in
+  previous versions this was the default.
 
 NoStackMode [{ `win-list` }]::
   This variable indicates that client window requests to change stacking order
@@ -1465,6 +1470,8 @@ OpaqueMove [{ `window-list` }]::
   used on fast displays (particularly if `NoGrabServer` is set). The optional
   window list parameter indicates that only windows in this list should actually
   be moved in opaque mode. The `NoOpaqueMove` counterpart is also available.
++
+As of %%NEXT%% this is enabled by default.
 
 OpaqueMoveThreshold `threshold`::
   The integer parameter is a percentage and indicates that only windows
@@ -1475,9 +1482,10 @@ OpaqueMoveThreshold `threshold`::
   eligible.
 
 OpaqueResize [{ `window-list` }]::
-  The opaque version of resize. Extremely resource intensive,
-  but beautiful with fast server/client/network. See `OpaqueMove`. The
-  `NoOpaqueResize` counterpart is also available.
+  The opaque version of resize. Extremely resource intensive, but
+  beautiful with fast server/client/network. See `OpaqueMove`. The
+  `NoOpaqueResize` counterpart is also available.  As of %%NEXT%% this is
+  enabled by default.
 
 OpaqueResizeThreshold `threshold`::
   The resize version of `OpaqueMoveThreshold`.  The default is 1000.
@@ -1578,6 +1586,8 @@ RandomPlacement [ `string1` [ `string2` ]]::
   visible in the current workspace.
   If the second argument isn't given, the displacement +30+30 (30 pixels
   left and down) is used.
++
+As of %%NEXT%%, ``on'' is the default.  Previously ``off'' was default.
 
 ReallyMoveInWorkspaceManager::
   This keyword tells ctwm to move the actual window when the user is
@@ -1596,7 +1606,8 @@ RestartPreviousState::
   manager was shutdown.  This includes using the `WM_STATE` property to
   tell which windows should be iconified and which should be left
   visible, and the `WM_OCCUPATION` property to determine in which
-  workspaces a window should be visible.
+  workspaces a window should be visible.  As of %%NEXT%% this is the
+  default.
 
 ReverseCurrentWorkspace::
   This variable tells ctwm to reverse the background and
@@ -1676,7 +1687,7 @@ SaveWorkspaceFocus::
 SortIconManager::
   This variable indicates that entries in the icon manager should be
   sorted alphabetically rather than by simply appending new windows to
-  the end.
+  the end.  As of %%NEXT%% this is the default.
 
 SoundHost `string`::
   Alias for `RplaySoundHost`, used in versions prior to %%NEXT%%.  Unless
@@ -1739,7 +1750,8 @@ StartInButtonState::
 
 StartInMapState::
   This variable specifies that the WorkSpaceManager should be started
-  in its map form when created.  See also `StartInButtonState`.
+  in its map form when created.  See also `StartInButtonState`.  As of
+  %%NEXT%% this is the default.
 
 StartSqueezed { `win-list` }::
   These windows will first show up squeezed (see f.squeeze).

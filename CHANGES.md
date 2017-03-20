@@ -158,6 +158,14 @@ remnants of special-case VMS support have been removed.
 1. OpaqueMoveThreshold values >= 200 (the default) are now treated as
     infinite, and so will always cause opaque moving.
 
+1. Several default settings have been changed.  ctwm now defaults to
+   acting as though `RestartPreviousState`, `NoGrabServer`,
+   `DecorateTransients`, `NoBackingStore`, `RandomPlacement`,
+   `OpaqueMove`, `OpaqueResize`, `SortIconManager`, and `StartInMapState`
+   have been set.  Those settings that didn't previously have an inverse
+   (to get the behavior previously seen when they weren't specified) have
+   such added; see below.
+
 1. Added various config parameters as inverses of existing params.  New
    params (with existing param they invert in parens):
     * `BackingStore` (`NoBackingStore`)

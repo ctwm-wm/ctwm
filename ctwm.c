@@ -139,7 +139,7 @@ char *ProgramName;
 int Argc;
 char **Argv;
 
-bool RestartPreviousState = false;      /* try to restart in previous state */
+bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool RestartFlag = false;
 SIGNAL_T Restart(int signum);
@@ -902,7 +902,7 @@ static void InitVariables(void)
 	Scr->Focus = NULL;
 	Scr->WarpCursor = false;
 	Scr->ForceIcon = false;
-	Scr->NoGrabServer = false;
+	Scr->NoGrabServer = true;
 	Scr->NoRaiseMove = false;
 	Scr->NoRaiseResize = false;
 	Scr->NoRaiseDeicon = false;
@@ -918,7 +918,7 @@ static void InitVariables(void)
 	Scr->SaveWorkspaceFocus = false;
 	Scr->NoIconTitlebar = false;
 	Scr->NoTitlebar = false;
-	Scr->DecorateTransients = false;
+	Scr->DecorateTransients = true;
 	Scr->IconifyByUnmapping = false;
 	Scr->ShowIconManager = false;
 	Scr->ShowWorkspaceManager = false;
@@ -934,16 +934,16 @@ static void InitVariables(void)
 	Scr->TransientHasOccupation = false;
 	Scr->DontPaintRootWindow = false;
 	Scr->IconManagerDontShow = false;
-	Scr->BackingStore = true;
+	Scr->BackingStore = false;
 	Scr->SaveUnder = true;
-	Scr->RandomPlacement = RP_OFF;
+	Scr->RandomPlacement = RP_ALL;
 	Scr->RandomDisplacementX = 30;
 	Scr->RandomDisplacementY = 30;
-	Scr->DoOpaqueMove = false;
+	Scr->DoOpaqueMove = true;
 	Scr->OpaqueMove = false;
 	Scr->OpaqueMoveThreshold = 200;
 	Scr->OpaqueResize = false;
-	Scr->DoOpaqueResize = false;
+	Scr->DoOpaqueResize = true;
 	Scr->OpaqueResizeThreshold = 1000;
 	Scr->Highlight = true;
 	Scr->StackMode = true;
@@ -952,7 +952,7 @@ static void InitVariables(void)
 	Scr->MoveOffResistance = -1;
 	Scr->MovePackResistance = 20;
 	Scr->ZoomCount = 8;
-	Scr->SortIconMgr = false;
+	Scr->SortIconMgr = true;
 	Scr->Shadow = true;
 	Scr->InterpolateMenuColors = false;
 	Scr->NoIconManagers = false;
