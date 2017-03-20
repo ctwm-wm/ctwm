@@ -608,6 +608,11 @@ CreateOccupyWindow(void)
 
 	/* Struct embedded in [struct embedded in] Scr, so memory's waiting */
 
+	/* There isn't anything we should do without workspaces... */
+	if(!Scr->workSpaceManagerActive) {
+		return;
+	}
+
 	/* Initialize font and colorpair bits */
 	occwin->font     = Scr->IconManagerFont;
 	occwin->cp       = Scr->IconManagerC;
