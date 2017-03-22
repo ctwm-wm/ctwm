@@ -1358,6 +1358,15 @@ int OtpGetPriority(TwmWindow *twm_win)
  * currently pretty much means EWMH bits.
  */
 int
+OtpEffectiveDisplayPriority(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	return(OTP_ZERO - OwlEffectivePriority(twm_win->otp));
+}
+
+int
 OtpEffectivePriority(TwmWindow *twm_win)
 {
 	assert(twm_win != NULL);
