@@ -1303,7 +1303,10 @@ int OtpGetPriority(TwmWindow *twm_win)
 
 
 /*
- * Calculating effective priorities
+ * Calculating effective priority.  Take the base priority (what gets
+ * set/altered by various OTP config and functions), and then tack on
+ * whatever alterations more ephemeral things might apply.  This
+ * currently pretty much means EWMH bits.
  */
 int
 OtpEffectivePriority(TwmWindow *twm_win)
