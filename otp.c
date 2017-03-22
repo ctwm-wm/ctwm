@@ -697,10 +697,19 @@ static void RaiseLowerOwl(OtpWinList *owl)
 	OtpWinList *other_owl;
 	int priority;
 
-	priority = MAX(owl->priority, OTP_MAX - owl->priority);
+	/*
+	 * abs(effective pri)
+	 * 
+	 * XXX Why?  This seems like it's encoding the assumption
+	 * "f.raiselower should assume any negative [user-level] priorities
+	 * are a result of a window that should be positive being switched,
+	 * and we should switch it positive before raising if we need to", or
+	 * some such.
+	 */
+	priority = MAX(PRI(owl), OTP_MAX - PRI(owl));
 
 	for(other_owl = owl->above;
-	                (other_owl != NULL) && (other_owl->priority <= priority);
+	                (other_owl != NULL) && (PRI(other_owl) <= priority);
 	                other_owl = other_owl->above) {
 		if(isHiddenBy(owl, other_owl)
 		                && !shouldStayAbove(other_owl, owl)) {
