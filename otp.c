@@ -70,6 +70,7 @@ typedef struct Box {
 
 
 static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
+static int OwlEffectivePriority(OtpWinList *owl);
 
 static OtpWinList *bottomOwl = NULL;
 
@@ -1298,4 +1299,37 @@ int OtpGetPriority(TwmWindow *twm_win)
 	OtpWinList *owl = twm_win->otp;
 
 	return owl->priority - OTP_ZERO;
+}
+
+
+/*
+ * Calculating effective priorities
+ */
+int
+OtpEffectivePriority(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	return OwlEffectivePriority(twm_win->otp);
+}
+
+static int
+OwlEffectivePriority(OtpWinList *owl)
+{
+	int pri;
+
+	assert(owl != NULL);
+
+	pri = owl->pri_base;
+#ifdef EWMH
+	if(owl->pri_aflags & OTP_AFLAG_ABOVE) {
+		pri += EWMH_PRI_ABOVE;
+	}
+	if(owl->pri_aflags & OTP_AFLAG_BELOW) {
+		pri -= EWMH_PRI_ABOVE;
+	}
+#endif
+
+	return pri;
 }

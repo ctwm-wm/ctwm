@@ -71,6 +71,7 @@ TwmWindow *OtpNextWinDown(TwmWindow *);
 
 /* Other access functions */
 int OtpGetPriority(TwmWindow *twm_win);
+int OtpEffectivePriority(TwmWindow *twm_win);
 
 /* Other debugging functions */
 bool OtpCheckConsistency(void);
