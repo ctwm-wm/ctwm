@@ -1594,13 +1594,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	/*
 	 * Setup OTP bits for stacking
 	 */
-	{
-		int flags = 0;
-#ifdef EWMH
-		flags |= EwmhGetOtpFlags(tmp_win);
-#endif
-		OtpAdd(tmp_win, WinWin);
-	}
+	OtpAdd(tmp_win, WinWin);
 
 
 	/*
