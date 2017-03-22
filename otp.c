@@ -43,6 +43,13 @@
 #define OTP_ZERO 8
 #define OTP_MAX (OTP_ZERO * 2)
 
+/* Shorten code a little */
+#define PRI(owl) OwlEffectivePriority(owl)
+#define PRI_CP(from, to) do {                  \
+            to->pri_base = from->pri_base;     \
+            to->pri_aflags = from->pri_aflags; \
+        } while(0)
+
 struct OtpWinList {
 	OtpWinList *above;
 	OtpWinList *below;
@@ -406,7 +413,7 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 	if(other_owl == NULL) {
 		DPRINTF((stderr, "Bottom-most window overall\n"));
 		/* special case for the lowest window overall */
-		assert(owl->priority <= bottomOwl->priority);
+		assert(PRI(owl) <= PRI(bottomOwl));
 
 		/* pass the action to the Xserver */
 		XLowerWindow(dpy, WindowOfOwl(owl));
@@ -428,9 +435,9 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 			vs_owl = GetOwlAtOrBelowInVS(other_owl, owl->twm_win->parent_vs);
 		}
 
-		assert(owl->priority >= other_owl->priority);
+		assert(PRI(owl) >= PRI(other_owl));
 		if(other_owl->above != NULL) {
-			assert(owl->priority <= other_owl->above->priority);
+			assert(PRI(owl) <= PRI(other_owl->above));
 		}
 
 		if(vs_owl == NULL) {
@@ -446,7 +453,7 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 
 			DPRINTF((stderr, "General case\n"));
 			/* general case */
-			assert(vs_owl->priority <= other_owl->priority);
+			assert(PRI(vs_owl) <= PRI(other_owl));
 			assert(owl->twm_win->parent_vs == vs_owl->twm_win->parent_vs);
 
 			/* pass the action to the Xserver */
@@ -490,7 +497,7 @@ static void RaiseSmallTransientsOfAbove(OtpWinList *owl, OtpWinList *other_owl)
 		tmp_owl = trans_owl->below;
 		if(shouldStayAbove(trans_owl, owl)) {
 			RemoveOwl(trans_owl);
-			trans_owl->priority = owl->priority;
+			PRI_CP(owl, trans_owl);
 			InsertOwlAbove(trans_owl, other_owl);
 		}
 	}
@@ -531,7 +538,7 @@ static void InsertOwl(OtpWinList *owl, int where)
 	assert(owl->below == NULL);
 	assert((where == Above) || (where == Below));
 
-	priority = (where == Above) ? owl->priority : owl->priority - 1;
+	priority = PRI(owl) - (where == Above ? 1 : 0);
 
 	if(bottomOwl == NULL) {
 		/* for the first window: just insert it in the list */
@@ -543,7 +550,8 @@ static void InsertOwl(OtpWinList *owl, int where)
 		/* make sure other_owl is not one of the transients */
 		while((other_owl != NULL)
 		                && shouldStayAbove(other_owl, owl)) {
-			other_owl->priority = owl->priority;
+			PRI_CP(owl, other_owl);
+
 			other_owl = other_owl->below;
 		}
 
