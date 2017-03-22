@@ -1775,6 +1775,23 @@ int EwmhGetPriority(TwmWindow *twm_win)
 	}
 }
 
+int EwmhGetOtpFlags(TwmWindow *twm_win)
+{
+	int flags = 0;
+
+	if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
+		flags |= OTP_AFLAG_ABOVE;
+	}
+	if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
+		flags |= OTP_AFLAG_BELOW;
+	}
+	if(twm_win->ewmhFlags & EWMH_STATE_FULLSCREEN) {
+		flags |= OTP_AFLAG_FULLSCREEN;
+	}
+
+	return flags;
+}
+
 bool EwmhHasBorder(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
