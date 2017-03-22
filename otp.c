@@ -1047,6 +1047,11 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 		ApplyPreferences(prefs, owl);
 	}
 
+	/* May have flags to initialize */
+#ifdef EWMH
+	owl->pri_aflags |= EwmhGetOtpFlags(twm_win);
+#endif
+
 	/* finally put the window where it should go */
 	InsertOwl(owl, Above);
 
