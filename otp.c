@@ -945,7 +945,7 @@ static void ApplyPreferences(OtpPreferences *prefs, OtpWinList *owl)
 	for(i = 0; i <= OTP_MAX; i++) {
 		if(LookInList(prefs->priorityL[i],
 		                twm_win->name, &twm_win->class)) {
-			owl->priority = i;
+			owl->pri_base = i;
 		}
 	}
 }
@@ -1029,7 +1029,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 
 	/* inherit the default attributes from the parent window if appropriate */
 	if(parent != NULL) {
-		owl->priority = parent->priority;
+		owl->pri_base = parent->pri_base;
 		owl->switching = parent->switching;
 	}
 
