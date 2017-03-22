@@ -622,11 +622,15 @@ static void TryToSwitch(OtpWinList *owl, int where)
 		return;
 	}
 
-	priority = OTP_MAX - owl->priority;
-	if(((where == Above) && (priority > owl->priority)) ||
-	                ((where == Below) && (priority < owl->priority))) {
+	/*
+	 * Switching is purely an adjustment to the base priority, so we
+	 * don't need to figure stuff based on the effective.
+	 */
+	priority = OTP_MAX - owl->pri_base;
+	if(((where == Above) && (priority > owl->pri_base)) ||
+	                ((where == Below) && (priority < owl->pri_base))) {
+		owl->pri_base = priority;
 		TryToMoveTransientsOfTo(owl, priority, where);
-		owl->priority = priority;
 	}
 }
 
