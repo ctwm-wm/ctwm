@@ -868,7 +868,7 @@ void OtpSetPriority(TwmWindow *twm_win, WinType wintype, int new_pri, int where)
 void OtpChangePriority(TwmWindow *twm_win, WinType wintype, int relpriority)
 {
 	OtpWinList *owl = (wintype == IconWin) ? twm_win->icon->otp : twm_win->otp;
-	int priority = owl->priority + relpriority;
+	int priority = owl->pri_base + relpriority;
 	int where;
 
 	if(twm_win->winbox != NULL || twm_win->iswinbox) {
@@ -887,7 +887,7 @@ void OtpChangePriority(TwmWindow *twm_win, WinType wintype, int relpriority)
 void OtpSwitchPriority(TwmWindow *twm_win, WinType wintype)
 {
 	OtpWinList *owl = (wintype == IconWin) ? twm_win->icon->otp : twm_win->otp;
-	int priority = OTP_MAX - owl->priority;
+	int priority = OTP_MAX - owl->pri_base;
 	int where;
 
 	assert(owl != NULL);
