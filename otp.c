@@ -50,6 +50,8 @@ struct OtpWinList {
 	WinType     type;
 	bool        switching;
 	int         priority;
+	int         pri_base;   // Base priority
+	unsigned    pri_aflags; // Flags that might alter it; OTP_AFLAG_*
 };
 
 struct OtpPreferences {
