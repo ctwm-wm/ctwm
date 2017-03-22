@@ -582,7 +582,7 @@ static void SetOwlPriority(OtpWinList *owl, int new_pri, int where)
 	owl->pri_base = new_pri;
 	InsertOwl(owl, where);
 
-	assert(owl->priority == new_pri);
+	assert(owl->pri_base == new_pri);
 }
 
 
