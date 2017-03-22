@@ -235,10 +235,12 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 			assert(owl->below->above == owl);
 		}
 
-		/* check the ordering of the priority */
-		assert(owl->priority <= OTP_MAX);
-		assert(owl->priority >= priority);
-		priority = owl->priority;
+		/* Code already ensures this */
+		assert(owl->pri_base <= OTP_MAX);
+
+		/* List should be bottom->top, so effective pri better ascend */
+		assert(PRI(owl) >= priority);
+		priority = PRI(owl);
 
 #if DEBUG_OTP
 
