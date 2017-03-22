@@ -1172,16 +1172,16 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 		/*
 		 * Other changes call into ctwm code, which in turn calls back to
 		 * this module to update the ewmhFlags and the property.
-		 * This change shortcuts that, since EwmhGetPriority() looks at
-		 * ewmhFlags.
 		 */
-		int newpri;
 
+		/* Update EWMH flags */
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
 		twm_win->ewmhFlags |= newValue;
-		newpri = EwmhGetPriority(twm_win);
 
-		OtpSetPriority(twm_win, WinWin, newpri, Above);
+		/* Update OTP as necessary */
+		OtpUpdateAflags(twm_win);
+
+		/* Set the EWMH property back on the window */
 		EwmhSet_NET_WM_STATE(twm_win, change);
 	}
 }

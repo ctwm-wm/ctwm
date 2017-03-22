@@ -1352,6 +1352,32 @@ int OtpGetPriority(TwmWindow *twm_win)
 
 
 /*
+ * Update pri_aflags and restack as necessary.
+ */
+void
+OtpUpdateAflags(TwmWindow *twm_win)
+{
+	OtpWinList *owl = twm_win->otp;
+	const int prepri = OwlEffectivePriority(owl);
+
+	/*
+	 * Currently EWMH flags are all these is to set, so we don't need to
+	 * worry about unsetting vs. setting.  If we grow more, we may have
+	 * to get smarter
+	 */
+#ifdef EWMH
+	owl->pri_aflags = EwmhGetOtpFlags(twm_win);
+#endif
+
+	if(OwlEffectivePriority(owl) != prepri) {
+		RemoveOwl(owl);
+		InsertOwl(owl, Above);
+		OtpCheckConsistency();
+	}
+}
+
+
+/*
  * Calculating effective priority.  Take the base priority (what gets
  * set/altered by various OTP config and functions), and then tack on
  * whatever alterations more ephemeral things might apply.  This
