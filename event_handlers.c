@@ -978,7 +978,7 @@ void HandlePropertyNotify(void)
 
 			/* recompute the priority if necessary */
 			if(Scr->AutoPriority) {
-				OtpRecomputeValues(Tmp_win);
+				OtpRecomputePrefs(Tmp_win);
 			}
 
 			SetupWindow(Tmp_win, Tmp_win->frame_x, Tmp_win->frame_y,

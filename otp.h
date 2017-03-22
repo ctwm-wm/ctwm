@@ -49,7 +49,7 @@ void OtpSetPriority(TwmWindow *, WinType, int, int);
 void OtpChangePriority(TwmWindow *, WinType, int);
 void OtpSwitchPriority(TwmWindow *, WinType);
 void OtpToggleSwitching(TwmWindow *, WinType);
-void OtpRecomputeValues(TwmWindow *);
+void OtpRecomputePrefs(TwmWindow *);
 void OtpForcePlacement(TwmWindow *, int, TwmWindow *);
 
 void OtpReassignIcon(TwmWindow *twm_win, Icon *old_icon);

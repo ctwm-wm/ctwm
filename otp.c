@@ -969,25 +969,30 @@ static void ApplyPreferences(OtpPreferences *prefs, OtpWinList *owl)
 	}
 }
 
-static void RecomputeOwlValues(OtpPreferences *prefs, OtpWinList *owl)
+
+/*
+ * Reset stuff based on preferences; called during property changes if
+ * AutoPriority set.
+ */
+static void RecomputeOwlPrefs(OtpPreferences *prefs, OtpWinList *owl)
 {
 	int old_pri;
 
-	old_pri = owl->priority;
+	old_pri = owl->pri_base;
 	ApplyPreferences(prefs, owl);
-	if(old_pri != owl->priority) {
+	if(old_pri != owl->pri_base) {
 		RemoveOwl(owl);
 		InsertOwl(owl, Above);
 	}
 }
 
-void OtpRecomputeValues(TwmWindow *twm_win)
+void OtpRecomputePrefs(TwmWindow *twm_win)
 {
 	assert(twm_win->otp != NULL);
 
-	RecomputeOwlValues(Scr->OTP, twm_win->otp);
+	RecomputeOwlPrefs(Scr->OTP, twm_win->otp);
 	if(twm_win->icon != NULL) {
-		RecomputeOwlValues(Scr->IconOTP, twm_win->icon->otp);
+		RecomputeOwlPrefs(Scr->IconOTP, twm_win->icon->otp);
 	}
 
 	OtpCheckConsistency();
