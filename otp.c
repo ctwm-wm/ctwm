@@ -662,7 +662,7 @@ static void TinyRaiseOwl(OtpWinList *owl)
 {
 	OtpWinList *other_owl = owl->above;
 
-	while((other_owl != NULL) && (other_owl->priority == owl->priority)) {
+	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
 		if(isHiddenBy(owl, other_owl)
 		                && !shouldStayAbove(other_owl, owl)) {
 			RemoveOwl(owl);
@@ -680,7 +680,7 @@ static void TinyLowerOwl(OtpWinList *owl)
 {
 	OtpWinList *other_owl = owl->below;
 
-	while((other_owl != NULL) && (other_owl->priority == owl->priority)) {
+	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
 		if(isHiddenBy(owl, other_owl)) {
 			RemoveOwl(owl);
 			InsertOwlAbove(owl, other_owl->below);
