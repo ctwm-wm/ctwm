@@ -509,17 +509,17 @@ static OtpWinList *OwlRightBelow(int priority)
 	OtpWinList *owl1, *owl2;
 
 	/* in case there isn't anything below */
-	if(priority <= bottomOwl->priority) {
+	if(priority <= PRI(bottomOwl)) {
 		return NULL;
 	}
 
 	for(owl1 = bottomOwl, owl2 = owl1->above;
-	                (owl2 != NULL) && (owl2->priority < priority);
+	                (owl2 != NULL) && (PRI(owl2) < priority);
 	                owl1 = owl2, owl2 = owl2->above);
 
 	assert(owl2 == owl1->above);
-	assert(owl1->priority < priority);
-	assert((owl2 == NULL) || (owl2->priority >= priority));
+	assert(PRI(owl1) < priority);
+	assert((owl2 == NULL) || (PRI(owl2) >= priority));
 
 
 	return owl1;
@@ -584,6 +584,10 @@ static void SetOwlPriority(OtpWinList *owl, int new_pri, int where)
 }
 
 
+/*
+ * Shift transients of a window to a new [base] priority, preparatory to
+ * moving that window itself there.
+ */
 static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 {
 	OtpWinList *other_owl, *tmp_owl;
@@ -593,15 +597,17 @@ static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 		return;
 	}
 
-	other_owl = OwlRightBelow(owl->priority);
+	other_owl = OwlRightBelow(PRI(owl));
 	other_owl = (other_owl == NULL) ? bottomOwl : other_owl->above;
-	assert(other_owl->priority >= owl->priority);
+	assert(PRI(other_owl) >= PRI(owl));
 
 	/* !beware! we're changing the list as we scan it, hence the tmp_owl */
-	while((other_owl != NULL) && (other_owl->priority == owl->priority)) {
+	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
 		tmp_owl = other_owl->above;
 		if((other_owl->type == WinWin)
 		                && isTransientOf(other_owl->twm_win, owl->twm_win)) {
+			/* Copy in our flags so it winds up in the right place */
+			PRI_CP(owl, other_owl);
 			SetOwlPriority(other_owl, priority, where);
 		}
 		other_owl = tmp_owl;
