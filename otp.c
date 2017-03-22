@@ -919,6 +919,13 @@ void OtpToggleSwitching(TwmWindow *twm_win, WinType wintype)
 }
 
 
+/*
+ * This is triggered as a result of a StackMode ConfigureRequest.  We
+ * choose to interpret this as restacking relative to the base
+ * priorities, since all the alterations are EWMH-related, and those
+ * should probably override.  This may need revisiting if we grow
+ * alterations that aren't a result of EWMH stuff.
+ */
 void OtpForcePlacement(TwmWindow *twm_win, int where, TwmWindow *other_win)
 {
 	OtpWinList *owl = twm_win->otp;
@@ -937,8 +944,11 @@ void OtpForcePlacement(TwmWindow *twm_win, int where, TwmWindow *other_win)
 	/* remove the owl to change it */
 	RemoveOwl(owl);
 
-	/* set the priority to keep the state consistent */
-	owl->priority = other_owl->priority;
+	/*
+	 * Base our priority base off that other win.  Don't use PRI_CP since
+	 * we shouldn't suddenly get its flags as well.
+	 */
+	owl->pri_base = other_owl->pri_base;
 
 	/* put the owl back into the list */
 	if(where == Below) {
