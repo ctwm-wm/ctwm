@@ -16,6 +16,7 @@ typedef enum WinType { WinWin, IconWin } WinType;
 /* Flags that might alter OTP */
 #define OTP_AFLAG_ABOVE      (1 << 0)
 #define OTP_AFLAG_BELOW      (1 << 1)
+#define OTP_AFLAG_FULLSCREEN (1 << 2)
 
 
 /* Wrapper functions to maintain the internal list uptodate.  */

@@ -1322,14 +1322,25 @@ OwlEffectivePriority(OtpWinList *owl)
 	assert(owl != NULL);
 
 	pri = owl->pri_base;
+
 #ifdef EWMH
+	/* ABOVE/BELOW states shift a bit relative to the base */
 	if(owl->pri_aflags & OTP_AFLAG_ABOVE) {
 		pri += EWMH_PRI_ABOVE;
 	}
 	if(owl->pri_aflags & OTP_AFLAG_BELOW) {
 		pri -= EWMH_PRI_ABOVE;
 	}
+
+	/* If FULLSCREEN and focused, jam to the top */
+	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN && Scr->Focus == owl->twm_win) {
+		pri = OTP_MAX;
+	}
 #endif
+
+	/* Constrain */
+	pri = MAX(pri, 0);
+	pri = MIN(pri, OTP_MAX);
 
 	return pri;
 }
