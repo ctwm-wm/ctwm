@@ -1011,6 +1011,8 @@ static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
 	owl->type = wintype;
 	owl->switching = switching;
 	owl->priority = priority;
+	owl->pri_base = priority;
+	owl->pri_aflags = 0;
 
 	return owl;
 }
