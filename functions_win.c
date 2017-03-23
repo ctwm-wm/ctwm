@@ -389,7 +389,14 @@ otp_priority_handler(EF_FULLPROTO)
 			OtpSwitchPriority(tmp_win, wintype);
 			break;
 	}
+
 #ifdef EWMH
+	/*
+	 * We changed the priority somehow, so we may have changed where it
+	 * sits relative to the middle.  So trigger rechecking/setting of the
+	 * _STATE_{ABOVE,BELOW}.  Naming just _ABOVE in the flags is
+	 * sufficient to set either.
+	 */
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_ABOVE);
 #endif /* EWMH */
 }
