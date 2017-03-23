@@ -2057,15 +2057,22 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
 	}
 	else if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
-		int pri;
-		/*
-		 * Check the window's current priority relative to what it
-		 * should be by default.
-		 *
-		 * XXX Should take account of DOCK/DESKTOP.
-		 */
+		int pri = OtpEffectivePriority(twm_win);
+
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		pri = OtpEffectivePriority(twm_win);
+
+		/*
+		 * If it's a DOCK or DESKTOP, and where we expect those to be, we
+		 * consider that there's nothing to tell it.  Otherwise, we tell
+		 * it ABOVE/BELOW based on where it effectively is.
+		 */
+		if(twm_win->ewmhWindowType == wt_Dock && pri == EWMH_PRI_DOCK) {
+			pri = 0;
+		}
+		if(twm_win->ewmhWindowType == wt_Desktop && pri == EWMH_PRI_DESKTOP) {
+			pri = 0;
+		}
+
 		if(pri > 0) {
 			twm_win->ewmhFlags |= EWMH_STATE_ABOVE;
 		}
