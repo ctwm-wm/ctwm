@@ -948,15 +948,15 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		border_y = 0;
 	}
 	if(tmp_win->zoomed == func) {
+		/* It was already zoomed this way, unzoom it */
 		dragHeight = tmp_win->save_frame_height;
 		dragWidth = tmp_win->save_frame_width;
 		dragx = tmp_win->save_frame_x;
 		dragy = tmp_win->save_frame_y;
-		tmp_win->zoomed = ZOOM_NONE;
 
-		if(tmp_win->save_otpri != OtpGetPriority(tmp_win)) {
-			OtpSetPriority(tmp_win, WinWin, tmp_win->save_otpri, Above);
-		}
+		unzoom(tmp_win);
+
+		/* XXX _should_ it be falling through here? */
 	}
 	else {
 		if(tmp_win->zoomed == ZOOM_NONE) {
@@ -1022,15 +1022,16 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				dragWidth = zwidth + bw3D_times_2;
 
 				/* and should ignore aspect ratio and size increments... */
-				/*
-				 * Raise the window above the dock.
-				 * It should have the extra priority only while it
-				 * has focus. This is handled in HandleFocusOut().
-				 */
 #ifdef EWMH
-				OtpSetPriority(tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
-#endif
+				/*
+				 * Set EWMH flag for fullscreen stuff.  This is needed in
+				 * some OTP magic; x-ref comments on HandleFocusIn().
+				 */
+				/* XXX Temp */
+				tmp_win->ewmhFlags |= EWMH_STATE_FULLSCREEN;
+				OtpRestackWindow(tmp_win);
 				/* the OtpRaise below is effectively already done here... */
+#endif
 			}
 		}
 	}
@@ -1077,9 +1078,11 @@ void fullzoom(TwmWindow *tmp_win, int func)
 void unzoom(TwmWindow *tmp_win)
 {
 	if(tmp_win->zoomed != ZOOM_NONE) {
-		if(tmp_win->save_otpri != OtpGetPriority(tmp_win)) {
-			OtpSetPriority(tmp_win, WinWin, tmp_win->save_otpri, Above);
+		if(tmp_win->zoomed == F_FULLSCREENZOOM) {
+			tmp_win->ewmhFlags &= ~EWMH_STATE_FULLSCREEN;
+			OtpRestackWindow(tmp_win);
 		}
+
 		tmp_win->zoomed = ZOOM_NONE;
 	}
 }
