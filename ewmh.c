@@ -2068,7 +2068,7 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		 * should be by default.
 		 */
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		pri = OtpGetPriority(twm_win) - EwmhGetPriority(twm_win);
+		pri = OtpEffectivePriority(twm_win);
 		if(pri > 0) {
 			twm_win->ewmhFlags |= EWMH_STATE_ABOVE;
 		}
