@@ -85,6 +85,7 @@ static void EwmhGetStrut(TwmWindow *twm_win, bool update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
 static void EwmhSet_NET_WORKAREA(ScreenInfo *scr);
 static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win);
+static int EwmhGet_CTWM_OTP_WM_STATE(TwmWindow *twm_win);
 static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
                 int newVal);
 
@@ -1783,18 +1784,29 @@ int EwmhGetInitPriority(TwmWindow *twm_win)
 	}
 }
 
-int EwmhGetOtpFlags(TwmWindow *twm_win)
+/* Get initial flags; part of AddWindow() process */
+int EwmhInitOtpFlags(TwmWindow *twm_win)
 {
 	int flags = 0;
+	int abflags = EwmhGet_CTWM_OTP_WM_STATE(twm_win);
 
-	if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
-		flags |= OTP_AFLAG_ABOVE;
-	}
-	if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
-		flags |= OTP_AFLAG_BELOW;
-	}
+	/* FULLSCREEN we get from the normal window prop no matter what */
 	if(twm_win->ewmhFlags & EWMH_STATE_FULLSCREEN) {
 		flags |= OTP_AFLAG_FULLSCREEN;
+	}
+
+	/*
+	 * ABOVE/BELOW we get from our stashes info if we can, the normal
+	 * window prop if we had nothing.
+	 */
+	if(abflags == -1) {
+		abflags = twm_win->ewmhFlags;
+	}
+	if(abflags & EWMH_STATE_ABOVE) {
+		flags |= OTP_AFLAG_ABOVE;
+	}
+	if(abflags & EWMH_STATE_BELOW) {
+		flags |= OTP_AFLAG_BELOW;
 	}
 
 	return flags;
@@ -2159,6 +2171,29 @@ static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win)
 	prop = EwmhGetWindowProperties(twm_win->w, XA__NET_WM_STATE, XA_ATOM, &nitems);
 
 	if(prop) {
+		for(i = 0; i < nitems; i++) {
+			flags |= atomToFlag(prop[i]);
+		}
+
+		XFree(prop);
+	}
+
+	return flags;
+}
+
+/* Ditto for our special stash of OTP-related bits */
+static int EwmhGet_CTWM_OTP_WM_STATE(TwmWindow *twm_win)
+{
+	int flags = -1;
+	unsigned long *prop;
+	unsigned long nitems;
+	int i;
+
+	prop = EwmhGetWindowProperties(twm_win->w, XA_CTWM_OTP_WM_STATE,
+			XA_ATOM, &nitems);
+
+	if(prop) {
+		flags = 0;
 		for(i = 0; i < nitems; i++) {
 			flags |= atomToFlag(prop[i]);
 		}

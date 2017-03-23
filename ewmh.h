@@ -71,7 +71,7 @@ void EwmhSet_NET_CLIENT_LIST_STACKING(void);
 void EwmhSet_NET_ACTIVE_WINDOW(Window w);
 void EwmhGetProperties(TwmWindow *twm_win);
 int EwmhGetInitPriority(TwmWindow *twm_win);
-int EwmhGetOtpFlags(TwmWindow *twm_win);
+int EwmhInitOtpFlags(TwmWindow *twm_win);
 bool EwmhHasBorder(TwmWindow *twm_win);
 bool EwmhHasTitle(TwmWindow *twm_win);
 bool EwmhOnWindowRing(TwmWindow *twm_win);
