@@ -2059,7 +2059,7 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
 	}
 	else if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
-		int pri = OtpEffectivePriority(twm_win);
+		int pri = OtpEffectiveDisplayPriority(twm_win);
 
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
 
