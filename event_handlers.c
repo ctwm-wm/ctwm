@@ -1752,7 +1752,8 @@ void HandleMapRequest(void)
 		/* add the new window to the EWMH client list */
 		EwmhAddClientWindow(Tmp_win);
 		EwmhSet_NET_CLIENT_LIST_STACKING();
-		OtpSetPriority(Tmp_win, WinWin, EwmhGetPriority(Tmp_win), Above);
+
+		/* Tell it whatever we think of it */
 		EwmhSet_NET_WM_STATE(Tmp_win, EWMH_STATE_ALL);
 #endif /* EWMH */
 	}
