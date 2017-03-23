@@ -2066,6 +2066,8 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		/*
 		 * Check the window's current priority relative to what it
 		 * should be by default.
+		 *
+		 * XXX Should take account of DOCK/DESKTOP.
 		 */
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
 		pri = OtpEffectivePriority(twm_win);
