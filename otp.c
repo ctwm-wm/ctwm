@@ -1431,6 +1431,19 @@ OwlEffectivePriority(OtpWinList *owl)
 		pri -= EWMH_PRI_ABOVE;
 	}
 
+	/*
+	 * Special magic: EWMH says that _BELOW + _DOCK = (just _BELOW).
+	 * So if both are set, and its base is where we'd expect just a _DOCK
+	 * to be, try cancelling that out.
+	 */
+	{
+		EwmhWindowType ewt = owl->twm_win->ewmhWindowType;
+		if((owl->pri_aflags & OTP_AFLAG_BELOW) && (ewt == wt_Dock) &&
+		                (owl->pri_base == EWMH_PRI_DOCK)) {
+			pri -= EWMH_PRI_DOCK;
+		}
+	}
+
 	/* If FULLSCREEN and focused, jam to the top */
 	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN && Scr->Focus == owl->twm_win) {
 		pri = OTP_MAX;
