@@ -1757,7 +1757,8 @@ void EwmhGetProperties(TwmWindow *twm_win)
 	                      (EWMH_STATE_ABOVE | EWMH_STATE_BELOW | EWMH_STATE_SHADED);
 }
 
-int EwmhGetPriority(TwmWindow *twm_win)
+/* Only used in initially mapping a window */
+int EwmhGetInitPriority(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
 		case wt_Desktop:
@@ -1765,13 +1766,7 @@ int EwmhGetPriority(TwmWindow *twm_win)
 		case wt_Dock:
 			return EWMH_PRI_DOCK;
 		default:
-			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
-				return EWMH_PRI_NORMAL + EWMH_PRI_ABOVE;
-			}
-			else if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
-				return EWMH_PRI_NORMAL - EWMH_PRI_ABOVE;
-			}
-			return EWMH_PRI_NORMAL;
+			return 0;
 	}
 }
 

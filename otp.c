@@ -1083,6 +1083,13 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 		ApplyPreferences(prefs, owl);
 	}
 
+#ifdef EWMH
+	/* If nothing came in, EWMH might have something to say */
+	if(owl->pri_base == 0) {
+		owl->pri_base = EwmhGetInitPriority(twm_win);
+	}
+#endif
+
 	/* May have flags to initialize */
 #ifdef EWMH
 	owl->pri_aflags |= EwmhGetOtpFlags(twm_win);
