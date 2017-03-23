@@ -1809,11 +1809,19 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 		                      False, XA_INTEGER, &act_type, &d_fmt, &nitems,
 		                      &d_after, (unsigned char **)&aflags_p);
 		if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
+			/* Got CTWM_OTP_WM_STATE; use it */
 			aflags = *aflags_p;
 			XFree(aflags_p);
 		}
 		else {
+			/* Nothing from CTWM_OTP_WM_STATE; check the regular */
 			aflags = 0;
+			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
+				aflags |= OTP_AFLAG_ABOVE;
+			}
+			if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
+				aflags |= OTP_AFLAG_BELOW;
+			}
 		}
 
 		flags |= aflags;
