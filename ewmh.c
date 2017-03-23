@@ -1802,16 +1802,21 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 		Atom d_type;
 		int d_fmt;
 		unsigned long nitems, d_after;
-		unsigned long abflags = 0;
+		unsigned long aflags, *aflags_p;
 
 		if(XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
 		                      False, XA_INTEGER, &d_type, &d_fmt, &nitems,
-		                      &d_after, (unsigned char **)&abflags)
-		                != Success) {
-			abflags = 0;
+		                      &d_after, (unsigned char **)&aflags_p)
+		                == Success && d_type == XA_INTEGER) {
+			aflags = *aflags_p;
+			XFree(aflags_p);
 		}
+		else {
+			aflags = 0;
+		}
+		fprintf(stderr, "aflags=0x%lx\n", aflags);
 
-		flags |= abflags;
+		flags |= aflags;
 	}
 
 	return flags;
