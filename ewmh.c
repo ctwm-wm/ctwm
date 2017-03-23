@@ -1171,7 +1171,8 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 	else if(change & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
 		/*
 		 * Other changes call into ctwm code, which in turn calls back to
-		 * this module to update the ewmhFlags and the property.
+		 * EWMH code to update the ewmhFlags and the property.  This one
+		 * we handle completely internally.
 		 */
 		const int abbel = (EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
 
