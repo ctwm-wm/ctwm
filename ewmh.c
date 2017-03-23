@@ -1173,10 +1173,11 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 		 * Other changes call into ctwm code, which in turn calls back to
 		 * this module to update the ewmhFlags and the property.
 		 */
+		const int abbel = (EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
 
 		/* Update EWMH flags */
-		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		twm_win->ewmhFlags |= newValue;
+		twm_win->ewmhFlags &= ~abbel;
+		twm_win->ewmhFlags |= (newValue & abbel);
 
 		/* Update OTP as necessary */
 		OtpUpdateAflags(twm_win);
