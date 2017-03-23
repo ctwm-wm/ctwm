@@ -371,12 +371,23 @@ HandleFocusIn(void)
 		AutoSqueeze(Tmp_win);
 	}
 	SetFocusVisualAttributes(Tmp_win, true);
+
+	Scr->Focus = Tmp_win;
+
 #ifdef EWMH
+	/*
+	 * EWMH says _STATE_FULLSCREEN windows (which F_FULLSCREENZOOM does)
+	 * are on the top of the stack when focused, but not when not.  We
+	 * implement that by having the OTP code slam them to the top when
+	 * _FULLSCREEN && focused.  So call the restack function here to
+	 * effect that; it should already have the _FULLSCREEN aflag set, so
+	 * the Scr->Focus setting above will cause it to make that move.
+	 */
 	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
+		OtpRestackWindow(Tmp_win);
 		OtpSetPriority(Tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
 	}
 #endif
-	Scr->Focus = Tmp_win;
 }
 
 
@@ -393,12 +404,18 @@ HandleFocusOut(void)
 		AutoSqueeze(Tmp_win);
 	}
 	SetFocusVisualAttributes(Tmp_win, false);
+
+	Scr->Focus = NULL;
+
 #ifdef EWMH
+	/*
+	 * Must be after the Scr->Focus setting; x-ref above comment in
+	 * HandleFocusIn().
+	 */
 	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
-		OtpSetPriority(Tmp_win, WinWin, EwmhGetPriority(Tmp_win), Above);
+		OtpRestackWindow(Tmp_win);
 	}
 #endif
-	Scr->Focus = NULL;
 }
 
 
