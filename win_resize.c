@@ -1025,8 +1025,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				/*
 				 * Set EWMH flag for fullscreen stuff.  This is needed in
 				 * some OTP magic; x-ref comments on HandleFocusIn().
+				 *
+				 * Note that this ewmhFlags setting winds up being redone
+				 * when we call the set func for _NET_WM_STATE anyway,
+				 * but we need to set it here so OTP sees it in time for
+				 * this restacking.
 				 */
-				/* XXX Temp */
 				tmp_win->ewmhFlags |= EWMH_STATE_FULLSCREEN;
 				OtpRestackWindow(tmp_win);
 				/* the OtpRaise below is effectively already done here... */
@@ -1065,7 +1069,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	                tmp_win->frame_y + tmp_win->frame_height < tmpY) {
 		XWarpPointer(dpy, Scr->Root, tmp_win->w, 0, 0, 0, 0, 0, 0);
 	}
+
 #ifdef EWMH
+	/*
+	 * Reset _NET_WM_STATE prop on the window.  It sets whichever state
+	 * applies, not always the _MAXIMIZED_VERT we specify here.
+	 */
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_MAXIMIZED_VERT);
 #endif
 }
