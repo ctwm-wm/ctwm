@@ -1799,22 +1799,22 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 	 */
 	{
 		/* Lotta dummy args */
-		Atom d_type;
+		int ret;
+		Atom act_type;
 		int d_fmt;
 		unsigned long nitems, d_after;
 		unsigned long aflags, *aflags_p;
 
-		if(XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
-		                      False, XA_INTEGER, &d_type, &d_fmt, &nitems,
-		                      &d_after, (unsigned char **)&aflags_p)
-		                == Success && d_type == XA_INTEGER) {
+		ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
+		                      False, XA_INTEGER, &act_type, &d_fmt, &nitems,
+		                      &d_after, (unsigned char **)&aflags_p);
+		if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
 			aflags = *aflags_p;
 			XFree(aflags_p);
 		}
 		else {
 			aflags = 0;
 		}
-		fprintf(stderr, "aflags=0x%lx\n", aflags);
 
 		flags |= aflags;
 	}
