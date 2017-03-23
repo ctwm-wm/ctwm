@@ -540,7 +540,7 @@ static void InsertOwl(OtpWinList *owl, int where)
 	assert(owl->below == NULL);
 	assert((where == Above) || (where == Below));
 
-	priority = PRI(owl) - (where == Above ? 1 : 0);
+	priority = PRI(owl) - (where == Above ? 0 : 1);
 
 	if(bottomOwl == NULL) {
 		/* for the first window: just insert it in the list */
