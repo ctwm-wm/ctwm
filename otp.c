@@ -1350,13 +1350,6 @@ TwmWindow *OtpNextWinDown(TwmWindow *twm_win)
 	return owl ? owl->twm_win : NULL;
 }
 
-int OtpGetPriority(TwmWindow *twm_win)
-{
-	OtpWinList *owl = twm_win->otp;
-
-	return owl->priority - OTP_ZERO;
-}
-
 
 /*
  * Update pri_aflags and restack as necessary.

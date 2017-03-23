@@ -76,7 +76,6 @@ TwmWindow *OtpNextWinUp(TwmWindow *);
 TwmWindow *OtpNextWinDown(TwmWindow *);
 
 /* Other access functions */
-int OtpGetPriority(TwmWindow *twm_win);
 int OtpEffectiveDisplayPriority(TwmWindow *twm_win);
 int OtpEffectivePriority(TwmWindow *twm_win);
 
