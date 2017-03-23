@@ -392,10 +392,6 @@ otp_priority_handler(EF_FULLPROTO)
 #ifdef EWMH
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_ABOVE);
 #endif /* EWMH */
-	/* Update saved priority, if any */
-	if(wintype == WinWin && tmp_win->zoomed != ZOOM_NONE) {
-		tmp_win->save_otpri = OtpGetPriority(tmp_win);
-	}
 }
 DFHANDLER(priorityswitching)
 {

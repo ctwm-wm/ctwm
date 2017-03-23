@@ -964,7 +964,6 @@ void fullzoom(TwmWindow *tmp_win, int func)
 			tmp_win->save_frame_y = dragy;
 			tmp_win->save_frame_width = dragWidth;
 			tmp_win->save_frame_height = dragHeight;
-			tmp_win->save_otpri = OtpGetPriority(tmp_win);
 		}
 		tmp_win->zoomed = func;
 
