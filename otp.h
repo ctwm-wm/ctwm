@@ -58,6 +58,7 @@ void OtpFreeIcon(TwmWindow *twm_win);
 void OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto);
 void OtpSetAflag(TwmWindow *twm_win, int flag);
 void OtpClearAflag(TwmWindow *twm_win, int flag);
+int OtpGetAflags(TwmWindow *twm_win);
 void OtpRestackWindow(TwmWindow *twm_win);
 
 /* functions to manage the preferences. The second arg specifies icon prefs */

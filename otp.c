@@ -1381,6 +1381,15 @@ OtpClearAflag(TwmWindow *twm_win, int flag)
 	twm_win->otp->pri_aflags &= ~flag;
 }
 
+/* Exposing layering violations */
+int
+OtpGetAflags(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+	return twm_win->otp->pri_aflags;
+}
+
 
 /*
  * Figure where a window should be stacked based on the current world,
