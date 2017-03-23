@@ -392,14 +392,14 @@ static OtpWinList *GetOwlAtOrBelowInWinbox(OtpWinList **owlp, WindowBox *wb)
 static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 {
 #if DEBUG_OTP
-	fprintf(stderr, "InsertOwlAbove owl->priority=%d w=%x parent_vs:(x,y)=(%d,%d)",
-	        owl->priority,
+	fprintf(stderr, "InsertOwlAbove owl->pri=%d w=%x parent_vs:(x,y)=(%d,%d)",
+	        PRI(owl),
 	        (unsigned int)WindowOfOwl(owl),
 	        owl->twm_win->parent_vs->x,
 	        owl->twm_win->parent_vs->y);
 	if(other_owl != NULL) {
-		fprintf(stderr, "other_owl->priority=%d w=%x parent_vs:(x,y)=(%d,%d)",
-		        other_owl->priority,
+		fprintf(stderr, "other_owl->pri=%d w=%x parent_vs:(x,y)=(%d,%d)",
+		        PRI(other_owl),
 		        (unsigned int)WindowOfOwl(other_owl),
 		        owl->twm_win->parent_vs->x,
 		        owl->twm_win->parent_vs->y);
