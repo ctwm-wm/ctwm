@@ -1353,25 +1353,6 @@ TwmWindow *OtpNextWinDown(TwmWindow *twm_win)
 /*
  * Stuff for messing with pri_aflags
  */
-void
-OtpUpdateAflags(TwmWindow *twm_win)
-{
-	const int prepri = OtpEffectivePriority(twm_win);
-
-	/*
-	 * Currently EWMH flags are all these is to set, so we don't need to
-	 * worry about unsetting vs. setting.  If we grow more, we may have
-	 * to get smarter
-	 */
-#ifdef EWMH
-	twm_win->otp->pri_aflags = EwmhGetOtpFlags(twm_win);
-#endif
-
-	if(OtpEffectivePriority(twm_win) != prepri) {
-		OtpRestackWindow(twm_win);
-	}
-}
-
 /* Set the masked bits to exactly what's given */
 void
 OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto)
@@ -1383,6 +1364,7 @@ OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto)
 	twm_win->otp->pri_aflags |= (setto & mask);
 }
 
+/* Set/clear individual ones */
 void
 OtpSetAflag(TwmWindow *twm_win, int flag)
 {

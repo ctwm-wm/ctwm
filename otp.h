@@ -55,7 +55,6 @@ void OtpForcePlacement(TwmWindow *, int, TwmWindow *);
 void OtpReassignIcon(TwmWindow *twm_win, Icon *old_icon);
 void OtpFreeIcon(TwmWindow *twm_win);
 
-void OtpUpdateAflags(TwmWindow *twm_win);
 void OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto);
 void OtpSetAflag(TwmWindow *twm_win, int flag);
 void OtpClearAflag(TwmWindow *twm_win, int flag);
