@@ -2092,6 +2092,30 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		else if(pri < 0) {
 			twm_win->ewmhFlags |= EWMH_STATE_BELOW;
 		}
+
+
+		/*
+		 * Extra fun: we store an extra property where we keep track of
+		 * whether we have above/below flags set in the OTP info, so we
+		 * can know what to set when we restart.  Otherwise we can't tell
+		 * whether the _NET_WM_STATE property is saying 'above' because
+		 * the above flag got set at some point, or whether other OTP
+		 * config happens to have already raised it.
+		 */
+		{
+			int aflags = OtpGetAflags(twm_win);
+			unsigned long of_prop[2];
+			int ofi = 0;
+
+			if(aflags & OTP_AFLAG_ABOVE) {
+				of_prop[ofi++] = XA__NET_WM_STATE_ABOVE;
+			}
+			if(aflags & OTP_AFLAG_BELOW) {
+				of_prop[ofi++] = XA__NET_WM_STATE_BELOW;
+			}
+			XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, XA_ATOM, 32,
+			                PropModeReplace, (unsigned char *)of_prop, ofi);
+		}
 	}
 
 	flags = twm_win->ewmhFlags;
