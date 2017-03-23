@@ -56,6 +56,8 @@ void OtpReassignIcon(TwmWindow *twm_win, Icon *old_icon);
 void OtpFreeIcon(TwmWindow *twm_win);
 
 void OtpUpdateAflags(TwmWindow *twm_win);
+void OtpSetAflag(TwmWindow *twm_win, int flag);
+void OtpClearAflag(TwmWindow *twm_win, int flag);
 void OtpRestackWindow(TwmWindow *twm_win);
 
 /* functions to manage the preferences. The second arg specifies icon prefs */

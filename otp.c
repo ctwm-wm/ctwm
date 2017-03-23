@@ -1351,7 +1351,7 @@ TwmWindow *OtpNextWinDown(TwmWindow *twm_win)
 
 
 /*
- * Update pri_aflags and restack as necessary.
+ * Stuff for messing with pri_aflags
  */
 void
 OtpUpdateAflags(TwmWindow *twm_win)
@@ -1370,6 +1370,22 @@ OtpUpdateAflags(TwmWindow *twm_win)
 	if(OtpEffectivePriority(twm_win) != prepri) {
 		OtpRestackWindow(twm_win);
 	}
+}
+
+void
+OtpSetAflag(TwmWindow *twm_win, int flag)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+	twm_win->otp->pri_aflags |= flag;
+}
+
+void
+OtpClearAflag(TwmWindow *twm_win, int flag)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+	twm_win->otp->pri_aflags &= ~flag;
 }
 
 
