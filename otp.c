@@ -1401,7 +1401,7 @@ OtpEffectiveDisplayPriority(TwmWindow *twm_win)
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
 
-	return(OTP_ZERO - OwlEffectivePriority(twm_win->otp));
+	return(OwlEffectivePriority(twm_win->otp) - OTP_ZERO);
 }
 
 int
