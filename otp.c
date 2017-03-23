@@ -1357,8 +1357,7 @@ int OtpGetPriority(TwmWindow *twm_win)
 void
 OtpUpdateAflags(TwmWindow *twm_win)
 {
-	OtpWinList *owl = twm_win->otp;
-	const int prepri = OwlEffectivePriority(owl);
+	const int prepri = OtpEffectivePriority(twm_win);
 
 	/*
 	 * Currently EWMH flags are all these is to set, so we don't need to
@@ -1366,14 +1365,29 @@ OtpUpdateAflags(TwmWindow *twm_win)
 	 * to get smarter
 	 */
 #ifdef EWMH
-	owl->pri_aflags = EwmhGetOtpFlags(twm_win);
+	twm_win->otp->pri_aflags = EwmhGetOtpFlags(twm_win);
 #endif
 
-	if(OwlEffectivePriority(owl) != prepri) {
-		RemoveOwl(owl);
-		InsertOwl(owl, Above);
-		OtpCheckConsistency();
+	if(OtpEffectivePriority(twm_win) != prepri) {
+		OtpRestackWindow(twm_win);
 	}
+}
+
+
+/*
+ * Figure where a window should be stacked based on the current world,
+ * and move it there.  This function pretty much assumes it's not already
+ * there; callers should generally be figuring that out before calling
+ * this.
+ */
+void
+OtpRestackWindow(TwmWindow *twm_win)
+{
+	OtpWinList *owl = twm_win->otp;
+
+	RemoveOwl(owl);
+	InsertOwl(owl, Above);
+	OtpCheckConsistency();
 }
 
 
