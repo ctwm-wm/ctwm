@@ -1174,14 +1174,25 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 		 * EWMH code to update the ewmhFlags and the property.  This one
 		 * we handle completely internally.
 		 */
-		const int abbel = (EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
+		int omask = 0, oval = 0;
+		const int prepri = OtpEffectivePriority(twm_win);
 
-		/* Update EWMH flags */
-		twm_win->ewmhFlags &= ~abbel;
-		twm_win->ewmhFlags |= (newValue & abbel);
+		/* Which bits are we changing and what to? */
+#define DOBIT(fld) do { \
+          if(change   & EWMH_STATE_##fld) { omask |= OTP_AFLAG_##fld; } \
+          if(newValue & EWMH_STATE_##fld) { oval  |= OTP_AFLAG_##fld; } \
+        } while(0)
+
+		DOBIT(ABOVE);
+		DOBIT(BELOW);
+
+#undef DOBIT
 
 		/* Update OTP as necessary */
-		OtpUpdateAflags(twm_win);
+		OtpSetAflagMask(twm_win, omask, oval);
+		if(OtpEffectivePriority(twm_win) != prepri) {
+			OtpRestackWindow(twm_win);
+		}
 
 		/* Set the EWMH property back on the window */
 		EwmhSet_NET_WM_STATE(twm_win, change);

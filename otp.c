@@ -1372,6 +1372,17 @@ OtpUpdateAflags(TwmWindow *twm_win)
 	}
 }
 
+/* Set the masked bits to exactly what's given */
+void
+OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	twm_win->otp->pri_aflags &= ~mask;
+	twm_win->otp->pri_aflags |= (setto & mask);
+}
+
 void
 OtpSetAflag(TwmWindow *twm_win, int flag)
 {
