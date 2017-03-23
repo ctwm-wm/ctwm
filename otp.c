@@ -56,7 +56,6 @@ struct OtpWinList {
 	TwmWindow  *twm_win;
 	WinType     type;
 	bool        switching;
-	int         priority;
 	int         pri_base;   // Base priority
 	unsigned    pri_aflags; // Flags that might alter it; OTP_AFLAG_*
 };
@@ -1055,7 +1054,6 @@ static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
 	owl->twm_win = twm_win;
 	owl->type = wintype;
 	owl->switching = switching;
-	owl->priority = priority;
 	owl->pri_base = priority;
 	owl->pri_aflags = 0;
 
