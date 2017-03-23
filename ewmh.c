@@ -1175,7 +1175,7 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 		 * EWMH code to update the ewmhFlags and the property.  This one
 		 * we handle completely internally.
 		 */
-		int omask = 0, oval = 0;
+		unsigned omask = 0, oval = 0;
 		const int prepri = OtpEffectivePriority(twm_win);
 
 		/* Which bits are we changing and what to? */
@@ -2115,7 +2115,7 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		 * config happens to have already raised it.
 		 */
 		{
-			int aflags = OtpGetAflags(twm_win);
+			unsigned aflags = OtpGetAflags(twm_win);
 			unsigned long of_prop[2];
 			int ofi = 0;
 

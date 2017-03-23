@@ -1355,7 +1355,7 @@ TwmWindow *OtpNextWinDown(TwmWindow *twm_win)
  */
 /* Set the masked bits to exactly what's given */
 void
-OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto)
+OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto)
 {
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
@@ -1366,7 +1366,7 @@ OtpSetAflagMask(TwmWindow *twm_win, int mask, int setto)
 
 /* Set/clear individual ones */
 void
-OtpSetAflag(TwmWindow *twm_win, int flag)
+OtpSetAflag(TwmWindow *twm_win, unsigned flag)
 {
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
@@ -1374,7 +1374,7 @@ OtpSetAflag(TwmWindow *twm_win, int flag)
 }
 
 void
-OtpClearAflag(TwmWindow *twm_win, int flag)
+OtpClearAflag(TwmWindow *twm_win, unsigned flag)
 {
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
@@ -1382,7 +1382,7 @@ OtpClearAflag(TwmWindow *twm_win, int flag)
 }
 
 /* Exposing layering violations */
-int
+unsigned
 OtpGetAflags(TwmWindow *twm_win)
 {
 	assert(twm_win != NULL);
