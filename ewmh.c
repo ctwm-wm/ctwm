@@ -85,7 +85,6 @@ static void EwmhGetStrut(TwmWindow *twm_win, bool update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
 static void EwmhSet_NET_WORKAREA(ScreenInfo *scr);
 static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win);
-static int EwmhGet_CTWM_OTP_WM_STATE(TwmWindow *twm_win);
 static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
                 int newVal);
 
@@ -1785,10 +1784,9 @@ int EwmhGetInitPriority(TwmWindow *twm_win)
 }
 
 /* Get initial flags; part of AddWindow() process */
-int EwmhInitOtpFlags(TwmWindow *twm_win)
+unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 {
-	int flags = 0;
-	int abflags = EwmhGet_CTWM_OTP_WM_STATE(twm_win);
+	unsigned flags = 0;
 
 	/* FULLSCREEN we get from the normal window prop no matter what */
 	if(twm_win->ewmhFlags & EWMH_STATE_FULLSCREEN) {
@@ -1799,14 +1797,21 @@ int EwmhInitOtpFlags(TwmWindow *twm_win)
 	 * ABOVE/BELOW we get from our stashes info if we can, the normal
 	 * window prop if we had nothing.
 	 */
-	if(abflags == -1) {
-		abflags = twm_win->ewmhFlags;
-	}
-	if(abflags & EWMH_STATE_ABOVE) {
-		flags |= OTP_AFLAG_ABOVE;
-	}
-	if(abflags & EWMH_STATE_BELOW) {
-		flags |= OTP_AFLAG_BELOW;
+	{
+		/* Lotta dummy args */
+		Atom d_type;
+		int d_fmt;
+		unsigned long nitems, d_after;
+		unsigned long abflags = 0;
+
+		if(XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
+		                      False, XA_INTEGER, &d_type, &d_fmt, &nitems,
+		                      &d_after, (unsigned char **)&abflags)
+		                != Success) {
+			abflags = 0;
+		}
+
+		flags |= abflags;
 	}
 
 	return flags;
@@ -2115,18 +2120,10 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		 * config happens to have already raised it.
 		 */
 		{
-			unsigned aflags = OtpGetAflags(twm_win);
-			unsigned long of_prop[2];
-			int ofi = 0;
+			unsigned long of_prop = OtpGetAflags(twm_win);
 
-			if(aflags & OTP_AFLAG_ABOVE) {
-				of_prop[ofi++] = XA__NET_WM_STATE_ABOVE;
-			}
-			if(aflags & OTP_AFLAG_BELOW) {
-				of_prop[ofi++] = XA__NET_WM_STATE_BELOW;
-			}
-			XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, XA_ATOM, 32,
-			                PropModeReplace, (unsigned char *)of_prop, ofi);
+			XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, XA_INTEGER,
+			                32, PropModeReplace, (unsigned char *)&of_prop, 1);
 		}
 	}
 
@@ -2171,29 +2168,6 @@ static int EwmhGet_NET_WM_STATE(TwmWindow *twm_win)
 	prop = EwmhGetWindowProperties(twm_win->w, XA__NET_WM_STATE, XA_ATOM, &nitems);
 
 	if(prop) {
-		for(i = 0; i < nitems; i++) {
-			flags |= atomToFlag(prop[i]);
-		}
-
-		XFree(prop);
-	}
-
-	return flags;
-}
-
-/* Ditto for our special stash of OTP-related bits */
-static int EwmhGet_CTWM_OTP_WM_STATE(TwmWindow *twm_win)
-{
-	int flags = -1;
-	unsigned long *prop;
-	unsigned long nitems;
-	int i;
-
-	prop = EwmhGetWindowProperties(twm_win->w, XA_CTWM_OTP_WM_STATE,
-			XA_ATOM, &nitems);
-
-	if(prop) {
-		flags = 0;
 		for(i = 0; i < nitems; i++) {
 			flags |= atomToFlag(prop[i]);
 		}
