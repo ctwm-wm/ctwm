@@ -698,7 +698,7 @@ static void RaiseLowerOwl(OtpWinList *owl)
 
 	/*
 	 * abs(effective pri)
-	 * 
+	 *
 	 * XXX Why?  This seems like it's encoding the assumption
 	 * "f.raiselower should assume any negative [user-level] priorities
 	 * are a result of a window that should be positive being switched,
