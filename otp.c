@@ -1090,6 +1090,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 
 	/* May have flags to initialize */
 #ifdef EWMH
+	/* XXX Consider ABOVE/BELOW vs. our previous setting on restart */
 	owl->pri_aflags |= EwmhGetOtpFlags(twm_win);
 #endif
 
