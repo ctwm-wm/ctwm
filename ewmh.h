@@ -43,13 +43,16 @@ typedef struct EwmhStrut {
 #define EWMH_STATE_ALL                  0xFFF0
 
 /*
- * Priorities of the window types we recognize
+ * OTP priorities of the window types we recognize
  */
-
+/* Initial vals for these types, if the user hasn't set something else */
 #define EWMH_PRI_DESKTOP                -8
 #define EWMH_PRI_DOCK                    4
+
+/* STATE_FULLSCREEN windows with focus get jammed here */
 #define EWMH_PRI_FULLSCREEN              6
-#define EWMH_PRI_NORMAL                  0
+
+/* STATE_ABOVE/BELOW get +/- this to what they would be otherwise */
 #define EWMH_PRI_ABOVE                   2
 
 void EwmhInit(void);
