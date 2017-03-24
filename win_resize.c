@@ -1022,10 +1022,7 @@ void fullzoom(TwmWindow *tmp_win, int func)
 
 				/* and should ignore aspect ratio and size increments... */
 #ifdef EWMH
-				/*
-				 * Set EWMH flag for fullscreen stuff.  This is needed in
-				 * some OTP magic; x-ref comments on HandleFocusIn().
-				 */
+				/* x-ref HandleFocusIn() comments for why we need this */
 				OtpSetAflag(tmp_win, OTP_AFLAG_FULLSCREEN);
 				OtpRestackWindow(tmp_win);
 				/* the OtpRaise below is effectively already done here... */
