@@ -1809,8 +1809,12 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 		                      False, XA_INTEGER, &act_type, &d_fmt, &nitems,
 		                      &d_after, (unsigned char **)&aflags_p);
 		if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
-			/* Got CTWM_OTP_WM_STATE; use it */
-			aflags = *aflags_p;
+			/*
+			 * Got CTWM_OTP_WM_STATE; use it.  Explicitly mask in only
+			 * the above/below flags; the others aren't telling us info
+			 * we need to persist.
+			 */
+			aflags = *aflags_p & (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
 			XFree(aflags_p);
 		}
 		else {
