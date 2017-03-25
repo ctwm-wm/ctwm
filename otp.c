@@ -79,8 +79,11 @@ typedef struct Box {
 
 
 static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
-static void OtpStashAflags(TwmWindow *twm_win);
-static unsigned OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit);
+static void OwlSetAflagMask(OtpWinList *owl, unsigned mask, unsigned setto);
+static void OwlSetAflag(OtpWinList *owl, unsigned flag);
+static void OwlClearAflag(OtpWinList *owl, unsigned flag);
+static void OwlStashAflags(OtpWinList *owl);
+static unsigned OwlGetStashedAflags(OtpWinList *owl, bool *gotit);
 static int OwlEffectivePriority(OtpWinList *owl);
 
 static OtpWinList *bottomOwl = NULL;
@@ -1098,7 +1101,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	{
 		bool gotflags;
 
-		unsigned aflags = OtpGetStashedAflags(twm_win, &gotflags);
+		unsigned aflags = OwlGetStashedAflags(owl, &gotflags);
 
 		if(gotflags) {
 			/*
@@ -1397,10 +1400,17 @@ OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto)
 {
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
+	OwlSetAflagMask(twm_win->otp, mask, setto);
+}
 
-	twm_win->otp->pri_aflags &= ~mask;
-	twm_win->otp->pri_aflags |= (setto & mask);
-	OtpStashAflags(twm_win);
+static void
+OwlSetAflagMask(OtpWinList *owl, unsigned mask, unsigned setto)
+{
+	assert(owl != NULL);
+
+	owl->pri_aflags &= ~mask;
+	owl->pri_aflags |= (setto & mask);
+	OwlStashAflags(owl);
 }
 
 /* Set/clear individual ones */
@@ -1410,8 +1420,16 @@ OtpSetAflag(TwmWindow *twm_win, unsigned flag)
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
 
-	twm_win->otp->pri_aflags |= flag;
-	OtpStashAflags(twm_win);
+	OwlSetAflag(twm_win->otp, flag);
+}
+
+static void
+OwlSetAflag(OtpWinList *owl, unsigned flag)
+{
+	assert(owl != NULL);
+
+	owl->pri_aflags |= flag;
+	OwlStashAflags(owl);
 }
 
 void
@@ -1420,8 +1438,16 @@ OtpClearAflag(TwmWindow *twm_win, unsigned flag)
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
 
-	twm_win->otp->pri_aflags &= ~flag;
-	OtpStashAflags(twm_win);
+	OwlClearAflag(twm_win->otp, flag);
+}
+
+static void
+OwlClearAflag(OtpWinList *owl, unsigned flag)
+{
+	assert(owl != NULL);
+
+	owl->pri_aflags &= ~flag;
+	OwlStashAflags(owl);
 }
 
 /*
@@ -1436,23 +1462,23 @@ void
 OtpStashAflagsFirstTime(TwmWindow *twm_win)
 {
 	if(!twm_win->otp->stashed_aflags) {
-		OtpStashAflags(twm_win);
+		OwlStashAflags(twm_win->otp);
 	}
 }
 
 static void
-OtpStashAflags(TwmWindow *twm_win)
+OwlStashAflags(OtpWinList *owl)
 {
-	unsigned long of_prop = twm_win->otp->pri_aflags;
+	unsigned long of_prop = owl->pri_aflags;
 
-	XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_AFLAGS, XA_INTEGER,
+	XChangeProperty(dpy, owl->twm_win->w, XA_CTWM_OTP_AFLAGS, XA_INTEGER,
 	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
 
-	twm_win->otp->stashed_aflags = true;
+	owl->stashed_aflags = true;
 }
 
 static unsigned
-OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
+OwlGetStashedAflags(OtpWinList *owl, bool *gotit)
 {
 	/* Lotta dummy args */
 	int ret;
@@ -1461,7 +1487,7 @@ OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 	unsigned long nitems, d_after;
 	unsigned long aflags, *aflags_p;
 
-	ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_AFLAGS, 0, 1,
+	ret = XGetWindowProperty(dpy, owl->twm_win->w, XA_CTWM_OTP_AFLAGS, 0, 1,
 	                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
 	                         &d_after, (unsigned char **)&aflags_p);
 	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
