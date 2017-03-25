@@ -385,7 +385,6 @@ HandleFocusIn(void)
 	 */
 	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
 		OtpRestackWindow(Tmp_win);
-		OtpSetPriority(Tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
 	}
 #endif
 }
