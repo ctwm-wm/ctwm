@@ -1134,6 +1134,11 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 
 		owl->pri_aflags |= aflags;
 		owl->stashed_aflags = gotflags;
+
+		/* If effective pri is nonzero, be sure we have stashed flags */
+		if(PRI(owl) != OTP_ZERO && !owl->stashed_aflags) {
+			OwlStashAflags(owl);
+		}
 	}
 
 	/* finally put the window where it should go */
