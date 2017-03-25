@@ -1096,7 +1096,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	/* May have flags to initialize */
 #ifdef EWMH
 	/* X-ref comment on func about layering */
-	owl->pri_aflags |= EwmhInitOtpFlags(twm_win);
+	owl->pri_aflags |= EwmhInitOtpFlags(twm_win, &(owl->stashed_aflags));
 #endif
 
 	/* finally put the window where it should go */
@@ -1434,10 +1434,10 @@ OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
 		aflags = *aflags_p;
 		XFree(aflags_p);
-		twm_win->otp->stashed_aflags = *gotit = true;
+		*gotit = true;
 	}
 	else {
-		twm_win->otp->stashed_aflags = *gotit = false;
+		*gotit = false;
 		aflags = 0;
 	}
 

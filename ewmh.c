@@ -1794,7 +1794,7 @@ int EwmhGetInitPriority(TwmWindow *twm_win)
  * moment.  Perhaps it should be considered better layered the other way
  * and live over in otp.c instead though.
  */
-unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
+unsigned EwmhInitOtpFlags(TwmWindow *twm_win, bool *gotflags)
 {
 	unsigned flags = 0;
 
@@ -1809,10 +1809,9 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 	 */
 	{
 		/* Lotta dummy args */
-		bool gotflags;
-		unsigned aflags = OtpGetStashedAflags(twm_win, &gotflags);
+		unsigned aflags = OtpGetStashedAflags(twm_win, gotflags);
 
-		if(gotflags) {
+		if(*gotflags) {
 			/*
 			 * Got stashed OTP flags; use 'em.  Explicitly mask in only
 			 * the above/below flags; the others aren't telling us info
