@@ -1432,15 +1432,6 @@ OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 	return aflags;
 }
 
-/* Exposing layering violations */
-unsigned
-OtpGetAflags(TwmWindow *twm_win)
-{
-	assert(twm_win != NULL);
-	assert(twm_win->otp != NULL);
-	return twm_win->otp->pri_aflags;
-}
-
 
 /*
  * Figure where a window should be stacked based on the current world,
