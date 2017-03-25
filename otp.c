@@ -1400,7 +1400,7 @@ OtpClearAflag(TwmWindow *twm_win, unsigned flag)
  * raised it.
  */
 void
-OtpMaybeStashAflags(TwmWindow *twm_win)
+OtpStashAflagsFirstTime(TwmWindow *twm_win)
 {
 	if(!twm_win->otp->stashed_aflags) {
 		OtpStashAflags(twm_win);
