@@ -1146,8 +1146,6 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 				aflags |= OTP_AFLAG_BELOW;
 			}
 		}
-
-		/* X-ref comment on func about layering */
 #endif
 
 		owl->pri_aflags |= aflags;
