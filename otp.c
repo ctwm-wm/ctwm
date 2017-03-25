@@ -16,8 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <X11/Xatom.h>
 
 #include "otp.h"
+#include "ctwm_atoms.h"
 #include "screen.h"
 #include "util.h"
 #include "icons.h"
@@ -76,6 +78,7 @@ typedef struct Box {
 
 
 static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
+static void OtpStashAflags(TwmWindow *twm_win);
 static int OwlEffectivePriority(OtpWinList *owl);
 
 static OtpWinList *bottomOwl = NULL;
@@ -1362,6 +1365,7 @@ OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto)
 
 	twm_win->otp->pri_aflags &= ~mask;
 	twm_win->otp->pri_aflags |= (setto & mask);
+	OtpStashAflags(twm_win);
 }
 
 /* Set/clear individual ones */
@@ -1370,7 +1374,9 @@ OtpSetAflag(TwmWindow *twm_win, unsigned flag)
 {
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
+
 	twm_win->otp->pri_aflags |= flag;
+	OtpStashAflags(twm_win);
 }
 
 void
@@ -1378,7 +1384,26 @@ OtpClearAflag(TwmWindow *twm_win, unsigned flag)
 {
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
+
 	twm_win->otp->pri_aflags &= ~flag;
+	OtpStashAflags(twm_win);
+}
+
+/*
+ * Stash up flags in a property.  We use this to keep track of whether we
+ * have above/below flags set in the OTP info, so we can know what to set
+ * when we restart.  Otherwise we can't tell whether stuff like EWMH
+ * _NET_WM_STATE flags are saying 'above' because the above flag got set
+ * at some point, or whether other OTP config happens to have already
+ * raised it.
+ */
+static void
+OtpStashAflags(TwmWindow *twm_win)
+{
+	unsigned long of_prop = twm_win->otp->pri_aflags;
+
+	XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, XA_INTEGER,
+	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
 }
 
 /* Exposing layering violations */

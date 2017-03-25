@@ -1195,21 +1195,6 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 			OtpRestackWindow(twm_win);
 		}
 
-		/*
-		 * We store an extra property where we keep track of whether we
-		 * have above/below flags set in the OTP info, so we can know
-		 * what to set when we restart.  Otherwise we can't tell whether
-		 * the _NET_WM_STATE property is saying 'above' because the above
-		 * flag got set at some point, or whether other OTP config
-		 * happens to have already raised it.
-		 */
-		{
-			unsigned long of_prop = OtpGetAflags(twm_win);
-
-			XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, XA_INTEGER,
-			                32, PropModeReplace, (unsigned char *)&of_prop, 1);
-		}
-
 		/* Set the EWMH property back on the window */
 		EwmhSet_NET_WM_STATE(twm_win, change);
 	}
