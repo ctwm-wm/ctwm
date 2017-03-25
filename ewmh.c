@@ -2062,6 +2062,10 @@ void EwmhSet_NET_SHOWING_DESKTOP(int state)
  *
  * TwmWindow.ewmhFlags keeps track of the atoms that should be in
  * the list, so that we don't have to fetch or recalculate them all.
+ *
+ * XXX It's not clear that the theoretical performance gain and edge-case
+ * bug avoidance of the 'changes' arg is worth the complexity and
+ * edge-case bug creation it brings.  Consider removing it.
  */
 void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 {
@@ -2097,13 +2101,17 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		                        EWMH_STATE_FULLSCREEN);
 		twm_win->ewmhFlags |= newFlags;
 	}
-	else if(changes & EWMH_STATE_SHADED) {
+
+	if(changes & EWMH_STATE_SHADED) {
 		if(twm_win->squeezed) {
 			twm_win->ewmhFlags |= EWMH_STATE_SHADED;
 		}
-		twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
+		else {
+			twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
+		}
 	}
-	else if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
+
+	if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
 		int pri = OtpEffectiveDisplayPriority(twm_win);
 
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
