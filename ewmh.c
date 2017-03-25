@@ -2042,7 +2042,9 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		if(twm_win->squeezed) {
 			twm_win->ewmhFlags |= EWMH_STATE_SHADED;
 		}
-		twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
+		else {
+			twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
+		}
 	}
 	else if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
 		int pri;
