@@ -1077,7 +1077,12 @@ static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
 	owl->switching = switching;
 	owl->pri_base = priority;
 	owl->pri_aflags = 0;
-	owl->stashed_aflags = false;
+
+	/*
+	 * We never need to stash anything for icons, they don't persist
+	 * across restart anyway.
+	 */
+	owl->stashed_aflags = (wintype == WinWin ? false : true);
 
 	return owl;
 }
