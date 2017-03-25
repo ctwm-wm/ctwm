@@ -2038,7 +2038,8 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		                        EWMH_STATE_FULLSCREEN);
 		twm_win->ewmhFlags |= newFlags;
 	}
-	else if(changes & EWMH_STATE_SHADED) {
+
+	if(changes & EWMH_STATE_SHADED) {
 		if(twm_win->squeezed) {
 			twm_win->ewmhFlags |= EWMH_STATE_SHADED;
 		}
@@ -2046,7 +2047,8 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 			twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
 		}
 	}
-	else if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
+
+	if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
 		int pri;
 		/*
 		 * Check the window's current priority relative to what it
