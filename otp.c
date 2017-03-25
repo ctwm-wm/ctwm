@@ -60,6 +60,7 @@ struct OtpWinList {
 	bool        switching;
 	int         pri_base;   // Base priority
 	unsigned    pri_aflags; // Flags that might alter it; OTP_AFLAG_*
+	bool        stashed_aflags;
 };
 
 struct OtpPreferences {
@@ -1059,6 +1060,7 @@ static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
 	owl->switching = switching;
 	owl->pri_base = priority;
 	owl->pri_aflags = 0;
+	owl->stashed_aflags = false;
 
 	return owl;
 }
@@ -1404,6 +1406,8 @@ OtpStashAflags(TwmWindow *twm_win)
 
 	XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_AFLAGS, XA_INTEGER,
 	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
+
+	twm_win->otp->stashed_aflags = true;
 }
 
 unsigned
@@ -1422,10 +1426,10 @@ OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
 		aflags = *aflags_p;
 		XFree(aflags_p);
-		*gotit = true;
+		twm_win->otp->stashed_aflags = *gotit = true;
 	}
 	else {
-		*gotit = false;
+		twm_win->otp->stashed_aflags = *gotit = false;
 		aflags = 0;
 	}
 
