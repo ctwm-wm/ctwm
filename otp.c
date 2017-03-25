@@ -1118,7 +1118,6 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	/* Initialize flags */
 	{
 		bool gotflags;
-
 		unsigned aflags = OwlGetStashedAflags(owl, &gotflags);
 
 		if(gotflags) {
@@ -1148,10 +1147,11 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 		}
 #endif
 
+		/* Set whatever we figured */
 		owl->pri_aflags |= aflags;
 		owl->stashed_aflags = gotflags;
 
-		/* If we set a priority, we should stash away flags */
+		/* If we set a priority or flags, we should stash away flags */
 		if((PRI(owl) != OTP_ZERO || owl->pri_aflags != 0)
 		                && !owl->stashed_aflags) {
 			OwlStashAflags(owl);
