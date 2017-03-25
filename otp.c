@@ -1406,6 +1406,30 @@ OtpStashAflags(TwmWindow *twm_win)
 	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
 }
 
+unsigned
+OtpGetStashedAflags(TwmWindow *twm_win)
+{
+	/* Lotta dummy args */
+	int ret;
+	Atom act_type;
+	int d_fmt;
+	unsigned long nitems, d_after;
+	unsigned long aflags, *aflags_p;
+
+	ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
+	                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
+	                         &d_after, (unsigned char **)&aflags_p);
+	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
+		aflags = *aflags_p;
+		XFree(aflags_p);
+	}
+	else {
+		aflags = 0;
+	}
+
+	return aflags;
+}
+
 /* Exposing layering violations */
 unsigned
 OtpGetAflags(TwmWindow *twm_win)
