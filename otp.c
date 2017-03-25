@@ -1094,10 +1094,42 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 #endif
 
 	/* May have flags to initialize */
+	{
+		bool gotflags;
+
+		unsigned aflags = OtpGetStashedAflags(twm_win, &gotflags);
+
+		if(gotflags) {
+			/*
+			 * Got stashed OTP flags; use 'em.  Explicitly mask in only
+			 * the above/below flags; the others aren't telling us info
+			 * we need to persist.
+			 */
+			aflags &= (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
+		}
+
 #ifdef EWMH
-	/* X-ref comment on func about layering */
-	owl->pri_aflags |= EwmhInitOtpFlags(twm_win, &(owl->stashed_aflags));
+		/* FULLSCREEN we get from the normal EWMH prop no matter what */
+		if(twm_win->ewmhFlags & EWMH_STATE_FULLSCREEN) {
+			aflags |= OTP_AFLAG_FULLSCREEN;
+		}
+
+		if(!gotflags) {
+			/* Nothing from OTP about above/below; check EWMH */
+			aflags = 0;
+			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
+				aflags |= OTP_AFLAG_ABOVE;
+			}
+			if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
+				aflags |= OTP_AFLAG_BELOW;
+			}
+		}
+
+		/* X-ref comment on func about layering */
 #endif
+
+		owl->pri_aflags |= aflags;
+	}
 
 	/* finally put the window where it should go */
 	InsertOwl(owl, Above);
