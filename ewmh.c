@@ -1806,8 +1806,8 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 		unsigned long aflags, *aflags_p;
 
 		ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
-		                      False, XA_INTEGER, &act_type, &d_fmt, &nitems,
-		                      &d_after, (unsigned char **)&aflags_p);
+		                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
+		                         &d_after, (unsigned char **)&aflags_p);
 		if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
 			/*
 			 * Got CTWM_OTP_WM_STATE; use it.  Explicitly mask in only
