@@ -1093,6 +1093,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 
 	/* May have flags to initialize */
 #ifdef EWMH
+	/* X-ref comment on func about layering */
 	owl->pri_aflags |= EwmhInitOtpFlags(twm_win);
 #endif
 

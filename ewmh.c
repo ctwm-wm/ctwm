@@ -1783,7 +1783,17 @@ int EwmhGetInitPriority(TwmWindow *twm_win)
 	}
 }
 
-/* Get initial flags; part of AddWindow() process */
+/*
+ * Get initial flags; part of AddWindow() process.
+ *
+ * This is a moderate layering violation, in that this is blending a lot
+ * of OTP and EWMH knowledge.  It's not quite so easy to split them up
+ * and still allow the overriding one way vs. the other to work right
+ * though.  And at the moment, all of the stashed flag bits we care about
+ * are actually purely EWMH triggered, so this is left here for the
+ * moment.  Perhaps it should be considered better layered the other way
+ * and live over in otp.c instead though.
+ */
 unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 {
 	unsigned flags = 0;
