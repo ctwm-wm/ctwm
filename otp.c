@@ -1013,12 +1013,18 @@ static void RecomputeOwlPrefs(OtpPreferences *prefs, OtpWinList *owl)
 		InsertOwl(owl, Above);
 
 		/*
-		 * If we changed something and don't have stashed aflags, we
-		 * should make sure we do.
-		if(!owl->stashed_aflags) {
-			OwlStashAflags(owl);
-		}
+		 * If we changed something on a real window and don't have
+		 * stashed aflags, we should make sure we do.  We also
+		 * potentially need to let EWMH know stacking has changed.
 		 */
+		if(owl->type == WinWin) {
+			if(!owl->stashed_aflags) {
+				OwlStashAflags(owl);
+			}
+#ifdef EWMH
+			EwmhSet_NET_WM_STATE(owl->twm_win, EWMH_STATE_ABOVE);
+#endif
+		}
 	}
 }
 
