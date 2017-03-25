@@ -1115,7 +1115,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	}
 #endif
 
-	/* May have flags to initialize */
+	/* Initialize flags */
 	{
 		bool gotflags;
 
