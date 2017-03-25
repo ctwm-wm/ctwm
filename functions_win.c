@@ -390,6 +390,13 @@ otp_priority_handler(EF_FULLPROTO)
 			break;
 	}
 
+	/*
+	 * Stash up our current flags if there aren't any set yet.  This is
+	 * necessary because otherwise the EWMH prop we [may] stash below
+	 * would be taken as gospel on restart, when it shouldn't be.
+	 */
+	OtpStashAflagsFirstTime(tmp_win);
+
 #ifdef EWMH
 	/*
 	 * We changed the priority somehow, so we may have changed where it
