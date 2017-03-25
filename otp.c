@@ -1407,7 +1407,7 @@ OtpStashAflags(TwmWindow *twm_win)
 }
 
 unsigned
-OtpGetStashedAflags(TwmWindow *twm_win)
+OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 {
 	/* Lotta dummy args */
 	int ret;
@@ -1422,8 +1422,10 @@ OtpGetStashedAflags(TwmWindow *twm_win)
 	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
 		aflags = *aflags_p;
 		XFree(aflags_p);
+		*gotit = true;
 	}
 	else {
+		*gotit = false;
 		aflags = 0;
 	}
 

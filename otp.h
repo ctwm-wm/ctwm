@@ -58,7 +58,7 @@ void OtpFreeIcon(TwmWindow *twm_win);
 void OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto);
 void OtpSetAflag(TwmWindow *twm_win, unsigned flag);
 void OtpClearAflag(TwmWindow *twm_win, unsigned flag);
-unsigned OtpGetStashedAflags(TwmWindow *twm_win);
+unsigned OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit);
 unsigned OtpGetAflags(TwmWindow *twm_win);
 void OtpRestackWindow(TwmWindow *twm_win);
 
