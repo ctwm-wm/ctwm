@@ -1149,14 +1149,10 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 		owl->pri_aflags |= aflags;
 		owl->stashed_aflags = gotflags;
 
-		/*
-		 * If we changed the priority, we may need to kick EWMH updates.
-		 * If the new effective pri is nonzero, be sure we have stashed flags.
-		EwmhSet_NET_WM_STATE(something);
+		/* If we set a priority, we should stash away flags */
 		if(PRI(owl) != OTP_ZERO && !owl->stashed_aflags) {
 			OwlStashAflags(owl);
 		}
-		 */
 	}
 
 	/* finally put the window where it should go */
