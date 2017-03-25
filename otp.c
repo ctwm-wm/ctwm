@@ -80,6 +80,7 @@ typedef struct Box {
 
 static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
 static void OtpStashAflags(TwmWindow *twm_win);
+static unsigned OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit);
 static int OwlEffectivePriority(OtpWinList *owl);
 
 static OtpWinList *bottomOwl = NULL;
@@ -1450,7 +1451,7 @@ OtpStashAflags(TwmWindow *twm_win)
 	twm_win->otp->stashed_aflags = true;
 }
 
-unsigned
+static unsigned
 OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 {
 	/* Lotta dummy args */

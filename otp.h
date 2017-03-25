@@ -59,7 +59,6 @@ void OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto);
 void OtpSetAflag(TwmWindow *twm_win, unsigned flag);
 void OtpClearAflag(TwmWindow *twm_win, unsigned flag);
 void OtpStashAflagsFirstTime(TwmWindow *twm_win);
-unsigned OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit);
 void OtpRestackWindow(TwmWindow *twm_win);
 
 /* functions to manage the preferences. The second arg specifies icon prefs */
