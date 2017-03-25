@@ -34,7 +34,6 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 
-#include "ctwm_atoms.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"
@@ -1800,26 +1799,19 @@ unsigned EwmhInitOtpFlags(TwmWindow *twm_win)
 	 */
 	{
 		/* Lotta dummy args */
-		int ret;
-		Atom act_type;
-		int d_fmt;
-		unsigned long nitems, d_after;
-		unsigned long aflags, *aflags_p;
+		bool gotflags;
+		unsigned aflags = OtpGetStashedAflags(twm_win, &gotflags);
 
-		ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
-		                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
-		                         &d_after, (unsigned char **)&aflags_p);
-		if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
+		if(gotflags) {
 			/*
-			 * Got CTWM_OTP_WM_STATE; use it.  Explicitly mask in only
+			 * Got stashed OTP flags; use 'em.  Explicitly mask in only
 			 * the above/below flags; the others aren't telling us info
 			 * we need to persist.
 			 */
-			aflags = *aflags_p & (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
-			XFree(aflags_p);
+			aflags &= (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
 		}
 		else {
-			/* Nothing from CTWM_OTP_WM_STATE; check the regular */
+			/* Nothing from OTP state; check the regular */
 			aflags = 0;
 			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
 				aflags |= OTP_AFLAG_ABOVE;
