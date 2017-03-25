@@ -1011,6 +1011,14 @@ static void RecomputeOwlPrefs(OtpPreferences *prefs, OtpWinList *owl)
 	if(old_pri != owl->pri_base) {
 		RemoveOwl(owl);
 		InsertOwl(owl, Above);
+
+		/*
+		 * If we changed something and don't have stashed aflags, we
+		 * should make sure we do.
+		if(!owl->stashed_aflags) {
+			OwlStashAflags(owl);
+		}
+		 */
 	}
 }
 
@@ -1135,10 +1143,14 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 		owl->pri_aflags |= aflags;
 		owl->stashed_aflags = gotflags;
 
-		/* If effective pri is nonzero, be sure we have stashed flags */
+		/*
+		 * If we changed the priority, we may need to kick EWMH updates.
+		 * If the new effective pri is nonzero, be sure we have stashed flags.
+		EwmhSet_NET_WM_STATE(something);
 		if(PRI(owl) != OTP_ZERO && !owl->stashed_aflags) {
 			OwlStashAflags(owl);
 		}
+		 */
 	}
 
 	/* finally put the window where it should go */
