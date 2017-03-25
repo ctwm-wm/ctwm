@@ -1783,59 +1783,6 @@ int EwmhGetInitPriority(TwmWindow *twm_win)
 	}
 }
 
-/*
- * Get initial flags; part of AddWindow() process.
- *
- * This is a moderate layering violation, in that this is blending a lot
- * of OTP and EWMH knowledge.  It's not quite so easy to split them up
- * and still allow the overriding one way vs. the other to work right
- * though.  And at the moment, all of the stashed flag bits we care about
- * are actually purely EWMH triggered, so this is left here for the
- * moment.  Perhaps it should be considered better layered the other way
- * and live over in otp.c instead though.
- */
-unsigned EwmhInitOtpFlags(TwmWindow *twm_win, bool *gotflags)
-{
-	unsigned flags = 0;
-
-	/* FULLSCREEN we get from the normal window prop no matter what */
-	if(twm_win->ewmhFlags & EWMH_STATE_FULLSCREEN) {
-		flags |= OTP_AFLAG_FULLSCREEN;
-	}
-
-	/*
-	 * ABOVE/BELOW we get from our stashes info if we can, the normal
-	 * window prop if we had nothing.
-	 */
-	{
-		/* Lotta dummy args */
-		unsigned aflags = OtpGetStashedAflags(twm_win, gotflags);
-
-		if(*gotflags) {
-			/*
-			 * Got stashed OTP flags; use 'em.  Explicitly mask in only
-			 * the above/below flags; the others aren't telling us info
-			 * we need to persist.
-			 */
-			aflags &= (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
-		}
-		else {
-			/* Nothing from OTP state; check the regular */
-			aflags = 0;
-			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
-				aflags |= OTP_AFLAG_ABOVE;
-			}
-			if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
-				aflags |= OTP_AFLAG_BELOW;
-			}
-		}
-
-		flags |= aflags;
-	}
-
-	return flags;
-}
-
 bool EwmhHasBorder(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
