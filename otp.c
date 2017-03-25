@@ -1402,7 +1402,7 @@ OtpStashAflags(TwmWindow *twm_win)
 {
 	unsigned long of_prop = twm_win->otp->pri_aflags;
 
-	XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, XA_INTEGER,
+	XChangeProperty(dpy, twm_win->w, XA_CTWM_OTP_AFLAGS, XA_INTEGER,
 	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
 }
 
@@ -1416,7 +1416,7 @@ OtpGetStashedAflags(TwmWindow *twm_win, bool *gotit)
 	unsigned long nitems, d_after;
 	unsigned long aflags, *aflags_p;
 
-	ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_WM_STATE, 0, 1,
+	ret = XGetWindowProperty(dpy, twm_win->w, XA_CTWM_OTP_AFLAGS, 0, 1,
 	                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
 	                         &d_after, (unsigned char **)&aflags_p);
 	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
