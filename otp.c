@@ -1496,6 +1496,11 @@ OwlStashAflags(OtpWinList *owl)
 {
 	unsigned long of_prop = owl->pri_aflags;
 
+	/* Only "real" windows need stashed flags */
+	if(owl->type != WinWin) {
+		return;
+	}
+
 	XChangeProperty(dpy, owl->twm_win->w, XA_CTWM_OTP_AFLAGS, XA_INTEGER,
 	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
 
@@ -1511,6 +1516,12 @@ OwlGetStashedAflags(OtpWinList *owl, bool *gotit)
 	int d_fmt;
 	unsigned long nitems, d_after;
 	unsigned long aflags, *aflags_p;
+
+	/* Only on real windows */
+	if(owl->type != WinWin) {
+		*gotit = false;
+		return 0;
+	}
 
 	ret = XGetWindowProperty(dpy, owl->twm_win->w, XA_CTWM_OTP_AFLAGS, 0, 1,
 	                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
