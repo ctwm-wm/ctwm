@@ -2003,6 +2003,10 @@ void EwmhSet_NET_SHOWING_DESKTOP(int state)
  *
  * TwmWindow.ewmhFlags keeps track of the atoms that should be in
  * the list, so that we don't have to fetch or recalculate them all.
+ *
+ * XXX It's not clear that the theoretical performance gain and edge-case
+ * bug avoidance of the 'changes' arg is worth the complexity and
+ * edge-case bug creation it brings.  Consider removing it.
  */
 void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 {
