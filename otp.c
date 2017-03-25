@@ -1399,6 +1399,14 @@ OtpClearAflag(TwmWindow *twm_win, unsigned flag)
  * at some point, or whether other OTP config happens to have already
  * raised it.
  */
+void
+OtpMaybeStashAflags(TwmWindow *twm_win)
+{
+	if(!twm_win->otp->stashed_aflags) {
+		OtpStashAflags(twm_win);
+	}
+}
+
 static void
 OtpStashAflags(TwmWindow *twm_win)
 {
