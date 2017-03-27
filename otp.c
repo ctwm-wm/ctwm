@@ -1621,9 +1621,12 @@ OwlEffectivePriority(OtpWinList *owl)
 		}
 	}
 
-	/* If FULLSCREEN and focused, jam to the top */
+	/*
+	 * If FULLSCREEN and focused, jam to (nearly; let the user still win
+	 * if they try) the top.
+	 */
 	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN && Scr->Focus == owl->twm_win) {
-		pri = OTP_MAX;
+		pri = EWMH_PRI_FULLSCREEN;
 	}
 #endif
 
