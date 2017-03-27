@@ -951,8 +951,11 @@ void OtpToggleSwitching(TwmWindow *twm_win, WinType wintype)
  * This is triggered as a result of a StackMode ConfigureRequest.  We
  * choose to interpret this as restacking relative to the base
  * priorities, since all the alterations are EWMH-related, and those
- * should probably override.  This may need revisiting if we grow
- * alterations that aren't a result of EWMH stuff.
+ * should probably override.
+ *
+ * XXX Or should they?  Maybe we should alter until our effective is
+ * positioned as desired relative to their effective?  This may also need
+ * revisiting if we grow alterations that aren't a result of EWMH stuff.
  */
 void OtpForcePlacement(TwmWindow *twm_win, int where, TwmWindow *other_win)
 {
