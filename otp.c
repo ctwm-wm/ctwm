@@ -524,7 +524,9 @@ static OtpWinList *OwlRightBelow(int priority)
 
 	for(owl1 = bottomOwl, owl2 = owl1->above;
 	                (owl2 != NULL) && (PRI(owl2) < priority);
-	                owl1 = owl2, owl2 = owl2->above);
+	                owl1 = owl2, owl2 = owl2->above) {
+		/* nada */;
+	}
 
 	assert(owl2 == owl1->above);
 	assert(PRI(owl1) < priority);
