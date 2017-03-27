@@ -616,7 +616,7 @@ static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 		if((other_owl->type == WinWin)
 		                && isTransientOf(other_owl->twm_win, owl->twm_win)) {
 			/* Copy in our flags so it winds up in the right place */
-			PRI_CP(owl, other_owl);
+			other_owl->pri_aflags = owl->pri_aflags;
 			SetOwlPriority(other_owl, priority, where);
 		}
 		other_owl = tmp_owl;
