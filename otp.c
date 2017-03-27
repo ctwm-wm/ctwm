@@ -1111,7 +1111,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 #ifdef EWMH
 	/* If nothing came in, EWMH might have something to say */
 	if(owl->pri_base == 0) {
-		owl->pri_base = EwmhGetInitPriority(twm_win);
+		owl->pri_base = EwmhGetInitPriority(twm_win) + OTP_ZERO;
 	}
 #endif
 
@@ -1616,7 +1616,7 @@ OwlEffectivePriority(OtpWinList *owl)
 	{
 		EwmhWindowType ewt = owl->twm_win->ewmhWindowType;
 		if((owl->pri_aflags & OTP_AFLAG_BELOW) && (ewt == wt_Dock) &&
-		                (owl->pri_base == EWMH_PRI_DOCK)) {
+		                (owl->pri_base == EWMH_PRI_DOCK + OTP_ZERO)) {
 			pri -= EWMH_PRI_DOCK;
 		}
 	}
@@ -1626,7 +1626,7 @@ OwlEffectivePriority(OtpWinList *owl)
 	 * if they try) the top.
 	 */
 	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN && Scr->Focus == owl->twm_win) {
-		pri = EWMH_PRI_FULLSCREEN;
+		pri = EWMH_PRI_FULLSCREEN + OTP_ZERO;
 	}
 #endif
 
