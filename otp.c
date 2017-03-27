@@ -1115,18 +1115,29 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 	}
 #endif
 
-	/* Initialize flags */
+	/*
+	 * Initialize flags.  Right now, the only stashed flags are related
+	 * to EWMH requests, so in a sense this whole thing could be dropped
+	 * under #ifdef.  But I'll assume that might not always be the case,
+	 * so for now the !(EWMH) case is just a twisty noop.
+	 */
 	{
-		bool gotflags;
-		unsigned aflags = OwlGetStashedAflags(owl, &gotflags);
+		bool gotflags = false;
+		unsigned aflags = 0, fromstash = 0;
+
+		aflags = OwlGetStashedAflags(owl, &gotflags);
+
+#ifdef EWMH
+		fromstash = (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
+#endif
 
 		if(gotflags) {
 			/*
 			 * Got stashed OTP flags; use 'em.  Explicitly mask in only
-			 * the above/below flags; the others aren't telling us info
-			 * we need to persist.
+			 * the flags we're caring about; the others aren't telling us
+			 * info we need to persist.
 			 */
-			aflags &= (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
+			aflags &= fromstash;
 		}
 
 #ifdef EWMH
@@ -1145,7 +1156,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 				aflags |= OTP_AFLAG_BELOW;
 			}
 		}
-#endif
+#endif // EWMH
 
 		/* Set whatever we figured */
 		owl->pri_aflags |= aflags;
