@@ -1113,7 +1113,7 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 
 	/* inherit the default attributes from the parent window if appropriate */
 	if(parent != NULL) {
-		owl->pri_base = parent->pri_base;
+		PRI_CP(parent, owl);
 		owl->switching = parent->switching;
 	}
 
