@@ -608,6 +608,10 @@ static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 		return;
 	}
 
+	/*
+	 * We start looking for transients of owl at the bottom of its OTP
+	 * layer.
+	 */
 	other_owl = OwlRightBelow(PRI(owl));
 	other_owl = (other_owl == NULL) ? bottomOwl : other_owl->above;
 	assert(PRI(other_owl) >= PRI(owl));
