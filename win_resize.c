@@ -1078,10 +1078,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 void unzoom(TwmWindow *tmp_win)
 {
 	if(tmp_win->zoomed != ZOOM_NONE) {
+#ifdef EWMH
 		if(tmp_win->zoomed == F_FULLSCREENZOOM) {
 			OtpClearAflag(tmp_win, OTP_AFLAG_FULLSCREEN);
 			OtpRestackWindow(tmp_win);
 		}
+#endif
 
 		tmp_win->zoomed = ZOOM_NONE;
 	}
