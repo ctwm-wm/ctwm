@@ -601,7 +601,7 @@ static void SetOwlPriority(OtpWinList *owl, int new_pri, int where)
  */
 static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 {
-	OtpWinList *other_owl, *tmp_owl;
+	OtpWinList *other_owl;
 
 	/* the icons have no transients */
 	if(owl->type != WinWin) {
@@ -618,7 +618,7 @@ static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 
 	/* !beware! we're changing the list as we scan it, hence the tmp_owl */
 	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
-		tmp_owl = other_owl->above;
+		OtpWinList *tmp_owl = other_owl->above;
 		if((other_owl->type == WinWin)
 		                && isTransientOf(other_owl->twm_win, owl->twm_win)) {
 			/* Copy in our flags so it winds up in the right place */
