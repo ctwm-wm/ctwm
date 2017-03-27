@@ -1164,8 +1164,8 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 			/* Toggle the shade/squeeze state */
 #ifdef DEBUG_EWMH
 			printf("EWMH_STATE_SHADED: change it\n");
-			Squeeze(twm_win);
 #endif
+			Squeeze(twm_win);
 		}
 	}
 	else if(change & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
