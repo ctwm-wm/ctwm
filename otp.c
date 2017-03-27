@@ -644,8 +644,12 @@ static void TryToSwitch(OtpWinList *owl, int where)
 	priority = OTP_MAX - owl->pri_base;
 	if(((where == Above) && (priority > owl->pri_base)) ||
 	                ((where == Below) && (priority < owl->pri_base))) {
-		owl->pri_base = priority;
+		/*
+		 * TTMTOT() before changing pri_base since it uses the current
+		 * state to find the transients.
+		 */
 		TryToMoveTransientsOfTo(owl, priority, where);
+		owl->pri_base = priority;
 	}
 }
 
