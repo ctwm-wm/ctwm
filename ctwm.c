@@ -531,7 +531,7 @@ int main(int argc, char **argv)
 
 		/* Parse it once for each screen. */
 		if(CLarg.cfgchk) {
-			if(ParseTwmrc(CLarg.InitFile) == 0) {
+			if(ParseTwmrc(CLarg.InitFile) == true) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
 				exit(1);
