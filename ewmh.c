@@ -225,16 +225,19 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 		}
 	}
 
-	if(selectionOwner != None) {
-		if(!CLarg.ewmh_replace) {
+	/*
+	 * If something else is owning things and we're not running
+	 * --replace, give up now and return failure.
+	 */
+	if(selectionOwner != None && !CLarg.ewmh_replace) {
 #ifdef DEBUG_EWMH
-			fprintf(stderr, "A window manager is already running on screen %d\n",
-			        scr->screen);
+		fprintf(stderr, "A window manager is already running on screen %d\n",
+		        scr->screen);
 #endif
-			return false;
-		}
+		return false;
 	}
 
+	/* We're asked to --replace, so try to do so */
 	XSetSelectionOwner(dpy, wmAtom, scr->icccm_Window, CurrentTime);
 
 	if(XGetSelectionOwner(dpy, wmAtom) != scr->icccm_Window) {
