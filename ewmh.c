@@ -180,6 +180,10 @@ static void GenerateTimestamp(ScreenInfo *scr)
  * at by the ICCCM section 4.3.
  * http://tronche.com/gui/x/icccm/sec-4.html#s-4.3
  *
+ * We do want to run through this even if we're not running with
+ * --replace ourselves, because it also sets up the bits for other
+ * invocations to --replace us.
+ *
  * TODO: convert the selection to atom VERSION.
  */
 static bool EwmhReplaceWM(ScreenInfo *scr)
