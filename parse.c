@@ -306,7 +306,7 @@ doparse(int (*ifunc)(void), const char *srctypename,
 		}
 		fprintf(stderr, "\n");
 	}
-	return ParseError;
+	return !(ParseError);
 }
 
 
