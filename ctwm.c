@@ -344,7 +344,7 @@ int main(int argc, char **argv)
 		XSync(dpy, 0);
 		XSetErrorHandler(TwmErrorHandler);
 
-		if(RedirectError && CLarg.cfgchk == 0) {
+		if(RedirectError && CLarg.cfgchk == false) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
 			if(CLarg.MultiScreen && NumScreens > 0) {
