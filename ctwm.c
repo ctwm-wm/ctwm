@@ -324,6 +324,16 @@ int main(int argc, char **argv)
 			continue;
 		}
 
+		/*
+		 * Generally, we're taking over the screen, but not always.  If
+		 * we're just checking the config, we're not trying to take it
+		 * over.  Nor are we if we're creating a captive ctwm.
+		 */
+		Scr->takeover = true;
+		if(CLarg.cfgchk || CLarg.is_captive) {
+			Scr->takeover = false;
+		}
+
 		Scr->screen = scrnum;
 		Scr->XineramaRoot = croot;
 #ifdef EWMH
@@ -344,7 +354,7 @@ int main(int argc, char **argv)
 		XSync(dpy, 0);
 		XSetErrorHandler(TwmErrorHandler);
 
-		if(RedirectError && CLarg.cfgchk == 0) {
+		if(RedirectError && Scr->takeover) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
 			if(CLarg.MultiScreen && NumScreens > 0) {
@@ -531,7 +541,7 @@ int main(int argc, char **argv)
 
 		/* Parse it once for each screen. */
 		if(CLarg.cfgchk) {
-			if(ParseTwmrc(CLarg.InitFile) == 0) {
+			if(ParseTwmrc(CLarg.InitFile) == false) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
 				exit(1);

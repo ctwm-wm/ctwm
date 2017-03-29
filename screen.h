@@ -46,6 +46,7 @@ struct TitlebarPixmaps {
 
 struct ScreenInfo {
 	int screen;                 /* the default screen */
+	bool takeover;              /* whether we're taking over this screen */
 	int d_depth;                /* copy of DefaultDepth(dpy, screen) */
 	Visual *d_visual;           /* copy of DefaultVisual(dpy, screen) */
 	int Monochrome;             /* is the display monochrome ? */

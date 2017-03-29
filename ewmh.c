@@ -180,6 +180,10 @@ static void GenerateTimestamp(ScreenInfo *scr)
  * at by the ICCCM section 4.3.
  * http://tronche.com/gui/x/icccm/sec-4.html#s-4.3
  *
+ * We do want to run through this even if we're not running with
+ * --replace ourselves, because it also sets up the bits for other
+ * invocations to --replace us.
+ *
  * TODO: convert the selection to atom VERSION.
  */
 static bool EwmhReplaceWM(ScreenInfo *scr)
@@ -187,6 +191,11 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 	char atomname[32];
 	Atom wmAtom;
 	Window selectionOwner;
+
+	/* If we're not trying to take over the screen, don't do this at all */
+	if(!scr->takeover) {
+		return false;
+	}
 
 	snprintf(atomname, sizeof(atomname), "WM_S%d", scr->screen);
 	wmAtom = XInternAtom(dpy, atomname, False);
@@ -216,14 +225,19 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 		}
 	}
 
-	if(selectionOwner != None) {
-		if(!CLarg.ewmh_replace) {
-			fprintf(stderr, "A window manager is already running on screen %d\n",
-			        scr->screen);
-			return false;
-		}
+	/*
+	 * If something else is owning things and we're not running
+	 * --replace, give up now and return failure.
+	 */
+	if(selectionOwner != None && !CLarg.ewmh_replace) {
+#ifdef DEBUG_EWMH
+		fprintf(stderr, "A window manager is already running on screen %d\n",
+		        scr->screen);
+#endif
+		return false;
 	}
 
+	/* We're asked to --replace, so try to do so */
 	XSetSelectionOwner(dpy, wmAtom, scr->icccm_Window, CurrentTime);
 
 	if(XGetSelectionOwner(dpy, wmAtom) != scr->icccm_Window) {
