@@ -948,15 +948,15 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		border_y = 0;
 	}
 	if(tmp_win->zoomed == func) {
+		/* It was already zoomed this way, unzoom it */
 		dragHeight = tmp_win->save_frame_height;
 		dragWidth = tmp_win->save_frame_width;
 		dragx = tmp_win->save_frame_x;
 		dragy = tmp_win->save_frame_y;
-		tmp_win->zoomed = ZOOM_NONE;
 
-		if(tmp_win->save_otpri != OtpGetPriority(tmp_win)) {
-			OtpSetPriority(tmp_win, WinWin, tmp_win->save_otpri, Above);
-		}
+		unzoom(tmp_win);
+
+		/* XXX _should_ it be falling through here? */
 	}
 	else {
 		if(tmp_win->zoomed == ZOOM_NONE) {
@@ -964,7 +964,6 @@ void fullzoom(TwmWindow *tmp_win, int func)
 			tmp_win->save_frame_y = dragy;
 			tmp_win->save_frame_width = dragWidth;
 			tmp_win->save_frame_height = dragHeight;
-			tmp_win->save_otpri = OtpGetPriority(tmp_win);
 		}
 		tmp_win->zoomed = func;
 
@@ -1022,15 +1021,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				dragWidth = zwidth + bw3D_times_2;
 
 				/* and should ignore aspect ratio and size increments... */
-				/*
-				 * Raise the window above the dock.
-				 * It should have the extra priority only while it
-				 * has focus. This is handled in HandleFocusOut().
-				 */
 #ifdef EWMH
-				OtpSetPriority(tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
-#endif
+				/* x-ref HandleFocusIn() comments for why we need this */
+				OtpSetAflag(tmp_win, OTP_AFLAG_FULLSCREEN);
+				OtpRestackWindow(tmp_win);
 				/* the OtpRaise below is effectively already done here... */
+#endif
 			}
 		}
 	}
@@ -1065,7 +1061,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	                tmp_win->frame_y + tmp_win->frame_height < tmpY) {
 		XWarpPointer(dpy, Scr->Root, tmp_win->w, 0, 0, 0, 0, 0, 0);
 	}
+
 #ifdef EWMH
+	/*
+	 * Reset _NET_WM_STATE prop on the window.  It sets whichever state
+	 * applies, not always the _MAXIMIZED_VERT we specify here.
+	 */
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_MAXIMIZED_VERT);
 #endif
 }
@@ -1077,9 +1078,13 @@ void fullzoom(TwmWindow *tmp_win, int func)
 void unzoom(TwmWindow *tmp_win)
 {
 	if(tmp_win->zoomed != ZOOM_NONE) {
-		if(tmp_win->save_otpri != OtpGetPriority(tmp_win)) {
-			OtpSetPriority(tmp_win, WinWin, tmp_win->save_otpri, Above);
+#ifdef EWMH
+		if(tmp_win->zoomed == F_FULLSCREENZOOM) {
+			OtpClearAflag(tmp_win, OTP_AFLAG_FULLSCREEN);
+			OtpRestackWindow(tmp_win);
 		}
+#endif
+
 		tmp_win->zoomed = ZOOM_NONE;
 	}
 }

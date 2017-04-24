@@ -13,6 +13,14 @@
 /* kind of window */
 typedef enum WinType { WinWin, IconWin } WinType;
 
+/* Flags that might alter OTP (currently only EWMH bits) */
+#ifdef EWMH
+#define OTP_AFLAG_ABOVE      (1 << 0)
+#define OTP_AFLAG_BELOW      (1 << 1)
+#define OTP_AFLAG_FULLSCREEN (1 << 2)
+#endif
+
+
 /* Wrapper functions to maintain the internal list uptodate.  */
 int ReparentWindow(Display *display, TwmWindow *twm_win,
                    WinType wintype, Window parent, int x, int y);
@@ -41,11 +49,17 @@ void OtpSetPriority(TwmWindow *, WinType, int, int);
 void OtpChangePriority(TwmWindow *, WinType, int);
 void OtpSwitchPriority(TwmWindow *, WinType);
 void OtpToggleSwitching(TwmWindow *, WinType);
-void OtpRecomputeValues(TwmWindow *);
+void OtpRecomputePrefs(TwmWindow *);
 void OtpForcePlacement(TwmWindow *, int, TwmWindow *);
 
 void OtpReassignIcon(TwmWindow *twm_win, Icon *old_icon);
 void OtpFreeIcon(TwmWindow *twm_win);
+
+void OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto);
+void OtpSetAflag(TwmWindow *twm_win, unsigned flag);
+void OtpClearAflag(TwmWindow *twm_win, unsigned flag);
+void OtpStashAflagsFirstTime(TwmWindow *twm_win);
+void OtpRestackWindow(TwmWindow *twm_win);
 
 /* functions to manage the preferences. The second arg specifies icon prefs */
 void OtpScrInitData(ScreenInfo *);
@@ -65,7 +79,8 @@ TwmWindow *OtpNextWinUp(TwmWindow *);
 TwmWindow *OtpNextWinDown(TwmWindow *);
 
 /* Other access functions */
-int OtpGetPriority(TwmWindow *twm_win);
+int OtpEffectiveDisplayPriority(TwmWindow *twm_win);
+int OtpEffectivePriority(TwmWindow *twm_win);
 
 /* Other debugging functions */
 bool OtpCheckConsistency(void);

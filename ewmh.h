@@ -43,13 +43,16 @@ typedef struct EwmhStrut {
 #define EWMH_STATE_ALL                  0xFFF0
 
 /*
- * Priorities of the window types we recognize
+ * OTP priorities of the window types we recognize
  */
-
+/* Initial vals for these types, if the user hasn't set something else */
 #define EWMH_PRI_DESKTOP                -8
 #define EWMH_PRI_DOCK                    4
+
+/* STATE_FULLSCREEN windows with focus get jammed here */
 #define EWMH_PRI_FULLSCREEN              6
-#define EWMH_PRI_NORMAL                  0
+
+/* STATE_ABOVE/BELOW get +/- this to what they would be otherwise */
 #define EWMH_PRI_ABOVE                   2
 
 void EwmhInit(void);
@@ -70,7 +73,7 @@ void EwmhDeleteClientWindow(TwmWindow *old_win);
 void EwmhSet_NET_CLIENT_LIST_STACKING(void);
 void EwmhSet_NET_ACTIVE_WINDOW(Window w);
 void EwmhGetProperties(TwmWindow *twm_win);
-int EwmhGetPriority(TwmWindow *twm_win);
+int EwmhGetInitPriority(TwmWindow *twm_win);
 bool EwmhHasBorder(TwmWindow *twm_win);
 bool EwmhHasTitle(TwmWindow *twm_win);
 bool EwmhOnWindowRing(TwmWindow *twm_win);

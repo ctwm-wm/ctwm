@@ -1081,7 +1081,6 @@ fillwindow(TwmWindow *tmp_win, const char *direction)
 			tmp_win->save_frame_width = tmp_win->frame_width;
 			tmp_win->save_frame_y = tmp_win->frame_y;
 			tmp_win->save_frame_x = tmp_win->frame_x;
-			tmp_win->save_otpri = OtpGetPriority(tmp_win);
 
 			tmp_win->frame_y++;
 			newy = FindConstraint(tmp_win, MFD_TOP);

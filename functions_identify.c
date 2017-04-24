@@ -150,7 +150,7 @@ Identify(TwmWindow *t)
 			CHKN;
 		}
 		snprintf(Info[n++], INFO_SIZE, "OnTopPriority      = %d",
-		         OtpGetPriority(t));
+		         OtpEffectiveDisplayPriority(t));
 		CHKN;
 
 		if(t->icon != NULL) {

@@ -389,13 +389,22 @@ otp_priority_handler(EF_FULLPROTO)
 			OtpSwitchPriority(tmp_win, wintype);
 			break;
 	}
+
+	/*
+	 * Stash up our current flags if there aren't any set yet.  This is
+	 * necessary because otherwise the EWMH prop we [may] stash below
+	 * would be taken as gospel on restart, when it shouldn't be.
+	 */
+	OtpStashAflagsFirstTime(tmp_win);
+
 #ifdef EWMH
+	/*
+	 * We changed the priority somehow, so we may have changed where it
+	 * sits relative to the middle.  So trigger rechecking/setting of the
+	 * _STATE_{ABOVE,BELOW}.  (_ABOVE in changes arg covers both)
+	 */
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_ABOVE);
 #endif /* EWMH */
-	/* Update saved priority, if any */
-	if(wintype == WinWin && tmp_win->zoomed != ZOOM_NONE) {
-		tmp_win->save_otpri = OtpGetPriority(tmp_win);
-	}
 }
 DFHANDLER(priorityswitching)
 {

@@ -1185,17 +1185,30 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 	else if(change & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
 		/*
 		 * Other changes call into ctwm code, which in turn calls back to
-		 * this module to update the ewmhFlags and the property.
-		 * This change shortcuts that, since EwmhGetPriority() looks at
-		 * ewmhFlags.
+		 * EWMH code to update the ewmhFlags and the property.  This one
+		 * we handle completely internally.
 		 */
-		int newpri;
+		unsigned omask = 0, oval = 0;
+		const int prepri = OtpEffectivePriority(twm_win);
 
-		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		twm_win->ewmhFlags |= newValue;
-		newpri = EwmhGetPriority(twm_win);
+		/* Which bits are we changing and what to? */
+#define DOBIT(fld) do { \
+          if(change   & EWMH_STATE_##fld) { omask |= OTP_AFLAG_##fld; } \
+          if(newValue & EWMH_STATE_##fld) { oval  |= OTP_AFLAG_##fld; } \
+        } while(0)
 
-		OtpSetPriority(twm_win, WinWin, newpri, Above);
+		DOBIT(ABOVE);
+		DOBIT(BELOW);
+
+#undef DOBIT
+
+		/* Update OTP as necessary */
+		OtpSetAflagMask(twm_win, omask, oval);
+		if(OtpEffectivePriority(twm_win) != prepri) {
+			OtpRestackWindow(twm_win);
+		}
+
+		/* Set the EWMH property back on the window */
 		EwmhSet_NET_WM_STATE(twm_win, change);
 	}
 }
@@ -1771,7 +1784,8 @@ void EwmhGetProperties(TwmWindow *twm_win)
 	                      (EWMH_STATE_ABOVE | EWMH_STATE_BELOW | EWMH_STATE_SHADED);
 }
 
-int EwmhGetPriority(TwmWindow *twm_win)
+/* Only used in initially mapping a window */
+int EwmhGetInitPriority(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
 		case wt_Desktop:
@@ -1779,13 +1793,7 @@ int EwmhGetPriority(TwmWindow *twm_win)
 		case wt_Dock:
 			return EWMH_PRI_DOCK;
 		default:
-			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
-				return EWMH_PRI_NORMAL + EWMH_PRI_ABOVE;
-			}
-			else if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
-				return EWMH_PRI_NORMAL - EWMH_PRI_ABOVE;
-			}
-			return EWMH_PRI_NORMAL;
+			return 0;
 	}
 }
 
@@ -2067,13 +2075,22 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 	}
 
 	if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
-		int pri;
-		/*
-		 * Check the window's current priority relative to what it
-		 * should be by default.
-		 */
+		int pri = OtpEffectiveDisplayPriority(twm_win);
+
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		pri = OtpGetPriority(twm_win) - EwmhGetPriority(twm_win);
+
+		/*
+		 * If it's a DOCK or DESKTOP, and where we expect those to be, we
+		 * consider that there's nothing to tell it.  Otherwise, we tell
+		 * it ABOVE/BELOW based on where it effectively is.
+		 */
+		if(twm_win->ewmhWindowType == wt_Dock && pri == EWMH_PRI_DOCK) {
+			pri = 0;
+		}
+		if(twm_win->ewmhWindowType == wt_Desktop && pri == EWMH_PRI_DESKTOP) {
+			pri = 0;
+		}
+
 		if(pri > 0) {
 			twm_win->ewmhFlags |= EWMH_STATE_ABOVE;
 		}

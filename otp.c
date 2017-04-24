@@ -16,8 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <X11/Xatom.h>
 
 #include "otp.h"
+#include "ctwm_atoms.h"
 #include "screen.h"
 #include "util.h"
 #include "icons.h"
@@ -43,13 +45,22 @@
 #define OTP_ZERO 8
 #define OTP_MAX (OTP_ZERO * 2)
 
+/* Shorten code a little */
+#define PRI(owl) OwlEffectivePriority(owl)
+#define PRI_CP(from, to) do {                  \
+            to->pri_base = from->pri_base;     \
+            to->pri_aflags = from->pri_aflags; \
+        } while(0)
+
 struct OtpWinList {
 	OtpWinList *above;
 	OtpWinList *below;
 	TwmWindow  *twm_win;
 	WinType     type;
 	bool        switching;
-	int         priority;
+	int         pri_base;   // Base priority
+	unsigned    pri_aflags; // Flags that might alter it; OTP_AFLAG_*
+	bool        stashed_aflags;
 };
 
 struct OtpPreferences {
@@ -68,6 +79,12 @@ typedef struct Box {
 
 
 static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
+static void OwlSetAflagMask(OtpWinList *owl, unsigned mask, unsigned setto);
+static void OwlSetAflag(OtpWinList *owl, unsigned flag);
+static void OwlClearAflag(OtpWinList *owl, unsigned flag);
+static void OwlStashAflags(OtpWinList *owl);
+static unsigned OwlGetStashedAflags(OtpWinList *owl, bool *gotit);
+static int OwlEffectivePriority(OtpWinList *owl);
 
 static OtpWinList *bottomOwl = NULL;
 
@@ -225,10 +242,12 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 			assert(owl->below->above == owl);
 		}
 
-		/* check the ordering of the priority */
-		assert(owl->priority <= OTP_MAX);
-		assert(owl->priority >= priority);
-		priority = owl->priority;
+		/* Code already ensures this */
+		assert(owl->pri_base <= OTP_MAX);
+
+		/* List should be bottom->top, so effective pri better ascend */
+		assert(PRI(owl) >= priority);
+		priority = PRI(owl);
 
 #if DEBUG_OTP
 
@@ -381,14 +400,14 @@ static OtpWinList *GetOwlAtOrBelowInWinbox(OtpWinList **owlp, WindowBox *wb)
 static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 {
 #if DEBUG_OTP
-	fprintf(stderr, "InsertOwlAbove owl->priority=%d w=%x parent_vs:(x,y)=(%d,%d)",
-	        owl->priority,
+	fprintf(stderr, "InsertOwlAbove owl->pri=%d w=%x parent_vs:(x,y)=(%d,%d)",
+	        PRI(owl),
 	        (unsigned int)WindowOfOwl(owl),
 	        owl->twm_win->parent_vs->x,
 	        owl->twm_win->parent_vs->y);
 	if(other_owl != NULL) {
-		fprintf(stderr, "other_owl->priority=%d w=%x parent_vs:(x,y)=(%d,%d)",
-		        other_owl->priority,
+		fprintf(stderr, "other_owl->pri=%d w=%x parent_vs:(x,y)=(%d,%d)",
+		        PRI(other_owl),
 		        (unsigned int)WindowOfOwl(other_owl),
 		        owl->twm_win->parent_vs->x,
 		        owl->twm_win->parent_vs->y);
@@ -403,7 +422,7 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 	if(other_owl == NULL) {
 		DPRINTF((stderr, "Bottom-most window overall\n"));
 		/* special case for the lowest window overall */
-		assert(owl->priority <= bottomOwl->priority);
+		assert(PRI(owl) <= PRI(bottomOwl));
 
 		/* pass the action to the Xserver */
 		XLowerWindow(dpy, WindowOfOwl(owl));
@@ -425,9 +444,9 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 			vs_owl = GetOwlAtOrBelowInVS(other_owl, owl->twm_win->parent_vs);
 		}
 
-		assert(owl->priority >= other_owl->priority);
+		assert(PRI(owl) >= PRI(other_owl));
 		if(other_owl->above != NULL) {
-			assert(owl->priority <= other_owl->above->priority);
+			assert(PRI(owl) <= PRI(other_owl->above));
 		}
 
 		if(vs_owl == NULL) {
@@ -443,7 +462,7 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 
 			DPRINTF((stderr, "General case\n"));
 			/* general case */
-			assert(vs_owl->priority <= other_owl->priority);
+			assert(PRI(vs_owl) <= PRI(other_owl));
 			assert(owl->twm_win->parent_vs == vs_owl->twm_win->parent_vs);
 
 			/* pass the action to the Xserver */
@@ -487,7 +506,7 @@ static void RaiseSmallTransientsOfAbove(OtpWinList *owl, OtpWinList *other_owl)
 		tmp_owl = trans_owl->below;
 		if(shouldStayAbove(trans_owl, owl)) {
 			RemoveOwl(trans_owl);
-			trans_owl->priority = owl->priority;
+			PRI_CP(owl, trans_owl);
 			InsertOwlAbove(trans_owl, other_owl);
 		}
 	}
@@ -499,17 +518,19 @@ static OtpWinList *OwlRightBelow(int priority)
 	OtpWinList *owl1, *owl2;
 
 	/* in case there isn't anything below */
-	if(priority <= bottomOwl->priority) {
+	if(priority <= PRI(bottomOwl)) {
 		return NULL;
 	}
 
 	for(owl1 = bottomOwl, owl2 = owl1->above;
-	                (owl2 != NULL) && (owl2->priority < priority);
-	                owl1 = owl2, owl2 = owl2->above);
+	                (owl2 != NULL) && (PRI(owl2) < priority);
+	                owl1 = owl2, owl2 = owl2->above) {
+		/* nada */;
+	}
 
 	assert(owl2 == owl1->above);
-	assert(owl1->priority < priority);
-	assert((owl2 == NULL) || (owl2->priority >= priority));
+	assert(PRI(owl1) < priority);
+	assert((owl2 == NULL) || (PRI(owl2) >= priority));
 
 
 	return owl1;
@@ -528,7 +549,7 @@ static void InsertOwl(OtpWinList *owl, int where)
 	assert(owl->below == NULL);
 	assert((where == Above) || (where == Below));
 
-	priority = (where == Above) ? owl->priority : owl->priority - 1;
+	priority = PRI(owl) - (where == Above ? 0 : 1);
 
 	if(bottomOwl == NULL) {
 		/* for the first window: just insert it in the list */
@@ -540,7 +561,8 @@ static void InsertOwl(OtpWinList *owl, int where)
 		/* make sure other_owl is not one of the transients */
 		while((other_owl != NULL)
 		                && shouldStayAbove(other_owl, owl)) {
-			other_owl->priority = owl->priority;
+			PRI_CP(owl, other_owl);
+
 			other_owl = other_owl->below;
 		}
 
@@ -566,31 +588,41 @@ static void SetOwlPriority(OtpWinList *owl, int new_pri, int where)
 	}
 
 	RemoveOwl(owl);
-	owl->priority = new_pri;
+	owl->pri_base = new_pri;
 	InsertOwl(owl, where);
 
-	assert(owl->priority == new_pri);
+	assert(owl->pri_base == new_pri);
 }
 
 
+/*
+ * Shift transients of a window to a new [base] priority, preparatory to
+ * moving that window itself there.
+ */
 static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 {
-	OtpWinList *other_owl, *tmp_owl;
+	OtpWinList *other_owl;
 
 	/* the icons have no transients */
 	if(owl->type != WinWin) {
 		return;
 	}
 
-	other_owl = OwlRightBelow(owl->priority);
+	/*
+	 * We start looking for transients of owl at the bottom of its OTP
+	 * layer.
+	 */
+	other_owl = OwlRightBelow(PRI(owl));
 	other_owl = (other_owl == NULL) ? bottomOwl : other_owl->above;
-	assert(other_owl->priority >= owl->priority);
+	assert(PRI(other_owl) >= PRI(owl));
 
 	/* !beware! we're changing the list as we scan it, hence the tmp_owl */
-	while((other_owl != NULL) && (other_owl->priority == owl->priority)) {
-		tmp_owl = other_owl->above;
+	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
+		OtpWinList *tmp_owl = other_owl->above;
 		if((other_owl->type == WinWin)
 		                && isTransientOf(other_owl->twm_win, owl->twm_win)) {
+			/* Copy in our flags so it winds up in the right place */
+			other_owl->pri_aflags = owl->pri_aflags;
 			SetOwlPriority(other_owl, priority, where);
 		}
 		other_owl = tmp_owl;
@@ -605,11 +637,19 @@ static void TryToSwitch(OtpWinList *owl, int where)
 		return;
 	}
 
-	priority = OTP_MAX - owl->priority;
-	if(((where == Above) && (priority > owl->priority)) ||
-	                ((where == Below) && (priority < owl->priority))) {
+	/*
+	 * Switching is purely an adjustment to the base priority, so we
+	 * don't need to figure stuff based on the effective.
+	 */
+	priority = OTP_MAX - owl->pri_base;
+	if(((where == Above) && (priority > owl->pri_base)) ||
+	                ((where == Below) && (priority < owl->pri_base))) {
+		/*
+		 * TTMTOT() before changing pri_base since it uses the current
+		 * state to find the transients.
+		 */
 		TryToMoveTransientsOfTo(owl, priority, where);
-		owl->priority = priority;
+		owl->pri_base = priority;
 	}
 }
 
@@ -639,7 +679,7 @@ static void TinyRaiseOwl(OtpWinList *owl)
 {
 	OtpWinList *other_owl = owl->above;
 
-	while((other_owl != NULL) && (other_owl->priority == owl->priority)) {
+	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
 		if(isHiddenBy(owl, other_owl)
 		                && !shouldStayAbove(other_owl, owl)) {
 			RemoveOwl(owl);
@@ -657,7 +697,7 @@ static void TinyLowerOwl(OtpWinList *owl)
 {
 	OtpWinList *other_owl = owl->below;
 
-	while((other_owl != NULL) && (other_owl->priority == owl->priority)) {
+	while((other_owl != NULL) && (PRI(other_owl) == PRI(owl))) {
 		if(isHiddenBy(owl, other_owl)) {
 			RemoveOwl(owl);
 			InsertOwlAbove(owl, other_owl->below);
@@ -674,10 +714,19 @@ static void RaiseLowerOwl(OtpWinList *owl)
 	OtpWinList *other_owl;
 	int priority;
 
-	priority = MAX(owl->priority, OTP_MAX - owl->priority);
+	/*
+	 * abs(effective pri)
+	 *
+	 * XXX Why?  This seems like it's encoding the assumption
+	 * "f.raiselower should assume any negative [user-level] priorities
+	 * are a result of a window that should be positive being switched,
+	 * and we should switch it positive before raising if we need to", or
+	 * some such.
+	 */
+	priority = MAX(PRI(owl), OTP_MAX - PRI(owl));
 
 	for(other_owl = owl->above;
-	                (other_owl != NULL) && (other_owl->priority <= priority);
+	                (other_owl != NULL) && (PRI(other_owl) <= priority);
 	                other_owl = other_owl->above) {
 		if(isHiddenBy(owl, other_owl)
 		                && !shouldStayAbove(other_owl, owl)) {
@@ -847,7 +896,7 @@ void OtpSetPriority(TwmWindow *twm_win, WinType wintype, int new_pri, int where)
 void OtpChangePriority(TwmWindow *twm_win, WinType wintype, int relpriority)
 {
 	OtpWinList *owl = (wintype == IconWin) ? twm_win->icon->otp : twm_win->otp;
-	int priority = owl->priority + relpriority;
+	int priority = owl->pri_base + relpriority;
 	int where;
 
 	if(twm_win->winbox != NULL || twm_win->iswinbox) {
@@ -866,7 +915,7 @@ void OtpChangePriority(TwmWindow *twm_win, WinType wintype, int relpriority)
 void OtpSwitchPriority(TwmWindow *twm_win, WinType wintype)
 {
 	OtpWinList *owl = (wintype == IconWin) ? twm_win->icon->otp : twm_win->otp;
-	int priority = OTP_MAX - owl->priority;
+	int priority = OTP_MAX - owl->pri_base;
 	int where;
 
 	assert(owl != NULL);
@@ -898,6 +947,16 @@ void OtpToggleSwitching(TwmWindow *twm_win, WinType wintype)
 }
 
 
+/*
+ * This is triggered as a result of a StackMode ConfigureRequest.  We
+ * choose to interpret this as restacking relative to the base
+ * priorities, since all the alterations are EWMH-related, and those
+ * should probably override.
+ *
+ * XXX Or should they?  Maybe we should alter until our effective is
+ * positioned as desired relative to their effective?  This may also need
+ * revisiting if we grow alterations that aren't a result of EWMH stuff.
+ */
 void OtpForcePlacement(TwmWindow *twm_win, int where, TwmWindow *other_win)
 {
 	OtpWinList *owl = twm_win->otp;
@@ -916,8 +975,11 @@ void OtpForcePlacement(TwmWindow *twm_win, int where, TwmWindow *other_win)
 	/* remove the owl to change it */
 	RemoveOwl(owl);
 
-	/* set the priority to keep the state consistent */
-	owl->priority = other_owl->priority;
+	/*
+	 * Base our priority base off that other win.  Don't use PRI_CP since
+	 * we shouldn't suddenly get its flags as well.
+	 */
+	owl->pri_base = other_owl->pri_base;
 
 	/* put the owl back into the list */
 	if(where == Below) {
@@ -943,30 +1005,48 @@ static void ApplyPreferences(OtpPreferences *prefs, OtpWinList *owl)
 	for(i = 0; i <= OTP_MAX; i++) {
 		if(LookInList(prefs->priorityL[i],
 		                twm_win->name, &twm_win->class)) {
-			owl->priority = i;
+			owl->pri_base = i;
 		}
 	}
 }
 
-static void RecomputeOwlValues(OtpPreferences *prefs, OtpWinList *owl)
+
+/*
+ * Reset stuff based on preferences; called during property changes if
+ * AutoPriority set.
+ */
+static void RecomputeOwlPrefs(OtpPreferences *prefs, OtpWinList *owl)
 {
 	int old_pri;
 
-	old_pri = owl->priority;
+	old_pri = owl->pri_base;
 	ApplyPreferences(prefs, owl);
-	if(old_pri != owl->priority) {
+	if(old_pri != owl->pri_base) {
 		RemoveOwl(owl);
 		InsertOwl(owl, Above);
+
+		/*
+		 * Stash flags if we don't have any yet, since we just changed
+		 * the priority.
+		 */
+		if(!owl->stashed_aflags) {
+			OwlStashAflags(owl);
+		}
+
+#ifdef EWMH
+		/* Let other things know we did something with stacking */
+		EwmhSet_NET_WM_STATE(owl->twm_win, EWMH_STATE_ABOVE);
+#endif
 	}
 }
 
-void OtpRecomputeValues(TwmWindow *twm_win)
+void OtpRecomputePrefs(TwmWindow *twm_win)
 {
 	assert(twm_win->otp != NULL);
 
-	RecomputeOwlValues(Scr->OTP, twm_win->otp);
+	RecomputeOwlPrefs(Scr->OTP, twm_win->otp);
 	if(twm_win->icon != NULL) {
-		RecomputeOwlValues(Scr->IconOTP, twm_win->icon->otp);
+		RecomputeOwlPrefs(Scr->IconOTP, twm_win->icon->otp);
 	}
 
 	OtpCheckConsistency();
@@ -1008,7 +1088,15 @@ static OtpWinList *new_OtpWinList(TwmWindow *twm_win,
 	owl->twm_win = twm_win;
 	owl->type = wintype;
 	owl->switching = switching;
-	owl->priority = priority;
+	owl->pri_base = priority;
+	owl->pri_aflags = 0;
+
+	/*
+	 * We never need to stash anything for icons, they don't persist
+	 * across restart anyway.  So pretend we did stash already to
+	 * discourage other code from trying to stash.
+	 */
+	owl->stashed_aflags = (wintype == WinWin ? false : true);
 
 	return owl;
 }
@@ -1025,13 +1113,74 @@ static OtpWinList *AddNewOwl(TwmWindow *twm_win, WinType wintype,
 
 	/* inherit the default attributes from the parent window if appropriate */
 	if(parent != NULL) {
-		owl->priority = parent->priority;
+		PRI_CP(parent, owl);
 		owl->switching = parent->switching;
 	}
 
 	/* now see if the preferences have something to say */
 	if(!(parent != NULL && twm_win->istransient)) {
 		ApplyPreferences(prefs, owl);
+	}
+
+#ifdef EWMH
+	/* If nothing came in, EWMH might have something to say */
+	if(owl->pri_base == 0) {
+		owl->pri_base = EwmhGetInitPriority(twm_win) + OTP_ZERO;
+	}
+#endif
+
+	/*
+	 * Initialize flags.  Right now, the only stashed flags are related
+	 * to EWMH requests, so in a sense this whole thing could be dropped
+	 * under #ifdef.  But I'll assume that might not always be the case,
+	 * so for now the !(EWMH) case is just a twisty noop.
+	 */
+	{
+		bool gotflags = false;
+		unsigned aflags = 0, fromstash = 0;
+
+		aflags = OwlGetStashedAflags(owl, &gotflags);
+
+#ifdef EWMH
+		fromstash = (OTP_AFLAG_ABOVE | OTP_AFLAG_BELOW);
+#endif
+
+		if(gotflags) {
+			/*
+			 * Got stashed OTP flags; use 'em.  Explicitly mask in only
+			 * the flags we're caring about; the others aren't telling us
+			 * info we need to persist.
+			 */
+			aflags &= fromstash;
+		}
+
+#ifdef EWMH
+		/* FULLSCREEN we get from the normal EWMH prop no matter what */
+		if(twm_win->ewmhFlags & EWMH_STATE_FULLSCREEN) {
+			aflags |= OTP_AFLAG_FULLSCREEN;
+		}
+
+		if(!gotflags) {
+			/* Nothing from OTP about above/below; check EWMH */
+			aflags = 0;
+			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
+				aflags |= OTP_AFLAG_ABOVE;
+			}
+			if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
+				aflags |= OTP_AFLAG_BELOW;
+			}
+		}
+#endif // EWMH
+
+		/* Set whatever we figured */
+		owl->pri_aflags |= aflags;
+		owl->stashed_aflags = gotflags;
+
+		/* If we set a priority or flags, we should stash away flags */
+		if((PRI(owl) != OTP_ZERO || owl->pri_aflags != 0)
+		                && !owl->stashed_aflags) {
+			OwlStashAflags(owl);
+		}
 	}
 
 	/* finally put the window where it should go */
@@ -1289,9 +1438,215 @@ TwmWindow *OtpNextWinDown(TwmWindow *twm_win)
 	return owl ? owl->twm_win : NULL;
 }
 
-int OtpGetPriority(TwmWindow *twm_win)
+
+/*
+ * Stuff for messing with pri_aflags
+ */
+/* Set the masked bits to exactly what's given */
+void
+OtpSetAflagMask(TwmWindow *twm_win, unsigned mask, unsigned setto)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+	OwlSetAflagMask(twm_win->otp, mask, setto);
+}
+
+static void
+OwlSetAflagMask(OtpWinList *owl, unsigned mask, unsigned setto)
+{
+	assert(owl != NULL);
+
+	owl->pri_aflags &= ~mask;
+	owl->pri_aflags |= (setto & mask);
+	OwlStashAflags(owl);
+}
+
+/* Set/clear individual ones */
+void
+OtpSetAflag(TwmWindow *twm_win, unsigned flag)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	OwlSetAflag(twm_win->otp, flag);
+}
+
+static void
+OwlSetAflag(OtpWinList *owl, unsigned flag)
+{
+	assert(owl != NULL);
+
+	owl->pri_aflags |= flag;
+	OwlStashAflags(owl);
+}
+
+void
+OtpClearAflag(TwmWindow *twm_win, unsigned flag)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	OwlClearAflag(twm_win->otp, flag);
+}
+
+static void
+OwlClearAflag(OtpWinList *owl, unsigned flag)
+{
+	assert(owl != NULL);
+
+	owl->pri_aflags &= ~flag;
+	OwlStashAflags(owl);
+}
+
+/*
+ * Stash up flags in a property.  We use this to keep track of whether we
+ * have above/below flags set in the OTP info, so we can know what to set
+ * when we restart.  Otherwise we can't tell whether stuff like EWMH
+ * _NET_WM_STATE flags are saying 'above' because the above flag got set
+ * at some point, or whether other OTP config happens to have already
+ * raised it.
+ */
+void
+OtpStashAflagsFirstTime(TwmWindow *twm_win)
+{
+	if(!twm_win->otp->stashed_aflags) {
+		OwlStashAflags(twm_win->otp);
+	}
+}
+
+static void
+OwlStashAflags(OtpWinList *owl)
+{
+	unsigned long of_prop = owl->pri_aflags;
+
+	/* Only "real" windows need stashed flags */
+	if(owl->type != WinWin) {
+		return;
+	}
+
+	XChangeProperty(dpy, owl->twm_win->w, XA_CTWM_OTP_AFLAGS, XA_INTEGER,
+	                32, PropModeReplace, (unsigned char *)&of_prop, 1);
+
+	owl->stashed_aflags = true;
+}
+
+static unsigned
+OwlGetStashedAflags(OtpWinList *owl, bool *gotit)
+{
+	/* Lotta dummy args */
+	int ret;
+	Atom act_type;
+	int d_fmt;
+	unsigned long nitems, d_after;
+	unsigned long aflags, *aflags_p;
+
+	/* Only on real windows */
+	if(owl->type != WinWin) {
+		*gotit = false;
+		return 0;
+	}
+
+	ret = XGetWindowProperty(dpy, owl->twm_win->w, XA_CTWM_OTP_AFLAGS, 0, 1,
+	                         False, XA_INTEGER, &act_type, &d_fmt, &nitems,
+	                         &d_after, (unsigned char **)&aflags_p);
+	if(ret == Success && act_type == XA_INTEGER && aflags_p != NULL) {
+		aflags = *aflags_p;
+		XFree(aflags_p);
+		*gotit = true;
+	}
+	else {
+		*gotit = false;
+		aflags = 0;
+	}
+
+	return aflags;
+}
+
+
+/*
+ * Figure where a window should be stacked based on the current world,
+ * and move it there.  This function pretty much assumes it's not already
+ * there; callers should generally be figuring that out before calling
+ * this.
+ */
+void
+OtpRestackWindow(TwmWindow *twm_win)
 {
 	OtpWinList *owl = twm_win->otp;
 
-	return owl->priority - OTP_ZERO;
+	RemoveOwl(owl);
+	InsertOwl(owl, Above);
+	OtpCheckConsistency();
+}
+
+
+/*
+ * Calculating effective priority.  Take the base priority (what gets
+ * set/altered by various OTP config and functions), and then tack on
+ * whatever alterations more ephemeral things might apply.  This
+ * currently pretty much means EWMH bits.
+ */
+int
+OtpEffectiveDisplayPriority(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	return(OwlEffectivePriority(twm_win->otp) - OTP_ZERO);
+}
+
+int
+OtpEffectivePriority(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	return OwlEffectivePriority(twm_win->otp);
+}
+
+static int
+OwlEffectivePriority(OtpWinList *owl)
+{
+	int pri;
+
+	assert(owl != NULL);
+
+	pri = owl->pri_base;
+
+#ifdef EWMH
+	/* ABOVE/BELOW states shift a bit relative to the base */
+	if(owl->pri_aflags & OTP_AFLAG_ABOVE) {
+		pri += EWMH_PRI_ABOVE;
+	}
+	if(owl->pri_aflags & OTP_AFLAG_BELOW) {
+		pri -= EWMH_PRI_ABOVE;
+	}
+
+	/*
+	 * Special magic: EWMH says that _BELOW + _DOCK = (just _BELOW).
+	 * So if both are set, and its base is where we'd expect just a _DOCK
+	 * to be, try cancelling that out.
+	 */
+	{
+		EwmhWindowType ewt = owl->twm_win->ewmhWindowType;
+		if((owl->pri_aflags & OTP_AFLAG_BELOW) && (ewt == wt_Dock) &&
+		                (owl->pri_base == EWMH_PRI_DOCK + OTP_ZERO)) {
+			pri -= EWMH_PRI_DOCK;
+		}
+	}
+
+	/*
+	 * If FULLSCREEN and focused, jam to (nearly; let the user still win
+	 * if they try) the top.
+	 */
+	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN && Scr->Focus == owl->twm_win) {
+		pri = EWMH_PRI_FULLSCREEN + OTP_ZERO;
+	}
+#endif
+
+	/* Constrain */
+	pri = MAX(pri, 0);
+	pri = MIN(pri, OTP_MAX);
+
+	return pri;
 }
