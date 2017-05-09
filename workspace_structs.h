@@ -43,7 +43,7 @@ struct WorkSpaceMgr {
 	char            *geometry;
 	int             lines, columns;
 	bool            noshowoccupyall;
-	int             initialstate;
+	WMgrState       initialstate;
 	ButtonStyle     buttonStyle;
 	name_list       *windowBackgroundL;
 	name_list       *windowForegroundL;
@@ -93,7 +93,7 @@ struct WorkSpaceWindow {                /* There is one per virtual screen */
 	ButtonSubwindow **bswl;               /* ButtonSubwindow List */
 	WorkSpace       *currentwspc;
 
-	int           state;
+	WMgrState     state;
 
 	int           width, height;   // Window dimensions
 	int           bwidth, bheight; // Button dimensions
