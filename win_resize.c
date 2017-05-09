@@ -323,8 +323,7 @@ void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = TopCursor;
 	}
-	else if(y_root <= dragy/* ||
-             y_root == findRootInfo(root)->rooty*/) {
+	else if(y_root <= dragy) {
 		dragy = y_root;
 		dragHeight = origy + origHeight -
 		             y_root;
@@ -345,8 +344,7 @@ void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = clampTop ? TopLeftCursor : LeftCursor;
 	}
-	else if(x_root <= dragx/* ||
-             x_root == findRootInfo(root)->rootx*/) {
+	else if(x_root <= dragx) {
 		dragx = x_root;
 		dragWidth = origx + origWidth -
 		            x_root;
@@ -459,8 +457,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = TopCursor;
 	}
-	else if(y_root <= dragy/* ||
-             y_root == findRootInfo(root)->rooty*/) {
+	else if(y_root <= dragy) {
 		dragy = y_root;
 		dragHeight = origy + origHeight -
 		             y_root;
@@ -481,8 +478,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = clampTop ? TopLeftCursor : LeftCursor;
 	}
-	else if(x_root <= dragx/* ||
-             x_root == findRootInfo(root)->rootx*/) {
+	else if(x_root <= dragx) {
 		dragx = x_root;
 		dragWidth = origx + origWidth -
 		            x_root;
@@ -502,9 +498,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = clampLeft ? BottomLeftCursor : BottomCursor;
 	}
-	else if(y_root >= dragy + dragHeight - 1/* ||
-           y_root == findRootInfo(root)->rooty
-           + findRootInfo(root)->rootheight - 1*/) {
+	else if(y_root >= dragy + dragHeight - 1) {
 		dragy = origy;
 		dragHeight = 1 + y_root - dragy;
 		clampTop = 0;
@@ -524,9 +518,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		cursor = clampBottom ? BottomRightCursor : RightCursor;
 		cursor = clampTop ? TopRightCursor : cursor;
 	}
-	else if(x_root >= dragx + dragWidth - 1/* ||
-             x_root == findRootInfo(root)->rootx +
-             findRootInfo(root)->rootwidth - 1*/) {
+	else if(x_root >= dragx + dragWidth - 1) {
 		dragx = origx;
 		dragWidth = 1 + x_root - origx;
 		clampLeft = 0;
