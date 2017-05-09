@@ -81,7 +81,7 @@ remnants of special-case VMS support have been removed.
    hgrav` pair of parameters to control layout.  Previous versions would
    accept a `hgrav vgrav` ordering in the parsing, and would mostly work
    by odd quirks of the code.  The parsing has been made stricter, so
-   only the documented `vgrav grav` ordering is accepted now.
+   only the documented `vgrav hgrav` ordering is accepted now.
 
 ### User Visible Changes
 
@@ -119,7 +119,7 @@ remnants of special-case VMS support have been removed.
 1. Added `--dumpcfg` command-line option to print out the compiled-in
     fallback config file.
 
-1. The Occupy { } specification for accepts "ws:" as a prefix for
+1. The Occupy {} specification now accepts "ws:" as a prefix for
     workspaces.  This may break things if you have workspaces with names
     that differ only by that prefix (e.g., you have workspaces "abc" and
     "ws:abc", and your Occupy {} declarations affects both.
