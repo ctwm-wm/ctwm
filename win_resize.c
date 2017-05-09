@@ -246,8 +246,8 @@ void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h)
 	dragy = y + tmp_win->frame_bw;
 	origx = dragx;
 	origy = dragy;
-	dragWidth = origWidth = w; /* - 2 * tmp_win->frame_bw; */
-	dragHeight = origHeight = h; /* - 2 * tmp_win->frame_bw; */
+	dragWidth = origWidth = w;
+	dragHeight = origHeight = h;
 	clampTop = clampBottom = clampLeft = clampRight = clampDX = clampDY = 0;
 	last_width = 0;
 	last_height = 0;
@@ -291,11 +291,6 @@ void AddStartResize(TwmWindow *tmp_win, int x, int y, int w, int h)
 	dragWidth = origWidth = w - 2 * tmp_win->frame_bw;
 	dragHeight = origHeight = h - 2 * tmp_win->frame_bw;
 	clampTop = clampBottom = clampLeft = clampRight = clampDX = clampDY = 0;
-	/*****
-	    if (Scr->AutoRelativeResize) {
-	        clampRight = clampBottom = 1;
-	    }
-	*****/
 	last_width = 0;
 	last_height = 0;
 	DisplaySize(tmp_win, origWidth, origHeight);
