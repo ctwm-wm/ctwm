@@ -55,7 +55,7 @@ remnants of special-case VMS support have been removed.
 1. The `f.movemenu` function has been removed.  It was added silently in
    2.1, has never done anything, and has never been documented.
 
-1. The NoVersion config parameter has been removed.  It's been
+1. The `NoVersion` config parameter has been removed.  It's been
    undocumented, obsoleted, and done absolutely nothing since 1.1.
 
 1. Support for non-flex versions of lex(1) is deprecated, and will take
@@ -88,7 +88,7 @@ remnants of special-case VMS support have been removed.
 1. The default install locations have been changed.  See the README for
     details about where things are installed and how to change them.
 
-1. Added DontShowWelcomeWindow config option to not show welcome
+1. Added `DontShowWelcomeWindow` config option to not show welcome
     splashscreen image.
 
 1. Selected a number of cleanups from Stefan Monnier
@@ -100,16 +100,16 @@ remnants of special-case VMS support have been removed.
     `f.adoptwindow`. More virtual screen tweaks/fixes.
 
 1. Added the remaining OnTopPriority changes from Stefan Monnier
-    <<monnier@IRO.UMontreal.CA>>: AutoPopup, AutoPriority, OnTopPriority,
-    PrioritySwitching, f.changepriority, f.priorityswitching,
-    f.setpriority, f.switchpriority, f.tinylower, f.tinyraise. Currently
-    consistency checking code is enabled, which will terminate with an
-    assertion failure if something unexpected happens. Smoothed out
-    various inconsistencies that this check discovered when virtual
-    screens are used.
+    <<monnier@IRO.UMontreal.CA>>: `AutoPopup`, `AutoPriority`,
+    `OnTopPriority`, `PrioritySwitching`, `f.changepriority`,
+    `f.priorityswitching`, `f.setpriority`, `f.switchpriority`,
+    `f.tinylower`, `f.tinyraise`.  Currently consistency checking code is
+    enabled, which will terminate with an assertion failure if something
+    unexpected happens. Smoothed out various inconsistencies that this
+    check discovered when virtual screens are used.
 
 1. Basic support for EWMH (Extended Window Manager Hints) added and
-    enabled by default.  EWMHIgnore {} config option allows selectively
+    enabled by default.  `EWMHIgnore {}` config option allows selectively
     disabling bits.
     [Olaf "Rhialto" Seibert, Matthew Fuller]
 
@@ -119,43 +119,43 @@ remnants of special-case VMS support have been removed.
 1. Added `--dumpcfg` command-line option to print out the compiled-in
     fallback config file.
 
-1. The Occupy {} specification now accepts "ws:" as a prefix for
+1. The `Occupy {}` specification now accepts "ws:" as a prefix for
     workspaces.  This may break things if you have workspaces with names
     that differ only by that prefix (e.g., you have workspaces "abc" and
-    "ws:abc", and your Occupy {} declarations affects both.
+    "ws:abc", and your `Occupy {}` declarations affects both.
 
 1. If ctwm is built with rplay support, sounds may now be configured with
     the RplaySounds {} parameter in the config file in place of the
     `~/.ctwm-sounds` file.  If so, ctwm will give a warning if
     `.ctwm-sounds` exists; support for the external file will be removed
-    in a future version.  Also the SoundHost config parameter is replaced
-    by RplaySoundHost; the old name is still accepted, but will be
-    removed in a future version.
+    in a future version.  Also the `SoundHost` config parameter is
+    replaced by `RplaySoundHost`; the old name is still accepted, but
+    will be removed in a future version.
 
-1. Added MWMIgnore {} config option to allow selectively disabling
+1. Added `MWMIgnore {}` config option to allow selectively disabling
     honoring of some Motif WM hints.
 
 1. Warping to a window now explicitly sets focus on that window.  This
     would generally (but not always, in the presence of odd X server
     behavior) have already happened for users with focus following mouse,
-    but now occurs for ClickToFocus users as well.
+    but now occurs for `ClickToFocus` users as well.
     [Alexander Klein]
 
 1. Several bugs relating to the Occupy window were fixed.  Iconifying the
     Occupy window no longer loses it and leaves you unable to pull it up
     again.  Minor undersizing in some cases fixed.
 
-1. Windows which fail to use the WM_HINTS property to tell us things like
+1. Windows which fail to use the `WM_HINTS` property to tell us things like
     whether they want us to give them focus are now explicitly given
     focus anyway.  This should fix focus problems with some apps.
 
-1. Added ForceFocus {} config option to forcibly give focus to all (or
+1. Added `ForceFocus {}` config option to forcibly give focus to all (or
     specified) windows, whether they request it or not.  Previously the
     code did this unconditionally (except when no `WM_HINTS` were
     provided; x-ref previous), but this causes problems with at least
     some programs that tell us they don't want focus, and mean it.
 
-1. OpaqueMoveThreshold values >= 200 (the default) are now treated as
+1. `OpaqueMoveThreshold` values >= 200 (the default) are now treated as
     infinite, and so will always cause opaque moving.
 
 1. Several default settings have been changed.  ctwm now defaults to
