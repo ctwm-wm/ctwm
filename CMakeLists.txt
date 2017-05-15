@@ -25,7 +25,7 @@ include(CheckSymbolExists)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 
 # Set a few predef'd vars for our use
-include(ctwm_cmake_vars)
+include(basic_vars)
 
 # Setup paths for where we install stuff
 include(install_paths)
@@ -170,7 +170,7 @@ endif(DO_CLIENT)
 #
 # And setup the installation
 #
-include(ctwm_install)
+include(install)
 
 
 #
