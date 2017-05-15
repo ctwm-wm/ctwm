@@ -170,7 +170,7 @@ endif(DO_CLIENT)
 #
 # And setup the installation
 #
-include(install)
+include(do_install)
 
 
 #
