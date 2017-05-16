@@ -9,9 +9,9 @@
 # useful.
 #
 # Making this a list messes with BISON_TARGET() which requires a string
-# accordign to the docs (though only cmake 3.4 start complaining about
+# according to the docs (though only cmake 3.4 start complaining about
 # getting a list).  A string might be nicer, but we'd really need
-# string(CONCAT) for that, and x-ref in ctwm_install.cmake for notes on
+# string(CONCAT) for that, and x-ref in do_install.cmake for notes on
 # that.
 set(YFLAGS -d -b gram)
 if(DO_DEBUGPARSER)
