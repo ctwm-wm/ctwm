@@ -56,7 +56,12 @@ configure_file(ctwm_config.h.in ctwm_config.h ESCAPE_QUOTES)
 
 
 # Fill in version info
-#
+
+# Need the VCS bits
+if(NOT VCS_CHECKS_RUN)
+	message(FATAL_ERROR "Internal error: VCS checks not done yet!")
+endif()
+
 # ${version_c_src} is the source version.c.in, except in the "have
 # pregen'd" case where it's the pregen'd (from e.g. a release tarball,
 # with VCS info preset).  ${version_c_in} is ${version_c_src} processed

@@ -104,16 +104,16 @@ include(build_options)
 # cases we decide are worth handling that way.
 include(check_funcs_etc)
 
+# If we're building out of a VCS, find those bits so we can stash the
+# revision info.
+include(vcs_checks)
+
 # Find some tools used for generating sources and manuals, and setup the
 # targets to build them all.
 include(setup_lex)
 include(setup_yacc)
 include(handle_manual)
 include(gen_source_files)
-
-# If we're building out of a VCS, find those bits so we can stash the
-# revision info.
-include(vcs_checks)
 
 
 # And link up the actual ctwm binary.
