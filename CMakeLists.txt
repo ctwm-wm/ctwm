@@ -97,6 +97,9 @@ set(LIBSEARCH
 	"/lib"
 )
 
+# Header files are in both source and build dirs
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 #
@@ -105,46 +108,26 @@ set(LIBSEARCH
 include(build_options)
 
 
-
 #
-# Next find some build tools
+# Some additional checks and lookups
 #
 
-# Do whatever we need to do to get lex.c ready
+# Find some build tools used for generating sources and manuals
 include(setup_lex)
-
-
-# And similar for gram.tab.[ch]
 include(setup_yacc)
-
-
-# Handle building the manual
 include(handle_manual)
 
-
-
-#
 # Do checks for library functions we need, and enable workarounds for any
 # cases we decide are worth handling that way.
-#
 include(check_funcs_etc)
 
 
-
-#
-# Now other build flags and the like
-#
 
 # Enable warnings by default
 if(NOT NO_WARNS)
 	add_definitions(${STD_WARNS})
 	message(STATUS "Enabling standard warnings.")
 endif(NOT NO_WARNS)
-
-
-# Header files are in both source and build dirs
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 
