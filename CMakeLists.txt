@@ -21,10 +21,13 @@ include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
 
-# Break out a bunch of bits into our own include dir
+
+#
+# Most of our bits are broken out into smaller files in a local dir
+#
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 
-# Set a few predef'd vars for our use
+# Setup basic vars for where our pieces are, list of source files, etc.
 include(basic_vars)
 
 # Setup paths for where we install stuff
