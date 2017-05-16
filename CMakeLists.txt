@@ -130,11 +130,9 @@ include(check_funcs_etc)
 # Generated files
 include(gen_source_files)
 
-
 # We're building ctwm
 add_executable(ctwm ${CTWMSRC})
 target_link_libraries(ctwm ${CTWMLIBS})
-
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
@@ -145,27 +143,25 @@ endif(DO_CLIENT)
 
 
 #
-# And setup the installation
+# Setup the installation
 #
 include(do_install)
 
 
+
 #
+# And some trailing misc bits
+#
+
 # Pull in some CPack config for auto-building packages (like .deb and
 # .rpm)
-#
 include(cpack_setup)
 
-
-#
 # Some targets to support release management stuff; building generated
 # files for the tarballs
-#
 include(mktar_support)
 
 
-#
-# Output various information about what we've figured and what we're
-# doing for the builder's edification
-#
+# Finish by outputting various information about what we've figured and
+# what we're doing for the builder's edification.
 include(show_build_info)
