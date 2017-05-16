@@ -127,9 +127,7 @@ if(DO_CLIENT)
 endif(DO_CLIENT)
 
 
-#
 # Setup the installation
-#
 include(do_install)
 
 
