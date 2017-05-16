@@ -103,33 +103,29 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 #
-# Look for various things on the system and setup our handlers for them.
+# Look for various things on the system and setup our handlers for them,
+# and put the build together.
 #
 
 # Check our build options and set things based on them
 include(build_options)
 
-# Find some build tools used for generating sources and manuals
-include(setup_lex)
-include(setup_yacc)
-include(handle_manual)
-
 # Do checks for library functions we need, and enable workarounds for any
 # cases we decide are worth handling that way.
 include(check_funcs_etc)
 
-
-
-#
-# And the build targets
-#
-
-# Generated files
+# Find some tools used for generating sources and manuals, and setup the
+# targets to build them all.
+include(setup_lex)
+include(setup_yacc)
+include(handle_manual)
 include(gen_source_files)
 
-# We're building ctwm
+
+# And link up the actual ctwm binary.
 add_executable(ctwm ${CTWMSRC})
 target_link_libraries(ctwm ${CTWMLIBS})
+
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
