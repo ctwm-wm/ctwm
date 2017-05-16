@@ -103,14 +103,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 #
+# Look for various things on the system and setup our handlers for them.
+#
+
 # Check our build options and set things based on them
-#
 include(build_options)
-
-
-#
-# Some additional checks and lookups
-#
 
 # Find some build tools used for generating sources and manuals
 include(setup_lex)
