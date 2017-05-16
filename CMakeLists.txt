@@ -21,6 +21,13 @@ include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
 
+# Guard against in-tree builds
+string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" insrc)
+if(insrc)
+	message(FATAL_ERROR "Please build out of tree; don't run cmake "
+			"directly in the source tree.")
+endif(insrc)
+
 
 #
 # Most of our bits are broken out into smaller files in a local dir
@@ -30,33 +37,16 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 # Setup basic vars for where our pieces are, list of source files, etc.
 include(basic_vars)
 
-# Setup paths for where we install stuff
+# Do some basic checks of the compiler and stdlib
+include(compiler_feature_checks)
+
+# Set our install paths
 include(install_paths)
 
 
-# Guard against in-tree builds
-string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" insrc)
-if(insrc)
-	message(FATAL_ERROR "Please build out of tree; don't run cmake "
-			"directly in the source tree.")
-endif(insrc)
-
-
-
 #
-# First off, do some checks of compiler/stdlib features and our build
-# environment.
-#
-include(compiler_feature_checks)
-include(vcs_checks)
-
-
-
-#
-# Next, find various libs/includes/etc we need, if enabled.
-#
-
 # First things first.  If we don't have X, we're going nowhere.
+#
 find_package(X11)
 if(NOT X11_FOUND)
 	# This just isn't feasible...
@@ -121,11 +111,14 @@ include(setup_yacc)
 include(handle_manual)
 include(gen_source_files)
 
+# If we're building out of a VCS, find those bits so we can stash the
+# revision info.
+include(vcs_checks)
+
 
 # And link up the actual ctwm binary.
 add_executable(ctwm ${CTWMSRC})
 target_link_libraries(ctwm ${CTWMLIBS})
-
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
@@ -134,12 +127,10 @@ if(DO_CLIENT)
 endif(DO_CLIENT)
 
 
-
 #
 # Setup the installation
 #
 include(do_install)
-
 
 
 #
@@ -153,7 +144,6 @@ include(cpack_setup)
 # Some targets to support release management stuff; building generated
 # files for the tarballs
 include(mktar_support)
-
 
 # Finish by outputting various information about what we've figured and
 # what we're doing for the builder's edification.
