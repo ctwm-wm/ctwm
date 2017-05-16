@@ -44,12 +44,11 @@ endif(insrc)
 
 
 #
-# First off, do some checks of compiler/stdlib features
+# First off, do some checks of compiler/stdlib features and our build
+# environment.
 #
 include(compiler_feature_checks)
-
-# And some build env checks
-include(build_env_checks)
+include(vcs_checks)
 
 
 

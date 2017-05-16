@@ -1,5 +1,5 @@
 #
-# Build env checks
+# See what sort of version control bits we might have around.
 #
 
 
