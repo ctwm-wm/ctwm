@@ -123,14 +123,6 @@ include(check_funcs_etc)
 
 
 
-# Enable warnings by default
-if(NOT NO_WARNS)
-	add_definitions(${STD_WARNS})
-	message(STATUS "Enabling standard warnings.")
-endif(NOT NO_WARNS)
-
-
-
 #
 # And the build targets
 #
