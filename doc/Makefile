@@ -13,9 +13,6 @@ all_set_version: all
 clean:
 	rm -f ${BASE} ${HTML}
 
-#${BASE}.adoc: ../ctwm.man convert.pl
-#	./convert.pl < ../ctwm.man > ${BASE}.adoc
-
 
 # asciidoc vs asciidoctor notes:
 #
