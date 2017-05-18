@@ -13,20 +13,20 @@ OPTIMIZE_OUTPUT_FOR_C = YES
 # We only care about HTML
 GENERATE_LATEX = NO
 
-# Pull everything, even if we haven't documented it
-EXTRACT_ALL = YES
-
-# But be quieter about it at least
+# Quiet down
 WARN_IF_UNDOCUMENTED = NO
 QUIET = YES
 
 # Do full macro expansion; this is necessary for e.g. the DFHANDLER()
-# stuff we use in building f.<function> handlers.
+# stuff we use in building f.<function> handlers.  It's still a little
+# wonky, but it's mostly good.
 MACRO_EXPANSION = YES
 
 # Misc output settings
 SOURCE_BROWSER = YES
+EXTRACT_ALL = YES
 EXTRACT_STATIC = YES
+JAVADOC_AUTOBRIEF = YES
 
 # Text x-refs of used/used-by functions, data structs, etc.
 REFERENCED_BY_RELATION = YES
