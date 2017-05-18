@@ -7,8 +7,8 @@ if(DOXYGEN_FOUND)
 		set(DOXYGEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
 	endif()
 	if(NOT DOXYGEN_HAVE_DOT)
-		# String YES/NO
-		set(DOXYGEN_HAVE_DOT "YES")
+		# String YES/NO; let user override what find_package() got.
+		set(DOXYGEN_HAVE_DOT ${DOXYGEN_DOT_FOUND})
 	endif()
 	if(NOT DOXYGEN_GRAPHIC_CALLGRAPHS)
 		# String YES/NO.  These are expensive to generate and big.
