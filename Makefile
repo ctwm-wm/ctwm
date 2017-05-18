@@ -15,6 +15,9 @@ allclean distclean:
 # The below targets are mostly only of interest to developers
 #
 
+# Add'l thunks to cmake
+man-pdf doxygen: build/Makefile
+	( cd build && ${MAKE} ${@} )
 
 # Reindent files
 indent:
