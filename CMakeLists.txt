@@ -115,6 +115,9 @@ include(setup_yacc)
 include(handle_manual)
 include(gen_source_files)
 
+# Targets to run doxygen; nobody but devs care
+include(doxygen)
+
 
 # And link up the actual ctwm binary.
 add_executable(ctwm ${CTWMSRC})
