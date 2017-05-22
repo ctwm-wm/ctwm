@@ -8,7 +8,7 @@ man: ${BASE}
 all: html man
 
 all_set_version: all
-	sed -i '' -e "s/@ctwm_version_str@/`head -1 ../VERSION`/" ${HTML} ${BASE}
+	sed -i '' -e "s/@ctwm_version_str@/`head -1 ../../VERSION`/" ${HTML} ${BASE}
 
 clean:
 	rm -f ${BASE} ${HTML}

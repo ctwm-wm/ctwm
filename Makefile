@@ -37,7 +37,7 @@ docs_clean doc_clean:
 
 
 # asciidoc files
-UMAN=doc
+UMAN=doc/manual
 adocs:
 	(cd ${UMAN} && make all_set_version)
 adocs_pregen:

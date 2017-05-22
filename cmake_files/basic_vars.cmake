@@ -6,7 +6,7 @@
 set(GENSRCDIR ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 
 # Where our manual source (asciidoc) files are
-set(MANSRCDIR ${CMAKE_SOURCE_DIR}/doc)
+set(MANSRCDIR ${CMAKE_SOURCE_DIR}/doc/manual)
 
 # Various build tools
 set(TOOLS ${CMAKE_SOURCE_DIR}/tools)
