@@ -75,7 +75,8 @@ DATADIR
 MANDIR
 :       Base directory under which manpage dirs like `man1` and `man2`
         live.
-        (default: `$PREFIX/share/man` or `$PREFIX/man` if that doesn't exist)
+        (default: `$PREFIX/share/man` or `$PREFIX/man`, whichever is
+        found first)
 
 DOCDIR
 :       Where non-manpage docs are installed.
