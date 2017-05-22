@@ -55,7 +55,8 @@ here).
 The following parameters control configuration/installation locations:
 
 CMAKE_INSTALL_PREFIX
-:       Where paths are based.  This is a standard cmake var.
+:       Where paths are based.  This is a standard cmake var.  Referred
+        to as `$PREFIX` below.
 
 ETCDIR
 :       Where ctwm will look for a `system.ctwmrc` to fall back to if it
