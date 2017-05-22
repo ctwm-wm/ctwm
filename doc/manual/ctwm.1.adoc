@@ -1546,7 +1546,9 @@ PrioritySwitching [Icons] { `win-list` }::
   plane 2 when raised and plane -2 when lowered, which means that it will usually
   stay on top if you raise another window, but can still be lowered if its
   priority is temporarily too high for your liking. If `Icons` is specified,
-  it means that the preference applies to icons rather than windows.
+  it means that the preference applies to icons rather than windows.  See
+  also the `f.priorityswitching` function for dynamically adding/removing
+  windows at runtime.
 +
 First appeared in %%NEXT%%.
 
@@ -2736,7 +2738,8 @@ f.prevworkspace::
   Goto the previous workspace in the list, using the order given in the `.ctwmrc` file.
 
 f.priorityswitching::
-  Toggle the window's switching ability.  X-ref `OnTopPriority` variable.
+  Toggle the window's switching ability.  X-ref `PrioritySwitching` and
+  `OnTopPriority` variables.
 +
 First appeared in %%NEXT%%.
 
