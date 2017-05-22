@@ -2285,6 +2285,11 @@ things (the `xkeycaps` program may also be useful).  The `alter1..5`
 modifiers refer to ctwm alternate keymaps; see the description of
 `f.altkeymap` below for details.
 
+Note that if you're using the `m4` preprocessor, most implementations
+define a `shift` macro internally, so using that as a modifier will
+silently fail to work right.  To get around it, you'll need to quote it
+so that `m4` passes it through as a literal string: `pass:[`shift']`.
+
 The `context` lets you specify which mappings apply based on where the
 pointer currently is on the screen.  The available options are
 `window` (`w`),
