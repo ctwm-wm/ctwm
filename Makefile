@@ -37,12 +37,13 @@ docs_clean doc_clean:
 
 
 # asciidoc files
+UMAN=doc/manual
 adocs:
-	(cd doc && make all_set_version)
+	(cd ${UMAN} && make all_set_version)
 adocs_pregen:
-	(cd doc && make all)
+	(cd ${UMAN} && make all)
 adoc_clean:
-	(cd doc && make clean)
+	(cd ${UMAN} && make clean)
 
 
 #
@@ -79,12 +80,12 @@ ${GEN}/version.c.in: ${GEN} version.c.in .bzr/checkout/dirstate
 	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c.in
 
 # Generate pregen'd manuals
-${GEN}/ctwm.1: doc/ctwm.1
-${GEN}/ctwm.1.html: doc/ctwm.1.html
+${GEN}/ctwm.1: ${UMAN}/ctwm.1
+${GEN}/ctwm.1.html: ${UMAN}/ctwm.1.html
 ${GEN}/ctwm.1 ${GEN}/ctwm.1.html:
-	cp doc/ctwm.1 doc/ctwm.1.html ${GEN}/
-doc/ctwm.1 doc/ctwm.1.html:
-	(cd doc && make clean all)
+	cp ${UMAN}/ctwm.1 ${UMAN}/ctwm.1.html ${GEN}/
+${UMAN}/ctwm.1 ${UMAN}/ctwm.1.html:
+	(cd ${UMAN} && make clean all)
 
 
 # Thunk through to gen'ing tarball

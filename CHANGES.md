@@ -6,8 +6,8 @@
 ### Build System Change
 
 The old `imake` build system has been replaced by a new structure using
-`cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
-build ctwm.  See the `README.md` file for how to run it.
+`cmake`.  This makes [cmake](https://cmake.org/) a requirement to build
+ctwm.  See the `README.md` file for how to run it.
 
 A fallback minimal build system is available in the `minibuild/`
 directory for environments that can't use the main one.  This is likely
@@ -18,7 +18,10 @@ all else fails.
 ### Platform Support
 
 Support for many non-current platforms has been dropped.  In particular,
-remnants of special-case VMS support have been removed.
+remnants of special-case VMS support have been removed.  Many old and now
+dead Unix variants have been similarly desupported.  Generally, platforms
+without support for C99 and mid-2000's POSIX are increasingly less likely
+to work.
 
 ### Backward-Incompatible Changes And Removed Features
 
@@ -77,7 +80,7 @@ remnants of special-case VMS support have been removed.
    single will work with both variants, unless you need multiple
    backslashes in a row in your workspace names.
 
-1. The IconRegion and WindowRegion config params both take a `vgrav
+1. The `IconRegion` and `WindowRegion` config params both take a `vgrav
    hgrav` pair of parameters to control layout.  Previous versions would
    accept a `hgrav vgrav` ordering in the parsing, and would mostly work
    by odd quirks of the code.  The parsing has been made stricter, so
@@ -87,6 +90,23 @@ remnants of special-case VMS support have been removed.
 
 1. The default install locations have been changed.  See the README for
     details about where things are installed and how to change them.
+
+1. Several default settings have been changed.  ctwm now defaults to
+   acting as though `RestartPreviousState`, `NoGrabServer`,
+   `DecorateTransients`, `NoBackingStore`, `RandomPlacement`,
+   `OpaqueMove`, `OpaqueResize`, `SortIconManager`, and `StartInMapState`
+   have been set.  Those settings that didn't previously have an inverse
+   (to get the behavior previously seen when they weren't specified) have
+   such added; see below.
+
+1. Added various config parameters as inverses of existing params.  New
+   params (with existing param they invert in parens):
+    * `BackingStore` (`NoBackingStore`)
+    * `GrabServer` (`NoGrabServer`)
+    * `StartInButtonState` (`StartInMapState`)
+    * `NoSortIconManager` (`SortIconManager`)
+    * `NoRestartPreviousState` (`RestartPreviousState`)
+    * `NoDecorateTransients` (`DecorateTransients`)
 
 1. Added `DontShowWelcomeWindow` config option to not show welcome
     splashscreen image.
@@ -147,33 +167,18 @@ remnants of special-case VMS support have been removed.
 
 1. Windows which fail to use the `WM_HINTS` property to tell us things like
     whether they want us to give them focus are now explicitly given
-    focus anyway.  This should fix focus problems with some apps.
+    focus anyway.  This should fix focus problems with some apps
+    (Chromium is a common example).
 
 1. Added `ForceFocus {}` config option to forcibly give focus to all (or
     specified) windows, whether they request it or not.  Previously the
     code did this unconditionally (except when no `WM_HINTS` were
     provided; x-ref previous), but this causes problems with at least
-    some programs that tell us they don't want focus, and mean it.
+    some programs that tell us they don't want focus, and mean it
+    (some Java GUI apps are common examples).
 
 1. `OpaqueMoveThreshold` values >= 200 (the default) are now treated as
     infinite, and so will always cause opaque moving.
-
-1. Several default settings have been changed.  ctwm now defaults to
-   acting as though `RestartPreviousState`, `NoGrabServer`,
-   `DecorateTransients`, `NoBackingStore`, `RandomPlacement`,
-   `OpaqueMove`, `OpaqueResize`, `SortIconManager`, and `StartInMapState`
-   have been set.  Those settings that didn't previously have an inverse
-   (to get the behavior previously seen when they weren't specified) have
-   such added; see below.
-
-1. Added various config parameters as inverses of existing params.  New
-   params (with existing param they invert in parens):
-    * `BackingStore` (`NoBackingStore`)
-    * `GrabServer` (`NoGrabServer`)
-    * `StartInButtonState` (`StartInMapState`)
-    * `NoSortIconManager` (`SortIconManager`)
-    * `NoRestartPreviousState` (`RestartPreviousState`)
-    * `NoDecorateTransients` (`DecorateTransients`)
 
 ### Internals
 

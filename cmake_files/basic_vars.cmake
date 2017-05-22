@@ -5,8 +5,8 @@
 # The dir in which we ship pregen'd source files
 set(GENSRCDIR ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 
-# Where our doc files are (and where pregen'd docs might be)
-set(SRCDOCDIR ${CMAKE_SOURCE_DIR}/doc)
+# Where our manual source (asciidoc) files are
+set(MANSRCDIR ${CMAKE_SOURCE_DIR}/doc/manual)
 
 # Various build tools
 set(TOOLS ${CMAKE_SOURCE_DIR}/tools)

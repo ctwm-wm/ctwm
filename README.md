@@ -25,12 +25,10 @@ Major features include:
 * Pinnable and sticky menus.
 * etc...
 
-The sources files were once the twm ones with only workmgr.[ch] added
-(written from scratch by Claude Lecommandeur).  There were also some
-modifications to some twm files.  This was back in ctwm version 1, by
-now, there are a bit more changes and a few more additions.  It's
-possible, thought it's doubtful, that twm patches can still be applied...
-with great care.
+The sources files were once the twm ones only workmgr.[ch] added (written
+from scratch by Claude Lecommandeur) and minor modifications to some twm
+files.  Since then much more extensive changes and reorganization have
+been done, so the codebase is now significantly different from plain twm.
 
 If you find bugs in ctwm, or just want to tell us how much you like it,
 please send a report to the mailing list.
@@ -57,7 +55,8 @@ here).
 The following parameters control configuration/installation locations:
 
 CMAKE_INSTALL_PREFIX
-:       Where paths are based.  This is a standard cmake var.
+:       Where paths are based.  This is a standard cmake var.  Referred
+        to as `$PREFIX` below.
 
 ETCDIR
 :       Where ctwm will look for a `system.ctwmrc` to fall back to if it
@@ -76,7 +75,8 @@ DATADIR
 MANDIR
 :       Base directory under which manpage dirs like `man1` and `man2`
         live.
-        (default: `$PREFIX/share/man` or `$PREFIX/man` if that doesn't exist)
+        (default: `$PREFIX/share/man` or `$PREFIX/man`, whichever is
+        found first)
 
 DOCDIR
 :       Where non-manpage docs are installed.
@@ -187,7 +187,7 @@ version control.  The code is available on launchpad as `lp:ctwm`.  See
 ## Further information
 
 Additional information can be found from the project webpage, at
-<http://www.ctwm.org/>.
+<https://www.ctwm.org/>.
 
 
 {>>
