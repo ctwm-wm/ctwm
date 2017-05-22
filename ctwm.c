@@ -942,7 +942,6 @@ static void InitVariables(void)
 	Scr->DontWarpCursorInWMap = false;
 	Scr->XMoveGrid = 1;
 	Scr->YMoveGrid = 1;
-	Scr->FastServer = true;
 	Scr->CenterFeedbackWindow = false;
 	Scr->ShrinkIconTitles = false;
 	Scr->AutoRaiseIcons = false;
