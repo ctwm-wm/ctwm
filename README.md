@@ -25,12 +25,10 @@ Major features include:
 * Pinnable and sticky menus.
 * etc...
 
-The sources files were once the twm ones with only workmgr.[ch] added
-(written from scratch by Claude Lecommandeur).  There were also some
-modifications to some twm files.  This was back in ctwm version 1, by
-now, there are a bit more changes and a few more additions.  It's
-possible, thought it's doubtful, that twm patches can still be applied...
-with great care.
+The sources files were once the twm ones only workmgr.[ch] added (written
+from scratch by Claude Lecommandeur) and minor modifications to some twm
+files.  Since then much more extensive changes and reorganization have
+been done, so the codebase is now significantly different from plain twm.
 
 If you find bugs in ctwm, or just want to tell us how much you like it,
 please send a report to the mailing list.
