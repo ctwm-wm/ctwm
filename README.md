@@ -187,7 +187,7 @@ version control.  The code is available on launchpad as `lp:ctwm`.  See
 ## Further information
 
 Additional information can be found from the project webpage, at
-<http://www.ctwm.org/>.
+<https://www.ctwm.org/>.
 
 
 {>>
