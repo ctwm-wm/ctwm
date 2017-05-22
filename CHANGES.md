@@ -91,6 +91,23 @@ to work.
 1. The default install locations have been changed.  See the README for
     details about where things are installed and how to change them.
 
+1. Several default settings have been changed.  ctwm now defaults to
+   acting as though `RestartPreviousState`, `NoGrabServer`,
+   `DecorateTransients`, `NoBackingStore`, `RandomPlacement`,
+   `OpaqueMove`, `OpaqueResize`, `SortIconManager`, and `StartInMapState`
+   have been set.  Those settings that didn't previously have an inverse
+   (to get the behavior previously seen when they weren't specified) have
+   such added; see below.
+
+1. Added various config parameters as inverses of existing params.  New
+   params (with existing param they invert in parens):
+    * `BackingStore` (`NoBackingStore`)
+    * `GrabServer` (`NoGrabServer`)
+    * `StartInButtonState` (`StartInMapState`)
+    * `NoSortIconManager` (`SortIconManager`)
+    * `NoRestartPreviousState` (`RestartPreviousState`)
+    * `NoDecorateTransients` (`DecorateTransients`)
+
 1. Added `DontShowWelcomeWindow` config option to not show welcome
     splashscreen image.
 
@@ -160,23 +177,6 @@ to work.
 
 1. `OpaqueMoveThreshold` values >= 200 (the default) are now treated as
     infinite, and so will always cause opaque moving.
-
-1. Several default settings have been changed.  ctwm now defaults to
-   acting as though `RestartPreviousState`, `NoGrabServer`,
-   `DecorateTransients`, `NoBackingStore`, `RandomPlacement`,
-   `OpaqueMove`, `OpaqueResize`, `SortIconManager`, and `StartInMapState`
-   have been set.  Those settings that didn't previously have an inverse
-   (to get the behavior previously seen when they weren't specified) have
-   such added; see below.
-
-1. Added various config parameters as inverses of existing params.  New
-   params (with existing param they invert in parens):
-    * `BackingStore` (`NoBackingStore`)
-    * `GrabServer` (`NoGrabServer`)
-    * `StartInButtonState` (`StartInMapState`)
-    * `NoSortIconManager` (`SortIconManager`)
-    * `NoRestartPreviousState` (`RestartPreviousState`)
-    * `NoDecorateTransients` (`DecorateTransients`)
 
 ### Internals
 
