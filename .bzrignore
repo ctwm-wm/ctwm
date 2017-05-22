@@ -5,5 +5,5 @@ minibuild/Makefile*
 minibuild/build
 minibuild/ctwm
 *.html
-doc/ctwm.1
-doc/ctwm.1.xml
+doc/manual/ctwm.1
+doc/manual/ctwm.1.xml
