@@ -1577,19 +1577,21 @@ RaiseWhenAutoUnSqueeze::
   Windows are raised when auto-unsqueezed (See AutoSqueeze).
 
 RandomPlacement [ `string1` [ `string2` ]]::
-  Where `string1` is either ``on'', ``off'', ``all'' or
-  ``unmapped'', and string2 is a displacement for the
-  pseudo-randomly placed window compared to the previous one.
   This variable indicates that windows with no specified geometry should
   be placed in a pseudo-random location instead of having the user drag
-  out an outline. The argument ``on'' or ``all'' tells ctwm do
-  do this for all such windows, ``off'', not to do this, and
-  ``unmapped'', only for unmapped windows, e.g. iconified or not
-  visible in the current workspace.
-  If the second argument isn't given, the displacement +30+30 (30 pixels
-  left and down) is used.
+  out an outline.  If no argument is given, it is interpreted as
+  `RandomPlacement "on"`.
 +
-As of %%NEXT%%, ``on'' is the default.  Previously ``off'' was default.
+`string1` may be ``on'', ``off'', ``all'' or ``unmapped'', and `string2`
+is a displacement for the pseudo-randomly placed window compared to the
+previous one.  The argument ``on'' or ``all'' are equivalent, and tell
+ctwm to do this for all such windows, ``off'', not to do this, and
+``unmapped'', only for unmapped windows, e.g. iconified or not visible in
+the current workspace.  If the second argument isn't given, the
+displacement +30+30 (30 pixels right and down) is used.
++
+As of %%NEXT%%, ``on'' is the default if no `RandomPlacement` is
+specified in the config.  Previously ``off'' was default.
 
 ReallyMoveInWorkspaceManager::
   This keyword tells ctwm to move the actual window when the user is
