@@ -13,7 +13,7 @@ include(find_asciidoc_bits)
 #
 
 # The original source.
-set(ADOC_SRC ${SRCDOCDIR}/ctwm.1.adoc)
+set(ADOC_SRC ${MANSRCDIR}/ctwm.1.adoc)
 
 # Where we build stuff.  Because we need to process the ADOC_SRC to
 # replace build paths etc, we need to dump it somewhere.  We could just
