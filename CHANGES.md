@@ -18,7 +18,10 @@ all else fails.
 ### Platform Support
 
 Support for many non-current platforms has been dropped.  In particular,
-remnants of special-case VMS support have been removed.
+remnants of special-case VMS support have been removed.  Many old and now
+dead Unix variants have been similarly desupported.  Generally, platforms
+without support for C99 and mid-2000's POSIX are increasingly less likely
+to work.
 
 ### Backward-Incompatible Changes And Removed Features
 
