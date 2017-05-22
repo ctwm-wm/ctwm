@@ -208,13 +208,12 @@ endif(HAS_MAN)
 # Do the HTML manual
 #
 set(HAS_HTML 0)
-if(MANUAL_BUILD_HTML)
+if(MANUAL_BUILD_HTML AND NOAUTO_HTML)
+	message(STATUS "Not autobuilding HTML manual with ${MANUAL_BUILD_HTML}.")
+endif()
+if(MANUAL_BUILD_HTML AND NOT NOAUTO_HTML)
 	# Got the tool to build it
-	if(NOAUTO_HTML)
-		message(STATUS "Not autobuilding HTML manual with ${MANUAL_BUILD_HTML}.")
-	else()
-		message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
-	endif(NOAUTO_HTML)
+	message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
 	set(HAS_HTML 1)
 
 	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
@@ -229,6 +228,7 @@ elseif(EXISTS ${HTML_PRESRC})
 	# Can't build it ourselves, but we've got a prebuilt version.
 	message(STATUS "Can't build HTML manual, using prebuilt version.")
 	set(HAS_HTML 1)
+	set(NOAUTO_HTML) # Clear so ALL target get set below
 
 	# As with the manpage above, we need to do the processing on the
 	# generated version for build options.
@@ -243,7 +243,7 @@ else()
 	# Left as STATUS, since this is "normal" for now.
 	message(STATUS "Can't build HTML manual, and no prebuilt version "
 		"available.")
-endif(MANUAL_BUILD_HTML)
+endif()  # Variants of building HTML manual
 
 
 # If we have (or are building) the HTML, add an easy target for it, and
