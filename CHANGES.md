@@ -6,7 +6,7 @@
 ### Build System Change
 
 The old `imake` build system has been replaced by a new structure using
-`cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
+`cmake`.  This makes [cmake](https://cmake.org/) a requirement to
 build ctwm.  See the `README.md` file for how to run it.
 
 A fallback minimal build system is available in the `minibuild/`
