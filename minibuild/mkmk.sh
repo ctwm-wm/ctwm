@@ -13,11 +13,11 @@ exec 1>Makefile
 ngfiles=`sed \
 	-e '1,/##STDSRC-START/d' -e '/##STDSRC-END/,$d' \
 	-e 's/#.*//' -e 's/[[:space:]]*//' -e '/^$/d' \
-	${rtdir}/cmake_files/ctwm_cmake_vars.cmake`
+	${rtdir}/cmake_files/basic_vars.cmake`
 gfiles=`sed \
 	-e '1,/##GENSRC-START/d' -e '/##GENSRC-END/,$d' \
 	-e 's/#.*//' -e 's/[[:space:]]*//' -e '/^$/d' \
-	${rtdir}/cmake_files/ctwm_cmake_vars.cmake`
+	${rtdir}/cmake_files/basic_vars.cmake`
 
 
 # Non-generated files that are optional; separate so they don't end up in
