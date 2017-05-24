@@ -1,7 +1,7 @@
 # CTWM Change History
 
 
-## 4.0.0  (2017-05-xx)
+## 4.0.0  (2017-05-24)
 
 ### Build System Change
 
