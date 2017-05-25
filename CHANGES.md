@@ -3,7 +3,12 @@
 
 ## Next release  (xxxx-xx-xx)
 
-Nothing yet.
+### Internals
+
+1. Systems with the ctfconvert/ctfmerge tools available will now use them
+   to include CTF info in the compiled binary.  This allows more detailed
+   inspection of the running process via DTrace (e.g., the layout of the
+   structs).
 
 
 
