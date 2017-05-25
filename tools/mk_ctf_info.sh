@@ -19,8 +19,8 @@ fi
 
 # Convert the debug info in-place into CTF
 for i in ${odir}/*.o; do
-	${CTFCONVERT} -g -l 0 ${i}
+	${CTFCONVERT} -l 0 ${i}
 done
 
 # Yank it all over into the binary
-${CTFMERGE} -g -l 0 -o ${ctwmbin} ${odir}/*.o
+${CTFMERGE} -l 0 -o ${ctwmbin} ${odir}/*.o

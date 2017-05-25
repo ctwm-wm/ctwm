@@ -17,6 +17,20 @@ if(CTFCONVERT AND CTFMERGE)
 	# enable that in the objects.
 	add_definitions("-g")
 
+	# ctfconvert/merge on BSD has a '-g' option, which we want to use
+	# (preserves the -g info in the final binary).  Solarish apparently
+	# doesn't; maybe it always does it anyway?  Regardless, figure out
+	# whether it takes that arg...
+	execute_process(COMMAND ${CTFCONVERT} -g -l0 /dev/null
+		OUTPUT_QUIET ERROR_VARIABLE _CTFCONVERT_G_OUT)
+	if(${_CTFCONVERT_G_OUT} MATCHES "^Usage:")
+		# No -g; leave vars alone
+	else()
+		# Add -g
+		set(CTFCONVERT "${CTFCONVERT} -g")
+		set(CTFMERGE "${CTFMERGE} -g")
+	endif()
+
 	# This is a horrific hack.  cmake provides no way to actually find
 	# out the list of object files, or where they are, because that would
 	# be too easy.  So we have to "know", and take our best shot.  Sigh.
