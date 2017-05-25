@@ -147,7 +147,7 @@ include(cpack_setup)
 include(mktar_support)
 
 # Pull in dtrace bits
-include(dtrace)
+include(dtrace_support)
 
 # Finish by outputting various information about what we've figured and
 # what we're doing for the builder's edification.
