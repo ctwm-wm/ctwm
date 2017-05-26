@@ -1,0 +1,60 @@
+= f.functions
+
+This document will describe how functions get written and dispatched.  It
+should be a useful reference when you intend to add a new function, or
+understand how the code works.
+
+
+== Conventions
+
+Unless otherwise stated, most mentions of "`f.function`" (in singular or
+plural) are meant to be generic references to any `f.anything` that ctwm
+implements, rather than specifically the `f.function` function.  This is
+done because just calling them "`functions`" is awful ambiguous,
+especially when talking about the implementation, because the
+implementation of a ctwm _function_ is done in terms of a C _function_,
+so there's _huge_ opportunity for terminological confusion.
+
+
+== Major Differences In Action
+
+=== Arguments
+
+f.functions taking a string arg vs. not.
+
+=== Deferral
+
+Window targetting and deferral.  Cursor.
+
+=== Magic and Internal
+
+Magic stuff like `f.function`.  Gloss of internal-only funcs that you're
+probably not touching.
+
+
+== Implementation Overview
+
+=== Overall Control
+
+Description of `functions_defs.list` and usage.  What gets generated from
+it any way.
+
+=== Dispatching
+
+`ExecuteFunction()` / `EF_main()` path.  Deferral.  Quick summary of
+magic funcs vs.  normal dispatch.
+
+=== Executing
+
+Individual f.functions.  `DFHANDLER()` definition.
+
+
+== Implementation Examples
+
+=== `f.identify` and `f.version`
+
+Window targetting vs. not and deferral.  Shared backend.
+
+=== `f.gotoworkspace`
+
+Example of f.function with arg.
