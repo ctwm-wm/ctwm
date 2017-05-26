@@ -1,0 +1,5 @@
+= CTWM Developer's Manual
+
+Eventually, this will be a full compendium of all the information that a
+Real CTWM Dev will already have in their head and never need to be
+reminded of.
