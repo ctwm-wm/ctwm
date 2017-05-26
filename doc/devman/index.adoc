@@ -3,3 +3,10 @@
 Eventually, this will be a full compendium of all the information that a
 Real CTWM Dev will already have in their head and never need to be
 reminded of.
+
+
+== Pages
+
+* <<principles.adoc#,Principles Of Operation>> is a pre-existing dev
+document that covers a number of areas.  Probably over time it'll get
+piecewise integrated into bigger individual sections.
