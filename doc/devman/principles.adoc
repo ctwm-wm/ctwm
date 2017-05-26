@@ -22,7 +22,7 @@ The idea of workspaces is that every window has a bitfield called
 
 If a window's occupation changes, or if the user switches the current
 workspace, the visibility of windows needs to be adjusted.
-All windows actually ``exist'' at all times (they are not destroyed), but
+All windows actually "`exist`" at all times (they are not destroyed), but
 the ones that are not to be visible are unmapped. When switching
 workspaces or occupation, some windows will be unmapped and others will
 be remapped.
@@ -196,7 +196,7 @@ followed to find each of the replicas.
 +WorkSpace.iconmgr+ points to the primary 'Icon Manager' that belongs to
 that workspace.
 
-In +GotoWorkspace()+, there is a ``reorganisation'' of ++WList++s.
+In +GotoWorkspace()+, there is a "`reorganisation`" of ++WList++s.
 I am not 100% sure what that means.
 Probably it is doing the job that more logically should be done in
 +ChangeOccupation()+, but lazily: put windows (++WList++s) in icon
