@@ -4,8 +4,8 @@
 ## Overall
 
 Most of these rules are meant to be general guidelines.  The overriding
-goal is for the code to *work*; if it doesn't do that, it's worthless.
-Given that it works, it should be *readable*.  These guidelines are aimed
+goal is for the code to _work_; if it doesn't do that, it's worthless.
+Given that it works, it should be _readable_.  These guidelines are aimed
 at achieving that goal; if you have to break a rule to be more readable,
 then do it.  If you have to bend a rule to match surrounding code, do it.
 
@@ -16,13 +16,13 @@ order, should be considered when making style choices.
 
 ## Automatic
 
-[Artistic Style](http://astyle.sourceforge.net/) is used to maintain
+http://astyle.sourceforge.net/[Artistic Style] is used to maintain
 gross code styling.  The `make indent` target will run it over the
 codebase, and should be used regularly to keep things in shape.
 
 These are thus hard rules; in theory, at any given time, running `make
 indent` should yield no changes.  This is the primary exception to the
-"break the rules" guideline above.  Code should always follow these
+"`break the rules`" guideline above.  Code should always follow these
 rules, because it makes life simpler.
 
 
@@ -32,37 +32,36 @@ rules, because it makes life simpler.
 
 * Includes should be generally ordered as:
 
-    * `ctwm.h`
+** `ctwm.h`
 
-    * (some vertical whitespace separator)
+** (some vertical whitespace separator)
 
-    * System includes (stdio, X11/foo, etc)
+** System includes (stdio, X11/foo, etc)
 
-    * (some vertical whitespace separator)
+** (some vertical whitespace separator)
 
-    * Other local includes
+** Other local includes
 
-    * However some special cases exist where we have to pull system files
-        after the locals; e.g., when something that comes out of our
-        config (pulled in via ctwm.h) is needed to figure what or where
-        to include.  That's fine.
+** However some special cases exist where we have to pull system files
+after the locals; e.g., when something that comes out of our config
+(pulled in via ctwm.h) is needed to figure what or where to include.
+That's fine.
 
-* Generally, local includes should avoid `#include`ing system includes
-    where possible, and avoid `#include`ing other local includes where
-    practical.  If the file itself needs something from another header
-    file (*e.g.*, a  prototype or var extern needs a type from
-    elsewhere), it should `#include` that; if however some `.c` file that
-    `#include`s the `.h` needs something from another header, generally
-    the `#include` should be put there.
-
-    Bear in mind that this is a *guideline*.  There are extant
-    exceptions, and may be more over time.  Make it readable and
-    maintainable.
+* Generally, local includes should avoid ``#include``ing system includes
+where possible, and avoid ``#include``ing other local includes where
+practical.  If the file itself needs something from another header file
+(_e.g._, a  prototype or var extern needs a type from elsewhere), it
+should `#include` that; if however some `.c` file that ``#include``s the
+`.h` needs something from another header, generally the `#include` should
+be put there.
++
+Bear in mind that this is a *guideline*.  There are extant exceptions,
+and may be more over time.  Make it readable and maintainable.
 
 * Try to avoid including things already brought in elsewhere.  For
-  instance, `ctwm.h` already includes our `types.h`, and the system
-  `stdbool.h` and most of Xlib's includes, so no other file in our tree
-  need `#include` them.
+instance, `ctwm.h` already includes our `types.h`, the system
+`stdbool.h`, and most of Xlib's includes, so no other file in our tree
+need `#include` them.
 
 
 ## Standards and Types
@@ -92,8 +91,8 @@ dealing with an external lib, use its types and values.
 Because of C's conversion rules, assigning values from one type to the
 other, via boolean conditional expressions, or via literal or numeric
 1/0, should always work as expected.  However, the type representations
-aren't the same, so e.g.  passing a `bool *` to a function expecting a
-`Bool *` will go *very badly*.
+aren't the same, so e.g.  passing a `+bool *+` to a function expecting a
+`+Bool *+` will go *very badly*.
 
 
 ## Comments
@@ -101,14 +100,8 @@ aren't the same, so e.g.  passing a `bool *` to a function expecting a
 There is no part of the codebase with too many comments.  I dream of the
 day when we'll have to edit that line; please help hasten it!
 
-C99 allows both `/* enclosed */` and `// to EOL` comment styles.  We
-generally lean toward `/* enclosed */`, but `// EOL` are acceptable as
-well.  In particular comments at the end of the line (like documentation
-of structure elements) are excellent candidates with `//` comments,
-particularly when they would otherwise wrap.
-
-
-
-{>>
- vim:expandtab:ft=markdown:formatoptions-=q:formatoptions+=2
-<<}
+C99 allows both `+/* enclosed */+` and `// to EOL` comment styles.  We
+generally lean toward `+/* enclosed */+`, but `// to EOL` are acceptable
+as well.  In particular comments at the end of the line (like
+documentation of structure elements) are excellent candidates for `//`
+comments, particularly when they would otherwise wrap.

@@ -7,6 +7,8 @@ reminded of.
 
 == Pages
 
+* <<code_style.adoc#,Code Style>> covers coding style guidelines.
+
 * <<functions.adoc#,f.functions>> talks about how the various
 `f.whatever` functions are dispatched and how you'd go about writing one.
 
