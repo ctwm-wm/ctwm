@@ -39,7 +39,7 @@ for i in ${FILES}; do
 	in="${i}"
 	out="\${BDIR}/`echo ${i} | sed -E -e 's/(.*)\.adoc/\1.html/'`"
 	echo "all: ${out}"
-	echo "${out}: ${in}"
+	echo "${out}: \${BDIR} ${in}"
 	printf "\t\${ADOC} -o ${out} ${in}\n"
 	echo
 done
