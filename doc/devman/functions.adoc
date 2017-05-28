@@ -21,6 +21,7 @@ so there's _huge_ opportunity for terminological confusion.
 There are a few choices in the way functions work to consider in any
 given case.
 
+[[func-arguments,Arguments]]
 === Arguments
 
 Some functions take an argument, while others don't.  For example, the
@@ -233,4 +234,14 @@ ctwm version/build info, and then the window info if it were given one.
 [[example-gotoworkspace,f.gotoworkspace]]
 === `f.gotoworkspace`
 
-Example of f.function with arg.
+`f.gotoworkspace` warps you to a named workspace, so it takes an
+argument.  See discussion in <<func-arguments>> above.  So we see in its
+line in `functions_defs.list` that it has an `S` in the first field,
+indicating it's taking a string argument (the only choice other than the
+stand-in `-` for functions not taking args).
+
+The implementation in `functions_workspaces.c` is then a fairly thin
+wrapper around the existing `GotoWorkSpaceByName()` function used
+elsewhere.  The `action` argument to the handler contains the value of
+the argument given in the config file, which in the case is a string of
+the name of the workspace, and `GotoWorkSpaceByName()` does its thing.
