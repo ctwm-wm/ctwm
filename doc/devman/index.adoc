@@ -15,3 +15,6 @@ reminded of.
 * <<principles.adoc#,Principles Of Operation>> is a pre-existing dev
 document that covers a number of areas.  Probably over time it'll get
 piecewise integrated into bigger individual sections.
+
+* <<links.adoc#,Links>> collections links to various manuals and
+specifications and other reference material that are often of use.
