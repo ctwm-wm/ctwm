@@ -10,10 +10,10 @@ understand how the code works.
 Unless otherwise stated, most mentions of "`f.function`" (in singular or
 plural) are meant to be generic references to any `f.anything` that ctwm
 implements, rather than specifically the `f.function` function.  This is
-done because just calling them "`functions`" is awful ambiguous,
-especially when talking about the implementation, because the
-implementation of a ctwm _function_ is done in terms of a C _function_,
-so there's _huge_ opportunity for terminological confusion.
+done because just calling them "`functions`" can be ambiguous, especially
+when talking about the implementation, because the implementation of a
+ctwm _function_ is done in terms of a C _function_, so there's often
+opportunity for terminological confusion.
 
 
 == Functional Considerations
@@ -37,19 +37,19 @@ below where the <<impl-functions-defs-sections>> are discussed.
 === Deferral
 
 There is also a concept of _function deferral_.  This happens in the case
-of functions that in some way target a window (`f.move` and friends,
+of f.functions that in some way target a window (`f.move` and friends,
 `f.resize`, `f.occupy`, and a great many others).  When you activate them
 from a mouse/key binding or titlebar icon or the like, ctwm can see which
 window you're pointing at, and targets it from there.  However, when run
 from a menu, you can't be pointing at a window; you're pointing at the
 menu.
 
-As a result, ctwm _defers_ the execution of the function.  It changes the
+As a result, ctwm _defers_ the execution of the f.function.  It changes the
 mouse cursor to something to prod the user, and waits for you to click on
 a window.  _Then_ it runs back into the function execution to actually to
 the work.
 
-So any function that has to do something related to a window has to be
+So any f.function that has to do something related to a window has to be
 setup to defer, or it won't work from a menu.  This is also controlled in
 `functions_defs.list`; x-ref the description of the
 <<impl-functions-defs-sections>>.  The right cursor for any given case is
@@ -58,12 +58,12 @@ a matter of judgement, but generally move/resize actions have one cursor
 
 === Magic and Internal
 
-There are a few "`synthetic`" or "`internal`" functions, which exist only
+There are a few "`synthetic`" or "`internal`" f.functions, which exist only
 to link up some magic like the `TwmWindows` auto-generated menu.  Unless
 you're working with magic menus, you never need to go near or know
 anything about them.
 
-There are also two somewhat magical functions.  One is `f.function` which
+There are also two somewhat magical f.functions.  One is `f.function` which
 runs a user-defined function, which is a sequence of other existing
 functions.  This is commonly used in conjunction with the other magical
 function, `f.deltastop`, to let you do stuff to a window that varies
@@ -74,7 +74,7 @@ functions; see the <<impl-dispatch>> section below for details.
 
 == Implementation Overview
 
-Much over the overall control for dispatching and finding functions is
+Much over the overall control for dispatching and finding f.functions is
 done via generated code, from the definitions in `functions_def.list`.
 f.function execution begins by calling into the `ExecuteFunction()`
 function from various places (usually event handlers for menu selections
@@ -98,10 +98,10 @@ There are 3 sections in the file, delineated by comments like
 `mk_function_bits.sh` script to find the bits it needs at any given time.
 
 The `aliases` and `synthetic` section are almost certainly not anything
-you need to touch.  `aliases` are alternate names for functions.  Those
+you need to touch.  `aliases` are alternate names for f.functions.  Those
 that exist are historical, and we should probably avoid adding any new
 ones; just name a function what it should be named, and don't add
-confusion by having multiple names.  `synthetic` are functions not
+confusion by having multiple names.  `synthetic` are f.functions not
 exposed to the user (_i.e._, not available in config files) but get
 called from things like the magic `TwmWindow` menu.  Both are very
 special cases, so unless you're doing something very unusual, you'll
@@ -110,11 +110,11 @@ never go near them.
 The `main` section is where you'll be playing.  It contains space
 delimited columns (mostly visually lined up in the file for convenience;
 the script only cares about whitespace).  First is the name; obvious.
-Second determines whether it's a function that takes an argument (like
+Second determines whether it's a f.function that takes an argument (like
 <<example-gotoworkspace>> below) or one that doesn't.
 
 The third column defines the deferral cursor; this has the side effect of
-determining whether it's a deferred function or not; see discussion of
+determining whether it's a deferred f.function or not; see discussion of
 <<cons-deferral>> above.  And the fourth allows hiding info about the
 function behind an #ifdef.  The only current use of that is for the
 rplay-based sound support, and it should probably be avoided for new
@@ -126,7 +126,7 @@ their config files.
 ==== Generated Files
 
 From that, `mk_function_bits.sh` generates header files that contain the
-various info about the functions.
+various info about the f.functions.
 
 * One file contains the ``#define``'s for all the `F_WHATEVER` contants
 used in the code to refer to the f.functions internally.  This only
@@ -161,7 +161,7 @@ cursor and returns.  Actual execution then happens via another fresh call
 into `ExecuteFunction()` via slightly creepy magic in the `ButtonPress`
 event handling code.  You don't want to know.
 
-Then it falls into actually dispatching the function.  There are two
+Then it falls into actually dispatching the f.function.  There are two
 special cases described below.  Most f.functions simply run through to an
 individual C function that implements them, via the `func_dispatch` table
 and specific naming; the implemetation of the ctwm function `f.abcdef`
