@@ -42,11 +42,11 @@ are always corner cases.
 the C99 standard with all the current amendments and corrections; ctwm
 defines C99 as the standard we're writing to.
 
-* http://pubs.opengroup.org/onlinepubs/009695399/ is "Issue 6" of
+* http://pubs.opengroup.org/onlinepubs/009695399/ is "`Issue 6`" of
 POSIX.1-2004 or IEEE 1003.1 or SUS or whatever you want to call it.  This
 is generally the minimum system conformance level we expect.
 
-** http://pubs.opengroup.org/onlinepubs/9699919799/ is Issue 7,
+** http://pubs.opengroup.org/onlinepubs/9699919799/ is "`Issue 7`",
 POSIX.1-2008.  This is a little newer (though still almost a decade old
 as of this writing), and may tell a little more in some cases.  Things
 this requires but the -2004 above doesn't may be useful, but should be
