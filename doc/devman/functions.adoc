@@ -57,8 +57,18 @@ a matter of judgement, but generally move/resize actions have one cursor
 
 === Magic and Internal
 
-Magic stuff like `f.function`.  Gloss of internal-only funcs that you're
-probably not touching.
+There are a few "`synthetic`" or "`internal`" functions, which exist only
+to link up some magic like the `TwmWindows` auto-generated menu.  Unless
+you're working with magic menus, you never need to go near or know
+anything about them.
+
+There are also two somewhat magical functions.  One is `f.function` which
+runs a user-defined function, which is a sequence of other existing
+functions.  This is commonly used in conjunction with the other magical
+function, `f.deltastop`, to let you do stuff to a window that varies
+depending on whether you move the mouse or not.  See the user manual for
+details of them.  They get executed slightly differently than other
+functions; see the <<impl-dispatch>> section below for details.
 
 
 == Implementation Overview
@@ -138,6 +148,7 @@ there).  See earlier discussion of <<cons-deferral>>.
 to dispatch the actual execution of the f.function to the underlying C
 function that implements it.  This is just built off the names.
 
+[[impl-dispatch,Function Dispatching]]
 === Dispatching and Executing
 
 Some mechanism (usually invocation from menu or button/key binding) calls
