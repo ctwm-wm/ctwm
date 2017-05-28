@@ -44,10 +44,10 @@ window you're pointing at, and targets it from there.  However, when run
 from a menu, you can't be pointing at a window; you're pointing at the
 menu.
 
-As a result, ctwm _defers_ the execution of the f.function.  It changes the
-mouse cursor to something to prod the user, and waits for you to click on
-a window.  _Then_ it runs back into the function execution to actually to
-the work.
+As a result, ctwm _defers_ the execution of the f.function.  It changes
+the mouse cursor to something to prod the user, and waits for you to
+click on a window.  _Then_ it runs back into the function execution to
+actually to the work.
 
 So any f.function that has to do something related to a window has to be
 setup to defer, or it won't work from a menu.  This is also controlled in
@@ -58,13 +58,13 @@ a matter of judgement, but generally move/resize actions have one cursor
 
 === Magic and Internal
 
-There are a few "`synthetic`" or "`internal`" f.functions, which exist only
-to link up some magic like the `TwmWindows` auto-generated menu.  Unless
-you're working with magic menus, you never need to go near or know
+There are a few "`synthetic`" or "`internal`" f.functions, which exist
+only to link up some magic like the `TwmWindows` auto-generated menu.
+Unless you're working with magic menus, you never need to go near or know
 anything about them.
 
-There are also two somewhat magical f.functions.  One is `f.function` which
-runs a user-defined function, which is a sequence of other existing
+There are also two somewhat magical f.functions.  One is `f.function`
+which runs a user-defined function, which is a sequence of other existing
 functions.  This is commonly used in conjunction with the other magical
 function, `f.deltastop`, to let you do stuff to a window that varies
 depending on whether you move the mouse or not.  See the user manual for
