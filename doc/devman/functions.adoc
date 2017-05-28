@@ -200,7 +200,30 @@ enough to satify the compiler and get you running.
 
 === Internal Macros And Details
 
-#TODO: `functions_internal.h` bits, EF_FULLPROTO, DFHANDLER(), etc#
+The `functions_internal.h` file contains a few macros used in defining
+and calling f.function implementations, the prototypes for all those
+implementations, and a few other bits that get shared among the
+`function_*.c` implementation files.
+
+`EF_FULLPROTO` gives the full list of arguments that `ExecuteFunction()`
+and all the f.function handlers takes.  It's also used in some backend
+functions the handlers call.  Commonly these are cases where several
+functions act almost identically, and so just thunk through to a shared
+backend function; _e.g._, how all of `f.move`, `f.forcemove`,
+`f.movepack`, and `f.movepush` merely call `movewindow()` in
+`functions_win_moveresize.c`.  The `EF_ARGS` macro is the same set of
+arguments, just in the form of the names as you'd use in calling the
+function; you can see its usage in those same cases.
+
+The `DFHANDLER()` macro is used in **D**efining a **F**unction
+**HANDLER**.  It's used in both the prototypes in `functions_internal.h`
+and in all the implementations in the `functions_*.c` files.  By just
+calling it with the function name, we can automate away making sure the
+implementation is named correctly so the generated `func_dispatch` table
+can find them in the dispatch (x-ref <<impl-dispatch>>), and that it
+takes the right args.  Along with the mentioned `EF_*` macros, that will
+save us a lot of trouble visiting hundreds of places if/when we change
+the set of args we pass around function execution and handlers.
 
 
 == Implementation Examples
