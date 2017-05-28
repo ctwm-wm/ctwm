@@ -30,7 +30,7 @@ so you'd have something like `f.gotoworkspace "one"` in a key binding or
 menu.  Contrarily, <<example-identify>> doesn't, so you'd merely have
 `f.identify` in the config.
 
-This is controlled by a column in the `function_defs.list` file; see
+This is controlled by a column in the `functions_defs.list` file; see
 below where the <<impl-functions-defs-sections>> are discussed.
 
 [[cons-deferral,Deferral]]
