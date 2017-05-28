@@ -104,13 +104,12 @@ Second determines whether it's a function that takes an argument (like
 
 The third column defines the deferral cursor; this has the side effect of
 determining whether it's a deferred function or not; see discussion of
-<<cons-deferral>> above.
-And the fourth allows hiding info about the function
-behind an #ifdef.  The only current use of that is for the rplay-based
-sound support, and it should probably be avoided for new functions.
-Generally, the function should be available all the time, and just do
-nothing (or beep, or something appropriate) when the condition code
-isn't available.  This saves users from some complication in writing
+<<cons-deferral>> above.  And the fourth allows hiding info about the
+function behind an #ifdef.  The only current use of that is for the
+rplay-based sound support, and it should probably be avoided for new
+functions.  Generally, the function should be available all the time, and
+just do nothing (or beep, or something appropriate) when the condition
+code isn't available.  This saves users from some complication in writing
 their config files.
 
 ==== Generated Files
