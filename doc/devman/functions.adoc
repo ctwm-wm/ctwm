@@ -16,15 +16,43 @@ implementation of a ctwm _function_ is done in terms of a C _function_,
 so there's _huge_ opportunity for terminological confusion.
 
 
-== Major Differences In Action
+== Functional Considerations
+
+There are a few choices in the way functions work to consider in any
+given case.
 
 === Arguments
 
-f.functions taking a string arg vs. not.
+Some functions take an argument, while others don't.  For example, the
+case of <<example-gotoworkspace>> as described below takes an argument,
+so you'd have something like `f.gotoworkspace "one"` in a key binding or
+menu.  Contrarily, <<example-identify>> doesn't, so you'd merely have
+`f.identify` in the config.
+
+This is controlled by a column in the `function_defs.list` file; see
+below where the <<impl-functions-defs-sections>> are discussed.
 
 === Deferral
 
-Window targetting and deferral.  Cursor.
+There is also a concept of _function deferral_.  This happens in the case
+of functions that in some way target a window (`f.move` and friends,
+`f.resize`, `f.occupy`, and a great many others).  When you activate them
+from a mouse/key binding or titlebar icon or the like, ctwm can see which
+window you're pointing at, and targets it from there.  However, when run
+from a menu, you can't be pointing at a window; you're pointing at the
+menu.
+
+As a result, ctwm _defers_ the execution of the function.  It changes the
+mouse cursor to something to prod the user, and waits for you to click on
+a window.  _Then_ it runs back into the function execution to actually to
+the work.
+
+So any function that has to do something related to a window has to be
+setup to defer, or it won't work from a menu.  This is also controlled in
+`functions_defs.list`; x-ref the description of the
+<<impl-functions-defs-sections>>.  The right cursor for any given case is
+a matter of judgement, but generally move/resize actions have one cursor
+(the `DC_MOVE` choice), and other functions use the other (`DC_SELECT`).
 
 === Magic and Internal
 
@@ -50,6 +78,7 @@ generated header files (_i.e._, `build/functions_*.h`) from the
 `functions_defs.list` file.  Comments in that file give a good reference
 to the details of the syntax.  We'll skim the higher-level overview here.
 
+[[impl-functions-defs-sections,functions_defs.list sections]]
 ==== Sections
 
 There are 3 sections in the file, delineated by comments like
@@ -159,6 +188,7 @@ enough to satify the compiler and get you running.
 
 == Implementation Examples
 
+[[example-identify,f.identify]]
 === `f.identify` and `f.version`
 
 Window targetting vs. not and deferral.  Shared backend.
