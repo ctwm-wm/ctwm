@@ -209,9 +209,9 @@ enough to satify the compiler and get you running.
 
 `f.version` pops up a window with info about the ctwm build and version.
 `f.identify` pops up a window with information about a given window,
-which has all that same information up top.  So they can be considered
-variants of the same thing.  And in fact, they both wind up implemented
-by the same code on the backend.
+which has also all that `f.version` information up top.  So they can be
+considered variants of the same thing.  And in fact, they both wind up
+implemented by the same code on the backend.
 
 So, to trace from the top, we find the `version` and `identify` lines in
 the `main` section of `functions_defs.list`.  The `version` line has
@@ -226,9 +226,9 @@ The implementations are in `functions_identify.c`.  As with all
 functions, the `DFHANDLER()` macro is used to name the function and
 arguments.  Each of those implementations just calls the `Identify()`
 backend function for the implementation; `f.identify` passes the
-targetted window, while `f.version` passes `NULL`.  `Identify()` then
-builds the window with the ctwm version/build info, and then the window
-info if it were given one.
+targetted window (the `tmp_win` argument to the handler), while
+`f.version` passes `NULL`.  `Identify()` then builds the window with the
+ctwm version/build info, and then the window info if it were given one.
 
 [[example-gotoworkspace,f.gotoworkspace]]
 === `f.gotoworkspace`
