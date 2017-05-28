@@ -7,6 +7,8 @@ reminded of.
 
 == Pages
 
+(Should be organized better.  Or at all.)
+
 * <<code_style.adoc#,Code Style>> covers coding style guidelines.
 
 * <<functions.adoc#,f.functions>> talks about how the various
