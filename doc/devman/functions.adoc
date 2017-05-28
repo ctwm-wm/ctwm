@@ -5,7 +5,7 @@ should be a useful reference when you intend to add a new function, or
 understand how the code works.
 
 
-== Conventions
+== Document Conventions
 
 Unless otherwise stated, most mentions of "`f.function`" (in singular or
 plural) are meant to be generic references to any `f.anything` that ctwm
