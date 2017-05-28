@@ -10,6 +10,12 @@
    inspection of the running process via DTrace (e.g., the layout of the
    structs).
 
+1. The initial rumblings of a Developer's Manual are now in
+   `doc/devman/`.  This isn't tied into the main build, and there's no
+   real reason it ever will be.  Things of interest to _users_ should
+   wind up in the main manual; this should only have things of interest
+   to people _developing_ ctwm.
+
 
 
 ## 4.0.0  (2017-05-24)

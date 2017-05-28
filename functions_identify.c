@@ -31,6 +31,9 @@ static void Identify(TwmWindow *t);
 
 /*
  * The functions that cause this to pop up.
+ *
+ * n.b.: these are referenced in the Developer Manual in doc/devman/; if
+ * you make any changes here be sure to tweak that if necessary.
  */
 DFHANDLER(identify)
 {
