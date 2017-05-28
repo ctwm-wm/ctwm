@@ -119,7 +119,7 @@ determining whether it's a deferred f.function or not; see discussion of
 function behind an #ifdef.  The only current use of that is for the
 rplay-based sound support, and it should probably be avoided for new
 functions.  Generally, the function should be available all the time, and
-just do nothing (or beep, or something appropriate) when the condition
+just do nothing (or beep, or something appropriate) when the conditional
 code isn't available.  This saves users from some complication in writing
 their config files.
 
