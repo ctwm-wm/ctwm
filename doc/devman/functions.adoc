@@ -32,6 +32,7 @@ menu.  Contrarily, <<example-identify>> doesn't, so you'd merely have
 This is controlled by a column in the `function_defs.list` file; see
 below where the <<impl-functions-defs-sections>> are discussed.
 
+[[cons-deferral,Deferral]]
 === Deferral
 
 There is also a concept of _function deferral_.  This happens in the case
@@ -102,8 +103,9 @@ Second determines whether it's a function that takes an argument (like
 <<example-gotoworkspace>> below) or one that doesn't.
 
 The third column defines the deferral cursor; this has the side effect of
-determining whether it's a deferred function or not.  #XXX x-ref deferral
-description#.  And the fourth allows hiding info about the function
+determining whether it's a deferred function or not; see discussion of
+<<cons-deferral>> above.
+And the fourth allows hiding info about the function
 behind an #ifdef.  The only current use of that is for the rplay-based
 sound support, and it should probably be avoided for new functions.
 Generally, the function should be available all the time, and just do
@@ -131,7 +133,7 @@ treat them the same as the real f.function names).
 f.function execution (in `EF_main()`) to determine whether to defer
 calling the function, and what X cursor to set when it defers.  This uses
 the third column (and only includes f.functions that have something
-there).  #XXX x-ref deferral#.
+there).  See earlier discussion of <<cons-deferral>>.
 
 * And finally, it generates the `func_dispatch` table used in `EF_main()`
 to dispatch the actual execution of the f.function to the underlying C
