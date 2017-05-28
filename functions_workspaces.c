@@ -90,6 +90,10 @@ DFHANDLER(movetoprevworkspaceandfollow)
  */
 DFHANDLER(gotoworkspace)
 {
+	/*
+	 * n.b.: referenced in the Developer Manual in doc/devman/; if you
+	 * make any changes here be sure to tweak that if necessary.
+	 */
 	GotoWorkSpaceByName(Scr->currentvs, action);
 }
 
