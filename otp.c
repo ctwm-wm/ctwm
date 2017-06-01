@@ -400,13 +400,13 @@ static OtpWinList *GetOwlAtOrBelowInWinbox(OtpWinList **owlp, WindowBox *wb)
 static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 {
 #if DEBUG_OTP
-	fprintf(stderr, "InsertOwlAbove owl->pri=%d w=%x parent_vs:(x,y)=(%d,%d)",
+	fprintf(stderr, "InsertOwlAbove owl->pri=%d w=0x%x parent_vs:(x,y)=(%d,%d)",
 	        PRI(owl),
 	        (unsigned int)WindowOfOwl(owl),
 	        owl->twm_win->parent_vs->x,
 	        owl->twm_win->parent_vs->y);
 	if(other_owl != NULL) {
-		fprintf(stderr, "other_owl->pri=%d w=%x parent_vs:(x,y)=(%d,%d)",
+		fprintf(stderr, "\n  other_owl->pri=%d w=0x%x parent_vs:(x,y)=(%d,%d)",
 		        PRI(other_owl),
 		        (unsigned int)WindowOfOwl(other_owl),
 		        owl->twm_win->parent_vs->x,
@@ -1649,4 +1649,29 @@ OwlEffectivePriority(OtpWinList *owl)
 	pri = MIN(pri, OTP_MAX);
 
 	return pri;
+}
+
+
+/*
+ * Does the priority of a window depend on its focus state?  External
+ * code needs to know, to know when it might need restacking.
+ */
+bool
+OtpIsFocusDependent(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+#ifdef EWMH
+	/*
+	 * EWMH says _FULLSCREEN and focused windows get shoved to the top;
+	 * this implies that _FULLSCREEN and _not_ focused don't.  So if the
+	 * focus is changing, that means we may need to restack.
+	 */
+	if(twm_win->otp->pri_aflags & OTP_AFLAG_FULLSCREEN) {
+		return true;
+	}
+#endif
+
+	return false;
 }

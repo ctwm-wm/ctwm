@@ -3,6 +3,13 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### User Visible Changes
+
+1. Fix a bug where fullscreen windows could sometimes wind up incorrectly
+   stacked due to a focus-handling issue.  This would lead to ctwm
+   aborting with an assertion failure in the OTP code, like `Assertion
+   failed: (PRI(owl) >= priority), function OtpCheckConsistencyVS`.
+
 ### Internals
 
 1. Systems with the ctfconvert/ctfmerge tools available will now use them

@@ -81,6 +81,7 @@ TwmWindow *OtpNextWinDown(TwmWindow *);
 /* Other access functions */
 int OtpEffectiveDisplayPriority(TwmWindow *twm_win);
 int OtpEffectivePriority(TwmWindow *twm_win);
+bool OtpIsFocusDependent(TwmWindow *twm_win);
 
 /* Other debugging functions */
 bool OtpCheckConsistency(void);
