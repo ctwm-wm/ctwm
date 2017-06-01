@@ -10,6 +10,9 @@
    aborting with an assertion failure in the OTP code, like `Assertion
    failed: (PRI(owl) >= priority), function OtpCheckConsistencyVS`.
 
+1. Fix an edge case (probably only triggerable via manual work with EWMH
+   messages) where a window could wind up resized down to nothing.
+
 ### Internals
 
 1. Systems with the ctfconvert/ctfmerge tools available will now use them

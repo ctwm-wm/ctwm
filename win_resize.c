@@ -923,6 +923,24 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	border_x = Scr->BorderLeft + Scr->BorderRight;
 	border_y = Scr->BorderTop + Scr->BorderBottom;
 
+	/*
+	 * Guard; if it was already not zoomed, and we're asking to unzoom
+	 * it, just finish right away.  This saves us work, but also avoids
+	 * really bad side effects in some cases.  e.g., if we try to
+	 * ZOOM_NONE a window that's never been ZOOM'd, tmp_win->save_* will
+	 * all be 0, so we'd wind up resizing it to a point.  It's possible
+	 * for that to happen via e.g. an EWMH message removing a _FULLSCREEN
+	 * or similar attribute; that can then call into us telling us not to
+	 * zoom, on a window that's never been zoomed.
+	 *
+	 * This wouldn't protect us if somehow it was zoomed but hadn't set
+	 * that data, but I don't see how that can happen.  Worry about that
+	 * when it does.
+	 */
+	if(func == ZOOM_NONE && tmp_win->zoomed == ZOOM_NONE) {
+		return;
+	}
+
 	if(tmp_win->winbox) {
 		XWindowAttributes winattrs;
 		if(XGetWindowAttributes(dpy, tmp_win->winbox->window, &winattrs)) {
