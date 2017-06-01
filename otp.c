@@ -1650,3 +1650,20 @@ OwlEffectivePriority(OtpWinList *owl)
 
 	return pri;
 }
+
+
+/*
+ * Does the priority of a window depend on its focus state?  External
+ * code needs to know, to know when it might need restacking.
+ */
+bool
+OtpIsFocusDependent(TwmWindow *twm_win)
+{
+	assert(twm_win != NULL);
+	assert(twm_win->otp != NULL);
+
+	if(twm_win->otp->pri_aflags & OTP_AFLAG_FULLSCREEN) {
+		return true;
+	}
+	return false;
+}
