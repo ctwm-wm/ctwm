@@ -129,6 +129,7 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 {
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
 	bool f_iconmgr = false;
+	TwmWindow *old_focus = Scr->Focus;
 
 	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
 		f_iconmgr = true;
@@ -158,6 +159,16 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 		SetFocusVisualAttributes(tmp_win, true);
 	}
 	Scr->Focus = tmp_win;
+
+#ifdef EWMH
+	/* Priority may change when focus does */
+	if(old_focus && OtpIsFocusDependent(old_focus)) {
+		OtpRestackWindow(old_focus);
+	}
+	if(tmp_win && OtpIsFocusDependent(tmp_win)) {
+		OtpRestackWindow(tmp_win);
+	}
+#endif
 }
 
 
