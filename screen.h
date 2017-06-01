@@ -245,7 +245,6 @@ struct ScreenInfo {
 	bool        ReverseCurrentWorkspace;
 	bool        DontWarpCursorInWMap;
 	short       XMoveGrid, YMoveGrid;
-	bool        FastServer;  // XXX Unused?
 	bool        CenterFeedbackWindow;
 	bool        ShrinkIconTitles;
 	bool        AutoRaiseIcons;

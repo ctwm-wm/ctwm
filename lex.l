@@ -50,6 +50,12 @@
 
 string				\"([^"]|\\.)*\"
 number				[0-9]+
+
+ /* Requires flex 2.5.1 (28Mar95) */
+%option noyywrap
+ /* Requires flex 2.5.2 (25Apr95) */
+%option nounput
+
 %%
 "{"				{ return (LB); }
 "}"				{ return (RB); }
@@ -93,6 +99,9 @@ number				[0-9]+
  * In flex versions before 2.4.1 (30Nov93), yywrap was a macro, not a
  * function.  There's no way we really support versions that old, but
  * what the heck...
+ *
+ * This function should actually be unused due to the noyywrap %option
+ * specified above, but is left around in case of weird edge cases.
  */
 #ifndef yywrap
 int yywrap(void) { return(1);}

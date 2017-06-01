@@ -8,23 +8,21 @@ man: ${BASE}
 all: html man
 
 all_set_version: all
-	sed -i '' -e "s/@ctwm_version_str@/`head -1 ../VERSION`/" ${HTML} ${BASE}
+	sed -i '' -e "s/@ctwm_version_str@/`head -1 ../../VERSION`/" ${HTML} ${BASE}
 
 clean:
 	rm -f ${BASE} ${HTML}
 
-#${BASE}.adoc: ../ctwm.man convert.pl
-#	./convert.pl < ../ctwm.man > ${BASE}.adoc
-
 
 # asciidoc vs asciidoctor notes:
 #
-# Note that asciidoctor has a slightly changed dialect, so there will be
-# some glitches in the output.  Also, the manpage generation requires
-# 1.5.3+ (not yet released as of this writing).  At the moment, we're
-# trying to work with both.  Current trends suggest that at some point
-# asciidoctor will be the de facto asciidoc-world implementation, so we
-# may drop the py-asciidoc at some point.
+# Note that asciidoctor has a slightly changed dialect, so there may be
+# minor differences in the output.  Also, the manpage generation requires
+# 1.5.3+.  At the moment, we're trying to work with both.  Current trends
+# suggest that at some point asciidoctor will be the de facto
+# asciidoc-world implementation, so we may drop the py-asciidoc at some
+# point.  For the moment, asciidoctor is treated as the standard
+# renderer, with asciidoc being a fallback we try to keep working well.
 
 
 # Generating HTML output by various means

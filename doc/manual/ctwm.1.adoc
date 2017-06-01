@@ -92,7 +92,7 @@ to touch the bottom the screen.
   In that case, the existing window manager is asked to quit,
   and ctwm takes its place.
   Available only if ctwm is built with the `USE_EWMH` flag.
-  First appeared in %%NEXT%%.
+  First appeared in 4.0.0.
 
 --single::
   This option indicates that only the default screen (as specified by
@@ -106,7 +106,7 @@ to touch the bottom the screen.
 
 --dumpcfg::
   This option causes ctwm to print out the compiled-in fallback config.
-  First appeared in %%NEXT%%.
+  First appeared in 4.0.0.
 
 --file=`filename`, -f `filename`::
   This option specifies the name of the startup file to use.
@@ -318,7 +318,7 @@ CTWM_VERSION_ADDL::
   `CTWM_VERSION_ADDL`; it's mostly meaningful in dev and betas.  For
   comparison, in this situation, TWM_VERSION will be "3.8.2".
 +
-The `CTWM_VERSION_*` variables first appeared in %%NEXT%%.
+The `CTWM_VERSION_*` variables first appeared in 4.0.0.
 
 === X server info
 
@@ -382,7 +382,7 @@ SOUNDS::
 
 EWMH::
   Is defined only if ctwm was compiled with EWMH support.  First appeared
-  in %%NEXT%%.
+  in 4.0.0.
 
 I18N::
   Is defined if ctwm was compiled with I18N support.  This is no longer
@@ -502,14 +502,14 @@ AutoPopup [{ `win-list` }]::
   its name whenever something gets displayed on the console, or for various mail
   readers who change their icons depending on the presence of unread mail.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 AutoPriority::
   This variable specifies that ctwm should automatically recompute the
   priority of a window (and its associated icon) when its name changes.
   See also `OnTopPriority`.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 AutoRaise { `win-list` }::
   This variable specifies a list of windows (all windows if the list is defaulted)
@@ -543,7 +543,7 @@ AutoSqueeze { `win-list` }::
 
 BackingStore::
   Enable usage of backing store on menus and workspace map windows.  See
-  also `NoBackingStore`.  Added in %%NEXT%%; in previous versions this
+  also `NoBackingStore`.  Added in 4.0.0; in previous versions this
   was the default.
 
 BeNiceToColormap::
@@ -772,7 +772,7 @@ DarkShadowContrast `contrast`::
 
 DecorateTransients::
   This variable indicates that transient windows (those containing a
-  `WM_TRANSIENT_FOR` property) should have titlebars.  As of %%NEXT%%
+  `WM_TRANSIENT_FOR` property) should have titlebars.  As of 4.0.0
   this is the default.
 
 DefaultBackground `string`::
@@ -841,7 +841,7 @@ EWMHIgnore
 }
 ------
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 ForceFocus [{ `win-list` }]::
   Give focus to windows whether they asked for it or not.  This may
@@ -850,7 +850,7 @@ ForceFocus [{ `win-list` }]::
   The optional window list allows specifying which windows will get such
   treatment.
 +
-First appeared in %%NEXT%%.  In prior versions, a variant of this
+First appeared in 4.0.0.  In prior versions, a variant of this
 functionality was unconditionally enabled.
 
 ForceIcons::
@@ -865,7 +865,7 @@ FramePadding `pixels`::
 GrabServer::
   Specifies that ctwm should grab the X server (blocking all events other
   than ours) when popping up menus and moving opaque windows.  See also
-  `NoGrabServer`.  Added in %%NEXT%%; in previous versions this was the
+  `NoGrabServer`.  Added in 4.0.0; in previous versions this was the
   default.
 
 IconBackground `string` [{ `win-list` }]::
@@ -1072,7 +1072,7 @@ IconSize `string`::
   If an icon with the exact size is not available, one with the nearest (area)
   size will be chosen.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 IgnoreCaseInMenuSelection::
   Used when moving the pointer inside a menu with the keyboard. When you
@@ -1231,13 +1231,13 @@ MWMIgnore
 }
 ------
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 NoBackingStore::
   This variable indicates that ctwm's menus should not request backing
   store to minimize repainting of menus.  This is typically used with
   servers that can repaint faster than they can handle backing store.
-  See also `BackingStore`.  As of %%NEXT%% this is the default.
+  See also `BackingStore`.  As of 4.0.0 this is the default.
 
 NoBorder { `win-list` }::
   These windows won't have borders. If you want no borders on all windows,
@@ -1251,7 +1251,7 @@ NoCaseSensitive::
 NoDecorateTransients::
   Specify that transient windows (i.e., windows with a `WM_TRANSIENT_FOR`
   property set) should be ignored (not given decorations) by ctwm.  See
-  also `DecorateTransients`.  Added in %%NEXT%%; in previous versions
+  also `DecorateTransients`.  Added in 4.0.0; in previous versions
   this was the default.
 
 NoDefaults::
@@ -1261,7 +1261,7 @@ NoDefaults::
 
 NoGrabServer::
   This variable indicates that ctwm should not grab the server
-  when popping up menus and moving opaque windows.  As of %%NEXT%% this
+  when popping up menus and moving opaque windows.  As of 4.0.0 this
   is the default.
 
 NoHighlight [{ `win-list` }]::
@@ -1324,7 +1324,7 @@ NoRaiseOnWarp::
 NoRestartPreviousState::
   Don't attempt to regenerate the state the screen was in before the
   previous window manager was shut down.  See `RestartPreviousState` for
-  details.  Added in %%NEXT%%; in previous versions this was the default.
+  details.  Added in 4.0.0; in previous versions this was the default.
 
 NoSaveUnders::
   This variable indicates that menus should not request save-unders to minimize
@@ -1337,7 +1337,7 @@ NoShowOccupyAll::
 
 NoSortIconManager::
   Specifies that entries in the icon manager should be appended in the
-  order they show up.  See also `SortIconManager`.  Added in %%NEXT%%; in
+  order they show up.  See also `SortIconManager`.  Added in 4.0.0; in
   previous versions this was the default.
 
 NoStackMode [{ `win-list` }]::
@@ -1461,7 +1461,7 @@ OnTopPriority 8         # keep these always on top of other windows
 }
 ------
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 OpaqueMove [{ `window-list` }]::
   This variable indicates that the `f.move` function should actually move
@@ -1471,20 +1471,20 @@ OpaqueMove [{ `window-list` }]::
   window list parameter indicates that only windows in this list should actually
   be moved in opaque mode. The `NoOpaqueMove` counterpart is also available.
 +
-As of %%NEXT%% this is enabled by default.
+As of 4.0.0 this is enabled by default.
 
 OpaqueMoveThreshold `threshold`::
   The integer parameter is a percentage and indicates that only windows
   (elligible for opaque moving) with a surface smaller than this
   percentage of the surface of the screen should actually be moved in
-  opaque mode.  The default is 200.  Since %%NEXT%%, values >= 200 are
+  opaque mode.  The default is 200.  Since 4.0.0, values >= 200 are
   treated as infinity, causing windows to always `OpaqueMove` if
   eligible.
 
 OpaqueResize [{ `window-list` }]::
   The opaque version of resize. Extremely resource intensive, but
   beautiful with fast server/client/network. See `OpaqueMove`. The
-  `NoOpaqueResize` counterpart is also available.  As of %%NEXT%% this is
+  `NoOpaqueResize` counterpart is also available.  As of 4.0.0 this is
   enabled by default.
 
 OpaqueResizeThreshold `threshold`::
@@ -1546,15 +1546,17 @@ PrioritySwitching [Icons] { `win-list` }::
   plane 2 when raised and plane -2 when lowered, which means that it will usually
   stay on top if you raise another window, but can still be lowered if its
   priority is temporarily too high for your liking. If `Icons` is specified,
-  it means that the preference applies to icons rather than windows.
+  it means that the preference applies to icons rather than windows.  See
+  also the `f.priorityswitching` function for dynamically adding/removing
+  windows at runtime.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 PriorityNotSwitching [Icons] { `win-list` }::
   As above except that it declares that the default should be for windows to be
   able to switch priority except for the windows in `win-list` which can't.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 RaiseDelay `milliseconds`::
   For windows that are to be automatically raised when the pointer enters
@@ -1575,19 +1577,21 @@ RaiseWhenAutoUnSqueeze::
   Windows are raised when auto-unsqueezed (See AutoSqueeze).
 
 RandomPlacement [ `string1` [ `string2` ]]::
-  Where `string1` is either ``on'', ``off'', ``all'' or
-  ``unmapped'', and string2 is a displacement for the
-  pseudo-randomly placed window compared to the previous one.
   This variable indicates that windows with no specified geometry should
   be placed in a pseudo-random location instead of having the user drag
-  out an outline. The argument ``on'' or ``all'' tells ctwm do
-  do this for all such windows, ``off'', not to do this, and
-  ``unmapped'', only for unmapped windows, e.g. iconified or not
-  visible in the current workspace.
-  If the second argument isn't given, the displacement +30+30 (30 pixels
-  left and down) is used.
+  out an outline.  If no argument is given, it is interpreted as
+  `RandomPlacement "on"`.
 +
-As of %%NEXT%%, ``on'' is the default.  Previously ``off'' was default.
+`string1` may be ``on'', ``off'', ``all'' or ``unmapped'', and `string2`
+is a displacement for the pseudo-randomly placed window compared to the
+previous one.  The argument ``on'' or ``all'' are equivalent, and tell
+ctwm to do this for all such windows, ``off'', not to do this, and
+``unmapped'', only for unmapped windows, e.g. iconified or not visible in
+the current workspace.  If the second argument isn't given, the
+displacement +30+30 (30 pixels right and down) is used.
++
+As of 4.0.0, ``on'' is the default if no `RandomPlacement` is
+specified in the config.  Previously ``off'' was default.
 
 ReallyMoveInWorkspaceManager::
   This keyword tells ctwm to move the actual window when the user is
@@ -1606,7 +1610,7 @@ RestartPreviousState::
   manager was shutdown.  This includes using the `WM_STATE` property to
   tell which windows should be iconified and which should be left
   visible, and the `WM_OCCUPATION` property to determine in which
-  workspaces a window should be visible.  As of %%NEXT%% this is the
+  workspaces a window should be visible.  As of 4.0.0 this is the
   default.
 
 ReverseCurrentWorkspace::
@@ -1617,7 +1621,7 @@ ReverseCurrentWorkspace::
 RplaySoundHost `string`::
   The host on which sounds should be played.  Only meaningful when ctwm
   is built with `USE_SOUND`; will give a warning otherwise.  See the
-  SOUNDS section.  Added in %%NEXT%%; prior versions used the `SoundHost`
+  SOUNDS section.  Added in 4.0.0; prior versions used the `SoundHost`
   parameter instead.
 
 RplaySounds { `sounds-list` }::
@@ -1631,7 +1635,7 @@ RplaySounds { `sounds-list` }::
 Only meaningful when ctwm is built with `USE_SOUND`; it will give a
 warning otherwise.  See the SOUNDS section.  Note that if this section is
 given in the ctwmrc, the `~/.ctwm-sounds` file will not be parsed.  First
-appeared in %%NEXT%%.
+appeared in 4.0.0.
 
 SaveColor { `colors-list` }::
   This variable indicates a list of color assignments to be stored as pixel
@@ -1687,10 +1691,10 @@ SaveWorkspaceFocus::
 SortIconManager::
   This variable indicates that entries in the icon manager should be
   sorted alphabetically rather than by simply appending new windows to
-  the end.  As of %%NEXT%% this is the default.
+  the end.  As of 4.0.0 this is the default.
 
 SoundHost `string`::
-  Alias for `RplaySoundHost`, used in versions prior to %%NEXT%%.  Unless
+  Alias for `RplaySoundHost`, used in versions prior to 4.0.0.  Unless
   you need backward compatibility with them, use `RplaySoundHost`
   instead.  This alias will be removed in a future version.
 
@@ -1746,12 +1750,12 @@ StartIconified { `win-list` }::
 
 StartInButtonState::
   Start the WorkSpaceManage in button form.  See also `StartInMapState`.
-  Added in %%NEXT%%.
+  Added in 4.0.0.
 
 StartInMapState::
   This variable specifies that the WorkSpaceManager should be started
   in its map form when created.  See also `StartInButtonState`.  As of
-  %%NEXT%% this is the default.
+  4.0.0 this is the default.
 
 StartSqueezed { `win-list` }::
   These windows will first show up squeezed (see f.squeeze).
@@ -1938,7 +1942,7 @@ WarpOnDeIconify { "Emacs" }
   necessary (typically when the minibuffer or the *Help* frame is in another
   workspace).
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 WarpRingOnScreen::
   Tells ctwm that f.warpring warps pointer only to windows visible in
@@ -2281,6 +2285,11 @@ things (the `xkeycaps` program may also be useful).  The `alter1..5`
 modifiers refer to ctwm alternate keymaps; see the description of
 `f.altkeymap` below for details.
 
+Note that if you're using the `m4` preprocessor, most implementations
+define a `shift` macro internally, so using that as a modifier will
+silently fail to work right.  To get around it, you'll need to quote it
+so that `m4` passes it through as a literal string: `pass:[`shift']`.
+
 The `context` lets you specify which mappings apply based on where the
 pointer currently is on the screen.  The available options are
 `window` (`w`),
@@ -2427,7 +2436,7 @@ f.changepriority `rel-value`::
   quotes). For instance, to bury a window one level down, you would use
   f.changepriority "-1".  See `OnTopPriority` variable.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.changesize `string`::
   This function allows you to change the size of the focused window. The
@@ -2736,9 +2745,10 @@ f.prevworkspace::
   Goto the previous workspace in the list, using the order given in the `.ctwmrc` file.
 
 f.priorityswitching::
-  Toggle the window's switching ability.  X-ref `OnTopPriority` variable.
+  Toggle the window's switching ability.  X-ref `PrioritySwitching` and
+  `OnTopPriority` variables.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.quit::
   This function causes ctwm to restore the window's borders and exit.  If
@@ -2759,7 +2769,7 @@ f.raiseorsqueeze::
   Raise the window or squeeze it if it's a double click.  The time that
   defines a double click is given by the `ConstrainedMoveTime` variable.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.refresh::
   This function causes all windows to be refreshed.
@@ -2780,7 +2790,7 @@ f.rescuewindows::
   screens, and those that are (nearly) out of the bounds of their virtual
   screen will be brought completely inside (if that fits).
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.resize::
   This function displays an outline of the selected window.  Crossing a border
@@ -2843,7 +2853,7 @@ f.setpriority "`value`"::
   placed below other windows of the given priority. Otherwise it is placed
   above.  See `OnTopPriority` variable for details.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.showbackground::
   This function unmaps all windows in the current workspace. This is a toggle
@@ -2882,7 +2892,7 @@ f.switchpriority::
   automatically.  X-ref `OnTopPriority` and `PrioritySwitching`
   variables.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.tinylower::
 
@@ -2892,7 +2902,7 @@ f.tinyraise::
   just above the lowest one that's hiding it. These two functions are not
   subject to priority-switching.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.title::
   This function provides a centered, unselectable item in a menu definition.  It
@@ -2936,7 +2946,7 @@ f.unfocus::
 f.unsqueeze::
   Is to `f.squeeze` what `f.deiconify` is to `f.iconify`.
 +
-First appeared in %%NEXT%%.
+First appeared in 4.0.0.
 
 f.upiconmgr::
   This function warps the pointer to the previous row in the current icon
@@ -3098,7 +3108,7 @@ keyboard.
 If built with the `USE_SOUND` option, ctwm is able to play sounds
 for any X event.  This may be configured in two ways.
 
-As of %%NEXT%%, the sounds may be configured in the ctwmrc with the
+As of 4.0.0, the sounds may be configured in the ctwmrc with the
 `RplaySounds` config parameter.  See above for details.
 
 If that is not found, or in older versions, ctwm will look for the file
@@ -3196,12 +3206,21 @@ Portions copyright 1988 Evans & Sutherland Computer Corporation; portions
 copyright 1989 Hewlett-Packard Company and the Massachusetts Institute of
 Technology,  See `X(1)` for a full statement of rights and permissions.
 
+See COPYRIGHT file in distribution for more information.
+
 == AUTHORS
+
+=== TWM
 Tom LaStrange, Solbourne Computer; Jim Fulton, MIT X Consortium;
 Steve Pitschke, Stardent Computer; Keith Packard, MIT X Consortium;
-Dave Sternlicht, MIT X Consortium; Dave Payne, Apple Computer;
-Claude Lecommandeur, Swiss Polytechnical Institute of Lausanne (lecom@sic.epfl.ch);
-Richard Levitte (richard@levitte.org).
+Dave Sternlicht, MIT X Consortium; Dave Payne, Apple Computer.
+
+=== CTWM
+Claude Lecommandeur, Swiss Polytechnical Institute of Lausanne
+(lecom@sic.epfl.ch);
+Richard Levitte (richard@levitte.org);
+Matthew Fuller (fullermd@over-yonder.net);
+and many other contributors.
 
 == VERSION
 This manual is build for ctwm @ctwm_version_str@.

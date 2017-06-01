@@ -21,16 +21,6 @@ include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
 
-# Break out a bunch of bits into our own include dir
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
-
-# Set a few predef'd vars for our use
-include(ctwm_cmake_vars)
-
-# Setup paths for where we install stuff
-include(install_paths)
-
-
 # Guard against in-tree builds
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" insrc)
 if(insrc)
@@ -39,22 +29,24 @@ if(insrc)
 endif(insrc)
 
 
+#
+# Most of our bits are broken out into smaller files in a local dir
+#
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 
-#
-# First off, do some checks of compiler/stdlib features
-#
+# Setup basic vars for where our pieces are, list of source files, etc.
+include(basic_vars)
+
+# Do some basic checks of the compiler and stdlib
 include(compiler_feature_checks)
 
-# And some build env checks
-include(build_env_checks)
-
+# Set our install paths
+include(install_paths)
 
 
 #
-# Next, find various libs/includes/etc we need, if enabled.
-#
-
 # First things first.  If we don't have X, we're going nowhere.
+#
 find_package(X11)
 if(NOT X11_FOUND)
 	# This just isn't feasible...
@@ -95,69 +87,41 @@ set(LIBSEARCH
 	"/lib"
 )
 
-
-
-#
-# Check our build options and set things based on them
-#
-include(build_options)
-
-
-
-#
-# Next find some build tools
-#
-
-# Do whatever we need to do to get lex.c ready
-include(setup_lex)
-
-
-# And similar for gram.tab.[ch]
-include(setup_yacc)
-
-
-# Handle building the manual
-include(handle_manual)
-
-
-
-#
-# Do checks for library functions we need, and enable workarounds for any
-# cases we decide are worth handling that way.
-#
-include(check_funcs_etc)
-
-
-
-#
-# Now other build flags and the like
-#
-
-# Enable warnings by default
-if(NOT NO_WARNS)
-	add_definitions(${STD_WARNS})
-	message(STATUS "Enabling standard warnings.")
-endif(NOT NO_WARNS)
-
-
 # Header files are in both source and build dirs
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
-
 #
-# And the build targets
+# Look for various things on the system and setup our handlers for them,
+# and put the build together.
 #
 
-# Generated files
+# Check our build options and set things based on them
+include(build_options)
+
+# Do checks for library functions we need, and enable workarounds for any
+# cases we decide are worth handling that way.
+include(check_funcs_etc)
+
+# If we're building out of a VCS, find those bits so we can stash the
+# revision info.
+include(vcs_checks)
+
+# Find some tools used for generating sources and manuals, and setup the
+# targets to build them all.
+include(setup_lex)
+include(setup_yacc)
+include(handle_manual)
 include(gen_source_files)
 
+# Targets to run doxygen; nobody but devs care
+include(doxygen)
 
-# We're building ctwm
+
+# And link up the actual ctwm binary.
 add_executable(ctwm ${CTWMSRC})
 target_link_libraries(ctwm ${CTWMLIBS})
-
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
@@ -166,29 +130,25 @@ if(DO_CLIENT)
 endif(DO_CLIENT)
 
 
-
-#
-# And setup the installation
-#
-include(ctwm_install)
+# Setup the installation
+include(do_install)
 
 
 #
+# And some trailing misc bits
+#
+
 # Pull in some CPack config for auto-building packages (like .deb and
 # .rpm)
-#
 include(cpack_setup)
 
-
-#
 # Some targets to support release management stuff; building generated
 # files for the tarballs
-#
 include(mktar_support)
 
+# Pull in dtrace bits
+include(dtrace_support)
 
-#
-# Output various information about what we've figured and what we're
-# doing for the builder's edification
-#
+# Finish by outputting various information about what we've figured and
+# what we're doing for the builder's edification.
 include(show_build_info)

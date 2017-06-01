@@ -368,65 +368,6 @@ int main(int argc, char **argv)
 
 		numManaged ++;
 
-		/* initialize list pointers, remember to put an initialization
-		 * in InitVariables also
-		 */
-		Scr->BorderColorL = NULL;
-		Scr->IconBorderColorL = NULL;
-		Scr->BorderTileForegroundL = NULL;
-		Scr->BorderTileBackgroundL = NULL;
-		Scr->TitleForegroundL = NULL;
-		Scr->TitleBackgroundL = NULL;
-		Scr->IconForegroundL = NULL;
-		Scr->IconBackgroundL = NULL;
-		Scr->AutoPopupL = NULL;
-		Scr->AutoPopup = false;
-		Scr->NoBorder = NULL;
-		Scr->NoIconTitle = NULL;
-		Scr->NoTitle = NULL;
-		Scr->OccupyAll = NULL;
-		Scr->UnmapByMovingFarAway = NULL;
-		Scr->DontSetInactive = NULL;
-		Scr->AutoSqueeze = NULL;
-		Scr->StartSqueezed = NULL;
-		Scr->AlwaysSqueezeToGravityL = NULL;
-		Scr->MakeTitle = NULL;
-		Scr->AutoRaise = NULL;
-		Scr->WarpOnDeIconify = NULL;
-		Scr->AutoLower = NULL;
-		Scr->IconNames = NULL;
-		Scr->NoHighlight = NULL;
-		Scr->NoStackModeL = NULL;
-		Scr->OTP = NULL;
-		Scr->NoTitleHighlight = NULL;
-		Scr->DontIconify = NULL;
-		Scr->IconMgrNoShow = NULL;
-		Scr->IconMgrShow = NULL;
-		Scr->IconifyByUn = NULL;
-		Scr->IconManagerFL = NULL;
-		Scr->IconManagerBL = NULL;
-		Scr->IconMgrs = NULL;
-		Scr->StartIconified = NULL;
-		Scr->SqueezeTitleL = NULL;
-		Scr->DontSqueezeTitleL = NULL;
-		Scr->WindowRingL = NULL;
-		Scr->WindowRingExcludeL = NULL;
-		Scr->WarpCursorL = NULL;
-		Scr->DontSave = NULL;
-		Scr->OpaqueMoveList = NULL;
-		Scr->NoOpaqueMoveList = NULL;
-		Scr->OpaqueResizeList = NULL;
-		Scr->NoOpaqueResizeList = NULL;
-		Scr->ImageCache = NULL;
-		Scr->HighlightPixmapName = NULL;
-		Scr->Workspaces = NULL;
-		Scr->IconMenuDontShow = NULL;
-		Scr->VirtualScreens = NULL;
-		Scr->IgnoreTransientL = NULL;
-
-		/* remember to put an initialization in InitVariables also
-		 */
-
 		Scr->screen = scrnum;
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
@@ -1001,7 +942,6 @@ static void InitVariables(void)
 	Scr->DontWarpCursorInWMap = false;
 	Scr->XMoveGrid = 1;
 	Scr->YMoveGrid = 1;
-	Scr->FastServer = true;
 	Scr->CenterFeedbackWindow = false;
 	Scr->ShrinkIconTitles = false;
 	Scr->AutoRaiseIcons = false;

@@ -71,7 +71,12 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
 static void HandleFocusIn(void);
 static void HandleFocusOut(void);
 
-static char *Action;            /* XXX This may be narrowable */
+/*
+ * This currently needs to live in the broader scope because of how it's
+ * used in deferred function handling.
+ */
+static char *Action;
+
 static TwmWindow *ButtonWindow; /* button press window structure */
 
 static void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
@@ -2694,9 +2699,14 @@ void HandleButtonPress(void)
 		}
 
 		/* make sure we are not trying to move an identify window */
-		if(Event.xany.window != Scr->InfoWindow.win)
+		if(Event.xany.window != Scr->InfoWindow.win) {
+			/*
+			 * X-ref comment at top of file about Action; this is where
+			 * we need to use its broader lifespan.
+			 */
 			ExecuteFunction(RootFunction, Action, Event.xany.window,
 			                Tmp_win, &Event, Context, false);
+		}
 
 		RootFunction = 0;
 		return;
