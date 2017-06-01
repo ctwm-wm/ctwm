@@ -366,7 +366,9 @@ HandleFocusChange(void)
 static void
 HandleFocusIn(void)
 {
+#ifdef EWMH
 	TwmWindow *old_focus = Scr->Focus;
+#endif
 
 	if(! Tmp_win->wmhints->input) {
 		return;
@@ -399,7 +401,9 @@ HandleFocusIn(void)
 static void
 HandleFocusOut(void)
 {
+#ifdef EWMH
 	TwmWindow *old_focus = Scr->Focus;
+#endif
 
 	if(Scr->Focus != Tmp_win) {
 		return;

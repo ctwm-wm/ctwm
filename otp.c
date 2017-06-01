@@ -1662,8 +1662,10 @@ OtpIsFocusDependent(TwmWindow *twm_win)
 	assert(twm_win != NULL);
 	assert(twm_win->otp != NULL);
 
+#ifdef EWMH
 	if(twm_win->otp->pri_aflags & OTP_AFLAG_FULLSCREEN) {
 		return true;
 	}
+#endif
 	return false;
 }

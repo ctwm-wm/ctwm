@@ -129,7 +129,9 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 {
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
 	bool f_iconmgr = false;
+#ifdef EWMH
 	TwmWindow *old_focus = Scr->Focus;
+#endif
 
 	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
 		f_iconmgr = true;
