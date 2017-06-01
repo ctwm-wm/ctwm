@@ -361,6 +361,8 @@ HandleFocusChange(void)
 static void
 HandleFocusIn(void)
 {
+	TwmWindow *old_focus = Scr->Focus;
+
 	if(! Tmp_win->wmhints->input) {
 		return;
 	}
@@ -376,14 +378,13 @@ HandleFocusIn(void)
 
 #ifdef EWMH
 	/*
-	 * EWMH says _STATE_FULLSCREEN windows (which F_FULLSCREENZOOM does)
-	 * are on the top of the stack when focused, but not when not.  We
-	 * implement that by having the OTP code slam them to the top when
-	 * _FULLSCREEN && focused.  So call the restack function here to
-	 * effect that; it should already have the _FULLSCREEN aflag set, so
-	 * the Scr->Focus setting above will cause it to make that move.
+	 * Some EWMH flags may affect stacking, so after we change
+	 * Scr->Focus...
 	 */
-	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
+	if(old_focus && OtpIsFocusDependent(old_focus)) {
+		OtpRestackWindow(old_focus);
+	}
+	if(Tmp_win && OtpIsFocusDependent(Tmp_win)) {
 		OtpRestackWindow(Tmp_win);
 	}
 #endif
@@ -393,6 +394,8 @@ HandleFocusIn(void)
 static void
 HandleFocusOut(void)
 {
+	TwmWindow *old_focus = Scr->Focus;
+
 	if(Scr->Focus != Tmp_win) {
 		return;
 	}
@@ -407,11 +410,11 @@ HandleFocusOut(void)
 	Scr->Focus = NULL;
 
 #ifdef EWMH
-	/*
-	 * Must be after the Scr->Focus setting; x-ref above comment in
-	 * HandleFocusIn().
-	 */
-	if(Tmp_win->zoomed == F_FULLSCREENZOOM) {
+	/* X-ref HandleFocusIn() comment */
+	if(old_focus && OtpIsFocusDependent(old_focus)) {
+		OtpRestackWindow(old_focus);
+	}
+	if(Tmp_win && OtpIsFocusDependent(Tmp_win)) {
 		OtpRestackWindow(Tmp_win);
 	}
 #endif
