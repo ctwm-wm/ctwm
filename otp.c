@@ -1663,9 +1663,15 @@ OtpIsFocusDependent(TwmWindow *twm_win)
 	assert(twm_win->otp != NULL);
 
 #ifdef EWMH
+	/*
+	 * EWMH says _FULLSCREEN and focused windows get shoved to the top;
+	 * this implies that _FULLSCREEN and _not_ focused don't.  So if the
+	 * focus is changing, that means we may need to restack.
+	 */
 	if(twm_win->otp->pri_aflags & OTP_AFLAG_FULLSCREEN) {
 		return true;
 	}
 #endif
+
 	return false;
 }
