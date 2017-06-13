@@ -140,12 +140,15 @@ static char *m4_defs(Display *display, char *host)
 	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
 	struct hostent *hostname;
 	char *vc, *color;
-	static char tmp_name[] = "/tmp/ctwmrcXXXXXX";
+#define TMPLFILE "/tmp/ctwmrcXXXXXX"
+	static char tmp_name[sizeof(TMPLFILE)];
 	int fd;
 	FILE *tmpf;
 	char *user;
 
 	/* Create temp file */
+	strcpy(tmp_name, TMPLFILE);
+#undef TMPLFILE
 	fd = mkstemp(tmp_name);
 	if(fd < 0) {
 		perror("mkstemp failed in m4_defs");

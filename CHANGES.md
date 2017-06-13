@@ -3,7 +3,11 @@
 
 ## Next release  (xxxx-xx-xx)
 
-Nothing yet.
+### Bugfixes
+
+1. When multiple X Screens are used, building the temporary file for M4
+   definitions could fail with an error from mkstemp().  Reported by
+   Manfred Knick.
 
 
 
