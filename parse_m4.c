@@ -24,7 +24,8 @@ static char *m4_defs(Display *display, char *host);
 /*
  * Primary entry point to do m4 parsing of a startup file
  */
-FILE *start_m4(FILE *fraw)
+FILE *
+start_m4(FILE *fraw)
 {
 	int fids[2];
 	int fres;
@@ -83,7 +84,8 @@ FILE *start_m4(FILE *fraw)
  * Writes out a temp file of all the m4 defs appropriate for this run,
  * and returns the file name
  */
-static char *m4_defs(Display *display, char *host)
+static char *
+m4_defs(Display *display, char *host)
 {
 	Screen *screen;
 	Visual *visual;
