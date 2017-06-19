@@ -42,6 +42,7 @@ start_m4(FILE *fraw)
 	if(fres < 0) {
 		perror("Fork for " M4CMD " failed");
 		unlink(defs_file);
+		free(defs_file);
 		exit(23);
 	}
 
@@ -66,6 +67,7 @@ start_m4(FILE *fraw)
 		/* If we get here we are screwed... */
 		perror("Can't execlp() " M4CMD);
 		unlink(defs_file);
+		free(defs_file);
 		exit(124);
 	}
 
@@ -73,6 +75,7 @@ start_m4(FILE *fraw)
 	 * Else we're the parent; hand back our reading end of the pipe.
 	 */
 	close(fids[1]);
+	free(defs_file);
 	return (fdopen(fids[0], "r"));
 }
 
@@ -92,21 +95,29 @@ m4_defs(Display *display, const char *host)
 	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
 	struct hostent *hostname;
 	char *vc, *color;
-#define TMPLFILE "/tmp/ctwmrcXXXXXX"
-	static char tmp_name[sizeof(TMPLFILE)];
-	int fd;
+	char *tmp_name;
 	FILE *tmpf;
 	char *user;
 
 	/* Create temp file */
-	strcpy(tmp_name, TMPLFILE);
-#undef TMPLFILE
-	fd = mkstemp(tmp_name);
-	if(fd < 0) {
-		perror("mkstemp failed in m4_defs");
-		exit(377);
+	{
+		char *td = getenv("TMPDIR");
+		if(!td || strlen(td) < 2 || *td != '/') {
+			td = "/tmp";
+		}
+		asprintf(&tmp_name, "%s/ctwmrc.XXXXXXXX", td);
+		if(!tmp_name) {
+			perror("asprintf failed in m4_defs");
+			exit(1);
+		}
+
+		int fd = mkstemp(tmp_name);
+		if(fd < 0) {
+			perror("mkstemp failed in m4_defs");
+			exit(377);
+		}
+		tmpf = fdopen(fd, "w+");
 	}
-	tmpf = fdopen(fd, "w+");
 
 
 	/*
