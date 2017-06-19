@@ -18,7 +18,7 @@
 #include "version.h"
 
 
-static char *m4_defs(Display *display, char *host);
+static char *m4_defs(Display *display, const char *host);
 
 
 /*
@@ -85,7 +85,7 @@ start_m4(FILE *fraw)
  * and returns the file name
  */
 static char *
-m4_defs(Display *display, char *host)
+m4_defs(Display *display, const char *host)
 {
 	Screen *screen;
 	Visual *visual;
