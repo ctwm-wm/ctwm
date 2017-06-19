@@ -26,13 +26,9 @@ static char *m4_defs(Display *display, char *host);
  */
 FILE *start_m4(FILE *fraw)
 {
-	int fno;
 	int fids[2];
 	int fres;
 	char *defs_file;
-
-	/* We'll need to work in file descriptors, not stdio FILE's */
-	fno = fileno(fraw);
 
 	/* Write our our standard definitions into a temp file */
 	defs_file = m4_defs(dpy, CLarg.display_name);
@@ -56,7 +52,7 @@ FILE *start_m4(FILE *fraw)
 		/* Setup file descriptors */
 		close(0);               /* stdin */
 		close(1);               /* stdout */
-		dup2(fno, 0);           /* stdin = fraw */
+		dup2(fileno(fraw), 0);  /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
 
 		/*
