@@ -92,7 +92,7 @@ m4_defs(Display *display, const char *host)
 {
 	Screen *screen;
 	Visual *visual;
-	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
+	char client[MAXHOSTNAME];
 	struct hostent *hostname;
 	char *vc, *color;
 	char *tmp_name;
@@ -140,17 +140,27 @@ m4_defs(Display *display, const char *host)
 	 * A guess at the machine running the X server.  We take the full
 	 * $DISPLAY and chop off the screen specification.
 	 */
-	/* stpncpy() a better choice */
-	snprintf(server, sizeof(server), "%s", XDisplayName(host));
-	colon = strchr(server, ':');
-	if(colon != NULL) {
-		*colon = '\0';
+	{
+		char *server, *colon;
+
+		server = strdup(XDisplayName(host));
+		if(!server) {
+			server = strdup("unknown");
+		}
+		colon = strchr(server, ':');
+		if(colon != NULL) {
+			*colon = '\0';
+		}
+
+		/* :0 or unix socket connection means it's the same as CLIENTHOST */
+		if((server[0] == '\0') || (!strcmp(server, "unix"))) {
+			free(server);
+			server = strdup(client);
+		}
+		WR_DEF("SERVERHOST", server);
+
+		free(server);
 	}
-	/* :0 or unix socket connection means it's the same as CLIENTHOST */
-	if((server[0] == '\0') || (!strcmp(server, "unix"))) {
-		strcpy(server, client);
-	}
-	WR_DEF("SERVERHOST", server);
 
 	/* DNS (/NSS) lookup can't be the best way to do this, but... */
 	hostname = gethostbyname(client);
