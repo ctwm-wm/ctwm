@@ -3,6 +3,11 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### User Visible Changes
+
+1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
+   have been removed; it is now just a duplicate of CLIENTHOST.
+
 ### Bugfixes
 
 1. When multiple X Screens are used, building the temporary file for M4
