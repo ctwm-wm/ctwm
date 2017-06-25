@@ -281,8 +281,9 @@ CLIENTHOST::
   The machine that is running the clients.  (ie, ctwm)
 
 HOSTNAME::
-  The canonical hostname running the clients.  (ie. a fully-qualified
-  version of `CLIENTHOST`)
+  As of %%NEXT%%, this is a duplicate of `CLIENTHOST`.  In prior
+  versions, `gethostbyname()` was used to attempt to derive a canonical
+  or fully-qualified version of the hostname.
 
 === User Info
 
