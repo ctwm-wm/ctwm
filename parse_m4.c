@@ -162,7 +162,13 @@ m4_defs(Display *display, const char *host)
 	}
 
 #ifdef HISTORICAL_HOSTNAME_IMPL
-	/* Historical attempt to use DNS to figure a canonical name */
+	/*
+	 * Historical attempt to use DNS to figure a canonical name.  This is
+	 * left inside this #ifdef for easy restoration if somebody finds a
+	 * need; enabling it is not supported or documented.  Unless somebody
+	 * comes up with a good reason to revive it, it will be removed after
+	 * %%NEXT%%.
+	 */
 	{
 		struct hostent *hostname = gethostbyname(client);
 		if(hostname) {
