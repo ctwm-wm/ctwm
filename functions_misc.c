@@ -59,6 +59,23 @@ DFHANDLER(slowdownanimation)
  */
 DFHANDLER(menu)
 {
+	/*
+	 * n.b.: The f.menu handler is all kinds of magic; it's actually
+	 * completely unrelated to pulling up the menu.
+	 *
+	 * When a button/key binding invokes f.menu to open up a menu, that's
+	 * actually handled in the KeyPress or ButtonPress handlers by
+	 * calling do{_key,}_menu().  When we descend into a submenu, that's
+	 * handled in KeyPress handler for keyboard navigation when we hit
+	 * the Right arrow, or inside the
+	 * event loop recapture in UpdateMenu() for mouse navigation when we
+	 * move it to the right side of the menu entry.
+	 *
+	 * This handler is only used by "invoking" a menu item; releasing the
+	 * mouse button on the left side without moving right to open out the
+	 * submenu, or hitting the Enter key.  All it does is immediately
+	 * invoke the default entry, if there is one.
+	 */
 	if(action && ! strncmp(action, "WGOTO : ", 8)) {
 		GotoWorkSpaceByName(/* XXXXX */ Scr->currentvs,
 		                                ((char *)action) + 8);
