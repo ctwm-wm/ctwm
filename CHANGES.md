@@ -979,7 +979,7 @@ to work.
     clients (Frame5) don't like this.
 
 1. `UnmapByMovingFarAway { win-list }`
-    These windows will be moved out of the screen instead of beeing
+    These windows will be moved out of the screen instead of being
     unmapped when they become invisible due to a change workspace. This has
     been added because some ill-behaved clients (Frame5) don't like to be
     unmapped. Use this if the previous doesn't work.
@@ -1216,7 +1216,7 @@ to work.
     this star won't be displayed and the corresponding entry will be the
     default entry for this menu. When a menu has a default entry and is used
     as a pull-right in another menu, this default entry action will be executed
-    automatically when this submenu is selected without beeing displayed.
+    automatically when this submenu is selected without being displayed.
     It's hard to explain, but easy to understand.
 
 1. New keywords:
