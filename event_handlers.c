@@ -540,7 +540,6 @@ void HandleKeyRelease(void)
 void HandleKeyPress(void)
 {
 	FuncKey *key;
-	int len;
 	unsigned int modifier;
 	Window w;
 
@@ -986,7 +985,7 @@ void HandleKeyPress(void)
 				 * matching that name and invoke on them.
 				 */
 				bool matched = false;
-				len = strlen(key->win_name);
+				const size_t len = strlen(key->win_name);
 
 				/* try and match the name first */
 				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
