@@ -539,7 +539,6 @@ void HandleKeyRelease(void)
  */
 void HandleKeyPress(void)
 {
-	FuncKey *key;
 	Window w;
 
 
@@ -945,7 +944,7 @@ void HandleKeyPress(void)
 	 * Loop over our key bindings and do its thing if we find a matching
 	 * one.
 	 */
-	for(key = Scr->FuncKeyRoot.next; key != NULL; key = key->next) {
+	for(FuncKey *key = Scr->FuncKeyRoot.next; key != NULL; key = key->next) {
 		/* XXX Should invert this condition for readability */
 		if(key->keycode == Event.xkey.keycode &&
 		                key->mods == modifier &&
