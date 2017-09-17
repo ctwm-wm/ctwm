@@ -559,7 +559,6 @@ void HandleKeyPress(void)
 		int      offset;
 		char *keynam;
 		KeySym keysym;
-		int xx, yy, wx, wy;
 		Window junkW;
 
 		item = NULL;
@@ -587,8 +586,9 @@ void HandleKeyPress(void)
 			 * Start with our X and (current+height)Y, then wrap around
 			 * to the top (Y)/into the menu (X) as necessary.
 			 */
-			xx = Event.xkey.x;
-			yy = Event.xkey.y + Scr->EntryHeight;
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y + Scr->EntryHeight;
+			int wx, wy;
 			XTranslateCoordinates(dpy, Scr->Root, ActiveMenu->w, xx, yy, &wx, &wy, &junkW);
 			if((wy < 0) || (wy > ActiveMenu->height)) {
 				yy -= (wy - (Scr->EntryHeight / 2) - 2);
@@ -611,8 +611,9 @@ void HandleKeyPress(void)
 			 * Up/Backspace move up an entry, with details similar in
 			 * reverse to the above.
 			 */
-			xx = Event.xkey.x;
-			yy = Event.xkey.y - Scr->EntryHeight;
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y - Scr->EntryHeight;
+			int wx, wy;
 			XTranslateCoordinates(dpy, Scr->Root, ActiveMenu->w, xx, yy, &wx, &wy, &junkW);
 			if((wy < 0) || (wy > ActiveMenu->height)) {
 				yy -= (wy - ActiveMenu->height + (Scr->EntryHeight / 2) + 2);
@@ -656,8 +657,9 @@ void HandleKeyPress(void)
 			 * we are and where we should be in the up-level, clear out
 			 * the windows for this level, and warp us up there.
 			 */
-			xx = Event.xkey.x;
-			yy = Event.xkey.y;
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y;
+			int wx, wy;
 			menu = ActiveMenu->prev;
 			XTranslateCoordinates(dpy, Scr->Root, menu->w, xx, yy, &wx, &wy, &junkW);
 			xx -= (wx - (menu->width / 2));
@@ -682,8 +684,9 @@ void HandleKeyPress(void)
 			 * character and jump to it.
 			 */
 			MenuItem *startitem;
-			xx = Event.xkey.x;
-			yy = Event.xkey.y;
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y;
+			int wx, wy;
 
 			startitem = ActiveItem ? ActiveItem : ActiveMenu->first;
 			item = startitem->next;
@@ -815,8 +818,9 @@ void HandleKeyPress(void)
 					 * highlights, and call do_key_menu() to do a lot of
 					 * the internals of it.
 					 */
-					xx = Event.xkey.x;
-					yy = Event.xkey.y;
+					int xx = Event.xkey.x;
+					int yy = Event.xkey.y;
+					int wx, wy;
 					XTranslateCoordinates(dpy, Scr->Root, ActiveMenu->w, xx, yy,
 					                      &wx, &wy, &junkW);
 					if(ActiveItem) {
