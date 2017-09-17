@@ -540,7 +540,6 @@ void HandleKeyRelease(void)
 void HandleKeyPress(void)
 {
 	FuncKey *key;
-	unsigned int modifier;
 	Window w;
 
 
@@ -695,21 +694,21 @@ void HandleKeyPress(void)
 			if(item == NULL) {
 				item = ActiveMenu->first;
 			}
-			modifier = (Event.xkey.state & mods_used);
-			modifier = set_mask_ignore(modifier);
+			unsigned int keymod = (Event.xkey.state & mods_used);
+			keymod = set_mask_ignore(keymod);
 
 			while(item != startitem) {
 				bool matched = false;
 				offset = 0;
 				switch(item->item [0]) {
 					case '^' :
-						if((modifier & ControlMask) &&
+						if((keymod & ControlMask) &&
 						                (keynam [0] == Tolower(item->item [1]))) {
 							matched = true;
 						}
 						break;
 					case '~' :
-						if((modifier & Mod1Mask) &&
+						if((keymod & Mod1Mask) &&
 						                (keynam [0] == Tolower(item->item [1]))) {
 							matched = true;
 						}
@@ -720,10 +719,10 @@ void HandleKeyPress(void)
 						if(((Scr->IgnoreCaseInMenuSelection) &&
 						                (keynam [0] == Tolower(item->item [offset]))) ||
 
-						                ((modifier & ShiftMask) && Isupper(item->item [offset]) &&
+						                ((keymod & ShiftMask) && Isupper(item->item [offset]) &&
 						                 (keynam [0] == Tolower(item->item [offset]))) ||
 
-						                (!(modifier & ShiftMask) && Islower(item->item [offset]) &&
+						                (!(keymod & ShiftMask) && Islower(item->item [offset]) &&
 						                 (keynam [0] == item->item [offset]))) {
 							matched = true;
 						}
@@ -931,7 +930,7 @@ void HandleKeyPress(void)
 	 * We've figured out the Context.  Now see what modifiers we might
 	 * have set...
 	 */
-	modifier = (Event.xkey.state | AlternateKeymap) & mods_used;
+	unsigned int modifier = (Event.xkey.state | AlternateKeymap) & mods_used;
 	modifier = set_mask_ignore(modifier);
 	if(AlternateKeymap) {
 		XUngrabPointer(dpy, CurrentTime);
