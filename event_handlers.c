@@ -577,7 +577,9 @@ void HandleKeyPress(void)
 
 
 		/*
-		 * Initial handling of the various keystrokes.
+		 * Initial handling of the various keystrokes.  Most keys are
+		 * completely handled here; we only descend out into later for
+		 * for Return/Right keys that do invoke-y stuff on menu entries.
 		 */
 		if(keysym == XK_Down || keysym == XK_space) {
 			/*
@@ -760,8 +762,8 @@ void HandleKeyPress(void)
 		/*
 		 * So if we get here, the key pressed was a Right/Return on an
 		 * entry to select it (chosen entry now in item).  Every other
-		 * case would have been completely handled in the block above and
-		 * would have returned.
+		 * case is have been completely handled in the block above and
+		 * would have already returned.
 		 *
 		 * So item should always be the entry we just tried to invoke.
 		 * I'm not sure how it could be empty, but if it is, we just hop
