@@ -767,7 +767,7 @@ void HandleKeyPress(void)
 					break;
 
 				/* If it's a f.menu, there's more to do */
-				case F_MENU :
+				case F_MENU: {
 					/*
 					 * Return is treated separately from Right.
 					 *
@@ -836,6 +836,7 @@ void HandleKeyPress(void)
 					do_key_menu(item->sub, None);
 					CurrentSelectedWorkspace = NULL;
 					break;
+				}
 
 				/*
 				 * Any other f.something.  Pop down the menu (unless
