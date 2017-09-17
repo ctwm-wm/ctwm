@@ -539,9 +539,6 @@ void HandleKeyRelease(void)
  */
 void HandleKeyPress(void)
 {
-	Window w;
-
-
 	/*
 	 * If the Info window (f.identify/f.version) is currently up, any key
 	 * press will drop it away.
@@ -884,8 +881,7 @@ void HandleKeyPress(void)
 			Context = C_ALTERNATE;
 		}
 		else if(AlternateKeymap && Event.xkey.subwindow) {
-			w = Event.xkey.subwindow;
-			Tmp_win = GetTwmWindow(w);
+			Tmp_win = GetTwmWindow(Event.xkey.subwindow);
 			if(Tmp_win) {
 				Event.xany.window = Tmp_win->w;
 			}
