@@ -1036,7 +1036,7 @@ void HandleKeyPress(void)
 			}
 
 			/* now try the res_name */
-			if(!matched)
+			if(!matched) {
 				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 				                Tmp_win = Tmp_win->next) {
 					if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
@@ -1048,9 +1048,10 @@ void HandleKeyPress(void)
 						}
 					}
 				}
+			}
 
 			/* now try the res_class */
-			if(!matched)
+			if(!matched) {
 				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 				                Tmp_win = Tmp_win->next) {
 					if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
@@ -1062,6 +1063,7 @@ void HandleKeyPress(void)
 						}
 					}
 				}
+			}
 
 			/*
 			 * If we wound up invoking something, we're done, so return.
