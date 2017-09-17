@@ -1064,9 +1064,9 @@ void HandleKeyPress(void)
 				}
 
 			/*
-			 * If we wound up invoking something, we're done, so
-			 * return.  If we didn't, we fall through to the next
-			 * loop through our defined bindings.
+			 * If we wound up invoking something, we're done, so return.
+			 * If we didn't, we fall through to the next loop through our
+			 * defined bindings.
 			 *
 			 * By-name bindings are unique in this; normal contexts
 			 * couldn't have multiple matches, so that side of things
