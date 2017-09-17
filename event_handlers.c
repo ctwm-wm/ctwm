@@ -530,12 +530,15 @@ void HandleKeyRelease(void)
 
 
 
-/***********************************************************************
+/*
+ * HandleKeyPress - key press event handler
  *
- *  Procedure:
- *      HandleKeyPress - key press event handler
- *
- ***********************************************************************
+ * When a key is pressed, we may do various things with it.  If we're in
+ * a menu, various keybindings move around in it, others get silently
+ * ignored.  Else, we look through the various bindings set in the config
+ * file and invoke whatever should be.  If none of that matches, and it
+ * seems like some window should have focus, pass the event down to that
+ * window.
  */
 void HandleKeyPress(void)
 {
@@ -1071,7 +1074,9 @@ void HandleKeyPress(void)
 
 	/*
 	 * If we get here, no function key was bound to the key.  Send it to
-	 * the client if it was in a window we know about.
+	 * the client if it was in a window we know about.  Mostly this
+	 * doesn't happen; clients with focus get their events more directly,
+	 * but special cases may cause this.
 	 */
 	if(Tmp_win) {
 		if(Context == C_WORKSPACE) {
