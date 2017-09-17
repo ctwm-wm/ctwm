@@ -632,6 +632,10 @@ void HandleKeyPress(void)
 			 * Right/Return mean we're invoking some entry item, so we
 			 * take note of where we are for activating at the end of
 			 * this set of conditionals.
+			 *
+			 * Follow this down into the following if(item) block for
+			 * details, particularly in the subtle differences between
+			 * Right and Return on f.menu entries.
 			 */
 			item = ActiveItem;
 		}
@@ -771,25 +775,24 @@ void HandleKeyPress(void)
 				case F_TITLE :
 					break;
 
-				/* If it's a f.menu, there's more to do */
+				/* If it's a f.menu, there's more magic to do */
 				case F_MENU: {
 					/*
-					 * Return is treated separately from Right.
-					 *
-					 * XXX Should it?  I think this might partly be a bug
-					 * introduced in 3.3; prior to that it was only the
-					 * case for Scr->Workspaces, not for everything else.
-					 * Revisit.
+					 * Return is treated separately from Right.  It
+					 * "invokes" the menu item, which immediately calls
+					 * whatever the default menu entry is (which may be
+					 * nothing).
 					 */
 					if(!strcmp(keynam, "Return")) {
 						if(ActiveMenu == Scr->Workspaces) {
 							/*
-							 * f.menu "TwmWorkspaces".  Hitting Return on
-							 * these entries jumps to the given
-							 * workspace, as opposed to Right which opens
-							 * the sub-menu of items in the workspace.
+							 * f.menu "TwmWorkspaces".  The "invocation"
+							 * of this jumps to the workspace in
+							 * question, as if it were a default entry of
+							 * f.gotoworkspace.
 							 *
-							 * XXX Grody magic.
+							 * XXX Grody magic.  Maybe this should be
+							 * unwound to a default entry...
 							 */
 							PopDownMenu();
 							XUngrabPointer(dpy, CurrentTime);
@@ -797,12 +800,9 @@ void HandleKeyPress(void)
 						}
 						else {
 							/*
-							 * Anything else (but still a f.menu
-							 * "something", since we're in that case).  I
-							 * don't believe this actually works right.
-							 * It seems like it's expecting to execute
-							 * something other than a f.menu.  X-ref
-							 * prior comment about 3.3 introduced bug.
+							 * Calling the f.menu handler invokes the
+							 * default action.  We handle popping out of
+							 * menus ourselves.
 							 */
 							ExecuteFunction(item->func, item->action,
 							                ButtonWindow ? ButtonWindow->frame : None,
@@ -810,12 +810,15 @@ void HandleKeyPress(void)
 							PopDownMenu();
 						}
 
-						/* Whatever Return might do is done */
+						/*
+						 * Whatever invocation Return does is done, so we
+						 * are too.
+						 */
 						return;
 					}
 
 					/*
-					 * Regular handling of opening up a sub-f.menu.  Open
+					 * Right arrow causes opening up a sub-f.menu.  Open
 					 * it up in the appropriate place, [re-]set
 					 * highlights, and call do_key_menu() to do a lot of
 					 * the internals of it.
@@ -980,6 +983,13 @@ void HandleKeyPress(void)
 		if(key->cont != C_NAME) {
 			/* Normal context binding; do what it wants */
 			if(key->func == F_MENU) {
+				/*
+				 * f.menu doesn't call the f.menu handler; we directly
+				 * do_key_menu() to pull it up.
+				 *
+				 * Note this is "we called f.menu from a keybinding", not
+				 * "we hit f.menu inside a menu we had up"; that's above.
+				 */
 				ButtonWindow = Tmp_win;
 				do_key_menu(key->menu, (Window) None);
 			}
@@ -2690,6 +2700,11 @@ void HandleButtonPress(void)
 					if(tbf->num == ButtonPressed
 					                && tbf->mods == modifier) {
 						switch(tbf->func) {
+							/*
+							 * Opening up a menu doesn't use the f.menu
+							 * handler, we use our do_menu(); x-ref
+							 * comments in the handler for details.
+							 */
 							case F_MENU :
 								Context = C_TITLE;
 								ButtonWindow = Tmp_win;
@@ -2942,6 +2957,10 @@ void HandleButtonPress(void)
 	if(tmp) {
 		func = tmp->func;
 		switch(func) {
+			/*
+			 * f.menu isn't invoked, it's handle magically.  Other funcs
+			 * we just invoke.  X-ref the f.menu handler for details.
+			 */
 			case F_MENU :
 				do_menu(tmp->menu, (Window) None);
 				break;
