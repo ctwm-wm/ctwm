@@ -2508,6 +2508,9 @@ void HandleButtonRelease(void)
 }
 
 
+/*
+ * Pop up a submenu as a result of moving the mouse right on its entry.
+ */
 static void do_menu(MenuRoot *menu,     /* menu to pop up */
                     Window w)          /* invoking window or None */
 {
@@ -2536,6 +2539,11 @@ static void do_menu(MenuRoot *menu,     /* menu to pop up */
 	}
 }
 
+
+/*
+ * Pop up a submenu as a result of hitting the Right arrow key while on
+ * its entry.  We should try folding these two together a bit more.
+ */
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w)              /* invoking window or None */
 {
