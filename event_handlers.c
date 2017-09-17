@@ -867,7 +867,7 @@ void HandleKeyPress(void)
 
 
 	/*
-	 * Not in a manu, so we loop through our various bindings.  First,
+	 * Not in a menu, so we loop through our various bindings.  First,
 	 * figure out what context we're in.  This goes in a global var,
 	 * presumably because stuff way down the chain of invoking some item
 	 * may need to refer up to it.
