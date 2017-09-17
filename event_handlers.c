@@ -945,52 +945,88 @@ void HandleKeyPress(void)
 	 * one.
 	 */
 	for(FuncKey *key = Scr->FuncKeyRoot.next; key != NULL; key = key->next) {
-		/* XXX Should invert this condition for readability */
-		if(key->keycode == Event.xkey.keycode &&
-		                key->mods == modifier &&
-		                (key->cont == Context || key->cont == C_NAME)) {
-			/* weed out the functions that don't make sense to execute
-			 * from a key press
-			 * TODO: add keyboard moving/resizing of windows.
-			 */
-			if(key->func == F_MOVE || key->func == F_RESIZE) {
-				return;
-			}
+		/*
+		 * Is this what we're trying to invoke?  Gotta be the right key,
+		 * and right modifier; those are easy.
+		 *
+		 * Context is tougher; that has to match what we're expecting as
+		 * well, except in the case of C_NAME, which we always have to
+		 * check to see if it'll match any windows.  So if we have the
+		 * right key and modifier, and it's a C_NAME context, it's a
+		 * "maybe" match and we have to go through the checks.
+		 */
+		if(key->keycode != Event.xkey.keycode ||
+		                key->mods != modifier ||
+		                (key->cont != Context && key->cont != C_NAME)) {
+			/* Nope, not yet */
+			continue;
+		}
 
-			if(key->cont != C_NAME) {
-				/* Normal binding; do what it wants */
-				if(key->func == F_MENU) {
-					ButtonWindow = Tmp_win;
-					do_key_menu(key->menu, (Window) None);
-				}
-				else {
+		/* 'k, it's a match (or potential match, in C_NAME case) */
+
+		/*
+		 * Weed out the functions that don't make sense to execute from a
+		 * key press
+		 *
+		 * TODO: add keyboard moving/resizing of windows.
+		 */
+		if(key->func == F_MOVE || key->func == F_RESIZE) {
+			return;
+		}
+
+		if(key->cont != C_NAME) {
+			/* Normal context binding; do what it wants */
+			if(key->func == F_MENU) {
+				ButtonWindow = Tmp_win;
+				do_key_menu(key->menu, (Window) None);
+			}
+			else {
 #ifdef EWMH_DESKTOP_ROOT
-					if(Context == C_ROOT && Tmp_win != NULL) {
-						Context = C_WINDOW;
-						fprintf(stderr, "HandleKeyPress: wt_Desktop -> C_WINDOW\n");
-					}
+				if(Context == C_ROOT && Tmp_win != NULL) {
+					Context = C_WINDOW;
+					fprintf(stderr, "HandleKeyPress: wt_Desktop -> C_WINDOW\n");
+				}
 #endif /* EWMH */
-					ExecuteFunction(key->func, key->action, Event.xany.window,
-					                Tmp_win, &Event, Context, false);
+				ExecuteFunction(key->func, key->action, Event.xany.window,
+				                Tmp_win, &Event, Context, false);
+				if(!AlternateKeymap && !AlternateContext) {
+					XUngrabPointer(dpy, CurrentTime);
+				}
+			}
+			return;
+		}
+		else {
+			/*
+			 * By-name binding (i.e., quoted string for the context
+			 * argument in config; see the manual).  Find windows
+			 * matching that name and invoke on them, if any.
+			 *
+			 * This is the 'maybe' case above; we don't know whether this
+			 * does something until we try it.  If we don't get a match,
+			 * we loop back around and keep going through our functions
+			 * until we do.
+			 */
+			bool matched = false;
+			const size_t len = strlen(key->win_name);
+
+			/* try and match the name first */
+			for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
+			                Tmp_win = Tmp_win->next) {
+				if(!strncmp(key->win_name, Tmp_win->name, len)) {
+					matched = true;
+					ExecuteFunction(key->func, key->action, Tmp_win->frame,
+					                Tmp_win, &Event, C_FRAME, false);
 					if(!AlternateKeymap && !AlternateContext) {
 						XUngrabPointer(dpy, CurrentTime);
 					}
 				}
-				return;
 			}
-			else {
-				/*
-				 * By-name binding (i.e., quoted string for the context
-				 * argument in config; see the manual).  Find windows
-				 * matching that name and invoke on them.
-				 */
-				bool matched = false;
-				const size_t len = strlen(key->win_name);
 
-				/* try and match the name first */
+			/* now try the res_name */
+			if(!matched)
 				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 				                Tmp_win = Tmp_win->next) {
-					if(!strncmp(key->win_name, Tmp_win->name, len)) {
+					if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
 						matched = true;
 						ExecuteFunction(key->func, key->action, Tmp_win->frame,
 						                Tmp_win, &Event, C_FRAME, false);
@@ -1000,52 +1036,37 @@ void HandleKeyPress(void)
 					}
 				}
 
-				/* now try the res_name */
-				if(!matched)
-					for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
-					                Tmp_win = Tmp_win->next) {
-						if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
-							matched = true;
-							ExecuteFunction(key->func, key->action, Tmp_win->frame,
-							                Tmp_win, &Event, C_FRAME, false);
-							if(!AlternateKeymap && !AlternateContext) {
-								XUngrabPointer(dpy, CurrentTime);
-							}
+			/* now try the res_class */
+			if(!matched)
+				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
+				                Tmp_win = Tmp_win->next) {
+					if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
+						matched = true;
+						ExecuteFunction(key->func, key->action, Tmp_win->frame,
+						                Tmp_win, &Event, C_FRAME, false);
+						if(!AlternateKeymap && !AlternateContext) {
+							XUngrabPointer(dpy, CurrentTime);
 						}
 					}
-
-				/* now try the res_class */
-				if(!matched)
-					for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
-					                Tmp_win = Tmp_win->next) {
-						if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
-							matched = true;
-							ExecuteFunction(key->func, key->action, Tmp_win->frame,
-							                Tmp_win, &Event, C_FRAME, false);
-							if(!AlternateKeymap && !AlternateContext) {
-								XUngrabPointer(dpy, CurrentTime);
-							}
-						}
-					}
-
-				/*
-				 * If we wound up invoking something, we're done, so
-				 * return.  If we didn't, we fall through to the next
-				 * loop through our defined bindings.
-				 *
-				 * By-name bindings are unique in this; normal contexts
-				 * couldn't have multiple matches, so that side of things
-				 * finishes when it deals with its found match.  But with
-				 * by-name we could have multiple bindings of a given
-				 * button/modifier with different names, so we have to go
-				 * back around to the next run through the for() loop.
-				 */
-				if(matched) {
-					return;
 				}
-			} /* regular context/by-name if() */
-		} /* matched */
-	}
+
+			/*
+			 * If we wound up invoking something, we're done, so
+			 * return.  If we didn't, we fall through to the next
+			 * loop through our defined bindings.
+			 *
+			 * By-name bindings are unique in this; normal contexts
+			 * couldn't have multiple matches, so that side of things
+			 * finishes when it deals with its found match.  But with
+			 * by-name we could have multiple bindings of a given
+			 * button/modifier with different names, so we have to go
+			 * back around to the next run through the for() loop.
+			 */
+			if(matched) {
+				return;
+			}
+		} // regular context or by-name?
+	} // Loop over all bindings
 
 
 	/*
