@@ -556,7 +556,6 @@ void HandleKeyPress(void)
 	 */
 	if(ActiveMenu != NULL) {
 		MenuItem *item;
-		int      offset;
 		char *keynam;
 		KeySym keysym;
 		Window junkW;
@@ -698,7 +697,7 @@ void HandleKeyPress(void)
 
 			while(item != startitem) {
 				bool matched = false;
-				offset = 0;
+				size_t offset = 0;
 				switch(item->item [0]) {
 					case '^' :
 						if((keymod & ControlMask) &&
