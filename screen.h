@@ -161,7 +161,7 @@ struct ScreenInfo {
 
 	/**
 	 * Root window holding our vscreens.  Initialized to the same value
-	 * as Root, and isn't changed afterward.
+	 * as ScreenInfo.Root, and isn't changed afterward.
 	 */
 	Window XineramaRoot;
 	Window CaptiveRoot; ///< The captive root window, if any, or None
