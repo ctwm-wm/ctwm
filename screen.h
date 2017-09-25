@@ -170,7 +170,14 @@ struct ScreenInfo {
 	/// @}
 
 
-	Window SizeWindow;          /* the resize dimensions window */
+	/**
+	 * Dimensions/coordinates window.  This is the small window (usually
+	 * in the upper left of the screen, unless
+	 * ScreenInfo.CenterFeedbackWindow is set) that shows
+	 * dimensions/coordinates for resize/move operations.
+	 */
+	Window SizeWindow;
+
 	struct {                    /* the information window */
 		Window       win;          // Actual X window
 		bool         mapped;       // Flag for currently up
