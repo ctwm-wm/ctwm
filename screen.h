@@ -44,6 +44,21 @@ struct TitlebarPixmaps {
 	Pixmap delete;
 };
 
+
+/**
+ * Info and control for each X Screen we control.
+ *
+ * This contains pure physical or X info (size, coordinates, color
+ * depth), ctwm info (lists of windows on it, window rings, how it fits
+ * with other Screens we control), most of the config file settings which
+ * may differ from Screen to Screen, menus, special windows (Occupy,
+ * Identify, etc), and piles of other stuff.
+ *
+ * \note
+ * Possibly this should be broken up somewhat.  e.g., much of the
+ * config-related bits pulled out into their own structure, which could
+ * allow decoupling the config parsing from the X screens a bit.
+ */
 struct ScreenInfo {
 	int screen;                 /* the default screen */
 	bool takeover;              /* whether we're taking over this screen */
