@@ -104,18 +104,30 @@ struct ScreenInfo {
 	              ///< \copydetails crootw
 	/// @}
 
-	int MaxWindowWidth;         /* largest window to allow */
-	int MaxWindowHeight;        /* ditto */
+	int MaxWindowWidth;   ///< Largest window width to allow
+	int MaxWindowHeight;  ///< Largest window height to allow
 
-	TwmWindow *FirstWindow;     /* the head of the twm window list */
-	Colormaps RootColormaps;    /* the colormaps of the root window */
+	/**
+	 * The head of the screen's twm window list.
+	 * This is used for places where we need to iterate over the
+	 * TwmWindow's in a single Screen, by following the TwmWindow.next
+	 * pointers.
+	 */
+	TwmWindow *FirstWindow;
 
-	Window Root;                /* the root window: the current virtual screen */
-	Window XineramaRoot;        /* the root window, may be CaptiveRoot or otherwise RealRoot */
-	Window CaptiveRoot;         /* the captive root window, if any, or 0 */
-	Window RealRoot;            /* the actual root window of the display */
+	Colormaps RootColormaps;  ///< The colormaps of the root window
 
-	/*
+
+	/**
+	 * \defgroup scr_roots Various root and pseudo-root Windows.
+	 * These are the various forms of root and almost-root windows that
+	 * things on this Screen reside in.  It's probable that there's a lot
+	 * of confusion of these, and they get set, reset, and used
+	 * incorrectly in a lot of places.  We mostly get away with it
+	 * because in normal usage, they're often all identical.
+	 *
+	 * \verbatim
+	 *
 	 *  +--RealRoot-----------------------------------------------------------+
 	 *  | the root of the display (most uses of this are probably incorrect!) |
 	 *  |                                                                     |
@@ -134,7 +146,29 @@ struct ScreenInfo {
 	 *  |   | +-----------------------------------------------------------+ | |
 	 *  |   +---------------------------------------------------------------+ |
 	 *  +---------------------------------------------------------------------+
+	 * \endverbatim
+	 *
+	 * @{
 	 */
+
+	/**
+	 * Root window for the current vscreen.
+	 * Initially either the real X RootWindow(), or the existing or
+	 * created Window for a captive ctwm.  Gets reset to a vscreen's
+	 * window in InitVirtualScreens().
+	 */
+	Window Root;
+
+	/**
+	 * Root window holding our vscreens.  Initialized to the same value
+	 * as Root, and isn't changed afterward.
+	 */
+	Window XineramaRoot;
+	Window CaptiveRoot; ///< The captive root window, if any, or None
+	Window RealRoot;    ///< The actual X root window of the display.
+	                    ///< This is always X's RootWindow().
+	/// @}
+
 
 	Window SizeWindow;          /* the resize dimensions window */
 	struct {                    /* the information window */
