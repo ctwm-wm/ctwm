@@ -48,6 +48,10 @@ struct TitlebarPixmaps {
 /**
  * Info and control for each X Screen we control.
  *
+ * We start up on an X Display (e.g., ":0"), and by default try to take
+ * over each X Screen on that display (e.g, ":0.0", ":0.1", ...).  Each
+ * of those Screens will have its own ScreenInfo.
+ *
  * This contains pure physical or X info (size, coordinates, color
  * depth), ctwm info (lists of windows on it, window rings, how it fits
  * with other Screens we control), most of the config file settings which
@@ -60,21 +64,45 @@ struct TitlebarPixmaps {
  * allow decoupling the config parsing from the X screens a bit.
  */
 struct ScreenInfo {
-	int screen;                 /* the default screen */
-	bool takeover;              /* whether we're taking over this screen */
-	int d_depth;                /* copy of DefaultDepth(dpy, screen) */
-	Visual *d_visual;           /* copy of DefaultVisual(dpy, screen) */
-	int Monochrome;             /* is the display monochrome ? */
-	int rootx;                  /* The x coordinate of the root window (virtual screen) relative to RealRoot */
-	int rooty;                  /* The y coordinate of the root window (virtual screen) relative to RealRoot */
-	int rootw;                  /* my copy of DisplayWidth(dpy, screen) */
-	int rooth;                  /* my copy of DisplayHeight(dpy, screen) */
+	int screen;       ///< Which screen (i.e., the x after the dot in ":0.x")
+	bool takeover;    ///< Whether we're taking over this screen.
+	                  ///< Usually true, unless running captive or \--cfgchk
+	int d_depth;      ///< Copy of DefaultDepth(dpy, screen)
+	Visual *d_visual; ///< Copy of DefaultVisual(dpy, screen)
+	int Monochrome;   ///< Is the display monochrome?
 
-	char *captivename;          /* The name of the captive root window if any */
-	int crootx;                 /* The x coordinate of the captive root window if any */
-	int crooty;                 /* The y coordinate of the captive root window if any */
-	int crootw;                 /* my copy of DisplayWidth(dpy, screen) */
-	int crooth;                 /* my copy of DisplayHeight(dpy, screen) */
+	/**
+	 * The x coordinate of the root window relative to RealRoot.
+	 *
+	 * This is usually 0, except in the case of captive mode where it
+	 * shows where we are on the real screen, or when we have
+	 * VirtualScreens and are positioning our real Screens on a virtual
+	 * RealRoot.
+	 */
+	int rootx;
+	int rooty; ///< The y coordinate of the root window relative to RealRoot.
+	           ///< \copydetails rootx
+
+	int rootw; ///< Copy of DisplayWidth(dpy, screen)
+	int rooth; ///< Copy of DisplayHeight(dpy, screen)
+
+	/**
+	 * \defgroup scr_captive_bits Captive ctwm bits
+	 * These are various fields related to running a captive ctwm (i.e.,
+	 * with \--window).  They'll generally be empty for non-captive
+	 * invocations, or describe our position inside the "outside" world
+	 * if we are.
+	 * @{
+	 */
+	char *captivename; ///< The name of the captive root window if any.
+	                   ///< Autogen'd or set with \--name
+	int crootx;   ///< The x coordinate of the captive root window if any.
+	int crooty;   ///< The y coordinate of the captive root window if any.
+	int crootw;   ///< Initially copy of DisplayWidth(dpy, screen).
+	              ///< See also ConfigureCaptiveRootWindow()
+	int crooth;   ///< Initially copy of DisplayHeight(dpy, screen).
+	              ///< \copydetails crootw
+	/// @}
 
 	int MaxWindowWidth;         /* largest window to allow */
 	int MaxWindowHeight;        /* ditto */
