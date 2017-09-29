@@ -196,6 +196,13 @@ struct ScreenInfo {
 	 * ScreenInfo docs as well as the struct's own.
 	 */
 
+	/**
+	 * \defgroup scr_maskwin Screen masking window stuff
+	 * These are bits for a window that covers up everything on the
+	 * screen during startup if we're showing the "Welcome window"
+	 * splash screen.  That is, if ScreenInfo.ShowWelcomeWindow is true.
+	 * @{
+	 */
 	Window WindowMask;      ///< Startup splash screen masking window if
 	                        ///< ScreenInfo.ShowWelcomeWindow
 	Window ShapeWindow;     ///< Utility window for animated icons
@@ -205,6 +212,7 @@ struct ScreenInfo {
 	                        ///< on ScreenInfo.WindowMask
 	Colormap WelcomeCmap;   ///< Colormap for ScreenInfo.WindowMask
 	Visual  *WelcomeVisual; ///< Unused \deprecated Unused
+	/// @}
 
 	name_list *ImageCache;      /* list of pixmaps */
 	TitlebarPixmaps tbpm;       /* titlebar pixmaps */
@@ -512,6 +520,13 @@ struct ScreenInfo {
 	bool  NoWarpToMenuTitle; /* warp cursor to clipped menu title */
 	bool  NoImagesInWorkSpaceManager;   /* do not display mini images of the desktop background images on WSmap */
 	bool  DontToggleWorkspaceManagerState;
+
+	/**
+	 * Whether to show the welcome window.
+	 * Related to the DontShowWelcomeWindow config var or the
+	 * \--nowelcome command-line arg.
+	 * \ingroup scr_maskwin
+	 */
 	bool  ShowWelcomeWindow;
 
 	/* Forcing focus-setting on windows */
