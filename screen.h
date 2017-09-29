@@ -178,13 +178,24 @@ struct ScreenInfo {
 	 */
 	Window SizeWindow;
 
-	struct {                    /* the information window */
-		Window       win;          // Actual X window
-		bool         mapped;       // Flag for currently up
-		int          lines;        // # of lines (internal)
-		unsigned int width;        // Stash of
-		unsigned int height;       // current measurements
-	} InfoWindow;
+	/**
+	 * Window info window.  This is the window that pops up with the
+	 * various information when you f.identify a window, and also the
+	 * truncated version of that that f.version pulls up.
+	 */
+	struct _InfoWindow {
+		Window       win;          ///< Actual X window
+		bool         mapped;       ///< Whether it's currently up
+		int          lines;        ///< Current number of lines
+		unsigned int width;        ///< Current size
+		unsigned int height;       ///< Current size
+	} InfoWindow; ///< \copydoc ScreenInfo::_InfoWindow
+	/*
+	 * Naming this struct type is pointless, but necessary for doxygen to
+	 * not barf on it.  The copydoc is needed so the desc shows up in the
+	 * ScreenInfo docs as well as the struct's own.
+	 */
+
 	Window WindowMask;          /* the window masking the screen at startup */
 	Window ShapeWindow;         /* an utilitary window for animated icons */
 
