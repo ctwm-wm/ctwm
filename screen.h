@@ -196,14 +196,14 @@ struct ScreenInfo {
 	 * ScreenInfo docs as well as the struct's own.
 	 */
 
-	Window WindowMask;    ///< Startup splash screen masking window if
-	                      ///< ScreenInfo.ShowWelcomeWindow
-	Window ShapeWindow;   ///< Utility window for animated icons
+	Window WindowMask;      ///< Startup splash screen masking window if
+	                        ///< ScreenInfo.ShowWelcomeWindow
+	Window ShapeWindow;     ///< Utility window for animated icons
 
-	Image   *WelcomeImage; ///< Image to show on ScreenInfo.WindowMask
-	GC       WelcomeGC;    ///< GC for drawing ScreenInfo.WelcomeImage
-	                       ///< on ScreenInfo.WindowMask
-	Colormap WelcomeCmap;  ///< Colormap for ScreenInfo.WindowMask
+	Image   *WelcomeImage;  ///< Image to show on ScreenInfo.WindowMask
+	GC       WelcomeGC;     ///< GC for drawing ScreenInfo.WelcomeImage
+	                        ///< on ScreenInfo.WindowMask
+	Colormap WelcomeCmap;   ///< Colormap for ScreenInfo.WindowMask
 	Visual  *WelcomeVisual; ///< Unused \deprecated Unused
 
 	name_list *ImageCache;      /* list of pixmaps */
