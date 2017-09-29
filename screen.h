@@ -36,12 +36,19 @@ struct StdCmap {
 #define SIZE_HINDENT 10
 #define SIZE_VINDENT 2
 
+/**
+ * Stash for memoizing various pixmaps used in titlebars.
+ * \sa the TBPM_* constants in image.h
+ * \todo This probably doesn't need to live on its own, since it only
+ * exists to define a member in the ScreenInfo struct.  Maybe it should
+ * just be moved to being defined nested in there...
+ */
 struct TitlebarPixmaps {
-	Pixmap xlogo;
-	Pixmap resize;
-	Pixmap question;
-	Pixmap menu;
-	Pixmap delete;
+	Pixmap xlogo;    ///< #TBPM_XLOGO
+	Pixmap resize;   ///< #TBPM_RESIZE
+	Pixmap question; ///< #TBPM_QUESTION
+	Pixmap menu;     ///< #TBPM_MENU
+	Pixmap delete;   ///< #TBPM_DOT
 };
 
 
@@ -211,31 +218,45 @@ struct ScreenInfo {
 	GC       WelcomeGC;     ///< GC for drawing ScreenInfo.WelcomeImage
 	                        ///< on ScreenInfo.WindowMask
 	Colormap WelcomeCmap;   ///< Colormap for ScreenInfo.WindowMask
-	Visual  *WelcomeVisual; ///< Unused \deprecated Unused
+	Visual  *WelcomeVisual; ///< Unused \deprecated Unused \todo Remove
 	/// @}
 
-	name_list *ImageCache;      /* list of pixmaps */
-	TitlebarPixmaps tbpm;       /* titlebar pixmaps */
-	Image *UnknownImage;        /* the unknown icon pixmap */
-	Pixmap siconifyPm;          /* the icon manager iconify pixmap */
-	Pixmap pullPm;              /* pull right menu icon */
-	unsigned int pullW, pullH;  /* size of pull right menu icon */
-	char *HighlightPixmapName;  /* name of the hilite image if any */
+	name_list *ImageCache;  ///< Cached pixmaps used in image loading
+	TitlebarPixmaps tbpm;   ///< Memoized titlebar pixmaps
+	Image *UnknownImage;    ///< Fallback icon pixmap
+	Pixmap siconifyPm;      ///< In-icon manager iconifed marker pixmap
+	Pixmap pullPm;          ///< In-menu submenu item marker icon
+	unsigned int pullW;     ///< Dimensions of ScreenInfo.pullPm
+	unsigned int pullH;     ///< Dimensions of ScreenInfo.pullPm
 
-	MenuRoot *MenuList;         /* head of the menu list */
-	MenuRoot *LastMenu;         /* the last menu (mostly unused?) */
-	MenuRoot *Windows;          /* the TwmWindows menu */
-	MenuRoot *Icons;            /* the TwmIcons menu */
-	MenuRoot *Workspaces;       /* the TwmWorkspaces menu */
-	MenuRoot *AllWindows;       /* the TwmAllWindows menu */
+	/**
+	 * Name of titlebar focus hilite image if any.  This is an
+	 * alternative to the builtin shading on the titlebar when a window
+	 * has focus.  See Pixmaps config var.
+	 */
+	char *HighlightPixmapName;
+
+	/**
+	 * \defgroup scr_menu_bits Various menus
+	 * These hold references to the various menus on the Screen.
+	 * @{
+	 */
+	MenuRoot *MenuList;    ///< Head of the menu list
+	MenuRoot *LastMenu;    ///< Temp var used in creating the Screen's menus
+	MenuRoot *Windows;     ///< f.menu TwmWindows
+	MenuRoot *Icons;       ///< f.menu TwmIcons
+	MenuRoot *Workspaces;  ///< f.menu TwmWorkspaces
+	MenuRoot *AllWindows;  ///< f.menu TwmAllWindows
 
 	/*Added by dl 2004 */
-	MenuRoot *AllIcons;         /* the TwmAllIcons menu */
+	MenuRoot *AllIcons;    ///< f.menu TwmAllIcons
 
 	/******************************************************/
 	/* Added by Dan Lilliehorn (dl@dl.nu) 2000-02-29)     */
-	MenuRoot *Keys;             /* the TwmKeys menu     */
-	MenuRoot *Visible;          /* thw TwmVisible menu  */
+	MenuRoot *Keys;        ///< f.menu TwmKeys
+	MenuRoot *Visible;     ///< f.menu TwmVisible
+
+	/// @}
 
 	TwmWindow *Ring;            /* one of the windows in window ring */
 	TwmWindow *RingLeader;      /* current window in ring */
