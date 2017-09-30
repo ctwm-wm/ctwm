@@ -258,14 +258,14 @@ struct ScreenInfo {
 
 	/// @}
 
-	TwmWindow *Ring;            /* one of the windows in window ring */
-	TwmWindow *RingLeader;      /* current window in ring */
+	TwmWindow *Ring;       ///< One of the windows in the Screen's ring
+	TwmWindow *RingLeader; ///< Current window in ring
 
-	MouseButton DefaultFunction;
-	MouseButton WindowFunction;
-	MouseButton ChangeWorkspaceFunction;
-	MouseButton DeIconifyFunction;
-	MouseButton IconifyFunction;
+	MouseButton DefaultFunction;   ///< DefaultFunction config var
+	MouseButton WindowFunction;    ///< WindowFunction config var
+	MouseButton ChangeWorkspaceFunction; ///< ChangeWorkspaceFunction config var
+	MouseButton DeIconifyFunction; ///< DeIconifyFunction config var
+	MouseButton IconifyFunction;   ///< IconifyFunction config var
 
 	struct {
 		Colormaps *cmaps;         /* current list of colormap windows */
