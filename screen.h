@@ -26,6 +26,10 @@ typedef enum {
 	ICONIFY_SWEEP,
 } IcStyle;
 
+/**
+ * Information about some XStandardColormap we're using.  See Xlib docs
+ * for details.
+ */
 struct StdCmap {
 	struct StdCmap *next;               /* next link in chain */
 	Atom atom;                          /* property from which this came */
@@ -267,34 +271,58 @@ struct ScreenInfo {
 	MouseButton DeIconifyFunction; ///< DeIconifyFunction config var
 	MouseButton IconifyFunction;   ///< IconifyFunction config var
 
-	struct {
-		Colormaps *cmaps;         /* current list of colormap windows */
-		int maxCmaps;             /* maximum number of installed colormaps */
-		unsigned long first_req;  /* seq # for first XInstallColormap() req in
-                                   pass thru loading a colortable list */
-		int root_pushes;          /* current push level to install root
-                                   colormap windows */
-		Colormaps *pushed_cmaps;  /* saved colormaps to install when pushes
-                                   drops to zero */
-	} cmapInfo;
+	/**
+	 * Various colormaps used on the Screen.  These probably have little
+	 * effect in a world where 24bpp is a baseline...
+	 */
+	struct _cmapInfo {
+		Colormaps *cmaps;  ///< Current list of colormap windows
+		int maxCmaps;      ///< Maximum number of installed colormaps
+		unsigned long first_req; /** seq # for first XInstallColormap() req in
+                                     pass thru loading a colortable list */
+		int root_pushes;   /** current push level to install root
+                               colormap windows */
+		Colormaps *pushed_cmaps; /** saved colormaps to install when pushes
+                                     drops to zero */
+	} cmapInfo; ///< \copydoc ScreenInfo::_cmapInfo
+	// x-ref trailing comment on InfoWindow above
 
-	struct {
-		StdCmap *head, *tail;           /* list of maps */
-		StdCmap *mru;                   /* most recently used in list */
-		int mruindex;                   /* index of mru in entry */
-	} StdCmapInfo;
+	/**
+	 * Various XStandardColormaps on the screen.  See Xlib documentation
+	 * for XStandardColormaps (e.g.,
+	 * <https://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Standard_Colormaps>)
+	 * if you need to make sense of it.
+	 */
+	struct _StdCmapInfo {
+		StdCmap *head;         ///< list of maps
+		StdCmap *tail;         ///< list of maps
+		StdCmap *mru;          ///< Most recently used in list
+		int mruindex;          ///< index of mru in entry
+	} StdCmapInfo; ///< \copydoc ScreenInfo::_StdCmapInfo
+	// x-ref trailing comment on InfoWindow above
 
-	struct {
-		int nleft, nright;              /* numbers of buttons in list */
-		TitleButton *head;              /* start of list */
-		int border;                     /* button border */
-		int pad;                        /* button-padding */
-		int width;                      /* width of single button & border */
-		int leftx;                      /* start of left buttons */
-		int titlex;                     /* start of title */
-		int rightoff;                   /* offset back from right edge */
-		int titlew;                     /* width of title part */
-	} TBInfo;
+	/**
+	 * Various titlebar buttons that will be put in the window
+	 * decorations for the screen.  This is setup by
+	 * InitTitlebarButtons() and possibly added to via
+	 * Left/RightTitleButton config vars.
+	 * \sa CreateWindowTitlebarButtons() where this gets used to build
+	 * the titlebar of an individual window.
+	 */
+	struct _TBInfo {
+		int nleft;         ///< numbers of buttons on left side
+		int nright;        ///< numbers of buttons on right side
+		TitleButton *head; ///< start of list
+		int border;        ///< button border
+		int pad;           ///< button-padding
+		int width;         ///< width of single button & border
+		int leftx;         ///< start of left buttons
+		int titlex;        ///< start of title
+		int rightoff;      ///< offset back from right edge
+		int titlew;        ///< width of title part
+	} TBInfo; ///< \copydoc ScreenInfo::_TBInfo
+	// x-ref trailing comment on InfoWindow above
+
 	ColorPair BorderTileC;      /* border tile colors */
 	ColorPair TitleC;           /* titlebar colors */
 	ColorPair MenuC;            /* menu colors */
