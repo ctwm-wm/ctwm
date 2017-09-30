@@ -285,6 +285,7 @@ struct ScreenInfo {
 		Colormaps *pushed_cmaps; /** saved colormaps to install when pushes
                                      drops to zero */
 	} cmapInfo; ///< \copydoc ScreenInfo::_cmapInfo
+	///< \todo Somebody needs to understand and document this better.
 	// x-ref trailing comment on InfoWindow above
 
 	/**
@@ -299,6 +300,7 @@ struct ScreenInfo {
 		StdCmap *mru;          ///< Most recently used in list
 		int mruindex;          ///< index of mru in entry
 	} StdCmapInfo; ///< \copydoc ScreenInfo::_StdCmapInfo
+	///< \todo Somebody needs to understand and document this better.
 	// x-ref trailing comment on InfoWindow above
 
 	/**
