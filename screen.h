@@ -325,45 +325,89 @@ struct ScreenInfo {
 	} TBInfo; ///< \copydoc ScreenInfo::_TBInfo
 	// x-ref trailing comment on InfoWindow above
 
-	ColorPair BorderTileC;      /* border tile colors */
-	ColorPair TitleC;           /* titlebar colors */
-	ColorPair MenuC;            /* menu colors */
-	ColorPair MenuTitleC;       /* menu title colors */
-	ColorPair IconC;            /* icon colors */
-	ColorPair IconManagerC;     /* icon manager colors */
-	ColorPair DefaultC;         /* default colors */
-	ColorPair BorderColorC;     /* color of window borders */
-	Pixel MenuShadowColor;      /* menu shadow color */
-	Pixel IconBorderColor;      /* icon border color */
-	Pixel IconManagerHighlight; /* icon manager highlight */
-	short ClearShadowContrast;  /* The contrast of the clear shadow */
-	short DarkShadowContrast;   /* The contrast of the dark shadow */
-	/* Icon bits */
-	/* Screen.IconJustification -> IconRegion.TitleJustification */
+	/**
+	 * \defgroup scr_color_bits Various color definitions.
+	 * These define various colors we use for things on the screen.
+	 * @{
+	 */
+	ColorPair BorderTileC;      ///< Border tile colors
+	ColorPair TitleC;           ///< Titlebar colors
+	ColorPair MenuC;            ///< Menu colors
+	ColorPair MenuTitleC;       ///< Menu title colors
+	ColorPair IconC;            ///< %Icon colors
+	ColorPair IconManagerC;     ///< %Icon manager colors
+	ColorPair DefaultC;         ///< Default colors
+	ColorPair BorderColorC;     ///< Color of window borders
+	Pixel MenuShadowColor;      ///< Menu shadow color
+	Pixel IconBorderColor;      ///< %Icon border color
+	Pixel IconManagerHighlight; ///< %Icon manager highlight
+	short ClearShadowContrast;  ///< The contrast of the clear shadow
+	short DarkShadowContrast;   ///< The contrast of the dark shadow
+	/// @}
+
+	/**
+	 * \defgroup scr_icon_bits Various icon control bits.
+	 * Various configurations for how icons get displayed and laid out.
+	 * @{
+	 */
+	/**
+	 * How icon images/titles are aligned.  From IconJustification config
+	 * var.  X-ref IconRegion.TitleJustification.
+	 */
 	TitleJust IconJustification;
+	/**
+	 * How icons are laid out horizontally inside a region.  From
+	 * IconRegionJustificationconfig var.
+	 */
 	IRJust IconRegionJustification;
+	/**
+	 * How icons are laid out vertically inside a region.  From
+	 * IconRegionAlignement config var.
+	 */
 	IRAlignement IconRegionAlignement;
 	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
+	/**
+	 * @}
+	 * How title text is aligned in window titlebars.  From
+	 * TitleJustification config var.
+	 */
 	TitleJust TitleJustification;
+	///< \todo Move this and following for easier scr_icon_bits grouping
+	/**
+	 * How to animate window iconification, if any.  From IconifyStyle
+	 * config var.
+	 */
 	IcStyle IconifyStyle;       /* ICONIFY_* */
-	int   MaxIconTitleWidth;    /* */
+	/**
+	 * \addtogroup scr_icon_bits Various icon control bits.
+	 * @{
+	 */
+	 /// Limit on icon title size.  From MaxIconTitleWidth config var.
+	int   MaxIconTitleWidth;
 #ifdef EWMH
-	int PreferredIconWidth;     /* Desired icon size: width */
-	int PreferredIconHeight;    /* Desired icon size: height */
+	int PreferredIconWidth;     ///< Width from IconSize config var
+	int PreferredIconHeight;    ///< Height from IconSize config var
 #endif
+	/// @}
 
-	Cursor TitleCursor;         /* title bar cursor */
-	Cursor FrameCursor;         /* frame cursor */
-	Cursor IconCursor;          /* icon cursor */
-	Cursor IconMgrCursor;       /* icon manager cursor */
-	Cursor ButtonCursor;        /* title bar button cursor */
-	Cursor MoveCursor;          /* move cursor */
-	Cursor ResizeCursor;        /* resize cursor */
-	Cursor WaitCursor;          /* wait a while cursor */
-	Cursor MenuCursor;          /* menu cursor */
-	Cursor SelectCursor;        /* dot cursor for f.move, etc. from menus */
-	Cursor DestroyCursor;       /* skull and cross bones, f.destroy */
-	Cursor AlterCursor;         /* cursor for alternate keymaps */
+	/**
+	 * \defgroup scr_cursors Various cursors used on the screen.
+	 * These all come from the Cursors config var, or defaults.
+	 * @{
+	 */
+	Cursor TitleCursor;    ///< title bar cursor
+	Cursor FrameCursor;    ///< frame cursor
+	Cursor IconCursor;     ///< icon cursor
+	Cursor IconMgrCursor;  ///< icon manager cursor
+	Cursor ButtonCursor;   ///< title bar button cursor
+	Cursor MoveCursor;     ///< move cursor
+	Cursor ResizeCursor;   ///< resize cursor
+	Cursor WaitCursor;     ///< wait a while cursor
+	Cursor MenuCursor;     ///< menu cursor
+	Cursor SelectCursor;   ///< dot cursor for f.move, etc. from menus
+	Cursor DestroyCursor;  ///< skull and cross bones, f.destroy
+	Cursor AlterCursor;    ///< cursor for alternate keymaps
+	/// @}
 
 	WorkSpaceMgr workSpaceMgr;
 	bool workSpaceManagerActive;
