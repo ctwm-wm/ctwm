@@ -409,25 +409,32 @@ struct ScreenInfo {
 	Cursor AlterCursor;    ///< cursor for alternate keymaps
 	/// @}
 
+	/// Info about the WorkSpaceManager (and Occupy window) for the screen.
 	WorkSpaceMgr workSpaceMgr;
-	bool workSpaceManagerActive;
+	bool workSpaceManagerActive; ///< Whether the WSM is being shown
 
-	VirtualScreen *vScreenList;
-	VirtualScreen *currentvs;
-	name_list     *VirtualScreens;
-	int         numVscreens;
+	/**
+	 * \defgroup scr_vscreen_bits VScreen bits
+	 * @{
+	 */
+	VirtualScreen *vScreenList;    ///< Linked list of per-VS info
+	VirtualScreen *currentvs;      ///< Currently active VS
+	name_list     *VirtualScreens; ///< List of defined VS's
+	int           numVscreens;     ///< Number of defined VS's
+	/// @}
 
-	name_list *OccupyAll;  // window names occupying all workspaces at startup
-	name_list   *UnmapByMovingFarAway;
-	name_list   *DontSetInactive;
-	name_list   *AutoSqueeze;
-	name_list   *StartSqueezed;
-	bool        use3Dmenus;
-	bool        use3Dtitles;
-	bool        use3Diconmanagers;
-	bool        use3Dborders;
-	bool        use3Dwmap;
-	bool        use3Diconborders;
+	name_list   *OccupyAll;       ///< OccupyAll config var
+	name_list   *UnmapByMovingFarAway; ///< UnmapByMovingFarAway config var
+	name_list   *DontSetInactive; ///< DontSetInactive config var
+	name_list   *AutoSqueeze;     ///< AutoSqueeze config var
+	name_list   *StartSqueezed;   ///< StartSqueezed config var
+	bool        use3Dmenus;       ///< UseThreeDMenus config var
+	bool        use3Dtitles;      ///< UseThreeDTitles config var
+	bool        use3Diconmanagers; ///< UseThreeDIconManagers config var
+	bool        use3Dborders;     ///< UseThreeDBorders config var
+	bool        use3Dwmap;        ///< UseThreeDWMap config var
+	bool        use3Diconborders; ///< UseThreeDIconBorders config var.
+	                              ///< Unused \deprecated Unused \todo Remove
 	bool        SunkFocusWindowTitle;
 	short       WMgrVertButtonIndent;
 	short       WMgrHorizButtonIndent;
