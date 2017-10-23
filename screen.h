@@ -435,28 +435,32 @@ struct ScreenInfo {
 	bool        use3Dwmap;        ///< UseThreeDWMap config var
 	bool        use3Diconborders; ///< UseThreeDIconBorders config var.
 	                              ///< Unused \deprecated Unused \todo Remove
-	bool        SunkFocusWindowTitle;
-	short       WMgrVertButtonIndent;
-	short       WMgrHorizButtonIndent;
-	short       WMgrButtonShadowDepth;
-	bool        BeNiceToColormap;
-	bool        BorderCursors;
-	bool        AutoPopup;
-	short       BorderShadowDepth;
-	short       TitleButtonShadowDepth;
-	short       TitleShadowDepth;
-	short       MenuShadowDepth;
-	short       IconManagerShadowDepth;
+	bool        SunkFocusWindowTitle;  ///< SunkFocusWindowTitle config var
+	short       WMgrVertButtonIndent;  ///< WMgrVertButtonIndent config var
+	short       WMgrHorizButtonIndent; ///< WMgrHorizButtonIndent config var
+	short       WMgrButtonShadowDepth; ///< WMgrButtonShadowDepth config var
+	bool        BeNiceToColormap; ///< BeNiceToColormap config var
+	bool        BorderCursors;    ///< BorderResizeCursors config var
+	bool        AutoPopup;        ///< AutoPopup config flag.
+	                              ///< \sa ScreenInfo.AutoPopupL
+	short       BorderShadowDepth;      ///< BorderShadowDepth config var
+	short       TitleButtonShadowDepth; ///< TitleButtonShadowDepth config var
+	short       TitleShadowDepth; ///< TitleShadowDepth config var
+	short       MenuShadowDepth;  ///< MenuShadowDepth config var
+	short       IconManagerShadowDepth; ///< IconManagerShadowDepth config var
+	/// ReallyMoveInWorkspaceManager config var
 	bool        ReallyMoveInWorkspaceManager;
+	/// AlwaysShowWindowWhenMovingFromWorkspaceManager config var
 	bool        ShowWinWhenMovingInWmgr;
-	bool        ReverseCurrentWorkspace;
-	bool        DontWarpCursorInWMap;
-	short       XMoveGrid, YMoveGrid;
-	bool        CenterFeedbackWindow;
-	bool        ShrinkIconTitles;
-	bool        AutoRaiseIcons;
-	bool        AutoFocusToTransients; /* kai */
-	bool        PackNewWindows;
+	bool        ReverseCurrentWorkspace; ///< ReverseCurrentWorkspace config var
+	bool        DontWarpCursorInWMap;  ///< DontWarpCursorInWMap config var
+	short       XMoveGrid;             ///< XMoveGrid config var
+	short       YMoveGrid;             ///< YMoveGrid config var
+	bool        CenterFeedbackWindow;  ///< CenterFeedbackWindow config var
+	bool        ShrinkIconTitles;      ///< ShrinkIconTitles config var
+	bool        AutoRaiseIcons;        ///< AutoRaiseIcons config var
+	bool        AutoFocusToTransients; ///< AutoFocusToTransients config var
+	bool        PackNewWindows;        ///< PackNewWindows config var
 
 	struct OtpPreferences *OTP;
 	struct OtpPreferences *IconOTP;
