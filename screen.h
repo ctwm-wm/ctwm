@@ -462,8 +462,14 @@ struct ScreenInfo {
 	bool        AutoFocusToTransients; ///< AutoFocusToTransients config var
 	bool        PackNewWindows;        ///< PackNewWindows config var
 
+	/**
+	 * Stash of various OTP info about the windows on the screen.
+	 * This is only used internally in various otp.c code; nothing else
+	 * currently references it.
+	 */
 	struct OtpPreferences *OTP;
-	struct OtpPreferences *IconOTP;
+	struct OtpPreferences *IconOTP; ///< Stash of OTP info about icons on
+	                                ///< the screen. \copydetails OTP
 
 	name_list *BorderColorL;
 	name_list *IconBorderColorL;
