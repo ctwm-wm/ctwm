@@ -328,18 +328,32 @@ struct ScreenInfo {
 	/**
 	 * \defgroup scr_color_bits Various color definitions.
 	 * These define various colors we use for things on the screen.
+	 * They tend to come from things inside a Color {} section in the
+	 * config.  There are often correspondences between the "simple"
+	 * ColorPair or Pixel values (for the "normal" colors of each type)
+	 * and a name_list (for per-window settings of that type).
 	 * @{
 	 */
-	ColorPair BorderTileC;      ///< Border tile colors
-	ColorPair TitleC;           ///< Titlebar colors
+	/// Border tile colors.  \sa ScreenInfo.BorderTileForegroundL
+	/// \sa ScreenInfo.BorderTileBackgroundL
+	ColorPair BorderTileC;
+	/// Titlebar colors  \sa ScreenInfo.TitleForegroundL
+	/// \sa ScreenInfo.TitleBackgroundL
+	ColorPair TitleC;
 	ColorPair MenuC;            ///< Menu colors
 	ColorPair MenuTitleC;       ///< Menu title colors
-	ColorPair IconC;            ///< %Icon colors
-	ColorPair IconManagerC;     ///< %Icon manager colors
+	/// %Icon colors.  \sa ScreenInfo.IconForegroundL
+	/// \sa ScreenInfo.IconBackgroundL
+	ColorPair IconC;
+	/// %Icon manager colors.  \sa ScreenInfo.IconManagerFL
+	/// \sa ScreenInfo.IconManagerBL
+	ColorPair IconManagerC;
 	ColorPair DefaultC;         ///< Default colors
-	ColorPair BorderColorC;     ///< Color of window borders
+	/// Color of window borders.  \sa ScreenInfo.BorderColorL
+	ColorPair BorderColorC;
 	Pixel MenuShadowColor;      ///< Menu shadow color
-	Pixel IconBorderColor;      ///< %Icon border color
+	/// %Icon border color.  \sa ScreenInfo.IconBorderColorL
+	Pixel IconBorderColor;
 	Pixel IconManagerHighlight; ///< %Icon manager highlight
 	short ClearShadowContrast;  ///< The contrast of the clear shadow
 	short DarkShadowContrast;   ///< The contrast of the dark shadow
@@ -471,16 +485,41 @@ struct ScreenInfo {
 	struct OtpPreferences *IconOTP; ///< Stash of OTP info about icons on
 	                                ///< the screen. \copydetails OTP
 
+	/**
+	 * \addtogroup scr_color_bits Various color definitions.
+	 * @{
+	 */
+	/// Specialized border colors for windows.  From BorderColor config
+	/// var.  \sa ScreenInfo.BorderColorC
 	name_list *BorderColorL;
+	/// Specialized border colors for icons.  From IconBorderColor config
+	/// var.  \sa ScreenInfo.IconBorderColor
 	name_list *IconBorderColorL;
+	/// Specialized border coloring.  From BorderTileForeground config
+	/// var.  \sa ScreenInfo.BorderTileC
 	name_list *BorderTileForegroundL;
+	/// \copydoc ScreenInfo::BorderTileForegroundL
 	name_list *BorderTileBackgroundL;
+	/// Specialized titlebar foreground coloring.  From TitleForeground
+	/// config var.  \sa ScreenInfo.TitleC
 	name_list *TitleForegroundL;
+	/// Specialized titlebar background coloring.  From TitleBackground
+	/// config var.  \sa ScreenInfo.TitleC
 	name_list *TitleBackgroundL;
+	/// Specialized icon foreground coloring.  From IconForeground
+	/// config var.  \sa ScreenInfo.IconC
 	name_list *IconForegroundL;
+	/// Specialized icon background coloring.  From IconBackground
+	/// config var.  \sa ScreenInfo.IconC
 	name_list *IconBackgroundL;
+	/// Specialized icon manager foreground coloring.  From
+	/// IconManagerForeground config var.  \sa ScreenInfo.IconManagerC
 	name_list *IconManagerFL;
+	/// Specialized icon manager background coloring.  From
+	/// IconManagerBackground config var.  \sa ScreenInfo.IconManagerC
 	name_list *IconManagerBL;
+	/// @}
+
 	name_list *IconMgrs;
 	name_list *AutoPopupL;      /* list of window the popup when changed */
 	name_list *NoBorder;        /* list of window without borders          */
