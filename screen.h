@@ -354,7 +354,9 @@ struct ScreenInfo {
 	Pixel MenuShadowColor;      ///< Menu shadow color
 	/// %Icon border color.  \sa ScreenInfo.IconBorderColorL
 	Pixel IconBorderColor;
-	Pixel IconManagerHighlight; ///< %Icon manager highlight
+	/// %Icon manager highlight color.
+	/// \sa ScreenInfo.IconManagerHighlightL
+	Pixel IconManagerHighlight;
 	short ClearShadowContrast;  ///< The contrast of the clear shadow
 	short DarkShadowContrast;   ///< The contrast of the dark shadow
 	/// @}
@@ -520,39 +522,131 @@ struct ScreenInfo {
 	name_list *IconManagerBL;
 	/// @}
 
+	/// IconManagers config var
 	name_list *IconMgrs;
-	name_list *AutoPopupL;      /* list of window the popup when changed */
-	name_list *NoBorder;        /* list of window without borders          */
-	name_list *NoIconTitle;     /* list of window names with no icon title */
-	name_list *NoTitle;         /* list of window names with no title bar */
-	name_list *MakeTitle;       /* list of window names with title bar */
-	name_list *AutoRaise;       /* list of window names to auto-raise */
-	name_list *WarpOnDeIconify; /* list of window names to warp on deiconify */
-	name_list *AutoLower;       /* list of window names to auto-lower */
-	name_list *IconNames;       /* list of window names and icon names */
-	name_list *NoHighlight;     /* list of windows to not highlight */
-	name_list *NoStackModeL;    /* windows to ignore stack mode requests */
-	name_list *NoTitleHighlight;/* list of windows to not highlight the TB*/
-	name_list *DontIconify;     /* don't iconify by unmapping */
-	name_list *IconMgrNoShow;   /* don't show in the icon manager */
-	name_list *IconMgrShow;     /* show in the icon manager */
-	name_list *IconifyByUn;     /* windows to iconify by unmapping */
-	name_list *StartIconified;  /* windows to start iconic */
-	name_list *IconManagerHighlightL;   /* icon manager highlight colors */
-	name_list *SqueezeTitleL;           /* windows of which to squeeze title */
-	name_list *DontSqueezeTitleL;       /* windows of which not to squeeze */
-	name_list *AlwaysSqueezeToGravityL; /* windows which should squeeze toward gravity */
-	name_list *WindowRingL;     /* windows in ring */
-	name_list *WindowRingExcludeL;      /* windows excluded from ring */
-	name_list *WarpCursorL;     /* windows to warp cursor to on deiconify */
+
+	/// AutoPopup config var (list).  Windows that popup when changed.
+	/// \sa ScreenInfo.AutoPopup
+	name_list *AutoPopupL;
+
+	/// NoBorder config var.  Windows without borders.
+	name_list *NoBorder;
+
+	/// NoIconTitle config var (list).  Windows to not show a title on
+	/// the icons for.  \sa ScreenInfo.NoIconTitlebar
+	name_list *NoIconTitle;
+
+	/// NoTitle config var (list).  Windows to not put a titlebar on.
+	/// \sa ScreenInfo.NoTitlebar
+	name_list *NoTitle;
+
+	/// MakeTitle config var.  Windows to pup a titlebar on when general
+	/// NoTitle is set.  \sa ScreenInfo.NoTitlebar \sa ScreenInfo.NoTitle
+	name_list *MakeTitle;
+
+	/// AutoRaise config var (list).  Windows to automatically raise when
+	/// pointed to (possible after a delay).
+	/// \sa ScreenInfo.AutoRaiseDefault \sa ScreenInfo.RaiseDelay
+	name_list *AutoRaise;
+
+	/// WarpOnDeIconify config var.  Windows to occupy over to current
+	/// workspace on deiconification.  \note Minor nomenclature issue;
+	/// 'Warp' in name suggests we move to the win, but it actually means
+	/// move the win to us.
+	name_list *WarpOnDeIconify;
+
+	/// AutoLower config var (list).  Windows to automatically lower when
+	/// pointed away from.  \sa ScreenInfo.AutoLowerDefault
+	name_list *AutoLower;
+
+	/// Icons config var.  Manually specified icons for particular
+	/// windows.
+	name_list *IconNames;
+
+	/// NoHightlight config var (list).  Windows to not highlight border
+	/// of when focused.  \sa ScreenInfo.Highlight
+	name_list *NoHighlight;
+
+	/// NoStackMode config var (list).  Windows to ignore
+	/// application-initiated restacking requests from.
+	/// \sa ScreenInfo.StackMode
+	name_list *NoStackModeL;
+
+	/// NoTitleHighlight config var (list).  Windows to not highlight in
+	/// titlevar when focused.  \sa ScreenInfo.TitleHighlight
+	name_list *NoTitleHighlight;
+
+	/// DontIconifyByUnmapping config var.  Windows to iconify by making
+	/// an icon for, overriding IconifyByUnmapping setting.
+	name_list *DontIconify;
+
+	/// IconManagerDontShow config var (list).
+	/// \sa ScreenInfo.IconManagerDontShow
+	name_list *IconMgrNoShow;
+
+	/// IconManagerShow config var.  Windows to show in icon manager even
+	/// if global IconManagerDontShow is set.
+	name_list *IconMgrShow;
+
+	/// IconifyByUnmapping config var (list).  \sa ScreenInfo.IconifyByUnmapping
+	name_list *IconifyByUn;
+
+	/// StartIconified config var.
+	name_list *StartIconified;
+
+	/// Color to highlight focused windows in icon manager.
+	/// \sa ScreenInfo.IconManagerHighlight \ingroup scr_color_bits
+	name_list *IconManagerHighlightL;
+
+	/// SqueezeTitle config var (list).  \sa ScreenInfo.SqueezeTitle
+	name_list *SqueezeTitleL;
+
+	/// DontSqueezeTitle config var (list).  \sa ScreenInfo.SqueezeTitle
+	name_list *DontSqueezeTitleL;
+
+	/// AlwaysSqueezeToGravity config var (list).
+	/// \sa ScreenInfo.AlwaysSqueezeToGravity
+	name_list *AlwaysSqueezeToGravityL;
+
+	/// WindowRing config var (list).  Windows to put in warp ring.
+	/// \sa ScreenInfo.WindowRingAll
+	name_list *WindowRingL;
+
+	/// WindowRingExclude config var.  Windows to exclude from warp ring.
+	name_list *WindowRingExcludeL;
+
+	/// WarpCursor config var (list).  Windows to warp to on deiconify.
+	/// \sa ScreenInfo.WarpCursor
+	name_list *WarpCursorL;
+
+	/// DontSave config var.  Windows to not save info in session manager.
 	name_list *DontSave;
+
+	/// WindowGeometries config var.  Default geometries for windows.
 	name_list *WindowGeometries;
+
+	/// IgnoreTransient config var.  Windows that we should pretend
+	/// aren't transient even if they are.
 	name_list *IgnoreTransientL;
 
+	/// OpaqueMove config var (list).  Windows to move opaquely rather
+	/// than in outline.  \sa ScreenInfo.DoOpaqueMove
 	name_list *OpaqueMoveList;
+
+	/// NoOpaqueMove config var (list).  Windows to not move opaquely.
+	/// \sa ScreenInfo.DoOpaqueMove
 	name_list *NoOpaqueMoveList;
+
+	/// OpaqueResize config var (list).  Windows to resize opaquely
+	/// rather than in outline.  \sa ScreenInfo.DoOpaqueResize
 	name_list *OpaqueResizeList;
+
+	/// NoOpaqueResize config var (list).  Windows to not resize
+	/// opaquely.  \sa ScreenInfo.DoOpaqueResize
 	name_list *NoOpaqueResizeList;
+
+	/// IconMenuDontShow config var.  Windows whose icons to not list in
+	/// TwmIcons menu.
 	name_list *IconMenuDontShow;
 
 	GC NormalGC;                /* normal GC for everything */
