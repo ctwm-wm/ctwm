@@ -649,11 +649,22 @@ struct ScreenInfo {
 	/// TwmIcons menu.
 	name_list *IconMenuDontShow;
 
-	GC NormalGC;                /* normal GC for everything */
-	GC MenuGC;                  /* gc for menus */
-	GC DrawGC;                  /* GC to draw lines for move and resize */
-	GC BorderGC;                /* for drawing 3D borders */
-	GC rootGC;                  /* used for allocating pixmaps in FindPixmap (util.c) */
+
+	/**
+	 * \defgroup scr_gc_bits Various graphics contexts
+	 * These are X Graphics Contexts, which are used for various sorts of
+	 * drawing in X.  Stuff that needs to draw lines, or write out text,
+	 * all needs to use a GC.  X-ref
+	 * <https://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Graphics_Context_Functions>
+	 * for upstream details.
+	 * @{
+	 */
+	GC NormalGC; ///< normal GC for everything
+	GC MenuGC;   ///< GC for menus
+	GC DrawGC;   ///< GC to draw lines for move and resize
+	GC BorderGC; ///< GC for drawing 3D borders
+	GC rootGC;   ///< GC for internal pixmaps in image.c / image_bitmap.c
+	/// @}
 
 	unsigned long Black;
 	unsigned long White;
