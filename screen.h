@@ -522,7 +522,10 @@ struct ScreenInfo {
 	name_list *IconManagerBL;
 	/// @}
 
-	/// IconManagers config var
+	/// From IconManagers config var.  This is a mapping from the window
+	/// name pattern to the IconMgr structure it should go in.  All the
+	/// IM's for the screen wind up in the iconmgr element.
+	/// \sa ScreenInfo.iconmgr
 	name_list *IconMgrs;
 
 	/// AutoPopup config var (list).  Windows that popup when changed.
@@ -687,11 +690,27 @@ struct ScreenInfo {
 	MyFont DefaultFont;      ///< Hardcoded fallback font
 	/// @}
 
-	IconMgr *iconmgr;           /* default icon manager  */
-	struct IconRegion *FirstRegion;     /* pointer to icon regions */
-	struct IconRegion *LastRegion;      /* pointer to the last icon region */
-	struct WindowRegion *FirstWindowRegion;     /* pointer to window regions */
+	/// Head of linked list of Screen's icon managers.  The head is also
+	/// the default icon manager for the screen.  \sa ScreenInfo.IconMgrs
+	IconMgr *iconmgr;
+
+	/// Head of the list of IconRegion structs on the Screen.  Built out
+	/// from %IconRegion config var.
+	struct IconRegion *FirstRegion;
+
+	/// Tail of the list of IconRegion structs on the Screen.  Used as an
+	/// optimization in configuring the list on startup.  \todo Is this
+	/// actually necessary?  Does the order matter?
+	struct IconRegion *LastRegion;
+
+	/// Pointer to head of list of window regions on screen.  Built from
+	/// %WindowRegion config var.
+	struct WindowRegion *FirstWindowRegion;
+
+	/// Pointer to head of list of windowboxes on screen.  Built from
+	/// %WindowBox config var.
 	WindowBox *FirstWindowBox;  /* pointer to window boxes list */
+
 	char *IconDirectory;        /* icon directory to search */
 	char *PixmapDirectory;      /* Pixmap directory to search */
 	int SizeStringOffset;       /* x offset in size window for drawing */
