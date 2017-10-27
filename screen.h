@@ -666,15 +666,27 @@ struct ScreenInfo {
 	GC rootGC;   ///< GC for internal pixmaps in image.c / image_bitmap.c
 	/// @}
 
+	/// Stash of "Black" X color for the screen
+	/// \todo This should be a Pixel?
 	unsigned long Black;
+
+	/// Stash of "White" X color for the screen
+	/// \todo This should be a Pixel?
 	unsigned long White;
-	unsigned long XORvalue;     /* number to use when drawing xor'ed */
-	MyFont TitleBarFont;        /* title bar font structure */
-	MyFont MenuFont;            /* menu font structure */
-	MyFont IconFont;            /* icon font structure */
-	MyFont SizeFont;            /* resize font structure */
-	MyFont IconManagerFont;     /* window list font structure */
-	MyFont DefaultFont;
+
+	unsigned long XORvalue;  ///< XorValue config var, or default
+
+	/// \defgroup scr_font_bits Various font settings
+	/// Definitions of various fonts to use on the Screen.
+	/// @{
+	MyFont TitleBarFont;     ///< TitleFont config var
+	MyFont MenuFont;         ///< MenuFont config var
+	MyFont IconFont;         ///< IconFont config var
+	MyFont SizeFont;         ///< SizeFont config var
+	MyFont IconManagerFont;  ///< IconManagerFont config var
+	MyFont DefaultFont;      ///< Hardcoded fallback font
+	/// @}
+
 	IconMgr *iconmgr;           /* default icon manager  */
 	struct IconRegion *FirstRegion;     /* pointer to icon regions */
 	struct IconRegion *LastRegion;      /* pointer to the last icon region */
