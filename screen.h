@@ -768,28 +768,53 @@ struct ScreenInfo {
 	bool  DontMoveOff;   ///< DontMoveOff config var
 	int MoveOffResistance;  ///< MoveOffResistence config var
 	int MovePackResistance; ///< MovePackResistence config var
-	bool  DoZoom;               /* zoom in and out of icons */
-	bool  TitleFocus;           /* focus on window in title bar ? */
-	bool  IconManagerFocus;     /* focus on iconified window ? */
-	bool  NoIconTitlebar;       /* put title bars on icons */
-	bool  NoTitlebar;           /* put title bars on windows */
-	bool  DecorateTransients;   /* put title bars on transients */
-	bool  IconifyByUnmapping;   /* simply unmap windows when iconifying */
-	bool  ShowIconManager;      /* display the window list */
-	bool  ShowWorkspaceManager; /* display the workspace manager */
-	bool  IconManagerDontShow;  /* show nothing in the icon manager */
-	bool  AutoOccupy;           /* Do we automatically change occupation when name changes */
-	bool  AutoPriority;         /* Do we automatically change priority when name changes */
-	bool  TransientHasOccupation;       /* Do transient-for windows have their own occupation */
-	bool  DontPaintRootWindow;  /* don't paint anything on the root window */
-	bool  BackingStore;         /* use backing store for menus */
-	bool  SaveUnder;            /* use save under's for menus */
-	RandPlac RandomPlacement;   /* randomly place windows that no give hints */
-	short RandomDisplacementX;  /* randomly displace by this much horizontally */
-	short RandomDisplacementY;  /* randomly displace by this much vertically */
-	bool  OpaqueMove;           /* move the window rather than outline */
-	bool  DoOpaqueMove;         /* move the window rather than outline */
-	unsigned short OpaqueMoveThreshold;         /*  */
+
+	/// Whether we're animating [de]iconification zooms.  From Zoom
+	/// config var.  \sa ScreenInfo.ZoomCount
+	bool  DoZoom;
+
+	bool  TitleFocus;       ///< NoTitleFocus config var (inverse)
+	bool  IconManagerFocus; ///< NoIconManagerFocus config var (inverse)
+
+	/// NoIconTitle config var.  \sa ScreenInfo.NoIconTitle
+	bool  NoIconTitlebar;
+
+	/// NoTitle config var.  \sa ScreenInfo.NoTitle
+	bool  NoTitlebar;
+
+	bool  DecorateTransients; ///< DecorateTransients config var
+
+	/// IconifyByUnmapping config var.  \sa ScreenInfo.IconifyByUn
+	bool  IconifyByUnmapping;
+
+	bool  ShowIconManager; ///< ShowIconManager config var
+	bool  ShowWorkspaceManager; ///< ShowWorkSpaceManager config var
+
+	/// IconManagerDontShow config var.  \sa ScreenInfo.IconMgrNoShow
+	bool  IconManagerDontShow;
+
+	bool  AutoOccupy;   ///< AutoOccupy config var
+	bool  AutoPriority; ///< AutoPriority config var
+	bool  TransientHasOccupation; ///< TransientHasOccupation config var
+	bool  DontPaintRootWindow;    ///< DontPaintRootWindow config var
+	bool  BackingStore; ///< BackingStore config var
+	bool  SaveUnder;    ///< NoSaveUnders config var (inverse)
+	RandPlac RandomPlacement;  ///< RandomPlacement config var (1st arg)
+	short RandomDisplacementX; ///< RandomPlacement config var (2nd arg)
+	short RandomDisplacementY; ///< RandomPlacement config var (2nd arg)
+
+	/// Whether we're doing a window opaque move.  This is set at runtime
+	/// for each particular move we start doing, acting as a "what are we
+	/// in the middle of" flag.  It will get figured based on various
+	/// things, like TwmWindow.OpaqueMove and
+	/// ScreenInfo.OpaqueMoveThreshold.
+	bool  OpaqueMove;
+
+	/// OpaqueMove config var.  \sa ScreenInfo.OpaqueMoveList
+	bool  DoOpaqueMove;
+
+	unsigned short OpaqueMoveThreshold;  ///< OpaqueMoveThreshold config var
+
 	bool  DoOpaqueResize;       /* resize the window rather than outline */
 	bool  OpaqueResize;         /* resize the window rather than outline */
 	unsigned short OpaqueResizeThreshold;       /*  */
