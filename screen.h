@@ -709,45 +709,65 @@ struct ScreenInfo {
 
 	/// Pointer to head of list of windowboxes on screen.  Built from
 	/// %WindowBox config var.
-	WindowBox *FirstWindowBox;  /* pointer to window boxes list */
+	WindowBox *FirstWindowBox;
 
-	char *IconDirectory;        /* icon directory to search */
-	char *PixmapDirectory;      /* Pixmap directory to search */
-	int SizeStringOffset;       /* x offset in size window for drawing */
-	int SizeStringWidth;        /* minimum width of size window */
-	int BorderWidth;            /* border width of twm windows */
-	int BorderLeft;
-	int BorderRight;
-	int BorderTop;
-	int BorderBottom;
-	int ThreeDBorderWidth;      /* 3D border width of twm windows */
-	int IconBorderWidth;        /* border width of icon windows */
-	int TitleHeight;            /* height of the title bar window */
-	TwmWindow *Focus;           /* the twm window that has focus */
-	int EntryHeight;            /* menu entry height */
-	int FramePadding;           /* distance between decorations and border */
-	int TitlePadding;           /* distance between items in titlebar */
-	int ButtonIndent;           /* amount to shrink buttons on each side */
-	int NumAutoRaises;          /* number of autoraise windows on screen */
-	int NumAutoLowers;          /* number of autolower windows on screen */
-	int TransientOnTop;         /* Percentage of the surface of it's leader */
-	bool  AutoRaiseDefault;     /* AutoRaise all windows if true */
-	bool  AutoLowerDefault;     /* AutoLower all windows if true */
-	bool  NoDefaults;           /* do not add in default UI stuff */
-	UsePPoss UsePPosition;      /* what do with PPosition, see values below */
-	bool  UseSunkTitlePixmap;
-	bool  AutoRelativeResize;   /* start resize relative to position in quad */
-	bool  FocusRoot;            /* is the input focus on the root ? */
-	bool  WarpCursor;           /* warp cursor on de-iconify ? */
-	bool  ForceIcon;            /* force the icon to the user specified */
-	bool  NoGrabServer;         /* don't do server grabs */
-	bool  NoRaiseMove;          /* don't raise window following move */
-	bool  NoRaiseResize;        /* don't raise window following resize */
-	bool  NoRaiseDeicon;        /* don't raise window on deiconify */
-	bool  RaiseOnWarp;          /* do raise window on warp */
-	bool  DontMoveOff;          /* don't allow windows to be moved off */
-	int MoveOffResistance;      /* nb of pixel before moveOff gives up */
-	int MovePackResistance;     /* nb of pixel before f.movepack gives up */
+	char *IconDirectory;    ///< IconDirectory config var
+	char *PixmapDirectory;  ///< PixmapDirectory config var
+
+	int SizeStringOffset;   ///< X offset in size window for drawing
+	int SizeStringWidth;    ///< Minimum width of size window
+
+	int BorderWidth;        ///< BorderWidth config var
+	int BorderLeft;         ///< BorderLeft config var
+	int BorderRight;        ///< BorderRight config var
+	int BorderTop;          ///< BorderTop config var
+	int BorderBottom;       ///< BorderBottom config var
+	int ThreeDBorderWidth;  ///< ThreeDBorderWidth config var
+	int IconBorderWidth;    ///< IconBorderWidth config var
+
+	/// Height of the title bar window.  Calculated from font height and
+	/// padding.  \todo Maybe this should be in ScreenInfo.TBInfo above?
+	/// Same can be said for a number of following fields that are
+	/// titlebar related...
+	int TitleHeight;
+
+	TwmWindow *Focus;    ///< The twm window that has focus.
+	                     ///< \sa ScreenInfo.FocusRoot
+	int EntryHeight;     ///< Menu entry height.  Calc'd from font height.
+
+	int FramePadding;    ///< FramePadding config var.  Distance between
+	                     ///< titlebar contents and frame.
+	int TitlePadding;    ///< TitlePadding config var.  Distance between
+	                     ///< items in titlebar.
+
+	int ButtonIndent;    ///< ButtonIndent config var.  Amount to shrink
+	                     ///< titlebar buttons.
+	int NumAutoRaises;   ///< Number of autoraise windows on screen
+	int NumAutoLowers;   ///< Number of autolower windows on screen
+	int TransientOnTop;  ///< TransientOnTop config var
+
+	/// AutoRaise config flag.  \sa ScreenInfo.AutoRaise
+	bool  AutoRaiseDefault;
+
+	/// AutoLower config flag.  \sa ScreenInfo.AutoLower
+	bool  AutoLowerDefault;
+
+	bool  NoDefaults;    ///< NoDefaults config var
+	UsePPoss UsePPosition;     ///< UsePPosition config var
+	bool  UseSunkTitlePixmap;  ///< UseSunkTitlePixmap config var
+	bool  AutoRelativeResize;  ///< AutoRelativeResize config var
+	bool  FocusRoot;     ///< Is the input focus on the root?
+	                     ///< \sa ScreenInfo.FocusRoot
+	bool  WarpCursor;    ///< WarpCursor config var.  \sa ScreenInfo.WarpCursorL
+	bool  ForceIcon;     ///< ForceIcons config var
+	bool  NoGrabServer;  ///< NoGrabServer config var
+	bool  NoRaiseMove;   ///< NoRaiseOnMove config var
+	bool  NoRaiseResize; ///< NoRaiseOnResize config var
+	bool  NoRaiseDeicon; ///< NoRaiseOnDeiconify config var
+	bool  RaiseOnWarp;   ///< NoRaiseOnWarp config var (inverse)
+	bool  DontMoveOff;   ///< DontMoveOff config var
+	int MoveOffResistance;  ///< MoveOffResistence config var
+	int MovePackResistance; ///< MovePackResistence config var
 	bool  DoZoom;               /* zoom in and out of icons */
 	bool  TitleFocus;           /* focus on window in title bar ? */
 	bool  IconManagerFocus;     /* focus on iconified window ? */
