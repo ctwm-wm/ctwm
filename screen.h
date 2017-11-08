@@ -763,6 +763,7 @@ struct ScreenInfo {
 	/// ClickToFocus case, as well as when f.focus is called on a window,
 	/// and then prevents Enter notifications from setting focus on new
 	/// windows.
+	/// \todo Rename to something better fitting.
 	bool  FocusRoot;
 
 	bool  WarpCursor;    ///< WarpCursor config var.  \sa ScreenInfo.WarpCursorL
