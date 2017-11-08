@@ -732,7 +732,6 @@ struct ScreenInfo {
 	int TitleHeight;
 
 	TwmWindow *Focus;    ///< The twm window that has focus.
-	                     ///< \sa ScreenInfo.FocusRoot
 	int EntryHeight;     ///< Menu entry height.  Calc'd from font height.
 
 	int FramePadding;    ///< FramePadding config var.  Distance between
@@ -756,8 +755,16 @@ struct ScreenInfo {
 	UsePPoss UsePPosition;     ///< UsePPosition config var
 	bool  UseSunkTitlePixmap;  ///< UseSunkTitlePixmap config var
 	bool  AutoRelativeResize;  ///< AutoRelativeResize config var
-	bool  FocusRoot;     ///< Is the input focus on the root?
-	                     ///< \sa ScreenInfo.FocusRoot
+
+	/// Whether focus is allowed to move.  At one point this allegedly
+	/// meant something like "is the input focus on the root?".  In
+	/// current use, however, it's used as a flag for whether to
+	/// auto-move focus to a new window; it's set to false in the
+	/// ClickToFocus case, as well as when f.focus is called on a window,
+	/// and then prevents Enter notifications from setting focus on new
+	/// windows.
+	bool  FocusRoot;
+
 	bool  WarpCursor;    ///< WarpCursor config var.  \sa ScreenInfo.WarpCursorL
 	bool  ForceIcon;     ///< ForceIcons config var
 	bool  NoGrabServer;  ///< NoGrabServer config var
