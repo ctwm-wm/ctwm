@@ -823,9 +823,17 @@ struct ScreenInfo {
 
 	unsigned short OpaqueMoveThreshold;  ///< OpaqueMoveThreshold config var
 
-	bool  DoOpaqueResize;       /* resize the window rather than outline */
-	bool  OpaqueResize;         /* resize the window rather than outline */
-	unsigned short OpaqueResizeThreshold;       /*  */
+	/// OpaqueResize config var.  \sa ScreenInfo.OpaqueResizeList
+	bool  DoOpaqueResize;
+
+	/// Whether we're in the midst of an opaque resizing.  Transiently
+	/// set at runtime based on things like TwmWindow.OpaqueResize and
+	/// ScreenInfo.OpaqueResizeThreshold.  X-ref ScreenInfo.OpaqueMove
+	/// for its counterpart in the window-moving department.
+	bool  OpaqueResize;
+
+	unsigned short OpaqueResizeThreshold; ///< OpaqueResizeThreshold config var
+
 	bool  Highlight;            /* should we highlight the window borders */
 	bool  StackMode;            /* should we honor stack mode requests */
 	bool  TitleHighlight;       /* should we highlight the titlebar */
