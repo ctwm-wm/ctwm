@@ -824,33 +824,51 @@ struct ScreenInfo {
 	unsigned short OpaqueMoveThreshold;  ///< OpaqueMoveThreshold config var
 
 	/// OpaqueResize config var.  \sa ScreenInfo.OpaqueResizeList
-	bool  DoOpaqueResize;
+	bool DoOpaqueResize;
 
 	/// Whether we're in the midst of an opaque resizing.  Transiently
 	/// set at runtime based on things like TwmWindow.OpaqueResize and
 	/// ScreenInfo.OpaqueResizeThreshold.  X-ref ScreenInfo.OpaqueMove
 	/// for its counterpart in the window-moving department.
-	bool  OpaqueResize;
+	bool OpaqueResize;
 
 	unsigned short OpaqueResizeThreshold; ///< OpaqueResizeThreshold config var
 
-	bool  Highlight;            /* should we highlight the window borders */
-	bool  StackMode;            /* should we honor stack mode requests */
-	bool  TitleHighlight;       /* should we highlight the titlebar */
-	short MoveDelta;            /* number of pixels before f.move starts */
-	short ZoomCount;            /* zoom outline count */
-	bool  SortIconMgr;          /* sort entries in the icon manager */
-	bool  Shadow;               /* show the menu shadow */
-	bool  InterpolateMenuColors;/* make pretty menus */
-	bool  StayUpMenus;          /* stay up menus */
-	bool  WarpToDefaultMenuEntry; /* warp cursor to default menu entry, if any  */
-	bool  ClickToFocus;         /* click to focus */
-	bool  SloppyFocus;          /* "sloppy" focus */
-	bool  SaveWorkspaceFocus;   /* Save and restore focus on workspace change. */
-	bool  NoIconManagers;       /* Don't create any icon managers */
-	bool  ClientBorderWidth;    /* respect client window border width */
-	bool  SqueezeTitle;         /* make title as small as possible */
-	bool  SqueezeTitleSet;      /* has ST been set yet */
+	/// NoHighlight config var (inverse).  \sa ScreenInfo.NoHighlight
+	bool Highlight;
+
+	/// NoStackMode config var (inverse).  \sa ScreenInfo.NoStackModeL
+	bool StackMode;
+
+	/// NoTitleHighlight config var (inverse).  \sa ScreenInfo.NoTitleHighlight
+	bool TitleHighlight;
+
+	/// MoveDelta config var.  Number of pixels before f.move starts
+	short MoveDelta;
+
+	/// Zoom config var.  Number of animated steps in [de]iconifying.
+	short ZoomCount;
+
+	bool SortIconMgr;  ///< SortIconManager config var
+	bool Shadow;       ///< NoMenuShadows config var (inverse)
+	bool InterpolateMenuColors;  ///< InterpolateMenuColors config var
+	bool StayUpMenus;  ///< StayUpMenus config var
+	bool WarpToDefaultMenuEntry; ///< WarpToDefaultMenuEntry config var
+	bool ClickToFocus; ///< ClickToFocus config var
+	bool SloppyFocus;  ///< SloppyFocus config var
+	bool SaveWorkspaceFocus; ///< SaveWorkspaceFocus config var
+	bool NoIconManagers;     ///< NoIconManagers config var
+	bool ClientBorderWidth;  ///< ClientBorderWidth config var
+
+	/// SqueezeTitle and/or DontSqueezeTitle config vars.
+	/// \sa ScreenInfo.SqueezeTitleL  \sa ScreenInfo.DontSqueezeTitleL
+	bool SqueezeTitle;
+
+	/// Flag used in config parsing when SqueezeTitle is set.
+	/// \todo Should just be removed, doesn't appear to do anything
+	/// useful at all.
+	bool SqueezeTitleSet;
+
 	bool  AlwaysSqueezeToGravity; /* squeeze toward gravity */
 	bool  HaveFonts;            /* set if fonts have been loaded */
 	bool  FirstTime;            /* first time we've read .twmrc */
