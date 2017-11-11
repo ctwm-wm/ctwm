@@ -910,9 +910,10 @@ struct ScreenInfo {
 	 */
 	bool  ShowWelcomeWindow;
 
-	/* Forcing focus-setting on windows */
-	bool      ForceFocus;
-	name_list *ForceFocusL;
+	/// ForceFocus config var.  Forcing focus-setting on windows.
+	bool      ForceFocus;   ///< \sa ScreenInfo.ForceFocusL
+	name_list *ForceFocusL; ///< \copybrief ForceFocus
+	                        ///< \sa ScreenInfo.ForceFocus
 
 	FuncKey FuncKeyRoot;
 	FuncButton FuncButtonRoot;
