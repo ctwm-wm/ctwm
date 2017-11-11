@@ -869,23 +869,38 @@ struct ScreenInfo {
 	/// useful at all.
 	bool SqueezeTitleSet;
 
-	bool  AlwaysSqueezeToGravity; /* squeeze toward gravity */
-	bool  HaveFonts;            /* set if fonts have been loaded */
-	bool  FirstTime;            /* first time we've read .twmrc */
-	bool  CaseSensitive;        /* be case-sensitive when sorting names */
-	bool  WarpUnmapped;         /* allow warping to unmapped windows */
-	bool  WindowRingAll;        /* add all windows to the ring */
-	bool  WarpRingAnyWhere;     /* warp to ring even if window is not visible */
-	bool  ShortAllWindowsMenus; /* Eliminates Icon and Workspace Managers */
-	short OpenWindowTimeout;    /* Timeout when a window tries to open */
-	bool  RaiseWhenAutoUnSqueeze;
-	bool  RaiseOnClick;         /* Raise a window when clieked into */
-	short RaiseOnClickButton;           /* Raise a window when clieked into */
-	unsigned int IgnoreModifier;/* We should ignore these modifiers */
-	bool  IgnoreCaseInMenuSelection;    /* Should we ignore case in menu selection */
-	bool  NoWarpToMenuTitle; /* warp cursor to clipped menu title */
-	bool  NoImagesInWorkSpaceManager;   /* do not display mini images of the desktop background images on WSmap */
-	bool  DontToggleWorkspaceManagerState;
+	/// AlwaysSqueezeToGravity config var.
+	/// \sa ScreenInfo.AlwaysSqueezeToGravityL
+	bool AlwaysSqueezeToGravity;
+
+	/// Whether fonts have been loaded yet in the startup process
+	bool HaveFonts;
+
+	/// Some sort of attempt to determine whether this is the first
+	/// config file we've parsed, but also used in some color getting for
+	/// obscure reasons.  This needs careful consideration and auditing;
+	/// it may be just bogus.  X-ref work vtwm did in adjusting its use
+	/// in GetColor() to avoid all the save/restore dances on calls
+	/// around it, and the \#ifdef inside GetColor().  \todo Evaulate to
+	/// determine whether it should exist.
+	bool FirstTime;
+
+	bool  CaseSensitive; ///< NoCaseSensitive config var (inverse)
+	bool  WarpUnmapped;  ///< WarpUnmapped config var
+	bool  WindowRingAll; ///< WindowRing config var.  \sa ScreenInfo.WindowRingL
+	bool  WarpRingAnyWhere;       ///< WarpRingOnScreen config var (inverse)
+	bool  ShortAllWindowsMenus;   ///< ShortAllWindowsMenus config var
+	short OpenWindowTimeout;      ///< OpenWindowTimeout config var
+	bool  RaiseWhenAutoUnSqueeze; ///< RaiseWhenAutoUnSqueeze config var
+	bool  RaiseOnClick;           ///< RaiseOnClick config var
+	short RaiseOnClickButton;     ///< RaiseOnClickButton config var
+	unsigned int IgnoreModifier;  ///< IgnoreModifier config var
+	bool IgnoreCaseInMenuSelection;  ///< IgnoreCaseInMenuSelection config var
+	bool NoWarpToMenuTitle;          ///< NoWarpToMenuTitle config var
+	bool NoImagesInWorkSpaceManager; ///< NoImagesInWorkSpaceManager config var
+
+	/// DontToggleWorkspaceManagerState config var
+	bool DontToggleWorkspaceManagerState;
 
 	/**
 	 * Whether to show the welcome window.
