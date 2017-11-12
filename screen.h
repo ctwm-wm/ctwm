@@ -924,12 +924,22 @@ struct ScreenInfo {
 	FuncButton FuncButtonRoot; ///< Mouse click bindings
 
 #ifdef EWMH
-	Window icccm_Window;        /* ICCCM sections 4.3, 2.8 */
+	/// Special-purpose window for WM_S<screennum> window selection.  See
+	/// ICCCM sections 4.3, 2.8.
+	Window icccm_Window;
+
+	/// List of known client windows.  Stashed in _NET_CLIENT_LIST
+	/// property.
 	long *ewmh_CLIENT_LIST;
-	int ewmh_CLIENT_LIST_size;
-	int ewmh_CLIENT_LIST_used;
-	EwmhStrut *ewmhStruts;          /* remember values of _NET_WM_STRUT */
-	name_list *EWMHIgnore;    /* EWMH messages to ignore */
+	int ewmh_CLIENT_LIST_size; ///< Allocated ScreenInfo.ewmh_CLIENT_LIST memory
+	int ewmh_CLIENT_LIST_used; ///< Used ScreenInfo.ewmh_CLIENT_LIST slots
+
+	/// List of EWMH struts.  From _NET_WM_STRUT properties.  EWMH config
+	/// for windows that reserve spaces at the sides of a screen (e.g.,
+	/// taskbars, panels, etc).
+	EwmhStrut *ewmhStruts;
+
+	name_list *EWMHIgnore; ///< EWMHIgnore config var.  Messages to ignore.
 #endif /* EWMH */
 
 	name_list *MWMIgnore; ///< Motif WM messages to ignore
