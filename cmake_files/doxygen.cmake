@@ -32,4 +32,8 @@ if(DOXYGEN_FOUND)
 		WORKING_DIRECTORY ${DOXYGEN_DIR}
 		COMMENT "Generating Doxygen documentation in ${DOXYGEN_DIR}"
 		VERBATIM)
+
+	add_custom_target(doxyclean
+		COMMAND rm -rf ${DOXYGEN_DIR}/html
+		COMMENT "Cleaning up Doxygen docs")
 endif(DOXYGEN_FOUND)
