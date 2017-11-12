@@ -915,8 +915,8 @@ struct ScreenInfo {
 	name_list *ForceFocusL; ///< \copybrief ForceFocus
 	                        ///< \sa ScreenInfo.ForceFocus
 
-	FuncKey FuncKeyRoot;
-	FuncButton FuncButtonRoot;
+	FuncKey FuncKeyRoot;       ///< Key bindings
+	FuncButton FuncButtonRoot; ///< Mouse click bindings
 
 #ifdef EWMH
 	Window icccm_Window;        /* ICCCM sections 4.3, 2.8 */
@@ -927,7 +927,7 @@ struct ScreenInfo {
 	name_list *EWMHIgnore;    /* EWMH messages to ignore */
 #endif /* EWMH */
 
-	name_list *MWMIgnore;    /* Motif WM messages to ignore */
+	name_list *MWMIgnore; ///< Motif WM messages to ignore
 };
 
 extern int NumScreens;
