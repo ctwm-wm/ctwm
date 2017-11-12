@@ -35,6 +35,10 @@ EXTRACT_ALL = YES
 EXTRACT_STATIC = YES
 JAVADOC_AUTOBRIEF = YES
 
+# This makes the source listings a little noisier, but also makes them
+# match the actual file.  Probably a reasonable tradeoff.
+STRIP_CODE_COMMENTS = NO
+
 # Text x-refs of used/used-by functions, data structs, etc.
 REFERENCED_BY_RELATION = YES
 REFERENCES_RELATION = YES
