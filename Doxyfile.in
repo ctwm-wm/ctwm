@@ -7,6 +7,13 @@ INPUT = @CMAKE_SOURCE_DIR@ \
         @CMAKE_SOURCE_DIR@/build \
         @CMAKE_SOURCE_DIR@/ext
 
+# These need to be set so we can properly expand #ifdef sections in
+# headers (e.g., in screen.h) by redundantly including config.
+PREDEFINED = DOXYGEN
+INCLUDE_PATH = @CMAKE_SOURCE_DIR@ \
+        @CMAKE_SOURCE_DIR@/build \
+        @CMAKE_SOURCE_DIR@/ext
+
 # It's all C
 OPTIMIZE_OUTPUT_FOR_C = YES
 

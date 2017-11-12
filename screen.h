@@ -14,6 +14,11 @@
 #ifndef _CTWM_SCREEN_H
 #define _CTWM_SCREEN_H
 
+/* Needed for doxygen to get at the #define's for config (like EMWH) */
+#ifdef DOXYGEN
+# include "ctwm_config.h"
+#endif
+
 #include "menus.h"  // embedded MouseButton/Func{Button,Key}
 #include "workspace_structs.h"  // embedded ScreenInfo.workSpaceMgr
 
