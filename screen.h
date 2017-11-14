@@ -102,12 +102,10 @@ struct ScreenInfo {
 	int Monochrome;   ///< Is the display monochrome?
 
 	/**
-	 * The x coordinate of the root window relative to RealRoot.
-	 *
-	 * This is usually 0, except in the case of captive mode where it
-	 * shows where we are on the real screen, or when we have
-	 * VirtualScreens and are positioning our real Screens on a virtual
-	 * RealRoot.
+	 * The x coordinate of the root window relative to RealRoot.  This is
+	 * usually 0, except in the case of captive mode where it shows where
+	 * we are on the real screen, or when we have VirtualScreens and are
+	 * positioning our real Screens on a virtual RealRoot.
 	 */
 	int rootx;
 	int rooty; ///< The y coordinate of the root window relative to RealRoot.
@@ -137,12 +135,9 @@ struct ScreenInfo {
 	int MaxWindowWidth;   ///< Largest window width to allow
 	int MaxWindowHeight;  ///< Largest window height to allow
 
-	/**
-	 * The head of the screen's twm window list.
-	 * This is used for places where we need to iterate over the
-	 * TwmWindow's in a single Screen, by following the TwmWindow.next
-	 * pointers.
-	 */
+	/// The head of the screen's twm window list.  This is used for
+	/// places where we need to iterate over the TwmWindow's in a single
+	/// Screen, by following the TwmWindow.next pointers.
 	TwmWindow *FirstWindow;
 
 	Colormaps RootColormaps;  ///< The colormaps of the root window
@@ -182,10 +177,9 @@ struct ScreenInfo {
 	 */
 
 	/**
-	 * Root window for the current vscreen.
-	 * Initially either the real X RootWindow(), or the existing or
-	 * created Window for a captive ctwm.  Gets reset to a vscreen's
-	 * window in InitVirtualScreens().
+	 * Root window for the current vscreen.  Initially either the real X
+	 * RootWindow(), or the existing or created Window for a captive
+	 * ctwm.  Gets reset to a vscreen's window in InitVirtualScreens().
 	 */
 	Window Root;
 
@@ -259,11 +253,9 @@ struct ScreenInfo {
 	 */
 	char *HighlightPixmapName;
 
-	/**
-	 * \defgroup scr_menu_bits Various menus
-	 * These hold references to the various menus on the Screen.
-	 * @{
-	 */
+	/// \defgroup scr_menu_bits Various menus
+	/// These hold references to the various menus on the Screen.
+	/// @{
 	MenuRoot *MenuList;    ///< Head of the menu list
 	MenuRoot *LastMenu;    ///< Temp var used in creating the Screen's menus
 	MenuRoot *Windows;     ///< f.menu TwmWindows
@@ -274,7 +266,6 @@ struct ScreenInfo {
 	/*Added by dl 2004 */
 	MenuRoot *AllIcons;    ///< f.menu TwmAllIcons
 
-	/******************************************************/
 	/* Added by Dan Lilliehorn (dl@dl.nu) 2000-02-29)     */
 	MenuRoot *Keys;        ///< f.menu TwmKeys
 	MenuRoot *Visible;     ///< f.menu TwmVisible
@@ -290,19 +281,17 @@ struct ScreenInfo {
 	MouseButton DeIconifyFunction; ///< DeIconifyFunction config var
 	MouseButton IconifyFunction;   ///< IconifyFunction config var
 
-	/**
-	 * Various colormaps used on the Screen.  These probably have little
-	 * effect in a world where 24bpp is a baseline...
-	 */
+	/// Various colormaps used on the Screen.  These probably have little
+	/// effect in a world where 24bpp is a baseline...
 	struct _cmapInfo {
 		Colormaps *cmaps;  ///< Current list of colormap windows
 		int maxCmaps;      ///< Maximum number of installed colormaps
-		unsigned long first_req; /** seq # for first XInstallColormap() req in
-                                     pass thru loading a colortable list */
-		int root_pushes;   /** current push level to install root
-                               colormap windows */
-		Colormaps *pushed_cmaps; /** saved colormaps to install when pushes
-                                     drops to zero */
+		unsigned long first_req; ///< seq # for first XInstallColormap() req in
+                                 ///< pass thru loading a colortable list
+		int root_pushes;   ///< current push level to install root
+                           ///< colormap windows
+		Colormaps *pushed_cmaps; ///< saved colormaps to install when pushes
+                                 ///< drops to zero
 	} cmapInfo; ///< \copydoc ScreenInfo::_cmapInfo
 	///< \todo Somebody needs to understand and document this better.
 	// x-ref trailing comment on InfoWindow above
@@ -356,28 +345,46 @@ struct ScreenInfo {
 	/// Border tile colors.  \sa ScreenInfo.BorderTileForegroundL
 	/// \sa ScreenInfo.BorderTileBackgroundL
 	ColorPair BorderTileC;
+
 	/// Titlebar colors  \sa ScreenInfo.TitleForegroundL
 	/// \sa ScreenInfo.TitleBackgroundL
 	ColorPair TitleC;
-	ColorPair MenuC;            ///< Menu colors
-	ColorPair MenuTitleC;       ///< Menu title colors
+
+	/// Menu colors
+	ColorPair MenuC;
+
+	/// Menu title colors
+	ColorPair MenuTitleC;
+
 	/// %Icon colors.  \sa ScreenInfo.IconForegroundL
 	/// \sa ScreenInfo.IconBackgroundL
 	ColorPair IconC;
+
 	/// %Icon manager colors.  \sa ScreenInfo.IconManagerFL
 	/// \sa ScreenInfo.IconManagerBL
 	ColorPair IconManagerC;
-	ColorPair DefaultC;         ///< Default colors
+
+	/// Default colors
+	ColorPair DefaultC;
+
 	/// Color of window borders.  \sa ScreenInfo.BorderColorL
 	ColorPair BorderColorC;
-	Pixel MenuShadowColor;      ///< Menu shadow color
+
+	/// Menu shadow color
+	Pixel MenuShadowColor;
+
 	/// %Icon border color.  \sa ScreenInfo.IconBorderColorL
 	Pixel IconBorderColor;
+
 	/// %Icon manager highlight color.
 	/// \sa ScreenInfo.IconManagerHighlightL
 	Pixel IconManagerHighlight;
-	short ClearShadowContrast;  ///< The contrast of the clear shadow
-	short DarkShadowContrast;   ///< The contrast of the dark shadow
+
+	/// The contrast of the clear shadow
+	short ClearShadowContrast;
+
+	/// The contrast of the dark shadow
+	short DarkShadowContrast;
 	/// @}
 
 	/**
@@ -385,39 +392,30 @@ struct ScreenInfo {
 	 * Various configurations for how icons get displayed and laid out.
 	 * @{
 	 */
-	/**
-	 * How icon images/titles are aligned.  From IconJustification config
-	 * var.  X-ref IconRegion.TitleJustification.
-	 */
+	/// How icon images/titles are aligned.  From IconJustification
+	/// config var.  X-ref IconRegion.TitleJustification.
 	TitleJust IconJustification;
-	/**
-	 * How icons are laid out horizontally inside a region.  From
-	 * IconRegionJustificationconfig var.
-	 */
+	/// How icons are laid out horizontally inside a region.  From
+	/// IconRegionJustificationconfig var.
 	IRJust IconRegionJustification;
-	/**
-	 * How icons are laid out vertically inside a region.  From
-	 * IconRegionAlignement config var.
-	 */
+	/// How icons are laid out vertically inside a region.  From
+	/// IconRegionAlignement config var.
 	IRAlignement IconRegionAlignement;
+	/// @}
+
 	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
-	/**
-	 * @}
-	 * How title text is aligned in window titlebars.  From
-	 * TitleJustification config var.
-	 */
+	/// How title text is aligned in window titlebars.  From
+	/// TitleJustification config var.
 	TitleJust TitleJustification;
 	///< \todo Move this and following for easier scr_icon_bits grouping
-	/**
-	 * How to animate window iconification, if any.  From IconifyStyle
-	 * config var.
-	 */
+
+	/// \addtogroup scr_icon_bits Various icon control bits.
+	/// @{
+
+	/// How to animate window iconification, if any.  From IconifyStyle
+	/// config var.
 	IcStyle IconifyStyle;       /* ICONIFY_* */
-	/**
-	 * \addtogroup scr_icon_bits Various icon control bits.
-	 * @{
-	 */
-	 /// Limit on icon title size.  From MaxIconTitleWidth config var.
+	/// Limit on icon title size.  From MaxIconTitleWidth config var.
 	int   MaxIconTitleWidth;
 #ifdef EWMH
 	int PreferredIconWidth;     ///< Width from IconSize config var
@@ -425,11 +423,9 @@ struct ScreenInfo {
 #endif
 	/// @}
 
-	/**
-	 * \defgroup scr_cursors Various cursors used on the screen.
-	 * These all come from the Cursors config var, or defaults.
-	 * @{
-	 */
+	/// \defgroup scr_cursors Various cursors used on the screen.
+	/// These all come from the Cursors config var, or defaults.
+	/// @{
 	Cursor TitleCursor;    ///< title bar cursor
 	Cursor FrameCursor;    ///< frame cursor
 	Cursor IconCursor;     ///< icon cursor
@@ -448,10 +444,8 @@ struct ScreenInfo {
 	WorkSpaceMgr workSpaceMgr;
 	bool workSpaceManagerActive; ///< Whether the WSM is being shown
 
-	/**
-	 * \defgroup scr_vscreen_bits VScreen bits
-	 * @{
-	 */
+	/// \defgroup scr_vscreen_bits VScreen bits
+	/// @{
 	VirtualScreen *vScreenList;    ///< Linked list of per-VS info
 	VirtualScreen *currentvs;      ///< Currently active VS
 	name_list     *VirtualScreens; ///< List of defined VS's
@@ -497,11 +491,9 @@ struct ScreenInfo {
 	bool        AutoFocusToTransients; ///< AutoFocusToTransients config var
 	bool        PackNewWindows;        ///< PackNewWindows config var
 
-	/**
-	 * Stash of various OTP info about the windows on the screen.
-	 * This is only used internally in various otp.c code; nothing else
-	 * currently references it.
-	 */
+	/// Stash of various OTP info about the windows on the screen.  This
+	/// is only used internally in various otp.c code; nothing else
+	/// currently references it.
 	struct OtpPreferences *OTP;
 	struct OtpPreferences *IconOTP; ///< Stash of OTP info about icons on
 	                                ///< the screen. \copydetails OTP
@@ -921,12 +913,9 @@ struct ScreenInfo {
 	/// DontToggleWorkspaceManagerState config var
 	bool DontToggleWorkspaceManagerState;
 
-	/**
-	 * Whether to show the welcome window.
-	 * Related to the DontShowWelcomeWindow config var or the
-	 * \--nowelcome command-line arg.
-	 * \ingroup scr_maskwin
-	 */
+	/// Whether to show the welcome window.  Related to the
+	/// DontShowWelcomeWindow config var or the \--nowelcome command-line
+	/// arg.  \ingroup scr_maskwin
 	bool  ShowWelcomeWindow;
 
 	/// ForceFocus config var.  Forcing focus-setting on windows.
