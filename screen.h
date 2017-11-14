@@ -50,12 +50,14 @@ struct StdCmap {
 	XStandardColormap *maps;            /* the actual maps */
 };
 
+
 /**
  * Internal padding in the size window.  \sa ScreenInfo.SizeWindow
  * \todo Possibly these should be in another header...
  */
 #define SIZE_HINDENT 10
 #define SIZE_VINDENT 2  ///< \copydoc #SIZE_HINDENT
+
 
 /**
  * Stash for memoizing various pixmaps used in titlebars.
