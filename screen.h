@@ -22,6 +22,13 @@
 #include "menus.h"  // embedded MouseButton/Func{Button,Key}
 #include "workspace_structs.h"  // embedded ScreenInfo.workSpaceMgr
 
+
+/**
+ * Type for iconification styles.  Options correspond to the values in
+ * IconifyStyle config var.  \sa ScreenInfo.IconifyStyle   \todo Maybe
+ * should just be moved inline in ScreenInfo struct, since it's never
+ * directly used elsewhere.
+ */
 typedef enum {
 	ICONIFY_NORMAL,
 	ICONIFY_MOSAIC,
@@ -30,6 +37,7 @@ typedef enum {
 	ICONIFY_FADE,
 	ICONIFY_SWEEP,
 } IcStyle;
+
 
 /**
  * Information about some XStandardColormap we're using.  See Xlib docs
@@ -42,8 +50,12 @@ struct StdCmap {
 	XStandardColormap *maps;            /* the actual maps */
 };
 
+/**
+ * Internal padding in the size window.  \sa ScreenInfo.SizeWindow
+ * \todo Possibly these should be in another header...
+ */
 #define SIZE_HINDENT 10
-#define SIZE_VINDENT 2
+#define SIZE_VINDENT 2  ///< \copydoc #SIZE_HINDENT
 
 /**
  * Stash for memoizing various pixmaps used in titlebars.
