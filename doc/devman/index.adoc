@@ -20,3 +20,6 @@ piecewise integrated into bigger individual sections.
 
 * <<links.adoc#,Links>> collections links to various manuals and
 specifications and other reference material that are often of use.
+
+* <<doxygen.adoc#,Doxygen>> discusses use of Doxygen to document the
+source.
