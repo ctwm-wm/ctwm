@@ -403,9 +403,11 @@ struct ScreenInfo {
 	IRAlignement IconRegionAlignement;
 	/// @}
 
-	/* Window titlebars (notably NOT IconRegion.TitleJustification) */
 	/// How title text is aligned in window titlebars.  From
-	/// TitleJustification config var.
+	/// TitleJustification config var.  \note Despite the naming
+	/// similarity, this is *not* related to
+	/// IconRegion.TitleJustification.  That comes instead from
+	/// ScreenInfo.IconJustification.
 	TitleJust TitleJustification;
 	///< \todo Move this and following for easier scr_icon_bits grouping
 
