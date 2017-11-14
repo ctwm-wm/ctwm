@@ -231,8 +231,8 @@ struct ScreenInfo {
 	                        ///< ScreenInfo.ShowWelcomeWindow
 	Window ShapeWindow;     ///< Utility window for animated icons
 
-	Image   *WelcomeImage;  ///< Image to show on ScreenInfo.WindowMask
-	GC       WelcomeGC;     ///< GC for drawing ScreenInfo.WelcomeImage
+	Image *WelcomeImage;    ///< Image to show on ScreenInfo.WindowMask
+	GC     WelcomeGC;       ///< GC for drawing ScreenInfo.WelcomeImage
 	                        ///< on ScreenInfo.WindowMask
 	Colormap WelcomeCmap;   ///< Colormap for ScreenInfo.WindowMask
 	Visual  *WelcomeVisual; ///< Unused \deprecated Unused \todo Remove
@@ -418,7 +418,7 @@ struct ScreenInfo {
 	/// config var.
 	IcStyle IconifyStyle;       /* ICONIFY_* */
 	/// Limit on icon title size.  From MaxIconTitleWidth config var.
-	int   MaxIconTitleWidth;
+	int MaxIconTitleWidth;
 #ifdef EWMH
 	int PreferredIconWidth;     ///< Width from IconSize config var
 	int PreferredIconHeight;    ///< Height from IconSize config var
@@ -459,39 +459,40 @@ struct ScreenInfo {
 	name_list   *DontSetInactive; ///< DontSetInactive config var
 	name_list   *AutoSqueeze;     ///< AutoSqueeze config var
 	name_list   *StartSqueezed;   ///< StartSqueezed config var
-	bool        use3Dmenus;       ///< UseThreeDMenus config var
-	bool        use3Dtitles;      ///< UseThreeDTitles config var
-	bool        use3Diconmanagers; ///< UseThreeDIconManagers config var
-	bool        use3Dborders;     ///< UseThreeDBorders config var
-	bool        use3Dwmap;        ///< UseThreeDWMap config var
-	bool        use3Diconborders; ///< UseThreeDIconBorders config var.
-	                              ///< Unused \deprecated Unused \todo Remove
-	bool        SunkFocusWindowTitle;  ///< SunkFocusWindowTitle config var
-	short       WMgrVertButtonIndent;  ///< WMgrVertButtonIndent config var
-	short       WMgrHorizButtonIndent; ///< WMgrHorizButtonIndent config var
-	short       WMgrButtonShadowDepth; ///< WMgrButtonShadowDepth config var
-	bool        BeNiceToColormap; ///< BeNiceToColormap config var
-	bool        BorderCursors;    ///< BorderResizeCursors config var
-	bool        AutoPopup;        ///< AutoPopup config flag.
-	                              ///< \sa ScreenInfo.AutoPopupL
-	short       BorderShadowDepth;      ///< BorderShadowDepth config var
-	short       TitleButtonShadowDepth; ///< TitleButtonShadowDepth config var
-	short       TitleShadowDepth; ///< TitleShadowDepth config var
-	short       MenuShadowDepth;  ///< MenuShadowDepth config var
-	short       IconManagerShadowDepth; ///< IconManagerShadowDepth config var
+
+	bool  use3Dmenus;        ///< UseThreeDMenus config var
+	bool  use3Dtitles;       ///< UseThreeDTitles config var
+	bool  use3Diconmanagers; ///< UseThreeDIconManagers config var
+	bool  use3Dborders;      ///< UseThreeDBorders config var
+	bool  use3Dwmap;         ///< UseThreeDWMap config var
+	bool  use3Diconborders;  ///< UseThreeDIconBorders config var.
+	                         ///< Unused \deprecated Unused \todo Remove
+	bool  SunkFocusWindowTitle;  ///< SunkFocusWindowTitle config var
+	short WMgrVertButtonIndent;  ///< WMgrVertButtonIndent config var
+	short WMgrHorizButtonIndent; ///< WMgrHorizButtonIndent config var
+	short WMgrButtonShadowDepth; ///< WMgrButtonShadowDepth config var
+	bool  BeNiceToColormap; ///< BeNiceToColormap config var
+	bool  BorderCursors;    ///< BorderResizeCursors config var
+	bool  AutoPopup;        ///< AutoPopup config flag.
+	                        ///< \sa ScreenInfo.AutoPopupL
+	short BorderShadowDepth;      ///< BorderShadowDepth config var
+	short TitleButtonShadowDepth; ///< TitleButtonShadowDepth config var
+	short TitleShadowDepth;       ///< TitleShadowDepth config var
+	short MenuShadowDepth;        ///< MenuShadowDepth config var
+	short IconManagerShadowDepth; ///< IconManagerShadowDepth config var
 	/// ReallyMoveInWorkspaceManager config var
-	bool        ReallyMoveInWorkspaceManager;
+	bool  ReallyMoveInWorkspaceManager;
 	/// AlwaysShowWindowWhenMovingFromWorkspaceManager config var
-	bool        ShowWinWhenMovingInWmgr;
-	bool        ReverseCurrentWorkspace; ///< ReverseCurrentWorkspace config var
-	bool        DontWarpCursorInWMap;  ///< DontWarpCursorInWMap config var
-	short       XMoveGrid;             ///< XMoveGrid config var
-	short       YMoveGrid;             ///< YMoveGrid config var
-	bool        CenterFeedbackWindow;  ///< CenterFeedbackWindow config var
-	bool        ShrinkIconTitles;      ///< ShrinkIconTitles config var
-	bool        AutoRaiseIcons;        ///< AutoRaiseIcons config var
-	bool        AutoFocusToTransients; ///< AutoFocusToTransients config var
-	bool        PackNewWindows;        ///< PackNewWindows config var
+	bool  ShowWinWhenMovingInWmgr;
+	bool  ReverseCurrentWorkspace; ///< ReverseCurrentWorkspace config var
+	bool  DontWarpCursorInWMap;  ///< DontWarpCursorInWMap config var
+	short XMoveGrid;             ///< XMoveGrid config var
+	short YMoveGrid;             ///< YMoveGrid config var
+	bool  CenterFeedbackWindow;  ///< CenterFeedbackWindow config var
+	bool  ShrinkIconTitles;      ///< ShrinkIconTitles config var
+	bool  AutoRaiseIcons;        ///< AutoRaiseIcons config var
+	bool  AutoFocusToTransients; ///< AutoFocusToTransients config var
+	bool  PackNewWindows;        ///< PackNewWindows config var
 
 	/// Stash of various OTP info about the windows on the screen.  This
 	/// is only used internally in various otp.c code; nothing else
@@ -759,15 +760,15 @@ struct ScreenInfo {
 	int TransientOnTop;  ///< TransientOnTop config var
 
 	/// AutoRaise config flag.  \sa ScreenInfo.AutoRaise
-	bool  AutoRaiseDefault;
+	bool AutoRaiseDefault;
 
 	/// AutoLower config flag.  \sa ScreenInfo.AutoLower
-	bool  AutoLowerDefault;
+	bool AutoLowerDefault;
 
-	bool  NoDefaults;    ///< NoDefaults config var
+	bool NoDefaults;    ///< NoDefaults config var
 	UsePPoss UsePPosition;     ///< UsePPosition config var
-	bool  UseSunkTitlePixmap;  ///< UseSunkTitlePixmap config var
-	bool  AutoRelativeResize;  ///< AutoRelativeResize config var
+	bool UseSunkTitlePixmap;  ///< UseSunkTitlePixmap config var
+	bool AutoRelativeResize;  ///< AutoRelativeResize config var
 
 	/// Whether focus is allowed to move.  At one point this allegedly
 	/// meant something like "is the input focus on the root?".  In
@@ -779,47 +780,47 @@ struct ScreenInfo {
 	/// \todo Rename to something better fitting.
 	bool  FocusRoot;
 
-	bool  WarpCursor;    ///< WarpCursor config var.  \sa ScreenInfo.WarpCursorL
-	bool  ForceIcon;     ///< ForceIcons config var
-	bool  NoGrabServer;  ///< NoGrabServer config var
-	bool  NoRaiseMove;   ///< NoRaiseOnMove config var
-	bool  NoRaiseResize; ///< NoRaiseOnResize config var
-	bool  NoRaiseDeicon; ///< NoRaiseOnDeiconify config var
-	bool  RaiseOnWarp;   ///< NoRaiseOnWarp config var (inverse)
-	bool  DontMoveOff;   ///< DontMoveOff config var
+	bool WarpCursor;    ///< WarpCursor config var.  \sa ScreenInfo.WarpCursorL
+	bool ForceIcon;     ///< ForceIcons config var
+	bool NoGrabServer;  ///< NoGrabServer config var
+	bool NoRaiseMove;   ///< NoRaiseOnMove config var
+	bool NoRaiseResize; ///< NoRaiseOnResize config var
+	bool NoRaiseDeicon; ///< NoRaiseOnDeiconify config var
+	bool RaiseOnWarp;   ///< NoRaiseOnWarp config var (inverse)
+	bool DontMoveOff;   ///< DontMoveOff config var
 	int MoveOffResistance;  ///< MoveOffResistence config var
 	int MovePackResistance; ///< MovePackResistence config var
 
 	/// Whether we're animating [de]iconification zooms.  From Zoom
 	/// config var.  \sa ScreenInfo.ZoomCount
-	bool  DoZoom;
+	bool DoZoom;
 
-	bool  TitleFocus;       ///< NoTitleFocus config var (inverse)
-	bool  IconManagerFocus; ///< NoIconManagerFocus config var (inverse)
+	bool TitleFocus;       ///< NoTitleFocus config var (inverse)
+	bool IconManagerFocus; ///< NoIconManagerFocus config var (inverse)
 
 	/// NoIconTitle config var.  \sa ScreenInfo.NoIconTitle
-	bool  NoIconTitlebar;
+	bool NoIconTitlebar;
 
 	/// NoTitle config var.  \sa ScreenInfo.NoTitle
-	bool  NoTitlebar;
+	bool NoTitlebar;
 
-	bool  DecorateTransients; ///< DecorateTransients config var
+	bool DecorateTransients; ///< DecorateTransients config var
 
 	/// IconifyByUnmapping config var.  \sa ScreenInfo.IconifyByUn
-	bool  IconifyByUnmapping;
+	bool IconifyByUnmapping;
 
-	bool  ShowIconManager; ///< ShowIconManager config var
-	bool  ShowWorkspaceManager; ///< ShowWorkSpaceManager config var
+	bool ShowIconManager; ///< ShowIconManager config var
+	bool ShowWorkspaceManager; ///< ShowWorkSpaceManager config var
 
 	/// IconManagerDontShow config var.  \sa ScreenInfo.IconMgrNoShow
-	bool  IconManagerDontShow;
+	bool IconManagerDontShow;
 
-	bool  AutoOccupy;   ///< AutoOccupy config var
-	bool  AutoPriority; ///< AutoPriority config var
-	bool  TransientHasOccupation; ///< TransientHasOccupation config var
-	bool  DontPaintRootWindow;    ///< DontPaintRootWindow config var
-	bool  BackingStore; ///< BackingStore config var
-	bool  SaveUnder;    ///< NoSaveUnders config var (inverse)
+	bool AutoOccupy;   ///< AutoOccupy config var
+	bool AutoPriority; ///< AutoPriority config var
+	bool TransientHasOccupation; ///< TransientHasOccupation config var
+	bool DontPaintRootWindow;    ///< DontPaintRootWindow config var
+	bool BackingStore; ///< BackingStore config var
+	bool SaveUnder;    ///< NoSaveUnders config var (inverse)
 	RandPlac RandomPlacement;  ///< RandomPlacement config var (1st arg)
 	short RandomDisplacementX; ///< RandomPlacement config var (2nd arg)
 	short RandomDisplacementY; ///< RandomPlacement config var (2nd arg)
@@ -829,10 +830,10 @@ struct ScreenInfo {
 	/// in the middle of" flag.  It will get figured based on various
 	/// things, like TwmWindow.OpaqueMove and
 	/// ScreenInfo.OpaqueMoveThreshold.
-	bool  OpaqueMove;
+	bool OpaqueMove;
 
 	/// OpaqueMove config var.  \sa ScreenInfo.OpaqueMoveList
-	bool  DoOpaqueMove;
+	bool DoOpaqueMove;
 
 	unsigned short OpaqueMoveThreshold;  ///< OpaqueMoveThreshold config var
 
@@ -918,7 +919,7 @@ struct ScreenInfo {
 	/// Whether to show the welcome window.  Related to the
 	/// DontShowWelcomeWindow config var or the \--nowelcome command-line
 	/// arg.  \ingroup scr_maskwin
-	bool  ShowWelcomeWindow;
+	bool ShowWelcomeWindow;
 
 	/// ForceFocus config var.  Forcing focus-setting on windows.
 	bool      ForceFocus;   ///< \sa ScreenInfo.ForceFocusL
