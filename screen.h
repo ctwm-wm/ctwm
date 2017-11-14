@@ -945,9 +945,14 @@ struct ScreenInfo {
 	name_list *MWMIgnore; ///< Motif WM messages to ignore
 };
 
-extern int NumScreens;
-extern ScreenInfo **ScreenList;
-extern ScreenInfo *Scr;
+
+
+/*
+ * A few global vars that talk about Screen stuff
+ */
+extern int NumScreens;  ///< How many Screens are on our display
+extern ScreenInfo **ScreenList; ///< List of ScreenInfo structs for each Screen
+extern ScreenInfo *Scr; ///< The ScreenInfo struct for the current Screen
 
 
 
