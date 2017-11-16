@@ -5,6 +5,9 @@
 
 ### Bugfixes
 
+1. Fix up broken parsing of IconifyStyle "sweep".  Bug was introduced in
+   4.0.0.
+
 1. When multiple X Screens are used, building the temporary file for M4
    definitions could fail with an error from mkstemp().  Reported by
    Manfred Knick.
