@@ -1823,7 +1823,7 @@ ParseIconifyStyle(const char *s)
 	CHK("zoomin",  ZOOMIN);
 	CHK("zoomout", ZOOMOUT);
 	CHK("fade",    FADE);
-	CHK("sweet",   SWEEP);
+	CHK("sweep",   SWEEP);
 #undef CHK
 
 	return -1;
