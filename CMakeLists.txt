@@ -4,27 +4,22 @@ project(ctwm C)
 # Figure our version
 file(READ "VERSION" vf_str)
 string(STRIP ${vf_str} vf_str)
-set(version_file_re "([0-9]+)\\.([0-9]+)\\.([0-9]+)(.*)")
-string(REGEX REPLACE ${version_file_re} "\\1" ctwm_version_major ${vf_str})
-string(REGEX REPLACE ${version_file_re} "\\2" ctwm_version_minor ${vf_str})
-string(REGEX REPLACE ${version_file_re} "\\3" ctwm_version_patch ${vf_str})
-string(REGEX REPLACE ${version_file_re} "\\4" ctwm_version_addl  ${vf_str})
-set(ctwm_version_str   "${ctwm_version_major}.${ctwm_version_minor}.${ctwm_version_patch}${ctwm_version_addl}")
+# Not currently using the split out variants
+if(0)
+	set(version_file_re "([0-9]+)\\.([0-9]+)\\.([0-9]+)(.*)")
+	string(REGEX REPLACE ${version_file_re} "\\1" ctwm_version_major ${vf_str})
+	string(REGEX REPLACE ${version_file_re} "\\2" ctwm_version_minor ${vf_str})
+	string(REGEX REPLACE ${version_file_re} "\\3" ctwm_version_patch ${vf_str})
+	string(REGEX REPLACE ${version_file_re} "\\4" ctwm_version_addl  ${vf_str})
+	set(ctwm_version_str "${ctwm_version_major}.${ctwm_version_minor}.${ctwm_version_patch}${ctwm_version_addl}")
+else()
+	set(ctwm_version_str ${vf_str})
+endif()
 
 # Modules we'll need
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
-
-# Break out a bunch of bits into our own include dir
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
-
-# Set a few predef'd vars for our use
-include(ctwm_cmake_vars)
-
-# Setup paths for where we install stuff
-include(install_paths)
-
 
 # Guard against in-tree builds
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" insrc)
@@ -34,32 +29,45 @@ if(insrc)
 endif(insrc)
 
 
+#
+# Most of our bits are broken out into smaller files in a local dir
+#
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_files)
 
-#
-# First off, do some checks of compiler/stdlib features
-#
+# Setup basic vars for where our pieces are, list of source files, etc.
+include(basic_vars)
+
+# Do some basic checks of the compiler and stdlib
 include(compiler_feature_checks)
 
-# And some build env checks
-include(build_env_checks)
-
+# Set our install paths
+include(install_paths)
 
 
 #
-# Next, find various libs/includes/etc we need, if enabled.
-#
-
 # First things first.  If we don't have X, we're going nowhere.
+#
 find_package(X11)
 if(NOT X11_FOUND)
 	# This just isn't feasible...
 	message(FATAL_ERROR "Can't find X libs.")
 endif(NOT X11_FOUND)
+if(NOT X11_INCLUDE_DIR)
+	message(FATAL_ERROR "Can't find X includes.")
+endif(NOT X11_INCLUDE_DIR)
 
 include_directories(${X11_INCLUDE_DIR})
-list(APPEND CTWMLIBS ${X11_LIBRARIES})
-list(APPEND CTWMLIBS ${X11_Xmu_LIB})
-list(APPEND CTWMLIBS ${X11_Xt_LIB})
+
+# Need to link in at least these; double check that we found 'em before
+# blindly applying them.  We can seemingly get through the above just
+# fine, even if it didn't find all the bits...
+foreach(VEXT LIBRARIES Xmu_LIB Xt_LIB)
+	if(NOT X11_${VEXT})
+		message(FATAL_ERROR "Can't find X11_${VEXT}; missing lib or "
+			"-devel package?")
+	endif()
+	list(APPEND CTWMLIBS ${X11_${VEXT}})
+endforeach()
 
 
 #
@@ -79,69 +87,41 @@ set(LIBSEARCH
 	"/lib"
 )
 
-
-
-#
-# Check our build options and set things based on them
-#
-include(build_options)
-
-
-
-#
-# Next find some build tools
-#
-
-# Do whatever we need to do to get lex.c ready
-include(setup_lex)
-
-
-# And similar for gram.tab.[ch]
-include(setup_yacc)
-
-
-# Handle building the manual
-include(handle_manual)
-
-
-
-#
-# Do checks for library functions we need, and enable workarounds for any
-# cases we decide are worth handling that way.
-#
-include(check_funcs_etc)
-
-
-
-#
-# Now other build flags and the like
-#
-
-# Enable warnings by default
-if(NOT NO_WARNS)
-	add_definitions(${STD_WARNS})
-	message(STATUS "Enabling standard warnings.")
-endif(NOT NO_WARNS)
-
-
 # Header files are in both source and build dirs
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
-
 #
-# And the build targets
+# Look for various things on the system and setup our handlers for them,
+# and put the build together.
 #
 
-# Generated files
+# Check our build options and set things based on them
+include(build_options)
+
+# Do checks for library functions we need, and enable workarounds for any
+# cases we decide are worth handling that way.
+include(check_funcs_etc)
+
+# If we're building out of a VCS, find those bits so we can stash the
+# revision info.
+include(vcs_checks)
+
+# Find some tools used for generating sources and manuals, and setup the
+# targets to build them all.
+include(setup_lex)
+include(setup_yacc)
+include(handle_manual)
 include(gen_source_files)
 
+# Targets to run doxygen; nobody but devs care
+include(doxygen)
 
-# We're building ctwm
+
+# And link up the actual ctwm binary.
 add_executable(ctwm ${CTWMSRC})
 target_link_libraries(ctwm ${CTWMLIBS})
-
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
@@ -150,29 +130,25 @@ if(DO_CLIENT)
 endif(DO_CLIENT)
 
 
-
-#
-# And setup the installation
-#
-include(ctwm_install)
+# Setup the installation
+include(do_install)
 
 
 #
+# And some trailing misc bits
+#
+
 # Pull in some CPack config for auto-building packages (like .deb and
 # .rpm)
-#
 include(cpack_setup)
 
-
-#
 # Some targets to support release management stuff; building generated
 # files for the tarballs
-#
 include(mktar_support)
 
+# Pull in dtrace bits
+include(dtrace_support)
 
-#
-# Output various information about what we've figured and what we're
-# doing for the builder's edification
-#
+# Finish by outputting various information about what we've figured and
+# what we're doing for the builder's edification.
 include(show_build_info)

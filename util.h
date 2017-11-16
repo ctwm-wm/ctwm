@@ -1,70 +1,24 @@
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
 /*
- *  [ ctwm ]
+ * utility routines header file
  *
- *  Copyright 1992 Claude Lecommandeur.
  *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
- */
-
-
-/***********************************************************************
+ *        Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                           Salt Lake City, Utah
+ *   Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                         Cambridge, Massachusetts
  *
  * $XConsortium: util.h,v 1.10 89/12/10 17:47:04 jim Exp $
  *
- * utility routines header file
- *
  * 28-Oct-87 Thomas E. LaStrange                File created
  *
- ***********************************************************************/
+ * Copyright 1992 Claude Lecommandeur.
+ */
 
 #ifndef _CTWM_UTIL_H
 #define _CTWM_UTIL_H
 
 #include <ctype.h>
+#include <stdio.h>
 
 #ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
@@ -89,45 +43,22 @@
 #define Tolower(c)      tolower((int)(unsigned char)(c))
 #define Toupper(c)      toupper((int)(unsigned char)(c))
 
-void     Zoom(Window wf, Window wt);
-void     MoveOutline(Window root,
-                     int x, int y, int width, int height,
-                     int bw, int th);
 char     *ExpandFilename(const char *name);
 char     *ExpandFilePath(char *path);
 
-void InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
-                       bool replace);
-void RemoveRGBColormap(Atom a);
-void LocateStandardColormaps(void);
-void GetColor(int kind, Pixel *what, char *name);
+void GetColor(int kind, Pixel *what, const char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
 bool UpdateFont(MyFont *font, int height);
-void SetFocusVisualAttributes(TwmWindow *tmp_win, bool focus);
+#if 0
 void move_to_after(TwmWindow *t, TwmWindow *after);
-void SetFocus(TwmWindow *tmp_win, Time tim);
-Pixmap CreateMenuIcon(int height, unsigned int *widthp, unsigned int *heightp);
-Pixmap Create3DMenuIcon(unsigned int height,
-                        unsigned int *widthp, unsigned int *heightp,
-                        ColorPair cp);
-Pixmap Create3DIconManagerIcon(ColorPair cp);
-void Draw3DBorder(Window w,
-                  int x, int y, int width, int height, int bw,
-                  ColorPair cp,
-                  int state, bool fill, bool forcebw);
-void PaintIcon(TwmWindow *tmp_win);
-void AdoptWindow(void);
+#endif
 void RescueWindows(void);
 void DebugTrace(char *file);
-void SetBorderCursor(TwmWindow *tmp_win, int x, int y);
 
 
-unsigned char *GetWMPropertyString(Window w, Atom prop);
-void FreeWMPropertyString(char *prop);
-void ConstrainByBorders1(int *left, int width, int *top, int height);
-void ConstrainByBorders(TwmWindow *twmwin,
-                        int *left, int width,
-                        int *top, int height);
+void safe_strncpy(char *dest, const char *src, size_t size);
+
+extern FILE *tracefile;
 
 #endif /* _CTWM_UTIL_H */

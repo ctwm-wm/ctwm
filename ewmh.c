@@ -1,28 +1,5 @@
 /*
- *  [ ctwm ]
- *
- *  Copyright 2014 Olaf Seibert
- *
- * Permission to use, copy, modify and distribute this software [ctwm]
- * and its documentation for any purpose is hereby granted without fee,
- * provided that the above copyright notice appear in all copies and
- * that both that copyright notice and this permission notice appear in
- * supporting documentation, and that the name of Olaf Seibert not be
- * used in advertising or publicity pertaining to distribution of the
- * software without specific, written prior permission. Olaf Seibert
- * makes no representations about the suitability of this software for
- * any purpose. It is provided "as is" without express or implied
- * warranty.
- *
- * Olaf Seibert DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
- * NO EVENT SHALL Olaf Seibert BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
- * OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
- * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
- * USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Olaf Seibert [ rhialto@falu.nl ][ May 2014 ]
+ * Copyright 2014 Olaf Seibert
  */
 
 /*
@@ -60,14 +37,20 @@
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"
+#include "event_handlers.h"
+#include "functions_defs.h"
 #include "icons.h"
-#include "add_window.h"
 #include "otp.h"
-#include "util.h"
-#include "parse.h"
-#include "resize.h"
 #include "image.h"
+#include "list.h"
 #include "functions.h"
+#include "occupation.h"
+#include "vscreen.h"
+#include "win_iconify.h"
+#include "win_ops.h"
+#include "win_resize.h"
+#include "win_utils.h"
+#include "workspace_utils.h"
 
 /* #define DEBUG_EWMH */
 
@@ -96,6 +79,7 @@ static void EwmhClientMessage_NET_WM_DESKTOP(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_STATE(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_ACTIVE_WINDOW(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg);
+static XEvent synth_btnevent_for_moveresize(TwmWindow *twm_win);
 static unsigned long EwmhGetWindowProperty(Window w, Atom name, Atom type);
 static void EwmhGetStrut(TwmWindow *twm_win, bool update);
 static void EwmhRemoveStrut(TwmWindow *twm_win);
@@ -163,7 +147,7 @@ static void GenerateTimestamp(ScreenInfo *scr)
 	tosleep.tv_sec  = 0;
 	tosleep.tv_nsec = (10 * 1000 * 1000);
 
-	if(lastTimestamp > 0) {
+	if(EventTime > 0) {
 		return;
 	}
 
@@ -185,8 +169,8 @@ static void GenerateTimestamp(ScreenInfo *scr)
 		fprintf(stderr, "GenerateTimestamp: time = %ld, timeout left = %d\n",
 		        event.xproperty.time, timeout);
 #endif /* DEBUG_EWMH */
-		if(lastTimestamp < event.xproperty.time) {
-			lastTimestamp = event.xproperty.time;
+		if(EventTime < event.xproperty.time) {
+			EventTime = event.xproperty.time;
 		}
 	}
 }
@@ -196,6 +180,10 @@ static void GenerateTimestamp(ScreenInfo *scr)
  * at by the ICCCM section 4.3.
  * http://tronche.com/gui/x/icccm/sec-4.html#s-4.3
  *
+ * We do want to run through this even if we're not running with
+ * --replace ourselves, because it also sets up the bits for other
+ * invocations to --replace us.
+ *
  * TODO: convert the selection to atom VERSION.
  */
 static bool EwmhReplaceWM(ScreenInfo *scr)
@@ -203,6 +191,11 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 	char atomname[32];
 	Atom wmAtom;
 	Window selectionOwner;
+
+	/* If we're not trying to take over the screen, don't do this at all */
+	if(!scr->takeover) {
+		return false;
+	}
 
 	snprintf(atomname, sizeof(atomname), "WM_S%d", scr->screen);
 	wmAtom = XInternAtom(dpy, atomname, False);
@@ -232,14 +225,19 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 		}
 	}
 
-	if(selectionOwner != None) {
-		if(!CLarg.ewmh_replace) {
-			fprintf(stderr, "A window manager is already running on screen %d\n",
-			        scr->screen);
-			return false;
-		}
+	/*
+	 * If something else is owning things and we're not running
+	 * --replace, give up now and return failure.
+	 */
+	if(selectionOwner != None && !CLarg.ewmh_replace) {
+#ifdef DEBUG_EWMH
+		fprintf(stderr, "A window manager is already running on screen %d\n",
+		        scr->screen);
+#endif
+		return false;
 	}
 
+	/* We're asked to --replace, so try to do so */
 	XSetSelectionOwner(dpy, wmAtom, scr->icccm_Window, CurrentTime);
 
 	if(XGetSelectionOwner(dpy, wmAtom) != scr->icccm_Window) {
@@ -292,7 +290,7 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 	GenerateTimestamp(scr);
 
 	SendPropertyMessage(scr->XineramaRoot, scr->XineramaRoot,
-	                    XA_MANAGER, lastTimestamp, wmAtom, scr->icccm_Window, 0, 0,
+	                    XA_MANAGER, EventTime, wmAtom, scr->icccm_Window, 0, 0,
 	                    StructureNotifyMask);
 
 	return true;
@@ -550,7 +548,7 @@ void EwmhTerminate(void)
  * (that's the only selection we have).
  */
 
-void EwhmSelectionClear(XSelectionClearEvent *sev)
+void EwmhSelectionClear(XSelectionClearEvent *sev)
 {
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "sev->window = %x\n", (unsigned)sev->window);
@@ -633,10 +631,10 @@ bool EwmhClientMessage(XClientMessageEvent *msg)
  *
  * First scan all sizes. Keep a record of the closest smaller and larger
  * size. At the end, choose from one of those.
- * FInally, go and fetch the pixel data.
+ * Finally, go and fetch the pixel data.
  */
 
-Image *EwhmGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
+Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 {
 	int fetch_offset;
 	Atom actual_type;
@@ -968,7 +966,7 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 		return;
 	}
 
-	Image *image = EwhmGetIcon(Scr, twm_win);
+	Image *image = EwmhGetIcon(Scr, twm_win);
 
 	/* TODO: de-duplicate with handling of XA_WM_HINTS */
 	{
@@ -988,10 +986,10 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 	x = GetIconOffset(twm_win->icon);
 	twm_win->icon->bm_w =
 	        XCreateWindow(dpy, twm_win->icon->w, x, 0,
-	                      (unsigned int) twm_win->icon->width,
-	                      (unsigned int) twm_win->icon->height,
-	                      (unsigned int) 0, Scr->d_depth,
-	                      (unsigned int) CopyFromParent, Scr->d_visual,
+	                      twm_win->icon->width,
+	                      twm_win->icon->height,
+	                      0, Scr->d_depth,
+	                      CopyFromParent, Scr->d_visual,
 	                      valuemask, &attributes);
 
 	if(image->mask) {
@@ -1011,7 +1009,7 @@ static void EwmhHandle_NET_WM_ICONNotify(XPropertyEvent *event,
 		                        0, &rect, 1, ShapeUnion, 0);
 	}
 	XMapSubwindows(dpy, twm_win->icon->w);
-	RedoIconName();
+	RedoIconName(twm_win);
 }
 
 /*
@@ -1157,7 +1155,7 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 				newZoom = twm_win->zoomed;      /* turn off whatever zoom */
 				break;
 			case EWMH_STATE_MAXIMIZED_VERT:
-				newZoom = F_VERTZOOM;
+				newZoom = F_ZOOM;
 				break;
 			case EWMH_STATE_MAXIMIZED_HORZ:
 				newZoom = F_HORIZOOM;
@@ -1180,24 +1178,37 @@ static void EwmhClientMessage_NET_WM_STATEchange(TwmWindow *twm_win, int change,
 			/* Toggle the shade/squeeze state */
 #ifdef DEBUG_EWMH
 			printf("EWMH_STATE_SHADED: change it\n");
-			Squeeze(twm_win);
 #endif
+			Squeeze(twm_win);
 		}
 	}
 	else if(change & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
 		/*
 		 * Other changes call into ctwm code, which in turn calls back to
-		 * this module to update the ewmhFlags and the property.
-		 * This change shortcuts that, since EwmhGetPriority() looks at
-		 * ewmhFlags.
+		 * EWMH code to update the ewmhFlags and the property.  This one
+		 * we handle completely internally.
 		 */
-		int newpri;
+		unsigned omask = 0, oval = 0;
+		const int prepri = OtpEffectivePriority(twm_win);
 
-		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		twm_win->ewmhFlags |= newValue;
-		newpri = EwmhGetPriority(twm_win);
+		/* Which bits are we changing and what to? */
+#define DOBIT(fld) do { \
+          if(change   & EWMH_STATE_##fld) { omask |= OTP_AFLAG_##fld; } \
+          if(newValue & EWMH_STATE_##fld) { oval  |= OTP_AFLAG_##fld; } \
+        } while(0)
 
-		OtpSetPriority(twm_win, WinWin, newpri, Above);
+		DOBIT(ABOVE);
+		DOBIT(BELOW);
+
+#undef DOBIT
+
+		/* Update OTP as necessary */
+		OtpSetAflagMask(twm_win, omask, oval);
+		if(OtpEffectivePriority(twm_win) != prepri) {
+			OtpRestackWindow(twm_win);
+		}
+
+		/* Set the EWMH property back on the window */
 		EwmhSet_NET_WM_STATE(twm_win, change);
 	}
 }
@@ -1257,11 +1268,9 @@ static void EwmhClientMessage_NET_ACTIVE_WINDOW(XClientMessageEvent *msg)
  */
 static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 {
-	Window w = msg->window;
 	TwmWindow *twm_win;
-	XEvent xevent;
 
-	twm_win = GetTwmWindow(w);
+	twm_win = GetTwmWindow(msg->window);
 
 	if(twm_win == NULL) {
 		return;
@@ -1280,49 +1289,85 @@ static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg)
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
 		case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
 		case _NET_WM_MOVERESIZE_SIZE_LEFT:
-		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD:
-			/* all implemented the same */
-			EventHandler[EnterNotify] = HandleUnknown;
-			EventHandler[LeaveNotify] = HandleUnknown;
-			OpaqueResizeSize(twm_win);
-			resizeFromCenter(twm_win->frame, twm_win);
+		case _NET_WM_MOVERESIZE_SIZE_KEYBOARD: {
+			/* Fake up as if we triggered f.resize on it */
+			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
+
 			/*
-			 * This should probably happen in HandleButtonRelease...
-			 * no idea why it doesn't.
+			 * The resize won't actually start until we cross the cursor
+			 * over a border.  Perhaps we should find the nearest corner,
+			 * and pre-warp the cursor there?  That may be less friendly
+			 * for the user, since it might not be as predictable, and
+			 * having the cursor zoom off without warning is probably a
+			 * little surprising...
 			 */
-			EventHandler[EnterNotify] = HandleEnterNotify;
-			EventHandler[LeaveNotify] = HandleLeaveNotify;
+			ExecuteFunction(F_RESIZE, "", twm_win->frame, twm_win,
+			                &xevent, C_WINDOW, false);
+
+			/*
+			 * It's not guaranteed that this actually began as a button
+			 * press, but our implementation is expecting the button to
+			 * be held down all through the move, so that
+			 * ExecuteFunction() won't actually end until there's a
+			 * button release of some kind, which will trigger
+			 * HandleButtonRelease() properly.  So we don't need to call
+			 * it ourselves.
+			 */
+
 			break;
+		}
 		case _NET_WM_MOVERESIZE_MOVE:
-		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
-			/* synthesize a button event */
-			xevent.xbutton.root = twm_win->parent_vs->window;
-			xevent.xbutton.window = (Window) - 1; /* force fromtitlebar = False */
-			xevent.xbutton.x_root = twm_win->frame_x;
-			xevent.xbutton.y_root = twm_win->frame_y;
-			xevent.xbutton.x = 0;
-			xevent.xbutton.y = 0;
-			xevent.xbutton.time = lastTimestamp;
-			menuFromFrameOrWindowOrTitlebar = true;
+		case _NET_WM_MOVERESIZE_MOVE_KEYBOARD: {
+			/* Fake up as if we triggered f.move on it */
+			XEvent xevent = synth_btnevent_for_moveresize(twm_win);
 			ExecuteFunction(F_MOVE, "", twm_win->frame, twm_win,
-			                &xevent, C_TITLE, false);
-			menuFromFrameOrWindowOrTitlebar = false;
-			/*
-			 * This should probably happen in HandleButtonRelease...
-			 * no idea why it doesn't.
-			 */
-			EventHandler[EnterNotify] = HandleEnterNotify;
-			EventHandler[LeaveNotify] = HandleLeaveNotify;
+			                &xevent, C_WINDOW, false);
+
+			/* X-ref HandleButtonRelease() discussion above */
 			break;
+		}
 		case _NET_WM_MOVERESIZE_CANCEL:
 			/*
 			 * TODO: check if the twm_win is the same.
 			 * TODO: check how to make this actually work.
+			 *
+			 * As currently implemented, I don't believe we ever need to
+			 * do anything here.  All the needed cleanup should happen in
+			 * our ButtonRelease handler.
 			 */
-			Cancel = true;
 			break;
 	}
 }
+
+static XEvent
+synth_btnevent_for_moveresize(TwmWindow *twm_win)
+{
+	XEvent xevent;
+	Window root = twm_win->parent_vs->window;
+	Window child = twm_win->w;
+	int x_root = twm_win->frame_x;
+	int y_root = twm_win->frame_y;
+	int x_win  = 0;
+	int y_win  = 0;
+	unsigned int dummy_mask;
+
+	/* Find the pointer */
+	XQueryPointer(dpy, twm_win->frame, &root, &child, &x_root, &y_root,
+	              &x_win, &y_win, &dummy_mask);
+
+	/* Synthesize a button event */
+	xevent.type = ButtonPress;
+	xevent.xbutton.root = root;
+	xevent.xbutton.window = child;
+	xevent.xbutton.x_root = x_root;
+	xevent.xbutton.y_root = y_root;
+	xevent.xbutton.x = x_win;
+	xevent.xbutton.y = y_win;
+	xevent.xbutton.time = EventTime;
+
+	return xevent;
+}
+
 
 /*
  * Handle any PropertyNotify.
@@ -1575,7 +1620,7 @@ void EwmhUnmapNotify(TwmWindow *twm_win)
  * Newer windows are always added at the end.
  *
  * Look at new_win->iconmanagerlist as an optimization for
- * !LookInList(Scr->IconMgrNoShow, new_win->full_name, &new_win->class)).
+ * !LookInList(Scr->IconMgrNoShow, new_win->name, &new_win->class)).
  */
 void EwmhAddClientWindow(TwmWindow *new_win)
 {
@@ -1739,7 +1784,8 @@ void EwmhGetProperties(TwmWindow *twm_win)
 	                      (EWMH_STATE_ABOVE | EWMH_STATE_BELOW | EWMH_STATE_SHADED);
 }
 
-int EwmhGetPriority(TwmWindow *twm_win)
+/* Only used in initially mapping a window */
+int EwmhGetInitPriority(TwmWindow *twm_win)
 {
 	switch(twm_win->ewmhWindowType) {
 		case wt_Desktop:
@@ -1747,13 +1793,7 @@ int EwmhGetPriority(TwmWindow *twm_win)
 		case wt_Dock:
 			return EWMH_PRI_DOCK;
 		default:
-			if(twm_win->ewmhFlags & EWMH_STATE_ABOVE) {
-				return EWMH_PRI_NORMAL + EWMH_PRI_ABOVE;
-			}
-			else if(twm_win->ewmhFlags & EWMH_STATE_BELOW) {
-				return EWMH_PRI_NORMAL - EWMH_PRI_ABOVE;
-			}
-			return EWMH_PRI_NORMAL;
+			return 0;
 	}
 }
 
@@ -1985,6 +2025,10 @@ void EwmhSet_NET_SHOWING_DESKTOP(int state)
  *
  * TwmWindow.ewmhFlags keeps track of the atoms that should be in
  * the list, so that we don't have to fetch or recalculate them all.
+ *
+ * XXX It's not clear that the theoretical performance gain and edge-case
+ * bug avoidance of the 'changes' arg is worth the complexity and
+ * edge-case bug creation it brings.  Consider removing it.
  */
 void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 {
@@ -2000,7 +2044,7 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 				newFlags = EWMH_STATE_MAXIMIZED_VERT |
 				           EWMH_STATE_MAXIMIZED_HORZ;
 				break;
-			case F_VERTZOOM:
+			case F_ZOOM:
 			case F_LEFTZOOM:
 			case F_RIGHTZOOM:
 				newFlags = EWMH_STATE_MAXIMIZED_VERT;
@@ -2020,20 +2064,33 @@ void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes)
 		                        EWMH_STATE_FULLSCREEN);
 		twm_win->ewmhFlags |= newFlags;
 	}
-	else if(changes & EWMH_STATE_SHADED) {
+
+	if(changes & EWMH_STATE_SHADED) {
 		if(twm_win->squeezed) {
 			twm_win->ewmhFlags |= EWMH_STATE_SHADED;
 		}
-		twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
+		else {
+			twm_win->ewmhFlags &= ~EWMH_STATE_SHADED;
+		}
 	}
-	else if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
-		int pri;
-		/*
-		 * Check the window's current priority relative to what it
-		 * should be by default.
-		 */
+
+	if(changes & (EWMH_STATE_ABOVE | EWMH_STATE_BELOW)) {
+		int pri = OtpEffectiveDisplayPriority(twm_win);
+
 		twm_win->ewmhFlags &= ~(EWMH_STATE_ABOVE | EWMH_STATE_BELOW);
-		pri = OtpGetPriority(twm_win) - EwmhGetPriority(twm_win);
+
+		/*
+		 * If it's a DOCK or DESKTOP, and where we expect those to be, we
+		 * consider that there's nothing to tell it.  Otherwise, we tell
+		 * it ABOVE/BELOW based on where it effectively is.
+		 */
+		if(twm_win->ewmhWindowType == wt_Dock && pri == EWMH_PRI_DOCK) {
+			pri = 0;
+		}
+		if(twm_win->ewmhWindowType == wt_Desktop && pri == EWMH_PRI_DESKTOP) {
+			pri = 0;
+		}
+
 		if(pri > 0) {
 			twm_win->ewmhFlags |= EWMH_STATE_ABOVE;
 		}

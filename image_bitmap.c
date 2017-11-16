@@ -146,7 +146,7 @@ LoadBitmapImage(const char *name, ColorPair cp)
 	}
 	bm = FindBitmap(name, &width, &height);
 	if(bm == None) {
-		return (None);
+		return NULL;
 	}
 
 	image = AllocImage();
@@ -159,6 +159,6 @@ LoadBitmapImage(const char *name, ColorPair cp)
 	XFreePixmap(dpy, bm);
 	image->width  = width;
 	image->height = height;
-	return (image);
+	return image;
 }
 

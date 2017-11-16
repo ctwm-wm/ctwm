@@ -10,9 +10,6 @@
 # any windows and to use meta-keys.
 #
 
-NoGrabServer
-RestartPreviousState
-DecorateTransients
 TitleFont	"-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
 ResizeFont	"-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
 MenuFont	"-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"

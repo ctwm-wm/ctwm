@@ -1,47 +1,6 @@
 /*
  * Copyright 1989 Massachusetts Institute of Technology
- *
- * Permission to use, copy, modify, and distribute this software and its
- * documentation for any purpose and without fee is hereby granted, provided
- * that the above copyright notice appear in all copies and that both that
- * copyright notice and this permission notice appear in supporting
- * documentation, and that the name of M.I.T. not be used in advertising
- * or publicity pertaining to distribution of the software without specific,
- * written prior permission.  M.I.T. makes no representations about the
- * suitability of this software for any purpose.  It is provided "as is"
- * without express or implied warranty.
- *
- * M.I.T. DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL M.I.T.
- * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-/*
- *  [ ctwm ]
- *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
+ * Copyright 1992 Claude Lecommandeur.
  */
 
 /***********************************************************************
@@ -70,20 +29,23 @@
 #include <X11/Xatom.h>
 
 #include "util.h"
-#include "parse.h"
+#include "iconmgr.h"
+#include "icons_builtin.h"
 #include "screen.h"
-#include "decorations.h"
-#include "resize.h"
+#include "drawing.h"
+#include "functions_defs.h"
+#include "list.h"
+#include "occupation.h"
 #include "otp.h"
 #include "add_window.h"
+#include "gram.tab.h"
+#include "win_decorations.h"
+#include "win_resize.h"
+#include "win_utils.h"
 
-const int siconify_width = 11;
-const int siconify_height = 11;
-int iconmgr_textx = /*siconify_width*/11 + 11;
-static unsigned char siconify_bits[] = {
-	0xff, 0x07, 0x01, 0x04, 0x0d, 0x05, 0x9d, 0x05, 0xb9, 0x04, 0x51, 0x04,
-	0xe9, 0x04, 0xcd, 0x05, 0x85, 0x05, 0x01, 0x04, 0xff, 0x07
-};
+
+/* Where we start drawing the name in the icon manager */
+static int iconmgr_textx;
 
 static WList *Active = NULL;
 static WList *Current = NULL;
@@ -122,18 +84,26 @@ void CreateIconManagers(void)
 		return;
 	}
 
+	/*
+	 * Move past the iconified icon to start the text.
+	 * XXX Semi-arbitrary magic add'l padding, to deal with various inner
+	 * positioning of the icon subwindow.  Be smarter (or at least
+	 * clearer) about this...
+	 */
+	iconmgr_textx = im_iconified_icon_width + 11;
 	if(Scr->use3Diconmanagers) {
 		iconmgr_textx += Scr->IconManagerShadowDepth;
 	}
+
 	if(Scr->siconifyPm == None) {
-		Scr->siconifyPm = XCreatePixmapFromBitmapData(dpy, Scr->Root,
-		                  (char *)siconify_bits, siconify_width,
-		                  siconify_height, 1, 0, 1);
+		Scr->siconifyPm = Create2DIconManagerIcon();
 	}
 
 	ws = Scr->workSpaceMgr.workSpaceList;
 	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
 		for(p = q; p != NULL; p = p->next) {
+			int gx, gy;
+
 			snprintf(str, sizeof(str), "%s Icon Manager", p->name);
 			snprintf(str1, sizeof(str1), "%s Icons", p->name);
 			if(p->icon_name) {
@@ -146,25 +116,25 @@ void CreateIconManagers(void)
 			if(!p->geometry || !strlen(p->geometry)) {
 				p->geometry = "+0+0";
 			}
-			mask = XParseGeometry(p->geometry, &JunkX, &JunkY,
+			mask = XParseGeometry(p->geometry, &gx, &gy,
 			                      (unsigned int *) &p->width, (unsigned int *)&p->height);
 
 			bw = LookInList(Scr->NoBorder, str, NULL) ? 0 :
 			     (Scr->ThreeDBorderWidth ? Scr->ThreeDBorderWidth : Scr->BorderWidth);
 
 			if(mask & XNegative) {
-				JunkX += Scr->rootw - p->width - 2 * bw;
+				gx += Scr->rootw - p->width - 2 * bw;
 				gravity = (mask & YNegative) ? SouthEastGravity : NorthEastGravity;
 			}
 			else {
 				gravity = (mask & YNegative) ? SouthWestGravity : NorthWestGravity;
 			}
 			if(mask & YNegative) {
-				JunkY += Scr->rooth - p->height - 2 * bw;
+				gy += Scr->rooth - p->height - 2 * bw;
 			}
 
 			background = Scr->IconManagerC.back;
-			GetColorFromList(Scr->IconManagerBL, p->name, (XClassHint *)NULL,
+			GetColorFromList(Scr->IconManagerBL, p->name, NULL,
 			                 &background);
 
 			if(p->width  < 1) {
@@ -174,17 +144,19 @@ void CreateIconManagers(void)
 				p->height = 1;
 			}
 			p->w = XCreateSimpleWindow(dpy, Scr->Root,
-			                           JunkX, JunkY, p->width, p->height, 1,
+			                           gx, gy, p->width, p->height, 1,
 			                           Scr->Black, background);
 
-			XSetStandardProperties(dpy, p->w, str, icon_name, None, NULL, 0, NULL);
 
 			/* Scr->workSpaceMgr.activeWSPC = ws; */
 			wmhints.initial_state = NormalState;
 			wmhints.input         = True;
 			wmhints.flags         = InputHint | StateHint;
-			XSetWMHints(dpy, p->w, &wmhints);
-			p->twm_win = AddWindow(p->w, ADD_WINDOW_ICON_MANAGER, p, Scr->currentvs);
+
+			XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
+			                   &wmhints, NULL);
+
+			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
 			 * SetupOccupation() called from AddWindow() doesn't setup
 			 * occupation for icon managers, nor clear vs if occupation lacks.
@@ -206,7 +178,7 @@ void CreateIconManagers(void)
 #ifdef DEBUG_ICONMGR
 			fprintf(stderr,
 			        "CreateIconManagers: IconMgr %p: x=%d y=%d w=%d h=%d occupation=%x\n",
-			        p, JunkX, JunkY,  p->width, p->height, p->twm_win->occupation);
+			        p, gx, gy,  p->width, p->height, p->twm_win->occupation);
 #endif
 
 			sizehints.flags       = PWinGravity;
@@ -215,8 +187,7 @@ void CreateIconManagers(void)
 
 			p->twm_win->mapped = false;
 			SetMapStateProp(p->twm_win, WithdrawnState);
-			if(p->twm_win && p->twm_win->wmhints &&
-			                (p->twm_win->wmhints->initial_state == IconicState)) {
+			if(p->twm_win && (p->twm_win->wmhints->initial_state == IconicState)) {
 				p->twm_win->isicon = true;
 			}
 			else if(!Scr->NoIconManagers && Scr->ShowIconManager) {
@@ -235,6 +206,18 @@ void CreateIconManagers(void)
 		Scr->workSpaceMgr.workSpaceList->iconmgr = Scr->iconmgr;
 	}
 
+
+	/*
+	 * Grab buttons/keystrokes for icon managers appropriately.
+	 * Normally, this is done in AddWindow(), but it explicitly skips it
+	 * for icon managers.  It's not at all clear why GrabButtons() would
+	 * do so; I don't think it needs to.  GrabKeys() does do some looping
+	 * over the Scr->iconmgr list at the end though, so it's possible we
+	 * need to delay calling it until now when the list is all filled up.
+	 * This needs further investigation; it may be that the special case
+	 * and this code can be removed.  X-ref comments in add_window.c
+	 * about it.
+	 */
 	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
 		for(p = q; p != NULL; p = p->next) {
 			GrabButtons(p->twm_win);
@@ -296,6 +279,86 @@ IconMgr *AllocateIconManager(char *name, char *icon_name, char *geom,
 	}
 	return(p);
 }
+
+
+/*
+ * Each workspace has its own [set of] icon manager[s].  The initial main
+ * one was setup via AllocateIconManager() early in startup.  The others
+ * were setup during parsing the config file.  Then this gets called late
+ * in startup, after all the workspaces are setup, to copy them all into
+ * each one.
+ *
+ * Note this is distinct from CreateIconManagers(); that creates and
+ * draws the windows, this creates and connects up the data structures.
+ */
+void AllocateOtherIconManagers(void)
+{
+	IconMgr   *imfirst; // First IM on each workspace
+	WorkSpace *ws;
+
+	/* No defined workspaces?  Nothing to do. */
+	if(! Scr->workSpaceManagerActive) {
+		return;
+	}
+
+	/* The first workspace just gets the ones we already have */
+	ws = Scr->workSpaceMgr.workSpaceList;
+	ws->iconmgr = Scr->iconmgr;
+
+	/* From the second on, we start copying */
+	imfirst = ws->iconmgr;
+	for(ws = ws->next; ws != NULL; ws = ws->next) {
+		IconMgr *ip, *previ, *p = NULL;
+
+		/* Copy in the first iconmgr */
+		ws->iconmgr  = malloc(sizeof(IconMgr));
+		*ws->iconmgr = *imfirst;
+
+		/*
+		 * This first is now the nextv to the first in the previous WS,
+		 * and we don't [yet] have a nextv of our own.
+		 * */
+		imfirst->nextv = ws->iconmgr;
+		ws->iconmgr->nextv = NULL;
+
+		/*
+		 * Start from the second, and copy them each from the prior
+		 * workspace we just went through.
+		 * */
+		previ = ws->iconmgr;
+		for(ip = imfirst->next; ip != NULL; ip = ip->next) {
+			/* Copy the base bits */
+			p  = malloc(sizeof(IconMgr));
+			*p = *ip;
+
+			/* Link up the double-links, and there's no nextv [yet] */
+			previ->next = p;
+			p->prev     = previ;
+			p->next     = NULL;
+			p->nextv    = NULL;
+
+			/* We're now the nextv to that one in the old workspace */
+			ip->nextv  = p;
+
+			/* And back around to the next one to copy into this WS */
+			previ = p;
+		}
+
+		/* Each one has a pointer to the last IM in this WS, so save those */
+		for(ip = ws->iconmgr; ip != NULL; ip = ip->next) {
+			ip->lasti = p;
+		}
+
+		/*
+		 * And back around to the next workspace, which works from those
+		 * we made for this WS.  We go from imfirst rather than
+		 * Scr->iconmgr so the ip->nextv rewrites are correct above; we
+		 * have to fill them in on the next loop.
+		 */
+		imfirst = ws->iconmgr;
+	}
+}
+
 
 /***********************************************************************
  *
@@ -626,16 +689,16 @@ WList *AddIconManager(TwmWindow *tmp_win)
 	}
 
 	/* Config could declare not to IMify this type of window in two ways */
-	if(LookInList(Scr->IconMgrNoShow, tmp_win->full_name, &tmp_win->class)) {
+	if(LookInList(Scr->IconMgrNoShow, tmp_win->name, &tmp_win->class)) {
 		return NULL;
 	}
 	if(Scr->IconManagerDontShow
-	                && !LookInList(Scr->IconMgrShow, tmp_win->full_name, &tmp_win->class)) {
+	                && !LookInList(Scr->IconMgrShow, tmp_win->name, &tmp_win->class)) {
 		return NULL;
 	}
 
 	/* Dredge up the appropriate IM */
-	if((ip = (IconMgr *)LookInList(Scr->IconMgrs, tmp_win->full_name,
+	if((ip = (IconMgr *)LookInList(Scr->IconMgrs, tmp_win->name,
 	                               &tmp_win->class)) == NULL) {
 		if(Scr->workSpaceManagerActive) {
 			ip = Scr->workSpaceMgr.workSpaceList->iconmgr;
@@ -672,14 +735,19 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		tmp->cp.back   = Scr->IconManagerC.back;
 		tmp->highlight = Scr->IconManagerHighlight;
 
-		GetColorFromList(Scr->IconManagerFL, tmp_win->full_name,
+		GetColorFromList(Scr->IconManagerFL, tmp_win->name,
 		                 &tmp_win->class, &tmp->cp.fore);
-		GetColorFromList(Scr->IconManagerBL, tmp_win->full_name,
+		GetColorFromList(Scr->IconManagerBL, tmp_win->name,
 		                 &tmp_win->class, &tmp->cp.back);
-		GetColorFromList(Scr->IconManagerHighlightL, tmp_win->full_name,
+		GetColorFromList(Scr->IconManagerHighlightL, tmp_win->name,
 		                 &tmp_win->class, &tmp->highlight);
 
-		/* Pop! */
+		/*
+		 * If we're using 3d icon managers, each line item has its own
+		 * icon; see comment on creation function for details.  With 2d
+		 * icon managers, it's the same for all of them, so it's stored
+		 * screen-wide.
+		 */
 		if(Scr->use3Diconmanagers) {
 			if(!Scr->BeNiceToColormap) {
 				GetShadeColors(&tmp->cp);
@@ -690,8 +758,8 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		/* Refigure the height of the whole IM */
 		h = Scr->IconManagerFont.avg_height
 		    + 2 * (ICON_MGR_OBORDER + ICON_MGR_OBORDER);
-		if(h < (siconify_height + 4)) {
-			h = siconify_height + 4;
+		if(h < (im_iconified_icon_height + 4)) {
+			h = im_iconified_icon_height + 4;
 		}
 
 		ip->height = h * ip->count;
@@ -712,10 +780,10 @@ WList *AddIconManager(TwmWindow *tmp_win)
 			attributes.event_mask |= (EnterWindowMask | LeaveWindowMask);
 		}
 		attributes.cursor = Scr->IconMgrCursor;
-		tmp->w = XCreateWindow(dpy, ip->w, 0, 0, (unsigned int) 1,
-		                       (unsigned int) h, (unsigned int) 0,
-		                       CopyFromParent, (unsigned int) CopyFromParent,
-		                       (Visual *) CopyFromParent,
+		tmp->w = XCreateWindow(dpy, ip->w, 0, 0, 1,
+		                       h, 0,
+		                       CopyFromParent, CopyFromParent,
+		                       CopyFromParent,
 		                       valuemask, &attributes);
 
 
@@ -728,11 +796,11 @@ WList *AddIconManager(TwmWindow *tmp_win)
 		attributes.cursor = Scr->ButtonCursor;
 		/* The precise location will be set it in PackIconManager.  */
 		tmp->icon = XCreateWindow(dpy, tmp->w, 0, 0,
-		                          (unsigned int) siconify_width,
-		                          (unsigned int) siconify_height,
-		                          (unsigned int) 0, CopyFromParent,
-		                          (unsigned int) CopyFromParent,
-		                          (Visual *) CopyFromParent,
+		                          im_iconified_icon_width,
+		                          im_iconified_icon_height,
+		                          0, CopyFromParent,
+		                          CopyFromParent,
+		                          CopyFromParent,
 		                          valuemask, &attributes);
 
 
@@ -1057,12 +1125,11 @@ void PackIconManager(IconMgr *ip)
 	int savewidth;
 	WList *tmp;
 	int mask;
-	unsigned int JunkW, JunkH;
 
 	wheight = Scr->IconManagerFont.avg_height
 	          + 2 * (ICON_MGR_OBORDER + ICON_MGR_IBORDER);
-	if(wheight < (siconify_height + 4)) {
-		wheight = siconify_height + 4;
+	if(wheight < (im_iconified_icon_height + 4)) {
+		wheight = im_iconified_icon_height + 4;
 	}
 
 	wwidth = ip->width / ip->columns;
@@ -1092,7 +1159,7 @@ void PackIconManager(IconMgr *ip)
 			XMoveResizeWindow(dpy, tmp->w, new_x, new_y, wwidth, wheight);
 			if(tmp->height != wheight)
 				XMoveWindow(dpy, tmp->icon, ICON_MGR_OBORDER + ICON_MGR_IBORDER,
-				            (wheight - siconify_height) / 2);
+				            (wheight - im_iconified_icon_height) / 2);
 
 			tmp->row = row - 1;
 			tmp->col = col;
@@ -1117,7 +1184,8 @@ void PackIconManager(IconMgr *ip)
 
 	XResizeWindow(dpy, ip->w, newwidth, ip->height);
 
-	mask = XParseGeometry(ip->geometry, &JunkX, &JunkY, &JunkW, &JunkH);
+	mask = XParseGeometry(ip->geometry, &JunkX, &JunkY,
+	                      &JunkWidth, &JunkHeight);
 	if(mask & XNegative) {
 		ip->twm_win->frame_x += ip->twm_win->frame_width - newwidth -
 		                        2 * ip->twm_win->frame_bw3D;
@@ -1147,4 +1215,68 @@ void dump_iconmanager(IconMgr *mgr, char *label)
 	        mgr->prev,
 	        mgr->lasti,
 	        mgr->nextv);
+}
+
+
+/*
+ * Draw the window name into the icon manager line
+ */
+void
+DrawIconManagerIconName(TwmWindow *tmp_win)
+{
+	WList *iconmanagerlist = tmp_win->iconmanagerlist;
+	XRectangle ink_rect, logical_rect;
+
+	XmbTextExtents(Scr->IconManagerFont.font_set,
+	               tmp_win->icon_name, strlen(tmp_win->icon_name),
+	               &ink_rect, &logical_rect);
+
+	if(UpdateFont(&Scr->IconManagerFont, logical_rect.height)) {
+		PackIconManagers();
+	}
+
+	DrawIconManagerBorder(iconmanagerlist, true);
+
+	FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
+
+	/* XXX This is a completely absurd way of writing this */
+	((Scr->use3Diconmanagers && (Scr->Monochrome != COLOR)) ?
+	 XmbDrawImageString : XmbDrawString)
+	(dpy,
+	 iconmanagerlist->w,
+	 Scr->IconManagerFont.font_set,
+	 Scr->NormalGC,
+	 iconmgr_textx,
+	 (Scr->IconManagerFont.avg_height - logical_rect.height) / 2
+	 + (- logical_rect.y)
+	 + ICON_MGR_OBORDER
+	 + ICON_MGR_IBORDER,
+	 tmp_win->icon_name,
+	 strlen(tmp_win->icon_name));
+}
+
+
+/*
+ * Copy the icon into the icon manager for a window that's iconified.
+ * This is slightly different for the 3d vs 2d case, since the 3d is just
+ * copying a pixmap in, while the 2d is drawing a bitmap in with the
+ * fg/bg colors appropriate to the line.
+ */
+void
+ShowIconifiedIcon(TwmWindow *tmp_win)
+{
+	WList *iconmanagerlist = tmp_win->iconmanagerlist;
+
+	if(Scr->use3Diconmanagers && iconmanagerlist->iconifypm) {
+		XCopyArea(dpy, iconmanagerlist->iconifypm,
+		          iconmanagerlist->icon,
+		          Scr->NormalGC, 0, 0,
+		          im_iconified_icon_width, im_iconified_icon_height, 0, 0);
+	}
+	else {
+		FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
+		XCopyPlane(dpy, Scr->siconifyPm, iconmanagerlist->icon,
+		           Scr->NormalGC, 0, 0,
+		           im_iconified_icon_width, im_iconified_icon_height, 0, 0, 1);
+	}
 }

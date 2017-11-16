@@ -27,7 +27,7 @@ static void dump_default_config(void);
 ctwm_cl_args CLarg = {
 	.MultiScreen     = true,
 	.Monochrome      = false,
-	.cfgchk          = 0,
+	.cfgchk          = false,
 	.InitFile        = NULL,
 	.display_name    = NULL,
 	.PrintErrorMessages = false,

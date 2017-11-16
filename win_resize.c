@@ -1,55 +1,11 @@
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
 /*
- *  [ ctwm ]
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
  *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
+ * Copyright 1992 Claude Lecommandeur.
  */
-
 
 /***********************************************************************
  *
@@ -72,14 +28,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "parse.h"
 #include "events.h"
 #include "util.h"
 #include "otp.h"
-#include "resize.h"
+#include "functions_defs.h"
 #include "add_window.h"
-#include "decorations.h"
+#include "colormaps.h"
 #include "screen.h"
+#include "drawing.h"
+#include "win_decorations.h"
+#include "win_ops.h"
+#include "win_resize.h"
+#include "win_utils.h"
+#include "workspace_manager.h"
+#include "iconmgr.h"
 
 #define MINHEIGHT 0     /* had been 32 */
 #define MINWIDTH 0      /* had been 60 */
@@ -185,9 +147,9 @@ void OpaqueResizeSize(TwmWindow *tmp_win)
 			 * scrsz will hold the number of pixels in your resolution,
 			 * which can get big.  [signed] int may not cut it.
 			 */
-			unsigned long winsz, scrsz;
-			winsz = tmp_win->frame_width * tmp_win->frame_height;
-			scrsz = Scr->rootw  * Scr->rooth;
+			const unsigned long winsz = tmp_win->frame_width
+			                            * tmp_win->frame_height;
+			const unsigned long scrsz = Scr->rootw  * Scr->rooth;
 			if(winsz > (scrsz * (Scr->OpaqueResizeThreshold / 100.0))) {
 				Scr->OpaqueResize = false;
 			}
@@ -284,8 +246,8 @@ void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h)
 	dragy = y + tmp_win->frame_bw;
 	origx = dragx;
 	origy = dragy;
-	dragWidth = origWidth = w; /* - 2 * tmp_win->frame_bw; */
-	dragHeight = origHeight = h; /* - 2 * tmp_win->frame_bw; */
+	dragWidth = origWidth = w;
+	dragHeight = origHeight = h;
 	clampTop = clampBottom = clampLeft = clampRight = clampDX = clampDY = 0;
 	last_width = 0;
 	last_height = 0;
@@ -329,11 +291,6 @@ void AddStartResize(TwmWindow *tmp_win, int x, int y, int w, int h)
 	dragWidth = origWidth = w - 2 * tmp_win->frame_bw;
 	dragHeight = origHeight = h - 2 * tmp_win->frame_bw;
 	clampTop = clampBottom = clampLeft = clampRight = clampDX = clampDY = 0;
-	/*****
-	    if (Scr->AutoRelativeResize) {
-	        clampRight = clampBottom = 1;
-	    }
-	*****/
 	last_width = 0;
 	last_height = 0;
 	DisplaySize(tmp_win, origWidth, origHeight);
@@ -361,8 +318,7 @@ void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = TopCursor;
 	}
-	else if(y_root <= dragy/* ||
-             y_root == findRootInfo(root)->rooty*/) {
+	else if(y_root <= dragy) {
 		dragy = y_root;
 		dragHeight = origy + origHeight -
 		             y_root;
@@ -383,8 +339,7 @@ void MenuDoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = clampTop ? TopLeftCursor : LeftCursor;
 	}
-	else if(x_root <= dragx/* ||
-             x_root == findRootInfo(root)->rootx*/) {
+	else if(x_root <= dragx) {
 		dragx = x_root;
 		dragWidth = origx + origWidth -
 		            x_root;
@@ -497,8 +452,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = TopCursor;
 	}
-	else if(y_root <= dragy/* ||
-             y_root == findRootInfo(root)->rooty*/) {
+	else if(y_root <= dragy) {
 		dragy = y_root;
 		dragHeight = origy + origHeight -
 		             y_root;
@@ -519,8 +473,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = clampTop ? TopLeftCursor : LeftCursor;
 	}
-	else if(x_root <= dragx/* ||
-             x_root == findRootInfo(root)->rootx*/) {
+	else if(x_root <= dragx) {
 		dragx = x_root;
 		dragWidth = origx + origWidth -
 		            x_root;
@@ -540,9 +493,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		action = 1;
 		cursor = clampLeft ? BottomLeftCursor : BottomCursor;
 	}
-	else if(y_root >= dragy + dragHeight - 1/* ||
-           y_root == findRootInfo(root)->rooty
-           + findRootInfo(root)->rootheight - 1*/) {
+	else if(y_root >= dragy + dragHeight - 1) {
 		dragy = origy;
 		dragHeight = 1 + y_root - dragy;
 		clampTop = 0;
@@ -562,9 +513,7 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		cursor = clampBottom ? BottomRightCursor : RightCursor;
 		cursor = clampTop ? TopRightCursor : cursor;
 	}
-	else if(x_root >= dragx + dragWidth - 1/* ||
-             x_root == findRootInfo(root)->rootx +
-             findRootInfo(root)->rootwidth - 1*/) {
+	else if(x_root >= dragx + dragWidth - 1) {
 		dragx = origx;
 		dragWidth = 1 + x_root - origx;
 		clampLeft = 0;
@@ -583,16 +532,18 @@ void DoResize(int x_root, int y_root, TwmWindow *tmp_win)
 		if(clampTop) {
 			dragy = origy + origHeight - dragHeight;
 		}
-		if(Scr->OpaqueResize && ! resizeWhenAdd)
+		if(Scr->OpaqueResize && ! resizeWhenAdd) {
 			SetupWindow(tmp_win, dragx - tmp_win->frame_bw, dragy - tmp_win->frame_bw,
 			            dragWidth, dragHeight, -1);
-		else
+		}
+		else {
 			MoveOutline(Scr->Root,
 			            dragx - tmp_win->frame_bw,
 			            dragy - tmp_win->frame_bw,
 			            dragWidth + 2 * tmp_win->frame_bw,
 			            dragHeight + 2 * tmp_win->frame_bw,
 			            tmp_win->frame_bw, tmp_win->title_height + tmp_win->frame_bw3D);
+		}
 		if(Scr->BorderCursors && (cursor != tmp_win->curcurs)) {
 			tmp_win->curcurs = cursor;
 			XChangeActivePointerGrab(dpy, resizeGrabMask, cursor, CurrentTime);
@@ -652,7 +603,7 @@ static void DisplaySize(TwmWindow *tmp_win, int width, int height)
 		dheight /= tmp_win->hints.height_inc;
 	}
 
-	(void) sprintf(str, " %4d x %-4d ", dwidth, dheight);
+	sprintf(str, " %4d x %-4d ", dwidth, dheight);
 	XRaiseWindow(dpy, Scr->SizeWindow);
 
 	Draw3DBorder(Scr->SizeWindow, 0, 0,
@@ -950,6 +901,17 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	int tmpX, tmpY, tmpW, tmpH;
 
 
+	/*
+	 * All our callers [need to] do this, so moving it here saves a few
+	 * lines in some places around the calling, and when redundant it
+	 * just wastes a comparison, so it's cheap.
+	 */
+	if(tmp_win->squeezed) {
+		XBell(dpy, 0);
+		return;
+	}
+
+
 	XGetGeometry(dpy, (Drawable) tmp_win->frame, &junkRoot,
 	             &dragx, &dragy, (unsigned int *)&dragWidth, (unsigned int *)&dragHeight,
 	             &junkbw,
@@ -960,6 +922,24 @@ void fullzoom(TwmWindow *tmp_win, int func)
 
 	border_x = Scr->BorderLeft + Scr->BorderRight;
 	border_y = Scr->BorderTop + Scr->BorderBottom;
+
+	/*
+	 * Guard; if it was already not zoomed, and we're asking to unzoom
+	 * it, just finish right away.  This saves us work, but also avoids
+	 * really bad side effects in some cases.  e.g., if we try to
+	 * ZOOM_NONE a window that's never been ZOOM'd, tmp_win->save_* will
+	 * all be 0, so we'd wind up resizing it to a point.  It's possible
+	 * for that to happen via e.g. an EWMH message removing a _FULLSCREEN
+	 * or similar attribute; that can then call into us telling us not to
+	 * zoom, on a window that's never been zoomed.
+	 *
+	 * This wouldn't protect us if somehow it was zoomed but hadn't set
+	 * that data, but I don't see how that can happen.  Worry about that
+	 * when it does.
+	 */
+	if(func == ZOOM_NONE && tmp_win->zoomed == ZOOM_NONE) {
+		return;
+	}
 
 	if(tmp_win->winbox) {
 		XWindowAttributes winattrs;
@@ -973,15 +953,15 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		border_y = 0;
 	}
 	if(tmp_win->zoomed == func) {
+		/* It was already zoomed this way, unzoom it */
 		dragHeight = tmp_win->save_frame_height;
 		dragWidth = tmp_win->save_frame_width;
 		dragx = tmp_win->save_frame_x;
 		dragy = tmp_win->save_frame_y;
-		tmp_win->zoomed = ZOOM_NONE;
 
-		if(tmp_win->save_otpri != OtpGetPriority(tmp_win)) {
-			OtpSetPriority(tmp_win, WinWin, tmp_win->save_otpri, Above);
-		}
+		unzoom(tmp_win);
+
+		/* XXX _should_ it be falling through here? */
 	}
 	else {
 		if(tmp_win->zoomed == ZOOM_NONE) {
@@ -989,7 +969,6 @@ void fullzoom(TwmWindow *tmp_win, int func)
 			tmp_win->save_frame_y = dragy;
 			tmp_win->save_frame_width = dragWidth;
 			tmp_win->save_frame_height = dragHeight;
-			tmp_win->save_otpri = OtpGetPriority(tmp_win);
 		}
 		tmp_win->zoomed = func;
 
@@ -998,7 +977,7 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		switch(func) {
 			case ZOOM_NONE:
 				break;
-			case F_VERTZOOM:
+			case F_ZOOM:
 				dragHeight = zheight - border_y - frame_bw_times_2;
 				dragy = basey;
 				break;
@@ -1047,15 +1026,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				dragWidth = zwidth + bw3D_times_2;
 
 				/* and should ignore aspect ratio and size increments... */
-				/*
-				 * Raise the window above the dock.
-				 * It should have the extra priority only while it
-				 * has focus. This is handled in HandleFocusOut().
-				 */
 #ifdef EWMH
-				OtpSetPriority(tmp_win, WinWin, EWMH_PRI_FULLSCREEN, Above);
-#endif
+				/* x-ref HandleFocusIn() comments for why we need this */
+				OtpSetAflag(tmp_win, OTP_AFLAG_FULLSCREEN);
+				OtpRestackWindow(tmp_win);
 				/* the OtpRaise below is effectively already done here... */
+#endif
 			}
 		}
 	}
@@ -1068,13 +1044,13 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		ConstrainSize(tmp_win, &dragWidth, &dragHeight);
 	}
 #ifdef BETTERZOOM
-	if(func == F_VERTZOOM) {
+	if(func == F_ZOOM) {
 		if(dragy + dragHeight < tmp_win->save_frame_y + tmp_win->save_frame_height) {
 			dragy = tmp_win->save_frame_y + tmp_win->save_frame_height - dragHeight;
 		}
 	}
 #endif
-	SetupWindow(tmp_win, dragx , dragy , dragWidth, dragHeight, -1);
+	SetupWindow(tmp_win, dragx, dragy, dragWidth, dragHeight, -1);
 	/* I don't understand the reason of this. Claude.
 	    XUngrabPointer (dpy, CurrentTime);
 	*/
@@ -1090,7 +1066,12 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	                tmp_win->frame_y + tmp_win->frame_height < tmpY) {
 		XWarpPointer(dpy, Scr->Root, tmp_win->w, 0, 0, 0, 0, 0, 0);
 	}
+
 #ifdef EWMH
+	/*
+	 * Reset _NET_WM_STATE prop on the window.  It sets whichever state
+	 * applies, not always the _MAXIMIZED_VERT we specify here.
+	 */
 	EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_MAXIMIZED_VERT);
 #endif
 }
@@ -1102,9 +1083,13 @@ void fullzoom(TwmWindow *tmp_win, int func)
 void unzoom(TwmWindow *tmp_win)
 {
 	if(tmp_win->zoomed != ZOOM_NONE) {
-		if(tmp_win->save_otpri != OtpGetPriority(tmp_win)) {
-			OtpSetPriority(tmp_win, WinWin, tmp_win->save_otpri, Above);
+#ifdef EWMH
+		if(tmp_win->zoomed == F_FULLSCREENZOOM) {
+			OtpClearAflag(tmp_win, OTP_AFLAG_FULLSCREEN);
+			OtpRestackWindow(tmp_win);
 		}
+#endif
+
 		tmp_win->zoomed = ZOOM_NONE;
 	}
 }
@@ -1195,7 +1180,7 @@ void ChangeSize(char *in_string, TwmWindow *tmp_win)
 			}
 
 			SetupWindow(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-			            tmp_win->frame_width, size ,
+			            tmp_win->frame_width, size,
 			            -1);
 
 			XQueryPointer(dpy, tmp_win->w, &rr, &cr, &rx, &ry, &wx, &wy,
@@ -1270,5 +1255,85 @@ void ChangeSize(char *in_string, TwmWindow *tmp_win)
 			        ProgramName, in_string);
 			return;
 		}
+	}
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      resizeFromCenter -
+ *
+ ***********************************************************************
+ */
+void
+resizeFromCenter(Window w, TwmWindow *tmp_win)
+{
+	int lastx, lasty, bw2;
+
+	bw2 = tmp_win->frame_bw * 2;
+	AddingW = tmp_win->attr.width + bw2 + 2 * tmp_win->frame_bw3D;
+	AddingH = tmp_win->attr.height + tmp_win->title_height + bw2 + 2 *
+	          tmp_win->frame_bw3D;
+
+	XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
+	             &DragWidth, &DragHeight,
+	             &JunkBW, &JunkDepth);
+
+	XWarpPointer(dpy, None, w,
+	             0, 0, 0, 0, DragWidth / 2, DragHeight / 2);
+	XQueryPointer(dpy, Scr->Root, &JunkRoot,
+	              &JunkChild, &JunkX, &JunkY,
+	              &AddingX, &AddingY, &JunkMask);
+
+	lastx = -10000;
+	lasty = -10000;
+
+	MenuStartResize(tmp_win, origDragX, origDragY, DragWidth, DragHeight);
+	while(1) {
+		XMaskEvent(dpy,
+		           ButtonPressMask | PointerMotionMask | ExposureMask, &Event);
+
+		if(Event.type == MotionNotify) {
+			/* discard any extra motion events before a release */
+			while(XCheckMaskEvent(dpy,
+			                      ButtonMotionMask | ButtonPressMask, &Event))
+				if(Event.type == ButtonPress) {
+					break;
+				}
+		}
+
+		if(Event.type == ButtonPress) {
+			MenuEndResize(tmp_win);
+			// Next line should be unneeded, done by MenuEndResize() ?
+			XMoveResizeWindow(dpy, w, AddingX, AddingY, AddingW, AddingH);
+			break;
+		}
+
+		if(Event.type != MotionNotify) {
+			DispatchEvent2();
+			if(Cancel) {
+				// ...
+				MenuEndResize(tmp_win);
+				return;
+			}
+			continue;
+		}
+
+		/*
+		 * XXX - if we are going to do a loop, we ought to consider
+		 * using multiple GXxor lines so that we don't need to
+		 * grab the server.
+		 */
+		XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkChild,
+		              &JunkX, &JunkY, &AddingX, &AddingY, &JunkMask);
+
+		if(lastx != AddingX || lasty != AddingY) {
+			MenuDoResize(AddingX, AddingY, tmp_win);
+
+			lastx = AddingX;
+			lasty = AddingY;
+		}
+
 	}
 }

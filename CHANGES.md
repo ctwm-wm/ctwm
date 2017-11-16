@@ -3,16 +3,62 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### Bugfixes
+
+1. When multiple X Screens are used, building the temporary file for M4
+   definitions could fail with an error from mkstemp().  Reported by
+   Manfred Knick.
+
+
+
+## 4.0.1  (2017-06-05)
+
+### User Visible Changes
+
+1. Fix a bug where fullscreen windows could sometimes wind up incorrectly
+   stacked due to a focus-handling issue.  This would lead to ctwm
+   aborting with an assertion failure in the OTP code, like `Assertion
+   failed: (PRI(owl) >= priority), function OtpCheckConsistencyVS`.
+
+1. Fix an edge case (probably only triggerable via manual work with EWMH
+   messages) where a window could wind up resized down to nothing.
+
+### Internals
+
+1. Systems with the ctfconvert/ctfmerge tools available will now use them
+   to include CTF info in the compiled binary.  This allows more detailed
+   inspection of the running process via DTrace (e.g., the layout of the
+   structs).
+
+1. The initial rumblings of a Developer's Manual are now in
+   `doc/devman/`.  This isn't tied into the main build, and there's no
+   real reason it ever will be.  Things of interest to _users_ should
+   wind up in the main manual; this should only have things of interest
+   to people _developing_ ctwm.
+
+
+
+## 4.0.0  (2017-05-24)
+
 ### Build System Change
 
 The old `imake` build system has been replaced by a new structure using
-`cmake`.  This makes [cmake](http://www.cmake.org/) a requirement to
-build ctwm.  See the `README.md` file for how to run it.
+`cmake`.  This makes [cmake](https://cmake.org/) a requirement to build
+ctwm.  See the `README.md` file for how to run it.
+
+A fallback minimal build system is available in the `minibuild/`
+directory for environments that can't use the main one.  This is likely
+to need some manual adjustment on many systems, and the main build is
+strongly preferred.  But it should suffice to get a runnable binary if
+all else fails.
 
 ### Platform Support
 
 Support for many non-current platforms has been dropped.  In particular,
-remnants of special-case VMS support have been removed.
+remnants of special-case VMS support have been removed.  Many old and now
+dead Unix variants have been similarly desupported.  Generally, platforms
+without support for C99 and mid-2000's POSIX are increasingly less likely
+to work.
 
 ### Backward-Incompatible Changes And Removed Features
 
@@ -46,7 +92,10 @@ remnants of special-case VMS support have been removed.
 1. The `f.source` function has been removed.  It's never done anything
    (except beep) as far back as 1.1 and has never been documented.
 
-1. The NoVersion config parameter has been removed.  It's been
+1. The `f.movemenu` function has been removed.  It was added silently in
+   2.1, has never done anything, and has never been documented.
+
+1. The `NoVersion` config parameter has been removed.  It's been
    undocumented, obsoleted, and done absolutely nothing since 1.1.
 
 1. Support for non-flex versions of lex(1) is deprecated, and will take
@@ -61,10 +110,43 @@ remnants of special-case VMS support have been removed.
    in the future.  If you have to mess with this, please bring it up on
    the mailing list so we can figure out a long-term solution.
 
+1. Parsing of the `ctwm.workspaces` X resource (i.e., setting `-xrm
+   "ctwm.workspaces: something"` on program command-lines) since 3.0 has
+   collapsed doubled backslashes (`\\`) into a single (`\`).  However,
+   there were no other escapes, so this didn't gain anything.  Using a
+   single will work with both variants, unless you need multiple
+   backslashes in a row in your workspace names.
+
+1. The `IconRegion` and `WindowRegion` config params both take a `vgrav
+   hgrav` pair of parameters to control layout.  Previous versions would
+   accept a `hgrav vgrav` ordering in the parsing, and would mostly work
+   by odd quirks of the code.  The parsing has been made stricter, so
+   only the documented `vgrav hgrav` ordering is accepted now.
+
 ### User Visible Changes
 
 1. The default install locations have been changed.  See the README for
     details about where things are installed and how to change them.
+
+1. Several default settings have been changed.  ctwm now defaults to
+   acting as though `RestartPreviousState`, `NoGrabServer`,
+   `DecorateTransients`, `NoBackingStore`, `RandomPlacement`,
+   `OpaqueMove`, `OpaqueResize`, `SortIconManager`, and `StartInMapState`
+   have been set.  Those settings that didn't previously have an inverse
+   (to get the behavior previously seen when they weren't specified) have
+   such added; see below.
+
+1. Added various config parameters as inverses of existing params.  New
+   params (with existing param they invert in parens):
+    * `BackingStore` (`NoBackingStore`)
+    * `GrabServer` (`NoGrabServer`)
+    * `StartInButtonState` (`StartInMapState`)
+    * `NoSortIconManager` (`SortIconManager`)
+    * `NoRestartPreviousState` (`RestartPreviousState`)
+    * `NoDecorateTransients` (`DecorateTransients`)
+
+1. Added `DontShowWelcomeWindow` config option to not show welcome
+    splashscreen image.
 
 1. Selected a number of cleanups from Stefan Monnier
     <<monnier@IRO.UMontreal.CA>>, including rate-limiting of animations
@@ -75,16 +157,16 @@ remnants of special-case VMS support have been removed.
     `f.adoptwindow`. More virtual screen tweaks/fixes.
 
 1. Added the remaining OnTopPriority changes from Stefan Monnier
-    <<monnier@IRO.UMontreal.CA>>: AutoPopup, AutoPriority, OnTopPriority,
-    PrioritySwitching, f.changepriority, f.priorityswitching,
-    f.setpriority, f.switchpriority, f.tinylower, f.tinyraise. Currently
-    consistency checking code is enabled, which will terminate with an
-    assertion failure if something unexpected happens. Smoothed out
-    various inconsistencies that this check discovered when virtual
-    screens are used.
+    <<monnier@IRO.UMontreal.CA>>: `AutoPopup`, `AutoPriority`,
+    `OnTopPriority`, `PrioritySwitching`, `f.changepriority`,
+    `f.priorityswitching`, `f.setpriority`, `f.switchpriority`,
+    `f.tinylower`, `f.tinyraise`.  Currently consistency checking code is
+    enabled, which will terminate with an assertion failure if something
+    unexpected happens. Smoothed out various inconsistencies that this
+    check discovered when virtual screens are used.
 
 1. Basic support for EWMH (Extended Window Manager Hints) added and
-    enabled by default.  EWMHIgnore {} config option allows selectively
+    enabled by default.  `EWMHIgnore {}` config option allows selectively
     disabling bits.
     [Olaf "Rhialto" Seibert, Matthew Fuller]
 
@@ -94,21 +176,46 @@ remnants of special-case VMS support have been removed.
 1. Added `--dumpcfg` command-line option to print out the compiled-in
     fallback config file.
 
-1. The Occupy { } specification for accepts "ws:" as a prefix for
+1. The `Occupy {}` specification now accepts "ws:" as a prefix for
     workspaces.  This may break things if you have workspaces with names
     that differ only by that prefix (e.g., you have workspaces "abc" and
-    "ws:abc", and your Occupy {} declarations affects both.
+    "ws:abc", and your `Occupy {}` declarations affects both.
 
 1. If ctwm is built with rplay support, sounds may now be configured with
     the RplaySounds {} parameter in the config file in place of the
     `~/.ctwm-sounds` file.  If so, ctwm will give a warning if
     `.ctwm-sounds` exists; support for the external file will be removed
-    in a future version.  Also the SoundHost config parameter is replaced
-    by RplaySoundHost; the old name is still accepted, but will be
-    removed in a future version.
+    in a future version.  Also the `SoundHost` config parameter is
+    replaced by `RplaySoundHost`; the old name is still accepted, but
+    will be removed in a future version.
 
-1. Added MWMIgnore {} config option to allow selectively disabling
+1. Added `MWMIgnore {}` config option to allow selectively disabling
     honoring of some Motif WM hints.
+
+1. Warping to a window now explicitly sets focus on that window.  This
+    would generally (but not always, in the presence of odd X server
+    behavior) have already happened for users with focus following mouse,
+    but now occurs for `ClickToFocus` users as well.
+    [Alexander Klein]
+
+1. Several bugs relating to the Occupy window were fixed.  Iconifying the
+    Occupy window no longer loses it and leaves you unable to pull it up
+    again.  Minor undersizing in some cases fixed.
+
+1. Windows which fail to use the `WM_HINTS` property to tell us things like
+    whether they want us to give them focus are now explicitly given
+    focus anyway.  This should fix focus problems with some apps
+    (Chromium is a common example).
+
+1. Added `ForceFocus {}` config option to forcibly give focus to all (or
+    specified) windows, whether they request it or not.  Previously the
+    code did this unconditionally (except when no `WM_HINTS` were
+    provided; x-ref previous), but this causes problems with at least
+    some programs that tell us they don't want focus, and mean it
+    (some Java GUI apps are common examples).
+
+1. `OpaqueMoveThreshold` values >= 200 (the default) are now treated as
+    infinite, and so will always cause opaque moving.
 
 ### Internals
 
@@ -116,6 +223,9 @@ remnants of special-case VMS support have been removed.
     into it.  Configs for
     [Artistic Style](http://astyle.sourceforge.net/)
     to generate the proper output are in the source tree.
+
+1. The `full_name` element of the TwmWindow structure has been removed.
+    Consumers should just use the `name` element instead.
 
 
 
@@ -869,7 +979,7 @@ remnants of special-case VMS support have been removed.
     clients (Frame5) don't like this.
 
 1. `UnmapByMovingFarAway { win-list }`
-    These windows will be moved out of the screen instead of beeing
+    These windows will be moved out of the screen instead of being
     unmapped when they become invisible due to a change workspace. This has
     been added because some ill-behaved clients (Frame5) don't like to be
     unmapped. Use this if the previous doesn't work.
@@ -1082,7 +1192,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.3  (1995-02-11 or earlier)
+## 3.3  (pre-1995-02-11 or 1995-05-04)
 
 1. Better 3D borders with SqueezeTitle.
 
@@ -1106,7 +1216,7 @@ remnants of special-case VMS support have been removed.
     this star won't be displayed and the corresponding entry will be the
     default entry for this menu. When a menu has a default entry and is used
     as a pull-right in another menu, this default entry action will be executed
-    automatically when this submenu is selected without beeing displayed.
+    automatically when this submenu is selected without being displayed.
     It's hard to explain, but easy to understand.
 
 1. New keywords:
@@ -1278,7 +1388,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.1  (date unknown)
+## 3.1  (1994-01-28)
 
 1. Ctwm is moving. You can now have animated images for icons, root
     backgrounds, title buttons and focus window title image. This adds
@@ -1373,7 +1483,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 3.0  (date unknown)
+## 3.0  (1993-07-21)
 
 1. A few bugs fixes.
 
@@ -1487,7 +1597,7 @@ remnants of special-case VMS support have been removed.
 
 
 
-## 2.2  (date unknown)
+## 2.2  (1993-02-05)
 
 1. Bugs:
 
@@ -1659,7 +1769,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 2.1  (date unknown)
+## 2.1  (1992-12-22)
 
 1. Cleanup code to make gcc happy.
 
@@ -1669,7 +1779,7 @@ try to use the same few already used in the example icons.
 
     * Workaround a bug on HP7xx/8.07 servers for RaiseLower in Map
         window. The stacking order in the MapWindow was not correct on
-        those servers. Use 
+        those servers. Use
 
             EXTRA_DEFINES = -DBUGGY_HP700_SERVER
 
@@ -1803,7 +1913,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 1.3  (date unknown)
+## 1.3  (1992-09-16)
 
 1. Many bugs fixed:
 
@@ -1874,7 +1984,7 @@ try to use the same few already used in the example icons.
 
 
 
-## 1.1  (1992-06-24)
+## 1.1  (1992-06-24 or 26)
 
 1. Correction of a few bugs
 
@@ -1913,6 +2023,10 @@ try to use the same few already used in the example icons.
     its name.  Example:
 
         "F1"      =    : root           : f.gotoworkspace "cognac"
+
+
+
+## 1.0  (after 1992-04-22)
 
 
 

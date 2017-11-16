@@ -1,54 +1,11 @@
 %{
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
-/* 
- *  [ ctwm ]
+/*
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
  *
- *  Copyright 1992 Claude Lecommandeur.
- *            
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
+ * Copyright 1992 Claude Lecommandeur.
  */
 
 /***********************************************************************
@@ -62,6 +19,7 @@
  ***********************************************************************/
 
 #include "ctwm.h"
+#include "functions_defs.h"
 #include "parse.h"
 #include "parse_be.h"
 
@@ -92,6 +50,12 @@
 
 string				\"([^"]|\\.)*\"
 number				[0-9]+
+
+ /* Requires flex 2.5.1 (28Mar95) */
+%option noyywrap
+ /* Requires flex 2.5.2 (25Apr95) */
+%option nounput
+
 %%
 "{"				{ return (LB); }
 "}"				{ return (RB); }
@@ -118,7 +82,7 @@ number				[0-9]+
 "!"				{ yylval.num = F_EXEC; return FSKEYWORD; }
 
 {string}			{ yylval.ptr = yytext; return STRING; }
-{number}			{ (void)sscanf(yytext, "%d", &yylval.num);
+{number}			{ sscanf(yytext, "%d", &yylval.num);
 				  return NUMBER; }
 \#[^\n]*\n			{;}
 [\n\t ]				{;}
@@ -135,6 +99,9 @@ number				[0-9]+
  * In flex versions before 2.4.1 (30Nov93), yywrap was a macro, not a
  * function.  There's no way we really support versions that old, but
  * what the heck...
+ *
+ * This function should actually be unused due to the noyywrap %option
+ * specified above, but is left around in case of weird edge cases.
  */
 #ifndef yywrap
 int yywrap(void) { return(1);}

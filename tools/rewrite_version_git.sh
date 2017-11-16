@@ -4,7 +4,6 @@
 # We assume if we're getting called, git is available.
 
 
-# "revno revid" of the working tree
 REVID=`git rev-parse HEAD`
 if [ $? -ne 0 ]; then
 	# Failed somehow

@@ -6,15 +6,30 @@
 #define _CTWM_FUNCTIONS_H
 
 /* All the outside world sees */
-bool ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
+/* x-ref EF_FULLPROTO in functions_internal.h; keep sync */
+void ExecuteFunction(int func, void *action, Window w, TwmWindow *tmp_win,
                      XEvent *eventp, int context, bool pulldown);
 
-/* Needed in events.c */
+
+typedef enum {
+	MOVE_NONE,
+	MOVE_VERT,
+	MOVE_HORIZ,
+} CMoveDir;
+
+
+/* Extra util used in add_window.c */
+void ReGrab(void);
+
+
+/* From functions_win_moveresize.c: needed in event_handlers.c */
 extern bool ConstMove;
-extern int ConstMoveDir;
+extern CMoveDir ConstMoveDir;
 extern int ConstMoveX;
 extern int ConstMoveY;
 
+
+/* From functions_identify.c: needed in event_handlers.c */
 void draw_info_window(void);
 
 

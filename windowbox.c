@@ -1,27 +1,5 @@
 /*
- *  [ ctwm ]
- *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
+ * Copyright 1992 Claude Lecommandeur.
  */
 
 
@@ -34,9 +12,11 @@
 
 #include "screen.h"
 #include "add_window.h"
-#include "decorations.h"
-#include "resize.h"
+#include "list.h"
 #include "windowbox.h"
+#include "win_decorations.h"
+#include "win_resize.h"
+#include "win_utils.h"
 
 name_list **addWindowBox(char *boxname, char *geometry)
 {
@@ -87,22 +67,23 @@ void createWindowBoxes(void)
 		       winbox->name, win, x, y, w, h);
 #endif
 		sprintf(title, "%s", winbox->name);
-		XSetStandardProperties(dpy, win, title, title, None, NULL, 0, NULL);
+
 		sizehints.flags  = USPosition | USSize | PWinGravity;
 		sizehints.x      = x;
 		sizehints.y      = y;
 		sizehints.width  = w;
 		sizehints.height = h;
 		sizehints.win_gravity = gravity;
-		XSetWMSizeHints(dpy, win, &sizehints, XA_WM_NORMAL_HINTS);
 
 		wmhints.initial_state = NormalState;
 		wmhints.input         = True;
 		wmhints.flags         = InputHint | StateHint;
-		XSetWMHints(dpy, win, &wmhints);
+
+		XmbSetWMProperties(dpy, win, title, title, NULL, 0,
+		                   &sizehints, &wmhints, NULL);
 
 		winbox->window = win;
-		winbox->twmwin = AddWindow(win, ADD_WINDOW_WINDOWBOX, NULL, Scr->currentvs);
+		winbox->twmwin = AddWindow(win, AWT_WINDOWBOX, NULL, Scr->currentvs);
 		if(!winbox->twmwin) {
 			fprintf(stderr, "cannot create %s window box, exiting...\n", winbox->name);
 			exit(1);
@@ -122,7 +103,7 @@ WindowBox *findWindowBox(TwmWindow *twmwin)
 		return NULL;
 	}
 	for(winbox = Scr->FirstWindowBox; winbox; winbox = winbox->next) {
-		if(LookInList(winbox->winlist, twmwin->full_name, &twmwin->class)) {
+		if(LookInList(winbox->winlist, twmwin->name, &twmwin->class)) {
 			if(visible(winbox->twmwin)) {
 				twmwin->winbox = winbox;
 				return winbox;

@@ -11,12 +11,13 @@
 #include <string.h>
 #include <strings.h>
 
-#include "decorations_init.h"
+#include "functions_defs.h"
 #include "util.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
+#include "win_decorations_init.h"
 
 #include "gram.tab.h"
 
@@ -221,25 +222,32 @@ void GotTitleButton(char *bitmapname, int func, bool rightside)
 	pull = NULL;
 }
 
+
+/* Check f.warptoscreen arg */
 bool
-CheckWarpScreenArg(char *s)
+CheckWarpScreenArg(const char *s)
 {
-	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
-	                strcasecmp(s,  WARPSCREEN_PREV) == 0 ||
-	                strcasecmp(s,  WARPSCREEN_BACK) == 0) {
+	/* next/prev/back are valid */
+	if(strcasecmp(s, WARPSCREEN_NEXT) == 0 ||
+	                strcasecmp(s, WARPSCREEN_PREV) == 0 ||
+	                strcasecmp(s, WARPSCREEN_BACK) == 0) {
 		return true;
 	}
 
-	for(; *s && Isascii(*s) && Isdigit(*s); s++) ;  /* SUPPRESS 530 */
+	/* Or if the whole thing is numeric, it's valid too */
+	for(; *s && Isascii(*s) && Isdigit(*s); s++) {
+		/* nada */;
+	}
 	return (*s ? false : true);
 }
 
 
+/* f.warptoring arg */
 bool
-CheckWarpRingArg(char *s)
+CheckWarpRingArg(const char *s)
 {
-	if(strcasecmp(s,  WARPSCREEN_NEXT) == 0 ||
-	                strcasecmp(s,  WARPSCREEN_PREV) == 0) {
+	if(strcasecmp(s, WARPSCREEN_NEXT) == 0 ||
+	                strcasecmp(s, WARPSCREEN_PREV) == 0) {
 		return true;
 	}
 
@@ -247,8 +255,9 @@ CheckWarpRingArg(char *s)
 }
 
 
+/* f.colormap arg */
 bool
-CheckColormapArg(char *s)
+CheckColormapArg(const char *s)
 {
 	if(strcasecmp(s, COLORMAP_NEXT) == 0 ||
 	                strcasecmp(s, COLORMAP_PREV) == 0 ||

@@ -37,20 +37,9 @@ else()
 endif(C99_FLAG)
 
 
-# Some compilers (like Sun's) don't take -W flags for warnings.  Do a
-# quick check with -Wall.  They're mostly for devs, so we don't care THAT
-# much, I guess...
-check_c_compiler_flag("-Wall" COMPILER_TAKES_WALL)
-if(NOT COMPILER_TAKES_WALL)
-	message(STATUS "Compiler doesn't like -Wall, disabling warnings.")
-	set(NO_WARNS 1)
-endif(NOT COMPILER_TAKES_WALL)
-
-
 # With -std=c99, GNU libc's includes get strict about what they export.
 # Particularly, a lot of POSIX stuff doesn't get defined unless we
 # explicitly ask for it.  Do our best at checking for what's there...
-set(USE_GLIBC_FEATURES_H OFF)
 check_include_files(features.h HAS_FEATURES_H)
 if(HAS_FEATURES_H)
 	# Check if including it with our args sets __USE_ISOC99; that's a
@@ -59,7 +48,6 @@ if(HAS_FEATURES_H)
 	if(SETS_USE_ISOC99)
 		# OK, it does.  Assume that's a good enough test that things are
 		# acting as we expect.
-		set(USE_GLIBC_FEATURES_H ON)
 		set(GLIBC_FEATURE_FLAGS
 			"-D_POSIX_C_SOURCE=200809L"
 			"-D_XOPEN_SOURCE=700"
@@ -75,3 +63,19 @@ if(HAS_FEATURES_H)
 		add_definitions(${GLIBC_FEATURE_FLAGS})
 	endif()
 endif(HAS_FEATURES_H)
+
+
+# Some compilers (like Sun's) don't take -W flags for warnings.  Do a
+# quick check with -Wall.  They're mostly for devs, so we don't care THAT
+# much, I guess...  maybe we should be more thorough about checking the
+# flags we use too, but worry about what when it becomes an issue.
+check_c_compiler_flag("-Wall" COMPILER_TAKES_WALL)
+if(NOT COMPILER_TAKES_WALL)
+	message(STATUS "Compiler doesn't like -Wall, disabling warnings.")
+	set(NO_WARNS 1)
+endif(NOT COMPILER_TAKES_WALL)
+
+if(NOT NO_WARNS)
+	add_definitions(${STD_WARNS})
+	message(STATUS "Enabling standard warnings.")
+endif(NOT NO_WARNS)

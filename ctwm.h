@@ -1,57 +1,8 @@
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
 /*
- *  [ ctwm ]
- *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
- */
-
-
-/***********************************************************************
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
  *
  * $XConsortium: twm.h,v 1.74 91/05/31 17:38:30 dave Exp $
  *
@@ -59,8 +10,9 @@
  *
  * 28-Oct-87 Thomas E. LaStrange        File created
  * 10-Oct-90 David M. Sternlicht        Storeing saved colors on root
- ***********************************************************************/
-
+ *
+ * Copyright 1992 Claude Lecommandeur.
+ */
 #ifndef _CTWM_CTWM_H
 #define _CTWM_CTWM_H
 
@@ -144,7 +96,12 @@
 #define MOD_SIZE        ((ShiftMask | ControlMask | Mod1Mask \
                           | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask) + 1)
 
-/* defines for zooming/unzooming */
+/*
+ * Used for TwmWindow.zoomed.  Var holds the number of the function that
+ * caused zooming, if one has, else ZOOM_NONE.  This mirror F_NOP
+ * currently, but that's OK, because f.nop doesn't do anything, so it
+ * can't be a real cause of zooming.
+ */
 #define ZOOM_NONE 0
 
 #define FBF(fix_fore, fix_back, fix_font)\
@@ -177,8 +134,6 @@ struct MyFont {
 struct ColorPair {
 	Pixel fore, back, shadc, shadd;
 };
-
-typedef enum {on, off} ButtonState;
 
 struct TitleButtonFunc {
 	struct TitleButtonFunc *next;  /* next in the list of function buttons */
@@ -257,6 +212,20 @@ typedef enum {
 } IRJust;
 
 
+/*
+ * Gravity used by IconRegion and WindowRegion.  Strictly, there should
+ * probably be separate vertical/horizontal types, but it'll take some
+ * nontrivial code reshuffling to make that possible because of how the
+ * values are used in the split* functions.
+ */
+typedef enum {
+	GRAV_NORTH,
+	GRAV_EAST,
+	GRAV_SOUTH,
+	GRAV_WEST,
+} RegGravity;
+
+
 /* RandomPlacement bits */
 typedef enum {
 	RP_OFF,
@@ -287,9 +256,11 @@ struct TwmColormap {
 	int refcnt;
 };
 
+/* TwmColormap.state bit definitions */
 #define CM_INSTALLABLE          1
 #define CM_INSTALLED            2
 #define CM_INSTALL              4
+
 
 struct ColormapWindow {
 	Window w;                   /* Window id */
@@ -310,7 +281,7 @@ struct Colormaps {
 struct WindowRegion {
 	struct WindowRegion *next;
 	int                 x, y, w, h;
-	int                 grav1, grav2;
+	RegGravity          grav1, grav2;
 	name_list           *clientlist;
 	struct WindowEntry  *entries;
 };
@@ -364,7 +335,6 @@ struct TwmWindow {
 	int title_y;
 	unsigned int title_height;  /* height of the title bar */
 	unsigned int title_width;   /* width of the title bar */
-	char *full_name;            /* full name of the window */
 	char *name;                 /* name of the window */
 	char *icon_name;            /* name of the icon */
 	int name_x;                 /* start x of name text */
@@ -398,6 +368,7 @@ struct TwmWindow {
 	bool iconify_by_unmapping;  /* unmap window to iconify it */
 	bool isiconmgr;             /* this is an icon manager window */
 	bool iswspmgr;              /* this is a workspace manager manager window */
+	bool isoccupy;              /* this is an Occupy window */
 	bool istransient;           /* this is a transient window */
 	Window transientfor;        /* window contained in XA_XM_TRANSIENT_FOR */
 	bool titlehighlight;        /* should I highlight the title bar */
@@ -406,14 +377,13 @@ struct TwmWindow {
 	int save_frame_y;           /* y position of frame  (saved from zoom)*/
 	unsigned int save_frame_width;  /* width of frame   (saved from zoom)*/
 	unsigned int save_frame_height; /* height of frame  (saved from zoom)*/
-	int save_otpri;             /* on top priority      (saved from zoom)*/
 	int zoomed;                 /* ZOOM_NONE || function causing zoom */
 	bool wShaped;               /* this window has a bounding shape */
 	unsigned long protocols;    /* which protocols this window handles */
 	Colormaps cmaps;            /* colormaps for this application */
 	TBWindow *titlebuttons;
 	SqueezeInfo *squeeze_info;  /* should the title be squeezed? */
-	int squeeze_info_copied;    /* must above SqueezeInfo be freed? */
+	bool squeeze_info_copied;   /* must above SqueezeInfo be freed? */
 	struct {
 		struct TwmWindow *next, *prev;
 		bool cursor_valid;
@@ -520,11 +490,11 @@ extern bool HandlingEvents;
 extern Cursor TopCursor, TopLeftCursor, LeftCursor, BottomLeftCursor,
        BottomCursor, BottomRightCursor, RightCursor, TopRightCursor;
 
-extern Window JunkRoot;
-extern Window JunkChild;
-extern int JunkX;
-extern int JunkY;
+/* Junk vars; see comment in ctwm.c about usage */
+extern Window JunkRoot, JunkChild;
+extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
+
 extern XGCValues Gcv;
 extern int Argc;
 extern char **Argv;

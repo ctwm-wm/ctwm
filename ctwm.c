@@ -1,57 +1,8 @@
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
 /*
- *  [ ctwm ]
- *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
- */
-
-
-/***********************************************************************
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
  *
  * $XConsortium: twm.c,v 1.124 91/05/08 11:01:54 dave Exp $
  *
@@ -60,12 +11,13 @@
  * 27-Oct-87 Thomas E. LaStrange        File created
  * 10-Oct-90 David M. Sternlicht        Storing saved colors on root
  *
+ * Copyright 1992 Claude Lecommandeur.
+ *
  * Do the necessary modification to be integrated in ctwm.
  * Can no longer be used for the standard twm.
  *
  * 22-April-92 Claude Lecommandeur.
- *
- ***********************************************************************/
+ */
 
 #include "ctwm.h"
 
@@ -92,8 +44,7 @@
 #include "gc.h"
 #include "parse.h"
 #include "version.h"
-#include "menus.h"
-#include "decorations_init.h"
+#include "colormaps.h"
 #include "events.h"
 #include "util.h"
 #include "mask_screen.h"
@@ -101,10 +52,19 @@
 #include "screen.h"
 #include "icons.h"
 #include "iconmgr.h"
+#include "list.h"
 #include "session.h"
+#include "occupation.h"
 #include "otp.h"
 #include "cursor.h"
 #include "windowbox.h"
+#include "captive.h"
+#include "vscreen.h"
+#include "win_decorations_init.h"
+#include "win_ops.h"
+#include "win_regions.h"
+#include "win_utils.h"
+#include "workspace_manager.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -132,6 +92,7 @@ static Window CreateRootWindow(int x, int y,
                                unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
+static bool MappedNotOverride(Window w);
 
 Cursor  UpperLeftCursor;
 Cursor  TopRightCursor,
@@ -161,17 +122,24 @@ int HomeLen;                    /* length of Home */
 
 bool HandlingEvents = false;    /* are we handling events yet? */
 
-Window JunkRoot;                /* junk window */
-Window JunkChild;               /* junk window */
-int JunkX;                      /* junk variable */
-int JunkY;                      /* junk variable */
+/*
+ * Various junk vars for xlib calls.  Many calls have to get passed these
+ * pointers to return values into, but in a lot of cases we don't care
+ * about some/all of them, and since xlib blindly derefs and stores into
+ * them, we can't just pass NULL for the ones we don't care about.  So we
+ * make this set of globals to use as standin.  These should never be
+ * used or read in our own code; use real vars for the values we DO use
+ * from the calls.
+ */
+Window JunkRoot, JunkChild;
+int JunkX, JunkY;
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 char *ProgramName;
 int Argc;
 char **Argv;
 
-bool RestartPreviousState = false;      /* try to restart in previous state */
+bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool RestartFlag = false;
 SIGNAL_T Restart(int signum);
@@ -210,7 +178,7 @@ int main(int argc, char **argv)
 	XRectangle ink_rect;
 	XRectangle logical_rect;
 
-	(void)setlocale(LC_ALL, "");
+	setlocale(LC_ALL, "");
 
 	ProgramName = argv[0];
 	Argc = argc;
@@ -233,7 +201,7 @@ int main(int argc, char **argv)
 
 
 #define newhandler(sig, action) \
-    if (signal (sig, SIG_IGN) != SIG_IGN) (void) signal (sig, action)
+    if (signal (sig, SIG_IGN) != SIG_IGN) signal (sig, action)
 
 	newhandler(SIGINT, Done);
 	signal(SIGHUP, Restart);
@@ -356,6 +324,16 @@ int main(int argc, char **argv)
 			continue;
 		}
 
+		/*
+		 * Generally, we're taking over the screen, but not always.  If
+		 * we're just checking the config, we're not trying to take it
+		 * over.  Nor are we if we're creating a captive ctwm.
+		 */
+		Scr->takeover = true;
+		if(CLarg.cfgchk || CLarg.is_captive) {
+			Scr->takeover = false;
+		}
+
 		Scr->screen = scrnum;
 		Scr->XineramaRoot = croot;
 #ifdef EWMH
@@ -376,7 +354,7 @@ int main(int argc, char **argv)
 		XSync(dpy, 0);
 		XSetErrorHandler(TwmErrorHandler);
 
-		if(RedirectError && CLarg.cfgchk == 0) {
+		if(RedirectError && Scr->takeover) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
 			if(CLarg.MultiScreen && NumScreens > 0) {
@@ -389,65 +367,6 @@ int main(int argc, char **argv)
 		}
 
 		numManaged ++;
-
-		/* initialize list pointers, remember to put an initialization
-		 * in InitVariables also
-		 */
-		Scr->BorderColorL = NULL;
-		Scr->IconBorderColorL = NULL;
-		Scr->BorderTileForegroundL = NULL;
-		Scr->BorderTileBackgroundL = NULL;
-		Scr->TitleForegroundL = NULL;
-		Scr->TitleBackgroundL = NULL;
-		Scr->IconForegroundL = NULL;
-		Scr->IconBackgroundL = NULL;
-		Scr->AutoPopupL = NULL;
-		Scr->AutoPopup = false;
-		Scr->NoBorder = NULL;
-		Scr->NoIconTitle = NULL;
-		Scr->NoTitle = NULL;
-		Scr->OccupyAll = NULL;
-		Scr->UnmapByMovingFarAway = NULL;
-		Scr->DontSetInactive = NULL;
-		Scr->AutoSqueeze = NULL;
-		Scr->StartSqueezed = NULL;
-		Scr->AlwaysSqueezeToGravityL = NULL;
-		Scr->MakeTitle = NULL;
-		Scr->AutoRaise = NULL;
-		Scr->WarpOnDeIconify = NULL;
-		Scr->AutoLower = NULL;
-		Scr->IconNames = NULL;
-		Scr->NoHighlight = NULL;
-		Scr->NoStackModeL = NULL;
-		Scr->OTP = NULL;
-		Scr->NoTitleHighlight = NULL;
-		Scr->DontIconify = NULL;
-		Scr->IconMgrNoShow = NULL;
-		Scr->IconMgrShow = NULL;
-		Scr->IconifyByUn = NULL;
-		Scr->IconManagerFL = NULL;
-		Scr->IconManagerBL = NULL;
-		Scr->IconMgrs = NULL;
-		Scr->StartIconified = NULL;
-		Scr->SqueezeTitleL = NULL;
-		Scr->DontSqueezeTitleL = NULL;
-		Scr->WindowRingL = NULL;
-		Scr->WindowRingExcludeL = NULL;
-		Scr->WarpCursorL = NULL;
-		Scr->DontSave = NULL;
-		Scr->OpaqueMoveList = NULL;
-		Scr->NoOpaqueMoveList = NULL;
-		Scr->OpaqueResizeList = NULL;
-		Scr->NoOpaqueResizeList = NULL;
-		Scr->ImageCache = NULL;
-		Scr->HighlightPixmapName = NULL;
-		Scr->Workspaces = NULL;
-		Scr->IconMenuDontShow = NULL;
-		Scr->VirtualScreens = NULL;
-		Scr->IgnoreTransientL = NULL;
-
-		/* remember to put an initialization in InitVariables also
-		 */
 
 		Scr->screen = scrnum;
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
@@ -463,9 +382,9 @@ int main(int argc, char **argv)
 		if(CLarg.is_captive) {
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
 			if(Scr->captivename) {
-				XSetStandardProperties(dpy, croot, Scr->captivename, Scr->captivename, None,
-				                       NULL, 0,
-				                       NULL);
+				XmbSetWMProperties(dpy, croot,
+				                   Scr->captivename, Scr->captivename,
+				                   NULL, 0, NULL, NULL, NULL);
 			}
 		}
 		Scr->RootColormaps.number_cwins = 1;
@@ -518,7 +437,7 @@ int main(int argc, char **argv)
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
 		if(FirstScreen) {
-			SetFocus((TwmWindow *)NULL, CurrentTime);
+			SetFocus(NULL, CurrentTime);
 
 			/* define cursors */
 
@@ -563,7 +482,7 @@ int main(int argc, char **argv)
 
 		/* Parse it once for each screen. */
 		if(CLarg.cfgchk) {
-			if(ParseTwmrc(CLarg.InitFile) == 0) {
+			if(ParseTwmrc(CLarg.InitFile) == false) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
 				exit(1);
@@ -686,13 +605,11 @@ int main(int argc, char **argv)
 		XGrabServer(dpy);
 		XSync(dpy, 0);
 
-		JunkX = 0;
-		JunkY = 0;
-
 		CreateWindowRegions();
 		AllocateOtherIconManagers();
 		CreateIconManagers();
 		CreateWorkSpaceManager();
+		CreateOccupyWindow();
 		MakeWorkspacesMenu();
 		createWindowBoxes();
 #ifdef EWMH
@@ -716,7 +633,7 @@ int main(int argc, char **argv)
 							}
 						}
 					}
-					XFree((char *) wmhintsp);
+					XFree(wmhintsp);
 				}
 			}
 		}
@@ -755,16 +672,13 @@ int main(int argc, char **argv)
 		attributes.background_pixel = Scr->DefaultC.back;
 		attributes.event_mask = (ExposureMask | ButtonPressMask |
 		                         KeyPressMask | ButtonReleaseMask);
-		attributes.backing_store = NotUseful;
 		NewFontCursor(&attributes.cursor, "hand2");
-		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask |
-		             CWBackingStore | CWCursor);
+		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask | CWCursor);
 		Scr->InfoWindow.win =
 		        XCreateWindow(dpy, Scr->Root, 0, 0,
-		                      (unsigned int) 5, (unsigned int) 5,
-		                      (unsigned int) 0, 0,
-		                      (unsigned int) CopyFromParent,
-		                      (Visual *) CopyFromParent,
+		                      5, 5,
+		                      0, 0,
+		                      CopyFromParent, CopyFromParent,
 		                      valuemask, &attributes);
 
 		XmbTextExtents(Scr->SizeFont.font_set,
@@ -779,20 +693,22 @@ int main(int argc, char **argv)
 			if(Scr->CenterFeedbackWindow) {
 				sx = (Scr->rootw / 2) - (Scr->SizeStringWidth / 2);
 				sy = (Scr->rooth / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
-				attributes.save_under = True;
-				valuemask |= CWSaveUnder;
+				if(Scr->SaveUnder) {
+					attributes.save_under = True;
+					valuemask |= CWSaveUnder;
+				}
 			}
 			else {
 				sx = 0;
 				sy = 0;
 			}
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
-			                                (unsigned int) Scr->SizeStringWidth,
-			                                (unsigned int)(Scr->SizeFont.height +
-			                                                SIZE_VINDENT * 2),
-			                                (unsigned int) 0, 0,
-			                                (unsigned int) CopyFromParent,
-			                                (Visual *) CopyFromParent,
+			                                Scr->SizeStringWidth,
+			                                (Scr->SizeFont.height +
+			                                 SIZE_VINDENT * 2),
+			                                0, 0,
+			                                CopyFromParent,
+			                                CopyFromParent,
 			                                valuemask, &attributes);
 		}
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
@@ -813,7 +729,7 @@ int main(int argc, char **argv)
 			        ProgramName);
 		exit(1);
 	}
-	(void) ConnectToSessionManager(CLarg.client_id);
+	ConnectToSessionManager(CLarg.client_id);
 #ifdef SOUNDS
 	sound_load_list();
 	play_startup_sound();
@@ -937,7 +853,7 @@ static void InitVariables(void)
 	Scr->Focus = NULL;
 	Scr->WarpCursor = false;
 	Scr->ForceIcon = false;
-	Scr->NoGrabServer = false;
+	Scr->NoGrabServer = true;
 	Scr->NoRaiseMove = false;
 	Scr->NoRaiseResize = false;
 	Scr->NoRaiseDeicon = false;
@@ -953,7 +869,7 @@ static void InitVariables(void)
 	Scr->SaveWorkspaceFocus = false;
 	Scr->NoIconTitlebar = false;
 	Scr->NoTitlebar = false;
-	Scr->DecorateTransients = false;
+	Scr->DecorateTransients = true;
 	Scr->IconifyByUnmapping = false;
 	Scr->ShowIconManager = false;
 	Scr->ShowWorkspaceManager = false;
@@ -969,16 +885,16 @@ static void InitVariables(void)
 	Scr->TransientHasOccupation = false;
 	Scr->DontPaintRootWindow = false;
 	Scr->IconManagerDontShow = false;
-	Scr->BackingStore = true;
+	Scr->BackingStore = false;
 	Scr->SaveUnder = true;
-	Scr->RandomPlacement = RP_OFF;
+	Scr->RandomPlacement = RP_ALL;
 	Scr->RandomDisplacementX = 30;
 	Scr->RandomDisplacementY = 30;
-	Scr->DoOpaqueMove = false;
+	Scr->DoOpaqueMove = true;
 	Scr->OpaqueMove = false;
 	Scr->OpaqueMoveThreshold = 200;
 	Scr->OpaqueResize = false;
-	Scr->DoOpaqueResize = false;
+	Scr->DoOpaqueResize = true;
 	Scr->OpaqueResizeThreshold = 1000;
 	Scr->Highlight = true;
 	Scr->StackMode = true;
@@ -987,7 +903,7 @@ static void InitVariables(void)
 	Scr->MoveOffResistance = -1;
 	Scr->MovePackResistance = 20;
 	Scr->ZoomCount = 8;
-	Scr->SortIconMgr = false;
+	Scr->SortIconMgr = true;
 	Scr->Shadow = true;
 	Scr->InterpolateMenuColors = false;
 	Scr->NoIconManagers = false;
@@ -1026,7 +942,6 @@ static void InitVariables(void)
 	Scr->DontWarpCursorInWMap = false;
 	Scr->XMoveGrid = 1;
 	Scr->YMoveGrid = 1;
-	Scr->FastServer = true;
 	Scr->CenterFeedbackWindow = false;
 	Scr->ShrinkIconTitles = false;
 	Scr->AutoRaiseIcons = false;
@@ -1048,6 +963,9 @@ static void InitVariables(void)
 	FreeList(&Scr->EWMHIgnore);
 #endif
 	FreeList(&Scr->MWMIgnore);
+
+	Scr->ForceFocus = false;
+	FreeList(&Scr->ForceFocusL);
 
 	Scr->BorderTop    = 0;
 	Scr->BorderBottom = 0;
@@ -1153,7 +1071,7 @@ void RestoreWithdrawnLocation(TwmWindow *tmp)
 		}
 		XConfigureWindow(dpy, tmp->w, mask, &xwc);
 
-		if(tmp->wmhints && (tmp->wmhints->flags & IconWindowHint)) {
+		if(tmp->wmhints->flags & IconWindowHint) {
 			XUnmapWindow(dpy, tmp->wmhints->icon_window);
 		}
 
@@ -1204,7 +1122,7 @@ void Reborder(Time mytime)
 	}
 	Scr = savedScreen;
 	XUngrabServer(dpy);
-	SetFocus((TwmWindow *)NULL, mytime);
+	SetFocus(NULL, mytime);
 }
 
 SIGNAL_T Done(int signum)
@@ -1340,15 +1258,30 @@ static Window CreateRootWindow(int x, int y,
 	ret = XCreateSimpleWindow(dpy, RootWindow(dpy, scrnum),
 	                          x, y, width, height, 2, WhitePixel(dpy, scrnum),
 	                          BlackPixel(dpy, scrnum));
-	XSetStandardProperties(dpy, ret, "Captive ctwm", NULL, None, NULL, 0, NULL);
 	wmhints.initial_state = NormalState;
 	wmhints.input         = True;
 	wmhints.flags         = InputHint | StateHint;
-	XSetWMHints(dpy, ret, &wmhints);
 
+	XmbSetWMProperties(dpy, ret, "Captive ctwm", NULL, NULL, 0, NULL,
+	                   &wmhints, NULL);
 	XChangeProperty(dpy, ret, XA_WM_CTWM_ROOT, XA_WINDOW, 32,
 	                PropModeReplace, (unsigned char *) &ret, 1);
 	XSelectInput(dpy, ret, StructureNotifyMask);
 	XMapWindow(dpy, ret);
 	return (ret);
+}
+
+
+/*
+ * Return true if a window is not set to override_redirect ("Hey!  WM!
+ * Leave those wins alone!"), and isn't unmapped.  Used during startup to
+ * fake mapping for wins that should be up.
+ */
+static bool
+MappedNotOverride(Window w)
+{
+	XWindowAttributes wa;
+
+	XGetWindowAttributes(dpy, w, &wa);
+	return ((wa.map_state != IsUnmapped) && (wa.override_redirect != True));
 }

@@ -1,27 +1,5 @@
 /*
- *  [ ctwm ]
- *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
+ * Copyright 1992 Claude Lecommandeur.
  */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -59,7 +37,7 @@ bool CtwmIsRunning(Display *display, int scrnum)
 	if(len == 0) {
 		return false;
 	}
-	XFree((char *)prop);
+	XFree(prop);
 	return true;
 }
 
@@ -107,7 +85,7 @@ char **CtwmListWorkspaces(Display *display, int scrnum)
 		p += strlen(p) + 1;
 	}
 	ret [i] = NULL;
-	XFree((char *)prop);
+	XFree(prop);
 	return (ret);
 }
 
@@ -195,7 +173,7 @@ char **CtwmCurrentOccupation(Display *display, Window window)
 		p += strlen(p) + 1;
 	}
 	ret [i] = NULL;
-	XFree((char *)prop);
+	XFree(prop);
 	return ret;
 }
 
@@ -276,8 +254,8 @@ int CtwmAddToCurrentWorkspace(Display *display, Window window)
 	XChangeProperty(display, window, _XA_WM_OCCUPATION, XA_STRING, 8,
 	                PropModeReplace,
 	                prop, (int) len + strlen((char *)currentw));
-	XFree((char *)prop);
-	XFree((char *)currentw);
+	XFree(prop);
+	XFree(currentw);
 	XFlush(display);
 	return (1);
 }

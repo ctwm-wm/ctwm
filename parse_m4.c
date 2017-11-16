@@ -18,21 +18,18 @@
 #include "version.h"
 
 
-static char *m4_defs(Display *display, char *host);
+static char *m4_defs(Display *display, const char *host);
 
 
 /*
  * Primary entry point to do m4 parsing of a startup file
  */
-FILE *start_m4(FILE *fraw)
+FILE *
+start_m4(FILE *fraw)
 {
-	int fno;
 	int fids[2];
 	int fres;
 	char *defs_file;
-
-	/* We'll need to work in file descriptors, not stdio FILE's */
-	fno = fileno(fraw);
 
 	/* Write our our standard definitions into a temp file */
 	defs_file = m4_defs(dpy, CLarg.display_name);
@@ -45,6 +42,7 @@ FILE *start_m4(FILE *fraw)
 	if(fres < 0) {
 		perror("Fork for " M4CMD " failed");
 		unlink(defs_file);
+		free(defs_file);
 		exit(23);
 	}
 
@@ -56,7 +54,7 @@ FILE *start_m4(FILE *fraw)
 		/* Setup file descriptors */
 		close(0);               /* stdin */
 		close(1);               /* stdout */
-		dup2(fno, 0);           /* stdin = fraw */
+		dup2(fileno(fraw), 0);  /* stdin = fraw */
 		dup2(fids[1], 1);       /* stdout = pipe to parent */
 
 		/*
@@ -69,6 +67,7 @@ FILE *start_m4(FILE *fraw)
 		/* If we get here we are screwed... */
 		perror("Can't execlp() " M4CMD);
 		unlink(defs_file);
+		free(defs_file);
 		exit(124);
 	}
 
@@ -76,53 +75,8 @@ FILE *start_m4(FILE *fraw)
 	 * Else we're the parent; hand back our reading end of the pipe.
 	 */
 	close(fids[1]);
+	free(defs_file);
 	return (fdopen(fids[0], "r"));
-}
-
-
-/*
- * Utils: Generate m4 definition lines for string or numeric values.
- * Just use a static buffer of a presumably crazy overspec size; it's
- * unlikely any lines will push more than 60 or 80 chars.
- */
-#define MAXDEFLINE 4095
-static const char *MkDef(const char *name, const char *def)
-{
-	static char cp[MAXDEFLINE + 1]; /* +1 for \n on error */
-	int pret;
-
-	/* Best response to an empty value is probably just nothing */
-	if(def == NULL) {
-		return ("");
-	}
-
-	/* Put together */
-	pret = snprintf(cp, MAXDEFLINE, "define(`%s', `%s')\n", name, def);
-
-	/* Be gracefulish about ultra-long lines */
-	if(pret >= MAXDEFLINE) {
-		pret = snprintf(cp, MAXDEFLINE, "dnl Define for '%s' too long: %d "
-		                "chars, limit %d\n", name, pret, MAXDEFLINE);
-		if(pret >= MAXDEFLINE) {
-			/* In case it was name that blew out the length */
-			*(cp + MAXDEFLINE - 1) = '\n';
-			*(cp + MAXDEFLINE)     = '\0';
-		}
-	}
-
-	return(cp);
-}
-
-static const char *MkNum(const char *name, int def)
-{
-	char num[32];
-
-	/*
-	 * 2**64 is only 20 digits, so we've got plenty of headroom.  Don't
-	 * even bother checking the size wasn't exceeded.
-	 */
-	snprintf(num, 32, "%d", def);
-	return(MkDef(name, num));
 }
 
 
@@ -133,32 +87,44 @@ static const char *MkNum(const char *name, int def)
  * Writes out a temp file of all the m4 defs appropriate for this run,
  * and returns the file name
  */
-static char *m4_defs(Display *display, char *host)
+static char *
+m4_defs(Display *display, const char *host)
 {
 	Screen *screen;
 	Visual *visual;
-	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
+	char client[MAXHOSTNAME];
 	struct hostent *hostname;
 	char *vc, *color;
-	static char tmp_name[] = "/tmp/ctwmrcXXXXXX";
-	int fd;
+	char *tmp_name;
 	FILE *tmpf;
 	char *user;
 
 	/* Create temp file */
-	fd = mkstemp(tmp_name);
-	if(fd < 0) {
-		perror("mkstemp failed in m4_defs");
-		exit(377);
+	{
+		char *td = getenv("TMPDIR");
+		if(!td || strlen(td) < 2 || *td != '/') {
+			td = "/tmp";
+		}
+		asprintf(&tmp_name, "%s/ctwmrc.XXXXXXXX", td);
+		if(!tmp_name) {
+			perror("asprintf failed in m4_defs");
+			exit(1);
+		}
+
+		int fd = mkstemp(tmp_name);
+		if(fd < 0) {
+			perror("mkstemp failed in m4_defs");
+			exit(377);
+		}
+		tmpf = fdopen(fd, "w+");
 	}
-	tmpf = fdopen(fd, "w+");
 
 
 	/*
 	 * Now start writing the defs into it.
 	 */
-#define WR_DEF(k, v) fputs(MkDef((k), (v)), tmpf)
-#define WR_NUM(k, v) fputs(MkNum((k), (v)), tmpf)
+#define WR_DEF(k, v) fprintf(tmpf, "define(`%s', `%s')\n", (k), (v))
+#define WR_NUM(k, v) fprintf(tmpf, "define(`%s', `%d')\n", (k), (v))
 
 	/*
 	 * The machine running the window manager process (and, presumably,
@@ -174,17 +140,27 @@ static char *m4_defs(Display *display, char *host)
 	 * A guess at the machine running the X server.  We take the full
 	 * $DISPLAY and chop off the screen specification.
 	 */
-	/* stpncpy() a better choice */
-	snprintf(server, sizeof(server), "%s", XDisplayName(host));
-	colon = strchr(server, ':');
-	if(colon != NULL) {
-		*colon = '\0';
+	{
+		char *server, *colon;
+
+		server = strdup(XDisplayName(host));
+		if(!server) {
+			server = strdup("unknown");
+		}
+		colon = strchr(server, ':');
+		if(colon != NULL) {
+			*colon = '\0';
+		}
+
+		/* :0 or unix socket connection means it's the same as CLIENTHOST */
+		if((server[0] == '\0') || (!strcmp(server, "unix"))) {
+			free(server);
+			server = strdup(client);
+		}
+		WR_DEF("SERVERHOST", server);
+
+		free(server);
 	}
-	/* :0 or unix socket connection means it's the same as CLIENTHOST */
-	if((server[0] == '\0') || (!strcmp(server, "unix"))) {
-		strcpy(server, client);
-	}
-	WR_DEF("SERVERHOST", server);
 
 	/* DNS (/NSS) lookup can't be the best way to do this, but... */
 	hostname = gethostbyname(client);

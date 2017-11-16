@@ -12,11 +12,11 @@
 #include <stdlib.h>
 
 #include "add_window.h"
+#include "functions_defs.h"
 #include "image.h"
-#include "parse.h"
 #include "screen.h"
 
-#include "decorations_init.h"
+#include "win_decorations_init.h"
 
 
 /*
@@ -280,8 +280,9 @@ CreateTitleButton(char *name, int func, char *action, MenuRoot *menuroot,
 	}
 	else if(append && rightside) {      /* 3 */
 		TitleButton *t;
-		for /* SUPPRESS 530 */
-		(t = Scr->TBInfo.head; t->next; t = t->next);
+		for(t = Scr->TBInfo.head; t->next; t = t->next) {
+			/* just walking to tail */;
+		}
 		t->next = cur_tb;
 		cur_tb->next = NULL;
 	}

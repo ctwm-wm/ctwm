@@ -8,13 +8,16 @@
 
 #include <sys/select.h>
 
-#include "util.h"
-#include "decorations.h"
 #include "screen.h"
 #include "icons.h"
 #include "cursor.h"
 #include "image.h"
 #include "gram.tab.h"
+#include "list.h"
+#include "vscreen.h"
+#include "win_decorations.h"
+#include "win_utils.h"
+#include "workspace_manager.h"
 
 #include "mask_screen.h"
 
@@ -39,20 +42,17 @@ MaskScreen(char *file)
 
 	NewFontCursor(&waitcursor, "watch");
 
-	valuemask = (CWBackingStore | CWSaveUnder | CWBackPixel |
-	             CWOverrideRedirect | CWEventMask | CWCursor);
-	attributes.backing_store     = NotUseful;
-	attributes.save_under        = False;
+	valuemask = (CWBackPixel | CWOverrideRedirect | CWEventMask | CWCursor);
 	attributes.override_redirect = True;
 	attributes.event_mask        = ExposureMask;
 	attributes.cursor            = waitcursor;
 	attributes.background_pixel  = Scr->Black;
 	Scr->WindowMask = XCreateWindow(dpy, Scr->Root, 0, 0,
-	                                (unsigned int) Scr->rootw,
-	                                (unsigned int) Scr->rooth,
-	                                (unsigned int) 0,
-	                                CopyFromParent, (unsigned int) CopyFromParent,
-	                                (Visual *) CopyFromParent, valuemask,
+	                                Scr->rootw,
+	                                Scr->rooth,
+	                                0,
+	                                CopyFromParent, CopyFromParent,
+	                                CopyFromParent, valuemask,
 	                                &attributes);
 	XMapWindow(dpy, Scr->WindowMask);
 	XMaskEvent(dpy, ExposureMask, &event);
@@ -251,7 +251,7 @@ PaintAllDecoration(void)
 		                tmp_win->icon           &&
 		                tmp_win->icon->w        &&
 		                !tmp_win->icon->w_not_ours &&
-		                ! LookInList(Scr->NoIconTitle, tmp_win->full_name, &tmp_win->class)) {
+		                ! LookInList(Scr->NoIconTitle, tmp_win->name, &tmp_win->class)) {
 			PaintIcon(tmp_win);
 		}
 	}

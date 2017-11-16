@@ -13,7 +13,7 @@ include(find_asciidoc_bits)
 #
 
 # The original source.
-set(ADOC_SRC ${SRCDOCDIR}/ctwm.1.adoc)
+set(ADOC_SRC ${MANSRCDIR}/ctwm.1.adoc)
 
 # Where we build stuff.  Because we need to process the ADOC_SRC to
 # replace build paths etc, we need to dump it somewhere.  We could just
@@ -36,13 +36,13 @@ set(MANPDF   ${CMAKE_BINARY_DIR}/ctwm.1.pdf)
 # pretty freeform in the manual.
 # \-escaped @ needed for pre-3.1 CMake compat and warning avoidance;
 # x-ref `cmake --help-policy CMP0053`
-set(MANSED_CMD sed -e "s,\@ETCDIR@,${ETCDIR},"
-	-e "s,\@ctwm_version_str@,${ctwm_version_str},")
+set(MANSED_CMD sed -e \"s,\@ETCDIR@,${ETCDIR},\"
+	-e \"s,\@ctwm_version_str@,`head -1 ${CMAKE_SOURCE_DIR}/VERSION`,\")
 
 # Pregen'd doc file paths we might have, in case we can't build them
 # ourselves.
-set(MAN_PRESRC ${SRCDOCDIR}/ctwm.1)
-set(HTML_PRESRC ${SRCDOCDIR}/ctwm.1.html)
+set(MAN_PRESRC ${GENSRCDIR}/ctwm.1)
+set(HTML_PRESRC ${GENSRCDIR}/ctwm.1.html)
 
 
 
@@ -95,6 +95,14 @@ if(DBLATEX AND DBLATEX_CAN_PDF AND MANUAL_BUILD_DBXML)
 endif()
 
 
+# Override: allow forcing use of pregen'd files.
+if(FORCE_PREGEN_FILES)
+	set(MANUAL_BUILD_HTML)
+	set(MANUAL_BUILD_MANPAGE)
+	set(MANUAL_BUILD_DBXML)
+endif()
+
+
 # If we can build stuff, prepare bits for it.  Technically unnecessary if
 # we're not building stuff, but doesn't do anything bad to define it in
 # those cases, and it's easier than listing every MANUAL_BUILD_* in the
@@ -107,7 +115,7 @@ if(SETUP_MAN_REWRITE)
 	# We hop through a temporary file to process in definitions for e.g.
 	# $ETCDIR.
 	add_custom_command(OUTPUT ${ADOC_TMPSRC}
-		DEPENDS ${ADOC_SRC}
+		DEPENDS ${ADOC_SRC} ${CMAKE_SOURCE_DIR}/VERSION
 		COMMAND ${MANSED_CMD} < ${ADOC_SRC} > ${ADOC_TMPSRC}
 		COMMENT "Processing ctwm.1.adoc -> mantmp/ctwm.1.adoc"
 	)
@@ -161,7 +169,7 @@ elseif(EXISTS ${MAN_PRESRC})
 	# We still have to do the substitutions like above, but we're doing
 	# it on the built version now, rather than the source.
 	add_custom_command(OUTPUT ${MANPAGE}
-		DEPENDS ${MAN_PRESRC}
+		DEPENDS ${MAN_PRESRC} ${CMAKE_SOURCE_DIR}/VERSION
 		COMMAND ${MANSED_CMD} < ${MAN_PRESRC} > ${MANPAGE}
 		COMMENT "Processing prebuilt manpage -> ctwm.1"
 	)
@@ -200,13 +208,12 @@ endif(HAS_MAN)
 # Do the HTML manual
 #
 set(HAS_HTML 0)
-if(MANUAL_BUILD_HTML)
+if(MANUAL_BUILD_HTML AND NOAUTO_HTML)
+	message(STATUS "Not autobuilding HTML manual with ${MANUAL_BUILD_HTML}.")
+endif()
+if(MANUAL_BUILD_HTML AND NOT NOAUTO_HTML)
 	# Got the tool to build it
-	if(NOAUTO_HTML)
-		message(STATUS "Not autobuilding HTML manual with ${MANUAL_BUILD_HTML}.")
-	else()
-		message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
-	endif(NOAUTO_HTML)
+	message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
 	set(HAS_HTML 1)
 
 	if(${MANUAL_BUILD_HTML} STREQUAL "asciidoctor")
@@ -221,11 +228,12 @@ elseif(EXISTS ${HTML_PRESRC})
 	# Can't build it ourselves, but we've got a prebuilt version.
 	message(STATUS "Can't build HTML manual, using prebuilt version.")
 	set(HAS_HTML 1)
+	set(NOAUTO_HTML) # Clear so ALL target get set below
 
 	# As with the manpage above, we need to do the processing on the
 	# generated version for build options.
 	add_custom_command(OUTPUT ${MANHTML}
-		DEPENDS ${HTML_PRESRC}
+		DEPENDS ${HTML_PRESRC} ${CMAKE_SOURCE_DIR}/VERSION
 		COMMAND ${MANSED_CMD} < ${HTML_PRESRC} > ${MANHTML}
 		COMMENT "Processing prebuilt manual -> ctwm.1.html"
 	)
@@ -235,7 +243,7 @@ else()
 	# Left as STATUS, since this is "normal" for now.
 	message(STATUS "Can't build HTML manual, and no prebuilt version "
 		"available.")
-endif(MANUAL_BUILD_HTML)
+endif()  # Variants of building HTML manual
 
 
 # If we have (or are building) the HTML, add an easy target for it, and

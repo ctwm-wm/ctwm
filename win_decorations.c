@@ -15,9 +15,12 @@
 #include "image.h"
 #include "iconmgr.h"
 #include "screen.h"
-#include "util.h"  // Border drawing
+#include "drawing.h"
+#include "occupation.h"
+#include "win_utils.h"
+#include "workspace_manager.h"
 
-#include "decorations.h"
+#include "win_decorations.h"
 
 
 /* Internal bits */
@@ -131,6 +134,26 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 		tmp_win->iconmgrp->width = w - (2 * tmp_win->frame_bw3D);
 		h = tmp_win->iconmgrp->height + tmp_win->title_height +
 		    (2 * tmp_win->frame_bw3D);
+	}
+
+	/*
+	 * If the window is an Occupy window, we have to tell it about its
+	 * new size too.
+	 */
+	if(tmp_win->isoccupy) {
+		/* XXX maybe add something like ->iconmgrp above? */
+		OccupyWindow *occwin = Scr->workSpaceMgr.occupyWindow;
+
+		/* occwin not yet set during startup */
+		if(occwin != NULL && occwin->twm_win != NULL) {
+			if(tmp_win != occwin->twm_win) {
+				fprintf(stderr, "%s(): %p not the expected Occupy window %p.\n",
+				        __func__, tmp_win, occwin->twm_win);
+			}
+			else {
+				ResizeOccupyWindow(tmp_win);
+			}
+		}
 	}
 
 	/*
@@ -325,7 +348,7 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 * If there's a titlebar, we may have hilight/lolight windows in it
 	 * to fix up.
 	 *
-	 * The sizing/positioning is all wonked up.  In particularly, the
+	 * The sizing/positioning is all wonked up.  In particular, the
 	 * left-side hi/lolite windows don't work out right because they
 	 * extend from the left side (after buttons) until name_x, which is
 	 * the start of the title, which means they jam right up against the
@@ -707,9 +730,9 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 					attributes.win_gravity = NorthWestGravity;
 				}
 				tbw->window = XCreateWindow(dpy, tmp_win->title_w, x, y, h, h,
-				                            (unsigned int) Scr->TBInfo.border,
-				                            0, (unsigned int) CopyFromParent,
-				                            (Visual *) CopyFromParent,
+				                            Scr->TBInfo.border,
+				                            0, CopyFromParent,
+				                            CopyFromParent,
 				                            valuemask, &attributes);
 				XStoreName(dpy, tbw->window, "TB button");
 
@@ -748,7 +771,7 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 	/*
 	 * ...but hide away the hilite's, since they'll only show up when we
 	 * give the window focus.  And when we do (even if that when is
-	 * "right now", the focus handler will handle mapping them for us).
+	 * "right now"), the focus handler will handle mapping them for us.
 	 */
 	if(tmp_win->hilite_wl) {
 		XUnmapWindow(dpy, tmp_win->hilite_wl);
@@ -1122,7 +1145,7 @@ CreateLowlightWindows(TwmWindow *tmp_win)
 /*
  * There is no DeleteLowlightWindows() as a counterpart to the
  * HighlightWindows variant.  That func doesn't delete the [sub-]window;
- * that happens semi-automattically when the frame window is destroyed.
+ * that happens semi-automatically when the frame window is destroyed.
  * It only cleans up the Pixmap if there is one.  And the only way the
  * Lowlight window can wind up with a pixmap is as a copy of the
  * highlight window one, in which case when THAT delete gets called all
@@ -1151,7 +1174,7 @@ PaintTitle(TwmWindow *tmp_win)
 		 */
 		int wid = tmp_win->title_width - Scr->TBInfo.titlex
 		          - Scr->TBInfo.rightoff - Scr->TitlePadding;
-		int state = off;
+		ButtonState state = off;
 
 		/*
 		 * If SunkFocusWindowTitle, then we "sink in" the whole title
@@ -1455,6 +1478,90 @@ PaintBorders(TwmWindow *tmp_win, bool focus)
 		             tmp_win->frame_bw3D,
 		             Scr->BorderShadowDepth, cp, off, true, false);
 	}
+}
+
+
+/*
+ * Setup the mouse cursor for various locations on the border of a
+ * window.
+ *
+ * Formerly in util.c
+ */
+void
+SetBorderCursor(TwmWindow *tmp_win, int x, int y)
+{
+	Cursor cursor;
+	XSetWindowAttributes attr;
+	int h, fw, fh, wd;
+
+	if(!tmp_win) {
+		return;
+	}
+
+	/* Use the max of these, but since one is always 0 we can add them. */
+	wd = tmp_win->frame_bw + tmp_win->frame_bw3D;
+	h = Scr->TitleHeight + wd;
+	fw = tmp_win->frame_width;
+	fh = tmp_win->frame_height;
+
+#if defined DEBUG && DEBUG
+	fprintf(stderr, "wd=%d h=%d, fw=%d fh=%d x=%d y=%d\n",
+	        wd, h, fw, fh, x, y);
+#endif
+
+	/*
+	 * If not using 3D borders:
+	 *
+	 * The left border has negative x coordinates,
+	 * The top border (above the title) has negative y coordinates.
+	 * The title is TitleHeight high, the next wd pixels are border.
+	 * The bottom border has coordinates >= the frame height.
+	 * The right border has coordinates >= the frame width.
+	 *
+	 * If using 3D borders: all coordinates are >= 0, and all coordinates
+	 * are higher by the border width.
+	 *
+	 * Since we only get events when we're actually in the border, we simply
+	 * allow for both cases at the same time.
+	 */
+
+	if((x < -wd) || (y < -wd)) {
+		cursor = Scr->FrameCursor;
+	}
+	else if(x < h) {
+		if(y < h) {
+			cursor = TopLeftCursor;
+		}
+		else if(y >= fh - h) {
+			cursor = BottomLeftCursor;
+		}
+		else {
+			cursor = LeftCursor;
+		}
+	}
+	else if(x >= fw - h) {
+		if(y < h) {
+			cursor = TopRightCursor;
+		}
+		else if(y >= fh - h) {
+			cursor = BottomRightCursor;
+		}
+		else {
+			cursor = RightCursor;
+		}
+	}
+	else if(y < h) {    /* also include title bar in top border area */
+		cursor = TopCursor;
+	}
+	else if(y >= fh - h) {
+		cursor = BottomCursor;
+	}
+	else {
+		cursor = Scr->FrameCursor;
+	}
+	attr.cursor = cursor;
+	XChangeWindowAttributes(dpy, tmp_win->frame, CWCursor, &attr);
+	tmp_win->curcurs = cursor;
 }
 
 

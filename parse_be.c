@@ -21,7 +21,10 @@
 #include "screen.h"
 #include "util.h"
 #include "animate.h"
+#include "functions_defs.h"
 #include "image.h"
+#include "list.h"
+#include "occupation.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
@@ -33,7 +36,7 @@
 
 
 static int ParseRandomPlacement(const char *s);
-static int ParseButtonStyle(char *s);
+static int ParseButtonStyle(const char *s);
 static int ParseUsePPosition(const char *s);
 static int ParseIconifyStyle(const char *s);
 
@@ -117,6 +120,12 @@ typedef struct _TwmKeyword {
 #define kw0_DontShowWelcomeWindow       68
 #define kw0_AutoPriority                69
 #define kw0_DontToggleWorkspacemanagerState 70
+#define kw0_BackingStore                71
+#define kw0_StartInButtonState          72
+#define kw0_NoSortIconManager           73
+#define kw0_NoRestartPreviousState      74
+#define kw0_NoDecorateTransients        75
+#define kw0_GrabServer                  76
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -208,7 +217,7 @@ typedef struct _TwmKeyword {
  * in lowercase and only contain the letters a-z).  It is fed to a binary
  * search to parse keywords.
  */
-static TwmKeyword keytable[] = {
+static const TwmKeyword keytable[] = {
 	{ "a",                      ALTER, 0 },
 	{ "all",                    ALL, 0 },
 	{ "alter",                  ALTER, 0 },
@@ -225,6 +234,7 @@ static TwmKeyword keytable[] = {
 	{ "autoraiseicons",         KEYWORD, kw0_AutoRaiseIcons },
 	{ "autorelativeresize",     KEYWORD, kw0_AutoRelativeResize },
 	{ "autosqueeze",            AUTOSQUEEZE, 0 },
+	{ "backingstore",           KEYWORD, kw0_BackingStore },
 	{ "benicetocolormap",       KEYWORD, kw0_BeNiceToColormap },
 	{ "borderbottom",           NKEYWORD, kwn_BorderBottom },
 	{ "bordercolor",            CLKEYWORD, kwcl_BorderColor },
@@ -265,146 +275,15 @@ static TwmKeyword keytable[] = {
 	{ "dontsqueezetitle",       DONT_SQUEEZE_TITLE, 0 },
 	{ "donttoggleworkspacemanagerstate", KEYWORD, kw0_DontToggleWorkspacemanagerState},
 	{ "dontwarpcursorinwmap",   KEYWORD, kw0_DontWarpCursorInWMap },
-	{ "east",                   DKEYWORD, D_EAST },
+	{ "east",                   GRAVITY, GRAV_EAST },
 	{ "ewmhignore",             EWMH_IGNORE, 0 },
 	{ "f",                      FRAME, 0 },
-	{ "f.addtoworkspace",       FSKEYWORD, F_ADDTOWORKSPACE },
-	{ "f.adoptwindow",          FKEYWORD, F_ADOPTWINDOW },
-	{ "f.altcontext",           FKEYWORD, F_ALTCONTEXT },
-	{ "f.altkeymap",            FSKEYWORD, F_ALTKEYMAP },
-	{ "f.autolower",            FKEYWORD, F_AUTOLOWER },
-	{ "f.autoraise",            FKEYWORD, F_AUTORAISE },
-	{ "f.backiconmgr",          FKEYWORD, F_BACKICONMGR },
-	{ "f.backmapiconmgr",       FKEYWORD, F_BACKMAPICONMGR },
-	{ "f.beep",                 FKEYWORD, F_BEEP },
-	{ "f.bottomzoom",           FKEYWORD, F_BOTTOMZOOM },
-	{ "f.changepriority",       FSKEYWORD, F_CHANGEPRIORITY },
-	{ "f.changesize",           FSKEYWORD, F_CHANGESIZE },
-	{ "f.circledown",           FKEYWORD, F_CIRCLEDOWN },
-	{ "f.circleup",             FKEYWORD, F_CIRCLEUP },
-	{ "f.colormap",             FSKEYWORD, F_COLORMAP },
-	{ "f.deiconify",            FKEYWORD, F_DEICONIFY },
-	{ "f.delete",               FKEYWORD, F_DELETE },
-	{ "f.deleteordestroy",      FKEYWORD, F_DELETEORDESTROY },
-	{ "f.deltastop",            FKEYWORD, F_DELTASTOP },
-	{ "f.destroy",              FKEYWORD, F_DESTROY },
-	{ "f.downiconmgr",          FKEYWORD, F_DOWNICONMGR },
-	{ "f.downworkspace",        FKEYWORD, F_DOWNWORKSPACE },
-	{ "f.exec",                 FSKEYWORD, F_EXEC },
-	{ "f.fill",                 FSKEYWORD, F_FILL },
-	{ "f.fittocontent",         FKEYWORD, F_FITTOCONTENT },
-	{ "f.focus",                FKEYWORD, F_FOCUS },
-	{ "f.forcemove",            FKEYWORD, F_FORCEMOVE },
-	{ "f.forwiconmgr",          FKEYWORD, F_FORWICONMGR },
-	{ "f.forwmapiconmgr",       FKEYWORD, F_FORWMAPICONMGR },
-	{ "f.fullscreenzoom",       FKEYWORD, F_FULLSCREENZOOM },
-	{ "f.fullzoom",             FKEYWORD, F_FULLZOOM },
-	{ "f.function",             FSKEYWORD, F_FUNCTION },
-	{ "f.gotoworkspace",        FSKEYWORD, F_GOTOWORKSPACE },
-	{ "f.hbzoom",               FKEYWORD, F_BOTTOMZOOM },
-	{ "f.hideiconmgr",          FKEYWORD, F_HIDELIST },
-	{ "f.hideworkspacemgr",     FKEYWORD, F_HIDEWORKMGR },
-	{ "f.horizoom",             FKEYWORD, F_HORIZOOM },
-	{ "f.htzoom",               FKEYWORD, F_TOPZOOM },
-	{ "f.hypermove",            FKEYWORD, F_HYPERMOVE },
-	{ "f.hzoom",                FKEYWORD, F_HORIZOOM },
-	{ "f.iconify",              FKEYWORD, F_ICONIFY },
-	{ "f.identify",             FKEYWORD, F_IDENTIFY },
-	{ "f.initsize",             FKEYWORD, F_INITSIZE },
-	{ "f.jumpdown",             FSKEYWORD, F_JUMPDOWN },
-	{ "f.jumpleft",             FSKEYWORD, F_JUMPLEFT },
-	{ "f.jumpright",            FSKEYWORD, F_JUMPRIGHT },
-	{ "f.jumpup",               FSKEYWORD, F_JUMPUP },
-	{ "f.lefticonmgr",          FKEYWORD, F_LEFTICONMGR },
-	{ "f.leftworkspace",        FKEYWORD, F_LEFTWORKSPACE },
-	{ "f.leftzoom",             FKEYWORD, F_LEFTZOOM },
-	{ "f.lower",                FKEYWORD, F_LOWER },
-	{ "f.menu",                 FSKEYWORD, F_MENU },
-	{ "f.move",                 FKEYWORD, F_MOVE },
-	{ "f.movemenu",             FKEYWORD, F_MOVEMENU },
-	{ "f.movepack",             FKEYWORD, F_MOVEPACK },
-	{ "f.movepush",             FKEYWORD, F_MOVEPUSH },
-	{ "f.moveresize",           FSKEYWORD, F_MOVERESIZE },
-	{ "f.movetitlebar",         FKEYWORD, F_MOVETITLEBAR },
-	{ "f.movetonextworkspace",  FKEYWORD, F_MOVETONEXTWORKSPACE },
-	{ "f.movetonextworkspaceandfollow",  FKEYWORD, F_MOVETONEXTWORKSPACEANDFOLLOW },
-	{ "f.movetoprevworkspace",  FKEYWORD, F_MOVETOPREVWORKSPACE },
-	{ "f.movetoprevworkspaceandfollow",  FKEYWORD, F_MOVETOPREVWORKSPACEANDFOLLOW },
-	{ "f.nexticonmgr",          FKEYWORD, F_NEXTICONMGR },
-	{ "f.nextworkspace",        FKEYWORD, F_NEXTWORKSPACE },
-	{ "f.nop",                  FKEYWORD, F_NOP },
-	{ "f.occupy",               FKEYWORD, F_OCCUPY },
-	{ "f.occupyall",            FKEYWORD, F_OCCUPYALL },
-	{ "f.pack",                 FSKEYWORD, F_PACK },
-	{ "f.pin",                  FKEYWORD, F_PIN },
-	{ "f.previconmgr",          FKEYWORD, F_PREVICONMGR },
-	{ "f.prevworkspace",        FKEYWORD, F_PREVWORKSPACE },
-	{ "f.priorityswitching",    FKEYWORD, F_PRIORITYSWITCHING },
-	{ "f.quit",                 FKEYWORD, F_QUIT },
-	{ "f.raise",                FKEYWORD, F_RAISE },
-	{ "f.raiseicons",           FKEYWORD, F_RAISEICONS },
-	{ "f.raiselower",           FKEYWORD, F_RAISELOWER },
-	{ "f.raiseorsqueeze",       FKEYWORD, F_RAISEORSQUEEZE },
-	{ "f.refresh",              FKEYWORD, F_REFRESH },
-	{ "f.removefromworkspace",  FSKEYWORD, F_REMOVEFROMWORKSPACE },
-#ifdef SOUNDS
-	{ "f.rereadsounds",         FKEYWORD, F_REREADSOUNDS },
-#endif
-	{ "f.rescuewindows",        FKEYWORD, F_RESCUE_WINDOWS },
-	{ "f.resize",               FKEYWORD, F_RESIZE },
-	{ "f.restart",              FKEYWORD, F_RESTART },
-	{ "f.restoregeometry",      FKEYWORD, F_RESTOREGEOMETRY },
-	{ "f.righticonmgr",         FKEYWORD, F_RIGHTICONMGR },
-	{ "f.rightworkspace",       FKEYWORD, F_RIGHTWORKSPACE },
-	{ "f.rightzoom",            FKEYWORD, F_RIGHTZOOM },
-	{ "f.ring",                 FKEYWORD, F_RING },
-	{ "f.savegeometry",         FKEYWORD, F_SAVEGEOMETRY },
-	{ "f.saveyourself",         FKEYWORD, F_SAVEYOURSELF },
-	{ "f.separator",            FKEYWORD, F_SEPARATOR },
-	{ "f.setbuttonsstate",      FKEYWORD, F_SETBUTTONSTATE },
-	{ "f.setmapstate",          FKEYWORD, F_SETMAPSTATE },
-	{ "f.setpriority",          FSKEYWORD, F_SETPRIORITY },
-	{ "f.showbackground",       FKEYWORD, F_SHOWBGRD },
-	{ "f.showiconmgr",          FKEYWORD, F_SHOWLIST },
-	{ "f.showworkspacemgr",     FKEYWORD, F_SHOWWORKMGR },
-	{ "f.slowdownanimation",    FKEYWORD, F_SLOWDOWNANIMATION },
-	{ "f.sorticonmgr",          FKEYWORD, F_SORTICONMGR },
-	{ "f.speedupanimation",     FKEYWORD, F_SPEEDUPANIMATION },
-	{ "f.squeeze",              FKEYWORD, F_SQUEEZE },
-	{ "f.startanimation",       FKEYWORD, F_STARTANIMATION },
-	{ "f.stopanimation",        FKEYWORD, F_STOPANIMATION },
-	{ "f.switchpriority",       FKEYWORD, F_SWITCHPRIORITY },
-	{ "f.tinylower",            FKEYWORD, F_TINYLOWER },
-	{ "f.tinyraise",            FKEYWORD, F_TINYRAISE },
-	{ "f.title",                FKEYWORD, F_TITLE },
-	{ "f.toggleoccupation",     FSKEYWORD, F_TOGGLEOCCUPATION },
-#ifdef SOUNDS
-	{ "f.togglesound",          FKEYWORD, F_TOGGLESOUND },
-#endif
-	{ "f.togglestate",          FKEYWORD, F_TOGGLESTATE },
-	{ "f.toggleworkspacemgr",   FKEYWORD, F_TOGGLEWORKMGR },
-	{ "f.topzoom",              FKEYWORD, F_TOPZOOM },
-	{ "f.trace",                FSKEYWORD, F_TRACE },
-	{ "f.twmrc",                FKEYWORD, F_RESTART },
-	{ "f.unfocus",              FKEYWORD, F_UNFOCUS },
-	{ "f.unsqueeze",            FKEYWORD, F_UNSQUEEZE },
-	{ "f.upiconmgr",            FKEYWORD, F_UPICONMGR },
-	{ "f.upworkspace",          FKEYWORD, F_UPWORKSPACE },
-	{ "f.vanish",               FKEYWORD, F_VANISH },
-	{ "f.version",              FKEYWORD, F_VERSION },
-	{ "f.vlzoom",               FKEYWORD, F_LEFTZOOM },
-	{ "f.vrzoom",               FKEYWORD, F_RIGHTZOOM },
-	{ "f.warphere",             FSKEYWORD, F_WARPHERE },
-	{ "f.warpring",             FSKEYWORD, F_WARPRING },
-	{ "f.warpto",               FSKEYWORD, F_WARPTO },
-	{ "f.warptoiconmgr",        FSKEYWORD, F_WARPTOICONMGR },
-	{ "f.warptoscreen",         FSKEYWORD, F_WARPTOSCREEN },
-	{ "f.winrefresh",           FKEYWORD, F_WINREFRESH },
-	{ "f.zoom",                 FKEYWORD, F_VERTZOOM },
+	{ "forcefocus",             FORCE_FOCUS, 0 },
 	{ "forceicons",             KEYWORD, kw0_ForceIcons },
 	{ "frame",                  FRAME, 0 },
 	{ "framepadding",           NKEYWORD, kwn_FramePadding },
 	{ "function",               FUNCTION, 0 },
+	{ "grabserver",             KEYWORD, kw0_GrabServer },
 	{ "i",                      ICON, 0 },
 	{ "icon",                   ICON, 0 },
 	{ "iconbackground",         CLKEYWORD, kwcl_IconBackground },
@@ -469,6 +348,7 @@ static TwmKeyword keytable[] = {
 	{ "nobackingstore",         KEYWORD, kw0_NoBackingStore },
 	{ "noborder",               NO_BORDER, 0 },
 	{ "nocasesensitive",        KEYWORD, kw0_NoCaseSensitive },
+	{ "nodecoratetransients",   KEYWORD, kw0_NoDecorateTransients },
 	{ "nodefaults",             KEYWORD, kw0_NoDefaults },
 	{ "nograbserver",           KEYWORD, kw0_NoGrabServer },
 	{ "nohighlight",            NO_HILITE, 0 },
@@ -483,9 +363,11 @@ static TwmKeyword keytable[] = {
 	{ "noraiseonmove",          KEYWORD, kw0_NoRaiseOnMove },
 	{ "noraiseonresize",        KEYWORD, kw0_NoRaiseOnResize },
 	{ "noraiseonwarp",          KEYWORD, kw0_NoRaiseOnWarp },
-	{ "north",                  DKEYWORD, D_NORTH },
+	{ "norestartpreviousstate", KEYWORD, kw0_NoRestartPreviousState },
+	{ "north",                  GRAVITY, GRAV_NORTH },
 	{ "nosaveunders",           KEYWORD, kw0_NoSaveUnders },
 	{ "noshowoccupyall",        KEYWORD, kw0_NoShowOccupyAll },
+	{ "nosorticonmanager",      KEYWORD, kw0_NoSortIconManager },
 	{ "nostackmode",            NO_STACKMODE, 0 },
 	{ "notitle",                NO_TITLE, 0 },
 	{ "notitlefocus",           KEYWORD, kw0_NoTitleFocus },
@@ -534,9 +416,10 @@ static TwmKeyword keytable[] = {
 	{ "sloppyfocus",            KEYWORD, kw0_SloppyFocus },
 	{ "sorticonmanager",        KEYWORD, kw0_SortIconManager },
 	{ "soundhost",              SKEYWORD, kws_SoundHost },
-	{ "south",                  DKEYWORD, D_SOUTH },
+	{ "south",                  GRAVITY, GRAV_SOUTH },
 	{ "squeezetitle",           SQUEEZE_TITLE, 0 },
 	{ "starticonified",         START_ICONIFIED, 0 },
+	{ "startinbuttonstate",     KEYWORD, kw0_StartInButtonState },
 	{ "startinmapstate",        KEYWORD, kw0_StartInMapState },
 	{ "startsqueezed",          STARTSQUEEZED, 0 },
 	{ "stayupmenus",            KEYWORD, kw0_StayUpMenus },
@@ -573,7 +456,7 @@ static TwmKeyword keytable[] = {
 	{ "warpringonscreen",       KEYWORD, kw0_WarpRingOnScreen },
 	{ "warptodefaultmenuentry", KEYWORD, kw0_WarpToDefaultMenuEntry },
 	{ "warpunmapped",           KEYWORD, kw0_WarpUnmapped },
-	{ "west",                   DKEYWORD, D_WEST },
+	{ "west",                   GRAVITY, GRAV_WEST },
 	{ "window",                 WINDOW, 0 },
 	{ "windowbox",              WINDOW_BOX, 0 },
 	{ "windowfunction",         WINDOW_FUNCTION, 0 },
@@ -596,29 +479,58 @@ static TwmKeyword keytable[] = {
 	{ "zoom",                   ZOOM, 0 },
 };
 
-static int numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
+static const size_t numkeywords = (sizeof(keytable) / sizeof(keytable[0]));
+
+
+/*
+ * The lookup table for functions is generated.
+ */
+#include "functions_parse_table.h"
+
+
+
+static int
+kt_compare(const void *lhs, const void *rhs)
+{
+	const TwmKeyword *l = lhs;
+	const TwmKeyword *r = rhs;
+	return strcasecmp(l->name, r->name);
+}
 
 int
-parse_keyword(char *s, int *nump)
+parse_keyword(const char *s, int *nump)
 {
-	int lower = 0, upper = numkeywords - 1;
+	const TwmKeyword srch = { .name = s };
+	TwmKeyword *ret;
+	const TwmKeyword *srchtab;
+	size_t nstab;
 
-	while(lower <= upper) {
-		int middle = (lower + upper) / 2;
-		TwmKeyword *p = &keytable[middle];
-		int res = strcasecmp(p->name, s);
-
-		if(res < 0) {
-			lower = middle + 1;
-		}
-		else if(res == 0) {
-			*nump = p->subnum;
-			return p->value;
-		}
-		else {
-			upper = middle - 1;
-		}
+	/* Guard; nothing can't be a valid keyword */
+	if(s == NULL || strlen(s) < 1) {
+		return ERRORTOKEN;
 	}
+
+	/*
+	 * Functions are in their own table, so check for them there.
+	 *
+	 * This is safe as long as (strlen >= 1), which we already checked.
+	 */
+	if(s[0] == 'f' && s[1] == '.') {
+		srchtab = funckeytable;
+		nstab = numfunckeywords;
+	}
+	else {
+		srchtab = keytable;
+		nstab = numkeywords;
+	}
+
+	/* Find it */
+	ret = bsearch(&srch, srchtab, nstab, sizeof(TwmKeyword), kt_compare);
+	if(ret) {
+		*nump = ret->subnum;
+		return ret->value;
+	}
+
 	return ERRORTOKEN;
 }
 
@@ -638,6 +550,14 @@ chk_keytable_order(void)
 			        keytable[i].name, keytable[i + 1].name);
 		}
 	}
+
+	for(i = 0 ; i < (numfunckeywords - 1) ; i++) {
+		if(strcasecmp(funckeytable[i].name, funckeytable[i + 1].name) >= 0) {
+			fprintf(stderr, "%s: INTERNAL ERROR: funckeytable sorting: "
+			        "'%s' >= '%s'\n", ProgramName,
+			        funckeytable[i].name, funckeytable[i + 1].name);
+		}
+	}
 }
 
 
@@ -646,335 +566,377 @@ chk_keytable_order(void)
  * action routines called by grammar
  */
 
-int
+bool
 do_single_keyword(int keyword)
 {
 	switch(keyword) {
 		case kw0_NoDefaults:
 			Scr->NoDefaults = true;
-			return 1;
+			return true;
 
 		case kw0_AutoRelativeResize:
 			Scr->AutoRelativeResize = true;
-			return 1;
+			return true;
 
 		case kw0_ForceIcons:
 			if(Scr->FirstTime) {
 				Scr->ForceIcon = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoIconManagers:
 			Scr->NoIconManagers = true;
-			return 1;
+			return true;
 
 		case kw0_InterpolateMenuColors:
 			if(Scr->FirstTime) {
 				Scr->InterpolateMenuColors = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_SortIconManager:
 			if(Scr->FirstTime) {
 				Scr->SortIconMgr = true;
 			}
-			return 1;
+			return true;
+
+		case kw0_NoSortIconManager:
+			if(Scr->FirstTime) {
+				Scr->SortIconMgr = false;
+			}
+			return true;
+
+		case kw0_GrabServer:
+			Scr->NoGrabServer = false;
+			return true;
 
 		case kw0_NoGrabServer:
 			Scr->NoGrabServer = true;
-			return 1;
+			return true;
 
 		case kw0_NoMenuShadows:
 			if(Scr->FirstTime) {
 				Scr->Shadow = false;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnMove:
 			if(Scr->FirstTime) {
 				Scr->NoRaiseMove = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnResize:
 			if(Scr->FirstTime) {
 				Scr->NoRaiseResize = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnDeiconify:
 			if(Scr->FirstTime) {
 				Scr->NoRaiseDeicon = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_DontMoveOff:
 			Scr->DontMoveOff = true;
-			return 1;
+			return true;
 
 		case kw0_NoBackingStore:
 			Scr->BackingStore = false;
-			return 1;
+			return true;
+
+		case kw0_BackingStore:
+			Scr->BackingStore = true;
+			return true;
 
 		case kw0_NoSaveUnders:
 			Scr->SaveUnder = false;
-			return 1;
+			return true;
 
 		case kw0_RestartPreviousState:
 			RestartPreviousState = true;
-			return 1;
+			return true;
+
+		case kw0_NoRestartPreviousState:
+			RestartPreviousState = false;
+			return true;
 
 		case kw0_ClientBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->ClientBorderWidth = true;
 			}
-			return 1;
+			return true;
 
 		case kw0_NoTitleFocus:
 			Scr->TitleFocus = false;
-			return 1;
+			return true;
 
 		case kw0_DecorateTransients:
 			Scr->DecorateTransients = true;
-			return 1;
+			return true;
+
+		case kw0_NoDecorateTransients:
+			Scr->DecorateTransients = false;
+			return true;
 
 		case kw0_ShowIconManager:
 			Scr->ShowIconManager = true;
-			return 1;
+			return true;
 
 		case kw0_ShowWorkspaceManager:
 			Scr->ShowWorkspaceManager = true;
-			return 1;
+			return true;
+
+		case kw0_StartInButtonState:
+			Scr->workSpaceMgr.initialstate = WMS_buttons;
+			return true;
 
 		case kw0_StartInMapState:
-			Scr->workSpaceMgr.initialstate = MAPSTATE;
-			return 1;
+			Scr->workSpaceMgr.initialstate = WMS_map;
+			return true;
 
 		case kw0_NoShowOccupyAll:
 			Scr->workSpaceMgr.noshowoccupyall = true;
-			return 1;
+			return true;
 
 		case kw0_AutoOccupy:
 			Scr->AutoOccupy = true;
-			return 1;
+			return true;
 
 		case kw0_AutoPriority:
 			Scr->AutoPriority = true;
-			return 1;
+			return true;
 
 		case kw0_TransientHasOccupation:
 			Scr->TransientHasOccupation = true;
-			return 1;
+			return true;
 
 		case kw0_DontPaintRootWindow:
 			Scr->DontPaintRootWindow = true;
-			return 1;
+			return true;
 
 		case kw0_UseSunkTitlePixmap:
 			Scr->UseSunkTitlePixmap = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DBorders:
 			Scr->use3Dborders = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DIconManagers:
 			Scr->use3Diconmanagers = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DMenus:
 			Scr->use3Dmenus = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DTitles:
 			Scr->use3Dtitles = true;
-			return 1;
+			return true;
 
 		case kw0_Use3DWMap:
 			Scr->use3Dwmap = true;
-			return 1;
+			return true;
 
 		case kw0_SunkFocusWindowTitle:
 			Scr->SunkFocusWindowTitle = true;
-			return 1;
+			return true;
 
 		case kw0_BeNiceToColormap:
 			Scr->BeNiceToColormap = true;
-			return 1;
+			return true;
 
 		case kw0_BorderResizeCursors:
 			Scr->BorderCursors = true;
-			return 1;
+			return true;
 
 		case kw0_NoCaseSensitive:
 			Scr->CaseSensitive = false;
-			return 1;
+			return true;
 
 		case kw0_NoRaiseOnWarp:
 			Scr->RaiseOnWarp = false;
-			return 1;
+			return true;
 
 		case kw0_RaiseOnWarp:
 			Scr->RaiseOnWarp = true;
-			return 1;
+			return true;
 
 		case kw0_WarpUnmapped:
 			Scr->WarpUnmapped = true;
-			return 1;
+			return true;
 
 		case kw0_WarpRingOnScreen:
 			Scr->WarpRingAnyWhere = false;
-			return 1;
+			return true;
 
 		case kw0_NoIconManagerFocus:
 			Scr->IconManagerFocus = false;
-			return 1;
+			return true;
 
 		case kw0_StayUpMenus:
 			Scr->StayUpMenus = true;
-			return 1;
+			return true;
 
 		case kw0_ClickToFocus:
 			Scr->ClickToFocus = true;
-			return 1;
+			return true;
 
 		case kw0_ReallyMoveInWorkspaceManager:
 			Scr->ReallyMoveInWorkspaceManager = true;
-			return 1;
+			return true;
 
 		case kw0_ShowWinWhenMovingInWmgr:
 			Scr->ShowWinWhenMovingInWmgr = true;
-			return 1;
+			return true;
 
 		case kw0_ReverseCurrentWorkspace:
 			Scr->ReverseCurrentWorkspace = true;
-			return 1;
+			return true;
 
 		case kw0_DontWarpCursorInWMap:
 			Scr->DontWarpCursorInWMap = true;
-			return 1;
+			return true;
 
 		case kw0_CenterFeedbackWindow:
 			Scr->CenterFeedbackWindow = true;
-			return 1;
+			return true;
 
 		case kw0_WarpToDefaultMenuEntry:
 			Scr->WarpToDefaultMenuEntry = true;
-			return 1;
+			return true;
 
 		case kw0_ShrinkIconTitles:
 			Scr->ShrinkIconTitles = true;
-			return 1;
+			return true;
 
 		case kw0_AutoRaiseIcons:
 			Scr->AutoRaiseIcons = true;
-			return 1;
+			return true;
 
 		/* kai */
 		case kw0_AutoFocusToTransients:
 			Scr->AutoFocusToTransients = true;
-			return 1;
+			return true;
 
 		case kw0_use3DIconBorders:
 			Scr->use3Diconborders = true;
-			return 1;
+			return true;
 
 		case kw0_ShortAllWindowsMenus:
 			Scr->ShortAllWindowsMenus = true;
-			return 1;
+			return true;
 
 		case kw0_RaiseWhenAutoUnSqueeze:
 			Scr->RaiseWhenAutoUnSqueeze = true;
-			return 1;
+			return true;
 
 		case kw0_RaiseOnClick:
 			Scr->RaiseOnClick = true;
-			return 1;
+			return true;
 
 		case kw0_IgnoreLockModifier:
 			Scr->IgnoreModifier |= LockMask;
-			return 1;
+			return true;
 
 		case kw0_PackNewWindows:
 			Scr->PackNewWindows = true;
-			return 1;
+			return true;
 
 		case kw0_IgnoreCaseInMenuSelection:
 			Scr->IgnoreCaseInMenuSelection = true;
-			return 1;
+			return true;
 
 		case kw0_SloppyFocus:
 			Scr->SloppyFocus = true;
-			return 1;
+			return true;
 
 		case kw0_SaveWorkspaceFocus:
 			Scr->SaveWorkspaceFocus = true;
-			return 1;
+			return true;
 
 		case kw0_NoImagesInWorkSpaceManager:
 			Scr->NoImagesInWorkSpaceManager = true;
-			return 1;
+			return true;
 
 		case kw0_NoWarpToMenuTitle:
 			Scr->NoWarpToMenuTitle = true;
-			return 1;
+			return true;
 
 		case kw0_DontShowWelcomeWindow:
 			Scr->ShowWelcomeWindow = false;
-			return 1;
+			return true;
 
 		case kw0_DontToggleWorkspacemanagerState:
 			Scr->DontToggleWorkspaceManagerState = true;
-			return 1;
+			return true;
 
 	}
-	return 0;
+	return false;
 }
 
 
-int
-do_string_string_keyword(int keyword, char *s1, char *s2)
+bool
+do_string_string_keyword(int keyword, const char *s1, const char *s2)
 {
 	switch(keyword) {
 		case kwss_RandomPlacement: {
-			int rp = ParseRandomPlacement(s1);
+			/* RandomPlacement {on,off,all,unmapped} [displacement geom] */
+			int rp;
+			int gmask, gx, gy;     // Geometry mask/x/y values
+			unsigned int gjw, gjh; // width/height (ignored)
+			int exmask = (XValue | YValue); // Bits we need in the mask
+
+			rp = ParseRandomPlacement(s1);
 			if(rp < 0) {
 				twmrc_error_prefix();
 				fprintf(stderr,
-				        "ignoring invalid RandomPlacement argument 1 \"%s\"\n", s1);
+				        "ignoring invalid RandomPlacement argument 1 \"%s\"\n",
+				        s1);
 			}
 			else {
 				Scr->RandomPlacement = rp;
 			}
-		}
-		{
+
+			/* If no geom, we're done */
 			if(s2 == NULL) {
-				return 1;
+				return true;
 			}
-			JunkMask = XParseGeometry(s2, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
+
+			/*
+			 * Figure what the geom means.  We actually don't care about
+			 * the size (it probably won't even be provided), so the
+			 * width/height are junk.  The X/Y offsets are what we need.
+			 * But we do need them.
+			 */
+			gmask = XParseGeometry(s2, &gx, &gy, &gjw, &gjh);
 #ifdef DEBUG
-			fprintf(stderr, "DEBUG:: JunkMask = %x, WidthValue = %x, HeightValue = %x\n",
-			        JunkMask, WidthValue, HeightValue);
-			fprintf(stderr, "DEBUG:: JunkX = %d, JunkY = %d\n", JunkX, JunkY);
+			fprintf(stderr, "DEBUG:: Mask = %x, Width = %d, Height = %d\n",
+			        gmask, gjw, gjh);
+			fprintf(stderr, "DEBUG:: X = %d, Y = %d\n", gx, gy);
 #endif
-			if((JunkMask & (XValue | YValue)) !=
-			                (XValue | YValue)) {
+			if((gmask & exmask) != exmask) {
+				/* Didn't get X and Y */
 				twmrc_error_prefix();
 				fprintf(stderr,
 				        "ignoring invalid RandomPlacement displacement \"%s\"\n", s2);
 			}
 			else {
-				Scr->RandomDisplacementX = JunkX;
-				Scr->RandomDisplacementY = JunkY;
+				Scr->RandomDisplacementX = gx;
+				Scr->RandomDisplacementY = gy;
 			}
-			return 1;
+
+			/* Done */
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 
-int
+bool
 do_string_keyword(int keyword, char *s)
 {
 	switch(keyword) {
@@ -988,79 +950,84 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->UsePPosition = ppos;
 			}
-			return 1;
+			return true;
 		}
 
 		case kws_IconFont:
 			if(!Scr->HaveFonts) {
 				Scr->IconFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_ResizeFont:
 			if(!Scr->HaveFonts) {
 				Scr->SizeFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_MenuFont:
 			if(!Scr->HaveFonts) {
 				Scr->MenuFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_WorkSpaceFont:
 			if(!Scr->HaveFonts) {
 				Scr->workSpaceMgr.windowFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_TitleFont:
 			if(!Scr->HaveFonts) {
 				Scr->TitleBarFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_IconManagerFont:
 			if(!Scr->HaveFonts) {
 				Scr->IconManagerFont.basename = s;
 			}
-			return 1;
+			return true;
 
 		case kws_UnknownIcon:
 			if(Scr->FirstTime) {
 				Scr->UnknownImage = GetImage(s, Scr->IconC);
 			}
-			return 1;
+			return true;
 
 		case kws_IconDirectory:
 			if(Scr->FirstTime) {
 				Scr->IconDirectory = ExpandFilePath(s);
 			}
-			return 1;
+			return true;
 
 		case kws_PixmapDirectory:
 			if(Scr->FirstTime) {
 				Scr->PixmapDirectory = ExpandFilePath(s);
 			}
-			return 1;
+			return true;
 
-		case kws_MaxWindowSize:
-			JunkMask = XParseGeometry(s, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
-			if((JunkMask & (WidthValue | HeightValue)) !=
-			                (WidthValue | HeightValue)) {
+		case kws_MaxWindowSize: {
+			int gmask;
+			int exmask = (WidthValue | HeightValue);
+			unsigned int gw, gh; // Stuff we care about
+			int gjx, gjy;        // Stuff we don't
+
+			gmask = XParseGeometry(s, &gjx, &gjy, &gw, &gh);
+			if((gmask & exmask) != exmask) {
 				twmrc_error_prefix();
 				fprintf(stderr, "bad MaxWindowSize \"%s\"\n", s);
-				return 0;
+				return false;
 			}
-			if(JunkWidth == 0 || JunkHeight == 0) {
+			if(gw == 0 || gh == 0) {
 				twmrc_error_prefix();
 				fprintf(stderr, "MaxWindowSize \"%s\" must be non-zero\n", s);
-				return 0;
+				return false;
 			}
-			Scr->MaxWindowWidth = JunkWidth;
-			Scr->MaxWindowHeight = JunkHeight;
-			return 1;
+			Scr->MaxWindowWidth = gw;
+			Scr->MaxWindowHeight = gh;
+			return true;
+		}
 
 		case kws_IconJustification: {
 			int just = ParseTitleJustification(s);
@@ -1073,7 +1040,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconJustification = just;
 			}
-			return 1;
+			return true;
 		}
 		case kws_IconRegionJustification: {
 			int just = ParseIRJustification(s);
@@ -1086,7 +1053,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconRegionJustification = just;
 			}
-			return 1;
+			return true;
 		}
 		case kws_IconRegionAlignement: {
 			int just = ParseAlignement(s);
@@ -1099,7 +1066,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconRegionAlignement = just;
 			}
-			return 1;
+			return true;
 		}
 
 		case kws_TitleJustification: {
@@ -1113,7 +1080,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->TitleJustification = just;
 			}
-			return 1;
+			return true;
 		}
 		case kws_RplaySoundHost:
 		case kws_SoundHost:
@@ -1132,7 +1099,7 @@ do_string_keyword(int keyword, char *s)
 				        (keyword == kws_RplaySoundHost ? "Rplay" : ""));
 #endif
 			}
-			return 1;
+			return true;
 
 		case kws_WMgrButtonStyle: {
 			int style = ParseButtonStyle(s);
@@ -1145,7 +1112,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->workSpaceMgr.buttonStyle = style;
 			}
-			return 1;
+			return true;
 		}
 
 		case kws_IconifyStyle: {
@@ -1158,7 +1125,7 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->IconifyStyle = style;
 			}
-			return 1;
+			return true;
 		}
 
 #ifdef EWMH
@@ -1173,125 +1140,125 @@ do_string_keyword(int keyword, char *s)
 			else {
 				Scr->PreferredIconHeight = Scr->PreferredIconWidth = 48;
 			}
-			return 1;
+			return true;
 #endif
 	}
-	return 0;
+	return false;
 }
 
 
-int
+bool
 do_number_keyword(int keyword, int num)
 {
 	switch(keyword) {
 		case kwn_ConstrainedMoveTime:
 			ConstrainedMoveTime = num;
-			return 1;
+			return true;
 
 		case kwn_MoveDelta:
 			Scr->MoveDelta = num;
-			return 1;
+			return true;
 
 		case kwn_MoveOffResistance:
 			Scr->MoveOffResistance = num;
-			return 1;
+			return true;
 
 		case kwn_MovePackResistance:
 			if(num < 0) {
 				num = 20;
 			}
 			Scr->MovePackResistance = num;
-			return 1;
+			return true;
 
 		case kwn_XMoveGrid:
-			if(num <   1) {
-				num =   1;
+			if(num < 1) {
+				num = 1;
 			}
 			if(num > 100) {
 				num = 100;
 			}
 			Scr->XMoveGrid = num;
-			return 1;
+			return true;
 
 		case kwn_YMoveGrid:
-			if(num <   1) {
-				num =   1;
+			if(num < 1) {
+				num = 1;
 			}
 			if(num > 100) {
 				num = 100;
 			}
 			Scr->YMoveGrid = num;
-			return 1;
+			return true;
 
 		case kwn_XorValue:
 			if(Scr->FirstTime) {
 				Scr->XORvalue = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_FramePadding:
 			if(Scr->FirstTime) {
 				Scr->FramePadding = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitlePadding:
 			if(Scr->FirstTime) {
 				Scr->TitlePadding = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_ButtonIndent:
 			if(Scr->FirstTime) {
 				Scr->ButtonIndent = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_ThreeDBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->ThreeDBorderWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderWidth:
 			if(Scr->FirstTime) {
 				Scr->BorderWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_IconBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->IconBorderWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitleButtonBorderWidth:
 			if(Scr->FirstTime) {
 				Scr->TBInfo.border = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_RaiseDelay:
 			RaiseDelay = num;
-			return 1;
+			return true;
 
 		case kwn_TransientOnTop:
 			if(Scr->FirstTime) {
 				Scr->TransientOnTop = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_OpaqueMoveThreshold:
 			if(Scr->FirstTime) {
 				Scr->OpaqueMoveThreshold = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_OpaqueResizeThreshold:
 			if(Scr->FirstTime) {
 				Scr->OpaqueResizeThreshold = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_WMgrVertButtonIndent:
 			if(Scr->FirstTime) {
@@ -1302,7 +1269,7 @@ do_number_keyword(int keyword, int num)
 			}
 			Scr->workSpaceMgr.vspace = Scr->WMgrVertButtonIndent;
 			Scr->workSpaceMgr.occupyWindow->vspace = Scr->WMgrVertButtonIndent;
-			return 1;
+			return true;
 
 		case kwn_WMgrHorizButtonIndent:
 			if(Scr->FirstTime) {
@@ -1313,7 +1280,7 @@ do_number_keyword(int keyword, int num)
 			}
 			Scr->workSpaceMgr.hspace = Scr->WMgrHorizButtonIndent;
 			Scr->workSpaceMgr.occupyWindow->hspace = Scr->WMgrHorizButtonIndent;
-			return 1;
+			return true;
 
 		case kwn_WMgrButtonShadowDepth:
 			if(Scr->FirstTime) {
@@ -1322,44 +1289,44 @@ do_number_keyword(int keyword, int num)
 			if(Scr->WMgrButtonShadowDepth < 1) {
 				Scr->WMgrButtonShadowDepth = 1;
 			}
-			return 1;
+			return true;
 
 		case kwn_MaxIconTitleWidth:
 			if(Scr->FirstTime) {
 				Scr->MaxIconTitleWidth = num;
 			}
-			return 1;
+			return true;
 
 		case kwn_ClearShadowContrast:
 			if(Scr->FirstTime) {
 				Scr->ClearShadowContrast = num;
 			}
-			if(Scr->ClearShadowContrast <   0) {
-				Scr->ClearShadowContrast =   0;
+			if(Scr->ClearShadowContrast < 0) {
+				Scr->ClearShadowContrast = 0;
 			}
 			if(Scr->ClearShadowContrast > 100) {
 				Scr->ClearShadowContrast = 100;
 			}
-			return 1;
+			return true;
 
 		case kwn_DarkShadowContrast:
 			if(Scr->FirstTime) {
 				Scr->DarkShadowContrast = num;
 			}
-			if(Scr->DarkShadowContrast <   0) {
-				Scr->DarkShadowContrast =   0;
+			if(Scr->DarkShadowContrast < 0) {
+				Scr->DarkShadowContrast = 0;
 			}
 			if(Scr->DarkShadowContrast > 100) {
 				Scr->DarkShadowContrast = 100;
 			}
-			return 1;
+			return true;
 
 		case kwn_AnimationSpeed:
 			if(num < 0) {
 				num = 0;
 			}
 			SetAnimationSpeed(num);
-			return 1;
+			return true;
 
 		case kwn_BorderShadowDepth:
 			if(Scr->FirstTime) {
@@ -1368,7 +1335,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderShadowDepth < 0) {
 				Scr->BorderShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderLeft:
 			if(Scr->FirstTime) {
@@ -1377,7 +1344,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderLeft < 0) {
 				Scr->BorderLeft = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderRight:
 			if(Scr->FirstTime) {
@@ -1386,7 +1353,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderRight < 0) {
 				Scr->BorderRight = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderTop:
 			if(Scr->FirstTime) {
@@ -1395,7 +1362,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderTop < 0) {
 				Scr->BorderTop = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_BorderBottom:
 			if(Scr->FirstTime) {
@@ -1404,7 +1371,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->BorderBottom < 0) {
 				Scr->BorderBottom = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitleButtonShadowDepth:
 			if(Scr->FirstTime) {
@@ -1413,7 +1380,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->TitleButtonShadowDepth < 0) {
 				Scr->TitleButtonShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_TitleShadowDepth:
 			if(Scr->FirstTime) {
@@ -1422,7 +1389,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->TitleShadowDepth < 0) {
 				Scr->TitleShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_IconManagerShadowDepth:
 			if(Scr->FirstTime) {
@@ -1431,7 +1398,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->IconManagerShadowDepth < 0) {
 				Scr->IconManagerShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_MenuShadowDepth:
 			if(Scr->FirstTime) {
@@ -1440,7 +1407,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->MenuShadowDepth < 0) {
 				Scr->MenuShadowDepth = 2;
 			}
-			return 1;
+			return true;
 
 		case kwn_OpenWindowTimeout:
 			if(Scr->FirstTime) {
@@ -1449,7 +1416,7 @@ do_number_keyword(int keyword, int num)
 			if(Scr->OpenWindowTimeout < 0) {
 				Scr->OpenWindowTimeout = 0;
 			}
-			return 1;
+			return true;
 
 		case kwn_RaiseOnClickButton:
 			if(Scr->FirstTime) {
@@ -1461,12 +1428,12 @@ do_number_keyword(int keyword, int num)
 			if(Scr->RaiseOnClickButton > MAX_BUTTONS) {
 				Scr->RaiseOnClickButton = MAX_BUTTONS;
 			}
-			return 1;
+			return true;
 
 
 	}
 
-	return 0;
+	return false;
 }
 
 name_list **
@@ -1530,41 +1497,41 @@ do_colorlist_keyword(int keyword, int colormode, char *s)
 	return NULL;
 }
 
-int
+bool
 do_color_keyword(int keyword, int colormode, char *s)
 {
 	switch(keyword) {
 		case kwc_DefaultForeground:
 			GetColor(colormode, &Scr->DefaultC.fore, s);
-			return 1;
+			return true;
 
 		case kwc_DefaultBackground:
 			GetColor(colormode, &Scr->DefaultC.back, s);
-			return 1;
+			return true;
 
 		case kwc_MenuForeground:
 			GetColor(colormode, &Scr->MenuC.fore, s);
-			return 1;
+			return true;
 
 		case kwc_MenuBackground:
 			GetColor(colormode, &Scr->MenuC.back, s);
-			return 1;
+			return true;
 
 		case kwc_MenuTitleForeground:
 			GetColor(colormode, &Scr->MenuTitleC.fore, s);
-			return 1;
+			return true;
 
 		case kwc_MenuTitleBackground:
 			GetColor(colormode, &Scr->MenuTitleC.back, s);
-			return 1;
+			return true;
 
 		case kwc_MenuShadowColor:
 			GetColor(colormode, &Scr->MenuShadowColor, s);
-			return 1;
+			return true;
 
 	}
 
-	return 0;
+	return false;
 }
 
 /*
@@ -1591,7 +1558,7 @@ put_pixel_on_root(Pixel pixel)
 			addPixel = 0;
 		}
 
-	XFree((char *)retProp);
+	XFree(retProp);
 
 	if(addPixel)
 		XChangeProperty(dpy, Scr->Root, XA__MIT_PRIORITY_COLORS,
@@ -1602,13 +1569,13 @@ put_pixel_on_root(Pixel pixel)
 /*
  * do_string_savecolor() save a color from a string in the twmrc file.
  */
-int
+void
 do_string_savecolor(int colormode, char *s)
 {
 	Pixel p;
 	GetColor(colormode, &p, s);
 	put_pixel_on_root(p);
-	return 0;
+	return;
 }
 
 /*
@@ -1620,7 +1587,7 @@ typedef struct _cnode {
 } Cnode, *Cptr;
 static Cptr chead = NULL;
 
-int
+void
 do_var_savecolor(int key)
 {
 	Cptr cptrav, cpnew;
@@ -1639,7 +1606,7 @@ do_var_savecolor(int key)
 		cpnew->next = NULL;
 		cptrav->next = cpnew;
 	}
-	return 0;
+	return;
 }
 
 /*
@@ -1723,7 +1690,7 @@ ParseRandomPlacement(const char *s)
 	CHK("unmapped", UNMAPPED);
 #undef CHK
 
-	return (-1);
+	return -1;
 }
 
 
@@ -1825,7 +1792,7 @@ ParseUsePPosition(const char *s)
 }
 
 static int
-ParseButtonStyle(char *s)
+ParseButtonStyle(const char *s)
 {
 	if(s == NULL || strlen(s) == 0) {
 		return -1;
@@ -1862,25 +1829,27 @@ ParseIconifyStyle(const char *s)
 	return -1;
 }
 
-int
-do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
-                 char *name,       /* window name */
-                 SIJust justify,   /* left, center, right */
-                 int num,          /* signed num */
-                 int denom)        /* 0 or indicates fraction denom */
+void
+do_squeeze_entry(name_list **slist, // squeeze or dont-squeeze list
+                 const char *name,  // window name
+                 SIJust justify,    // left, center, right
+                 int num,           // signed num
+                 int denom)         // 0 or indicates fraction denom
 {
 	int absnum = (num < 0 ? -num : num);
 
 	if(denom < 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "negative SqueezeTitle denominator %d\n", denom);
-		return (1);
+		ParseError = true;
+		return;
 	}
 	if(absnum > denom && denom != 0) {
 		twmrc_error_prefix();
 		fprintf(stderr, "SqueezeTitle fraction %d/%d outside window\n",
 		        num, denom);
-		return (1);
+		ParseError = true;
+		return;
 	}
 	/* Process the special cases from the manual here rather than
 	 * each time we calculate the position of the title bar
@@ -1911,14 +1880,15 @@ do_squeeze_entry(name_list **slist,  /* squeeze or dont-squeeze list */
 			twmrc_error_prefix();
 			fprintf(stderr, "unable to allocate %lu bytes for squeeze info\n",
 			        (unsigned long) sizeof(SqueezeInfo));
-			return (1);
+			ParseError = true;
+			return;
 		}
 		sinfo->justify = justify;
 		sinfo->num = num;
 		sinfo->denom = denom;
 		AddToList(slist, name, sinfo);
 	}
-	return (0);
+	return;
 }
 
 

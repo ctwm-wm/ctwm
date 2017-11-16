@@ -1,55 +1,11 @@
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
 /*
- *  [ ctwm ]
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
  *
- *  Copyright 1992 Claude Lecommandeur.
- *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
+ * Copyright 1992 Claude Lecommandeur.
  */
-
 
 /***********************************************************************
  *
@@ -72,18 +28,21 @@
 #include <strings.h>
 
 #include "otp.h"
-#include "menus.h"
+#include "iconmgr.h"
 #include "icons.h"
 #include "windowbox.h"
-#include "add_window.h"
-#include "decorations_init.h"
+#include "functions_defs.h"
 #include "list.h"
 #include "util.h"
+#include "occupation.h"
 #include "screen.h"
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
 #include "cursor.h"
+#include "win_decorations_init.h"
+#include "win_regions.h"
+#include "workspace_config.h"
 #ifdef SOUNDS
 #	include "sound.h"
 #endif
@@ -94,6 +53,7 @@ static char *workspace = NULL;
 static MenuItem *lastmenuitem = NULL;
 static name_list **curplist = NULL;
 static int color = 0;
+extern char *yytext; // Have to manually pull this in
 
 int yylex(void);
 %}
@@ -119,7 +79,8 @@ int yylex(void);
 %token <num> MOVE RESIZE WAITC SELECT KILL LEFT_TITLEBUTTON RIGHT_TITLEBUTTON
 %token <num> NUMBER KEYWORD NKEYWORD CKEYWORD CLKEYWORD FKEYWORD FSKEYWORD
 %token <num> FNKEYWORD PRIORITY_SWITCHING PRIORITY_NOT_SWITCHING
-%token <num> SKEYWORD SSKEYWORD DKEYWORD WINDOW_RING WINDOW_RING_EXCLUDE WARP_CURSOR ERRORTOKEN
+%token <num> SKEYWORD SSKEYWORD WINDOW_RING WINDOW_RING_EXCLUDE WARP_CURSOR ERRORTOKEN
+%token <num> GRAVITY /* N/S/E/W */
 %token <num> SIJENUM /* SqueezeTitle justifications, SIJust enum */
 %token <num> NO_STACKMODE ALWAYS_ON_TOP WORKSPACE WORKSPACES WORKSPCMGR_GEOMETRY
 %token <num> OCCUPYALL OCCUPYLIST MAPWINDOWCURRENTWORKSPACE MAPWINDOWDEFAULTWORKSPACE
@@ -132,10 +93,12 @@ int yylex(void);
 %token <num> EWMH_IGNORE
 %token <num> MWM_IGNORE
 %token <num> RPLAY_SOUNDS
+%token <num> FORCE_FOCUS
 %token <ptr> STRING
 
 %type <ptr> string
 %type <num> action button number signed_number keyaction full fullkey
+%type <num> vgrav hgrav
 
 %start twmrc
 
@@ -153,36 +116,36 @@ stmt		: error
 		| sarg
 		| narg
 		| squeeze
-		| ICON_REGION string DKEYWORD DKEYWORD number number {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
+		| ICON_REGION string vgrav hgrav number number {
+		      AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number string {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
+		| ICON_REGION string vgrav hgrav number number string {
+		      AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
+		| ICON_REGION string vgrav hgrav number number string string {
+		      AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string string {
-		      (void) AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
+		| ICON_REGION string vgrav hgrav number number string string string {
+		      AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
-		| ICON_REGION string DKEYWORD DKEYWORD number number {
+		| ICON_REGION string vgrav hgrav number number {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, "undef", "undef", "undef");
 		  }
 		  win_list
-		| ICON_REGION string DKEYWORD DKEYWORD number number string {
+		| ICON_REGION string vgrav hgrav number number string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, "undef", "undef");
 		  }
 		  win_list
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string {
+		| ICON_REGION string vgrav hgrav number number string string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, "undef");
 		  }
 		  win_list
-		| ICON_REGION string DKEYWORD DKEYWORD number number string string string {
+		| ICON_REGION string vgrav hgrav number number string string string {
 		      curplist = AddIconRegion($2, $3, $4, $5, $6, $7, $8, $9);
 		  }
 		  win_list
 
-		| WINDOW_REGION string DKEYWORD DKEYWORD {
+		| WINDOW_REGION string vgrav hgrav {
 		      curplist = AddWindowRegion ($2, $3, $4);
 		  }
 		  win_list
@@ -463,6 +426,9 @@ stmt		: error
 		  mwm_ignore_list
 		| RPLAY_SOUNDS { }
 		  rplay_sounds_list
+		| FORCE_FOCUS { Scr->ForceFocus = true; }
+		| FORCE_FOCUS { curplist = &Scr->ForceFocusL; }
+		  win_list
 		;
 
 noarg		: KEYWORD		{ if (!do_single_keyword ($1)) {
@@ -571,6 +537,36 @@ key		: META			{ mods |= Mod1Mask; }
 					}
 		| OR			{ }
 		;
+
+vgrav	: GRAVITY {
+			switch($1) {
+				case GRAV_NORTH:
+				case GRAV_SOUTH:
+					/* OK */
+					$$ = $1;
+					break;
+				default:
+					twmrc_error_prefix();
+					fprintf(stderr, "Bad vertical gravity '%s'\n", yytext);
+					ParseError = true;
+					YYERROR;
+			}
+		}
+
+hgrav	: GRAVITY {
+			switch($1) {
+				case GRAV_EAST:
+				case GRAV_WEST:
+					/* OK */
+					$$ = $1;
+					break;
+				default:
+					twmrc_error_prefix();
+					fprintf(stderr, "Bad horiz gravity '%s'\n", yytext);
+					ParseError = true;
+					YYERROR;
+			}
+		}
 
 contexts	: /* Empty */
 		| contexts context

@@ -10,13 +10,21 @@ allclean distclean:
 	rm -rf build/*
 
 
+
+#
+# The below targets are mostly only of interest to developers
+#
+
+# Add'l thunks to cmake
+man-pdf doxygen doxyclean: build/Makefile
+	( cd build && ${MAKE} ${@} )
+
 # Reindent files
 indent:
 	astyle -n --options=tools/ctwm.astyle *.h *.c
 
 
 # Build documentation files
-# STYLE is also HTMLable, but there's no reason to do it by default
 DOC_FILES=README.html CHANGES.html
 docs: ${DOC_FILES}
 docs_clean doc_clean:
@@ -28,10 +36,13 @@ docs_clean doc_clean:
 
 
 # asciidoc files
+UMAN=doc/manual
 adocs:
-	(cd doc && make all_set_version)
+	(cd ${UMAN} && make all_set_version)
+adocs_pregen:
+	(cd ${UMAN} && make all)
 adoc_clean:
-	(cd doc && make clean)
+	(cd ${UMAN} && make clean)
 
 
 #
@@ -42,12 +53,12 @@ ${GEN}:
 	mkdir -p ${GEN}
 
 # All the generated source files
-_RELEASE_FILES=gram.tab.c gram.tab.h lex.c version.c
+_RELEASE_FILES=gram.tab.c gram.tab.h lex.c version.c.in ctwm.1 ctwm.1.html
 RELEASE_FILES=${_RELEASE_FILES:%=${GEN}/%}
 
 # Build those, the .html versions of the above docs, and the HTML/man
 # versions of the manual
-release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES} ${DOC_FILES} adocs
+release_files: ${GEN} build/MKTAR_GENFILES ${RELEASE_FILES} ${DOC_FILES}
 release_clean: doc_clean adoc_clean
 	rm -rf ${GEN}
 
@@ -64,5 +75,18 @@ ${GEN}/lex.c: ${GEN} lex.l build/MKTAR_GENFILES
 	cp build/lex.c ${GEN}/
 
 # Setup version file
-${GEN}/version.c: ${GEN} version.c.in .bzr/checkout/dirstate
-	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c
+${GEN}/version.c.in: ${GEN} version.c.in .bzr/checkout/dirstate
+	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c.in
+
+# Generate pregen'd manuals
+${GEN}/ctwm.1: ${UMAN}/ctwm.1
+${GEN}/ctwm.1.html: ${UMAN}/ctwm.1.html
+${GEN}/ctwm.1 ${GEN}/ctwm.1.html:
+	cp ${UMAN}/ctwm.1 ${UMAN}/ctwm.1.html ${GEN}/
+${UMAN}/ctwm.1 ${UMAN}/ctwm.1.html:
+	(cd ${UMAN} && make clean all)
+
+
+# Thunk through to gen'ing tarball
+tar:
+	tools/mk_tar.sh

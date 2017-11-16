@@ -1,28 +1,5 @@
 /*
- *  [ ctwm ]
- *
- *  Copyright 2014 Olaf Seibert
- *
- * Permission to use, copy, modify and distribute this software [ctwm]
- * and its documentation for any purpose is hereby granted without fee,
- * provided that the above copyright notice appear in all copies and
- * that both that copyright notice and this permission notice appear in
- * supporting documentation, and that the name of Olaf Seibert not be
- * used in advertising or publicity pertaining to distribution of the
- * software without specific, written prior permission. Olaf Seibert
- * makes no representations about the suitability of this software for
- * any purpose. It is provided "as is" without express or implied
- * warranty.
- *
- * Olaf Seibert DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
- * NO EVENT SHALL Olaf Seibert BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
- * OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
- * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
- * USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Olaf Seibert [ rhialto@falu.nl ][ May 2014 ]
+ * Copyright 2014 Olaf Seibert
  */
 
 #ifndef _CTWM_EWMH_H
@@ -66,13 +43,16 @@ typedef struct EwmhStrut {
 #define EWMH_STATE_ALL                  0xFFF0
 
 /*
- * Priorities of the window types we recognize
+ * OTP priorities of the window types we recognize
  */
-
+/* Initial vals for these types, if the user hasn't set something else */
 #define EWMH_PRI_DESKTOP                -8
 #define EWMH_PRI_DOCK                    4
+
+/* STATE_FULLSCREEN windows with focus get jammed here */
 #define EWMH_PRI_FULLSCREEN              6
-#define EWMH_PRI_NORMAL                  0
+
+/* STATE_ABOVE/BELOW get +/- this to what they would be otherwise */
 #define EWMH_PRI_ABOVE                   2
 
 void EwmhInit(void);
@@ -80,9 +60,9 @@ bool EwmhInitScreenEarly(ScreenInfo *scr);
 void EwmhInitScreenLate(ScreenInfo *scr);
 void EwmhInitVirtualRoots(ScreenInfo *scr);
 void EwmhTerminate(void);
-void EwhmSelectionClear(XSelectionClearEvent *sev);
+void EwmhSelectionClear(XSelectionClearEvent *sev);
 bool EwmhClientMessage(XClientMessageEvent *msg);
-Image *EwhmGetIcon(ScreenInfo *scr, TwmWindow *twm_win);
+Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win);
 int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win);
 void EwmhSet_NET_WM_DESKTOP(TwmWindow *twm_win);
 void EwmhSet_NET_WM_DESKTOP_ws(TwmWindow *twm_win, WorkSpace *ws);
@@ -93,7 +73,7 @@ void EwmhDeleteClientWindow(TwmWindow *old_win);
 void EwmhSet_NET_CLIENT_LIST_STACKING(void);
 void EwmhSet_NET_ACTIVE_WINDOW(Window w);
 void EwmhGetProperties(TwmWindow *twm_win);
-int EwmhGetPriority(TwmWindow *twm_win);
+int EwmhGetInitPriority(TwmWindow *twm_win);
 bool EwmhHasBorder(TwmWindow *twm_win);
 bool EwmhHasTitle(TwmWindow *twm_win);
 bool EwmhOnWindowRing(TwmWindow *twm_win);

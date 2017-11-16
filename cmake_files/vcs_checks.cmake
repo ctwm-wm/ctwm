@@ -1,5 +1,5 @@
 #
-# Build env checks
+# See what sort of version control bits we might have around.
 #
 
 
@@ -48,3 +48,7 @@ if(NOT IS_BZR_CO)
 		endif(GIT_CMD)
 	endif(IS_GIT_CO)
 endif(NOT IS_BZR_CO)
+
+
+# Flag for dev use
+set(VCS_CHECKS_RUN 1)

@@ -1,65 +1,18 @@
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
 /*
- *  [ ctwm ]
+ * twm menus include file
  *
- *  Copyright 1992 Claude Lecommandeur.
  *
- * Permission to use, copy, modify  and distribute this software  [ctwm] and
- * its documentation for any purpose is hereby granted without fee, provided
- * that the above  copyright notice appear  in all copies and that both that
- * copyright notice and this permission notice appear in supporting documen-
- * tation, and that the name of  Claude Lecommandeur not be used in adverti-
- * sing or  publicity  pertaining to  distribution of  the software  without
- * specific, written prior permission. Claude Lecommandeur make no represen-
- * tations  about the suitability  of this software  for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * Claude Lecommandeur DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL  IMPLIED WARRANTIES OF  MERCHANTABILITY AND FITNESS.  IN NO
- * EVENT SHALL  Claude Lecommandeur  BE LIABLE FOR ANY SPECIAL,  INDIRECT OR
- * CONSEQUENTIAL  DAMAGES OR ANY  DAMAGES WHATSOEVER  RESULTING FROM LOSS OF
- * USE, DATA  OR PROFITS,  WHETHER IN AN ACTION  OF CONTRACT,  NEGLIGENCE OR
- * OTHER  TORTIOUS ACTION,  ARISING OUT OF OR IN  CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Claude Lecommandeur [ lecom@sic.epfl.ch ][ April 1992 ]
- */
-
-
-/***********************************************************************
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
  *
  * $XConsortium: menus.h,v 1.24 89/12/10 17:46:26 jim Exp $
  *
- * twm menus include file
- *
  * 17-Nov-87 Thomas E. LaStrange                File created
  *
- ***********************************************************************/
+ * Copyright 1992 Claude Lecommandeur.
+ */
 
 #ifndef _CTWM_MENUS_H
 #define _CTWM_MENUS_H
@@ -77,6 +30,20 @@
 /* Added by Dan Lilliehorn (dl@dl.nu) 2000-02-29                   */
 #define TWM_KEYS        "TwmKeys"       /* for f.menu "TwmKeys"    */
 #define TWM_VISIBLE     "TwmVisible"    /* for f.menu "TwmVisible" */
+
+
+/*
+ * MenuRoot.mapped - current/past state.
+ *
+ * XXX Perhaps the NEVER_MAPPED stuff should be pulled out and tracked
+ * some other way, and mapped just made into an bool.
+ */
+typedef enum {
+	MRM_NEVER,
+	MRM_UNMAPPED,
+	MRM_MAPPED,
+} MRMapState;
+
 
 struct MenuItem {
 	struct MenuItem *next;      /* next menu item */
@@ -107,7 +74,7 @@ struct MenuRoot {
 	Window w;                   /* the window of the menu */
 	Window shadow;              /* the shadow window */
 	ColorPair highlight;        /* highlight colors */
-	short mapped;               /* NEVER_MAPPED, UNMAPPED, or MAPPED */
+	MRMapState mapped;          /* whether ever/currently mapped */
 	short height;               /* height of the menu */
 	short width;                /* width of the menu */
 	short items;                /* number of items in the menu */
@@ -118,10 +85,6 @@ struct MenuRoot {
 	bool  pinned;               /* is this a pinned menu*/
 	struct MenuRoot *pmenu;     /* the associated pinned menu */
 };
-
-#define NEVER_MAPPED    0       /* constants for mapped field of MenuRoot */
-#define UNMAPPED        1
-#define MAPPED          2
 
 
 struct MouseButton {
@@ -165,10 +128,6 @@ extern int AlternateKeymap;
 #define MAXMENUDEPTH    10      /* max number of nested menus */
 extern int MenuDepth;
 
-#define MOVE_NONE       0       /* modes of constrained move */
-#define MOVE_VERT       1
-#define MOVE_HORIZ      2
-
 #define WARPSCREEN_NEXT "next"
 #define WARPSCREEN_PREV "prev"
 #define WARPSCREEN_BACK "back"
@@ -191,9 +150,6 @@ void AddFuncButton(int num, int cont, int mods, int func,
 void AddDefaultFuncButtons(void);
 void PopDownMenu(void);
 void HideMenu(MenuRoot *menu);
-void resizeFromCenter(Window w, TwmWindow *tmp_win);
-void ReGrab(void);
-void SetLastCursor(Cursor newcur);
 void PaintEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 void PaintMenu(MenuRoot *mr, XEvent *e);
 bool cur_fromMenu(void);
@@ -201,31 +157,6 @@ void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
 void MoveMenu(XEvent *eventp);
-void DeIconify(TwmWindow *tmp_win);
-void Iconify(TwmWindow *tmp_win, int def_x, int def_y);
-void SetMapStateProp(TwmWindow *tmp_win, int state);
-bool GetWMState(Window w, int *statep, Window *iwp);
-void send_clientmessage(Window w, Atom a, Time timestamp);
-void SendEndAnimationMessage(Window w, Time timestamp);
-void SendTakeFocusMessage(TwmWindow *tmp, Time timestamp);
-void RaiseWindow(TwmWindow *tmp_win);
-void LowerWindow(TwmWindow *tmp_win);
-void RaiseLower(TwmWindow *tmp_win);
-void RaiseLowerFrame(Window frame, int ontop);
-void MapRaised(TwmWindow *tmp_win);
-void RaiseFrame(Window frame);
-void FocusOnRoot(void);
-void TryToPack(TwmWindow *tmp_win, int *x, int *y);
-void TryToPush(TwmWindow *tmp_win, int x, int y);
-void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
-void WarpToWindow(TwmWindow *t, bool must_raise);
-void DisplayPosition(TwmWindow *tmp_win, int x, int y);
-void AutoSqueeze(TwmWindow *tmp_win);
-void Squeeze(TwmWindow *tmp_win);
-
-/* To move soonish? */
-void WarpAlongRing(XButtonEvent *ev, bool forward);
-int WarpToScreen(int n, int inc);
 
 #endif /* _CTWM_MENUS_H */

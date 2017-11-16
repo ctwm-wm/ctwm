@@ -5,7 +5,11 @@
 
 set(MKTAR_GENFILES "${CMAKE_CURRENT_BINARY_DIR}/MKTAR_GENFILES")
 
-# First, the lex/yacc output files are definitely on the list.
+# The lex/yacc output files are definitely on the list.  The manual is
+# also, but is currently built manually rather than via this build
+# because it turns out to require a lot more conditional code (changing
+# how/when things get sub'd around) than it's worth, so we leave that
+# done manually in the doc/Makefile.
 add_custom_target(mktar_genfiles
 	COMMENT "Building generated files for tarball."
 	DEPENDS ${MKTAR_GENFILES}
