@@ -7,6 +7,13 @@ INPUT = @CMAKE_SOURCE_DIR@ \
         @CMAKE_SOURCE_DIR@/build \
         @CMAKE_SOURCE_DIR@/ext
 
+# These need to be set so we can properly expand #ifdef sections in
+# headers (e.g., in screen.h) by redundantly including config.
+PREDEFINED = DOXYGEN
+INCLUDE_PATH = @CMAKE_SOURCE_DIR@ \
+        @CMAKE_SOURCE_DIR@/build \
+        @CMAKE_SOURCE_DIR@/ext
+
 # It's all C
 OPTIMIZE_OUTPUT_FOR_C = YES
 
@@ -27,6 +34,10 @@ SOURCE_BROWSER = YES
 EXTRACT_ALL = YES
 EXTRACT_STATIC = YES
 JAVADOC_AUTOBRIEF = YES
+
+# This makes the source listings a little noisier, but also makes them
+# match the actual file.  Probably a reasonable tradeoff.
+STRIP_CODE_COMMENTS = NO
 
 # Text x-refs of used/used-by functions, data structs, etc.
 REFERENCED_BY_RELATION = YES

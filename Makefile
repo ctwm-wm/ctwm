@@ -16,7 +16,7 @@ allclean distclean:
 #
 
 # Add'l thunks to cmake
-man-pdf doxygen: build/Makefile
+man-pdf doxygen doxyclean: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 # Reindent files

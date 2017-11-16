@@ -19,15 +19,21 @@ if(DOXYGEN_FOUND)
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
 		"${DOXYGEN_DIR}/Doxyfile" @ONLY)
 
-	# Special target, since it hardly ever gets used.  Depend on the full
-	# 'ctwm' build.  We need to pull in the various generated source
-	# files, and the easiest way to ensure they're all these is to just
-	# build ctwm.  That's more work than strictly required, but what the
-	# heck.
+	# Special target, since it hardly ever gets used.  We need to pull in
+	# the various generated source files, and the easiest way to ensure
+	# they're all these is to just build ctwm.  That gets a little
+	# tedious when working on docs though, so try depending on CTWMSRC.
+	# That seems to work well enough, and if we find edge cases that
+	# break it...   well, it's a tool for devs, not end users, so we can
+	# afford the possibility of surprises.
 	add_custom_target(doxygen
-		DEPENDS ctwm
+		DEPENDS ${CTWMSRC}
 		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_DIR}/Doxyfile
 		WORKING_DIRECTORY ${DOXYGEN_DIR}
 		COMMENT "Generating Doxygen documentation in ${DOXYGEN_DIR}"
 		VERBATIM)
+
+	add_custom_target(doxyclean
+		COMMAND rm -rf ${DOXYGEN_DIR}/html
+		COMMENT "Cleaning up Doxygen docs")
 endif(DOXYGEN_FOUND)
