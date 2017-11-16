@@ -27,7 +27,9 @@ commands available.
 We make use of both ``/**``-style and ``///``-style comments, in various
 combinations.  Post-comments, particularly in ``///<``-style at EOL are
 used mostly when they fit on the single line.  If they start wrapping to
-multiple, they mostly get converted to pre-comments on prior lines.
+multiple lines, they usually get converted to pre-comments on prior
+lines.  Exceptions exist though, generally to avoid breaking up the flow
+with surrounding lines.
 
 Some seemingly odd constructions get used, like a `/**` block comment
 immediately followed by a `///` line, or multiple `///` lines separated
