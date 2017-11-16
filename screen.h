@@ -395,9 +395,11 @@ struct ScreenInfo {
 	/// How icon images/titles are aligned.  From IconJustification
 	/// config var.  X-ref IconRegion.TitleJustification.
 	TitleJust IconJustification;
+
 	/// How icons are laid out horizontally inside a region.  From
 	/// IconRegionJustificationconfig var.
 	IRJust IconRegionJustification;
+
 	/// How icons are laid out vertically inside a region.  From
 	/// IconRegionAlignement config var.
 	IRAlignement IconRegionAlignement;
@@ -508,33 +510,43 @@ struct ScreenInfo {
 	/// Specialized border colors for windows.  From BorderColor config
 	/// var.  \sa ScreenInfo.BorderColorC
 	name_list *BorderColorL;
+
 	/// Specialized border colors for icons.  From IconBorderColor config
 	/// var.  \sa ScreenInfo.IconBorderColor
 	name_list *IconBorderColorL;
+
 	/// Specialized border coloring.  From BorderTileForeground config
 	/// var.  \sa ScreenInfo.BorderTileC
 	name_list *BorderTileForegroundL;
+
 	/// \copydoc ScreenInfo::BorderTileForegroundL
 	name_list *BorderTileBackgroundL;
+
 	/// Specialized titlebar foreground coloring.  From TitleForeground
 	/// config var.  \sa ScreenInfo.TitleC
 	name_list *TitleForegroundL;
+
 	/// Specialized titlebar background coloring.  From TitleBackground
 	/// config var.  \sa ScreenInfo.TitleC
 	name_list *TitleBackgroundL;
+
 	/// Specialized icon foreground coloring.  From IconForeground
 	/// config var.  \sa ScreenInfo.IconC
 	name_list *IconForegroundL;
+
 	/// Specialized icon background coloring.  From IconBackground
 	/// config var.  \sa ScreenInfo.IconC
 	name_list *IconBackgroundL;
+
 	/// Specialized icon manager foreground coloring.  From
 	/// IconManagerForeground config var.  \sa ScreenInfo.IconManagerC
 	name_list *IconManagerFL;
+
 	/// Specialized icon manager background coloring.  From
 	/// IconManagerBackground config var.  \sa ScreenInfo.IconManagerC
 	name_list *IconManagerBL;
 	/// @}
+
 
 	/// From IconManagers config var.  This is a mapping from the window
 	/// name pattern to the IconMgr structure it should go in.  All the
