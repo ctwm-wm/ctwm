@@ -552,6 +552,10 @@ struct ScreenInfo {
 	/// Specialized icon manager background coloring.  From
 	/// IconManagerBackground config var.  \sa ScreenInfo.IconManagerC
 	name_list *IconManagerBL;
+
+	/// Color to highlight focused windows in icon manager.
+	/// \sa ScreenInfo.IconManagerHighlight
+	name_list *IconManagerHighlightL;
 	/// @}
 
 
@@ -629,10 +633,6 @@ struct ScreenInfo {
 
 	/// StartIconified config var.
 	name_list *StartIconified;
-
-	/// Color to highlight focused windows in icon manager.
-	/// \sa ScreenInfo.IconManagerHighlight \ingroup scr_color_bits
-	name_list *IconManagerHighlightL;
 
 	/// SqueezeTitle config var (list).  \sa ScreenInfo.SqueezeTitle
 	name_list *SqueezeTitleL;
