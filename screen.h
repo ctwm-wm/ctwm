@@ -417,18 +417,6 @@ struct ScreenInfo {
 	/// How icons are laid out vertically inside a region.  From
 	/// IconRegionAlignement config var.
 	IRAlignement IconRegionAlignement;
-	/// @}
-
-	/// How title text is aligned in window titlebars.  From
-	/// TitleJustification config var.  \note Despite the naming
-	/// similarity, this is *not* related to
-	/// IconRegion.TitleJustification.  That comes instead from
-	/// ScreenInfo.IconJustification.
-	TitleJust TitleJustification;
-	///< \todo Move this and following for easier scr_icon_bits grouping
-
-	/// \addtogroup scr_icon_bits Various icon control bits.
-	/// @{
 
 	/// How to animate window iconification, if any.  From IconifyStyle
 	/// config var.
@@ -440,6 +428,14 @@ struct ScreenInfo {
 	int PreferredIconHeight;    ///< Height from IconSize config var
 #endif
 	/// @}
+
+	/// How title text is aligned in window titlebars.  From
+	/// TitleJustification config var.  \note Despite the naming
+	/// similarity, this is *not* related to
+	/// IconRegion.TitleJustification.  That comes instead from
+	/// ScreenInfo.IconJustification.
+	TitleJust TitleJustification;
+	///< \todo Move this and following for easier scr_icon_bits grouping
 
 	/// \defgroup scr_cursors Various cursors used on the screen.
 	/// These all come from the Cursors config var, or defaults.
