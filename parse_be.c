@@ -445,7 +445,6 @@ static const TwmKeyword keytable[] = {
 	{ "usepposition",           SKEYWORD, kws_UsePPosition },
 	{ "usesunktitlepixmap",     KEYWORD, kw0_UseSunkTitlePixmap },
 	{ "usethreedborders",       KEYWORD, kw0_Use3DBorders },
-	{ "usethreediconborders",   KEYWORD, kw0_use3DIconBorders },
 	{ "usethreediconmanagers",  KEYWORD, kw0_Use3DIconManagers },
 	{ "usethreedmenus",         KEYWORD, kw0_Use3DMenus },
 	{ "usethreedtitles",        KEYWORD, kw0_Use3DTitles },
@@ -821,10 +820,6 @@ do_single_keyword(int keyword)
 		/* kai */
 		case kw0_AutoFocusToTransients:
 			Scr->AutoFocusToTransients = true;
-			return true;
-
-		case kw0_use3DIconBorders:
-			Scr->use3Diconborders = true;
 			return true;
 
 		case kw0_ShortAllWindowsMenus:

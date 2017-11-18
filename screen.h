@@ -481,8 +481,6 @@ struct ScreenInfo {
 	bool  use3Diconmanagers; ///< UseThreeDIconManagers config var
 	bool  use3Dborders;      ///< UseThreeDBorders config var
 	bool  use3Dwmap;         ///< UseThreeDWMap config var
-	/// UseThreeDIconBorders config var.  Unused.  \todo Remove
-	bool  use3Diconborders;
 	bool  SunkFocusWindowTitle;  ///< SunkFocusWindowTitle config var
 	short WMgrVertButtonIndent;  ///< WMgrVertButtonIndent config var
 	short WMgrHorizButtonIndent; ///< WMgrHorizButtonIndent config var
