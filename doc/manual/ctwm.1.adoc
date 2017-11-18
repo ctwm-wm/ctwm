@@ -485,7 +485,7 @@ AutoFocusToTransients::
   Transient windows get focus automatically when created.  Useful with
   programs that have keyboard shortcuts that pop up windows.
 
-AutoLower { `win-list` }::
+AutoLower [{ `win-list` }]::
   This variable specifies a list of windows (all windows if the list is
   defaulted) to be automatically lowered whenever the pointer leaves a
   window.  This action can be interactively enabled or disabled on
@@ -511,7 +511,7 @@ AutoPriority::
 +
 First appeared in 4.0.0.
 
-AutoRaise { `win-list` }::
+AutoRaise [{ `win-list` }]::
   This variable specifies a list of windows (all windows if the list is defaulted)
   to be automatically raised whenever the pointer has come to rest in a window for
   the amount of time specified by the `RaiseDelay` variable. This action can be
