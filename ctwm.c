@@ -957,6 +957,7 @@ static void InitVariables(void)
 	Scr->AlwaysSqueezeToGravity = false;
 	Scr->NoWarpToMenuTitle = false;
 	Scr->DontToggleWorkspaceManagerState = false;
+	Scr->NameDecorations = true;
 #ifdef EWMH
 	Scr->PreferredIconWidth = 48;
 	Scr->PreferredIconHeight = 48;
