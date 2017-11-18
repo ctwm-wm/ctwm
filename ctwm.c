@@ -908,7 +908,6 @@ static void InitVariables(void)
 	Scr->InterpolateMenuColors = false;
 	Scr->NoIconManagers = false;
 	Scr->ClientBorderWidth = false;
-	Scr->SqueezeTitleSet = false;
 	Scr->SqueezeTitle = false;
 	Scr->FirstRegion = NULL;
 	Scr->LastRegion = NULL;

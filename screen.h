@@ -907,11 +907,6 @@ struct ScreenInfo {
 	/// \sa ScreenInfo.SqueezeTitleL  \sa ScreenInfo.DontSqueezeTitleL
 	bool SqueezeTitle;
 
-	/// Flag used in config parsing when SqueezeTitle is set.
-	/// \todo Should just be removed, doesn't appear to do anything
-	/// useful at all.
-	bool SqueezeTitleSet;
-
 	/// AlwaysSqueezeToGravity config var.
 	/// \sa ScreenInfo.AlwaysSqueezeToGravityL
 	bool AlwaysSqueezeToGravity;
