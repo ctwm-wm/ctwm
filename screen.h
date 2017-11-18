@@ -711,12 +711,8 @@ struct ScreenInfo {
 	GC rootGC;   ///< GC for internal pixmaps in image.c / image_bitmap.c
 	/// @}
 
-	/// Stash of "Black" X color for the screen
-	Pixel Black;
-
-	/// Stash of "White" X color for the screen
-	Pixel White;
-
+	Pixel Black; ///< Stash of "Black" X color for the screen
+	Pixel White; ///< Stash of "White" X color for the screen
 	unsigned long XORvalue;  ///< XorValue config var, or default
 
 	/// \defgroup scr_font_bits Various font settings
