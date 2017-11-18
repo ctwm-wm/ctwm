@@ -3,6 +3,14 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### New Config Options
+
+1. Added DontNameDecorations config option to disable setting names on
+   the X windows we create for window decoration (added in 4.0.0).  These
+   have been reported to confuse xwit, and might do the same for other
+   tools that don't expect to find them on non-end-app windows.  Reported
+   by Frank Steiner.
+
 ### Bugfixes
 
 1. Fix up broken parsing of IconifyStyle "sweep".  Bug was introduced in
