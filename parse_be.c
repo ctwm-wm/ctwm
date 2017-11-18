@@ -126,6 +126,7 @@ typedef struct _TwmKeyword {
 #define kw0_NoRestartPreviousState      74
 #define kw0_NoDecorateTransients        75
 #define kw0_GrabServer                  76
+#define kw0_DontNameDecorations         77
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -268,6 +269,7 @@ static const TwmKeyword keytable[] = {
 	{ "destroy",                KILL, 0 },
 	{ "donticonifybyunmapping", DONT_ICONIFY_BY_UNMAPPING, 0 },
 	{ "dontmoveoff",            KEYWORD, kw0_DontMoveOff },
+	{ "dontnamedecorations",    KEYWORD, kw0_DontNameDecorations },
 	{ "dontpaintrootwindow",    KEYWORD, kw0_DontPaintRootWindow },
 	{ "dontsave",               DONT_SAVE, 0 },
 	{ "dontsetinactive",        DONTSETINACTIVE, 0 },
@@ -871,6 +873,10 @@ do_single_keyword(int keyword)
 
 		case kw0_DontToggleWorkspacemanagerState:
 			Scr->DontToggleWorkspaceManagerState = true;
+			return true;
+
+		case kw0_DontNameDecorations:
+			Scr->NameDecorations = false;
 			return true;
 
 	}

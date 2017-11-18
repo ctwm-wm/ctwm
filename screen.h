@@ -933,6 +933,8 @@ struct ScreenInfo {
 	/// arg.  \ingroup scr_maskwin
 	bool ShowWelcomeWindow;
 
+	bool NameDecorations;  ///< DontNameDecorations config var (inverse)
+
 	/// ForceFocus config var.  Forcing focus-setting on windows.
 	bool      ForceFocus;   ///< \sa ScreenInfo.ForceFocusL
 	name_list *ForceFocusL; ///< \copybrief ForceFocus
