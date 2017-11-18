@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 	int numManaged, firstscrn, lastscrn, scrnum;
 	int zero = 0;
 	char *welcomefile;
-	int  screenmasked;
+	bool screenmasked;
 	static int crootx = 100;
 	static int crooty = 100;
 	static unsigned int crootw = 1280;
@@ -470,10 +470,10 @@ int main(int argc, char **argv)
 		Scr->tbpm.delete = None;
 
 		Scr->WindowMask = (Window) 0;
-		screenmasked = 0;
+		screenmasked = false;
 		/* XXX Happens before config parse, so ignores DontShowWW param */
 		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
-			screenmasked = 1;
+			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
 		InitVariables();
