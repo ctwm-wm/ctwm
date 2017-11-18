@@ -978,12 +978,4 @@ extern ScreenInfo **ScreenList; ///< List of ScreenInfo structs for each Screen
 extern ScreenInfo *Scr; ///< The ScreenInfo struct for the current Screen
 
 
-
-/* XXX should be in iconmgr.h? */
-/* Spacing between the text and the outer border.  */
-#define ICON_MGR_IBORDER 3
-/* Thickness of the outer border (3d or not).  */
-#define ICON_MGR_OBORDER \
-    (Scr->use3Diconmanagers ? Scr->IconManagerShadowDepth : 2)
-
 #endif /* _CTWM_SCREEN_H */
