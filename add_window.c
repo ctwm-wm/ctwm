@@ -1522,7 +1522,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		                               tmp_win->frame_bw,
 		                               Scr->d_depth, CopyFromParent,
 		                               Scr->d_visual, valuemask, &attributes);
-		XStoreName(dpy, tmp_win->frame, "CTWM frame");
+		if(Scr->NameDecorations) {
+			XStoreName(dpy, tmp_win->frame, "CTWM frame");
+		}
 	}
 
 
@@ -1555,7 +1557,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		                                 Scr->TitleHeight, tmp_win->frame_bw,
 		                                 Scr->d_depth, CopyFromParent,
 		                                 Scr->d_visual, valuemask, &attributes);
-		XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");
+		if(Scr->NameDecorations) {
+			XStoreName(dpy, tmp_win->title_w, "CTWM titlebar");
+		}
 	}
 	else {
 		tmp_win->title_w = None;
