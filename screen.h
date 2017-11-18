@@ -435,7 +435,6 @@ struct ScreenInfo {
 	/// IconRegion.TitleJustification.  That comes instead from
 	/// ScreenInfo.IconJustification.
 	TitleJust TitleJustification;
-	///< \todo Move this and following for easier scr_icon_bits grouping
 
 	/// \defgroup scr_cursors Various cursors used on the screen.
 	/// These all come from the Cursors config var, or defaults.
