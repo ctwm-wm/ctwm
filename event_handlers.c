@@ -401,10 +401,6 @@ HandleFocusIn(void)
 static void
 HandleFocusOut(void)
 {
-#ifdef EWMH
-	TwmWindow *old_focus = Scr->Focus;
-#endif
-
 	if(Scr->Focus != Tmp_win) {
 		return;
 	}
@@ -419,10 +415,11 @@ HandleFocusOut(void)
 	Scr->Focus = NULL;
 
 #ifdef EWMH
-	/* X-ref HandleFocusIn() comment */
-	if(old_focus && OtpIsFocusDependent(old_focus)) {
-		OtpRestackWindow(old_focus);
-	}
+	/*
+	 * X-ref HandleFocusIn() comment.  FocusOut is only leaving a window,
+	 * not entering a new one, so there's only one we may need to
+	 * restack.
+	 */
 	if(Tmp_win && OtpIsFocusDependent(Tmp_win)) {
 		OtpRestackWindow(Tmp_win);
 	}
