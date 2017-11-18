@@ -95,8 +95,11 @@ struct TitlebarPixmaps {
  */
 struct ScreenInfo {
 	int screen;       ///< Which screen (i.e., the x after the dot in ":0.x")
-	bool takeover;    ///< Whether we're taking over this screen.
-	                  ///< Usually true, unless running captive or \--cfgchk
+
+	/// Whether we're taking over this screen.  Usually true, unless
+	/// running captive or \--cfgchk
+	bool takeover;
+
 	int d_depth;      ///< Copy of DefaultDepth(dpy, screen)
 	Visual *d_visual; ///< Copy of DefaultVisual(dpy, screen)
 	int Monochrome;   ///< Is the display monochrome?
@@ -108,8 +111,9 @@ struct ScreenInfo {
 	 * positioning our real Screens on a virtual RealRoot.
 	 */
 	int rootx;
-	int rooty; ///< The y coordinate of the root window relative to RealRoot.
-	           ///< \copydetails rootx
+	/// The y coordinate of the root window relative to RealRoot.
+	/// \copydetails rootx
+	int rooty;
 
 	int rootw; ///< Copy of DisplayWidth(dpy, screen)
 	int rooth; ///< Copy of DisplayHeight(dpy, screen)
@@ -122,14 +126,19 @@ struct ScreenInfo {
 	 * if we are.
 	 * @{
 	 */
-	char *captivename; ///< The name of the captive root window if any.
-	                   ///< Autogen'd or set with \--name
-	int crootx;   ///< The x coordinate of the captive root window if any.
-	int crooty;   ///< The y coordinate of the captive root window if any.
-	int crootw;   ///< Initially copy of DisplayWidth(dpy, screen).
-	              ///< See also ConfigureCaptiveRootWindow()
-	int crooth;   ///< Initially copy of DisplayHeight(dpy, screen).
-	              ///< \copydetails crootw
+	/// The name of the captive root window if any.  Autogen'd or set
+	/// with \--name
+	char *captivename;
+	/// The x coordinate of the captive root window if any.
+	int crootx;
+	/// The y coordinate of the captive root window if any.
+	int crooty;
+	/// Initially copy of DisplayWidth(dpy, screen).  See also
+	/// ConfigureCaptiveRootWindow()
+	int crootw;
+	/// Initially copy of DisplayHeight(dpy, screen).
+	/// \copydetails crootw
+	int crooth;
 	/// @}
 
 	int MaxWindowWidth;   ///< Largest window width to allow
@@ -188,9 +197,11 @@ struct ScreenInfo {
 	 * as ScreenInfo.Root, and isn't changed afterward.
 	 */
 	Window XineramaRoot;
-	Window CaptiveRoot; ///< The captive root window, if any, or None
-	Window RealRoot;    ///< The actual X root window of the display.
-	                    ///< This is always X's RootWindow().
+	/// The captive root window, if any, or None
+	Window CaptiveRoot;
+	/// The actual X root window of the display.  This is always X's
+	/// RootWindow().
+	Window RealRoot;
 	/// @}
 
 
@@ -227,15 +238,19 @@ struct ScreenInfo {
 	 * splash screen.  That is, if ScreenInfo.ShowWelcomeWindow is true.
 	 * @{
 	 */
-	Window WindowMask;      ///< Startup splash screen masking window if
-	                        ///< ScreenInfo.ShowWelcomeWindow
-	Window ShapeWindow;     ///< Utility window for animated icons
-
-	Image *WelcomeImage;    ///< Image to show on ScreenInfo.WindowMask
-	GC     WelcomeGC;       ///< GC for drawing ScreenInfo.WelcomeImage
-	                        ///< on ScreenInfo.WindowMask
-	Colormap WelcomeCmap;   ///< Colormap for ScreenInfo.WindowMask
-	Visual  *WelcomeVisual; ///< Unused \deprecated Unused \todo Remove
+	/// Startup splash screen masking window if
+	/// ScreenInfo.ShowWelcomeWindow
+	Window WindowMask;
+	/// Utility window for animated icons
+	Window ShapeWindow;
+	/// Image to show on ScreenInfo.WindowMask
+	Image *WelcomeImage;
+	/// GC for drawing ScreenInfo.WelcomeImage on ScreenInfo.WindowMask
+	GC     WelcomeGC;
+	/// Colormap for ScreenInfo.WindowMask
+	Colormap WelcomeCmap;
+	/// Unused \deprecated Unused \todo Remove
+	Visual  *WelcomeVisual;
 	/// @}
 
 	name_list *ImageCache;  ///< Cached pixmaps used in image loading
@@ -286,12 +301,13 @@ struct ScreenInfo {
 	struct _cmapInfo {
 		Colormaps *cmaps;  ///< Current list of colormap windows
 		int maxCmaps;      ///< Maximum number of installed colormaps
-		unsigned long first_req; ///< seq # for first XInstallColormap() req in
-                                 ///< pass thru loading a colortable list
-		int root_pushes;   ///< current push level to install root
-                           ///< colormap windows
-		Colormaps *pushed_cmaps; ///< saved colormaps to install when pushes
-                                 ///< drops to zero
+		/// seq # for first XInstallColormap() req in pass thru loading a
+		/// colortable list
+		unsigned long first_req;
+		/// current push level to install root colormap windows
+		int root_pushes;
+		/// saved colormaps to install when pushes drops to zero
+		Colormaps *pushed_cmaps;
 	} cmapInfo; ///< \copydoc ScreenInfo::_cmapInfo
 	///< \todo Somebody needs to understand and document this better.
 	// x-ref trailing comment on InfoWindow above
@@ -467,16 +483,16 @@ struct ScreenInfo {
 	bool  use3Diconmanagers; ///< UseThreeDIconManagers config var
 	bool  use3Dborders;      ///< UseThreeDBorders config var
 	bool  use3Dwmap;         ///< UseThreeDWMap config var
-	bool  use3Diconborders;  ///< UseThreeDIconBorders config var.
-	                         ///< Unused \deprecated Unused \todo Remove
+	/// UseThreeDIconBorders config var.  Unused.  \todo Remove
+	bool  use3Diconborders;
 	bool  SunkFocusWindowTitle;  ///< SunkFocusWindowTitle config var
 	short WMgrVertButtonIndent;  ///< WMgrVertButtonIndent config var
 	short WMgrHorizButtonIndent; ///< WMgrHorizButtonIndent config var
 	short WMgrButtonShadowDepth; ///< WMgrButtonShadowDepth config var
 	bool  BeNiceToColormap; ///< BeNiceToColormap config var
 	bool  BorderCursors;    ///< BorderResizeCursors config var
-	bool  AutoPopup;        ///< AutoPopup config flag.
-	                        ///< \sa ScreenInfo.AutoPopupL
+	/// AutoPopup config flag.  \sa ScreenInfo.AutoPopupL
+	bool  AutoPopup;
 	short BorderShadowDepth;      ///< BorderShadowDepth config var
 	short TitleButtonShadowDepth; ///< TitleButtonShadowDepth config var
 	short TitleShadowDepth;       ///< TitleShadowDepth config var
@@ -500,8 +516,8 @@ struct ScreenInfo {
 	/// is only used internally in various otp.c code; nothing else
 	/// currently references it.
 	struct OtpPreferences *OTP;
-	struct OtpPreferences *IconOTP; ///< Stash of OTP info about icons on
-	                                ///< the screen. \copydetails OTP
+	/// Stash of OTP info about icons on the screen. \copydetails OTP
+	struct OtpPreferences *IconOTP;
 
 	/**
 	 * \addtogroup scr_color_bits Various color definitions.
@@ -760,13 +776,14 @@ struct ScreenInfo {
 	TwmWindow *Focus;    ///< The twm window that has focus.
 	int EntryHeight;     ///< Menu entry height.  Calc'd from font height.
 
-	int FramePadding;    ///< FramePadding config var.  Distance between
-	                     ///< titlebar contents and frame.
-	int TitlePadding;    ///< TitlePadding config var.  Distance between
-	                     ///< items in titlebar.
+	/// FramePadding config var.  Distance between titlebar contents and
+	/// frame.
+	int FramePadding;
+	/// TitlePadding config var.  Distance between items in titlebar.
+	int TitlePadding;
 
-	int ButtonIndent;    ///< ButtonIndent config var.  Amount to shrink
-	                     ///< titlebar buttons.
+	/// ButtonIndent config var.  Amount to shrink titlebar buttons.
+	int ButtonIndent;
 	int NumAutoRaises;   ///< Number of autoraise windows on screen
 	int NumAutoLowers;   ///< Number of autolower windows on screen
 	int TransientOnTop;  ///< TransientOnTop config var
@@ -936,9 +953,10 @@ struct ScreenInfo {
 	bool NameDecorations;  ///< DontNameDecorations config var (inverse)
 
 	/// ForceFocus config var.  Forcing focus-setting on windows.
-	bool      ForceFocus;   ///< \sa ScreenInfo.ForceFocusL
-	name_list *ForceFocusL; ///< \copybrief ForceFocus
-	                        ///< \sa ScreenInfo.ForceFocus
+	/// \sa ScreenInfo.ForceFocusL
+	bool      ForceFocus;
+	/// \copybrief ForceFocus \sa ScreenInfo.ForceFocus
+	name_list *ForceFocusL;
 
 	FuncKey FuncKeyRoot;       ///< Key bindings
 	FuncButton FuncButtonRoot; ///< Mouse click bindings
