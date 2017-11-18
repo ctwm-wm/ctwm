@@ -712,12 +712,10 @@ struct ScreenInfo {
 	/// @}
 
 	/// Stash of "Black" X color for the screen
-	/// \todo This should be a Pixel?
-	unsigned long Black;
+	Pixel Black;
 
 	/// Stash of "White" X color for the screen
-	/// \todo This should be a Pixel?
-	unsigned long White;
+	Pixel White;
 
 	unsigned long XORvalue;  ///< XorValue config var, or default
 
