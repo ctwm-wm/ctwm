@@ -71,14 +71,8 @@ Iconify(TwmWindow *tmp_win, int def_x, int def_y)
 			IconUp(tmp_win);
 		}
 		if(visible(tmp_win)) {
-			if(Scr->WindowMask) {
-				OtpRaise(tmp_win, IconWin);
-				XMapWindow(dpy, tmp_win->icon->w);
-			}
-			else {
-				OtpRaise(tmp_win, IconWin);
-				XMapWindow(dpy, tmp_win->icon->w);
-			}
+			OtpRaise(tmp_win, IconWin);
+			XMapWindow(dpy, tmp_win->icon->w);
 		}
 	}
 	if(tmp_win->iconmanagerlist) {
