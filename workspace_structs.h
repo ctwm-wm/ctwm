@@ -50,12 +50,12 @@ struct WorkSpaceMgr {
 	/* The fields below have been moved from WorkSpaceWindow */
 	ColorPair           curColors;
 	Image               *curImage;
-	unsigned long       curBorderColor;
+	Pixel               curBorderColor;
 	bool                curPaint;
 
 	ColorPair           defColors;
 	Image              *defImage;
-	unsigned long       defBorderColor;
+	Pixel               defBorderColor;
 	int                 hspace, vspace;
 	char               *name;
 	char               *icon_name;
