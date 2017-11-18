@@ -47,8 +47,9 @@ GetImage(const char *name, ColorPair cp)
 	image = NULL;
 
 	list = &Scr->ImageCache;
-	if(0)
+	if(0) {
 		/* dummy */ ;
+	}
 	else if((name [0] == '@') || (strncmp(name, "xpm:", 4) == 0)) {
 #ifdef XPM
 		snprintf(fullname, GIFNLEN, "%s%dx%d", name, (int) cp.fore, (int) cp.back);
