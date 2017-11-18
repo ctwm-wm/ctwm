@@ -249,8 +249,6 @@ struct ScreenInfo {
 	GC     WelcomeGC;
 	/// Colormap for ScreenInfo.WindowMask
 	Colormap WelcomeCmap;
-	/// Unused \deprecated Unused \todo Remove
-	Visual  *WelcomeVisual;
 	/// @}
 
 	name_list *ImageCache;  ///< Cached pixmaps used in image loading
