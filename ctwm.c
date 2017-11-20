@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 	int numManaged, firstscrn, lastscrn, scrnum;
 	int zero = 0;
 	char *welcomefile;
-	int  screenmasked;
+	bool screenmasked;
 	static int crootx = 100;
 	static int crooty = 100;
 	static unsigned int crootw = 1280;
@@ -470,10 +470,10 @@ int main(int argc, char **argv)
 		Scr->tbpm.delete = None;
 
 		Scr->WindowMask = (Window) 0;
-		screenmasked = 0;
+		screenmasked = false;
 		/* XXX Happens before config parse, so ignores DontShowWW param */
 		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
-			screenmasked = 1;
+			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
 		InitVariables();
@@ -908,7 +908,6 @@ static void InitVariables(void)
 	Scr->InterpolateMenuColors = false;
 	Scr->NoIconManagers = false;
 	Scr->ClientBorderWidth = false;
-	Scr->SqueezeTitleSet = false;
 	Scr->SqueezeTitle = false;
 	Scr->FirstRegion = NULL;
 	Scr->LastRegion = NULL;
@@ -946,7 +945,6 @@ static void InitVariables(void)
 	Scr->ShrinkIconTitles = false;
 	Scr->AutoRaiseIcons = false;
 	Scr->AutoFocusToTransients = false; /* kai */
-	Scr->use3Diconborders = false;
 	Scr->OpenWindowTimeout = 0;
 	Scr->RaiseWhenAutoUnSqueeze = false;
 	Scr->RaiseOnClick = false;

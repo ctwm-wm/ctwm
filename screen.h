@@ -249,8 +249,6 @@ struct ScreenInfo {
 	GC     WelcomeGC;
 	/// Colormap for ScreenInfo.WindowMask
 	Colormap WelcomeCmap;
-	/// Unused \deprecated Unused \todo Remove
-	Visual  *WelcomeVisual;
 	/// @}
 
 	name_list *ImageCache;  ///< Cached pixmaps used in image loading
@@ -386,6 +384,49 @@ struct ScreenInfo {
 	/// Color of window borders.  \sa ScreenInfo.BorderColorL
 	ColorPair BorderColorC;
 
+	/// Specialized border colors for windows.  From BorderColor config
+	/// var.  \sa ScreenInfo.BorderColorC
+	name_list *BorderColorL;
+
+	/// Specialized border colors for icons.  From IconBorderColor config
+	/// var.  \sa ScreenInfo.IconBorderColor
+	name_list *IconBorderColorL;
+
+	/// Specialized border coloring.  From BorderTileForeground config
+	/// var.  \sa ScreenInfo.BorderTileC
+	name_list *BorderTileForegroundL;
+
+	/// \copydoc ScreenInfo::BorderTileForegroundL
+	name_list *BorderTileBackgroundL;
+
+	/// Specialized titlebar foreground coloring.  From TitleForeground
+	/// config var.  \sa ScreenInfo.TitleC
+	name_list *TitleForegroundL;
+
+	/// Specialized titlebar background coloring.  From TitleBackground
+	/// config var.  \sa ScreenInfo.TitleC
+	name_list *TitleBackgroundL;
+
+	/// Specialized icon foreground coloring.  From IconForeground
+	/// config var.  \sa ScreenInfo.IconC
+	name_list *IconForegroundL;
+
+	/// Specialized icon background coloring.  From IconBackground
+	/// config var.  \sa ScreenInfo.IconC
+	name_list *IconBackgroundL;
+
+	/// Specialized icon manager foreground coloring.  From
+	/// IconManagerForeground config var.  \sa ScreenInfo.IconManagerC
+	name_list *IconManagerFL;
+
+	/// Specialized icon manager background coloring.  From
+	/// IconManagerBackground config var.  \sa ScreenInfo.IconManagerC
+	name_list *IconManagerBL;
+
+	/// Color to highlight focused windows in icon manager.
+	/// \sa ScreenInfo.IconManagerHighlight
+	name_list *IconManagerHighlightL;
+
 	/// Menu shadow color
 	Pixel MenuShadowColor;
 
@@ -419,18 +460,6 @@ struct ScreenInfo {
 	/// How icons are laid out vertically inside a region.  From
 	/// IconRegionAlignement config var.
 	IRAlignement IconRegionAlignement;
-	/// @}
-
-	/// How title text is aligned in window titlebars.  From
-	/// TitleJustification config var.  \note Despite the naming
-	/// similarity, this is *not* related to
-	/// IconRegion.TitleJustification.  That comes instead from
-	/// ScreenInfo.IconJustification.
-	TitleJust TitleJustification;
-	///< \todo Move this and following for easier scr_icon_bits grouping
-
-	/// \addtogroup scr_icon_bits Various icon control bits.
-	/// @{
 
 	/// How to animate window iconification, if any.  From IconifyStyle
 	/// config var.
@@ -442,6 +471,13 @@ struct ScreenInfo {
 	int PreferredIconHeight;    ///< Height from IconSize config var
 #endif
 	/// @}
+
+	/// How title text is aligned in window titlebars.  From
+	/// TitleJustification config var.  \note Despite the naming
+	/// similarity, this is *not* related to
+	/// IconRegion.TitleJustification.  That comes instead from
+	/// ScreenInfo.IconJustification.
+	TitleJust TitleJustification;
 
 	/// \defgroup scr_cursors Various cursors used on the screen.
 	/// These all come from the Cursors config var, or defaults.
@@ -483,8 +519,6 @@ struct ScreenInfo {
 	bool  use3Diconmanagers; ///< UseThreeDIconManagers config var
 	bool  use3Dborders;      ///< UseThreeDBorders config var
 	bool  use3Dwmap;         ///< UseThreeDWMap config var
-	/// UseThreeDIconBorders config var.  Unused.  \todo Remove
-	bool  use3Diconborders;
 	bool  SunkFocusWindowTitle;  ///< SunkFocusWindowTitle config var
 	short WMgrVertButtonIndent;  ///< WMgrVertButtonIndent config var
 	short WMgrHorizButtonIndent; ///< WMgrHorizButtonIndent config var
@@ -518,51 +552,6 @@ struct ScreenInfo {
 	struct OtpPreferences *OTP;
 	/// Stash of OTP info about icons on the screen. \copydetails OTP
 	struct OtpPreferences *IconOTP;
-
-	/**
-	 * \addtogroup scr_color_bits Various color definitions.
-	 * @{
-	 */
-	/// Specialized border colors for windows.  From BorderColor config
-	/// var.  \sa ScreenInfo.BorderColorC
-	name_list *BorderColorL;
-
-	/// Specialized border colors for icons.  From IconBorderColor config
-	/// var.  \sa ScreenInfo.IconBorderColor
-	name_list *IconBorderColorL;
-
-	/// Specialized border coloring.  From BorderTileForeground config
-	/// var.  \sa ScreenInfo.BorderTileC
-	name_list *BorderTileForegroundL;
-
-	/// \copydoc ScreenInfo::BorderTileForegroundL
-	name_list *BorderTileBackgroundL;
-
-	/// Specialized titlebar foreground coloring.  From TitleForeground
-	/// config var.  \sa ScreenInfo.TitleC
-	name_list *TitleForegroundL;
-
-	/// Specialized titlebar background coloring.  From TitleBackground
-	/// config var.  \sa ScreenInfo.TitleC
-	name_list *TitleBackgroundL;
-
-	/// Specialized icon foreground coloring.  From IconForeground
-	/// config var.  \sa ScreenInfo.IconC
-	name_list *IconForegroundL;
-
-	/// Specialized icon background coloring.  From IconBackground
-	/// config var.  \sa ScreenInfo.IconC
-	name_list *IconBackgroundL;
-
-	/// Specialized icon manager foreground coloring.  From
-	/// IconManagerForeground config var.  \sa ScreenInfo.IconManagerC
-	name_list *IconManagerFL;
-
-	/// Specialized icon manager background coloring.  From
-	/// IconManagerBackground config var.  \sa ScreenInfo.IconManagerC
-	name_list *IconManagerBL;
-	/// @}
-
 
 	/// From IconManagers config var.  This is a mapping from the window
 	/// name pattern to the IconMgr structure it should go in.  All the
@@ -639,10 +628,6 @@ struct ScreenInfo {
 	/// StartIconified config var.
 	name_list *StartIconified;
 
-	/// Color to highlight focused windows in icon manager.
-	/// \sa ScreenInfo.IconManagerHighlight \ingroup scr_color_bits
-	name_list *IconManagerHighlightL;
-
 	/// SqueezeTitle config var (list).  \sa ScreenInfo.SqueezeTitle
 	name_list *SqueezeTitleL;
 
@@ -711,14 +696,8 @@ struct ScreenInfo {
 	GC rootGC;   ///< GC for internal pixmaps in image.c / image_bitmap.c
 	/// @}
 
-	/// Stash of "Black" X color for the screen
-	/// \todo This should be a Pixel?
-	unsigned long Black;
-
-	/// Stash of "White" X color for the screen
-	/// \todo This should be a Pixel?
-	unsigned long White;
-
+	Pixel Black; ///< Stash of "Black" X color for the screen
+	Pixel White; ///< Stash of "White" X color for the screen
 	unsigned long XORvalue;  ///< XorValue config var, or default
 
 	/// \defgroup scr_font_bits Various font settings
@@ -907,11 +886,6 @@ struct ScreenInfo {
 	/// \sa ScreenInfo.SqueezeTitleL  \sa ScreenInfo.DontSqueezeTitleL
 	bool SqueezeTitle;
 
-	/// Flag used in config parsing when SqueezeTitle is set.
-	/// \todo Should just be removed, doesn't appear to do anything
-	/// useful at all.
-	bool SqueezeTitleSet;
-
 	/// AlwaysSqueezeToGravity config var.
 	/// \sa ScreenInfo.AlwaysSqueezeToGravityL
 	bool AlwaysSqueezeToGravity;
@@ -992,13 +966,5 @@ extern int NumScreens;  ///< How many Screens are on our display
 extern ScreenInfo **ScreenList; ///< List of ScreenInfo structs for each Screen
 extern ScreenInfo *Scr; ///< The ScreenInfo struct for the current Screen
 
-
-
-/* XXX should be in iconmgr.h? */
-/* Spacing between the text and the outer border.  */
-#define ICON_MGR_IBORDER 3
-/* Thickness of the outer border (3d or not).  */
-#define ICON_MGR_OBORDER \
-    (Scr->use3Diconmanagers ? Scr->IconManagerShadowDepth : 2)
 
 #endif /* _CTWM_SCREEN_H */

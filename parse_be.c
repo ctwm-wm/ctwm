@@ -103,7 +103,7 @@ typedef struct _TwmKeyword {
 #define kw0_WarpToDefaultMenuEntry      51
 #define kw0_ShrinkIconTitles            52
 #define kw0_AutoRaiseIcons              53
-#define kw0_use3DIconBorders            54
+//#define kw0_use3DIconBorders            54
 #define kw0_UseSunkTitlePixmap          55
 #define kw0_ShortAllWindowsMenus        56
 #define kw0_RaiseWhenAutoUnSqueeze      57
@@ -445,7 +445,6 @@ static const TwmKeyword keytable[] = {
 	{ "usepposition",           SKEYWORD, kws_UsePPosition },
 	{ "usesunktitlepixmap",     KEYWORD, kw0_UseSunkTitlePixmap },
 	{ "usethreedborders",       KEYWORD, kw0_Use3DBorders },
-	{ "usethreediconborders",   KEYWORD, kw0_use3DIconBorders },
 	{ "usethreediconmanagers",  KEYWORD, kw0_Use3DIconManagers },
 	{ "usethreedmenus",         KEYWORD, kw0_Use3DMenus },
 	{ "usethreedtitles",        KEYWORD, kw0_Use3DTitles },
@@ -821,10 +820,6 @@ do_single_keyword(int keyword)
 		/* kai */
 		case kw0_AutoFocusToTransients:
 			Scr->AutoFocusToTransients = true;
-			return true;
-
-		case kw0_use3DIconBorders:
-			Scr->use3Diconborders = true;
 			return true;
 
 		case kw0_ShortAllWindowsMenus:

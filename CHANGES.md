@@ -3,6 +3,11 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### Backward-Incompatible Changes And Removed Features
+
+1. The `UseThreeDIconBorders` config var has been removed.  It came in
+   silently and undocumented in 3.4 and has never done anything.
+
 ### New Config Options
 
 1. Added DontNameDecorations config option to disable setting names on
