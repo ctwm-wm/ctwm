@@ -103,7 +103,7 @@ typedef struct _TwmKeyword {
 #define kw0_WarpToDefaultMenuEntry      51
 #define kw0_ShrinkIconTitles            52
 #define kw0_AutoRaiseIcons              53
-#define kw0_use3DIconBorders            54
+//#define kw0_use3DIconBorders            54
 #define kw0_UseSunkTitlePixmap          55
 #define kw0_ShortAllWindowsMenus        56
 #define kw0_RaiseWhenAutoUnSqueeze      57
