@@ -211,6 +211,9 @@ set(HAS_HTML 0)
 if(MANUAL_BUILD_HTML AND NOAUTO_HTML)
 	message(STATUS "Not autobuilding HTML manual with ${MANUAL_BUILD_HTML}.")
 endif()
+# Separate if() rather than an elseif() so that the above case can still
+# fall into the elseif(EXISTS ${HTML_PRESRC}) below and use the pregen'd
+# version.
 if(MANUAL_BUILD_HTML AND NOT NOAUTO_HTML)
 	# Got the tool to build it
 	message(STATUS "Building HTML manual with ${MANUAL_BUILD_HTML}.")
