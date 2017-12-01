@@ -97,29 +97,26 @@ elseif(IS_GIT_CO AND HAS_GIT)
 		COMMAND ${rw_ver_git} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current git state."
 	)
-else()
-	# Is there a prebuilt one to use?
-	if(EXISTS ${version_c_gen})
-		# Yep, switch to using it as the source for building
-		# ${version_c_in}.
-		set(version_c_src ${version_c_gen})
+elseif(EXISTS ${version_c_gen})
+	# There's a prebuilt ont to use, to switch to using it as the source
+	# for building ${version_c_in}.
+	set(version_c_src ${version_c_gen})
 
-		# And just copy to the final
-		add_custom_command(OUTPUT ${version_c}
-			DEPENDS ${version_c_in}
-			COMMAND cp ${version_c_in} ${version_c}
-			COMMENT "Using pregenerated version.c."
-		)
-	else()
-		# Nope, we got nothing at all.
-		add_custom_command(OUTPUT ${version_c}
-			DEPENDS ${version_c_in}
-			COMMAND sed -e 's/%%VCSTYPE%%/NULL/' -e 's/%%REVISION%%/NULL/'
-				< ${version_c_in} > ${version_c}
-			COMMENT "Using null version.c."
-		)
-	endif(EXISTS ${version_c_gen})
-endif(IS_BZR_CO AND HAS_BZR)
+	# And just copy to the final
+	add_custom_command(OUTPUT ${version_c}
+		DEPENDS ${version_c_in}
+		COMMAND cp ${version_c_in} ${version_c}
+		COMMENT "Using pregenerated version.c."
+	)
+else()
+	# Nope, we got nothing at all.
+	add_custom_command(OUTPUT ${version_c}
+		DEPENDS ${version_c_in}
+		COMMAND sed -e 's/%%VCSTYPE%%/NULL/' -e 's/%%REVISION%%/NULL/'
+			< ${version_c_in} > ${version_c}
+		COMMENT "Using null version.c."
+	)
+endif()
 
 # Note that the above may be rewriting version_c_src in the "no VCS info,
 # but we have a pregen'd gen/version.c to use" case.
