@@ -70,4 +70,4 @@ else()
 		message(FATAL_ERROR "Can't find bison/yacc, and no prebuilt files "
 			"available.")
 	endif(GRAM_C AND GRAM_H)
-endif(BISON_FOUND)
+endif()
