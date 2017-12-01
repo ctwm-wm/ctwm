@@ -67,6 +67,7 @@ else()
 		set_source_files_properties(gram.tab.c OBJECT_DEPENDS gram.tab.h)
 	else()
 		# No bison, no yacc, no prebuilt.  Boom.
-		message(FATAL_ERROR "Can't find yacc.")
+		message(FATAL_ERROR "Can't find bison/yacc, and no prebuilt files "
+			"available.")
 	endif(GRAM_C AND GRAM_H)
 endif(BISON_FOUND)
