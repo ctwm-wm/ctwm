@@ -55,6 +55,9 @@ set(CTWMSRC
 	parse.c
 	parse_be.c
 	parse_yacc.c
+	r_area.c
+	r_area_list.c
+	r_layout.c
 	session.c
 	util.c
 	vscreen.c
@@ -69,6 +72,7 @@ set(CTWMSRC
 	workspace_config.c
 	workspace_manager.c
 	workspace_utils.c
+	xrandr.c
 
 	# External libs
 	ext/repl_str.c

@@ -14,6 +14,7 @@
 #include "drawing.h"
 #include "events.h"
 #include "icons.h"
+#include "r_area.h"
 #include "screen.h"
 #include "util.h"
 #include "win_decorations.h"
@@ -677,10 +678,53 @@ static void ConstrainRightBottom(int *value, int size1, int border, int size2);
 void
 ConstrainByBorders1(int *left, int width, int *top, int height)
 {
-	ConstrainRightBottom(left, width, Scr->BorderRight, Scr->rootw);
-	ConstrainLeftTop(left, Scr->BorderLeft);
-	ConstrainRightBottom(top, height, Scr->BorderBottom, Scr->rooth);
-	ConstrainLeftTop(top, Scr->BorderTop);
+	RArea area, in;
+
+	RAreaNewIn(*left, *top, width, height, &area);
+	in = area;
+
+	int limit = RLayoutFindBottomEdge(Scr->Layout, &area) - height + 1;
+	if(area.y > limit) {
+		if(Scr->MoveOffResistance >= 0 && area.y >= limit + Scr->MoveOffResistance) {
+			area.y -= Scr->MoveOffResistance;
+		}
+		else {
+			area.y = limit;
+		}
+	}
+
+	limit = RLayoutFindRightEdge(Scr->Layout, &area) - width + 1;
+	if(area.x > limit) {
+		if(Scr->MoveOffResistance >= 0 && area.x >= limit + Scr->MoveOffResistance) {
+			area.x -= Scr->MoveOffResistance;
+		}
+		else {
+			area.x = limit;
+		}
+	}
+
+	limit = RLayoutFindLeftEdge(Scr->Layout, &area);
+	if(area.x < limit) {
+		if(Scr->MoveOffResistance >= 0 && area.x <= limit - Scr->MoveOffResistance) {
+			area.x += Scr->MoveOffResistance;
+		}
+		else {
+			area.x = limit;
+		}
+	}
+
+	limit = RLayoutFindTopEdge(Scr->Layout, &area);
+	if(area.y < limit) {
+		if(Scr->MoveOffResistance >= 0 && area.y <= limit - Scr->MoveOffResistance) {
+			area.y += Scr->MoveOffResistance;
+		}
+		else {
+			area.y = limit;
+		}
+	}
+
+	*left = area.x;
+	*top = area.y;
 }
 
 void

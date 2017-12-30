@@ -59,6 +59,7 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
+#include "xrandr.h"
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
@@ -377,6 +378,11 @@ int main(int argc, char **argv)
 		Scr->XineramaRoot = croot;
 		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
+		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+		if(Scr->Layout == NULL) {
+			continue;
+		}
+
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		if(CLarg.is_captive) {
@@ -494,6 +500,18 @@ int main(int argc, char **argv)
 		}
 		else {
 			ParseTwmrc(CLarg.InitFile);
+		}
+
+		/* At least one border around the screen */
+		if(Scr->BorderLeft > 0 || Scr->BorderRight > 0
+		                || Scr->BorderTop > 0 || Scr->BorderBottom > 0) {
+			RLayoutCrop(Scr->Layout, Scr->BorderLeft, Scr->BorderRight,
+			            Scr->BorderTop, Scr->BorderBottom);
+			if(Scr->Layout->monitors->len == 0) {
+				fprintf(stderr,
+				        "Borders too large! correct BorderLeft, BorderRight, BorderTop and/or BorderBottom parameters\n");
+				exit(1);
+			}
 		}
 
 		InitVirtualScreens(Scr);
