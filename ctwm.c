@@ -503,15 +503,16 @@ int main(int argc, char **argv)
 		}
 
 		/* At least one border around the screen */
-		if(Scr->BorderLeft > 0 || Scr->BorderRight > 0
-		                || Scr->BorderTop > 0 || Scr->BorderBottom > 0) {
-			RLayoutCrop(Scr->Layout, Scr->BorderLeft, Scr->BorderRight,
-			            Scr->BorderTop, Scr->BorderBottom);
-			if(Scr->Layout->monitors->len == 0) {
-				fprintf(stderr,
-				        "Borders too large! correct BorderLeft, BorderRight, BorderTop and/or BorderBottom parameters\n");
-				exit(1);
-			}
+		Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
+		                      Scr->BorderLeft, Scr->BorderRight,
+		                      Scr->BorderTop, Scr->BorderBottom);
+		if(Scr->BorderedLayout == NULL) {
+			Scr->BorderedLayout = Scr->Layout;        // nothing to crop
+		}
+		else if(Scr->BorderedLayout->monitors->len == 0) {
+			fprintf(stderr,
+			        "Borders too large! correct BorderLeft, BorderRight, BorderTop and/or BorderBottom parameters\n");
+			exit(1);
 		}
 
 		InitVirtualScreens(Scr);

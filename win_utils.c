@@ -675,56 +675,70 @@ TryToGrid(TwmWindow *tmp_win, int *x, int *y)
 static void ConstrainLeftTop(int *value, int border);
 static void ConstrainRightBottom(int *value, int size1, int border, int size2);
 
-void
-ConstrainByBorders1(int *left, int width, int *top, int height)
+bool
+ConstrainByLayout(RLayout *layout, int move_off_res, int *left, int width,
+                  int *top, int height)
 {
-	RArea area, in;
+	RArea area;
+	bool clipped = false;
 
 	RAreaNewIn(*left, *top, width, height, &area);
-	in = area;
 
-	int limit = RLayoutFindBottomEdge(Scr->Layout, &area) - height + 1;
+	int limit = RLayoutFindBottomEdge(layout, &area) - height + 1;
 	if(area.y > limit) {
-		if(Scr->MoveOffResistance >= 0 && area.y >= limit + Scr->MoveOffResistance) {
-			area.y -= Scr->MoveOffResistance;
+		if(move_off_res >= 0 && area.y >= limit + move_off_res) {
+			area.y -= move_off_res;
 		}
 		else {
 			area.y = limit;
+			clipped = true;
 		}
 	}
 
-	limit = RLayoutFindRightEdge(Scr->Layout, &area) - width + 1;
+	limit = RLayoutFindRightEdge(layout, &area) - width + 1;
 	if(area.x > limit) {
-		if(Scr->MoveOffResistance >= 0 && area.x >= limit + Scr->MoveOffResistance) {
-			area.x -= Scr->MoveOffResistance;
+		if(move_off_res >= 0 && area.x >= limit + move_off_res) {
+			area.x -= move_off_res;
 		}
 		else {
 			area.x = limit;
+			clipped = true;
 		}
 	}
 
-	limit = RLayoutFindLeftEdge(Scr->Layout, &area);
+	limit = RLayoutFindLeftEdge(layout, &area);
 	if(area.x < limit) {
-		if(Scr->MoveOffResistance >= 0 && area.x <= limit - Scr->MoveOffResistance) {
-			area.x += Scr->MoveOffResistance;
+		if(move_off_res >= 0 && area.x <= limit - move_off_res) {
+			area.x += move_off_res;
 		}
 		else {
 			area.x = limit;
+			clipped = true;
 		}
 	}
 
-	limit = RLayoutFindTopEdge(Scr->Layout, &area);
+	limit = RLayoutFindTopEdge(layout, &area);
 	if(area.y < limit) {
-		if(Scr->MoveOffResistance >= 0 && area.y <= limit - Scr->MoveOffResistance) {
-			area.y += Scr->MoveOffResistance;
+		if(move_off_res >= 0 && area.y <= limit - move_off_res) {
+			area.y += move_off_res;
 		}
 		else {
 			area.y = limit;
+			clipped = true;
 		}
 	}
 
 	*left = area.x;
 	*top = area.y;
+
+	return clipped;
+}
+
+void
+ConstrainByBorders1(int *left, int width, int *top, int height)
+{
+	ConstrainByLayout(Scr->BorderedLayout, Scr->MoveOffResistance,
+	                  left, width, top, height);
 }
 
 void

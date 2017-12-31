@@ -10,8 +10,8 @@
 
 RLayout *RLayoutNew(RAreaList *monitors);
 
-void RLayoutCrop(RLayout *self, int left_margin, int right_margin,
-                 int top_margin, int bottom_margin);
+RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
+                            int top_margin, int bottom_margin);
 
 int RLayoutFindBottomEdge(RLayout *self, RArea *area);
 int RLayoutFindTopEdge(RLayout *self, RArea *area);

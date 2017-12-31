@@ -206,6 +206,7 @@ struct ScreenInfo {
 	/// @}
 
 	RLayout *Layout;
+	RLayout *BorderedLayout;
 
 	/**
 	 * Dimensions/coordinates window.  This is the small window (usually

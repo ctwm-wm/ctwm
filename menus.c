@@ -1401,23 +1401,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	/*
 	* clip to screen
 	*/
-	clipped = false;
-	if(x + menu->width > Scr->rootw) {
-		x = Scr->rootw - menu->width;
-		clipped = true;
-	}
-	if(x < 0) {
-		x = 0;
-		clipped = true;
-	}
-	if(y + menu->height > Scr->rooth) {
-		y = Scr->rooth - menu->height;
-		clipped = true;
-	}
-	if(y < 0) {
-		y = 0;
-		clipped = true;
-	}
+	clipped = ConstrainByLayout(Scr->Layout, -1, &x, menu->width, &y, menu->height);
 	MenuOrigins[MenuDepth].x = x;
 	MenuOrigins[MenuDepth].y = y;
 	MenuDepth++;

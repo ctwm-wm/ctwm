@@ -51,14 +51,9 @@ RAreaList *RAreaListCopy(RAreaList *self)
 	return new;
 }
 
-void RAreaListFree(RAreaList *self)
-{
-	free(self->areas);
-	free(self);
-}
-
-int RAreaListCrop(RAreaList *self, int left_margin, int right_margin,
-                  int top_margin, int bottom_margin)
+RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
+                                int right_margin,
+                                int top_margin, int bottom_margin)
 {
 	if(left_margin > 0 || right_margin > 0
 	                || top_margin > 0 || bottom_margin > 0) {
@@ -83,19 +78,17 @@ int RAreaListCrop(RAreaList *self, int left_margin, int right_margin,
 		big_area->height -= top_margin + bottom_margin;
 
 		if(big_area->width <= 0 || big_area->height <= 0) {
-			self->len = 0;
+			return RAreaListNew(0, NULL); // empty list
 		}
-		else {
-			RAreaList *new = RAreaListIntersectCrop(self, big_area);
-			RAreaList tmp = *new;
-
-			*new = *self;
-			*self = tmp;
-			RAreaListFree(new);
-		}
-		return 1;
+		return RAreaListIntersectCrop(self, big_area);
 	}
-	return 0;
+	return NULL; // no margin, no crop possible
+}
+
+void RAreaListFree(RAreaList *self)
+{
+	free(self->areas);
+	free(self);
 }
 
 void RAreaListDelete(RAreaList *self, int index)

@@ -21,6 +21,8 @@ void DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y);
 void TryToPack(TwmWindow *tmp_win, int *x, int *y);
 void TryToPush(TwmWindow *tmp_win, int x, int y);
 void TryToGrid(TwmWindow *tmp_win, int *x, int *y);
+bool ConstrainByLayout(RLayout *layout, int move_off_res, int *left, int width,
+                       int *top, int height);
 void ConstrainByBorders1(int *left, int width, int *top, int height);
 void ConstrainByBorders(TwmWindow *twmwin, int *left, int width,
                         int *top, int height);

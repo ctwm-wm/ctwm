@@ -1863,6 +1863,13 @@ static void EwmhRecalculateStrut(void)
 	Scr->BorderTop    = top;
 	Scr->BorderBottom = bottom;
 
+	// Bordered layout may have changed
+	Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
+	                      left, right, top, bottom);
+	if(Scr->BorderedLayout == NULL) {
+		Scr->BorderedLayout = Scr->Layout;        // nothing to crop
+	}
+
 	EwmhSet_NET_WORKAREA(Scr);
 }
 /*

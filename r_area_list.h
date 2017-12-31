@@ -13,8 +13,9 @@ RAreaList *RAreaListCopy(RAreaList *self);
 
 void RAreaListFree(RAreaList *self);
 
-int RAreaListCrop(RAreaList *self, int left_margin, int right_margin,
-                  int top_margin, int bottom_margin);
+RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
+                                int right_margin,
+                                int top_margin, int bottom_margin);
 
 void RAreaListDelete(RAreaList *self, int index);
 void RAreaListAdd(RAreaList *self, RArea *area);

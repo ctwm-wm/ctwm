@@ -24,9 +24,23 @@ RLayout *RLayoutNew(RAreaList *monitors)
 	return layout;
 }
 
+RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
+                            int top_margin, int bottom_margin)
+{
+	RAreaList *cropped_monitors = RAreaListCopyCropped(self->monitors,
+	                              left_margin, right_margin,
+	                              top_margin, bottom_margin);
+	if(cropped_monitors == NULL) {
+		return NULL;        // nothing to crop, same layout as passed
+	}
+
+	return RLayoutNew(cropped_monitors);
+}
+
 static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 {
 	//  |_V_|
+	//  |   |
 	// L|   |R
 	//  |___|
 	//  | V |
@@ -61,6 +75,7 @@ static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 static RAreaList *_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
 {
 	// ___T___
+	//  |   |
 	// H|   |H
 	// _|___|_
 	//    B
@@ -118,16 +133,6 @@ static RAreaList *_RLayoutHorizontalIntersect(RLayout *self, RArea *area)
 	}
 
 	return mit;
-}
-
-void RLayoutCrop(RLayout *self, int left_margin, int right_margin,
-                 int top_margin, int bottom_margin)
-{
-	if(RAreaListCrop(self->monitors,
-	                 left_margin, right_margin, top_margin, bottom_margin)) {
-		self->horiz = RAreaListHorizontalUnion(self->monitors);
-		self->vert = RAreaListVerticalUnion(self->monitors);
-	}
 }
 
 int RLayoutFindBottomEdge(RLayout *self, RArea *area)
