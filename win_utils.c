@@ -680,11 +680,12 @@ ConstrainByLayout(RLayout *layout, int move_off_res, int *left, int width,
                   int *top, int height)
 {
 	RArea area;
+	int limit;
 	bool clipped = false;
 
 	RAreaNewIn(*left, *top, width, height, &area);
 
-	int limit = RLayoutFindBottomEdge(layout, &area) - height + 1;
+	limit = RLayoutFindBottomEdge(layout, &area) - height + 1;
 	if(area.y > limit) {
 		if(move_off_res >= 0 && area.y >= limit + move_off_res) {
 			area.y -= move_off_res;
