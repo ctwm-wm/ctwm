@@ -16,6 +16,7 @@
 #include "icons.h"
 #include "otp.h"
 #include "parse.h"
+#include "r_area.h"
 #include "screen.h"
 #include "util.h"
 #include "vscreen.h"
@@ -1281,36 +1282,43 @@ static int
 FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 {
 	TwmWindow  *t;
-	int ret;
+	RArea area;
+	int ret, limit;
 	const int winx = tmp_win->frame_x;
 	const int winy = tmp_win->frame_y;
 	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
 	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
+	RAreaNewIn(winx, winy, winw, winh, &area);
+
 	switch(direction) {
 		case MFD_LEFT:
-			if(winx < Scr->BorderLeft) {
+			limit = RLayoutFindLeftEdge(Scr->BorderedLayout, &area);
+			if(winx < limit) {
 				return -1;
 			}
-			ret = Scr->BorderLeft;
+			ret = limit;
 			break;
 		case MFD_RIGHT:
-			if(winx + winw > Scr->rootw - Scr->BorderRight) {
+			limit = RLayoutFindRightEdge(Scr->BorderedLayout, &area);
+			if(winx + winw > limit) {
 				return -1;
 			}
-			ret = Scr->rootw - Scr->BorderRight;
+			ret = limit + 1;
 			break;
 		case MFD_TOP:
-			if(winy < Scr->BorderTop) {
+			limit = RLayoutFindTopEdge(Scr->BorderedLayout, &area);
+			if(winy < limit) {
 				return -1;
 			}
-			ret = Scr->BorderTop;
+			ret = limit;
 			break;
 		case MFD_BOTTOM:
-			if(winy + winh > Scr->rooth - Scr->BorderBottom) {
+			limit = RLayoutFindBottomEdge(Scr->BorderedLayout, &area);
+			if(winy + winh > limit) {
 				return -1;
 			}
-			ret = Scr->rooth - Scr->BorderBottom;
+			ret = limit + 1;
 			break;
 		default:
 			return -1;
