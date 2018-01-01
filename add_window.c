@@ -47,6 +47,7 @@
 #include "occupation.h"
 #include "otp.h"
 #include "parse.h"
+#include "r_area.h"
 #include "screen.h"
 #include "session.h"
 #include "util.h"
@@ -1239,18 +1240,23 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					}
 				}
 				else if(event.xbutton.button == Button3) {
-					int maxw = Scr->rootw - Scr->BorderRight  - AddingX - bw2;
-					int maxh = Scr->rooth - Scr->BorderBottom - AddingY - bw2;
+					RArea area;
+					int max_bottom, max_right;
+
+					RAreaNewIn(AddingX, AddingY, AddingW, AddingH, &area);
+
+					max_bottom = RLayoutFindBottomEdge(Scr->BorderedLayout, &area) - bw2;
+					max_right = RLayoutFindRightEdge(Scr->BorderedLayout, &area) - bw2;
 
 					/*
 					 * Make window go to bottom of screen, and clip to right edge.
 					 * This is useful when popping up large windows and fixed
 					 * column text windows.
 					 */
-					if(AddingW > maxw) {
-						AddingW = maxw;
+					if(AddingX + AddingW - 1 > max_right) {
+						AddingW = max_right - AddingX + 1;
 					}
-					AddingH = maxh;
+					AddingH = max_bottom - AddingY + 1;
 
 					ConstrainSize(tmp_win, &AddingW, &AddingH);   /* w/o borders */
 					AddingW += bw2;
