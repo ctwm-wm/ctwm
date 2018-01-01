@@ -1472,12 +1472,25 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 
 		/* No matter what, make sure SOME part of the window is on-screen */
-		if((tmp_win->frame_x > Scr->rootw) ||
-		                (tmp_win->frame_y > Scr->rooth) ||
-		                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
-		                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
-			tmp_win->frame_x = 0;
-			tmp_win->frame_y = 0;
+		{
+			RArea area;
+			int min_x, min_y, max_bottom, max_right;
+
+			RAreaNewIn(tmp_win->frame_x, tmp_win->frame_y,
+			           (int)tmp_win->frame_width, (int)tmp_win->frame_height,
+			           &area);
+
+			min_x = RLayoutFindLeftEdge(Scr->BorderedLayout, &area);
+			min_y = RLayoutFindTopEdge(Scr->BorderedLayout, &area);
+			max_bottom = RLayoutFindBottomEdge(Scr->BorderedLayout, &area);
+			max_right = RLayoutFindRightEdge(Scr->BorderedLayout, &area);
+
+			if(area.x > max_right || area.y > max_bottom ||
+			                area.x + area.width <= min_x ||
+			                area.y + area.height <= min_y) {
+				tmp_win->frame_x = min_x;
+				tmp_win->frame_y = min_y;
+			}
 		}
 
 		/* May need adjusting for vscreens too */
