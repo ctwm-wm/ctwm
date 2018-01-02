@@ -15,6 +15,7 @@
 #include "functions_internal.h"
 #include "icons.h"
 #include "otp.h"
+#include "r_area.h"
 #include "screen.h"
 #include "version.h"
 #include "vscreen.h"
@@ -226,23 +227,34 @@ info_dismiss:
 	height += 10;               /* some padding */
 	if(XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkChild,
 	                 &dummy, &dummy, &px, &py, &udummy)) {
-		px -= (width / 2);
-		py -= (height / 3);
-		if(px + width + BW2 >= Scr->rootw) {
-			px = Scr->rootw - width - BW2;
-		}
-		if(py + height + BW2 >= Scr->rooth) {
-			py = Scr->rooth - height - BW2;
-		}
-		if(px < 0) {
-			px = 0;
-		}
-		if(py < 0) {
-			py = 0;
-		}
+		px -= width / 2;
+		py -= height / 3;
 	}
 	else {
 		px = py = 0;
+	}
+
+	{
+		RArea area;
+		int min_x, min_y, max_bottom, max_right;
+
+		RAreaNewIn(px, py, width, height, &area);
+
+		RLayoutFindLeftRightEdges(Scr->Layout, &area, &min_x, &max_right);
+		if(px < min_x) {
+			px = min_x;
+		}
+		else if(px + width - 1 > max_right) {
+			px = max_right - width + 1;
+		}
+
+		RLayoutFindTopBottomEdges(Scr->Layout, &area, &min_y, &max_bottom);
+		if(py < min_y) {
+			py = min_y;
+		}
+		else if(py + height - 1 > max_bottom) {
+			py = max_bottom - height + 1;
+		}
 	}
 	XMoveResizeWindow(dpy, Scr->InfoWindow.win, px, py, width, height);
 	XMapRaised(dpy, Scr->InfoWindow.win);
