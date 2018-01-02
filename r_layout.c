@@ -135,72 +135,82 @@ static RAreaList *_RLayoutHorizontalIntersect(RLayout *self, RArea *area)
 	return mit;
 }
 
-int RLayoutFindBottomEdge(RLayout *self, RArea *area)
+void RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
+                               int *bottom)
 {
 	RAreaList *mit = _RLayoutVerticalIntersect(self, area);
-	int min_y2 = RAreaListMinY2(mit);
+
+	if(top != NULL) {
+		*top = RAreaListMaxY(mit);
+	}
+
+	if(bottom != NULL) {
+		*bottom = RAreaListMinY2(mit);
+	}
 
 	RAreaListFree(mit);
+}
 
+int RLayoutFindBottomEdge(RLayout *self, RArea *area)
+{
+	int min_y2;
+	RLayoutFindTopBottomEdges(self, area, NULL, &min_y2);
 	return min_y2;
 }
 
 int RLayoutFindTopEdge(RLayout *self, RArea *area)
 {
-	RAreaList *mit = _RLayoutVerticalIntersect(self, area);
-	int max_y = RAreaListMaxY(mit);
+	int max_y;
+	RLayoutFindTopBottomEdges(self, area, &max_y, NULL);
+	return max_y;
+}
+
+void RLayoutFindLeftRightEdges(RLayout *self, RArea *area, int *left,
+                               int *right)
+{
+	RAreaList *mit = _RLayoutHorizontalIntersect(self, area);
+
+	if(left != NULL) {
+		*left = RAreaListMaxX(mit);
+	}
+
+	if(right != NULL) {
+		*right = RAreaListMinX2(mit);
+	}
 
 	RAreaListFree(mit);
-
-	return max_y;
 }
 
 int RLayoutFindLeftEdge(RLayout *self, RArea *area)
 {
-	RAreaList *mit = _RLayoutHorizontalIntersect(self, area);
-	int max_x = RAreaListMaxX(mit);
-
-	RAreaListFree(mit);
-
+	int max_x;
+	RLayoutFindLeftRightEdges(self, area, &max_x, NULL);
 	return max_x;
 }
 
 int RLayoutFindRightEdge(RLayout *self, RArea *area)
 {
-	RAreaList *mit = _RLayoutHorizontalIntersect(self, area);
-	int min_x2 = RAreaListMinX2(mit);
-
-	RAreaListFree(mit);
-
+	int min_x2;
+	RLayoutFindLeftRightEdges(self, area, NULL, &min_x2);
 	return min_x2;
 }
 
 RArea *RLayoutFullHoriz(RLayout *self, RArea *area)
 {
-	RAreaList *mit = _RLayoutHorizontalIntersect(self, area);
 	int max_x, min_x2;
 
-	max_x = RAreaListMaxX(mit);
-	min_x2 = RAreaListMinX2(mit);
+	RLayoutFindLeftRightEdges(self, area, &max_x, &min_x2);
 
-	RAreaListFree(mit);
-
-	return RAreaNew(max_x, area->y,
-	                min_x2 - max_x + 1, area-> height);
+	return RAreaNew(max_x, area->y, min_x2 - max_x + 1, area->height);
 }
 
 RArea *RLayoutFullVert(RLayout *self, RArea *area)
 {
-	RAreaList *mit = _RLayoutVerticalIntersect(self, area);
 	int max_y, min_y2;
 
-	max_y = RAreaListMaxY(mit);
-	min_y2 = RAreaListMinY2(mit);
+	RLayoutFindTopBottomEdges(self, area, &max_y, &min_y2);
 
-	RAreaListFree(mit);
-
-	return RAreaNew(area->x, max_y,
-	                area->width, min_y2 - max_y + 1);
+	return RAreaNew(area->x, max_y, area->width, min_y2 - max_y + 1);
 }
 
 RArea *RLayoutFull(RLayout *self, RArea *area)
