@@ -37,6 +37,14 @@ RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
 	return RLayoutNew(cropped_monitors);
 }
 
+void RLayoutFree(RLayout *self)
+{
+	RAreaListFree(self->monitors);
+	RAreaListFree(self->horiz);
+	RAreaListFree(self->vert);
+	free(self);
+}
+
 static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 {
 	//  |_V_|

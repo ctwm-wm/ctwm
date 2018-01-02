@@ -9,6 +9,7 @@
 
 
 RLayout *RLayoutNew(RAreaList *monitors);
+void RLayoutFree(RLayout *self);
 
 RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
                             int top_margin, int bottom_margin);
