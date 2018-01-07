@@ -117,6 +117,11 @@ USE_RPLAY
         valid but deprecated alias for this, and will give a warning.
         (**OFF** by default)
 
+USE_XRANDR15
+:       Enables the use of multi-monitors of different sizes via
+        libXrandr.  Disable if libXrandr isn't present or lesser than 1.5.
+        (**ON** by default)
+
 
 Additional vars you might need to set:
 

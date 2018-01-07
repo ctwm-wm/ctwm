@@ -59,7 +59,12 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
+#ifdef XRANDR
 #include "xrandr.h"
+#else
+#include "r_area.h"
+#include "r_area_list.h"
+#endif
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
@@ -378,10 +383,22 @@ int main(int argc, char **argv)
 		Scr->XineramaRoot = croot;
 		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
+#ifdef XRANDR
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
 		if(Scr->Layout == NULL) {
 			continue;
 		}
+#else
+		Scr->Layout = RLayoutNew(
+		                      RAreaListNew(1,
+		                                   RAreaNew(Scr->rootx,
+		                                                   Scr->rooty,
+		                                                   Scr->rootw,
+		                                                   Scr->rooth),
+		                                   NULL));
+#endif
+		printf("Full: ");
+		RLayoutPrint(Scr->Layout);
 
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
@@ -514,6 +531,8 @@ int main(int argc, char **argv)
 			        "Borders too large! correct BorderLeft, BorderRight, BorderTop and/or BorderBottom parameters\n");
 			exit(1);
 		}
+		printf("Bordered: ");
+		RLayoutPrint(Scr->BorderedLayout);
 
 		InitVirtualScreens(Scr);
 #ifdef EWMH
