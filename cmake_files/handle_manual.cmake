@@ -54,6 +54,16 @@ set(HTML_PRESRC ${GENSRCDIR}/ctwm.1.html)
 # enums for later code for "What method we use to build this type of
 # output".
 
+# We use the DocBook XML output for PDF (if manually requested), and
+# _can_ use it in very special cases for manpages.  So find out first if
+# we can even build it.
+set(MANUAL_BUILD_DBXML)
+if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_DBXML)
+	set(MANUAL_BUILD_DBXML asciidoctor)
+elseif(ASCIIDOC AND ASCIIDOC_CAN_DBXML)
+	set(MANUAL_BUILD_DBXML asciidoc)
+endif()
+
 # If we have asciidoctor, use it to build the HTML.  Else, we could use
 # asciidoc, but leave it disabled because it's very slow.
 set(MANUAL_BUILD_HTML)
@@ -70,25 +80,20 @@ endif()
 # For the manpage output, asciidoctor has to be of a certain version.  If
 # it's not there or not high enough version, we fall back to asciidoc/a2x
 # (which is very slow at this too, but we need to build a manpage, so eat
-# the expense).
+# the expense).  And it's possible to go via the DocBook XML output, but
+# it takes very odd cases to wind up there.
 set(MANUAL_BUILD_MANPAGE)
 if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE asciidoctor)
 elseif(A2X AND ASCIIDOC_CAN_MAN)
 	set(MANUAL_BUILD_MANPAGE a2x)
-elseif(XMLTO AND XMLTO_CAN_STUFF)
+elseif(XMLTO AND XMLTO_CAN_STUFF AND MANUAL_BUILD_DBXML)
 	# Should probably never happen in reality
 	set(MANUAL_BUILD_MANPAGE xmlto)
 endif()
 
 # PDF output is not hooked into the build process by default, but is made
 # available by an extra target.
-set(MANUAL_BUILD_DBXML)
-if(ASCIIDOCTOR AND ASCIIDOCTOR_CAN_DBXML)
-	set(MANUAL_BUILD_DBXML asciidoctor)
-elseif(ASCIIDOC AND ASCIIDOC_CAN_DBXML)
-	set(MANUAL_BUILD_DBXML asciidoc)
-endif()
 set(MANUAL_BUILD_PDF)
 if(DBLATEX AND DBLATEX_CAN_PDF AND MANUAL_BUILD_DBXML)
 	set(MANUAL_BUILD_PDF dblatex)
