@@ -552,6 +552,8 @@ struct ScreenInfo {
 	struct OtpPreferences *OTP;
 	/// Stash of OTP info about icons on the screen. \copydetails OTP
 	struct OtpPreferences *IconOTP;
+	/// Pointer to the start of the OTP winlists for the screen.
+	struct OtpWinList *bottomOwl;
 
 	/// From IconManagers config var.  This is a mapping from the window
 	/// name pattern to the IconMgr structure it should go in.  All the

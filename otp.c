@@ -86,8 +86,6 @@ static void OwlStashAflags(OtpWinList *owl);
 static unsigned OwlGetStashedAflags(OtpWinList *owl, bool *gotit);
 static int OwlEffectivePriority(OtpWinList *owl);
 
-static OtpWinList *bottomOwl = NULL;
-
 static Box BoxOfOwl(OtpWinList *owl)
 {
 	Box b;
@@ -227,7 +225,7 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 	}
 #endif
 
-	for(owl = bottomOwl; owl != NULL; owl = owl->above) {
+	for(owl = Scr->bottomOwl; owl != NULL; owl = owl->above) {
 		twm_win = owl->twm_win;
 
 		/* check the back arrows are correct */
@@ -236,7 +234,7 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 
 		/* check the doubly linked list's consistency */
 		if(owl->below == NULL) {
-			assert(owl == bottomOwl);
+			assert(owl == Scr->bottomOwl);
 		}
 		else {
 			assert(owl->below->above == owl);
@@ -350,7 +348,7 @@ static void RemoveOwl(OtpWinList *owl)
 		owl->below->above = owl->above;
 	}
 	else {
-		bottomOwl = owl->above;
+		Scr->bottomOwl = owl->above;
 	}
 	owl->below = NULL;
 	owl->above = NULL;
@@ -422,15 +420,15 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 	if(other_owl == NULL) {
 		DPRINTF((stderr, "Bottom-most window overall\n"));
 		/* special case for the lowest window overall */
-		assert(PRI(owl) <= PRI(bottomOwl));
+		assert(PRI(owl) <= PRI(Scr->bottomOwl));
 
 		/* pass the action to the Xserver */
 		XLowerWindow(dpy, WindowOfOwl(owl));
 
 		/* update the list */
-		owl->above = bottomOwl;
+		owl->above = Scr->bottomOwl;
 		owl->above->below = owl;
-		bottomOwl = owl;
+		Scr->bottomOwl = owl;
 	}
 	else {
 		WindowBox *winbox = owl->twm_win->winbox;
@@ -518,11 +516,11 @@ static OtpWinList *OwlRightBelow(int priority)
 	OtpWinList *owl1, *owl2;
 
 	/* in case there isn't anything below */
-	if(priority <= PRI(bottomOwl)) {
+	if(priority <= PRI(Scr->bottomOwl)) {
 		return NULL;
 	}
 
-	for(owl1 = bottomOwl, owl2 = owl1->above;
+	for(owl1 = Scr->bottomOwl, owl2 = owl1->above;
 	                (owl2 != NULL) && (PRI(owl2) < priority);
 	                owl1 = owl2, owl2 = owl2->above) {
 		/* nada */;
@@ -551,9 +549,9 @@ static void InsertOwl(OtpWinList *owl, int where)
 
 	priority = PRI(owl) - (where == Above ? 0 : 1);
 
-	if(bottomOwl == NULL) {
+	if(Scr->bottomOwl == NULL) {
 		/* for the first window: just insert it in the list */
-		bottomOwl = owl;
+		Scr->bottomOwl = owl;
 	}
 	else {
 		other_owl = OwlRightBelow(priority + 1);
@@ -613,7 +611,7 @@ static void TryToMoveTransientsOfTo(OtpWinList *owl, int priority, int where)
 	 * layer.
 	 */
 	other_owl = OwlRightBelow(PRI(owl));
-	other_owl = (other_owl == NULL) ? bottomOwl : other_owl->above;
+	other_owl = (other_owl == NULL) ? Scr->bottomOwl : other_owl->above;
 	assert(PRI(other_owl) >= PRI(owl));
 
 	/* !beware! we're changing the list as we scan it, hence the tmp_owl */
@@ -1401,7 +1399,7 @@ ReparentWindowAndIcon(Display *display, TwmWindow *twm_win,
 /* Iterators.  */
 TwmWindow *OtpBottomWin()
 {
-	OtpWinList *owl = bottomOwl;
+	OtpWinList *owl = Scr->bottomOwl;
 	while(owl && owl->type != WinWin) {
 		owl = owl->above;
 	}
@@ -1410,7 +1408,7 @@ TwmWindow *OtpBottomWin()
 
 TwmWindow *OtpTopWin()
 {
-	OtpWinList *owl = bottomOwl, *top = NULL;
+	OtpWinList *owl = Scr->bottomOwl, *top = NULL;
 	while(owl) {
 		if(owl->type == WinWin) {
 			top = owl;
