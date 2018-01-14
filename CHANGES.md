@@ -25,6 +25,11 @@
    definitions could fail with an error from mkstemp().  Reported by
    Manfred Knick.
 
+1. When multiple X Screens are used, the OTP code didn't recognize the
+   difference, and kept everything in one list.  This caused the internal
+   consistency checks to trip when it didn't find all the windows it
+   expected.  Reported by Terran Melconian.
+
 
 
 ## 4.0.1  (2017-06-05)
