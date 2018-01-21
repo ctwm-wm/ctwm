@@ -1710,7 +1710,7 @@ wmap_mapwin_backend(TwmWindow *win, bool handleraise)
 					else {
 						XMapRaised(dpy, wl->w);
 					}
-					WMapRedrawName(win->vs, wl);
+					WMapRedrawName(vs, wl);
 					break;
 				}
 			}

@@ -30,6 +30,11 @@
    consistency checks to trip when it didn't find all the windows it
    expected.  Reported by Terran Melconian.
 
+1. When ReverseCurrentWorkspace is set, mapping windows not on the
+   current workspace (e.g., via restarting ctwm, or creating new windows
+   with the desktop set via EWMH properties) could segfault.  Reported by
+   Sean McAllister.
+
 
 
 ## 4.0.1  (2017-06-05)
