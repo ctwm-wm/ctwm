@@ -1070,8 +1070,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			 * The TryTo*() and DoResize() calls below rely on having
 			 * frame_{width,height} set, so set them.
 			 */
-			tmp_win->frame_width  = AddingW;
-			tmp_win->frame_height = AddingH;
+			tmp_win->frame_width  = AddingW - bw2;
+			tmp_win->frame_height = AddingH - bw2;
 			/*SetFocus (NULL, CurrentTime);*/
 			while(1) {
 				if(Scr->OpenWindowTimeout) {
