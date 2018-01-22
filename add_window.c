@@ -1245,8 +1245,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 					RAreaNewIn(AddingX, AddingY, AddingW, AddingH, &area);
 
-					max_bottom = RLayoutFindBottomEdge(Scr->BorderedLayout, &area) - bw2;
-					max_right = RLayoutFindRightEdge(Scr->BorderedLayout, &area) - bw2;
+					max_bottom = RLayoutFindMonitorBottomEdge(Scr->BorderedLayout, &area) - bw2;
+					max_right = RLayoutFindMonitorRightEdge(Scr->BorderedLayout, &area) - bw2;
 
 					/*
 					 * Make window go to bottom of screen, and clip to right edge.

@@ -29,6 +29,9 @@ RAreaList *RAreaListVerticalUnion(RAreaList *self);
 
 RAreaList *RAreaListIntersect(RAreaList *self, RArea *area);
 RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area);
+void RAreaListForeach(RAreaList *self, void (*func)(RArea *area, void *data),
+                      void *data);
+
 RArea *RAreaListBigArea(RAreaList *self);
 RArea *RAreaListBestTarget(RAreaList *self, RArea *area);
 

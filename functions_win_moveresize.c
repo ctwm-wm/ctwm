@@ -1293,28 +1293,28 @@ FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 
 	switch(direction) {
 		case MFD_LEFT:
-			limit = RLayoutFindLeftEdge(Scr->BorderedLayout, &area);
+			limit = RLayoutFindMonitorLeftEdge(Scr->BorderedLayout, &area);
 			if(winx < limit) {
 				return -1;
 			}
 			ret = limit;
 			break;
 		case MFD_RIGHT:
-			limit = RLayoutFindRightEdge(Scr->BorderedLayout, &area);
+			limit = RLayoutFindMonitorRightEdge(Scr->BorderedLayout, &area);
 			if(winx + winw > limit) {
 				return -1;
 			}
 			ret = limit + 1;
 			break;
 		case MFD_TOP:
-			limit = RLayoutFindTopEdge(Scr->BorderedLayout, &area);
+			limit = RLayoutFindMonitorTopEdge(Scr->BorderedLayout, &area);
 			if(winy < limit) {
 				return -1;
 			}
 			ret = limit;
 			break;
 		case MFD_BOTTOM:
-			limit = RLayoutFindBottomEdge(Scr->BorderedLayout, &area);
+			limit = RLayoutFindMonitorBottomEdge(Scr->BorderedLayout, &area);
 			if(winy + winh > limit) {
 				return -1;
 			}

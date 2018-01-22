@@ -203,6 +203,114 @@ int RLayoutFindRightEdge(RLayout *self, RArea *area)
 	return min_x2;
 }
 
+struct monitor_edge_finder {
+	RArea *area;
+	union {
+		int max_x;
+		int max_y;
+		int min_x2;
+		int min_y2;
+	} u;
+	int found;
+};
+
+static void _findMonitorBottomEdge(RArea *cur, void *vdata)
+{
+	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
+
+	// Does the area intersect the current list area
+	if(RAreaIsIntersect(cur, data->area)
+	                && RAreaY2(cur) > RAreaY2(data->area)
+	                && (!data->found || RAreaY2(cur) < data->u.min_y2)) {
+		data->u.min_y2 = RAreaY2(cur);
+		data->found = 1;
+	}
+}
+
+int RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
+{
+	struct monitor_edge_finder data = { area };
+
+	RAreaListForeach(self->monitors, _findMonitorBottomEdge, &data);
+
+	return data.found ? data.u.min_y2 : RLayoutFindBottomEdge(self, area);
+}
+
+static void _findMonitorTopEdge(RArea *cur, void *vdata)
+{
+	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
+
+	// Does the area intersect the current list area
+	if(RAreaIsIntersect(cur, data->area)
+	                && cur->y < data->area->y
+	                && (!data->found || cur->y > data->u.max_y)) {
+		data->u.max_y = cur->y;
+		data->found = 1;
+	}
+}
+
+int RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
+{
+	struct monitor_edge_finder data = { area };
+
+	RAreaListForeach(self->monitors, _findMonitorTopEdge, &data);
+
+	return data.found ? data.u.max_y : RLayoutFindTopEdge(self, area);
+}
+
+static void _findMonitorLeftEdge(RArea *cur, void *vdata)
+{
+	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
+
+	// Does the area intersect the current list area
+	if(RAreaIsIntersect(cur, data->area)
+	                && cur->x < data->area->x
+	                && (!data->found || cur->x > data->u.max_x)) {
+		data->u.max_x = cur->x;
+		data->found = 1;
+	}
+}
+
+int RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
+{
+	struct monitor_edge_finder data = { area };
+
+	RAreaListForeach(self->monitors, _findMonitorLeftEdge, &data);
+
+	return data.found ? data.u.max_x : RLayoutFindLeftEdge(self, area);
+}
+
+static void _findMonitorRightEdge(RArea *cur, void *vdata)
+{
+	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
+
+	// Does the area intersect the current list area
+	printf("  > cur=");
+	RAreaPrint(cur);
+	printf(" vs win=");
+	RAreaPrint(data->area);
+	if(RAreaIsIntersect(cur, data->area)
+	                && RAreaX2(cur) > RAreaX2(data->area)
+	                && (!data->found || RAreaX2(cur) < data->u.min_x2)) {
+		data->u.min_x2 = RAreaX2(cur);
+		data->found = 1;
+		printf(" min_x2=%d", data->u.min_x2);
+	}
+	printf(" (%d/%d/%d)\n", RAreaIsIntersect(cur, data->area), data->u.min_x2,
+	       data->found);
+}
+
+int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
+{
+	struct monitor_edge_finder data = { area };
+
+	printf("RLayoutFindMonitorRightEdge ");
+	RLayoutPrint(self);
+	RAreaListForeach(self->monitors, _findMonitorRightEdge, &data);
+
+	return data.found ? data.u.min_x2 : RLayoutFindRightEdge(self, area);
+}
+
 RArea *RLayoutFullHoriz(RLayout *self, RArea *area)
 {
 	int max_x, min_x2;
