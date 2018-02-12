@@ -426,6 +426,8 @@ struct TwmWindow {
 #endif /* EWMH */
 };
 
+
+/* Flags for TwmWindow.protocols */
 #define DoesWmTakeFocus         (1L << 0)
 #define DoesWmSaveYourself      (1L << 1)
 #define DoesWmDeleteWindow      (1L << 2)
