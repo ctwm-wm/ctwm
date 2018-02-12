@@ -8,6 +8,9 @@
 1. The `UseThreeDIconBorders` config var has been removed.  It came in
    silently and undocumented in 3.4 and has never done anything.
 
+1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
+   have been removed; it is now just a duplicate of CLIENTHOST.
+
 ### New Config Options
 
 1. Added DontNameDecorations config option to disable setting names on

@@ -93,7 +93,6 @@ m4_defs(Display *display, const char *host)
 	Screen *screen;
 	Visual *visual;
 	char client[MAXHOSTNAME];
-	struct hostent *hostname;
 	char *vc, *color;
 	char *tmp_name;
 	FILE *tmpf;
@@ -162,14 +161,30 @@ m4_defs(Display *display, const char *host)
 		free(server);
 	}
 
-	/* DNS (/NSS) lookup can't be the best way to do this, but... */
-	hostname = gethostbyname(client);
-	if(hostname) {
-		WR_DEF("HOSTNAME", hostname->h_name);
+#ifdef HISTORICAL_HOSTNAME_IMPL
+	/*
+	 * Historical attempt to use DNS to figure a canonical name.  This is
+	 * left inside this #ifdef for easy restoration if somebody finds a
+	 * need; enabling it is not supported or documented.  Unless somebody
+	 * comes up with a good reason to revive it, it will be removed after
+	 * %%NEXT%%.
+	 */
+	{
+		struct hostent *hostname = gethostbyname(client);
+		if(hostname) {
+			WR_DEF("HOSTNAME", hostname->h_name);
+		}
+		else {
+			WR_DEF("HOSTNAME", client);
+		}
 	}
-	else {
-		WR_DEF("HOSTNAME", client);
-	}
+#else
+	/*
+	 * Just leave HOSTNAME as a copy of CLIENTHOST for backward
+	 * compat.
+	 */
+	WR_DEF("HOSTNAME", client);
+#endif
 
 	/*
 	 * Info about the user and their environment
