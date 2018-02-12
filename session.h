@@ -9,6 +9,34 @@
 
 #include <X11/SM/SMlib.h>
 
+
+/* Used in stashing session info */
+struct TWMWinConfigEntry {
+	struct TWMWinConfigEntry *next;
+	int tag;
+	char *client_id;
+	char *window_role;
+	XClassHint class;
+	char *wm_name;
+	int wm_command_count;
+	char **wm_command;
+	short x, y;
+	unsigned short width, height;
+	short icon_x, icon_y;
+	bool iconified;
+	bool icon_info_present;
+	bool width_ever_changed_by_user;
+	bool height_ever_changed_by_user;
+	/* ===================[ Matthew McNeill Feb 1997 ]======================= *
+	 * Added this property to facilitate restoration of workspaces when
+	 * restarting a session.
+	 */
+	int occupation;
+	/* ====================================================================== */
+
+};
+
+
 /* XXX Only used in one place, should convert to a func? */
 extern SmcConn smcConn;
 
