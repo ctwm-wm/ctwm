@@ -103,7 +103,7 @@ typedef struct _TwmKeyword {
 #define kw0_WarpToDefaultMenuEntry      51
 #define kw0_ShrinkIconTitles            52
 #define kw0_AutoRaiseIcons              53
-#define kw0_use3DIconBorders            54
+//#define kw0_use3DIconBorders            54
 #define kw0_UseSunkTitlePixmap          55
 #define kw0_ShortAllWindowsMenus        56
 #define kw0_RaiseWhenAutoUnSqueeze      57
@@ -126,6 +126,7 @@ typedef struct _TwmKeyword {
 #define kw0_NoRestartPreviousState      74
 #define kw0_NoDecorateTransients        75
 #define kw0_GrabServer                  76
+#define kw0_DontNameDecorations         77
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -268,6 +269,7 @@ static const TwmKeyword keytable[] = {
 	{ "destroy",                KILL, 0 },
 	{ "donticonifybyunmapping", DONT_ICONIFY_BY_UNMAPPING, 0 },
 	{ "dontmoveoff",            KEYWORD, kw0_DontMoveOff },
+	{ "dontnamedecorations",    KEYWORD, kw0_DontNameDecorations },
 	{ "dontpaintrootwindow",    KEYWORD, kw0_DontPaintRootWindow },
 	{ "dontsave",               DONT_SAVE, 0 },
 	{ "dontsetinactive",        DONTSETINACTIVE, 0 },
@@ -443,7 +445,6 @@ static const TwmKeyword keytable[] = {
 	{ "usepposition",           SKEYWORD, kws_UsePPosition },
 	{ "usesunktitlepixmap",     KEYWORD, kw0_UseSunkTitlePixmap },
 	{ "usethreedborders",       KEYWORD, kw0_Use3DBorders },
-	{ "usethreediconborders",   KEYWORD, kw0_use3DIconBorders },
 	{ "usethreediconmanagers",  KEYWORD, kw0_Use3DIconManagers },
 	{ "usethreedmenus",         KEYWORD, kw0_Use3DMenus },
 	{ "usethreedtitles",        KEYWORD, kw0_Use3DTitles },
@@ -821,10 +822,6 @@ do_single_keyword(int keyword)
 			Scr->AutoFocusToTransients = true;
 			return true;
 
-		case kw0_use3DIconBorders:
-			Scr->use3Diconborders = true;
-			return true;
-
 		case kw0_ShortAllWindowsMenus:
 			Scr->ShortAllWindowsMenus = true;
 			return true;
@@ -871,6 +868,10 @@ do_single_keyword(int keyword)
 
 		case kw0_DontToggleWorkspacemanagerState:
 			Scr->DontToggleWorkspaceManagerState = true;
+			return true;
+
+		case kw0_DontNameDecorations:
+			Scr->NameDecorations = false;
 			return true;
 
 	}
@@ -1823,7 +1824,7 @@ ParseIconifyStyle(const char *s)
 	CHK("zoomin",  ZOOMIN);
 	CHK("zoomout", ZOOMOUT);
 	CHK("fade",    FADE);
-	CHK("sweet",   SWEEP);
+	CHK("sweep",   SWEEP);
 #undef CHK
 
 	return -1;

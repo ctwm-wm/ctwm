@@ -486,7 +486,7 @@ AutoFocusToTransients::
   Transient windows get focus automatically when created.  Useful with
   programs that have keyboard shortcuts that pop up windows.
 
-AutoLower { `win-list` }::
+AutoLower [{ `win-list` }]::
   This variable specifies a list of windows (all windows if the list is
   defaulted) to be automatically lowered whenever the pointer leaves a
   window.  This action can be interactively enabled or disabled on
@@ -512,7 +512,7 @@ AutoPriority::
 +
 First appeared in 4.0.0.
 
-AutoRaise { `win-list` }::
+AutoRaise [{ `win-list` }]::
   This variable specifies a list of windows (all windows if the list is defaulted)
   to be automatically raised whenever the pointer has come to rest in a window for
   the amount of time specified by the `RaiseDelay` variable. This action can be
@@ -793,6 +793,13 @@ DontIconifyByUnmapping { `win-list` }::
 DontMoveOff::
   This variable indicates that windows should not be allowed to be moved off the
   screen.  It can be overridden by the `f.forcemove` function.
+
+DontNameDecorations::
+  Disable setting WM_NAME properties on the various decoration windows
+  ctwm puts around the windows it manages.  These are handy to keep track
+  of what's what when poking through the list of windows on the screen,
+  but can confuse some tools that don't expect to find them there (xwit
+  is known to be one of them).  First appeared in %%NEXT%%.
 
 DontPaintRootWindow::
   This variable tells ctwm not to paint the root window, whatever you told in

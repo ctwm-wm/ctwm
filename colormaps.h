@@ -5,8 +5,8 @@
 #define _CTWM_COLORMAPS_H
 
 
-int InstallWindowColormaps(int type, TwmWindow *tmp);
-int InstallColormaps(int type, Colormaps *cmaps);
+bool InstallWindowColormaps(int type, TwmWindow *tmp);
+bool InstallColormaps(int type, Colormaps *cmaps);
 void InstallRootColormap(void);
 void UninstallRootColormap(void);
 

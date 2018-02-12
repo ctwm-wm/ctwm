@@ -792,10 +792,9 @@ mwm_ignore_entry	: string { add_mwm_ignore($1); }
 
 squeeze		: SQUEEZE_TITLE {
 				    if (HasShape) Scr->SqueezeTitle = true;
-				    Scr->SqueezeTitleSet = true;
 				}
 		| SQUEEZE_TITLE { curplist = &Scr->SqueezeTitleL;
-				  if (HasShape && !Scr->SqueezeTitleSet)
+				  if (HasShape)
 				    Scr->SqueezeTitle = true;
 				}
 		  LB win_sqz_entries RB

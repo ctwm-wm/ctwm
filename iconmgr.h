@@ -78,4 +78,11 @@ void DrawIconManagerIconName(TwmWindow *tmp_win);
 void ShowIconifiedIcon(TwmWindow *tmp_win);
 
 
+/* Spacing between the text and the outer border.  */
+#define ICON_MGR_IBORDER 3
+/* Thickness of the outer border (3d or not).  */
+#define ICON_MGR_OBORDER \
+    (Scr->use3Diconmanagers ? Scr->IconManagerShadowDepth : 2)
+
+
 #endif /* _CTWM_ICONMGR_H */

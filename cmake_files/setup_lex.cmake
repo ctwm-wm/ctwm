@@ -10,9 +10,12 @@
 # own if you have flex).  If neither of those hit, not much we can do but
 # bomb...
 
+# Override for forcing use of pregen'd source files
 if(NOT FORCE_PREGEN_FILES)
 	find_package(FLEX)
 endif()
+
+
 if(FLEX_FOUND)
 	FLEX_TARGET(ctwm_lexer lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.c)
 else()
@@ -30,6 +33,7 @@ else()
 		)
 	else()
 		# No flex, no pre-built lex.c
-		message(FATAL_ERROR "Can't find flex.")
+		message(FATAL_ERROR "Can't find flex, and no prebuilt files "
+			"available.")
 	endif(LEX_C)
 endif(FLEX_FOUND)

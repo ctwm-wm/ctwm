@@ -3,16 +3,40 @@
 
 ## Next release  (xxxx-xx-xx)
 
-### User Visible Changes
+### Backward-Incompatible Changes And Removed Features
+
+1. The `UseThreeDIconBorders` config var has been removed.  It came in
+   silently and undocumented in 3.4 and has never done anything.
 
 1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
    have been removed; it is now just a duplicate of CLIENTHOST.
 
+### New Config Options
+
+1. Added DontNameDecorations config option to disable setting names on
+   the X windows we create for window decoration (added in 4.0.0).  These
+   have been reported to confuse xwit, and might do the same for other
+   tools that don't expect to find them on non-end-app windows.  Reported
+   by Frank Steiner.
+
 ### Bugfixes
+
+1. Fix up broken parsing of IconifyStyle "sweep".  Bug was introduced in
+   4.0.0.
 
 1. When multiple X Screens are used, building the temporary file for M4
    definitions could fail with an error from mkstemp().  Reported by
    Manfred Knick.
+
+1. When multiple X Screens are used, the OTP code didn't recognize the
+   difference, and kept everything in one list.  This caused the internal
+   consistency checks to trip when it didn't find all the windows it
+   expected.  Reported by Terran Melconian.
+
+1. When ReverseCurrentWorkspace is set, mapping windows not on the
+   current workspace (e.g., via restarting ctwm, or creating new windows
+   with the desktop set via EWMH properties) could segfault.  Reported by
+   Sean McAllister.
 
 
 
@@ -984,7 +1008,7 @@ to work.
     clients (Frame5) don't like this.
 
 1. `UnmapByMovingFarAway { win-list }`
-    These windows will be moved out of the screen instead of beeing
+    These windows will be moved out of the screen instead of being
     unmapped when they become invisible due to a change workspace. This has
     been added because some ill-behaved clients (Frame5) don't like to be
     unmapped. Use this if the previous doesn't work.
@@ -1221,7 +1245,7 @@ to work.
     this star won't be displayed and the corresponding entry will be the
     default entry for this menu. When a menu has a default entry and is used
     as a pull-right in another menu, this default entry action will be executed
-    automatically when this submenu is selected without beeing displayed.
+    automatically when this submenu is selected without being displayed.
     It's hard to explain, but easy to understand.
 
 1. New keywords:

@@ -35,7 +35,7 @@ static Bool UninstallRootColormapQScanner(Display *display, XEvent *ev,
  *
  * Previously in events.c
  */
-int
+bool
 InstallWindowColormaps(int type, TwmWindow *tmp)
 {
 	if(tmp) {
@@ -47,7 +47,7 @@ InstallWindowColormaps(int type, TwmWindow *tmp)
 }
 
 
-int
+bool
 InstallColormaps(int type, Colormaps *cmaps)
 {
 	int i, j, n, number_cwins, state;
@@ -68,11 +68,11 @@ InstallColormaps(int type, Colormaps *cmaps)
 			 * force loaded.
 			 */
 			if(Scr->cmapInfo.root_pushes) {
-				return (0);
+				return false;
 			}
 			/* Don't reload the current window colormap list.
 			if (Scr->cmapInfo.cmaps == cmaps)
-			    return (0);
+			    return false;
 			 */
 			if(Scr->cmapInfo.cmaps) {
 				for(i = Scr->cmapInfo.cmaps->number_cwins,
@@ -138,7 +138,7 @@ InstallColormaps(int type, Colormaps *cmaps)
 			n--;
 		}
 	}
-	return (1);
+	return true;
 }
 
 

@@ -401,10 +401,6 @@ HandleFocusIn(void)
 static void
 HandleFocusOut(void)
 {
-#ifdef EWMH
-	TwmWindow *old_focus = Scr->Focus;
-#endif
-
 	if(Scr->Focus != Tmp_win) {
 		return;
 	}
@@ -419,10 +415,11 @@ HandleFocusOut(void)
 	Scr->Focus = NULL;
 
 #ifdef EWMH
-	/* X-ref HandleFocusIn() comment */
-	if(old_focus && OtpIsFocusDependent(old_focus)) {
-		OtpRestackWindow(old_focus);
-	}
+	/*
+	 * X-ref HandleFocusIn() comment.  FocusOut is only leaving a window,
+	 * not entering a new one, so there's only one we may need to
+	 * restack.
+	 */
 	if(Tmp_win && OtpIsFocusDependent(Tmp_win)) {
 		OtpRestackWindow(Tmp_win);
 	}
@@ -527,36 +524,45 @@ void HandleKeyRelease(void)
 		WMgrHandleKeyReleaseEvent(Scr->currentvs, &Event);
 	}
 }
-/***********************************************************************
- *
- *  Procedure:
- *      HandleKeyPress - key press event handler
- *
- ***********************************************************************
- */
 
+
+
+/*
+ * HandleKeyPress - key press event handler
+ *
+ * When a key is pressed, we may do various things with it.  If we're in
+ * a menu, various keybindings move around in it, others get silently
+ * ignored.  Else, we look through the various bindings set in the config
+ * file and invoke whatever should be.  If none of that matches, and it
+ * seems like some window should have focus, pass the event down to that
+ * window.
+ */
 void HandleKeyPress(void)
 {
-	FuncKey *key;
-	int len;
-	unsigned int modifier;
-	Window w;
-
+	/*
+	 * If the Info window (f.identify/f.version) is currently up, any key
+	 * press will drop it away.
+	 */
 	if(Scr->InfoWindow.mapped) {
 		XUnmapWindow(dpy, Scr->InfoWindow.win);
 		Scr->InfoWindow.mapped = false;
 	}
 
+
+	/*
+	 * If a menu is up, we interpret various keys as moving around or
+	 * doing things in the menu.  No other key bindings or usages are
+	 * considered.
+	 */
 	if(ActiveMenu != NULL) {
 		MenuItem *item;
-		int      offset;
 		char *keynam;
 		KeySym keysym;
-		int xx, yy, wx, wy;
 		Window junkW;
 
 		item = NULL;
 
+		/* What key was pressed? */
 		keysym = XLookupKeysym((XKeyEvent *) &Event, 0);
 		if(! keysym) {
 			return;
@@ -566,9 +572,24 @@ void HandleKeyPress(void)
 			return;
 		}
 
+
+		/*
+		 * Initial handling of the various keystrokes.  Most keys are
+		 * completely handled here; we only descend out into later for
+		 * for Return/Right keys that do invoke-y stuff on menu entries.
+		 */
 		if(keysym == XK_Down || keysym == XK_space) {
-			xx = Event.xkey.x;
-			yy = Event.xkey.y + Scr->EntryHeight;
+			/*
+			 * Down or Spacebar moves us to the next entry in the menu,
+			 * looping back around to the top when it falls off the
+			 * bottom.
+			 *
+			 * Start with our X and (current+height)Y, then wrap around
+			 * to the top (Y)/into the menu (X) as necessary.
+			 */
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y + Scr->EntryHeight;
+			int wx, wy;
 			XTranslateCoordinates(dpy, Scr->Root, ActiveMenu->w, xx, yy, &wx, &wy, &junkW);
 			if((wy < 0) || (wy > ActiveMenu->height)) {
 				yy -= (wy - (Scr->EntryHeight / 2) - 2);
@@ -576,13 +597,24 @@ void HandleKeyPress(void)
 			if((wx < 0) || (wx > ActiveMenu->width)) {
 				xx -= (wx - (ActiveMenu->width / 2));
 			}
+
+			/*
+			 * Move the pointer there.  We'll get a Motion notify from
+			 * the X server as a result, which will fall into the loop in
+			 * UpdateMenu() and handle re-highlighting etc.
+			 */
 			XWarpPointer(dpy, Scr->Root, Scr->Root, Event.xkey.x, Event.xkey.y,
 			             ActiveMenu->width, ActiveMenu->height, xx, yy);
 			return;
 		}
 		else if(keysym == XK_Up || keysym == XK_BackSpace) {
-			xx = Event.xkey.x;
-			yy = Event.xkey.y - Scr->EntryHeight;
+			/*
+			 * Up/Backspace move up an entry, with details similar in
+			 * reverse to the above.
+			 */
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y - Scr->EntryHeight;
+			int wx, wy;
 			XTranslateCoordinates(dpy, Scr->Root, ActiveMenu->w, xx, yy, &wx, &wy, &junkW);
 			if((wy < 0) || (wy > ActiveMenu->height)) {
 				yy -= (wy - ActiveMenu->height + (Scr->EntryHeight / 2) + 2);
@@ -595,21 +627,44 @@ void HandleKeyPress(void)
 			return;
 		}
 		else if(keysym == XK_Right || keysym == XK_Return) {
+			/*
+			 * Right/Return mean we're invoking some entry item, so we
+			 * take note of where we are for activating at the end of
+			 * this set of conditionals.
+			 *
+			 * Follow this down into the following if(item) block for
+			 * details, particularly in the subtle differences between
+			 * Right and Return on f.menu entries.
+			 */
 			item = ActiveItem;
 		}
 		else if(keysym == XK_Left || keysym == XK_Escape) {
+			/*
+			 * Left/Escape back up to a higher menu level, or out totally
+			 * from the top.
+			 */
 			MenuRoot *menu;
 
+			/* Leave pinned menus alone though */
 			if(ActiveMenu->pinned) {
 				return;
 			}
+
+			/* Top-level?  Clear out and leave menu mode totally. */
 			if(!ActiveMenu->prev || MenuDepth == 1) {
 				PopDownMenu();
 				XUngrabPointer(dpy, CurrentTime);
 				return;
 			}
-			xx = Event.xkey.x;
-			yy = Event.xkey.y;
+
+			/*
+			 * We're in a sub level.  Figure out various stuff for where
+			 * we are and where we should be in the up-level, clear out
+			 * the windows for this level, and warp us up there.
+			 */
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y;
+			int wx, wy;
 			menu = ActiveMenu->prev;
 			XTranslateCoordinates(dpy, Scr->Root, menu->w, xx, yy, &wx, &wy, &junkW);
 			xx -= (wx - (menu->width / 2));
@@ -628,30 +683,36 @@ void HandleKeyPress(void)
 			return;
 		}
 		else if(strlen(keynam) == 1) {
+			/*
+			 * This would mean pressing a more normal (e.g., letter/num)
+			 * key.  These find the first entry starting with a matching
+			 * character and jump to it.
+			 */
 			MenuItem *startitem;
-			xx = Event.xkey.x;
-			yy = Event.xkey.y;
+			int xx = Event.xkey.x;
+			int yy = Event.xkey.y;
+			int wx, wy;
 
 			startitem = ActiveItem ? ActiveItem : ActiveMenu->first;
 			item = startitem->next;
 			if(item == NULL) {
 				item = ActiveMenu->first;
 			}
-			modifier = (Event.xkey.state & mods_used);
-			modifier = set_mask_ignore(modifier);
+			unsigned int keymod = (Event.xkey.state & mods_used);
+			keymod = set_mask_ignore(keymod);
 
 			while(item != startitem) {
 				bool matched = false;
-				offset = 0;
+				size_t offset = 0;
 				switch(item->item [0]) {
 					case '^' :
-						if((modifier & ControlMask) &&
+						if((keymod & ControlMask) &&
 						                (keynam [0] == Tolower(item->item [1]))) {
 							matched = true;
 						}
 						break;
 					case '~' :
-						if((modifier & Mod1Mask) &&
+						if((keymod & Mod1Mask) &&
 						                (keynam [0] == Tolower(item->item [1]))) {
 							matched = true;
 						}
@@ -662,10 +723,10 @@ void HandleKeyPress(void)
 						if(((Scr->IgnoreCaseInMenuSelection) &&
 						                (keynam [0] == Tolower(item->item [offset]))) ||
 
-						                ((modifier & ShiftMask) && Isupper(item->item [offset]) &&
+						                ((keymod & ShiftMask) && Isupper(item->item [offset]) &&
 						                 (keynam [0] == Tolower(item->item [offset]))) ||
 
-						                (!(modifier & ShiftMask) && Islower(item->item [offset]) &&
+						                (!(keymod & ShiftMask) && Islower(item->item [offset]) &&
 						                 (keynam [0] == item->item [offset]))) {
 							matched = true;
 						}
@@ -690,31 +751,80 @@ void HandleKeyPress(void)
 			return;
 		}
 		else {
+			/* Other keys get ignored */
 			return;
 		}
+
+
+		/*
+		 * So if we get here, the key pressed was a Right/Return on an
+		 * entry to select it (chosen entry now in item).  Every other
+		 * case is have been completely handled in the block above and
+		 * would have already returned.
+		 *
+		 * So item should always be the entry we just tried to invoke.
+		 * I'm not sure how it could be empty, but if it is, we just hop
+		 * ourselves out of the menu.  Otherwise, we do whatever we want
+		 * to do with the entry type we're on.
+		 */
 		if(item) {
 			switch(item->func) {
+				/* f.nop and f.title, we just silently let pass */
 				case 0 :
 				case F_TITLE :
 					break;
 
-				case F_MENU :
+				/* If it's a f.menu, there's more magic to do */
+				case F_MENU: {
+					/*
+					 * Return is treated separately from Right.  It
+					 * "invokes" the menu item, which immediately calls
+					 * whatever the default menu entry is (which may be
+					 * nothing).
+					 */
 					if(!strcmp(keynam, "Return")) {
 						if(ActiveMenu == Scr->Workspaces) {
+							/*
+							 * f.menu "TwmWorkspaces".  The "invocation"
+							 * of this jumps to the workspace in
+							 * question, as if it were a default entry of
+							 * f.gotoworkspace.
+							 *
+							 * XXX Grody magic.  Maybe this should be
+							 * unwound to a default entry...
+							 */
 							PopDownMenu();
 							XUngrabPointer(dpy, CurrentTime);
 							GotoWorkSpaceByName(Scr->currentvs, item->action + 8);
 						}
 						else {
+							/*
+							 * Calling the f.menu handler invokes the
+							 * default action.  We handle popping out of
+							 * menus ourselves.
+							 */
 							ExecuteFunction(item->func, item->action,
 							                ButtonWindow ? ButtonWindow->frame : None,
 							                ButtonWindow, &Event, Context, false);
 							PopDownMenu();
 						}
+
+						/*
+						 * Whatever invocation Return does is done, so we
+						 * are too.
+						 */
 						return;
 					}
-					xx = Event.xkey.x;
-					yy = Event.xkey.y;
+
+					/*
+					 * Right arrow causes opening up a sub-f.menu.  Open
+					 * it up in the appropriate place, [re-]set
+					 * highlights, and call do_key_menu() to do a lot of
+					 * the internals of it.
+					 */
+					int xx = Event.xkey.x;
+					int yy = Event.xkey.y;
+					int wx, wy;
 					XTranslateCoordinates(dpy, Scr->Root, ActiveMenu->w, xx, yy,
 					                      &wx, &wy, &junkW);
 					if(ActiveItem) {
@@ -734,7 +844,12 @@ void HandleKeyPress(void)
 					do_key_menu(item->sub, None);
 					CurrentSelectedWorkspace = NULL;
 					break;
+				}
 
+				/*
+				 * Any other f.something.  Pop down the menu (unless
+				 * we're trying to pin it up), and invoke the function.
+				 */
 				default :
 					if(item->func != F_PIN) {
 						PopDownMenu();
@@ -743,14 +858,29 @@ void HandleKeyPress(void)
 					                ButtonWindow ? ButtonWindow->frame : None,
 					                ButtonWindow, &Event, Context, false);
 			}
+
+			/* Done whatever invocation of the entry we need */
 		}
 		else {
+			/* Was no item; pop out of the menu */
 			PopDownMenu();
 			XUngrabPointer(dpy, CurrentTime);
 		}
+
+		/*
+		 * We're done handling the keypress in a menu, so there's nothing
+		 * else to do.
+		 */
 		return;
 	}
 
+
+	/*
+	 * Not in a menu, so we loop through our various bindings.  First,
+	 * figure out what context we're in.  This goes in a global var,
+	 * presumably because stuff way down the chain of invoking some item
+	 * may need to refer up to it.
+	 */
 	Context = C_NO_CONTEXT;
 	if(Event.xany.window == Scr->Root) {
 		if(AlternateContext) {
@@ -760,8 +890,7 @@ void HandleKeyPress(void)
 			Context = C_ALTERNATE;
 		}
 		else if(AlternateKeymap && Event.xkey.subwindow) {
-			w = Event.xkey.subwindow;
-			Tmp_win = GetTwmWindow(w);
+			Tmp_win = GetTwmWindow(Event.xkey.subwindow);
 			if(Tmp_win) {
 				Event.xany.window = Tmp_win->w;
 			}
@@ -772,6 +901,7 @@ void HandleKeyPress(void)
 	}
 	if(Tmp_win) {
 		if(0) {
+			/* Dummy to simplify constructions of else if's */
 		}
 #ifdef EWMH_DESKTOP_ROOT
 		else if(Tmp_win->ewmhWindowType == wt_Desktop) {
@@ -802,53 +932,113 @@ void HandleKeyPress(void)
 		}
 	}
 
-	modifier = (Event.xkey.state | AlternateKeymap) & mods_used;
+	/*
+	 * We've figured out the Context.  Now see what modifiers we might
+	 * have set...
+	 */
+	unsigned int modifier = (Event.xkey.state | AlternateKeymap) & mods_used;
 	modifier = set_mask_ignore(modifier);
 	if(AlternateKeymap) {
 		XUngrabPointer(dpy, CurrentTime);
 		XUngrabKeyboard(dpy, CurrentTime);
 		AlternateKeymap = 0;
 	}
-	for(key = Scr->FuncKeyRoot.next; key != NULL; key = key->next) {
-		if(key->keycode == Event.xkey.keycode &&
-		                key->mods == modifier &&
-		                (key->cont == Context || key->cont == C_NAME)) {
-			/* weed out the functions that don't make sense to execute
-			 * from a key press
-			 * TODO: add keyboard moving/resizing of windows.
-			 */
-			if(key->func == F_MOVE || key->func == F_RESIZE) {
-				return;
-			}
 
-			if(key->cont != C_NAME) {
-				if(key->func == F_MENU) {
-					ButtonWindow = Tmp_win;
-					do_key_menu(key->menu, (Window) None);
-				}
-				else {
+
+	/*
+	 * Loop over our key bindings and do its thing if we find a matching
+	 * one.
+	 */
+	for(FuncKey *key = Scr->FuncKeyRoot.next; key != NULL; key = key->next) {
+		/*
+		 * Is this what we're trying to invoke?  Gotta be the right key,
+		 * and right modifier; those are easy.
+		 *
+		 * Context is tougher; that has to match what we're expecting as
+		 * well, except in the case of C_NAME, which we always have to
+		 * check to see if it'll match any windows.  So if we have the
+		 * right key and modifier, and it's a C_NAME context, it's a
+		 * "maybe" match and we have to go through the checks.
+		 */
+		if(key->keycode != Event.xkey.keycode ||
+		                key->mods != modifier ||
+		                (key->cont != Context && key->cont != C_NAME)) {
+			/* Nope, not yet */
+			continue;
+		}
+
+		/* 'k, it's a match (or potential match, in C_NAME case) */
+
+		/*
+		 * Weed out the functions that don't make sense to execute from a
+		 * key press
+		 *
+		 * TODO: add keyboard moving/resizing of windows.
+		 */
+		if(key->func == F_MOVE || key->func == F_RESIZE) {
+			return;
+		}
+
+		if(key->cont != C_NAME) {
+			/* Normal context binding; do what it wants */
+			if(key->func == F_MENU) {
+				/*
+				 * f.menu doesn't call the f.menu handler; we directly
+				 * do_key_menu() to pull it up.
+				 *
+				 * Note this is "we called f.menu from a keybinding", not
+				 * "we hit f.menu inside a menu we had up"; that's above.
+				 */
+				ButtonWindow = Tmp_win;
+				do_key_menu(key->menu, (Window) None);
+			}
+			else {
 #ifdef EWMH_DESKTOP_ROOT
-					if(Context == C_ROOT && Tmp_win != NULL) {
-						Context = C_WINDOW;
-						fprintf(stderr, "HandleKeyPress: wt_Desktop -> C_WINDOW\n");
-					}
+				if(Context == C_ROOT && Tmp_win != NULL) {
+					Context = C_WINDOW;
+					fprintf(stderr, "HandleKeyPress: wt_Desktop -> C_WINDOW\n");
+				}
 #endif /* EWMH */
-					ExecuteFunction(key->func, key->action, Event.xany.window,
-					                Tmp_win, &Event, Context, false);
+				ExecuteFunction(key->func, key->action, Event.xany.window,
+				                Tmp_win, &Event, Context, false);
+				if(!AlternateKeymap && !AlternateContext) {
+					XUngrabPointer(dpy, CurrentTime);
+				}
+			}
+			return;
+		}
+		else {
+			/*
+			 * By-name binding (i.e., quoted string for the context
+			 * argument in config; see the manual).  Find windows
+			 * matching that name and invoke on them, if any.
+			 *
+			 * This is the 'maybe' case above; we don't know whether this
+			 * does something until we try it.  If we don't get a match,
+			 * we loop back around and keep going through our functions
+			 * until we do.
+			 */
+			bool matched = false;
+			const size_t len = strlen(key->win_name);
+
+			/* try and match the name first */
+			for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
+			                Tmp_win = Tmp_win->next) {
+				if(!strncmp(key->win_name, Tmp_win->name, len)) {
+					matched = true;
+					ExecuteFunction(key->func, key->action, Tmp_win->frame,
+					                Tmp_win, &Event, C_FRAME, false);
 					if(!AlternateKeymap && !AlternateContext) {
 						XUngrabPointer(dpy, CurrentTime);
 					}
 				}
-				return;
 			}
-			else {
-				bool matched = false;
-				len = strlen(key->win_name);
 
-				/* try and match the name first */
+			/* now try the res_name */
+			if(!matched) {
 				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
 				                Tmp_win = Tmp_win->next) {
-					if(!strncmp(key->win_name, Tmp_win->name, len)) {
+					if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
 						matched = true;
 						ExecuteFunction(key->func, key->action, Tmp_win->frame,
 						                Tmp_win, &Event, C_FRAME, false);
@@ -857,43 +1047,47 @@ void HandleKeyPress(void)
 						}
 					}
 				}
+			}
 
-				/* now try the res_name */
-				if(!matched)
-					for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
-					                Tmp_win = Tmp_win->next) {
-						if(!strncmp(key->win_name, Tmp_win->class.res_name, len)) {
-							matched = true;
-							ExecuteFunction(key->func, key->action, Tmp_win->frame,
-							                Tmp_win, &Event, C_FRAME, false);
-							if(!AlternateKeymap && !AlternateContext) {
-								XUngrabPointer(dpy, CurrentTime);
-							}
+			/* now try the res_class */
+			if(!matched) {
+				for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
+				                Tmp_win = Tmp_win->next) {
+					if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
+						matched = true;
+						ExecuteFunction(key->func, key->action, Tmp_win->frame,
+						                Tmp_win, &Event, C_FRAME, false);
+						if(!AlternateKeymap && !AlternateContext) {
+							XUngrabPointer(dpy, CurrentTime);
 						}
 					}
-
-				/* now try the res_class */
-				if(!matched)
-					for(Tmp_win = Scr->FirstWindow; Tmp_win != NULL;
-					                Tmp_win = Tmp_win->next) {
-						if(!strncmp(key->win_name, Tmp_win->class.res_class, len)) {
-							matched = true;
-							ExecuteFunction(key->func, key->action, Tmp_win->frame,
-							                Tmp_win, &Event, C_FRAME, false);
-							if(!AlternateKeymap && !AlternateContext) {
-								XUngrabPointer(dpy, CurrentTime);
-							}
-						}
-					}
-				if(matched) {
-					return;
 				}
 			}
-		}
-	}
 
-	/* if we get here, no function key was bound to the key.  Send it
-	 * to the client if it was in a window we know about.
+			/*
+			 * If we wound up invoking something, we're done, so return.
+			 * If we didn't, we fall through to the next loop through our
+			 * defined bindings.
+			 *
+			 * By-name bindings are unique in this; normal contexts
+			 * couldn't have multiple matches, so that side of things
+			 * finishes when it deals with its found match.  But with
+			 * by-name we could have multiple bindings of a given
+			 * button/modifier with different names, so we have to go
+			 * back around to the next run through the for() loop.
+			 */
+			if(matched) {
+				return;
+			}
+		} // regular context or by-name?
+	} // Loop over all bindings
+
+
+	/*
+	 * If we get here, no function key was bound to the key.  Send it to
+	 * the client if it was in a window we know about.  Mostly this
+	 * doesn't happen; clients with focus get their events more directly,
+	 * but special cases may cause this.
 	 */
 	if(Tmp_win) {
 		if(Context == C_WORKSPACE) {
@@ -909,6 +1103,8 @@ void HandleKeyPress(void)
 		}
 	}
 
+
+	/* And done */
 }
 
 
@@ -2323,6 +2519,9 @@ void HandleButtonRelease(void)
 }
 
 
+/*
+ * Pop up a submenu as a result of moving the mouse right on its entry.
+ */
 static void do_menu(MenuRoot *menu,     /* menu to pop up */
                     Window w)          /* invoking window or None */
 {
@@ -2351,6 +2550,11 @@ static void do_menu(MenuRoot *menu,     /* menu to pop up */
 	}
 }
 
+
+/*
+ * Pop up a submenu as a result of hitting the Right arrow key while on
+ * its entry.  We should try folding these two together a bit more.
+ */
 static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
                         Window w)              /* invoking window or None */
 {
@@ -2372,6 +2576,11 @@ static void do_key_menu(MenuRoot *menu,         /* menu to pop up */
 		center = true;
 	}
 	if(PopUpMenu(menu, x, y, center)) {
+		/*
+		 * Note: UpdateMenu() has the internal re-capture of the event
+		 * loop to handle in-menu stuff, so this won't actually return
+		 * until we somehow exit out of that [sub]menu.
+		 */
 		UpdateMenu();
 	}
 	else {
@@ -2492,6 +2701,11 @@ void HandleButtonPress(void)
 					if(tbf->num == ButtonPressed
 					                && tbf->mods == modifier) {
 						switch(tbf->func) {
+							/*
+							 * Opening up a menu doesn't use the f.menu
+							 * handler, we use our do_menu(); x-ref
+							 * comments in the handler for details.
+							 */
 							case F_MENU :
 								Context = C_TITLE;
 								ButtonWindow = Tmp_win;
@@ -2744,6 +2958,10 @@ void HandleButtonPress(void)
 	if(tmp) {
 		func = tmp->func;
 		switch(func) {
+			/*
+			 * f.menu isn't invoked, it's handle magically.  Other funcs
+			 * we just invoke.  X-ref the f.menu handler for details.
+			 */
 			case F_MENU :
 				do_menu(tmp->menu, (Window) None);
 				break;

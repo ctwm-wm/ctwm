@@ -734,7 +734,9 @@ CreateWindowTitlebarButtons(TwmWindow *tmp_win)
 				                            0, CopyFromParent,
 				                            CopyFromParent,
 				                            valuemask, &attributes);
-				XStoreName(dpy, tbw->window, "TB button");
+				if(Scr->NameDecorations) {
+					XStoreName(dpy, tbw->window, "TB button");
+				}
 
 				/*
 				 * XXX Can we just use tb->image for this instead?  I
@@ -1036,11 +1038,15 @@ CreateHighlightWindows(TwmWindow *tmp_win)
                               Scr->d_visual, valuemask, &attributes)
 	if(Scr->TitleJustification != TJ_LEFT) {
 		tmp_win->hilite_wl = MKWIN();
-		XStoreName(dpy, tmp_win->hilite_wl, "hilite_wl");
+		if(Scr->NameDecorations) {
+			XStoreName(dpy, tmp_win->hilite_wl, "hilite_wl");
+		}
 	}
 	if(Scr->TitleJustification != TJ_RIGHT) {
 		tmp_win->hilite_wr = MKWIN();
-		XStoreName(dpy, tmp_win->hilite_wr, "hilite_wr");
+		if(Scr->NameDecorations) {
+			XStoreName(dpy, tmp_win->hilite_wr, "hilite_wr");
+		}
 	}
 #undef MKWIN
 }
@@ -1133,11 +1139,15 @@ CreateLowlightWindows(TwmWindow *tmp_win)
                               Scr->d_visual, valuemask, &attributes)
 	if(Scr->TitleJustification != TJ_LEFT) {
 		tmp_win->lolite_wl = MKWIN();
-		XStoreName(dpy, tmp_win->lolite_wl, "lolite_wl");
+		if(Scr->NameDecorations) {
+			XStoreName(dpy, tmp_win->lolite_wl, "lolite_wl");
+		}
 	}
 	if(Scr->TitleJustification != TJ_RIGHT) {
 		tmp_win->lolite_wr = MKWIN();
-		XStoreName(dpy, tmp_win->lolite_wr, "lolite_wr");
+		if(Scr->NameDecorations) {
+			XStoreName(dpy, tmp_win->lolite_wr, "lolite_wr");
+		}
 	}
 #undef MKWIN
 }
