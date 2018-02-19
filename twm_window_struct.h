@@ -22,13 +22,25 @@
  * into various linked lists for each screen and workspace, and
  * references get stashed in X Contexts so we can find the window that
  * events happen on.
+ *
+ * Much of this is initially setup in AddWindow() when we find out about
+ * and take over a window.
  */
 struct TwmWindow {
-	struct TwmWindow *next;     /* next twm window */
-	struct TwmWindow *prev;     /* previous twm window */
-	OtpWinList *otp;            /* OnTopPriority info for the window */
-	Window w;                   /* the child window */
-	int old_bw;                 /* border width before reparenting */
+	struct TwmWindow *next;  ///< Next TwmWindow on the Screen
+	struct TwmWindow *prev;  ///< Previous TwmWindow on the Screen
+
+	/// OTP control info for stacking.  Created in OtpAdd().
+	OtpWinList *otp;
+
+	/// The actual X Window handle
+	Window w;
+
+	/// Original window border width before we took it over and made our
+	/// own bordering.  This comes from the XWindowAttributes we get from
+	/// XGetWindowAttributes().
+	int old_bw;
+
 	Window frame;               /* the frame window */
 	Window title_w;             /* the title bar window */
 	Window hilite_wl;           /* the left hilite window */
