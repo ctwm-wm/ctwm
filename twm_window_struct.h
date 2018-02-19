@@ -1,8 +1,27 @@
+/**
+ * \file
+ * TwmWindow struct definition.
+ *
+ * This previously lived in ctwm.h, but was moved out here to make it a
+ * bit easier to scan either this struct or all the other stuff in
+ * ctwm.h, without so much rooting around.  It's \#include'd in ctwm.h,
+ * and shouldn't be included elsewhere; it's split out purely for
+ * dev ease.
+ */
 #ifndef _CTWM_TWM_WINDOW_STRUCT_H
 #define _CTWM_TWM_WINDOW_STRUCT_H
 
-/* for each window that is on the display, one of these structures
- * is allocated and linked into a list
+
+/**
+ * Info and control for every X Window we take over.
+ *
+ * As a window manager, our job is to...  y'know.  Manage windows.  Every
+ * other window on the screen we wrap and control (as well as a few of
+ * our internal windows) gets one of these structs put around it to hold
+ * the various config and state info we track about it.  They get put
+ * into various linked lists for each screen and workspace, and
+ * references get stashed in X Contexts so we can find the window that
+ * events happen on.
  */
 struct TwmWindow {
 	struct TwmWindow *next;     /* next twm window */
