@@ -2437,7 +2437,7 @@ f.beep::
 
 f.bottomzoom::
   This function is similar to the `f.fullzoom` function, but
-  resizes the window to fill only the bottom half of the screen.
+  resizes the window to fill only the bottom half of the current monitor.
 
 f.changepriority `rel-value`::
   Change the priority of a window by `rel-value` (enclosed within double
@@ -2560,15 +2560,15 @@ f.forwmapiconmgr::
 
 f.fullscreenzoom::
   This function resizes the client part (the inside the frame) of the selected
-  window to the full size of the display or else restores the original size if
-  the window was already zoomed. The frame is moved just outside the screen.
-  This gives the appearance that window is shown without the frame:
+  window to the full size of the current monitor or else restores the original
+  size if the window was already zoomed. The frame is moved just outside the
+  monitor.  This gives the appearance that window is shown without the frame:
   since ctwm can't dynamically make a window borderless, this is the next best
   thing.
 
 f.fullzoom::
-  This function resizes the selected window to the full size of the display or
-  else restores the original size if the window was already zoomed.
+  This function resizes the selected window to the full size of the current
+  monitor or else restores the original size if the window was already zoomed.
 
 f.function `string`::
   This function executes the user-defined function whose name is specified
@@ -2588,7 +2588,7 @@ f.hideworkspacemgr::
 
 f.horizoom::
   This variable is similar to the `f.zoom` function except that the
-  selected window is resized to the full width of the display.
+  selected window is resized to the full width of the current monitor.
 
 f.htzoom::
   This function is a synonym for `f.topzoom`.
@@ -2640,7 +2640,7 @@ f.leftworkspace::
 
 f.leftzoom::
   This variable is similar to the `f.bottomzoom` function but causes
-  the selected window is only resized to the left half of the display.
+  the selected window is only resized to the left half of the current monitor.
 
 f.lower::
   This function lowers the selected window.
@@ -2825,7 +2825,7 @@ f.rightworkspace::
 
 f.rightzoom::
   This variable is similar to the `f.bottomzoom` function except that
-  the selected window is only resized to the right half of the display.
+  the selected window is only resized to the right half of the current monitor.
 
 f.ring::
   Selects a window and adds it to the WarpRing, or removes it if it
@@ -2933,7 +2933,7 @@ f.toggleworkspacemgr::
 
 f.topzoom::
   This variable is similar to the `f.bottomzoom` function except that
-  the selected window is only resized to the top half of the display.
+  the selected window is only resized to the top half of the current monitor.
 
 f.trace `string`::
   Used for handling dumping debug output.  If a filename is given in
@@ -3013,6 +3013,59 @@ f.warptoscreen `string`::
 f.winrefresh::
   This function is similar to the `f.refresh` function except that only the
   selected window is refreshed.
+
+f.xbottomzoom::
+  This function is similar to the `f.xfullzoom` function, but
+  resizes the window to fill only the bottom half of the screen (across all
+  monitors).
+
+f.xfullscreenzoom::
+  This function resizes the client part (the inside the frame) of the selected
+  window to the full size of the display (across all monitors) or else
+  restores the original size if the window was already zoomed. The frame is
+  moved just outside the screen. This gives the appearance that window is
+  shown without the frame: since ctwm can't dynamically make a window
+  borderless, this is the next best thing.
+
+f.xfullzoom::
+  This function resizes the selected window to the full size of the display
+  (across all monitors) or else restores the original size if the window was
+  already zoomed.
+
+f.xhorizoom::
+  This variable is similar to the `f.xzoom` function except that the selected
+  window is resized to the full width of the display (across all monitors).
+
+f.xhtzoom::
+  This function is a synonym for `f.xtopzoom`.
+
+f.xhzoom::
+  This function is a synonym for `f.xhorizoom`.
+
+f.xleftzoom::
+  This variable is similar to the `f.xbottomzoom` function but causes the
+  selected window is only resized to the left half of the display (across all
+  monitors).
+
+f.xrightzoom::
+  This variable is similar to the `f.xbottomzoom` function except that the
+  selected window is only resized to the right half of the display (across all
+  monitors).
+
+f.xtopzoom::
+  This variable is similar to the `f.xbottomzoom` function except that the
+  selected window is only resized to the top half of the display (accross all
+  monitors).
+
+f.xvlzoom::
+  This function is a synonym for `f.xleftzoom`.
+
+f.xvrzoom::
+  This function is a synonym for `f.xrightzoom`.
+
+f.xzoom::
+  This function is similar to the `f.xfullzoom` function, except that
+  the only the height of the selected window is changed.
 
 f.zoom::
   This function is similar to the `f.fullzoom` function, except that

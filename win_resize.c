@@ -978,51 +978,91 @@ void fullzoom(TwmWindow *tmp_win, int func)
 		switch(func) {
 			case ZOOM_NONE:
 				break;
-			case F_ZOOM:
+			case F_XZOOM:
 				finalArea = RLayoutFullVert(borderedLayout, &area);
+			/* fall through */
+			case F_ZOOM:
+				if(finalArea == NULL) {
+					finalArea = RLayoutFullVert1(borderedLayout, &area);
+				}
 				dragy = finalArea->y;
 				dragHeight = finalArea->height - frame_bw_times_2;
 				break;
-			case F_HORIZOOM:
+			case F_XHORIZOOM:
 				finalArea = RLayoutFullHoriz(borderedLayout, &area);
+			/* fall through */
+			case F_HORIZOOM:
+				if(finalArea == NULL) {
+					finalArea = RLayoutFullHoriz1(borderedLayout, &area);
+				}
 				dragx = finalArea->x;
 				dragWidth = finalArea->width - frame_bw_times_2;
 				break;
-			case F_FULLZOOM:
+			case F_XFULLZOOM:
 				finalArea = RLayoutFull(borderedLayout, &area);
+			/* fall through */
+			case F_FULLZOOM:
+				if(finalArea == NULL) {
+					finalArea = RLayoutFull1(borderedLayout, &area);
+				}
 				dragx = finalArea->x;
 				dragy = finalArea->y;
 				dragWidth = finalArea->width - frame_bw_times_2;
 				dragHeight = finalArea->height - frame_bw_times_2;
 				break;
-			case F_LEFTZOOM:
+			case F_XLEFTZOOM:
 				dragx = RLayoutFindLeftEdge(borderedLayout, &area);
 				dragWidth += area.x - dragx;
 				// TODO make it visible if hidden
 				break;
-			case F_RIGHTZOOM: {
+			case F_LEFTZOOM:
+				dragx = RLayoutFindMonitorLeftEdge(borderedLayout, &area);
+				dragWidth += area.x - dragx;
+				// TODO make it visible if hidden
+				break;
+			case F_XRIGHTZOOM: {
 				int limit = RLayoutFindRightEdge(borderedLayout, &area);
 				dragWidth = limit - area.x + 1 - frame_bw_times_2;
 				// TODO make it visible if hidden
 			}
 			break;
-			case F_TOPZOOM:
+			case F_RIGHTZOOM: {
+				int limit = RLayoutFindMonitorRightEdge(borderedLayout, &area);
+				dragWidth = limit - area.x + 1 - frame_bw_times_2;
+				// TODO make it visible if hidden
+			}
+			break;
+			case F_XTOPZOOM:
 				dragy = RLayoutFindTopEdge(borderedLayout, &area);
 				dragHeight += area.y - dragy;
 				// TODO make it visible if hidden
 				break;
-			case F_BOTTOMZOOM: {
+			case F_TOPZOOM:
+				dragy = RLayoutFindMonitorTopEdge(borderedLayout, &area);
+				dragHeight += area.y - dragy;
+				// TODO make it visible if hidden
+				break;
+			case F_XBOTTOMZOOM: {
 				int limit = RLayoutFindBottomEdge(borderedLayout, &area);
 				dragHeight = limit - area.y + 1 - frame_bw_times_2;
 				// TODO make it visible if hidden
 			}
 			break;
-			case F_FULLSCREENZOOM: {
+			case F_BOTTOMZOOM: {
+				int limit = RLayoutFindMonitorBottomEdge(borderedLayout, &area);
+				dragHeight = limit - area.y + 1 - frame_bw_times_2;
+				// TODO make it visible if hidden
+			}
+			break;
+			case F_FULLSCREENZOOM:
+			case F_XFULLSCREENZOOM: {
 				int bw3D = tmp_win->frame_bw3D;
 				int bw3D_times_2 = 2 * bw3D;
 				int bw = tmp_win->frame_bw + bw3D;
 
-				finalArea = RLayoutFull(borderedLayout, &area);
+				finalArea = func == F_XFULLSCREENZOOM
+				            ? RLayoutFull(borderedLayout, &area)
+				            : RLayoutFull1(borderedLayout, &area);
 				dragx = finalArea->x - bw;
 				dragy = finalArea->y - tmp_win->title_height - bw;
 				dragWidth = finalArea->width + bw3D_times_2;

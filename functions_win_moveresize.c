@@ -979,6 +979,39 @@ DFHANDLER(bottomzoom)
 	fullzoom(tmp_win, func);
 }
 
+DFHANDLER(xzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xhorizoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xfullzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xfullscreenzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xleftzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xrightzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xtopzoom)
+{
+	fullzoom(tmp_win, func);
+}
+DFHANDLER(xbottomzoom)
+{
+	fullzoom(tmp_win, func);
+}
+
 
 /*
  * f.fill - resizing until collision
