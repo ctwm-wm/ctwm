@@ -543,7 +543,7 @@ void UpdateMenu(void)
 		              &x_root, &y_root, &x, &y, &JunkMask);
 
 		/* if we haven't received the enter notify yet, wait */
-		if(ActiveMenu && !ActiveMenu->entered) {
+		if(!ActiveMenu->entered) {
 			continue;
 		}
 
