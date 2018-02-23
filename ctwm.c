@@ -731,18 +731,19 @@ int main(int argc, char **argv)
 		attributes.bit_gravity = NorthWestGravity;
 
 		{
+			RArea area = RLayoutGetAreaIndex(Scr->Layout, 0);
 			int sx, sy;
 			if(Scr->CenterFeedbackWindow) {
-				sx = (Scr->rootw / 2) - (Scr->SizeStringWidth / 2);
-				sy = (Scr->rooth / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
+				sx = (area.width / 2) - (Scr->SizeStringWidth / 2);
+				sy = (area.height / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
 				if(Scr->SaveUnder) {
 					attributes.save_under = True;
 					valuemask |= CWSaveUnder;
 				}
 			}
 			else {
-				sx = 0;
-				sy = 0;
+				sx = area.x;
+				sy = area.y;
 			}
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
 			                                Scr->SizeStringWidth,
