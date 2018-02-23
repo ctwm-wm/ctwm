@@ -18,6 +18,7 @@ int RAreaY2(RArea *self);
 int RAreaArea(RArea *self);
 RArea *RAreaIntersect(RArea *self, RArea *other);
 int RAreaIsIntersect(RArea *self, RArea *other);
+int RAreaContainsXY(RArea *self, int x, int y);
 RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other);
 RAreaList *RAreaVerticalUnion(RArea *self, RArea *other);
 

@@ -101,6 +101,12 @@ int RAreaIsIntersect(RArea *self, RArea *other)
 	return 1;
 }
 
+int RAreaContainsXY(RArea *self, int x, int y)
+{
+	return x >= self->x && x <= RAreaX2(self)
+	       && y >= self->y && y <= RAreaY2(self);
+}
+
 RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 {
 	// [other]|[self] (perhaps common lines, but areas disjointed)

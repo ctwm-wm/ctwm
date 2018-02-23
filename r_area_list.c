@@ -257,13 +257,15 @@ RAreaList *RAreaListIntersect(RAreaList *self, RArea *area)
 }
 
 void RAreaListForeach(RAreaList *self,
-                      void (*func)(RArea *cur_area, void *data),
+                      int (*func)(RArea *cur_area, void *data),
                       void *data)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 
 	while(cur_area < area_end) {
-		func(cur_area++, data);
+		if(func(cur_area++, data)) {
+			break;
+		}
 	}
 }
 

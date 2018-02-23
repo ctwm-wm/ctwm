@@ -203,6 +203,40 @@ int RLayoutFindRightEdge(RLayout *self, RArea *area)
 	return min_x2;
 }
 
+struct monitor_finder_xy {
+	RArea *area;
+	int x, y;
+};
+
+static int _findMonitorByXY(RArea *cur, void *vdata)
+{
+	struct monitor_finder_xy *data = (struct monitor_finder_xy *)vdata;
+
+	if(RAreaContainsXY(cur, data->x, data->y)) {
+		data->area = cur;
+		return 1;
+	}
+	return 0;
+}
+
+RArea RLayoutGetAreaAtXY(RLayout *self, int x, int y)
+{
+	struct monitor_finder_xy data = { NULL, x, y };
+
+	RAreaListForeach(self->monitors, _findMonitorByXY, &data);
+
+	return data.area == NULL ? self->monitors->areas[0] : *data.area;
+}
+
+RArea RLayoutGetAreaIndex(RLayout *self, int index)
+{
+	if(index >= self->monitors->len) {
+		index = self->monitors->len - 1;
+	}
+
+	return self->monitors->areas[index];
+}
+
 struct monitor_edge_finder {
 	RArea *area;
 	union {
@@ -214,7 +248,7 @@ struct monitor_edge_finder {
 	int found;
 };
 
-static void _findMonitorBottomEdge(RArea *cur, void *vdata)
+static int _findMonitorBottomEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -225,6 +259,7 @@ static void _findMonitorBottomEdge(RArea *cur, void *vdata)
 		data->u.min_y2 = RAreaY2(cur);
 		data->found = 1;
 	}
+	return 0;
 }
 
 int RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
@@ -236,7 +271,7 @@ int RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.min_y2 : RLayoutFindBottomEdge(self, area);
 }
 
-static void _findMonitorTopEdge(RArea *cur, void *vdata)
+static int _findMonitorTopEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -247,6 +282,7 @@ static void _findMonitorTopEdge(RArea *cur, void *vdata)
 		data->u.max_y = cur->y;
 		data->found = 1;
 	}
+	return 0;
 }
 
 int RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
@@ -258,7 +294,7 @@ int RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.max_y : RLayoutFindTopEdge(self, area);
 }
 
-static void _findMonitorLeftEdge(RArea *cur, void *vdata)
+static int _findMonitorLeftEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -269,6 +305,7 @@ static void _findMonitorLeftEdge(RArea *cur, void *vdata)
 		data->u.max_x = cur->x;
 		data->found = 1;
 	}
+	return 0;
 }
 
 int RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
@@ -280,7 +317,7 @@ int RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.max_x : RLayoutFindLeftEdge(self, area);
 }
 
-static void _findMonitorRightEdge(RArea *cur, void *vdata)
+static int _findMonitorRightEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -291,6 +328,7 @@ static void _findMonitorRightEdge(RArea *cur, void *vdata)
 		data->u.min_x2 = RAreaX2(cur);
 		data->found = 1;
 	}
+	return 0;
 }
 
 int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)

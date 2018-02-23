@@ -14,6 +14,8 @@ void RLayoutFree(RLayout *self);
 RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
                             int top_margin, int bottom_margin);
 
+RArea RLayoutGetAreaAtXY(RLayout *self, int x, int y);
+RArea RLayoutGetAreaIndex(RLayout *self, int index);
 
 void RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
                                int *bottom);
