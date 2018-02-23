@@ -1072,7 +1072,6 @@ Occupy(TwmWindow *twm_win)
 {
 	int          x, y;
 	unsigned int width, height;
-	int          xoffset, yoffset;
 	Window       w;
 	struct OccupyWindow    *occupyWindow;
 	TwmWindow *occupy_twm;
@@ -1092,27 +1091,17 @@ Occupy(TwmWindow *twm_win)
 	             &JunkBW, &JunkDepth);
 	XQueryPointer(dpy, Scr->Root, &JunkRoot, &JunkRoot, &JunkX, &JunkY,
 	              &x, &y, &JunkMask);
-	x -= (width  / 2);
-	y -= (height / 2);
-	if(x < 0) {
-		x = 0;
-	}
-	if(y < 0) {
-		y = 0;
-	}
-	xoffset = width  + 2 * Scr->BorderWidth;
-	yoffset = height + 2 * Scr->BorderWidth + Scr->TitleHeight;
-
-	/* ... (but not off the screen!) */
-	if((x + xoffset) > Scr->rootw) {
-		x = Scr->rootw - xoffset;
-	}
-	if((y + yoffset) > Scr->rooth) {
-		y = Scr->rooth - yoffset;
-	}
 
 	occupy_twm = occupyWindow->twm_win;
 	occupy_twm->occupation = twm_win->occupation;
+
+	width += 2 * (occupy_twm->frame_bw3D + occupy_twm->frame_bw);
+	height += 2 * (occupy_twm->frame_bw3D + occupy_twm->frame_bw);
+	x -= (width  / 2);
+	y -= (height / 2);
+
+	/* Clip to screen */
+	ConstrainByLayout(Scr->BorderedLayout, -1, &x, width, &y, height);
 
 	/* Move the occupy window to where it should be */
 	if(occupy_twm->parent_vs != twm_win->parent_vs) {
