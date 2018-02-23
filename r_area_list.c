@@ -2,6 +2,7 @@
  * Copyright notice...
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -381,10 +382,10 @@ int RAreaListMinY2(RAreaList *self)
 void RAreaListPrint(RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
-	printf("[len=%d cap=%d", self->len, self->cap);
+	fprintf(stderr, "[len=%d cap=%d", self->len, self->cap);
 	while(cur_area < area_end) {
-		printf(" ");
+		fprintf(stderr, " ");
 		RAreaPrint(cur_area++);
 	}
-	printf("]");
+	fprintf(stderr, "]");
 }

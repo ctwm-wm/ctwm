@@ -285,27 +285,18 @@ static void _findMonitorRightEdge(RArea *cur, void *vdata)
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
 	// Does the area intersect the current list area
-	printf("  > cur=");
-	RAreaPrint(cur);
-	printf(" vs win=");
-	RAreaPrint(data->area);
 	if(RAreaIsIntersect(cur, data->area)
 	                && RAreaX2(cur) > RAreaX2(data->area)
 	                && (!data->found || RAreaX2(cur) < data->u.min_x2)) {
 		data->u.min_x2 = RAreaX2(cur);
 		data->found = 1;
-		printf(" min_x2=%d", data->u.min_x2);
 	}
-	printf(" (%d/%d/%d)\n", RAreaIsIntersect(cur, data->area), data->u.min_x2,
-	       data->found);
 }
 
 int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
 {
 	struct monitor_edge_finder data = { area };
 
-	printf("RLayoutFindMonitorRightEdge ");
-	RLayoutPrint(self);
 	RAreaListForeach(self->monitors, _findMonitorRightEdge, &data);
 
 	return data.found ? data.u.min_x2 : RLayoutFindRightEdge(self, area);
@@ -416,11 +407,11 @@ RArea *RLayoutFull1(RLayout *self, RArea *area)
 
 void RLayoutPrint(RLayout *self)
 {
-	printf("[monitors=");
+	fprintf(stderr, "[monitors=");
 	RAreaListPrint(self->monitors);
-	printf("\n horiz=");
+	fprintf(stderr, "\n horiz=");
 	RAreaListPrint(self->horiz);
-	printf("\n vert=");
+	fprintf(stderr, "\n vert=");
 	RAreaListPrint(self->vert);
-	printf("]\n");
+	fprintf(stderr, "]\n");
 }

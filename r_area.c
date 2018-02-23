@@ -283,5 +283,6 @@ RAreaList *RAreaVerticalUnion(RArea *self, RArea *other)
 
 void RAreaPrint(RArea *self)
 {
-	printf("[x=%d y=%d w=%d h=%d]", self->x, self->y, self->width, self->height);
+	fprintf(stderr, "[x=%d y=%d w=%d h=%d]", self->x, self->y, self->width,
+	        self->height);
 }

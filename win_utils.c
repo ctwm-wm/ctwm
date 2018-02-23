@@ -513,8 +513,6 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 		monitor_top = RLayoutFindMonitorTopEdge(Scr->BorderedLayout, &area);
 		monitor_left = RLayoutFindMonitorLeftEdge(Scr->BorderedLayout, &area);
 		monitor_right = RLayoutFindMonitorRightEdge(Scr->BorderedLayout, &area);
-		printf("TryToPack monitor: left=%d top=%d right=%d bot=%d\n",
-		       monitor_left, monitor_top, monitor_right, monitor_bot);
 
 		// Left border
 		RAreaNewIn(monitor_left - 1, monitor_top,
@@ -537,9 +535,6 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 		RAreaNewIn(monitor_left, monitor_bot + 1,
 		           monitor_right - monitor_left + 1, 1, &cur_win);
 		_tryToPack(winw, winh, &cur_win, x, y);
-
-		printf("TryToPack: x=%d y=%d w=%d h=%d (bw=%d)\n", *x, *y, winw, winh,
-		       tmp_win->frame_bw);
 	}
 
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
@@ -563,7 +558,6 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 
 		_tryToPack(winw, winh, &cur_win, x, y);
 	}
-	printf("=TryToPack: x=%d y=%d w=%d h=%d\n\n", *x, *y, winw, winh);
 }
 
 

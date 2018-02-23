@@ -31,9 +31,11 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 		           ps_monitors[index].width,
 		           ps_monitors[index].height,
 		           &cur_area);
-		printf("NEW area: ");
+#ifdef DEBUG
+		fprintf(stderr, "NEW area: ");
 		RAreaPrint(&cur_area);
-		printf("\n");
+		fprintf(stderr, "\n");
+#endif
 
 		RAreaListAdd(areas, &cur_area);
 	}

@@ -397,8 +397,10 @@ int main(int argc, char **argv)
 		                                                   Scr->rooth),
 		                                   NULL));
 #endif
-		printf("Full: ");
+#ifdef DEBUG
+		fprintf(stderr, "Full: ");
 		RLayoutPrint(Scr->Layout);
+#endif
 
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
@@ -531,8 +533,10 @@ int main(int argc, char **argv)
 			        "Borders too large! correct BorderLeft, BorderRight, BorderTop and/or BorderBottom parameters\n");
 			exit(1);
 		}
-		printf("Bordered: ");
+#ifdef DEBUG
+		fprintf(stderr, "Bordered: ");
 		RLayoutPrint(Scr->BorderedLayout);
+#endif
 
 		InitVirtualScreens(Scr);
 #ifdef EWMH
