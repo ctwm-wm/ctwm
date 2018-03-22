@@ -104,7 +104,7 @@ void RAreaListDelete(RAreaList *self, int index)
 		return;
 	}
 
-	memcpy(&self->areas[index], &self->areas[index + 1], self->len - index);
+	memcpy(&self->areas[index], &self->areas[index + 1], (self->len - index) * sizeof(RArea));
 }
 
 void RAreaListAdd(RAreaList *self, RArea *area)
