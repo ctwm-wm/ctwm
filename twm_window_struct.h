@@ -41,14 +41,32 @@ struct TwmWindow {
 	/// XGetWindowAttributes().
 	int old_bw;
 
-	Window frame;               /* the frame window */
-	Window title_w;             /* the title bar window */
-	Window hilite_wl;           /* the left hilite window */
-	Window hilite_wr;           /* the right hilite window */
-	Window lolite_wl;           /* the left lolite window */
-	Window lolite_wr;           /* the right lolite window */
-	Cursor curcurs;             /* current resize cursor */
+	/**
+	 * \defgroup win_frame Window frame bits
+	 * These fields are related to the "frame" window; the decoration we
+	 * put around the application's own window (the thing in TwmWindow.w
+	 * above) to display borders, titlebars, etc.
+	 * @{
+	 */
+	Window frame;      ///< The X window for the overall frame
+	Window title_w;    ///< The title bar Window
+	Window hilite_wl;  ///< Left hilite window in titlebar
+	Window hilite_wr;  ///< Right hilite window in titlebar
+	Window lolite_wl;  ///< Left lolite window in titlebar
+	Window lolite_wr;  ///< Right lolite window in titlebar
+
+	/// Current resize cursor.  This changes depending on where on the
+	/// frame you are, if we're making them.  \sa
+	/// ScreenInfo.BorderCursors
+	Cursor curcurs;
+
+	/// Pixmap to which the border is set to when window isn't focused.
+	/// \sa TwmWindow.borderC  \sa SetFocusVisualAttributes()
+	/// \todo See the XXX in SetFocusVisualAttributes()
 	Pixmap gray;
+
+	/// @}
+
 	struct Icon *icon;          /* the curent icon */
 	name_list *iconslist;       /* the current list of icons */
 	int frame_x;                /* x position of frame */
