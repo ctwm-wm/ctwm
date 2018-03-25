@@ -67,22 +67,38 @@ struct TwmWindow {
 
 	/// @}
 
-	struct Icon *icon;          /* the curent icon */
-	name_list *iconslist;       /* the current list of icons */
-	int frame_x;                /* x position of frame */
-	int frame_y;                /* y position of frame */
-	unsigned int frame_width;   /* width of frame */
-	unsigned int frame_height;  /* height of frame */
-	int frame_bw;               /* borderwidth of frame */
-	int frame_bw3D;             /* 3D borderwidth of frame */
-	int actual_frame_x;         /* save frame_y of frame when squeezed */
-	int actual_frame_y;         /* save frame_x of frame when squeezed */
-	unsigned int actual_frame_width;  /* save width of frame when squeezed */
-	unsigned int actual_frame_height; /* save height of frame when squeezed */
+	struct Icon *icon;     ///< The current icon.  \sa CreateIconWindow()
+	name_list *iconslist;  ///< The current list of potential icons
+
+	/// \addtogroup win_frame Window frame bits
+	/// @{
+	int frame_x;                ///< X position on screen of frame
+	int frame_y;                ///< Y position on screen of frame
+	unsigned int frame_width;   ///< Width of frame
+	unsigned int frame_height;  ///< Height of frame
+
+	/// 2d border width.  \sa ScreenInfo.BorderWidth
+	int frame_bw;
+	/// 3d border width.  \sa ScreenInfo.ThreeDBorderWidth
+	int frame_bw3D;
+
+	int actual_frame_x;         ///< Saved frame_x when squeezed
+	int actual_frame_y;         ///< Saved frame_y when squeezed
+	unsigned int actual_frame_width;  ///< Saved frame_width when squeezed
+	unsigned int actual_frame_height; ///< Saved frame_height when squeezed
+
+	/// X coord of window title relative to title_w.
+	/// \sa ComputeTitleLocation()
 	int title_x;
+	/// Y coord of window title relative to title_w.
+	/// \sa ComputeTitleLocation()
 	int title_y;
-	unsigned int title_height;  /* height of the title bar */
-	unsigned int title_width;   /* width of the title bar */
+
+	unsigned int title_height;  ///< Height of the full title bar
+	unsigned int title_width;   ///< Width of the full title bar
+
+	/// @}
+
 	char *name;                 /* name of the window */
 	char *icon_name;            /* name of the icon */
 	int name_x;                 /* start x of name text */
