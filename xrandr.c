@@ -5,6 +5,8 @@
 #include "xrandr.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <X11/extensions/Xrandr.h>
 
 #include "r_area_list.h"
@@ -15,6 +17,7 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 {
 	int i_nmonitors = 0, index;
 	XRRMonitorInfo *ps_monitors;
+	char **monitor_names, *name;
 	RAreaList *areas;
 	RArea cur_area;
 
@@ -24,6 +27,11 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 		return NULL;
 	}
 
+	monitor_names = malloc((i_nmonitors + 1) * sizeof(char *));
+	if(monitor_names == NULL) {
+		abort();
+	}
+
 	areas = RAreaListNew(i_nmonitors, NULL);
 	for(index = 0; index < i_nmonitors; index++) {
 		RAreaNewIn(ps_monitors[index].x,
@@ -31,13 +39,28 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 		           ps_monitors[index].width,
 		           ps_monitors[index].height,
 		           &cur_area);
+
+		name = XGetAtomName(dpy, ps_monitors[index].name);
 #ifdef DEBUG
-		fprintf(stderr, "NEW area: ");
+		fprintf(stderr, "NEW area: %s%s",
+		        name != NULL ? name : "",
+		        name != NULL ? ":" : "");
 		RAreaPrint(&cur_area);
 		fprintf(stderr, "\n");
 #endif
+		if(name != NULL) {
+			monitor_names[index] = strdup(name);
+			XFree(name);
+		}
+		else {
+			monitor_names[index] = strdup("");
+		}
 
 		RAreaListAdd(areas, &cur_area);
 	}
-	return RLayoutNew(areas);
+	monitor_names[index] = NULL;
+
+	XRRFreeMonitors(ps_monitors);
+
+	return RLayoutSetMonitorsNames(RLayoutNew(areas), monitor_names);
 }

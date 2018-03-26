@@ -22,6 +22,7 @@ typedef struct {
 	RAreaList *monitors;
 	RAreaList *horiz;
 	RAreaList *vert;
+	char **names;
 } RLayout;
 
 static inline int max(int a, int b)

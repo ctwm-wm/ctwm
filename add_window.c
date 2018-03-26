@@ -59,6 +59,7 @@
 #include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
+#include "xparsegeometry.h"
 
 
 int AddingX;
@@ -737,9 +738,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	{
 		char *geom = LookInListWin(Scr->WindowGeometries, tmp_win);
 		if(geom) {
-			int mask = XParseGeometry(geom, &tmp_win->attr.x, &tmp_win->attr.y,
-			                          (unsigned int *) &tmp_win->attr.width,
-			                          (unsigned int *) &tmp_win->attr.height);
+			int mask = RLayoutXParseGeometry(Scr->Layout, geom,
+			                                 &tmp_win->attr.x, &tmp_win->attr.y,
+			                                 (unsigned int *) &tmp_win->attr.width,
+			                                 (unsigned int *) &tmp_win->attr.height);
 
 			if(mask & XNegative) {
 				tmp_win->attr.x += Scr->rootw - tmp_win->attr.width;

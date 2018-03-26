@@ -32,7 +32,7 @@ RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area);
 void RAreaListForeach(RAreaList *self, int (*func)(RArea *area, void *data),
                       void *data);
 
-RArea *RAreaListBigArea(RAreaList *self);
+RArea RAreaListBigArea(RAreaList *self);
 RArea *RAreaListBestTarget(RAreaList *self, RArea *area);
 
 int RAreaListMaxX(RAreaList *self);

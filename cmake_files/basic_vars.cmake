@@ -72,6 +72,7 @@ set(CTWMSRC
 	workspace_config.c
 	workspace_manager.c
 	workspace_utils.c
+	xparsegeometry.c
 
 	# External libs
 	ext/repl_str.c

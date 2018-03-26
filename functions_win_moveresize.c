@@ -25,6 +25,7 @@
 #include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
+#include "xparsegeometry.h"
 
 
 /*
@@ -1222,7 +1223,7 @@ DFHANDLER(moveresize)
 	unsigned int width, height;
 	int px = 20, py = 30;
 
-	mask = XParseGeometry(action, &x, &y, &width, &height);
+	mask = RLayoutXParseGeometry(Scr->Layout, action, &x, &y, &width, &height);
 	if(!(mask &  WidthValue)) {
 		width = tmp_win->frame_width;
 	}

@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "r_layout.h"
 #include "r_area_list.h"
@@ -20,6 +21,7 @@ RLayout *RLayoutNew(RAreaList *monitors)
 	layout->monitors = monitors;
 	layout->horiz = RAreaListHorizontalUnion(monitors);
 	layout->vert = RAreaListVerticalUnion(monitors);
+	layout->names = NULL;
 
 	return layout;
 }
@@ -37,12 +39,28 @@ RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
 	return RLayoutNew(cropped_monitors);
 }
 
+static void _RLayoutFreeNames(RLayout *self)
+{
+	if(self->names != NULL) {
+		free(self->names);
+		self->names = NULL;
+	}
+}
+
 void RLayoutFree(RLayout *self)
 {
 	RAreaListFree(self->monitors);
 	RAreaListFree(self->horiz);
 	RAreaListFree(self->vert);
+	_RLayoutFreeNames(self);
 	free(self);
+}
+
+RLayout *RLayoutSetMonitorsNames(RLayout *self, char **names)
+{
+	_RLayoutFreeNames(self);
+	self->names = names;
+	return self;
 }
 
 static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
@@ -235,6 +253,31 @@ RArea RLayoutGetAreaIndex(RLayout *self, int index)
 	}
 
 	return self->monitors->areas[index];
+}
+
+RArea RLayoutGetAreaByName(RLayout *self, const char *name, int len)
+{
+	if(self->names != NULL) {
+		int index;
+
+		if(len < 0) {
+			len = strlen(name);
+		}
+
+		for(index = 0; index < self->monitors->len
+		                && self->names[index] != NULL; index++) {
+			if(strncmp(self->names[index], name, len) == 0) {
+				return self->monitors->areas[index];
+			}
+		}
+	}
+
+	return RAreaInvalid();
+}
+
+RArea RLayoutBigArea(RLayout *self)
+{
+	return RAreaListBigArea(self->monitors);
 }
 
 struct monitor_edge_finder {

@@ -14,8 +14,12 @@ void RLayoutFree(RLayout *self);
 RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
                             int top_margin, int bottom_margin);
 
+RLayout *RLayoutSetMonitorsNames(RLayout *self, char **names);
+
 RArea RLayoutGetAreaAtXY(RLayout *self, int x, int y);
 RArea RLayoutGetAreaIndex(RLayout *self, int index);
+RArea RLayoutGetAreaByName(RLayout *self, const char *name, int len);
+RArea RLayoutBigArea(RLayout *self);
 
 void RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
                                int *bottom);

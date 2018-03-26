@@ -1970,22 +1970,28 @@ WindowBox [{ `win-list` }]::
   creates a new window called a box, where
   all the client windows that match the windows list are opened in,
   instead of the root window. This is useful to group small windows
-  in the same box (xload for instance)
+  in the same box (xload for instance). When XrandR is
+  compiled, the geometry can be relative to a monitor, by prefixing
+  its name (visible with `xrandr(1)` command line) followed by `:`. This name
+  is ignored when XrandR is not available:
 +
 ------
-WindowBox "xloadbox" "320x100+0-0" {
+WindowBox "xloadbox" "HDMI1:320x100+0-0" {
     "xload"
 }
 ------
 +
 
 WindowGeometries { `win-list` }::
-  Used to give a default geometry to some clients :
+  Used to give a default geometry to some clients. When XrandR is
+  compiled, the geometry can be relative to a monitor, by prefixing
+  its name (visible with `xrandr(1)` command line) followed by `:`. This name
+  is ignored when XrandR is not available:
 +
 ------
 WindowGeometries {
     "Mozilla*"       "1000x800+10+10"
-    "jpilot*"        "800x600-0-0"
+    "jpilot*"        "HDMI1:800x600-0-0"
 }
 ------
 +
@@ -2025,11 +2031,15 @@ WorkSpaceFont `string`::
 WorkSpaceManagerGeometry `string` [ `columns` ]::
   This variable specifies the geometry of the workspace manager window. The
   `string` argument is standard geometry specification that indicates
-  the initial full size of the workspace manager. The `columns` argument
+  the initial full size of the workspace manager. When XrandR is
+  compiled, the geometry can be relative to a monitor, by prefixing
+  its name (visible with `xrandr(1)` command line) followed by `:`. This name
+  is ignored when XrandR is not available. The `columns` argument
   indicates the number of columns to use for the workspace manager window.
 +
 ------
 WorkSpaceManagerGeometry        "360x60+60-0" 8
+WorkSpaceManagerGeometry        "HDMI1:600x30+1235+0" 12
 ------
 +
 
@@ -2687,6 +2697,10 @@ f.moveresize `geometry`::
   standard X geometry syntax (e.g. 200x300+150-0). Sets the current window
   to the specified geometry. The width and height are to be given in pixel,
   no base size or resize increment are used.
+  When XrandR is compiled, the geometry can be relative to a monitor,
+  by prefixing its name (visible with `xrandr(1)` command line) followed by
+  `:` (e.g. HDMI1:200x300+150-0). This name is ignored when XrandR is not
+  available.
 
 f.movetitlebar::
   If applied to a squeezed titlebar (see `SqueezeTitle`) you can drag
