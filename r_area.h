@@ -12,6 +12,9 @@ RArea *RAreaNew(int x, int y, int width, int height);
 void RAreaNewIn(int x, int y, int width, int height, RArea *area);
 RArea *RAreaCopy(RArea *self);
 
+RArea RAreaInvalid(void);
+int RAreaIsValid(RArea *self);
+
 void RAreaFree(RArea *self);
 int RAreaX2(RArea *self);
 int RAreaY2(RArea *self);

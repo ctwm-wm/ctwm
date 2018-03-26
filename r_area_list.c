@@ -58,7 +58,7 @@ RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
 {
 	if(left_margin > 0 || right_margin > 0
 	                || top_margin > 0 || bottom_margin > 0) {
-		RArea *big_area = RAreaListBigArea(self);
+		RArea big_area = RAreaListBigArea(self);
 
 		if(left_margin < 0) {
 			left_margin = 0;
@@ -73,15 +73,15 @@ RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
 			bottom_margin = 0;
 		}
 
-		big_area->x += left_margin;
-		big_area->width -= left_margin + right_margin;
-		big_area->y += top_margin;
-		big_area->height -= top_margin + bottom_margin;
+		big_area.x += left_margin;
+		big_area.width -= left_margin + right_margin;
+		big_area.y += top_margin;
+		big_area.height -= top_margin + bottom_margin;
 
-		if(big_area->width <= 0 || big_area->height <= 0) {
+		if(big_area.width <= 0 || big_area.height <= 0) {
 			return RAreaListNew(0, NULL); // empty list
 		}
-		return RAreaListIntersectCrop(self, big_area);
+		return RAreaListIntersectCrop(self, &big_area);
 	}
 	return NULL; // no margin, no crop possible
 }
@@ -104,7 +104,8 @@ void RAreaListDelete(RAreaList *self, int index)
 		return;
 	}
 
-	memcpy(&self->areas[index], &self->areas[index + 1], (self->len - index) * sizeof(RArea));
+	memcpy(&self->areas[index], &self->areas[index + 1],
+	       (self->len - index) * sizeof(RArea));
 }
 
 void RAreaListAdd(RAreaList *self, RArea *area)
@@ -286,9 +287,9 @@ RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area)
 	return new;
 }
 
-RArea *RAreaListBigArea(RAreaList *self)
+RArea RAreaListBigArea(RAreaList *self)
 {
-	RArea *area;
+	RArea *area, big;
 	int index, x, y, x2, y2;
 
 	for(index = 0, area = self->areas; index < self->len; area++, index++) {
@@ -309,7 +310,8 @@ RArea *RAreaListBigArea(RAreaList *self)
 		}
 	}
 
-	return RAreaNew(x, y, x2 - x + 1, y2 - y + 1);
+	RAreaNewIn(x, y, x2 - x + 1, y2 - y + 1, &big);
+	return big;
 }
 
 RArea *RAreaListBestTarget(RAreaList *self, RArea *area)

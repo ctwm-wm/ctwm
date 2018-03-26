@@ -53,26 +53,26 @@ static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 	//  |___|
 	//  | V |
 	RAreaList *mit;
-	RArea *big = RAreaListBigArea(self->monitors), *tmp;
+	RArea big = RAreaListBigArea(self->monitors), *tmp;
 
 	// In one of V areas?
-	if((far_area->x >= big->x && far_area->x <= RAreaX2(big))
-	                || (RAreaX2(far_area) >= big->x && RAreaX2(far_area) <= RAreaX2(big))) {
+	if((far_area->x >= big.x && far_area->x <= RAreaX2(&big))
+	                || (RAreaX2(far_area) >= big.x && RAreaX2(far_area) <= RAreaX2(&big))) {
 		// Take it back vertically
-		tmp = RAreaNew(far_area->x, big->y,
-		               far_area->width, big->height);
+		tmp = RAreaNew(far_area->x, big.y,
+		               far_area->width, big.height);
 	}
 	// On left? (L area)
-	else if(RAreaX2(far_area) < big->x) {
-		// Take it back vertically with its right border at pos big->x
-		tmp = RAreaNew(big->x - far_area->width + 1, big->y,
-		               far_area->width, big->height);
+	else if(RAreaX2(far_area) < big.x) {
+		// Take it back vertically with its right border at pos big.x
+		tmp = RAreaNew(big.x - far_area->width + 1, big.y,
+		               far_area->width, big.height);
 	}
 	// On right (R area)
 	else {
 		// Take it back vertically with its left border at pos RAreaX2(big)
-		tmp = RAreaNew(RAreaX2(big), big->y,
-		               far_area->width, big->height);
+		tmp = RAreaNew(RAreaX2(&big), big.y,
+		               far_area->width, big.height);
 	}
 	mit = RAreaListIntersect(self->vert, tmp);
 	RAreaFree(tmp);
@@ -88,26 +88,26 @@ static RAreaList *_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
 	// _|___|_
 	//    B
 	RAreaList *mit;
-	RArea *big = RAreaListBigArea(self->monitors), *tmp;
+	RArea big = RAreaListBigArea(self->monitors), *tmp;
 
 	// In one of H areas?
-	if((far_area->y >= big->y && far_area->y <= RAreaY2(big))
-	                || (RAreaY2(far_area) >= big->y && RAreaY2(far_area) <= RAreaY2(big))) {
+	if((far_area->y >= big.y && far_area->y <= RAreaY2(&big))
+	                || (RAreaY2(far_area) >= big.y && RAreaY2(far_area) <= RAreaY2(&big))) {
 		// Take it back horizontally
-		tmp = RAreaNew(big->x, far_area->y,
-		               big->width, far_area->height);
+		tmp = RAreaNew(big.x, far_area->y,
+		               big.width, far_area->height);
 	}
 	// On top? (T area)
-	else if(RAreaY2(far_area) < big->y) {
-		// Take it back horizontally with its bottom border at pos big->y
-		tmp = RAreaNew(big->x, big->y - far_area->height + 1,
-		               big->width, far_area->height);
+	else if(RAreaY2(far_area) < big.y) {
+		// Take it back horizontally with its bottom border at pos big.y
+		tmp = RAreaNew(big.x, big.y - far_area->height + 1,
+		               big.width, far_area->height);
 	}
 	// On bottom (B areas)
 	else {
 		// Take it back horizontally with its top border at pos RAreaY2(big)
-		tmp = RAreaNew(big->x, RAreaY2(big),
-		               big->width, far_area->height);
+		tmp = RAreaNew(big.x, RAreaY2(&big),
+		               big.width, far_area->height);
 	}
 
 	mit = RAreaListIntersect(self->horiz, tmp);

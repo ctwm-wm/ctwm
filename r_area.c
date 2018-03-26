@@ -42,6 +42,17 @@ void RAreaFree(RArea *self)
 	free(self);
 }
 
+RArea RAreaInvalid()
+{
+	RArea area = { 0 };
+	return area;
+}
+
+int RAreaIsValid(RArea *self)
+{
+	return self->x != 0 || self->y != 0 || self->width != 0 || self->height != 0;
+}
+
 int RAreaX2(RArea *self)
 {
 	return self->x + self->width - 1;
