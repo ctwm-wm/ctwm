@@ -1483,9 +1483,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			                (int)tmp_win->frame_height);
 
 			RLayoutFindTopBottomEdges(Scr->BorderedLayout, &area,
-			                          &min_x, &max_bottom);
+			                          &min_y, &max_bottom);
 			RLayoutFindLeftRightEdges(Scr->BorderedLayout, &area,
-			                          &min_y, &max_right);
+			                          &min_x, &max_right);
 
 			if(area.x > max_right || area.y > max_bottom ||
 			                area.x + area.width <= min_x ||
