@@ -235,10 +235,8 @@ info_dismiss:
 	}
 
 	{
-		RArea area;
+		RArea area = RAreaNew(px, py, width, height);
 		int min_x, min_y, max_bottom, max_right;
-
-		RAreaNewIn(px, py, width, height, &area);
 
 		RLayoutFindLeftRightEdges(Scr->Layout, &area, &min_x, &max_right);
 		if(px < min_x) {

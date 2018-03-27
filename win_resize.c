@@ -944,7 +944,7 @@ void fullzoom(TwmWindow *tmp_win, int func)
 	}
 	else {
 		RLayout *borderedLayout = NULL;
-		RArea area, *finalArea = NULL;
+		RArea area, finalArea = RAreaInvalid();
 		int frame_bw_times_2;
 
 		if(tmp_win->winbox) {
@@ -973,7 +973,7 @@ void fullzoom(TwmWindow *tmp_win, int func)
 
 		frame_bw_times_2 = 2 * tmp_win->frame_bw;
 
-		RAreaNewIn(dragx, dragy, dragWidth, dragHeight, &area);
+		area = RAreaNew(dragx, dragy, dragWidth, dragHeight);
 
 		switch(func) {
 			case ZOOM_NONE:
@@ -982,33 +982,33 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				finalArea = RLayoutFullVert(borderedLayout, &area);
 			/* fall through */
 			case F_ZOOM:
-				if(finalArea == NULL) {
+				if(!RAreaIsValid(&finalArea)) {
 					finalArea = RLayoutFullVert1(borderedLayout, &area);
 				}
-				dragy = finalArea->y;
-				dragHeight = finalArea->height - frame_bw_times_2;
+				dragy = finalArea.y;
+				dragHeight = finalArea.height - frame_bw_times_2;
 				break;
 			case F_XHORIZOOM:
 				finalArea = RLayoutFullHoriz(borderedLayout, &area);
 			/* fall through */
 			case F_HORIZOOM:
-				if(finalArea == NULL) {
+				if(!RAreaIsValid(&finalArea)) {
 					finalArea = RLayoutFullHoriz1(borderedLayout, &area);
 				}
-				dragx = finalArea->x;
-				dragWidth = finalArea->width - frame_bw_times_2;
+				dragx = finalArea.x;
+				dragWidth = finalArea.width - frame_bw_times_2;
 				break;
 			case F_XFULLZOOM:
 				finalArea = RLayoutFull(borderedLayout, &area);
 			/* fall through */
 			case F_FULLZOOM:
-				if(finalArea == NULL) {
+				if(!RAreaIsValid(&finalArea)) {
 					finalArea = RLayoutFull1(borderedLayout, &area);
 				}
-				dragx = finalArea->x;
-				dragy = finalArea->y;
-				dragWidth = finalArea->width - frame_bw_times_2;
-				dragHeight = finalArea->height - frame_bw_times_2;
+				dragx = finalArea.x;
+				dragy = finalArea.y;
+				dragWidth = finalArea.width - frame_bw_times_2;
+				dragHeight = finalArea.height - frame_bw_times_2;
 				break;
 			case F_XLEFTZOOM:
 				dragx = RLayoutFindLeftEdge(borderedLayout, &area);
@@ -1063,10 +1063,10 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				finalArea = func == F_XFULLSCREENZOOM
 				            ? RLayoutFull(borderedLayout, &area)
 				            : RLayoutFull1(borderedLayout, &area);
-				dragx = finalArea->x - bw;
-				dragy = finalArea->y - tmp_win->title_height - bw;
-				dragWidth = finalArea->width + bw3D_times_2;
-				dragHeight = finalArea->height + tmp_win->title_height + bw3D_times_2;
+				dragx = finalArea.x - bw;
+				dragy = finalArea.y - tmp_win->title_height - bw;
+				dragWidth = finalArea.width + bw3D_times_2;
+				dragHeight = finalArea.height + tmp_win->title_height + bw3D_times_2;
 
 				/* and should ignore aspect ratio and size increments... */
 #ifdef EWMH
@@ -1076,10 +1076,6 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				/* the OtpRaise below is effectively already done here... */
 #endif
 			}
-		}
-
-		if(finalArea != NULL) {
-			RAreaFree(finalArea);
 		}
 
 		/* Temporary built layout? */

@@ -33,7 +33,7 @@ void RAreaListForeach(RAreaList *self, int (*func)(RArea *area, void *data),
                       void *data);
 
 RArea RAreaListBigArea(RAreaList *self);
-RArea *RAreaListBestTarget(RAreaList *self, RArea *area);
+RArea RAreaListBestTarget(RAreaList *self, RArea *area);
 
 int RAreaListMaxX(RAreaList *self);
 int RAreaListMaxY(RAreaList *self);

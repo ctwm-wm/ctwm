@@ -1316,14 +1316,13 @@ static int
 FindConstraint(TwmWindow *tmp_win, MoveFillDir direction)
 {
 	TwmWindow  *t;
-	RArea area;
 	int ret, limit;
 	const int winx = tmp_win->frame_x;
 	const int winy = tmp_win->frame_y;
 	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
 	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
 
-	RAreaNewIn(winx, winy, winw, winh, &area);
+	RArea area = RAreaNew(winx, winy, winw, winh);
 
 	switch(direction) {
 		case MFD_LEFT:

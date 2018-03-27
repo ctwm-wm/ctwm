@@ -273,14 +273,13 @@ void RAreaListForeach(RAreaList *self,
 RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
-	RArea *it;
+	RArea it;
 	int index;
 
 	for(index = 0; index < self->len; index++) {
 		it = RAreaIntersect(&self->areas[index], area);
-		if(it != NULL) {
-			RAreaListAdd(new, it);
-			RAreaFree(it);
+		if(RAreaIsValid(&it)) {
+			RAreaListAdd(new, &it);
 		}
 	}
 
@@ -289,7 +288,7 @@ RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area)
 
 RArea RAreaListBigArea(RAreaList *self)
 {
-	RArea *area, big;
+	RArea *area;
 	int index, x, y, x2, y2;
 
 	for(index = 0, area = self->areas; index < self->len; area++, index++) {
@@ -310,25 +309,23 @@ RArea RAreaListBigArea(RAreaList *self)
 		}
 	}
 
-	RAreaNewIn(x, y, x2 - x + 1, y2 - y + 1, &big);
-	return big;
+	return RAreaNew(x, y, x2 - x + 1, y2 - y + 1);
 }
 
-RArea *RAreaListBestTarget(RAreaList *self, RArea *area)
+RArea RAreaListBestTarget(RAreaList *self, RArea *area)
 {
-	RArea *full_area = NULL, *it;
+	RArea full_area = RAreaInvalid(), it;
 	int index, max_area = -1;
 
 	for(index = 0; index < self->len; index++) {
 		it = RAreaIntersect(area, &self->areas[index]);
-		if(it != NULL && (max_area < 0 || RAreaArea(it) > max_area)) {
-			max_area = RAreaArea(it);
-			full_area = &self->areas[index];
+		if(RAreaIsValid(&it) && (max_area < 0 || RAreaArea(&it) > max_area)) {
+			max_area = RAreaArea(&it);
+			full_area = self->areas[index];
 		}
-		RAreaFree(it);
 	}
 
-	return full_area != NULL ? RAreaCopy(full_area) : NULL;
+	return full_area;
 }
 
 int RAreaListMaxX(RAreaList *self)

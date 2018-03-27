@@ -96,10 +96,8 @@ SetupFrame(TwmWindow *tmp_win, int x, int y, int w, int h, int bw,
 	 */
 	{
 #define MARGIN (16 - 1)  /* one "average" cursor width - 1 */
-		RArea area;
+		RArea area = RAreaNew(x, y, w, h);
 		int limit;
-
-		RAreaNewIn(x, y, w, h, &area);
 
 		/* Make sure the window is not vertically off the screen */
 		limit = RLayoutFindBottomEdge(Scr->Layout, &area);

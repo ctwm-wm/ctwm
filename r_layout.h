@@ -35,12 +35,12 @@ int RLayoutFindMonitorTopEdge(RLayout *self, RArea *area);
 int RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area);
 int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area);
 
-RArea *RLayoutFullHoriz(RLayout *self, RArea *area);
-RArea *RLayoutFullVert(RLayout *self, RArea *area);
-RArea *RLayoutFull(RLayout *self, RArea *area);
-RArea *RLayoutFullHoriz1(RLayout *self, RArea *area);
-RArea *RLayoutFullVert1(RLayout *self, RArea *area);
-RArea *RLayoutFull1(RLayout *self, RArea *area);
+RArea RLayoutFullHoriz(RLayout *self, RArea *area);
+RArea RLayoutFullVert(RLayout *self, RArea *area);
+RArea RLayoutFull(RLayout *self, RArea *area);
+RArea RLayoutFullHoriz1(RLayout *self, RArea *area);
+RArea RLayoutFullVert1(RLayout *self, RArea *area);
+RArea RLayoutFull1(RLayout *self, RArea *area);
 
 void RLayoutPrint(RLayout *self);
 

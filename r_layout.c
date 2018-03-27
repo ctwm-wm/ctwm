@@ -70,8 +70,7 @@ static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 	// L|   |R
 	//  |___|
 	//  | V |
-	RAreaList *mit;
-	RArea big = RAreaListBigArea(self->monitors), *tmp;
+	RArea big = RAreaListBigArea(self->monitors), tmp;
 
 	// In one of V areas?
 	if((far_area->x >= big.x && far_area->x <= RAreaX2(&big))
@@ -92,10 +91,7 @@ static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 		tmp = RAreaNew(RAreaX2(&big), big.y,
 		               far_area->width, big.height);
 	}
-	mit = RAreaListIntersect(self->vert, tmp);
-	RAreaFree(tmp);
-
-	return mit;
+	return RAreaListIntersect(self->vert, &tmp);
 }
 
 static RAreaList *_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
@@ -105,8 +101,7 @@ static RAreaList *_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
 	// H|   |H
 	// _|___|_
 	//    B
-	RAreaList *mit;
-	RArea big = RAreaListBigArea(self->monitors), *tmp;
+	RArea big = RAreaListBigArea(self->monitors), tmp;
 
 	// In one of H areas?
 	if((far_area->y >= big.y && far_area->y <= RAreaY2(&big))
@@ -128,10 +123,7 @@ static RAreaList *_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
 		               big.width, far_area->height);
 	}
 
-	mit = RAreaListIntersect(self->horiz, tmp);
-	RAreaFree(tmp);
-
-	return mit;
+	return RAreaListIntersect(self->horiz, &tmp);
 }
 
 static RAreaList *_RLayoutVerticalIntersect(RLayout *self, RArea *area)
@@ -383,7 +375,7 @@ int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.min_x2 : RLayoutFindRightEdge(self, area);
 }
 
-RArea *RLayoutFullHoriz(RLayout *self, RArea *area)
+RArea RLayoutFullHoriz(RLayout *self, RArea *area)
 {
 	int max_x, min_x2;
 
@@ -392,7 +384,7 @@ RArea *RLayoutFullHoriz(RLayout *self, RArea *area)
 	return RAreaNew(max_x, area->y, min_x2 - max_x + 1, area->height);
 }
 
-RArea *RLayoutFullVert(RLayout *self, RArea *area)
+RArea RLayoutFullVert(RLayout *self, RArea *area)
 {
 	int max_y, min_y2;
 
@@ -401,56 +393,47 @@ RArea *RLayoutFullVert(RLayout *self, RArea *area)
 	return RAreaNew(area->x, max_y, area->width, min_y2 - max_y + 1);
 }
 
-RArea *RLayoutFull(RLayout *self, RArea *area)
+RArea RLayoutFull(RLayout *self, RArea *area)
 {
-	RArea *full_horiz, *full_vert, *full1, *full2;
+	RArea full_horiz, full_vert, full1, full2;
 
 	full_horiz = RLayoutFullHoriz(self, area);
 	full_vert = RLayoutFullVert(self, area);
 
-	full1 = RLayoutFullVert(self, full_horiz);
-	full2 = RLayoutFullHoriz(self, full_vert);
+	full1 = RLayoutFullVert(self, &full_horiz);
+	full2 = RLayoutFullHoriz(self, &full_vert);
 
-	RAreaFree(full_horiz);
-	RAreaFree(full_vert);
-
-	if(RAreaArea(full1) > RAreaArea(full2)) {
-		RAreaFree(full2);
-		return full1;
-	}
-
-	RAreaFree(full1);
-	return full2;
+	return RAreaArea(&full1) > RAreaArea(&full2) ? full1 : full2;
 }
 
-RArea *RLayoutFullHoriz1(RLayout *self, RArea *area)
+RArea RLayoutFullHoriz1(RLayout *self, RArea *area)
 {
-	RArea *target = RLayoutFull1(self, area);
+	RArea target = RLayoutFull1(self, area);
 	int max_y, min_y2;
 
-	max_y = max(area->y, target->y);
-	min_y2 = min(RAreaY2(area), RAreaY2(target));
+	max_y = max(area->y, target.y);
+	min_y2 = min(RAreaY2(area), RAreaY2(&target));
 
-	// target->x OK
-	target->y = max_y;
-	// target->width OK
-	target->height = min_y2 - max_y + 1;
+	// target.x OK
+	target.y = max_y;
+	// target.width OK
+	target.height = min_y2 - max_y + 1;
 
 	return target;
 }
 
-RArea *RLayoutFullVert1(RLayout *self, RArea *area)
+RArea RLayoutFullVert1(RLayout *self, RArea *area)
 {
-	RArea *target = RLayoutFull1(self, area);
+	RArea target = RLayoutFull1(self, area);
 	int max_x, min_x2;
 
-	max_x = max(area->x, target->x);
-	min_x2 = min(RAreaX2(area), RAreaX2(target));
+	max_x = max(area->x, target.x);
+	min_x2 = min(RAreaX2(area), RAreaX2(&target));
 
-	target->x = max_x;
-	// target->y OK
-	target->width = min_x2 - max_x + 1;
-	// target->height OK
+	target.x = max_x;
+	// target.y OK
+	target.width = min_x2 - max_x + 1;
+	// target.height OK
 
 	return target;
 }
@@ -470,8 +453,9 @@ RArea *RLayoutFullVert1(RLayout *self, RArea *area)
  ***********************************************************************
  */
 
-RArea *RLayoutFull1(RLayout *self, RArea *area)
+RArea RLayoutFull1(RLayout *self, RArea *area)
 {
+	RArea target;
 	RAreaList *mit = RAreaListIntersect(self->monitors, area);
 
 	if(mit->len == 0) {
@@ -481,9 +465,9 @@ RArea *RLayoutFull1(RLayout *self, RArea *area)
 		mit = _RLayoutRecenterHorizontally(self, area);
 	}
 
-	area = RAreaListBestTarget(mit, area);
+	target = RAreaListBestTarget(mit, area);
 	RAreaListFree(mit);
-	return area;
+	return target;
 }
 
 void RLayoutPrint(RLayout *self)

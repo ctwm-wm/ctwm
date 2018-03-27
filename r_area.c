@@ -9,48 +9,28 @@
 #include "r_area_list.h"
 
 
-RArea *RAreaNew(int x, int y, int width, int height)
+RArea RAreaNew(int x, int y, int width, int height)
 {
-	RArea *area = malloc(sizeof(RArea));
-	if(area == NULL) {
-		abort();
-	}
-
-	area->x = x;
-	area->y = y;
-	area->width = width;
-	area->height = height;
-
+	RArea area = { x, y, width, height };
 	return area;
 }
 
-void RAreaNewIn(int x, int y, int width, int height, RArea *area)
+RArea *RAreaNewStatic(int x, int y, int width, int height)
 {
-	area->x = x;
-	area->y = y;
-	area->width = width;
-	area->height = height;
-}
-
-RArea *RAreaCopy(RArea *self)
-{
-	return RAreaNew(self->x, self->y, self->width, self->height);
-}
-
-void RAreaFree(RArea *self)
-{
-	free(self);
+	static RArea area;
+	area = RAreaNew(x, y, width, height);
+	return &area;
 }
 
 RArea RAreaInvalid()
 {
-	RArea area = { 0 };
+	RArea area = { -1, -1, -1, -1 };
 	return area;
 }
 
 int RAreaIsValid(RArea *self)
 {
-	return self->x != 0 || self->y != 0 || self->width != 0 || self->height != 0;
+	return self->width >= 0 && self->height >= 0;
 }
 
 int RAreaX2(RArea *self)
@@ -68,7 +48,7 @@ int RAreaArea(RArea *self)
 	return self->width * self->height;
 }
 
-RArea *RAreaIntersect(RArea *self, RArea *other)
+RArea RAreaIntersect(RArea *self, RArea *other)
 {
 	if(RAreaIsIntersect(self, other)) {
 		int x1, x2, y1, y2;
@@ -82,7 +62,7 @@ RArea *RAreaIntersect(RArea *self, RArea *other)
 		return RAreaNew(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
 	}
 
-	return NULL;
+	return RAreaInvalid();
 }
 
 int RAreaIsIntersect(RArea *self, RArea *other)
@@ -141,8 +121,8 @@ RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 			if(RAreaY2(other) + 1 == self->y)
 				return RAreaListNew(
 				               1,
-				               RAreaNew(self->x, other->y,
-				                        self->width, self->height + other->height),
+				               RAreaNewStatic(self->x, other->y,
+				                              self->width, self->height + other->height),
 				               NULL);
 
 			// [self-]
@@ -150,8 +130,8 @@ RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 			if(RAreaY2(self) + 1 == other->y)
 				return RAreaListNew(
 				               1,
-				               RAreaNew(self->x, self->y,
-				                        self->width, self->height + other->height),
+				               RAreaNewStatic(self->x, self->y,
+				                              self->width, self->height + other->height),
 				               NULL);
 		}
 		return NULL;
@@ -180,13 +160,13 @@ RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 		//     [   ]         [  ]        [   ]         [  ]
 
 		if(hi->y != low->y)
-			RAreaListAdd(res, RAreaNew(low->x, low->y,
-			                           low->width, hi->y - low->y));
+			RAreaListAdd(res, RAreaNewStatic(low->x, low->y,
+			                                 low->width, hi->y - low->y));
 
 		RAreaListAdd(res,
-		             RAreaNew(min_x, hi->y,
-		                      max_width,
-		                      min(RAreaY2(low), RAreaY2(hi)) - max(low->y, hi->y) + 1));
+		             RAreaNewStatic(min_x, hi->y,
+		                            max_width,
+		                            min(RAreaY2(low), RAreaY2(hi)) - max(low->y, hi->y) + 1));
 
 		if(RAreaY2(low) != RAreaY2(hi)) {
 			//     [   ]    [   ]
@@ -194,15 +174,15 @@ RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 			//     [   ]    [   ]
 			if(RAreaY2(hi) < RAreaY2(low))
 				RAreaListAdd(res,
-				             RAreaNew(low->x, RAreaY2(hi) + 1,
-				                      low->width, RAreaY2(low) - RAreaY2(hi)));
+				             RAreaNewStatic(low->x, RAreaY2(hi) + 1,
+				                            low->width, RAreaY2(low) - RAreaY2(hi)));
 			//     [   ]    [   ]
 			// [hi][low] or [low][hi]
 			// [  ]              [  ]
 			else
 				RAreaListAdd(res,
-				             RAreaNew(hi->x, RAreaY2(low) + 1,
-				                      hi->width, RAreaY2(hi) - RAreaY2(low)));
+				             RAreaNewStatic(hi->x, RAreaY2(low) + 1,
+				                            hi->width, RAreaY2(hi) - RAreaY2(low)));
 		}
 
 		return res;
@@ -234,16 +214,16 @@ RAreaList *RAreaVerticalUnion(RArea *self, RArea *other)
 			if(RAreaX2(other) + 1 == self->x)
 				return RAreaListNew(
 				               1,
-				               RAreaNew(other->x, self->y,
-				                        self->width + other->width, self->height),
+				               RAreaNewStatic(other->x, self->y,
+				                              self->width + other->width, self->height),
 				               NULL);
 
 			// [self][other]
 			if(RAreaX2(self) + 1 == other->x)
 				return RAreaListNew(
 				               1,
-				               RAreaNew(self->x, self->y,
-				                        self->width + other->width, self->height),
+				               RAreaNewStatic(self->x, self->y,
+				                              self->width + other->width, self->height),
 				               NULL);
 		}
 		return NULL;
@@ -271,27 +251,27 @@ RAreaList *RAreaVerticalUnion(RArea *self, RArea *other)
 
 		if(right->x != left->x)
 			RAreaListAdd(res,
-			             RAreaNew(left->x, left->y,
-			                      right->x - left->x, left->height));
+			             RAreaNewStatic(left->x, left->y,
+			                            right->x - left->x, left->height));
 
 		RAreaListAdd(res,
-		             RAreaNew(right->x, min_y,
-		                      min(RAreaX2(left), RAreaX2(right)) - max(left->x, right->x) + 1,
-		                      max_height));
+		             RAreaNewStatic(right->x, min_y,
+		                            min(RAreaX2(left), RAreaX2(right)) - max(left->x, right->x) + 1,
+		                            max_height));
 
 		if(RAreaX2(left) != RAreaX2(right)) {
 			// [--left--] or  [right]
 			//  [right]     [--left--]
 			if(RAreaX2(right) < RAreaX2(left))
 				RAreaListAdd(res,
-				             RAreaNew(RAreaX2(right) + 1, left->y,
-				                      RAreaX2(left) - RAreaX2(right), left->height));
+				             RAreaNewStatic(RAreaX2(right) + 1, left->y,
+				                            RAreaX2(left) - RAreaX2(right), left->height));
 			//     [right] or [left]
 			//  [left]          [right]
 			else
 				RAreaListAdd(res,
-				             RAreaNew(RAreaX2(left) + 1, right->y,
-				                      RAreaX2(right) - RAreaX2(left), right->height));
+				             RAreaNewStatic(RAreaX2(left) + 1, right->y,
+				                            RAreaX2(right) - RAreaX2(left), right->height));
 		}
 
 		return res;

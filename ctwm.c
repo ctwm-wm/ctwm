@@ -391,7 +391,7 @@ int main(int argc, char **argv)
 #else
 		Scr->Layout = RLayoutNew(
 		                      RAreaListNew(1,
-		                                   RAreaNew(Scr->rootx,
+		                                   RAreaNewStatic(Scr->rootx,
 		                                                   Scr->rooty,
 		                                                   Scr->rootw,
 		                                                   Scr->rooth),

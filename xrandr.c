@@ -34,11 +34,10 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 
 	areas = RAreaListNew(i_nmonitors, NULL);
 	for(index = 0; index < i_nmonitors; index++) {
-		RAreaNewIn(ps_monitors[index].x,
-		           ps_monitors[index].y,
-		           ps_monitors[index].width,
-		           ps_monitors[index].height,
-		           &cur_area);
+		cur_area = RAreaNew(ps_monitors[index].x,
+		                    ps_monitors[index].y,
+		                    ps_monitors[index].width,
+		                    ps_monitors[index].height);
 
 		name = XGetAtomName(dpy, ps_monitors[index].name);
 #ifdef DEBUG

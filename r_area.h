@@ -8,18 +8,16 @@
 #include "r_structs.h"
 
 
-RArea *RAreaNew(int x, int y, int width, int height);
-void RAreaNewIn(int x, int y, int width, int height, RArea *area);
-RArea *RAreaCopy(RArea *self);
+RArea *RAreaNewStatic(int x, int y, int width, int height);
+RArea RAreaNew(int x, int y, int width, int height);
 
 RArea RAreaInvalid(void);
 int RAreaIsValid(RArea *self);
 
-void RAreaFree(RArea *self);
 int RAreaX2(RArea *self);
 int RAreaY2(RArea *self);
 int RAreaArea(RArea *self);
-RArea *RAreaIntersect(RArea *self, RArea *other);
+RArea RAreaIntersect(RArea *self, RArea *other);
 int RAreaIsIntersect(RArea *self, RArea *other);
 int RAreaContainsXY(RArea *self, int x, int y);
 RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other);

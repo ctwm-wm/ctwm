@@ -508,32 +508,30 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 		RArea area;
 		int monitor_bot, monitor_top, monitor_left, monitor_right;
 
-		RAreaNewIn(tmp_win->frame_x, tmp_win->frame_y, winw, winh, &area);
+		area = RAreaNew(tmp_win->frame_x, tmp_win->frame_y, winw, winh);
 		monitor_bot = RLayoutFindMonitorBottomEdge(Scr->BorderedLayout, &area);
 		monitor_top = RLayoutFindMonitorTopEdge(Scr->BorderedLayout, &area);
 		monitor_left = RLayoutFindMonitorLeftEdge(Scr->BorderedLayout, &area);
 		monitor_right = RLayoutFindMonitorRightEdge(Scr->BorderedLayout, &area);
 
 		// Left border
-		RAreaNewIn(monitor_left - 1, monitor_top,
-		           1, monitor_bot - monitor_top + 1,
-		           &cur_win);
+		cur_win = RAreaNew(monitor_left - 1, monitor_top,
+		                   1, monitor_bot - monitor_top + 1);
 		_tryToPack(winw, winh, &cur_win, x, y);
 
 		// Right border
-		RAreaNewIn(monitor_right + 1, monitor_top,
-		           1, monitor_bot - monitor_top + 1,
-		           &cur_win);
+		cur_win = RAreaNew(monitor_right + 1, monitor_top,
+		                   1, monitor_bot - monitor_top + 1);
 		_tryToPack(winw, winh, &cur_win, x, y);
 
 		// Top border
-		RAreaNewIn(monitor_left, monitor_top - 1,
-		           monitor_right - monitor_left + 1, 1, &cur_win);
+		cur_win = RAreaNew(monitor_left, monitor_top - 1,
+		                   monitor_right - monitor_left + 1, 1);
 		_tryToPack(winw, winh, &cur_win, x, y);
 
 		// Bottom border
-		RAreaNewIn(monitor_left, monitor_bot + 1,
-		           monitor_right - monitor_left + 1, 1, &cur_win);
+		cur_win = RAreaNew(monitor_left, monitor_bot + 1,
+		                   monitor_right - monitor_left + 1, 1);
 		_tryToPack(winw, winh, &cur_win, x, y);
 	}
 
@@ -551,10 +549,9 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 			continue;
 		}
 
-		RAreaNewIn(t->frame_x, t->frame_y,
-		           t->frame_width  + 2 * t->frame_bw,
-		           t->frame_height + 2 * t->frame_bw,
-		           &cur_win);
+		cur_win = RAreaNew(t->frame_x, t->frame_y,
+		                   t->frame_width  + 2 * t->frame_bw,
+		                   t->frame_height + 2 * t->frame_bw);
 
 		_tryToPack(winw, winh, &cur_win, x, y);
 	}
@@ -721,7 +718,7 @@ ConstrainByLayout(RLayout *layout, int move_off_res, int *left, int width,
 	int limit;
 	bool clipped = false;
 
-	RAreaNewIn(*left, *top, width, height, &area);
+	area = RAreaNew(*left, *top, width, height);
 
 	limit = RLayoutFindBottomEdge(layout, &area) - height + 1;
 	if(area.y > limit) {
