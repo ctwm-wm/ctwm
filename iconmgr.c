@@ -42,6 +42,7 @@
 #include "win_decorations.h"
 #include "win_resize.h"
 #include "win_utils.h"
+#include "xparsegeometry.h"
 
 
 /* Where we start drawing the name in the icon manager */
@@ -116,8 +117,9 @@ void CreateIconManagers(void)
 			if(!p->geometry || !strlen(p->geometry)) {
 				p->geometry = "+0+0";
 			}
-			mask = XParseGeometry(p->geometry, &gx, &gy,
-			                      (unsigned int *) &p->width, (unsigned int *)&p->height);
+			mask = RLayoutXParseGeometry(Scr->Layout, p->geometry,
+			                             &gx, &gy,
+			                             (unsigned int *) &p->width, (unsigned int *)&p->height);
 
 			bw = LookInList(Scr->NoBorder, str, NULL) ? 0 :
 			     (Scr->ThreeDBorderWidth ? Scr->ThreeDBorderWidth : Scr->BorderWidth);
@@ -1184,8 +1186,8 @@ void PackIconManager(IconMgr *ip)
 
 	XResizeWindow(dpy, ip->w, newwidth, ip->height);
 
-	mask = XParseGeometry(ip->geometry, &JunkX, &JunkY,
-	                      &JunkWidth, &JunkHeight);
+	mask = RLayoutXParseGeometry(Scr->Layout, ip->geometry, &JunkX, &JunkY,
+	                             &JunkWidth, &JunkHeight);
 	if(mask & XNegative) {
 		ip->twm_win->frame_x += ip->twm_win->frame_width - newwidth -
 		                        2 * ip->twm_win->frame_bw3D;

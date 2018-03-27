@@ -968,7 +968,10 @@ IconManagerGeometry `string` [ `columns` ]::
   the initial full size of the icon manager.  The icon manager window is
   then broken into `columns` pieces and scaled according to the number
   of entries in the icon manager.  Extra entries are wrapped to form
-  additional rows.  The default number of columns is 1.
+  additional rows.  The default number of columns is 1. When XrandR is
+  compiled, the geometry can be relative to a monitor, by prefixing
+  its name (visible with `xrandr(1)` command line) followed by `:`. This name
+  is ignored when XrandR is not available.
 
 IconManagerHighlight `string` [{ `win-list` }]::
   This variable specifies the border color to be used when highlighting
@@ -989,17 +992,20 @@ IconManagers { `iconmgr-list` }::
 ------
 +
 [normal]
-  where `winname` is the name of the windows that should be put into this
-  icon manager, `iconname` is the name of that icon manager window's icon,
-  `geometry` is a standard geometry specification, and `columns` is
-  the number of columns in this icon manager as described in
-  `IconManagerGeometry`.  For example:
+  where `winname` is the name of the windows that should be put into
+  this icon manager, `iconname` is the name of that icon manager
+  window's icon, `geometry` is a standard geometry specification, and
+  `columns` is the number of columns in this icon manager as described
+  in `IconManagerGeometry`. When XrandR is compiled, the geometry can
+  be relative to a monitor, by prefixing its name (visible with
+  `xrandr(1)` command line) followed by `:`. This name is ignored when
+  XrandR is not available.  For example:
 +
 ------
 IconManagers
 {
-    "XTerm"  "=300x5+800+5"  5
-    "myhost" "=400x5+100+5"  2
+    "XTerm"  "=300x5+800+5"       5
+    "myhost" "HDMI2:400x5+100+5"  2
 }
 ------
 +
@@ -1023,7 +1029,10 @@ IconMenuDontShow { `win-list` }::
 IconRegion `geomstring` `vgrav hgrav gridwidth gridheight` [`iconjust`] [`iconregjust`] [`iconregalign`] [{ `win-list` }]::
   This variable specifies an area on the root window in which icons are placed
   if no specific icon location is provided by the client.  The `geomstring`
-  is a quoted string containing a standard geometry specification. If more than
+  is a quoted string containing a standard geometry specification. When XrandR
+  is compiled, the geometry can be relative to a monitor, by prefixing
+  its name (visible with `xrandr(1)` command line) followed by `:`.
+  This name is ignored when XrandR is not available. If more than
   one `IconRegion` lines are given, icons will be put into the succeeding
   icon regions when the first is full. The `vgrav` argument should be either
   `North` or `South`  and is used to control whether icons are

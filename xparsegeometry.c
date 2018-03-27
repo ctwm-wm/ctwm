@@ -19,32 +19,30 @@ int RLayoutXParseGeometry(RLayout *layout, const char *geometry, int *x, int *y,
 
 	sep = strchr(geometry, ':');
 	if(sep != NULL) {
-		if(layout != NULL) {
-			RArea mon = RLayoutGetAreaByName(layout, geometry, sep - geometry);
-			if(RAreaIsValid(&mon)) {
-				int mask = XParseGeometry(sep + 1, x, y, width, height);
-				RArea big = RLayoutBigArea(layout);
+		RArea mon = RLayoutGetAreaByName(layout, geometry, sep - geometry);
+		if(RAreaIsValid(&mon)) {
+			int mask = XParseGeometry(sep + 1, x, y, width, height);
+			RArea big = RLayoutBigArea(layout);
 
-				if(mask & XValue) {
-					if(mask & XNegative) {
-						*x -= big.width - mon.width - (mon.x - big.x);
-					}
-					else {
-						*x += mon.x - big.x;
-					}
+			if(mask & XValue) {
+				if(mask & XNegative) {
+					*x -= big.width - mon.width - (mon.x - big.x);
 				}
-
-				if(mask & YValue) {
-					if(mask & YNegative) {
-						*y -= big.height - mon.height - (mon.y - big.y);
-					}
-					else {
-						*y += mon.y - big.y;
-					}
+				else {
+					*x += mon.x - big.x;
 				}
-
-				return mask;
 			}
+
+			if(mask & YValue) {
+				if(mask & YNegative) {
+					*y -= big.height - mon.height - (mon.y - big.y);
+				}
+				else {
+					*y += mon.y - big.y;
+				}
+			}
+
+			return mask;
 		}
 
 		// Name not found, keep the geometry part as-is
