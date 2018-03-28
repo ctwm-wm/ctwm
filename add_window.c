@@ -1043,8 +1043,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				Scr->SizeStringOffset = width + logical_rect.width;
 			}
 
-			XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
-			              Scr->SizeStringWidth + SIZE_HINDENT, height);
+			MoveResizeSizeWindow(AddingX, AddingY,
+			                     Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
+			                     height);
 			XMapRaised(dpy, Scr->SizeWindow);
 			InstallRootColormap();
 			FB(Scr->DefaultC.fore, Scr->DefaultC.back);
@@ -1155,8 +1156,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					               ": ", 2,  NULL, &logical_rect);
 					Scr->SizeStringOffset = width + logical_rect.width;
 
-					XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
-					              Scr->SizeStringWidth + SIZE_HINDENT, height);
+					MoveResizeSizeWindow(event.xbutton.x_root, event.xbutton.y_root,
+					                     Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
+					                     height);
 
 					XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
 					                   Scr->NormalGC, width,

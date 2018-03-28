@@ -732,20 +732,8 @@ int main(int argc, char **argv)
 
 		{
 			RArea area = RLayoutGetAreaIndex(Scr->Layout, 0);
-			int sx, sy;
-			if(Scr->CenterFeedbackWindow) {
-				sx = (area.width / 2) - (Scr->SizeStringWidth / 2);
-				sy = (area.height / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
-				if(Scr->SaveUnder) {
-					attributes.save_under = True;
-					valuemask |= CWSaveUnder;
-				}
-			}
-			else {
-				sx = area.x;
-				sy = area.y;
-			}
-			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
+			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root,
+			                                area.x, area.y,
 			                                Scr->SizeStringWidth,
 			                                (Scr->SizeFont.height +
 			                                 SIZE_VINDENT * 2),

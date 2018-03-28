@@ -455,6 +455,20 @@ DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y)
 	                   Scr->SizeFont.ascent + SIZE_VINDENT, str, 13);
 }
 
+void
+MoveResizeSizeWindow(int x, int y, unsigned int width, unsigned int height)
+{
+	XResizeWindow(dpy, Scr->SizeWindow, width, height);
+
+	if(Scr->CenterFeedbackWindow) {
+		RArea monitor = RLayoutGetAreaAtXY(Scr->BorderedLayout, x, y);
+
+		XMoveWindow(dpy, Scr->SizeWindow,
+		            monitor.x + monitor.width / 2 - width / 2,
+		            monitor.y + monitor.height / 2 - height / 2);
+	}
+}
+
 
 /*
  * Various funcs for adjusting coordinates for windows based on

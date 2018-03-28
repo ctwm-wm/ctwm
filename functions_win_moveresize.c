@@ -186,9 +186,9 @@ movewindow(EF_FULLPROTO)
 	 * different size.
 	 */
 	Scr->SizeStringOffset = SIZE_HINDENT;
-	XResizeWindow(dpy, Scr->SizeWindow,
-	              Scr->SizeStringWidth + SIZE_HINDENT * 2,
-	              Scr->SizeFont.height + SIZE_VINDENT * 2);
+	MoveResizeSizeWindow(eventp->xbutton.x_root, eventp->xbutton.y_root,
+	                     Scr->SizeStringWidth + SIZE_HINDENT * 2,
+	                     Scr->SizeFont.height + SIZE_VINDENT * 2);
 	XMapRaised(dpy, Scr->SizeWindow);
 
 	/*

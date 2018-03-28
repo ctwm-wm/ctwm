@@ -218,9 +218,9 @@ void StartResize(XEvent *evp, TwmWindow *tmp_win,
 	}
 
 	Scr->SizeStringOffset = SIZE_HINDENT;
-	XResizeWindow(dpy, Scr->SizeWindow,
-	              Scr->SizeStringWidth + SIZE_HINDENT * 2,
-	              Scr->SizeFont.height + SIZE_VINDENT * 2);
+	MoveResizeSizeWindow(evp->xbutton.x_root, evp->xbutton.y_root,
+	                     Scr->SizeStringWidth + SIZE_HINDENT * 2,
+	                     Scr->SizeFont.height + SIZE_VINDENT * 2);
 	XMapRaised(dpy, Scr->SizeWindow);
 	InstallRootColormap();
 	last_width = 0;
@@ -254,9 +254,9 @@ void MenuStartResize(TwmWindow *tmp_win, int x, int y, int w, int h)
 	last_width = 0;
 	last_height = 0;
 	Scr->SizeStringOffset = SIZE_HINDENT;
-	XResizeWindow(dpy, Scr->SizeWindow,
-	              Scr->SizeStringWidth + SIZE_HINDENT * 2,
-	              Scr->SizeFont.height + SIZE_VINDENT * 2);
+	MoveResizeSizeWindow(dragx, dragy,
+	                     Scr->SizeStringWidth + SIZE_HINDENT * 2,
+	                     Scr->SizeFont.height + SIZE_VINDENT * 2);
 	XMapRaised(dpy, Scr->SizeWindow);
 	DisplaySize(tmp_win, origWidth, origHeight);
 	if(! Scr->OpaqueResize)
