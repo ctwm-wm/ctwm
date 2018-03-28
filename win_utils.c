@@ -15,6 +15,7 @@
 #include "events.h"
 #include "icons.h"
 #include "r_area.h"
+#include "r_area_list.h"
 #include "screen.h"
 #include "util.h"
 #include "win_decorations.h"
@@ -462,36 +463,46 @@ DisplayPosition(const TwmWindow *_unused_tmp_win, int x, int y)
  * XXX In desperate need of better commenting.
  */
 static void
-_tryToPack(int winw, int winh, RArea *cur_win, int *x, int *y)
+_tryToPack(RArea *final, RArea *cur_win)
 {
-	if(*x >= cur_win->x + cur_win->width) {
+	if(final->x >= cur_win->x + cur_win->width) {
 		return;
 	}
-	if(*y >= cur_win->y + cur_win->height) {
+	if(final->y >= cur_win->y + cur_win->height) {
 		return;
 	}
-	if(*x + winw <= cur_win->x) {
+	if(final->x + final->width <= cur_win->x) {
 		return;
 	}
-	if(*y + winh <= cur_win->y) {
+	if(final->y + final->height <= cur_win->y) {
 		return;
 	}
 
-	if(*x + Scr->MovePackResistance > cur_win->x + cur_win->width) {  /* left */
-		*x = MAX(*x, cur_win->x + cur_win->width);
+	if(final->x + Scr->MovePackResistance > cur_win->x +
+	                cur_win->width) {  /* left */
+		final->x = MAX(final->x, cur_win->x + cur_win->width);
 		return;
 	}
-	if(*x + winw < cur_win->x + Scr->MovePackResistance) {  /* right */
-		*x = MIN(*x, cur_win->x - winw);
+	if(final->x + final->width < cur_win->x +
+	                Scr->MovePackResistance) {  /* right */
+		final->x = MIN(final->x, cur_win->x - final->width);
 		return;
 	}
-	if(*y + Scr->MovePackResistance > cur_win->y + cur_win->height) {  /* top */
-		*y = MAX(*y, cur_win->y + cur_win->height);
+	if(final->y + Scr->MovePackResistance > cur_win->y +
+	                cur_win->height) {  /* top */
+		final->y = MAX(final->y, cur_win->y + cur_win->height);
 		return;
 	}
-	if(*y + winh < cur_win->y + Scr->MovePackResistance) {  /* bottom */
-		*y = MIN(*y, cur_win->y - winh);
+	if(final->y + final->height < cur_win->y +
+	                Scr->MovePackResistance) {  /* bottom */
+		final->y = MIN(final->y, cur_win->y - final->height);
 	}
+}
+
+static int _tryToPackVsEachMonitor(RArea *monitor_area, void *vfinal)
+{
+	_tryToPack((RArea *)vfinal, monitor_area);
+	return 0;
 }
 
 void
@@ -499,40 +510,15 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 {
 	TwmWindow   *t;
 	RArea cur_win;
-	const int winw = tmp_win->frame_width  + 2 * tmp_win->frame_bw;
-	const int winh = tmp_win->frame_height + 2 * tmp_win->frame_bw;
+	RArea final = RAreaNew(*x, *y,
+	                       tmp_win->frame_width  + 2 * tmp_win->frame_bw,
+	                       tmp_win->frame_height + 2 * tmp_win->frame_bw);
 
 	/* Global layout is not a single rectangle, check against the
 	 * monitor borders */
 	if(Scr->BorderedLayout->horiz->len > 1) {
-		RArea area;
-		int monitor_bot, monitor_top, monitor_left, monitor_right;
-
-		area = RAreaNew(tmp_win->frame_x, tmp_win->frame_y, winw, winh);
-		monitor_bot = RLayoutFindMonitorBottomEdge(Scr->BorderedLayout, &area);
-		monitor_top = RLayoutFindMonitorTopEdge(Scr->BorderedLayout, &area);
-		monitor_left = RLayoutFindMonitorLeftEdge(Scr->BorderedLayout, &area);
-		monitor_right = RLayoutFindMonitorRightEdge(Scr->BorderedLayout, &area);
-
-		// Left border
-		cur_win = RAreaNew(monitor_left - 1, monitor_top,
-		                   1, monitor_bot - monitor_top + 1);
-		_tryToPack(winw, winh, &cur_win, x, y);
-
-		// Right border
-		cur_win = RAreaNew(monitor_right + 1, monitor_top,
-		                   1, monitor_bot - monitor_top + 1);
-		_tryToPack(winw, winh, &cur_win, x, y);
-
-		// Top border
-		cur_win = RAreaNew(monitor_left, monitor_top - 1,
-		                   monitor_right - monitor_left + 1, 1);
-		_tryToPack(winw, winh, &cur_win, x, y);
-
-		// Bottom border
-		cur_win = RAreaNew(monitor_left, monitor_bot + 1,
-		                   monitor_right - monitor_left + 1, 1);
-		_tryToPack(winw, winh, &cur_win, x, y);
+		RAreaListForeach(
+		        Scr->BorderedLayout->monitors, _tryToPackVsEachMonitor, &final);
 	}
 
 	for(t = Scr->FirstWindow; t != NULL; t = t->next) {
@@ -553,8 +539,11 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 		                   t->frame_width  + 2 * t->frame_bw,
 		                   t->frame_height + 2 * t->frame_bw);
 
-		_tryToPack(winw, winh, &cur_win, x, y);
+		_tryToPack(&final, &cur_win);
 	}
+
+	*x = final.x;
+	*y = final.y;
 }
 
 
@@ -714,11 +703,9 @@ bool
 ConstrainByLayout(RLayout *layout, int move_off_res, int *left, int width,
                   int *top, int height)
 {
-	RArea area;
+	RArea area = RAreaNew(*left, *top, width, height);
 	int limit;
 	bool clipped = false;
-
-	area = RAreaNew(*left, *top, width, height);
 
 	limit = RLayoutFindBottomEdge(layout, &area) - height + 1;
 	if(area.y > limit) {
