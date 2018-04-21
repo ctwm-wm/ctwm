@@ -3535,6 +3535,8 @@ void HandleLeaveNotify(void)
 			}
 			Scr->RingLeader = NULL;
 		}
+
+		/* Are we moving focus based on the leave? */
 		if(Scr->FocusRoot) {
 
 			if(Event.xcrossing.detail != NotifyInferior) {
@@ -3578,6 +3580,7 @@ void HandleLeaveNotify(void)
 				}
 			}
 		}
+
 		/* Autolower modification. */
 		if(Tmp_win->auto_lower) {
 			leave_win = Tmp_win;
