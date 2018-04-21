@@ -3477,9 +3477,6 @@ static Bool HLNQueueScanner(Display *display, XEvent *ev, char *_args)
 
 void HandleLeaveNotify(void)
 {
-	HLNScanArgs scanArgs;
-	XEvent dummy;
-
 	if(ActiveMenu && ActiveMenu->pinned
 	                && (Event.xcrossing.window == ActiveMenu->w)) {
 		PopDownMenu();
@@ -3541,6 +3538,8 @@ void HandleLeaveNotify(void)
 		if(Scr->FocusRoot) {
 
 			if(Event.xcrossing.detail != NotifyInferior) {
+				HLNScanArgs scanArgs;
+				XEvent dummy;
 
 				/*
 				 * Scan for EnterNotify events to see if we can avoid some
