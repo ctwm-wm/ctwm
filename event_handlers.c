@@ -3594,7 +3594,10 @@ void HandleLeaveNotify(void)
 		XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
 		              (char *) &scanArgs);
 
-		if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
+		if(0) {
+			(void)0;
+		}
+		else if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
 			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
 				SetFocus(NULL, Event.xcrossing.time);
 			}
