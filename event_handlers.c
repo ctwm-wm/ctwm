@@ -3577,9 +3577,8 @@ void HandleLeaveNotify(void)
 	 *     we skip handling there too; the endpoints will do
 	 *     whatever's necessary.
 	 */
-	if(Scr->FocusRoot) {
-
-		if(Event.xcrossing.detail != NotifyInferior
+	if(Scr->FocusRoot
+		&& Event.xcrossing.detail != NotifyInferior
 		                && Event.xcrossing.detail != NotifyVirtual
 		                && Event.xcrossing.detail != NotifyNonlinearVirtual
 		  ) {
@@ -3621,7 +3620,6 @@ void HandleLeaveNotify(void)
 			                !scanArgs.enters) {
 				InstallColormaps(LeaveNotify, &Scr->RootColormaps);
 			}
-		}
 	}
 
 	/* Autolower modification. */
