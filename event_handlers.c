@@ -3482,7 +3482,11 @@ void HandleLeaveNotify(void)
 		PopDownMenu();
 	}
 
-	if(Tmp_win != NULL) {
+	if(Tmp_win == NULL) {
+		/* No window to be Leave'ing, so nothing much to do... */
+		return;
+	}
+
 		bool inicon;
 
 		/*
@@ -3631,7 +3635,6 @@ void HandleLeaveNotify(void)
 
 		XSync(dpy, 0);
 		return;
-	}
 }
 
 
