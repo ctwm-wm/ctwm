@@ -3597,16 +3597,6 @@ void HandleLeaveNotify(void)
 		if(0) {
 			(void)0;
 		}
-		else if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
-			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
-				SetFocus(NULL, Event.xcrossing.time);
-			}
-			/* pretend there was a focus out as sometimes
-			   * we don't get one. */
-			if(Event.xcrossing.focus) {
-				SynthesiseFocusOut(Tmp_win->w);
-			}
-		}
 		else if(inicon && Scr->IconManagerFocus) {
 			if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
 				return;
@@ -3614,6 +3604,16 @@ void HandleLeaveNotify(void)
 			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
 				SetFocus(NULL, Event.xcrossing.time);
 			}
+			if(Event.xcrossing.focus) {
+				SynthesiseFocusOut(Tmp_win->w);
+			}
+		}
+		else if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
+			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
+				SetFocus(NULL, Event.xcrossing.time);
+			}
+			/* pretend there was a focus out as sometimes
+			   * we don't get one. */
 			if(Event.xcrossing.focus) {
 				SynthesiseFocusOut(Tmp_win->w);
 			}
