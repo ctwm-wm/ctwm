@@ -3607,7 +3607,7 @@ void HandleLeaveNotify(void)
 				SynthesiseFocusOut(Tmp_win->w);
 			}
 		}
-		else if(Scr->IconManagerFocus && inicon) {
+		else if(inicon && Scr->IconManagerFocus) {
 			if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
 				return;
 			}
