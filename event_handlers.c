@@ -3598,6 +3598,8 @@ void HandleLeaveNotify(void)
 			(void)0;
 		}
 		else if(inicon && Scr->IconManagerFocus) {
+			// Defocusing window because we moved out of its entry in an
+			// icon manager.
 			if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
 				return;
 			}
@@ -3609,6 +3611,7 @@ void HandleLeaveNotify(void)
 			}
 		}
 		else if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
+			// Defocusing window because we moved out of its frame
 			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
 				SetFocus(NULL, Event.xcrossing.time);
 			}
@@ -3619,6 +3622,8 @@ void HandleLeaveNotify(void)
 			}
 		}
 		else if(Event.xcrossing.window == Tmp_win->w && !scanArgs.enters) {
+			// Flipping colormaps around because we moved out of the
+			// window.
 			InstallColormaps(LeaveNotify, &Scr->RootColormaps);
 		}
 	}
