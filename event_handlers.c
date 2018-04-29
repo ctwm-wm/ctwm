@@ -3487,154 +3487,154 @@ void HandleLeaveNotify(void)
 		return;
 	}
 
-		bool inicon;
+	bool inicon;
 
-		/*
-		 * We're not interested in pseudo Enter/Leave events generated
-		 * from grab initiations and terminations.
-		 */
-		if(Event.xcrossing.mode != NotifyNormal) {
-			return;
-		}
-
-		if(Scr->ShrinkIconTitles &&
-		                Tmp_win->icon &&
-		                Event.xcrossing.window == Tmp_win->icon->w &&
-		                Event.xcrossing.detail != NotifyInferior) {
-			ShrinkIconTitle(Tmp_win);
-			return;
-		}
-
-		inicon = (Tmp_win->iconmanagerlist &&
-		          Tmp_win->iconmanagerlist->w == Event.xcrossing.window);
-
-		if(Scr->RingLeader && Scr->RingLeader == Tmp_win &&
-		                (Event.xcrossing.detail != NotifyInferior &&
-		                 Event.xcrossing.window != Tmp_win->w)) {
-#ifdef DEBUG
-			fprintf(stderr,
-			        "HandleLeaveNotify: Event.xcrossing.window %x != Tmp_win->w %x\n",
-			        Event.xcrossing.window, Tmp_win->w);
-#endif
-			if(!inicon) {
-				if(Event.xcrossing.window != Tmp_win->frame /*was: Tmp_win->mapped*/) {
-					Tmp_win->ring.cursor_valid = false;
-#ifdef DEBUG
-					fprintf(stderr, "HandleLeaveNotify: cursor_valid = false\n");
-#endif
-				}
-				else {          /* Event.xcrossing.window == Tmp_win->frame */
-					Tmp_win->ring.cursor_valid = true;
-					Tmp_win->ring.curs_x = (Event.xcrossing.x_root -
-					                        Tmp_win->frame_x);
-					Tmp_win->ring.curs_y = (Event.xcrossing.y_root -
-					                        Tmp_win->frame_y);
-#ifdef DEBUG
-					fprintf(stderr,
-					        "HandleLeaveNotify: cursor_valid = true; x = %d (%d-%d), y = %d (%d-%d)\n",
-					        Tmp_win->ring.curs_x, Event.xcrossing.x_root, Tmp_win->frame_x,
-					        Tmp_win->ring.curs_y, Event.xcrossing.y_root, Tmp_win->frame_y);
-#endif
-				}
-			}
-			Scr->RingLeader = NULL;
-		}
-
-
-		/*
-		 * Are we moving focus based on the leave?  There are 2 steps to
-		 * this:
-		 * - Scr->FocusRoot is our "are we automatically changing focus
-		 *   based on the leave" flag.  This gets unset when ClickToFocus
-		 *   is config'd or a window is f.focus'd.
-		 * - Then we check the detail for the focus leaving.  We're only
-		 *   getting here for normal entry/exits.  Most cases outside of
-		 *   the icon manager peek ahead in the event queue for any
-		 *   Enter's, and don't do anything if there are; if there were,
-		 *   we'd be moving the focus when we get them, so no point doing
-		 *   it twice.  So the remainder here assumes there aren't any
-		 *   Enters waiting.
-		 *
-		 *   See
-		 *   <https://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Normal_EntryExit_Events>
-		 *   for details of the cases.  So, when do we want to un-set the
-		 *   focus?  Let's look at each doc'd value...
-		 *   - NotifyAncestor means we're leaving a subwindow for its
-		 *     parent.  That means the root, so, yep, we want to yield
-		 *     focus up to it.
-		 *   - NotifyNonLinear means we're leaving a window for something
-		 *     that isn't a parent or child.  So we should probably yield
-		 *     focus in this case too.
-		 *   - NotifyInferior means we're leaving a window for a
-		 *     subwindow of it.  From the WM perspective, that means
-		 *     we're leaving focus where it was.
-		 *   - NotifyVirtual means we're in the middle of an ascending
-		 *     sequence.  Nothing to do; the Ancestor handling already
-		 *     did the job.
-		 *   - NotifyNonLinearVirtual is another "in the middle" case, so
-		 *     we skip handling there too; the endpoints will do
-		 *     whatever's necessary.
-		 */
-		if(Scr->FocusRoot) {
-
-			if(Event.xcrossing.detail != NotifyInferior
-					&& Event.xcrossing.detail != NotifyVirtual
-					&& Event.xcrossing.detail != NotifyNonlinearVirtual
-					) {
-				HLNScanArgs scanArgs;
-				XEvent dummy;
-
-				/*
-				 * Scan for EnterNotify events to see if we can avoid some
-				 * unnecessary processing.
-				 */
-				scanArgs.w = Event.xcrossing.window;
-				scanArgs.enters = scanArgs.matches = False;
-				XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
-				              (char *) &scanArgs);
-
-				if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
-					if(Scr->TitleFocus ||
-					                Tmp_win->protocols & DoesWmTakeFocus) {
-						SetFocus(NULL, Event.xcrossing.time);
-					}
-					/* pretend there was a focus out as sometimes
-					   * we don't get one. */
-					if(Event.xcrossing.focus) {
-						SynthesiseFocusOut(Tmp_win->w);
-					}
-				}
-				else if(Scr->IconManagerFocus && inicon) {
-					if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
-						return;
-					}
-					if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
-						SetFocus(NULL, Event.xcrossing.time);
-					}
-					if(Event.xcrossing.focus) {
-						SynthesiseFocusOut(Tmp_win->w);
-					}
-				}
-				else if(Event.xcrossing.window == Tmp_win->w &&
-				                !scanArgs.enters) {
-					InstallColormaps(LeaveNotify, &Scr->RootColormaps);
-				}
-			}
-		}
-
-		/* Autolower modification. */
-		if(Tmp_win->auto_lower) {
-			leave_win = Tmp_win;
-			if(leave_flag == false) {
-				AutoLowerWindow(Tmp_win);
-			}
-		}
-		else if(leave_flag && lower_win == Tmp_win) {
-			leave_win = Tmp_win;
-		}
-
-		XSync(dpy, 0);
+	/*
+	 * We're not interested in pseudo Enter/Leave events generated
+	 * from grab initiations and terminations.
+	 */
+	if(Event.xcrossing.mode != NotifyNormal) {
 		return;
+	}
+
+	if(Scr->ShrinkIconTitles &&
+	                Tmp_win->icon &&
+	                Event.xcrossing.window == Tmp_win->icon->w &&
+	                Event.xcrossing.detail != NotifyInferior) {
+		ShrinkIconTitle(Tmp_win);
+		return;
+	}
+
+	inicon = (Tmp_win->iconmanagerlist &&
+	          Tmp_win->iconmanagerlist->w == Event.xcrossing.window);
+
+	if(Scr->RingLeader && Scr->RingLeader == Tmp_win &&
+	                (Event.xcrossing.detail != NotifyInferior &&
+	                 Event.xcrossing.window != Tmp_win->w)) {
+#ifdef DEBUG
+		fprintf(stderr,
+		        "HandleLeaveNotify: Event.xcrossing.window %x != Tmp_win->w %x\n",
+		        Event.xcrossing.window, Tmp_win->w);
+#endif
+		if(!inicon) {
+			if(Event.xcrossing.window != Tmp_win->frame /*was: Tmp_win->mapped*/) {
+				Tmp_win->ring.cursor_valid = false;
+#ifdef DEBUG
+				fprintf(stderr, "HandleLeaveNotify: cursor_valid = false\n");
+#endif
+			}
+			else {          /* Event.xcrossing.window == Tmp_win->frame */
+				Tmp_win->ring.cursor_valid = true;
+				Tmp_win->ring.curs_x = (Event.xcrossing.x_root -
+				                        Tmp_win->frame_x);
+				Tmp_win->ring.curs_y = (Event.xcrossing.y_root -
+				                        Tmp_win->frame_y);
+#ifdef DEBUG
+				fprintf(stderr,
+				        "HandleLeaveNotify: cursor_valid = true; x = %d (%d-%d), y = %d (%d-%d)\n",
+				        Tmp_win->ring.curs_x, Event.xcrossing.x_root, Tmp_win->frame_x,
+				        Tmp_win->ring.curs_y, Event.xcrossing.y_root, Tmp_win->frame_y);
+#endif
+			}
+		}
+		Scr->RingLeader = NULL;
+	}
+
+
+	/*
+	 * Are we moving focus based on the leave?  There are 2 steps to
+	 * this:
+	 * - Scr->FocusRoot is our "are we automatically changing focus
+	 *   based on the leave" flag.  This gets unset when ClickToFocus
+	 *   is config'd or a window is f.focus'd.
+	 * - Then we check the detail for the focus leaving.  We're only
+	 *   getting here for normal entry/exits.  Most cases outside of
+	 *   the icon manager peek ahead in the event queue for any
+	 *   Enter's, and don't do anything if there are; if there were,
+	 *   we'd be moving the focus when we get them, so no point doing
+	 *   it twice.  So the remainder here assumes there aren't any
+	 *   Enters waiting.
+	 *
+	 *   See
+	 *   <https://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Normal_EntryExit_Events>
+	 *   for details of the cases.  So, when do we want to un-set the
+	 *   focus?  Let's look at each doc'd value...
+	 *   - NotifyAncestor means we're leaving a subwindow for its
+	 *     parent.  That means the root, so, yep, we want to yield
+	 *     focus up to it.
+	 *   - NotifyNonLinear means we're leaving a window for something
+	 *     that isn't a parent or child.  So we should probably yield
+	 *     focus in this case too.
+	 *   - NotifyInferior means we're leaving a window for a
+	 *     subwindow of it.  From the WM perspective, that means
+	 *     we're leaving focus where it was.
+	 *   - NotifyVirtual means we're in the middle of an ascending
+	 *     sequence.  Nothing to do; the Ancestor handling already
+	 *     did the job.
+	 *   - NotifyNonLinearVirtual is another "in the middle" case, so
+	 *     we skip handling there too; the endpoints will do
+	 *     whatever's necessary.
+	 */
+	if(Scr->FocusRoot) {
+
+		if(Event.xcrossing.detail != NotifyInferior
+		                && Event.xcrossing.detail != NotifyVirtual
+		                && Event.xcrossing.detail != NotifyNonlinearVirtual
+		  ) {
+			HLNScanArgs scanArgs;
+			XEvent dummy;
+
+			/*
+			 * Scan for EnterNotify events to see if we can avoid some
+			 * unnecessary processing.
+			 */
+			scanArgs.w = Event.xcrossing.window;
+			scanArgs.enters = scanArgs.matches = False;
+			XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
+			              (char *) &scanArgs);
+
+			if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
+				if(Scr->TitleFocus ||
+				                Tmp_win->protocols & DoesWmTakeFocus) {
+					SetFocus(NULL, Event.xcrossing.time);
+				}
+				/* pretend there was a focus out as sometimes
+				   * we don't get one. */
+				if(Event.xcrossing.focus) {
+					SynthesiseFocusOut(Tmp_win->w);
+				}
+			}
+			else if(Scr->IconManagerFocus && inicon) {
+				if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
+					return;
+				}
+				if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
+					SetFocus(NULL, Event.xcrossing.time);
+				}
+				if(Event.xcrossing.focus) {
+					SynthesiseFocusOut(Tmp_win->w);
+				}
+			}
+			else if(Event.xcrossing.window == Tmp_win->w &&
+			                !scanArgs.enters) {
+				InstallColormaps(LeaveNotify, &Scr->RootColormaps);
+			}
+		}
+	}
+
+	/* Autolower modification. */
+	if(Tmp_win->auto_lower) {
+		leave_win = Tmp_win;
+		if(leave_flag == false) {
+			AutoLowerWindow(Tmp_win);
+		}
+	}
+	else if(leave_flag && lower_win == Tmp_win) {
+		leave_win = Tmp_win;
+	}
+
+	XSync(dpy, 0);
+	return;
 }
 
 
