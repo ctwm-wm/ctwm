@@ -3477,6 +3477,8 @@ static Bool HLNQueueScanner(Display *display, XEvent *ev, char *_args)
 
 void HandleLeaveNotify(void)
 {
+	bool inicon;
+
 	if(ActiveMenu && ActiveMenu->pinned
 	                && (Event.xcrossing.window == ActiveMenu->w)) {
 		PopDownMenu();
@@ -3486,8 +3488,6 @@ void HandleLeaveNotify(void)
 		/* No window to be Leave'ing, so nothing much to do... */
 		return;
 	}
-
-	bool inicon;
 
 	/*
 	 * We're not interested in pseudo Enter/Leave events generated
@@ -3505,6 +3505,8 @@ void HandleLeaveNotify(void)
 		return;
 	}
 
+	// Are we Leave'ing the icon manager entry for the Tmp_win in
+	// question, or some other part of the window itself?
 	inicon = (Tmp_win->iconmanagerlist &&
 	          Tmp_win->iconmanagerlist->w == Event.xcrossing.window);
 
