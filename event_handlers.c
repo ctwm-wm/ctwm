@@ -3597,26 +3597,35 @@ void HandleLeaveNotify(void)
 		if(0) {
 			(void)0;
 		}
-		else if(inicon && Scr->IconManagerFocus) {
+		else if((inicon && Scr->IconManagerFocus)
+		                || (Event.xcrossing.window == Tmp_win->frame
+		                    && !scanArgs.matches)
+		       ) {
 			// Defocusing window because we moved out of its entry in an
-			// icon manager.
-			if(! Tmp_win->mapped || ! Tmp_win->wmhints->input) {
+			// icon manager, or because we moved out of its frame.
+
+			// Nothing to do if we were in the icon manager, and the
+			// window's either unmapped or doesn't accept input.  XXX Is
+			// the inicon flag needed here?  If it's not mapped, we
+			// presumably couldn't have gotten a Leave on its frame
+			// anyway, and if it's not accepting input, we probably don't
+			// need to focus out anyway?  Left conditional because this
+			// matches historical behavior prior to some rework here, but
+			// revisit.
+			if(inicon && (!Tmp_win->mapped || !Tmp_win->wmhints->input)) {
 				return;
 			}
+
+			// Shift away focus
 			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
 				SetFocus(NULL, Event.xcrossing.time);
 			}
-			if(Event.xcrossing.focus) {
-				SynthesiseFocusOut(Tmp_win->w);
-			}
-		}
-		else if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
-			// Defocusing window because we moved out of its frame
-			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
-				SetFocus(NULL, Event.xcrossing.time);
-			}
-			/* pretend there was a focus out as sometimes
-			   * we don't get one. */
+
+			// If we're in the icon manager, we need to take a FocusOut
+			// event for the window, since it wouldn't have gotten one.
+			// If we're in the frame, we fake one anyway as historical
+			// code says "pretend there was a focus out as sometimes we
+			// don't get one".
 			if(Event.xcrossing.focus) {
 				SynthesiseFocusOut(Tmp_win->w);
 			}
