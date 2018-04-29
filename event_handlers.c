@@ -3594,13 +3594,10 @@ void HandleLeaveNotify(void)
 		XCheckIfEvent(dpy, &dummy, HLNQueueScanner,
 		              (char *) &scanArgs);
 
-		if(0) {
-			(void)0;
-		}
-		else if((inicon && Scr->IconManagerFocus)
+		if((inicon && Scr->IconManagerFocus)
 		                || (Event.xcrossing.window == Tmp_win->frame
 		                    && !scanArgs.matches)
-		       ) {
+		  ) {
 			// Defocusing window because we moved out of its entry in an
 			// icon manager, or because we moved out of its frame.
 
