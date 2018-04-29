@@ -3595,8 +3595,7 @@ void HandleLeaveNotify(void)
 		              (char *) &scanArgs);
 
 		if(Event.xcrossing.window == Tmp_win->frame && !scanArgs.matches) {
-			if(Scr->TitleFocus ||
-			                Tmp_win->protocols & DoesWmTakeFocus) {
+			if(Scr->TitleFocus || Tmp_win->protocols & DoesWmTakeFocus) {
 				SetFocus(NULL, Event.xcrossing.time);
 			}
 			/* pretend there was a focus out as sometimes
@@ -3616,8 +3615,7 @@ void HandleLeaveNotify(void)
 				SynthesiseFocusOut(Tmp_win->w);
 			}
 		}
-		else if(Event.xcrossing.window == Tmp_win->w &&
-		                !scanArgs.enters) {
+		else if(Event.xcrossing.window == Tmp_win->w && !scanArgs.enters) {
 			InstallColormaps(LeaveNotify, &Scr->RootColormaps);
 		}
 	}
