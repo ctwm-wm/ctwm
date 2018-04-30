@@ -38,6 +38,13 @@
    with the desktop set via EWMH properties) could segfault.  Reported by
    Sean McAllister.
 
+1. Fix some edge cases where we'd fight other apps' focus handling.  When
+   an application moved focus itself to an unrelated (in X terms) window,
+   our processing would often race and re-moved the focus to the root
+   ourselves.  This was visible with e.g. sub-windows in Firefox for
+   context menu and urlbar dropdown, which would flash on and then
+   disappear.
+
 
 
 ## 4.0.1  (2017-06-05)
