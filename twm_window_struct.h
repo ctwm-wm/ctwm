@@ -99,13 +99,22 @@ struct TwmWindow {
 
 	/// @}
 
-	char *name;                 /* name of the window */
-	char *icon_name;            /* name of the icon */
-	int name_x;                 /* start x of name text */
-	unsigned int name_width;    /* width of name text */
-	int highlightxl;            /* start of left highlight window */
-	int highlightxr;            /* start of right highlight window */
-	int rightx;                 /* start of right buttons */
+	char *name;       ///< Window name.  From WM_NAME property.
+	char *icon_name;  ///< Icon name.  From WM_ICON_NAME property.
+
+	/// \addtogroup win_frame Window frame bits
+	/// @{
+
+	/// Position of window title text, relative to title_w.  Starts from
+	/// \ref title_x, but may be pushed over due to TitleJustification
+	/// config.
+	int name_x;
+	unsigned int name_width; ///< width of name text
+	int highlightxl;         ///< Position of \ref hilite_wl and \ref lolite_wl
+	int highlightxr;         ///< Position of \ref hilite_wr and \ref lolite_wr
+	int rightx;              ///< Position of of right titlebar buttons
+	/// @}
+
 	XWindowAttributes attr;     /* the child window attributes */
 	XSizeHints hints;           /* normal hints */
 	XWMHints *wmhints;          /* WM hints */
