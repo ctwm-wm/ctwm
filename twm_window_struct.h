@@ -115,39 +115,55 @@ struct TwmWindow {
 	int rightx;              ///< Position of of right titlebar buttons
 	/// @}
 
-	XWindowAttributes attr;     /* the child window attributes */
-	XSizeHints hints;           /* normal hints */
-	XWMHints *wmhints;          /* WM hints */
-	Window group;               /* group ID */
-	XClassHint class;
-	struct WList *iconmanagerlist;/* iconmanager subwindows */
-	/***********************************************************************
-	 * color definitions per window
-	 **********************************************************************/
-	ColorPair borderC;          /* border color */
-	ColorPair border_tile;
-	ColorPair title;
-	bool iconified;             /* has the window ever been iconified? */
-	bool isicon;                /* is the window an icon now ? */
-	bool icon_on;               /* is the icon visible */
-	bool mapped;                /* is the window mapped ? */
-	bool squeezed;              /* is the window squeezed ? */
-	bool auto_raise;            /* should we auto-raise this window ? */
-	bool auto_lower;            /* should we auto-lower this window ? */
-	bool forced;                /* has had an icon forced upon it */
-	bool icon_moved;            /* user explicitly moved the icon */
-	bool highlight;             /* should highlight this window */
-	bool stackmode;             /* honor stackmode requests */
-	bool iconify_by_unmapping;  /* unmap window to iconify it */
-	bool isiconmgr;             /* this is an icon manager window */
-	bool iswspmgr;              /* this is a workspace manager manager window */
-	bool isoccupy;              /* this is an Occupy window */
-	bool istransient;           /* this is a transient window */
-	Window transientfor;        /* window contained in XA_XM_TRANSIENT_FOR */
-	bool titlehighlight;        /* should I highlight the title bar */
-	struct IconMgr *iconmgrp;   /* pointer to it if this is an icon manager */
-	int save_frame_x;           /* x position of frame  (saved from zoom) */
-	int save_frame_y;           /* y position of frame  (saved from zoom)*/
+	/// Window attributes from XGetWindowAttributes()
+	XWindowAttributes attr;
+	/// Window size hints.  From WM_NORMAL_HINTS property.
+	/// \sa GetWindowSizeHints()
+	XSizeHints hints;
+	/// Window manager hints.  From WM_HINTS property, filled in via
+	/// XGetWMHints().
+	XWMHints *wmhints;
+	Window group;      ///< Window group, from WM hints.
+	XClassHint class;  ///< Window class info.  From XGetClassHint().
+
+	/// List of the icon managers the window is in.  \sa AddIconManager()
+	struct WList *iconmanagerlist;
+
+	ColorPair borderC;     ///< ColorPair for focused window borders
+	ColorPair border_tile; ///< ColorPair for non-focused window borders
+	ColorPair title;       ///< ColorPair for various other titlebar bits
+
+	bool iconified;  ///< Has the window ever been iconified?
+	bool isicon;     ///< Is the window an icon now ?
+	bool icon_on;    ///< Is the icon visible
+	bool mapped;     ///< Is the window mapped ?
+	bool squeezed;   ///< Is the window squeezed ?
+	bool auto_raise; ///< Should we auto-raise this window ?
+	bool auto_lower; ///< Should we auto-lower this window ?
+	bool forced;     ///< Has had an icon forced upon it
+	bool icon_moved; ///< User explicitly moved the icon
+	bool highlight;  ///< Should highlight this window
+	bool stackmode;  ///< Honor stackmode requests
+	bool iconify_by_unmapping;  ///< Unmap window to iconify it
+	bool isiconmgr;  ///< This is an icon manager window
+	bool iswspmgr;   ///< This is a workspace manager window
+	bool isoccupy;   ///< This is an Occupy window
+
+	bool istransient;    ///< This is a transient window
+	/// What window it's transient for.  From XGetTransientForHint() and
+	/// XM_TRANSIENT_FOR property.
+	Window transientfor;
+
+	bool titlehighlight;      ///< Should I highlight the title bar?
+
+	/// Pointer to the icon manager structure, for windows that are icon
+	/// managers.  Currently also set for some other window types to
+	/// various things, but is only ever used for icon manager windows
+	/// (\ref isiconmgr = true).
+	struct IconMgr *iconmgrp;
+
+	int save_frame_x;         /* x position of frame  (saved from zoom) */
+	int save_frame_y;         /* y position of frame  (saved from zoom)*/
 	unsigned int save_frame_width;  /* width of frame   (saved from zoom)*/
 	unsigned int save_frame_height; /* height of frame  (saved from zoom)*/
 	int zoomed;                 /* ZOOM_NONE || function causing zoom */
