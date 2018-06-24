@@ -167,53 +167,79 @@ struct TwmWindow {
 	/// (\ref isiconmgr = true).
 	struct IconMgr *iconmgrp;
 
-	int save_frame_x;         /* x position of frame  (saved from zoom) */
-	int save_frame_y;         /* y position of frame  (saved from zoom)*/
-	unsigned int save_frame_width;  /* width of frame   (saved from zoom)*/
-	unsigned int save_frame_height; /* height of frame  (saved from zoom)*/
-	int zoomed;                 /* ZOOM_NONE || function causing zoom */
-	bool wShaped;               /* this window has a bounding shape */
-	unsigned long protocols;    /* which protocols this window handles */
-	Colormaps cmaps;            /* colormaps for this application */
+	int save_frame_x;        ///< x position of frame  (saved from zoom)
+	int save_frame_y;        ///< y position of frame  (saved from zoom)
+	unsigned int save_frame_width;  ///< width of frame   (saved from zoom)
+	unsigned int save_frame_height; ///< height of frame  (saved from zoom)
+	int zoomed;                ///< ZOOM_NONE || function causing zoom
+	bool wShaped;              ///< This window is Shape'd
+	/// Which protocols this window handles.  From WM_PROTOCOLS property
+	/// via XGetWMProtocols()
+	unsigned long protocols;
+	Colormaps cmaps;           ///< colormaps for this application
+	/// Button windows in the titlebar.  \ingroup win_frame
 	TBWindow *titlebuttons;
-	SqueezeInfo *squeeze_info;  /* should the title be squeezed? */
-	bool squeeze_info_copied;   /* must above SqueezeInfo be freed? */
-	struct {
-		struct TwmWindow *next, *prev;
-		bool cursor_valid;
-		int curs_x, curs_y;
-	} ring;
+	SqueezeInfo *squeeze_info;  ///< Control info for title squeezing
+	bool squeeze_info_copied;   ///< Should ->squeeze_info be free()'d?
 
-	bool OpaqueMove;
-	bool OpaqueResize;
-	bool UnmapByMovingFarAway;
-	bool AutoSqueeze;
-	bool StartSqueezed;
-	bool AlwaysSqueezeToGravity;
-	bool DontSetInactive;
-	bool hasfocusvisible;      /* The window has visible focus*/
-	int  occupation;
-	Image *HiliteImage;         /* focus highlight window background */
-	Image *LoliteImage;         /* focus lowlight window background */
+	/// Window ring connectivity
+	struct _ring {
+		struct TwmWindow *next; ///< Next window in the ring
+		struct TwmWindow *prev; ///< Previous window in the ring
+		bool cursor_valid;  ///< Whether curs_x and curs_y are usable
+		int curs_x;         ///< Stored cursor position in the window
+		int curs_y;         ///< Stored cursor position in the window
+	} ring; ///< \copydoc TwmWindow::_ring
+	// x-ref ScreenInfo.InfoWindow about doxygen hackery
+
+	// Many of these are just the window's particular casing of various
+	// config params, inherited from the screen's info.  In most cases,
+	// they're essentially a read-only cache.
+	bool OpaqueMove;      ///< Move opaquely.  \sa ScreenInfo.DoOpaqueMove
+	bool OpaqueResize;    ///< Resize opaquely.  \sa ScreenInfo.DoOpaqueResize
+	bool UnmapByMovingFarAway;  ///< \sa ScreenInfo.UnmapByMovingFarAway
+	bool AutoSqueeze;     ///< \sa ScreenInfo.AutoSqueeze
+	bool StartSqueezed;   ///< \sa ScreenInfo.StartSqueezed
+	bool AlwaysSqueezeToGravity; ///< \sa ScreenInfo.AlwaysSqueezeToGravity
+	bool DontSetInactive; ///< \sa ScreenInfo.DontSetInactive
+
+	bool hasfocusvisible; ///< The window visibly has focus
+
+	int occupation;  ///< Workspaces the window is in (bitmap)
+
+	Image *HiliteImage; ///< Titlebar hilite backround.  \ingroup win_frame
+	Image *LoliteImage; ///< Titlebar lolite backround.  \ingroup win_frame
+
+	/// WindowRegion containing this window.  \todo Write-only?  Reap?
 	WindowRegion *wr;
-	WindowBox *winbox;
-	bool iswinbox;
-	struct {
-		int x, y;
-		unsigned int width, height;
-	} savegeometry;
+	WindowBox *winbox; ///< WindowBox containing this window.
+	bool iswinbox;     ///< This is a WindowBox window.
 
-	/* where the window is mapped (may be NULL) */
+	/// Saved window geometry.  Used in f.savegeometry and
+	/// f.restoregeometry.
+	struct _savegeometry {
+		int x;  ///< Saved x coord
+		int y;  ///< Saved y coord
+		unsigned int width;  ///< Saved width
+		unsigned int height; ///< Saved height
+	} savegeometry; ///< \copydoc TwmWindow::_savegeometry
+
+	/// Where the window is currently mapped (may be NULL)
 	struct VirtualScreen *vs;
-	/* where it is parented (deparenting is impossible) */
+	/// Where the window is parented.  Always set.
 	struct VirtualScreen *parent_vs;
 
-	struct VirtualScreen *savevs;       /* for ShowBackground only */
+	/// Where the window would be.  Used only by f.showbackground.
+	/// \sa ShowBackground()
+	struct VirtualScreen *savevs;
 
-	bool nameChanged;  /* did WM_NAME ever change? */
-	/* did the user ever change the width/height? */
+	/// Has \ref TwmWindow::name ever changed?  Used only in session saving.
+	bool nameChanged;
+	/// Has \ref TwmWindow::attr width ever changed?  Used only in sessions.
 	bool widthEverChangedByUser;
+	/// Has \ref TwmWindow::attr height ever changed?  Used only in sessions.
 	bool heightEverChangedByUser;
+
 #ifdef EWMH
 	EwmhWindowType ewmhWindowType;
 	int ewmhFlags;
