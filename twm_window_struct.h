@@ -148,7 +148,7 @@ struct TwmWindow {
 	bool forced;     ///< Has had an icon forced upon it
 	bool icon_moved; ///< User explicitly moved the icon
 	bool highlight;  ///< Should highlight this window
-	bool stackmode;  ///< Honor stackmode requests
+	bool stackmode;  ///< Honor stackmode requests.  \sa ScreenInfo.StackMode
 	bool iconify_by_unmapping;  ///< Unmap window to iconify it
 	bool isiconmgr;  ///< This is an icon manager window
 	bool iswspmgr;   ///< This is a workspace manager window
