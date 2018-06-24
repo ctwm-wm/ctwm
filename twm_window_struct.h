@@ -133,7 +133,12 @@ struct TwmWindow {
 	ColorPair border_tile; ///< ColorPair for non-focused window borders
 	ColorPair title;       ///< ColorPair for various other titlebar bits
 
-	bool iconified;  ///< Has the window ever been iconified?
+	/// Has the window ever been iconified?
+	/// \todo This is almost write-only, and the one reader seems bogus
+	/// in light of what it does.  Investigate further and possibly
+	/// remove.
+	bool iconified;
+
 	bool isicon;     ///< Is the window an icon now ?
 	bool icon_on;    ///< Is the icon visible
 	bool mapped;     ///< Is the window mapped ?
