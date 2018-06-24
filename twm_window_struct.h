@@ -11,6 +11,11 @@
 #ifndef _CTWM_TWM_WINDOW_STRUCT_H
 #define _CTWM_TWM_WINDOW_STRUCT_H
 
+/* Needed for doxygen to get at the #define's for config (like EMWH) */
+#ifdef DOXYGEN
+# include "ctwm_config.h"
+#endif
+
 
 /**
  * Info and control for every X Window we take over.
@@ -241,8 +246,8 @@ struct TwmWindow {
 	bool heightEverChangedByUser;
 
 #ifdef EWMH
-	EwmhWindowType ewmhWindowType;
-	int ewmhFlags;
+	EwmhWindowType ewmhWindowType; ///< EWMH-defined window type
+	int ewmhFlags; ///< EWMH-defined window stats. Mostly from _NET_WM_STATE.
 #endif /* EWMH */
 };
 
