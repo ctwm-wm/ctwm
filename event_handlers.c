@@ -1184,16 +1184,18 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			if(strcmp(Tmp_win->name, prop) == 0) {
+			if(strcmp(Tmp_win->names.wm_name, prop) == 0) {
 				/* No change, just free and skip out */
 				free(prop);
 				return;
 			}
 
-			/* It's changing, free the old */
-			FreeWMPropertyString(Tmp_win->name);
+			/* It's changing, free the old and bring in the new */
+			FreeWMPropertyString(Tmp_win->names.wm_name);
+			Tmp_win->names.wm_name = prop;
 
-			Tmp_win->name = prop;
+			/* Update the active name */
+			Tmp_win->name = Tmp_win->names.wm_name;
 			Tmp_win->nameChanged = true;
 			XmbTextExtents(Scr->TitleBarFont.font_set,
 			               Tmp_win->name, strlen(Tmp_win->name),
@@ -1883,7 +1885,7 @@ void HandleDestroyNotify(void)
 		Scr->NumAutoLowers--;
 	}
 
-	FreeWMPropertyString(Tmp_win->name);        // 2
+	FreeWMPropertyString(Tmp_win->names.wm_name);        // 2
 	FreeWMPropertyString(Tmp_win->icon_name);   // 3
 
 	XFree(Tmp_win->wmhints);                                    /* 4 */

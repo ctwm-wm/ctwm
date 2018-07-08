@@ -199,7 +199,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * name_lists generally goes by the name/class, so we need to get
 	 * these set pretty early in the process.
 	 */
-	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	tmp_win->name = tmp_win->names.wm_name
+			= GetWMPropertyString(tmp_win->w, XA_WM_NAME);
 	if(tmp_win->name == NULL) {
 		tmp_win->name = NoName;
 	}

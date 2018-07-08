@@ -107,6 +107,11 @@ struct TwmWindow {
 	char *name;       ///< Window name.  From WM_NAME property.
 	char *icon_name;  ///< Icon name.  From WM_ICON_NAME property.
 
+	/// Various sources of window names.
+	struct _names {
+		char *wm_name;  ///< Name from ICCCM WM_NAME property
+	} names; ///< \copydoc TwmWindow::_names
+
 	/// \addtogroup win_frame Window frame bits
 	/// @{
 
