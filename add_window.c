@@ -200,7 +200,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * these set pretty early in the process.
 	 */
 	tmp_win->name = tmp_win->names.wm_name
-			= GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	                = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
 	if(tmp_win->name == NULL) {
 		tmp_win->name = NoName;
 	}
