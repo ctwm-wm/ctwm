@@ -109,6 +109,9 @@ struct TwmWindow {
 
 	/// Various sources of window names.
 	struct _names {
+#ifdef EWMH
+		char *net_wm_name;  ///< Name from EWMH _NET_WM_NAME property
+#endif
 		char *wm_name;  ///< Name from ICCCM WM_NAME property
 	} names; ///< \copydoc TwmWindow::_names
 
