@@ -222,13 +222,12 @@ GetWMPropertyString(Window w, Atom prop)
 		return NULL;
 	}
 
-	char **text_list;
-	int  text_list_count;
-
 	if(text_prop.encoding == XA_STRING
 	                || text_prop.encoding == XA_UTF8_STRING
 	                || text_prop.encoding == XA_COMPOUND_TEXT) {
 		/* property is encoded as compound text - convert to locale string */
+		char **text_list;
+		int  text_list_count;
 		int status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
 		                                       &text_list_count);
 		if(text_list_count == 0
