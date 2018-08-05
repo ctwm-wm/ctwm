@@ -1182,7 +1182,8 @@ void HandlePropertyNotify(void)
 				return;
 			}
 
-			if(strcmp(Tmp_win->names.wm_name, prop) == 0) {
+			if(Tmp_win->names.wm_name != NULL
+			                && strcmp(Tmp_win->names.wm_name, prop) == 0) {
 				/* No change, just free and skip out */
 				free(prop);
 				return;
