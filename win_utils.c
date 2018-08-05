@@ -915,13 +915,29 @@ gen_synthetic_wmhints(TwmWindow *win)
 void
 apply_window_name(TwmWindow *win)
 {
+	/* Figure what the name should be, and change if necessary */
+	{
+		char *newname = NULL;
+#define TRY(fld) { \
+        if(newname == NULL && win->names.fld != NULL) \
+                newname = win->names.fld; \
+        }
+		TRY(wm_name)
+#undef TRY
+
+		if(win->name == newname) {
+			return; // Nothing to do
+		}
+
+		win->name = newname;
+		win->nameChanged = true;
+	}
+
 	/* Update the active name */
 	{
 		XRectangle inc_rect;
 		XRectangle logical_rect;
 
-		win->name = win->names.wm_name;
-		win->nameChanged = true;
 		XmbTextExtents(Scr->TitleBarFont.font_set,
 		               win->name, strlen(win->name),
 		               &inc_rect, &logical_rect);
