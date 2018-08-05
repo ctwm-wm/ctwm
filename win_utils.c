@@ -992,4 +992,6 @@ apply_window_name(TwmWindow *win)
 		RedoIcon(win);
 	}
 	AutoPopupMaybe(win);
+
+	return;
 }
