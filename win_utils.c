@@ -922,6 +922,9 @@ apply_window_name(TwmWindow *win)
         if(newname == NULL && win->names.fld != NULL) \
                 newname = win->names.fld; \
         }
+#ifdef EWMH
+		TRY(net_wm_name)
+#endif
 		TRY(wm_name)
 #undef TRY
 
