@@ -222,61 +222,61 @@ GetWMPropertyString(Window w, Atom prop)
 		return NULL;
 	}
 
-		char **text_list;
-		int  text_list_count;
+	char **text_list;
+	int  text_list_count;
 
-		if(text_prop.encoding == XA_STRING
-		                || text_prop.encoding == XA_COMPOUND_TEXT) {
-			/* property is encoded as compound text - convert to locale string */
-			int status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
-			                                       &text_list_count);
-			if(text_list_count == 0) {
-				stringptr = NULL;
-			}
-			else if(text_list == NULL) {
-				stringptr = NULL;
-			}
-			else if(text_list [0] == NULL) {
-				stringptr = NULL;
-			}
-			else if(status < 0 || text_list_count < 0) {
-				switch(status) {
-					case XConverterNotFound:
-						fprintf(stderr,
-						        "%s: Converter not found; unable to convert property %s of window ID %lx.\n",
-						        ProgramName, XGetAtomName(dpy, prop), w);
-						break;
-					case XNoMemory:
-						fprintf(stderr,
-						        "%s: Insufficient memory; unable to convert property %s of window ID %lx.\n",
-						        ProgramName, XGetAtomName(dpy, prop), w);
-						break;
-					case XLocaleNotSupported:
-						fprintf(stderr,
-						        "%s: Locale not supported; unable to convert property %s of window ID %lx.\n",
-						        ProgramName, XGetAtomName(dpy, prop), w);
-						break;
-				}
-				stringptr = NULL;
-				/*
-				   don't call XFreeStringList - text_list appears to have
-				   invalid address if status is bad
-				   XFreeStringList(text_list);
-				*/
-			}
-			else {
-				stringptr = strdup(text_list[0]);
-				XFreeStringList(text_list);
-			}
-		}
-		else {
-			/* property is encoded in a format we don't understand */
-			fprintf(stderr,
-			        "%s: Encoding not STRING or COMPOUND_TEXT; unable to decode property %s of window ID %lx.\n",
-			        ProgramName, XGetAtomName(dpy, prop), w);
+	if(text_prop.encoding == XA_STRING
+	                || text_prop.encoding == XA_COMPOUND_TEXT) {
+		/* property is encoded as compound text - convert to locale string */
+		int status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
+		                                       &text_list_count);
+		if(text_list_count == 0) {
 			stringptr = NULL;
 		}
-		XFree(text_prop.value);
+		else if(text_list == NULL) {
+			stringptr = NULL;
+		}
+		else if(text_list [0] == NULL) {
+			stringptr = NULL;
+		}
+		else if(status < 0 || text_list_count < 0) {
+			switch(status) {
+				case XConverterNotFound:
+					fprintf(stderr,
+					        "%s: Converter not found; unable to convert property %s of window ID %lx.\n",
+					        ProgramName, XGetAtomName(dpy, prop), w);
+					break;
+				case XNoMemory:
+					fprintf(stderr,
+					        "%s: Insufficient memory; unable to convert property %s of window ID %lx.\n",
+					        ProgramName, XGetAtomName(dpy, prop), w);
+					break;
+				case XLocaleNotSupported:
+					fprintf(stderr,
+					        "%s: Locale not supported; unable to convert property %s of window ID %lx.\n",
+					        ProgramName, XGetAtomName(dpy, prop), w);
+					break;
+			}
+			stringptr = NULL;
+			/*
+			   don't call XFreeStringList - text_list appears to have
+			   invalid address if status is bad
+			   XFreeStringList(text_list);
+			*/
+		}
+		else {
+			stringptr = strdup(text_list[0]);
+			XFreeStringList(text_list);
+		}
+	}
+	else {
+		/* property is encoded in a format we don't understand */
+		fprintf(stderr,
+		        "%s: Encoding not STRING or COMPOUND_TEXT; unable to decode property %s of window ID %lx.\n",
+		        ProgramName, XGetAtomName(dpy, prop), w);
+		stringptr = NULL;
+	}
+	XFree(text_prop.value);
 
 	return stringptr;
 }
