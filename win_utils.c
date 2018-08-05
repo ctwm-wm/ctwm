@@ -218,7 +218,10 @@ GetWMPropertyString(Window w, Atom prop)
 	char                *stringptr;
 
 	XGetTextProperty(dpy, w, &text_prop, prop);
-	if(text_prop.value != NULL) {
+	if(text_prop.value == NULL) {
+		return NULL;
+	}
+
 		char **text_list;
 		int  text_list_count;
 
@@ -274,10 +277,6 @@ GetWMPropertyString(Window w, Atom prop)
 			stringptr = NULL;
 		}
 		XFree(text_prop.value);
-	}
-	else {
-		stringptr = NULL;
-	}
 
 	return stringptr;
 }
