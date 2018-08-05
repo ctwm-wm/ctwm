@@ -27,6 +27,7 @@ void ConstrainByBorders(TwmWindow *twmwin, int *left, int width,
 void WarpToWindow(TwmWindow *t, bool must_raise);
 void send_clientmessage(Window w, Atom a, Time timestamp);
 XWMHints *gen_synthetic_wmhints(TwmWindow *win);
+void apply_window_name(TwmWindow *win);
 
 
 #endif /* _CTWM_WIN_UTILS_H */

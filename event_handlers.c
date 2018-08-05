@@ -1125,8 +1125,6 @@ void HandlePropertyNotify(void)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	Pixmap pm;
-	XRectangle inc_rect;
-	XRectangle logical_rect;
 	Icon *icon;
 
 
@@ -1194,78 +1192,8 @@ void HandlePropertyNotify(void)
 			FreeWMPropertyString(Tmp_win->names.wm_name);
 			Tmp_win->names.wm_name = prop;
 
-			/* Update the active name */
-			Tmp_win->name = Tmp_win->names.wm_name;
-			Tmp_win->nameChanged = true;
-			XmbTextExtents(Scr->TitleBarFont.font_set,
-			               Tmp_win->name, strlen(Tmp_win->name),
-			               &inc_rect, &logical_rect);
-			Tmp_win->name_width = logical_rect.width;
-
-			/* recompute the priority if necessary */
-			if(Scr->AutoPriority) {
-				OtpRecomputePrefs(Tmp_win);
-			}
-
-			SetupWindow(Tmp_win, Tmp_win->frame_x, Tmp_win->frame_y,
-			            Tmp_win->frame_width, Tmp_win->frame_height, -1);
-
-			if(Tmp_win->title_w) {
-				XClearArea(dpy, Tmp_win->title_w, 0, 0, 0, 0, True);
-			}
-			if(Scr->AutoOccupy) {
-				WmgrRedoOccupation(Tmp_win);
-			}
-
-#if 0
-			/* Experimental, not yet working. */
-			{
-				ColorPair cp;
-				int f, b;
-
-				f = GetColorFromList(Scr->TitleForegroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->TitleBackgroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.back);
-				if(f || b) {
-					if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
-						GetShadeColors(&cp);
-					}
-					Tmp_win->title = cp;
-				}
-				f = GetColorFromList(Scr->BorderColorL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->BorderColorL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.back);
-				if(f || b) {
-					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-						GetShadeColors(&cp);
-					}
-					Tmp_win->borderC = cp;
-				}
-
-				f = GetColorFromList(Scr->BorderTileForegroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->BorderTileBackgroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.back);
-				if(f || b) {
-					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-						GetShadeColors(&cp);
-					}
-					Tmp_win->border_tile = cp;
-				}
-			}
-#endif
-
-			/*
-			 * if the icon name is NoName, set the name of the icon to be
-			 * the same as the window
-			 */
-			if(Tmp_win->icon_name == NoName) {
-				Tmp_win->icon_name = strdup(Tmp_win->name);
-				RedoIcon(Tmp_win);
-			}
-			AutoPopupMaybe(Tmp_win);
+			/* Kick the reset process */
+			apply_window_name(Tmp_win);
 
 			break;
 		}

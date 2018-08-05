@@ -13,7 +13,10 @@
 #include "ctwm_atoms.h"
 #include "drawing.h"
 #include "events.h"
+#include "event_internal.h" // Temp?
 #include "icons.h"
+#include "occupation.h"
+#include "otp.h"
 #include "screen.h"
 #include "util.h"
 #include "win_decorations.h"
@@ -901,4 +904,92 @@ gen_synthetic_wmhints(TwmWindow *win)
 	hints->initial_state = NormalState;
 
 	return hints;
+}
+
+
+/*
+ * [Re]set a window's name.  This is called after we've received a new
+ * WM_NAME (or other name-setting) property, to update our titlebars,
+ * icon managers, etc.
+ */
+void
+apply_window_name(TwmWindow *win)
+{
+	/* Update the active name */
+	{
+		XRectangle inc_rect;
+		XRectangle logical_rect;
+
+		win->name = win->names.wm_name;
+		win->nameChanged = true;
+		XmbTextExtents(Scr->TitleBarFont.font_set,
+		               win->name, strlen(win->name),
+		               &inc_rect, &logical_rect);
+		win->name_width = logical_rect.width;
+	}
+
+	/* recompute the priority if necessary */
+	if(Scr->AutoPriority) {
+		OtpRecomputePrefs(win);
+	}
+
+	SetupWindow(win, win->frame_x, win->frame_y,
+	            win->frame_width, win->frame_height, -1);
+
+	if(win->title_w) {
+		XClearArea(dpy, win->title_w, 0, 0, 0, 0, True);
+	}
+	if(Scr->AutoOccupy) {
+		WmgrRedoOccupation(win);
+	}
+
+#if 0
+	/* Experimental, not yet working. */
+	{
+		ColorPair cp;
+		int f, b;
+
+		f = GetColorFromList(Scr->TitleForegroundL, win->name,
+		                     &win->class, &cp.fore);
+		b = GetColorFromList(Scr->TitleBackgroundL, win->name,
+		                     &win->class, &cp.back);
+		if(f || b) {
+			if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
+				GetShadeColors(&cp);
+			}
+			win->title = cp;
+		}
+		f = GetColorFromList(Scr->BorderColorL, win->name,
+		                     &win->class, &cp.fore);
+		b = GetColorFromList(Scr->BorderColorL, win->name,
+		                     &win->class, &cp.back);
+		if(f || b) {
+			if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+				GetShadeColors(&cp);
+			}
+			win->borderC = cp;
+		}
+
+		f = GetColorFromList(Scr->BorderTileForegroundL, win->name,
+		                     &win->class, &cp.fore);
+		b = GetColorFromList(Scr->BorderTileBackgroundL, win->name,
+		                     &win->class, &cp.back);
+		if(f || b) {
+			if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+				GetShadeColors(&cp);
+			}
+			win->border_tile = cp;
+		}
+	}
+#endif
+
+	/*
+	 * if the icon name is NoName, set the name of the icon to be
+	 * the same as the window
+	 */
+	if(win->icon_name == NoName) {
+		win->icon_name = strdup(win->name);
+		RedoIcon(win);
+	}
+	AutoPopupMaybe(win);
 }
