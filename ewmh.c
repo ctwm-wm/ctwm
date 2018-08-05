@@ -34,6 +34,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 
+#include "ctwm_atoms.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"
