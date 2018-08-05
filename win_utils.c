@@ -919,8 +919,9 @@ apply_window_name(TwmWindow *win)
 	{
 		char *newname = NULL;
 #define TRY(fld) { \
-        if(newname == NULL && win->names.fld != NULL) \
-                newname = win->names.fld; \
+                if(newname == NULL && win->names.fld != NULL) { \
+                        newname = win->names.fld; \
+                } \
         }
 #ifdef EWMH
 		TRY(net_wm_name)
