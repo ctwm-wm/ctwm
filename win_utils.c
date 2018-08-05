@@ -233,10 +233,12 @@ GetWMPropertyString(Window w, Atom prop)
 		if(text_list_count == 0
 		                || text_list == NULL
 		                || text_list[0] == NULL) {
+			// Got nothing
 			XFree(text_prop.value);
 			return NULL;
 		}
 		else if(status < 0 || text_list_count < 0) {
+			// Got an error statuf
 			switch(status) {
 				case XConverterNotFound:
 					fprintf(stderr,
@@ -262,6 +264,7 @@ GetWMPropertyString(Window w, Atom prop)
 			*/
 		}
 		else {
+			// Actually got the data!
 			stringptr = strdup(text_list[0]);
 			XFreeStringList(text_list);
 		}
