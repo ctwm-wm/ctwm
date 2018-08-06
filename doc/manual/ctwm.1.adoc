@@ -1773,6 +1773,17 @@ StayUpMenus::
   will stay on the screen when ButtonUp, if either the menu has not
   yet been entered by the pointer, or the current item is a f.title.
 
+StrictWinNameEncoding::
+  Whether to be strict about what encodings we accept for window naming
+  properties.  Added in %%NEXT%%.
++
+[normal]
+  This is used when translating properties relating to naming windows,
+  like `WM_NAME`.  For example, according to the ICCCM, `WM_NAME` can
+  only be a `STRING` or `COMPOUND_TEXT` type.  However, sloppy programs
+  like Chrome may set it to a `UTF8_STRING` instead.  If this var is set,
+  ctwm will reject that, as was standard behavior prior to %%NEXT%%.
+
 SunkFocusWindowTitle::
   This variable specifies that the title of the focus window (if exists)
   should be sunken instead of raised. Only valid if UseThreeDTitles is set.

@@ -14,7 +14,9 @@
 ### New Features
 
 1. The EWMH `_NET_WM_NAME` property is now supported, and used for the
-   window name in place of the ICCCM `WM_NAME` when set.
+   window name in place of the ICCCM `WM_NAME` when set.  By default, we
+   also accept `UTF8_STRING` encoded `WM_NAME` as a result of this
+   change; see below for var to restore historical strictness.
 
 ### New Config Options
 
@@ -23,6 +25,10 @@
    have been reported to confuse xwit, and might do the same for other
    tools that don't expect to find them on non-end-app windows.  Reported
    by Frank Steiner.
+
+1. Added StrictWinNameEncoding config option to enable historical
+   behavior, where we're reject invalid property encoding for window
+   naming properties (like a `UTF8_STRING` encoded `WM_NAME`).
 
 ### Bugfixes
 
