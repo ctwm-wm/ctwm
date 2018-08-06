@@ -14,6 +14,9 @@
 #include "drawing.h"
 #include "events.h"
 #include "event_internal.h" // Temp?
+#ifdef EWMH
+# include "ewmh_atoms.h"
+#endif
 #include "icons.h"
 #include "occupation.h"
 #include "otp.h"
@@ -229,6 +232,32 @@ GetWMPropertyString(Window w, Atom prop)
 		char **text_list;
 		int  text_list_count;
 		int status;
+
+		/* Check historical strictness */
+		if(Scr->StrictWinNameEncoding) {
+			bool fail = false;
+
+			if(prop == XA_WM_NAME
+			                && text_prop.encoding != XA_STRING
+			                && text_prop.encoding != XA_COMPOUND_TEXT) {
+				fail = true;
+			}
+
+#ifdef EWMH
+			if(prop == XA__NET_WM_NAME
+			                && text_prop.encoding != XA_UTF8_STRING) {
+				fail = true;
+			}
+#endif // EWMH
+
+			if(fail) {
+				fprintf(stderr, "%s: Invalid encoding for property %s "
+				        "of window 0x%lx\n", ProgramName,
+				        XGetAtomName(dpy, prop), w);
+				XFree(text_prop.value);
+				return NULL;
+			}
+		}
 
 
 		status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
