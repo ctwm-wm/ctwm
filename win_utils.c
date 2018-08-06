@@ -939,42 +939,57 @@ gen_synthetic_wmhints(TwmWindow *win)
 
 
 /*
- * [Re]set a window's name.  This is called after we've received a new
- * WM_NAME (or other name-setting) property, to update our titlebars,
- * icon managers, etc.
+ * [Re]set a window's name.  This should rarely be called directly;
+ * apply_window_name() should be used instead.  It's split out because we
+ * need to do this step individually in AddWindow().
  *
  * Note that we never need to worry about freeing win->name; it always
  * points to one of the win->names.something's (which are free'd by the
  * event handler when they change) or NoName (which is static).  So we
  * can just casually flip it around at will.
  */
-void
-apply_window_name(TwmWindow *win)
+bool
+set_window_name(TwmWindow *win)
 {
-	/* Figure what the name should be, and change if necessary */
-	{
-		char *newname = NULL;
+	char *newname = NULL;
 #define TRY(fld) { \
                 if(newname == NULL && win->names.fld != NULL) { \
                         newname = win->names.fld; \
                 } \
         }
 #ifdef EWMH
-		TRY(net_wm_name)
+	TRY(net_wm_name)
 #endif
-		TRY(wm_name)
+	TRY(wm_name)
 #undef TRY
 
-		if(newname == NULL) {
-			newname = NoName;
-		}
-		if(win->name == newname) {
-			return; // Nothing to do
-		}
-
-		win->name = newname;
-		win->nameChanged = true;
+	if(newname == NULL) {
+		newname = NoName;
 	}
+	if(win->name == newname) {
+		return false; // Nothing to do
+	}
+
+	win->name = newname;
+	return true;
+}
+
+
+/*
+ * [Re]set and apply changes to a window's name.  This is called after
+ * we've received a new WM_NAME (or other name-setting) property, to
+ * update our titlebars, icon managers, etc.
+ */
+void
+apply_window_name(TwmWindow *win)
+{
+	/* [Re]set ->name */
+	if(set_window_name(win) == false) {
+		// No change
+		return;
+	}
+	win->nameChanged = true;
+
 
 	/* Update the active name */
 	{
