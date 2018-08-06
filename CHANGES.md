@@ -11,6 +11,11 @@
 1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
    have been removed; it is now just a duplicate of CLIENTHOST.
 
+### New Features
+
+1. The EWMH `_NET_WM_NAME` property is now supported, and used for the
+   window name in place of the ICCCM `WM_NAME` when set.
+
 ### New Config Options
 
 1. Added DontNameDecorations config option to disable setting names on
