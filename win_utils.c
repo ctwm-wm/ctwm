@@ -942,6 +942,11 @@ gen_synthetic_wmhints(TwmWindow *win)
  * [Re]set a window's name.  This is called after we've received a new
  * WM_NAME (or other name-setting) property, to update our titlebars,
  * icon managers, etc.
+ *
+ * Note that we never need to worry about freeing win->name; it always
+ * points to one of the win->names.something's (which are free'd by the
+ * event handler when they change) or NoName (which is static).  So we
+ * can just casually flip it around at will.
  */
 void
 apply_window_name(TwmWindow *win)
