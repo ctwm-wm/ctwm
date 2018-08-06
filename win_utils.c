@@ -960,7 +960,10 @@ apply_window_name(TwmWindow *win)
 		TRY(wm_name)
 #undef TRY
 
-		if(newname == NULL || win->name == newname) {
+		if(newname == NULL) {
+			newname = NoName;
+		}
+		if(win->name == newname) {
 			return; // Nothing to do
 		}
 
