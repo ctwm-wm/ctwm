@@ -38,6 +38,9 @@
 #include "colormaps.h"
 #include "functions.h"
 #include "events.h"
+#ifdef EWMH
+# include "ewmh_atoms.h"
+#endif
 #include "gram.tab.h"
 #include "icons.h"
 #include "iconmgr.h"
@@ -199,11 +202,12 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * name_lists generally goes by the name/class, so we need to get
 	 * these set pretty early in the process.
 	 */
-	tmp_win->name = tmp_win->names.wm_name
-	                = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
-	if(tmp_win->name == NULL) {
-		tmp_win->name = NoName;
-	}
+#ifdef EWMH
+	tmp_win->names.net_wm_name = GetWMPropertyString(tmp_win->w,
+	                             XA__NET_WM_NAME);
+#endif
+	tmp_win->names.wm_name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	set_window_name(tmp_win);
 	namelen = strlen(tmp_win->name);
 
 	/* Setup class */
