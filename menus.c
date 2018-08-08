@@ -133,6 +133,10 @@ AddFuncKey(char *name, int cont, int nmods, int func,
 	 */
 	if((keysym = XStringToKeysym(name)) == NoSymbol ||
 	                (keycode = XKeysymToKeycode(dpy, keysym)) == 0) {
+		fprintf(stderr, "ignore %s key binding (%s)\n", name,
+		        keysym == NoSymbol
+		        ? "key symbol not found"
+		        : "key code not found");
 		return false;
 	}
 
