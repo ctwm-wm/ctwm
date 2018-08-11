@@ -1058,14 +1058,78 @@ apply_window_name(TwmWindow *win)
 #endif
 
 	/*
-	 * if the icon name is NoName, set the name of the icon to be
-	 * the same as the window
+	 * If we haven't set a separate icon name, we use the window name, so
+	 * we need to update it.
 	 */
-	if(win->icon_name == NoName) {
-		win->icon_name = strdup(win->name);
-		RedoIcon(win);
+	if(win->names.icon_set == false) {
+		apply_window_icon_name(win);
 	}
 	AutoPopupMaybe(win);
+
+	return;
+}
+
+
+/*
+ * Similarly, [re]set a window's icon name.  As with the window name
+ * version, this is mostly separate so the AddWindow() process can call
+ * it.
+ *
+ * And as with win->name, we never want to try free()'ing or the like
+ * win->icon_name.
+ */
+bool
+set_window_icon_name(TwmWindow *win)
+{
+	char *newname = NULL;
+#define TRY(fld) { \
+                if(newname == NULL && win->names.fld != NULL) { \
+fprintf(stderr, "Setting to win->names.%s='%s'\n", #fld, win->names.fld); \
+                        newname = win->names.fld; \
+                        win->names.icon_set = true; \
+                } \
+        }
+#ifdef EWMH
+	TRY(net_wm_icon_name)
+#endif
+	TRY(wm_icon_name)
+#undef TRY
+
+	// Our fallback for icon names is the window name.  Flag when we're
+	// doing that, so the window name handler can know when it needs to
+	// call us.
+	if(newname == NULL) {
+fprintf(stderr, "Fallback to win->name='%s'\n", win->name);
+		newname = win->name;
+		win->names.icon_set = false;
+	}
+	if(win->icon_name == newname) {
+		return false; // Nothing to do
+	}
+
+	win->icon_name = newname;
+	return true;
+}
+
+
+/*
+ * [Re]set and apply changes to a window's name.  This is called after
+ * we've received a new WM_NAME (or other name-setting) property, to
+ * update our titlebars, icon managers, etc.
+ */
+void
+apply_window_icon_name(TwmWindow *win)
+{
+	/* [Re]set ->icon_name */
+	if(set_window_icon_name(win) == false) {
+		// No change
+		return;
+	}
+
+
+	/* Lot less to do for icons... */
+	RedoIcon(Tmp_win);
+	AutoPopupMaybe(Tmp_win);
 
 	return;
 }

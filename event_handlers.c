@@ -1217,9 +1217,7 @@ void HandlePropertyNotify(void)
 			Tmp_win->names.wm_icon_name = prop;
 
 			/* And show the new */
-			Tmp_win->icon_name = Tmp_win->names.wm_icon_name;
-			RedoIcon(Tmp_win);
-			AutoPopupMaybe(Tmp_win);
+			apply_window_icon_name(Tmp_win);
 
 			break;
 		}
