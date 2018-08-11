@@ -114,6 +114,10 @@ struct TwmWindow {
 #endif
 		char *wm_name;  ///< Name from ICCCM WM_NAME property
 
+#ifdef EWMH
+		/// Icon name from EWMH _NET_WM_ICON_NAME property
+		char *net_wm_icon_name;
+#endif
 		char *wm_icon_name;  ///< Icon name from WM_ICON_NAME property
 		bool icon_set;       ///< Whether an icon property has been set
 	} names; ///< \copydoc TwmWindow::_names
