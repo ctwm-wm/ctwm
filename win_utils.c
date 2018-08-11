@@ -1084,7 +1084,6 @@ set_window_icon_name(TwmWindow *win)
 	char *newname = NULL;
 #define TRY(fld) { \
                 if(newname == NULL && win->names.fld != NULL) { \
-fprintf(stderr, "Setting to win->names.%s='%s'\n", #fld, win->names.fld); \
                         newname = win->names.fld; \
                         win->names.icon_set = true; \
                 } \
@@ -1099,7 +1098,6 @@ fprintf(stderr, "Setting to win->names.%s='%s'\n", #fld, win->names.fld); \
 	// doing that, so the window name handler can know when it needs to
 	// call us.
 	if(newname == NULL) {
-fprintf(stderr, "Fallback to win->name='%s'\n", win->name);
 		newname = win->name;
 		win->names.icon_set = false;
 	}
