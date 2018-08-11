@@ -957,6 +957,7 @@ set_window_name(TwmWindow *win)
                         newname = win->names.fld; \
                 } \
         }
+	TRY(ctwm_wm_name)
 #ifdef EWMH
 	TRY(net_wm_name)
 #endif
@@ -1088,6 +1089,7 @@ set_window_icon_name(TwmWindow *win)
                         win->names.icon_set = true; \
                 } \
         }
+	TRY(ctwm_wm_icon_name)
 #ifdef EWMH
 	TRY(net_wm_icon_name)
 #endif

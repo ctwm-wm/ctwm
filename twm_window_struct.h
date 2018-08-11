@@ -112,11 +112,14 @@ struct TwmWindow {
 	/// TwmWindow::name and TwmWindow::icon_name point to the currently
 	/// active element in here.
 	struct _names {
+		char *ctwm_wm_name; ///< Name from override CTWM_WM_NAME property
 #ifdef EWMH
 		char *net_wm_name;  ///< Name from EWMH _NET_WM_NAME property
 #endif
 		char *wm_name;      ///< Name from ICCCM WM_NAME property
 
+		/// Icon name from override CTWM_WM_ICON_NAME property
+		char *ctwm_wm_icon_name;
 #ifdef EWMH
 		/// Icon name from EWMH _NET_WM_ICON_NAME property
 		char *net_wm_icon_name;
