@@ -1405,6 +1405,27 @@ int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win)
 		apply_window_name(twm_win);
 		return 1;
 	}
+	else if(event->atom == XA__NET_WM_ICON_NAME) {
+		char *prop = GetWMPropertyString(twm_win->w, XA__NET_WM_ICON_NAME);
+		if(prop == NULL) {
+			return 1;
+		}
+
+		if(twm_win->names.net_wm_icon_name != NULL
+		                && strcmp(twm_win->names.net_wm_icon_name, prop) == 0) {
+			/* No change, just free and skip out */
+			free(prop);
+			return 1;
+		}
+
+		/* It's changing, free the old and bring in the new */
+		FreeWMPropertyString(twm_win->names.net_wm_icon_name);
+		twm_win->names.net_wm_icon_name = prop;
+
+		/* Kick the reset process */
+		apply_window_icon_name(twm_win);
+		return 1;
+	}
 
 	return 0;
 }

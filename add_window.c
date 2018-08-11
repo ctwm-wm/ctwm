@@ -221,6 +221,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 	/* Grab the icon name too */
+#ifdef EWMH
+	tmp_win->names.net_wm_icon_name = GetWMPropertyString(tmp_win->w,
+	                             XA__NET_WM_ICON_NAME);
+#endif
 	tmp_win->names.wm_icon_name = GetWMPropertyString(tmp_win->w,
 			XA_WM_ICON_NAME);
 	set_window_icon_name(tmp_win);
