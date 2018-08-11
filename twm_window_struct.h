@@ -104,15 +104,18 @@ struct TwmWindow {
 
 	/// @}
 
-	char *name;       ///< Window name.  From WM_NAME property.
-	char *icon_name;  ///< Icon name.  From WM_ICON_NAME property.
+	char *name;       ///< Current window name.  Points into TwmWindow::names.
+	char *icon_name;  ///< Current icon name. Points into TwmWindow::names.
 
-	/// Various sources of window names.
+	/// Various sources of window/icon names.  These are the values from
+	/// the various window properties we look at to get the results.  The
+	/// TwmWindow::name and TwmWindow::icon_name point to the currently
+	/// active element in here.
 	struct _names {
 #ifdef EWMH
 		char *net_wm_name;  ///< Name from EWMH _NET_WM_NAME property
 #endif
-		char *wm_name;  ///< Name from ICCCM WM_NAME property
+		char *wm_name;      ///< Name from ICCCM WM_NAME property
 
 #ifdef EWMH
 		/// Icon name from EWMH _NET_WM_ICON_NAME property
@@ -120,10 +123,10 @@ struct TwmWindow {
 #endif
 		char *wm_icon_name; ///< Icon name from WM_ICON_NAME property
 
-		/// Whether an icon property has been set.  Since we default the
-		/// icon name to the window name when nothing is given, this flag
-		/// allows the window-name-setting code to know when it needs to
-		/// re-kick the icon-name-setting.
+		/// Whether an icon name property has been set.  Since we default
+		/// the icon name to the window name when nothing is given, this
+		/// flag allows the window-name-setting code to know when it
+		/// needs to re-kick the icon-name-setting.
 		bool icon_set;
 	} names; ///< \copydoc TwmWindow::_names
 
