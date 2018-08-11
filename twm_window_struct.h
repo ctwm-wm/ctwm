@@ -118,8 +118,13 @@ struct TwmWindow {
 		/// Icon name from EWMH _NET_WM_ICON_NAME property
 		char *net_wm_icon_name;
 #endif
-		char *wm_icon_name;  ///< Icon name from WM_ICON_NAME property
-		bool icon_set;       ///< Whether an icon property has been set
+		char *wm_icon_name; ///< Icon name from WM_ICON_NAME property
+
+		/// Whether an icon property has been set.  Since we default the
+		/// icon name to the window name when nothing is given, this flag
+		/// allows the window-name-setting code to know when it needs to
+		/// re-kick the icon-name-setting.
+		bool icon_set;
 	} names; ///< \copydoc TwmWindow::_names
 
 	/// \addtogroup win_frame Window frame bits
