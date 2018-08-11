@@ -1384,7 +1384,7 @@ int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win)
 		EwmhHandle_NET_WM_STRUTNotify(event, twm_win);
 		return 1;
 	}
-	if(event->atom == XA__NET_WM_NAME) {
+	else if(event->atom == XA__NET_WM_NAME) {
 		char *prop = GetWMPropertyString(twm_win->w, XA__NET_WM_NAME);
 		if(prop == NULL) {
 			return 1;
