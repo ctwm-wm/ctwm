@@ -1818,6 +1818,10 @@ void HandleDestroyNotify(void)
 
 	FreeWMPropertyString(Tmp_win->names.wm_name);        // 2
 	FreeWMPropertyString(Tmp_win->names.wm_icon_name);   // 3
+#ifdef EWMH
+	FreeWMPropertyString(Tmp_win->names.net_wm_name);      // 2
+	FreeWMPropertyString(Tmp_win->names.net_wm_icon_name); // 3
+#endif
 
 	XFree(Tmp_win->wmhints);                                    /* 4 */
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */
