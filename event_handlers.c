@@ -1206,14 +1206,18 @@ void HandlePropertyNotify(void)
 			}
 
 			/* No change?  Nothing to do. */
-			if(strcmp(Tmp_win->icon_name, prop) == 0) {
+			if(Tmp_win->names.wm_icon_name != NULL
+			                && strcmp(Tmp_win->names.wm_icon_name, prop) == 0) {
 				free(prop);
-				break;
+				return;
 			}
 
-			/* Else, free the old one and set it */
-			FreeWMPropertyString(Tmp_win->icon_name);
-			Tmp_win->icon_name = prop;
+			/* It's changing, free the old and bring in the new */
+			FreeWMPropertyString(Tmp_win->names.wm_icon_name);
+			Tmp_win->names.wm_icon_name = prop;
+
+			/* And show the new */
+			Tmp_win->icon_name = Tmp_win->names.wm_icon_name;
 			RedoIcon(Tmp_win);
 			AutoPopupMaybe(Tmp_win);
 
@@ -1815,7 +1819,7 @@ void HandleDestroyNotify(void)
 	}
 
 	FreeWMPropertyString(Tmp_win->names.wm_name);        // 2
-	FreeWMPropertyString(Tmp_win->icon_name);   // 3
+	FreeWMPropertyString(Tmp_win->names.wm_icon_name);   // 3
 
 	XFree(Tmp_win->wmhints);                                    /* 4 */
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */

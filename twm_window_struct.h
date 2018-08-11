@@ -113,6 +113,9 @@ struct TwmWindow {
 		char *net_wm_name;  ///< Name from EWMH _NET_WM_NAME property
 #endif
 		char *wm_name;  ///< Name from ICCCM WM_NAME property
+
+		char *wm_icon_name;  ///< Icon name from WM_ICON_NAME property
+		bool icon_set;       ///< Whether an icon property has been set
 	} names; ///< \copydoc TwmWindow::_names
 
 	/// \addtogroup win_frame Window frame bits
