@@ -221,15 +221,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 	/* Grab the icon name too */
-	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
-	if(!tmp_win->icon_name) {
-		if(tmp_win->name == NoName) {
-			tmp_win->icon_name = NoName;
-		}
-		else {
-			tmp_win->icon_name = strdup(tmp_win->name);
-		}
-	}
+	tmp_win->names.wm_icon_name = GetWMPropertyString(tmp_win->w,
+			XA_WM_ICON_NAME);
+	set_window_icon_name(tmp_win);
+
 
 	/* Convenience macro */
 #define CHKL(lst) IsInList(Scr->lst, tmp_win)
