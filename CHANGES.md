@@ -18,6 +18,10 @@
    also accept `UTF8_STRING` encoded `WM_NAME` as a result of this
    change; see below for var to restore historical strictness.
 
+1. The EWMH `_NET_WM_ICON_NAME` property is now supported, and used for
+   the icon name in place of the ICCCM `WM_ICON_NAME` when set.  Similar
+   comments as above apply to the encodings.
+
 1. When no icon name is set for a window, we've always used the window
    name for the icon name as well.  But that only happened the first time
    the window name is set; after that, the icon name is stuck at the
