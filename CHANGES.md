@@ -18,6 +18,12 @@
    also accept `UTF8_STRING` encoded `WM_NAME` as a result of this
    change; see below for var to restore historical strictness.
 
+1. When no icon name is set for a window, we've always used the window
+   name for the icon name as well.  But that only happened the first time
+   the window name is set; after that, the icon name is stuck at the
+   first name.  It now updates along with the window name, if no icon
+   name is set.
+
 ### New Config Options
 
 1. Added DontNameDecorations config option to disable setting names on
