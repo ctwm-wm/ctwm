@@ -3133,7 +3133,7 @@ mentioning.
 
 === Window Naming
 
-Windows get their named via X properties.  There are two types of names;
+Windows get their names via X properties.  There are two types of names;
 the window name (which is what shows up in the titlebar, the `f.identify`
 window, etc), and the icon name (which shows up on the icon and on the
 icon manager).
