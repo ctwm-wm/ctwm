@@ -431,13 +431,13 @@ AutoRaise
 }
 ------
 
-When a variable containing a list of strings representing windows is searched
-(e.g. to determine whether or not to enable autoraise as shown above), a string
-must be an exact, case-sensitive match to
-the window's name (given by various window properties, such as `WM_NAME`), resource name
-or class name (both given by the `WM_CLASS` window property).  The preceding
-example would enable autoraise on windows named ``emacs'' as well as any
-`xterm` (since they are of class ``XTerm'') or xmh windows
+When a variable containing a list of strings representing windows is
+searched (e.g. to determine whether or not to enable autoraise as shown
+above), a string must be an exact, case-sensitive match to the window's
+name (given by various window properties, such as `WM_NAME`), resource
+name or class name (both given by the `WM_CLASS` window property).  The
+preceding example would enable autoraise on windows named ``emacs'' as
+well as any `xterm` (since they are of class ``XTerm'') or xmh windows
 (which are of class ``Xmh'').
 
 String arguments that are interpreted as filenames (see the `Pixmaps`,
