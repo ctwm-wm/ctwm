@@ -237,14 +237,14 @@ GetWMPropertyString(Window w, Atom prop)
 		if(Scr->StrictWinNameEncoding) {
 			bool fail = false;
 
-			if(prop == XA_WM_NAME
+			if((prop == XA_WM_NAME || prop == XA_WM_ICON_NAME)
 			                && text_prop.encoding != XA_STRING
 			                && text_prop.encoding != XA_COMPOUND_TEXT) {
 				fail = true;
 			}
 
 #ifdef EWMH
-			if(prop == XA__NET_WM_NAME
+			if((prop == XA__NET_WM_NAME || prop == XA__NET_WM_ICON_NAME)
 			                && text_prop.encoding != XA_UTF8_STRING) {
 				fail = true;
 			}
