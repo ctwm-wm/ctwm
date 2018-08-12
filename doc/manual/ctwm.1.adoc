@@ -3123,6 +3123,57 @@ Using the `f.upiconmgr`, `f.downiconmgr`
 the input focus can be changed between windows directly from the
 keyboard.
 
+
+== X WINDOW PROPERTIES
+
+As a window manager, ctwm reads and sets a huge variety of properties on
+the windows it manages and the windows it creates.  Most of that is
+beyond the scope of user documentation.  However, a few points are worth
+mentioning.
+
+=== Window Naming
+
+Windows get their named via X properties.  There are two types of names;
+the window name (which is what shows up in the titlebar, the `f.identify`
+window, etc), and the icon name (which shows up on the icon and on the
+icon manager).
+
+Prior to %%NEXT%%, ctwm only supported the standard ICCCM properties for
+setting the window and icon names.  These are `WM_NAME` for the window
+name, and `WM_ICON_NAME` for the icon name.  As of %%NEXT%%, ctwm also
+supports the EWMH versions of these, which are `_NET_WM_NAME` and
+`_NET_WM_ICON_NAME`.  If the EWMH variants exist, they're used in
+preference to the older ICCCM style.
+
+As of %%NEXT%%, ctwm also supports an additional pair of properties;
+`CTWM_WM_NAME` and `CTWM_WM_ICON_NAME`, which override all the others.
+These are specifically intended for the user to manually set, not for
+programs to set themselves.  This allows the user to override programs
+that name themselves unhelpfully, or to otherwise label things to their
+liking.
+
+You can set these via any method you'd use to set window properties.
+From the command line, the `xprop(1)` tool is widely available, if a
+little clunky.  So, for instance, to set the icon name of a window
+(changing how it looks in the icon manager), but leave the window name
+alone as the program itself normally sets it (leaving the titlebar
+normal), you could run a command like:
+
+----
+xprop -f CTWM_WM_ICON_NAME 8u -set CTWM_WM_ICON_NAME "I hate this window"
+----
+
+and then click the window you want to set it on.  Unfortunately,
+`xprop(1)` does require you to specify the property name when defining
+the format, as well as when setting it, so it's a little ugly.  The `8u`
+means you're giving a UTF-8 string.  Other possible formats are `8s` for
+a plain uninterpreted string (probably ASCII), and `8t` for
+``internationalized'' (ICCCM-style locale conversion).  Usually you'd
+just use UTF-8 though.  `xprop -remove CTWM_WM_ICON_NAME` and click would
+let you undo it and go back to the normal naming.  See the `xprop(1)`
+manual for more.
+
+
 == SOUNDS
 If built with the `USE_SOUND` option, ctwm is able to play sounds
 for any X event.  This may be configured in two ways.
