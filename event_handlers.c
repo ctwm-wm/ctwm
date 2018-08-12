@@ -1439,7 +1439,7 @@ void HandlePropertyNotify(void)
 			GetWindowSizeHints(Tmp_win);
 			break;
 		}
-		default:
+		default: {
 			if(Event.xproperty.atom == XA_WM_COLORMAP_WINDOWS) {
 				FetchWmColormapWindows(Tmp_win);    /* frees old data */
 				break;
@@ -1460,12 +1460,60 @@ void HandlePropertyNotify(void)
 				ChangeOccupation(Tmp_win, GetMaskFromProperty(prop, nitems));
 				XFree(prop);
 			}
+			else if(Event.xproperty.atom == XA_CTWM_WM_NAME) {
+				char *prop = GetWMPropertyString(Tmp_win->w, XA_CTWM_WM_NAME);
+				if(prop == NULL) {
+					return;
+				}
+
+				if(Tmp_win->names.ctwm_wm_name != NULL
+				                && strcmp(Tmp_win->names.ctwm_wm_name,
+				                          prop) == 0) {
+					/* No change, just free and skip out */
+					free(prop);
+					return;
+				}
+
+				/* It's changing, free the old and bring in the new */
+				FreeWMPropertyString(Tmp_win->names.ctwm_wm_name);
+				Tmp_win->names.ctwm_wm_name = prop;
+
+				/* Kick the reset process */
+				apply_window_name(Tmp_win);
+
+				return;
+			}
+			else if(Event.xproperty.atom == XA_CTWM_WM_ICON_NAME) {
+				char *prop = GetWMPropertyString(Tmp_win->w,
+				                                 XA_CTWM_WM_ICON_NAME);
+				if(prop == NULL) {
+					return;
+				}
+
+				if(Tmp_win->names.ctwm_wm_icon_name != NULL
+				                && strcmp(Tmp_win->names.ctwm_wm_icon_name,
+				                          prop) == 0) {
+					/* No change, just free and skip out */
+					free(prop);
+					return;
+				}
+
+				/* It's changing, free the old and bring in the new */
+				FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name);
+				Tmp_win->names.ctwm_wm_icon_name = prop;
+
+				/* Kick the reset process */
+				apply_window_icon_name(Tmp_win);
+
+				break;
+			}
 #ifdef EWMH
 			else if(EwmhHandlePropertyNotify(&Event.xproperty, Tmp_win)) {
 				/* event handled */
 			}
 #endif /* EWMH */
 			break;
+		}
 	}
 }
 
