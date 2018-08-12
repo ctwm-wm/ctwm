@@ -1872,8 +1872,10 @@ void HandleDestroyNotify(void)
 		Scr->NumAutoLowers--;
 	}
 
-	FreeWMPropertyString(Tmp_win->names.wm_name);        // 2
-	FreeWMPropertyString(Tmp_win->names.wm_icon_name);   // 3
+	FreeWMPropertyString(Tmp_win->names.ctwm_wm_name); // 2
+	FreeWMPropertyString(Tmp_win->names.wm_name);      // 2
+	FreeWMPropertyString(Tmp_win->names.wm_icon_name); // 3
+	FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name); // 3
 #ifdef EWMH
 	FreeWMPropertyString(Tmp_win->names.net_wm_name);      // 2
 	FreeWMPropertyString(Tmp_win->names.net_wm_icon_name); // 3
