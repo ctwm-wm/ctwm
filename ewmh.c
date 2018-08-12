@@ -1387,6 +1387,9 @@ int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win)
 	else if(event->atom == XA__NET_WM_NAME) {
 		char *prop = GetWMPropertyString(twm_win->w, XA__NET_WM_NAME);
 		if(prop == NULL) {
+			FreeWMPropertyString(twm_win->names.net_wm_name);
+			twm_win->names.net_wm_name = NULL;
+			apply_window_name(twm_win);
 			return 1;
 		}
 
@@ -1408,6 +1411,9 @@ int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win)
 	else if(event->atom == XA__NET_WM_ICON_NAME) {
 		char *prop = GetWMPropertyString(twm_win->w, XA__NET_WM_ICON_NAME);
 		if(prop == NULL) {
+			FreeWMPropertyString(twm_win->names.net_wm_icon_name);
+			twm_win->names.net_wm_icon_name = NULL;
+			apply_window_icon_name(twm_win);
 			return 1;
 		}
 

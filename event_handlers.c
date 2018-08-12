@@ -1179,6 +1179,10 @@ void HandlePropertyNotify(void)
 		case XA_WM_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
 			if(prop == NULL) {
+				// Clear
+				FreeWMPropertyString(Tmp_win->names.wm_name);
+				Tmp_win->names.wm_name = NULL;
+				apply_window_name(Tmp_win);
 				return;
 			}
 
@@ -1202,6 +1206,10 @@ void HandlePropertyNotify(void)
 		case XA_WM_ICON_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_ICON_NAME);
 			if(prop == NULL) {
+				// Clear
+				FreeWMPropertyString(Tmp_win->names.wm_icon_name);
+				Tmp_win->names.wm_icon_name = NULL;
+				apply_window_icon_name(Tmp_win);
 				return;
 			}
 
