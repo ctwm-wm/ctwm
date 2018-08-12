@@ -1502,7 +1502,7 @@ void HandlePropertyNotify(void)
 					// Clearing
 					FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name);
 					Tmp_win->names.ctwm_wm_icon_name = NULL;
-					apply_window_name(Tmp_win);
+					apply_window_icon_name(Tmp_win);
 					return;
 				}
 
