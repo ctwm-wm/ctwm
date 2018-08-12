@@ -971,10 +971,35 @@ set_window_name(TwmWindow *win)
 		return false; // Nothing to do
 	}
 
-	// XXX We still need to handle EWMH _NET_WM_VISIBLE_NAME if we're
-	// overriding.
-
+	// Now we know what to call it
 	win->name = newname;
+
+#ifdef EWMH
+	// EWMH says we set an additional property on any windows where what
+	// we consider the name isn't what's in _NET_WM_NAME, so pagers etc
+	// can call it the same as we do.
+	//
+	// The parts of the text describing it conflict a little; at one
+	// place, it implies this should be set unless we're using
+	// _NET_WM_NAME, in another it seems to suggest WM_NAME should be
+	// considered applicable too.  I choose to implement it excluding
+	// both, so this only gets set if we're overriding either standard
+	// naming (probably rare).
+	if(win->name != win->names.net_wm_name && win->name != win->names.wm_name) {
+		// XXX We're not doing any checking of the encoding here...  I
+		// don't see that Xlib helps us any, so we probably have to fall
+		// back to iconv?  That came into the base in POSIX 2008, but was
+		// in XSI back into the 90's I believe?
+		XChangeProperty(dpy, win->w, XA__NET_WM_VISIBLE_NAME, XA_UTF8_STRING,
+		                8, PropModeReplace, (unsigned char *)win->name,
+		                strlen(win->name));
+	}
+	else {
+		XDeleteProperty(dpy, win->w, XA__NET_WM_VISIBLE_NAME);
+	}
+#endif // EWMH
+
+	// We set a name
 	return true;
 }
 
@@ -1110,10 +1135,28 @@ set_window_icon_name(TwmWindow *win)
 		return false; // Nothing to do
 	}
 
-	// XXX We still need to handle EWMH _NET_WM_VISIBLE_ICON_NAME if
-	// we're overriding.
-
+	// A name is chosen
 	win->icon_name = newname;
+
+#ifdef EWMH
+	// EWMH asks for _NET_WM_VISIBLE_ICON_NAME in various cases where
+	// we're not using 'standard' properties' values.  x-ref comments above in
+	// set_window_name() about the parallel property for the window name
+	// for various caveats.
+	if(win->icon_name != win->names.net_wm_icon_name
+	                && win->icon_name != win->names.wm_icon_name) {
+		// XXX Still encoding questionable; x-ref above.
+		XChangeProperty(dpy, win->w, XA__NET_WM_VISIBLE_ICON_NAME,
+		                XA_UTF8_STRING,
+		                8, PropModeReplace, (unsigned char *)win->icon_name,
+		                strlen(win->icon_name));
+	}
+	else {
+		XDeleteProperty(dpy, win->w, XA__NET_WM_VISIBLE_ICON_NAME);
+	}
+#endif // EWMH
+
+	// Did it
 	return true;
 }
 
