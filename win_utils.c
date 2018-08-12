@@ -971,6 +971,9 @@ set_window_name(TwmWindow *win)
 		return false; // Nothing to do
 	}
 
+	// XXX We still need to handle EWMH _NET_WM_VISIBLE_NAME if we're
+	// overriding.
+
 	win->name = newname;
 	return true;
 }
@@ -1106,6 +1109,9 @@ set_window_icon_name(TwmWindow *win)
 	if(win->icon_name == newname) {
 		return false; // Nothing to do
 	}
+
+	// XXX We still need to handle EWMH _NET_WM_VISIBLE_ICON_NAME if
+	// we're overriding.
 
 	win->icon_name = newname;
 	return true;
