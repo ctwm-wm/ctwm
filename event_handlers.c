@@ -1463,6 +1463,10 @@ void HandlePropertyNotify(void)
 			else if(Event.xproperty.atom == XA_CTWM_WM_NAME) {
 				char *prop = GetWMPropertyString(Tmp_win->w, XA_CTWM_WM_NAME);
 				if(prop == NULL) {
+					// Clearing
+					FreeWMPropertyString(Tmp_win->names.ctwm_wm_name);
+					Tmp_win->names.ctwm_wm_name = NULL;
+					apply_window_name(Tmp_win);
 					return;
 				}
 
@@ -1487,6 +1491,10 @@ void HandlePropertyNotify(void)
 				char *prop = GetWMPropertyString(Tmp_win->w,
 				                                 XA_CTWM_WM_ICON_NAME);
 				if(prop == NULL) {
+					// Clearing
+					FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name);
+					Tmp_win->names.ctwm_wm_icon_name = NULL;
+					apply_window_name(Tmp_win);
 					return;
 				}
 
