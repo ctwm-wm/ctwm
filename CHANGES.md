@@ -22,6 +22,15 @@
    the icon name in place of the ICCCM `WM_ICON_NAME` when set.  Similar
    comments as above apply to the encodings.
 
+1. Support has been added for `CTWM_WM_NAME` and `CTWM_WM_ICON_NAME`
+   properties, which will override any window/icon names otherwise
+   specified.  This may be useful for applications that set unhelpful
+   names themselves, or for manually adjusting labelling.  These
+   properties can be set from the command line via `xprop`; as an
+   example, `xprop -f CTWM_WM_NAME 8u -set CTWM_WM_NAME "awesome
+   windowsauce"`.  See `xprop(1)` manual for details; the `s`, `t`, and
+   `u` field type specifiers will all work.
+
 1. When no icon name is set for a window, we've always used the window
    name for the icon name as well.  But that only happened the first time
    the window name is set; after that, the icon name is stuck at the
