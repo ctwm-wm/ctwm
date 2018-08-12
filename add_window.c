@@ -204,7 +204,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * these set pretty early in the process.
 	 */
 	tmp_win->names.ctwm_wm_name = GetWMPropertyString(tmp_win->w,
-			XA_CTWM_WM_NAME);
+	                              XA_CTWM_WM_NAME);
 #ifdef EWMH
 	tmp_win->names.net_wm_name = GetWMPropertyString(tmp_win->w,
 	                             XA__NET_WM_NAME);
@@ -225,7 +225,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 
 	/* Grab the icon name too */
 	tmp_win->names.ctwm_wm_icon_name = GetWMPropertyString(tmp_win->w,
-	                              XA_CTWM_WM_ICON_NAME);
+	                                   XA_CTWM_WM_ICON_NAME);
 #ifdef EWMH
 	tmp_win->names.net_wm_icon_name = GetWMPropertyString(tmp_win->w,
 	                                  XA__NET_WM_ICON_NAME);
