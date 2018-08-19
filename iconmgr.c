@@ -93,13 +93,13 @@ void CreateIconManagers(void)
 	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
 		for(IconMgr *p = q; p != NULL; p = p->next) {
 			int gx, gy;
-			char str[100];
+			char imname[100];
 			int mask;
 			int gravity;
 			int bw;
 			Pixel background;
 
-			snprintf(str, sizeof(str), "%s Icon Manager", p->name);
+			snprintf(imname, sizeof(imname), "%s Icon Manager", p->name);
 
 			if(!p->geometry || !strlen(p->geometry)) {
 				p->geometry = "+0+0";
@@ -107,7 +107,7 @@ void CreateIconManagers(void)
 			mask = XParseGeometry(p->geometry, &gx, &gy,
 			                      (unsigned int *) &p->width, (unsigned int *)&p->height);
 
-			bw = LookInList(Scr->NoBorder, str, NULL) ? 0 :
+			bw = LookInList(Scr->NoBorder, imname, NULL) ? 0 :
 			     (Scr->ThreeDBorderWidth ? Scr->ThreeDBorderWidth : Scr->BorderWidth);
 
 			if(mask & XNegative) {
@@ -154,7 +154,7 @@ void CreateIconManagers(void)
 				wmhints.input         = True;
 				wmhints.flags         = InputHint | StateHint;
 
-				XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
+				XmbSetWMProperties(dpy, p->w, imname, icon_name, NULL, 0, NULL,
 				                   &wmhints, NULL);
 				free(icon_name);
 			}
