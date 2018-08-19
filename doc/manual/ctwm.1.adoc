@@ -3167,11 +3167,11 @@ and then click the window you want to set it on.  Unfortunately,
 `xprop(1)` does require you to specify the property name when defining
 the format, as well as when setting it, so it's a little ugly.  The `8u`
 means you're giving a UTF-8 string.  Other possible formats are `8s` for
-a plain uninterpreted string (probably ASCII), and `8t` for
-``internationalized'' (ICCCM-style locale conversion).  Usually you'd
-just use UTF-8 though.  `xprop -remove CTWM_WM_ICON_NAME` and click would
-let you undo it and go back to the normal naming.  See the `xprop(1)`
-manual for more.
+a plain 7-bit `STRING` (i.e, plain ASCII), and `8t` for
+``internationalized'' ICCCM-style `COMPOUND_TEXT`.  Usually you'd just
+use UTF-8 though.  `xprop -remove CTWM_WM_ICON_NAME` and click would let
+you undo it and go back to the normal naming.  See the `xprop(1)` manual
+for more.
 
 
 == SOUNDS
