@@ -938,15 +938,21 @@ gen_synthetic_wmhints(TwmWindow *win)
 }
 
 
-/*
- * [Re]set a window's name.  This should rarely be called directly;
- * apply_window_name() should be used instead.  It's split out because we
- * need to do this step individually in AddWindow().
+/**
+ * [Re]set a window's name.  This goes over the available naming sources
+ * for the window and points the TwmWindow::name at the appropriate one.
+ * It may also set a property to signal other EWMH-aware clients when
+ * we're naming it a way they can't see themselves.
  *
- * Note that we never need to worry about freeing win->name; it always
- * points to one of the win->names.something's (which are free'd by the
- * event handler when they change) or NoName (which is static).  So we
- * can just casually flip it around at will.
+ * \note This should rarely be called directly; apply_window_name()
+ * should be used instead.  It's split out because we need to do this
+ * step individually in AddWindow().
+ *
+ * \note Note also that we never need to worry about freeing the
+ * TwmWindow::name; it always points to one of the TwmWindow::names
+ * values (which are free'd by the event handler when they change) or to
+ * NoName (which is static).  So we can just casually flip it around at
+ * will.
  */
 bool
 set_window_name(TwmWindow *win)
@@ -1004,7 +1010,7 @@ set_window_name(TwmWindow *win)
 }
 
 
-/*
+/**
  * [Re]set and apply changes to a window's name.  This is called after
  * we've received a new WM_NAME (or other name-setting) property, to
  * update our titlebars, icon managers, etc.
@@ -1099,13 +1105,16 @@ apply_window_name(TwmWindow *win)
 }
 
 
-/*
- * Similarly, [re]set a window's icon name.  As with the window name
- * version, this is mostly separate so the AddWindow() process can call
- * it.
+/**
+ * [Re]set a window's icon name.  As with the window name version in
+ * set_window_name(), this is mostly separate so the AddWindow() process
+ * can call it.
  *
- * And as with win->name, we never want to try free()'ing or the like
- * win->icon_name.
+ * \note As with TwmWindow::name, we never want to try free()'ing or the
+ * like TwmWindow::icon_name.
+ *
+ * \sa set_window_name() for details; this is just the icon name
+ * equivalent of it.
  */
 bool
 set_window_icon_name(TwmWindow *win)
@@ -1161,10 +1170,12 @@ set_window_icon_name(TwmWindow *win)
 }
 
 
-/*
- * [Re]set and apply changes to a window's name.  This is called after
- * we've received a new WM_NAME (or other name-setting) property, to
- * update our titlebars, icon managers, etc.
+/**
+ * [Re]set and apply changes to a window's icon name.  This is called
+ * after we've received a new WM_ICON_NAME (or other name-setting)
+ * property, to update our titlebars, icon managers, etc.
+ *
+ * \sa apply_window_name() which does the same for the window title.
  */
 void
 apply_window_icon_name(TwmWindow *win)
