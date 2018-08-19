@@ -139,6 +139,8 @@ void CreateIconManagers(void)
 
 
 			/* Scr->workSpaceMgr.activeWSPC = ws; */
+
+			/* Setup various WM properties on the iconmgr's window */
 			{
 				char *icon_name;
 				XWMHints wmhints;
@@ -150,7 +152,6 @@ void CreateIconManagers(void)
 					asprintf(&icon_name, "%s Icons", p->name);
 				}
 
-
 				wmhints.initial_state = NormalState;
 				wmhints.input         = True;
 				wmhints.flags         = InputHint | StateHint;
@@ -159,6 +160,7 @@ void CreateIconManagers(void)
 				                   &wmhints, NULL);
 				free(icon_name);
 			}
+
 
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
