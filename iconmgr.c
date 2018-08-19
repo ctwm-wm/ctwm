@@ -68,14 +68,7 @@ WList *DownIconManager = NULL;
 
 void CreateIconManagers(void)
 {
-	IconMgr *p, *q;
-	int mask;
-	char str[100];
-	Pixel background;
 	WorkSpace    *ws;
-	XSizeHints    sizehints;
-	int           gravity;
-	int bw;
 
 	if(Scr->NoIconManagers) {
 		return;
@@ -97,9 +90,15 @@ void CreateIconManagers(void)
 	}
 
 	ws = Scr->workSpaceMgr.workSpaceList;
-	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
-		for(p = q; p != NULL; p = p->next) {
+	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
+		for(IconMgr *p = q; p != NULL; p = p->next) {
 			int gx, gy;
+			char str[100];
+			int mask;
+			int gravity;
+			int bw;
+			Pixel background;
+			XSizeHints sizehints;
 
 			snprintf(str, sizeof(str), "%s Icon Manager", p->name);
 
@@ -224,8 +223,8 @@ void CreateIconManagers(void)
 	 * and this code can be removed.  X-ref comments in add_window.c
 	 * about it.
 	 */
-	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
-		for(p = q; p != NULL; p = p->next) {
+	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
+		for(IconMgr *p = q; p != NULL; p = p->next) {
 			GrabButtons(p->twm_win);
 			GrabKeys(p->twm_win);
 		}
