@@ -16,7 +16,8 @@ allclean distclean:
 #
 
 # Add'l thunks to cmake
-man-pdf doxygen doxyclean: build/Makefile
+.PHONY: tags
+man-pdf doxygen doxyclean tags: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 # Reindent files
