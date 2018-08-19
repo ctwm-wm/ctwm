@@ -71,11 +71,8 @@ void CreateIconManagers(void)
 	IconMgr *p, *q;
 	int mask;
 	char str[100];
-	char str1[100];
 	Pixel background;
-	char *icon_name;
 	WorkSpace    *ws;
-	XWMHints      wmhints;
 	XSizeHints    sizehints;
 	int           gravity;
 	int bw;
@@ -105,13 +102,6 @@ void CreateIconManagers(void)
 			int gx, gy;
 
 			snprintf(str, sizeof(str), "%s Icon Manager", p->name);
-			snprintf(str1, sizeof(str1), "%s Icons", p->name);
-			if(p->icon_name) {
-				icon_name = p->icon_name;
-			}
-			else {
-				icon_name = str1;
-			}
 
 			if(!p->geometry || !strlen(p->geometry)) {
 				p->geometry = "+0+0";
@@ -149,12 +139,26 @@ void CreateIconManagers(void)
 
 
 			/* Scr->workSpaceMgr.activeWSPC = ws; */
-			wmhints.initial_state = NormalState;
-			wmhints.input         = True;
-			wmhints.flags         = InputHint | StateHint;
+			{
+				char *icon_name;
+				XWMHints wmhints;
 
-			XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
-			                   &wmhints, NULL);
+				if(p->icon_name) {
+					icon_name = strdup(p->icon_name);
+				}
+				else {
+					asprintf(&icon_name, "%s Icons", p->name);
+				}
+
+
+				wmhints.initial_state = NormalState;
+				wmhints.input         = True;
+				wmhints.flags         = InputHint | StateHint;
+
+				XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
+				                   &wmhints, NULL);
+				free(icon_name);
+			}
 
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
