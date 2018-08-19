@@ -13,7 +13,13 @@
 #include "ctwm_atoms.h"
 #include "drawing.h"
 #include "events.h"
+#include "event_internal.h" // Temp?
+#ifdef EWMH
+# include "ewmh_atoms.h"
+#endif
 #include "icons.h"
+#include "occupation.h"
+#include "otp.h"
 #include "screen.h"
 #include "util.h"
 #include "win_decorations.h"
@@ -215,66 +221,94 @@ GetWMPropertyString(Window w, Atom prop)
 	char                *stringptr;
 
 	XGetTextProperty(dpy, w, &text_prop, prop);
-	if(text_prop.value != NULL) {
+	if(text_prop.value == NULL) {
+		return NULL;
+	}
+
+	if(text_prop.encoding == XA_STRING
+	                || text_prop.encoding == XA_UTF8_STRING
+	                || text_prop.encoding == XA_COMPOUND_TEXT) {
+		/* property is encoded as compound text - convert to locale string */
 		char **text_list;
 		int  text_list_count;
+		int status;
 
-		if(text_prop.encoding == XA_STRING
-		                || text_prop.encoding == XA_COMPOUND_TEXT) {
-			/* property is encoded as compound text - convert to locale string */
-			int status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
-			                                       &text_list_count);
-			if(text_list_count == 0) {
-				stringptr = NULL;
+		/* Check historical strictness */
+		if(Scr->StrictWinNameEncoding) {
+			bool fail = false;
+
+			if((prop == XA_WM_NAME || prop == XA_WM_ICON_NAME)
+			                && text_prop.encoding != XA_STRING
+			                && text_prop.encoding != XA_COMPOUND_TEXT) {
+				fail = true;
 			}
-			else if(text_list == NULL) {
-				stringptr = NULL;
+
+#ifdef EWMH
+			if((prop == XA__NET_WM_NAME || prop == XA__NET_WM_ICON_NAME)
+			                && text_prop.encoding != XA_UTF8_STRING) {
+				fail = true;
 			}
-			else if(text_list [0] == NULL) {
-				stringptr = NULL;
+#endif // EWMH
+
+			if(fail) {
+				fprintf(stderr, "%s: Invalid encoding for property %s "
+				        "of window 0x%lx\n", ProgramName,
+				        XGetAtomName(dpy, prop), w);
+				XFree(text_prop.value);
+				return NULL;
 			}
-			else if(status < 0 || text_list_count < 0) {
-				switch(status) {
-					case XConverterNotFound:
-						fprintf(stderr,
-						        "%s: Converter not found; unable to convert property %s of window ID %lx.\n",
-						        ProgramName, XGetAtomName(dpy, prop), w);
-						break;
-					case XNoMemory:
-						fprintf(stderr,
-						        "%s: Insufficient memory; unable to convert property %s of window ID %lx.\n",
-						        ProgramName, XGetAtomName(dpy, prop), w);
-						break;
-					case XLocaleNotSupported:
-						fprintf(stderr,
-						        "%s: Locale not supported; unable to convert property %s of window ID %lx.\n",
-						        ProgramName, XGetAtomName(dpy, prop), w);
-						break;
-				}
-				stringptr = NULL;
-				/*
-				   don't call XFreeStringList - text_list appears to have
-				   invalid address if status is bad
-				   XFreeStringList(text_list);
-				*/
+		}
+
+
+		status = XmbTextPropertyToTextList(dpy, &text_prop, &text_list,
+		                                   &text_list_count);
+		if(text_list_count == 0
+		                || text_list == NULL
+		                || text_list[0] == NULL) {
+			// Got nothing
+			XFree(text_prop.value);
+			return NULL;
+		}
+		else if(status < 0 || text_list_count < 0) {
+			// Got an error statuf
+			switch(status) {
+				case XConverterNotFound:
+					fprintf(stderr,
+					        "%s: Converter not found; unable to convert property %s of window ID %lx.\n",
+					        ProgramName, XGetAtomName(dpy, prop), w);
+					break;
+				case XNoMemory:
+					fprintf(stderr,
+					        "%s: Insufficient memory; unable to convert property %s of window ID %lx.\n",
+					        ProgramName, XGetAtomName(dpy, prop), w);
+					break;
+				case XLocaleNotSupported:
+					fprintf(stderr,
+					        "%s: Locale not supported; unable to convert property %s of window ID %lx.\n",
+					        ProgramName, XGetAtomName(dpy, prop), w);
+					break;
 			}
-			else {
-				stringptr = strdup(text_list[0]);
-				XFreeStringList(text_list);
-			}
+			stringptr = NULL;
+			/*
+			   don't call XFreeStringList - text_list appears to have
+			   invalid address if status is bad
+			   XFreeStringList(text_list);
+			*/
 		}
 		else {
-			/* property is encoded in a format we don't understand */
-			fprintf(stderr,
-			        "%s: Encoding not STRING or COMPOUND_TEXT; unable to decode property %s of window ID %lx.\n",
-			        ProgramName, XGetAtomName(dpy, prop), w);
-			stringptr = NULL;
+			// Actually got the data!
+			stringptr = strdup(text_list[0]);
+			XFreeStringList(text_list);
 		}
-		XFree(text_prop.value);
 	}
 	else {
+		/* property is encoded in a format we don't understand */
+		fprintf(stderr,
+		        "%s: Encoding not STRING or COMPOUND_TEXT; unable to decode property %s of window ID %lx.\n",
+		        ProgramName, XGetAtomName(dpy, prop), w);
 		stringptr = NULL;
 	}
+	XFree(text_prop.value);
 
 	return stringptr;
 }
@@ -901,4 +935,261 @@ gen_synthetic_wmhints(TwmWindow *win)
 	hints->initial_state = NormalState;
 
 	return hints;
+}
+
+
+/**
+ * [Re]set a window's name.  This goes over the available naming sources
+ * for the window and points the TwmWindow::name at the appropriate one.
+ * It may also set a property to signal other EWMH-aware clients when
+ * we're naming it a way they can't see themselves.
+ *
+ * \note This should rarely be called directly; apply_window_name()
+ * should be used instead.  It's split out because we need to do this
+ * step individually in AddWindow().
+ *
+ * \note Note also that we never need to worry about freeing the
+ * TwmWindow::name; it always points to one of the TwmWindow::names
+ * values (which are free'd by the event handler when they change) or to
+ * NoName (which is static).  So we can just casually flip it around at
+ * will.
+ */
+bool
+set_window_name(TwmWindow *win)
+{
+	char *newname = NULL;
+#define TRY(fld) { \
+                if(newname == NULL && win->names.fld != NULL) { \
+                        newname = win->names.fld; \
+                } \
+        }
+	TRY(ctwm_wm_name)
+#ifdef EWMH
+	TRY(net_wm_name)
+#endif
+	TRY(wm_name)
+#undef TRY
+
+	if(newname == NULL) {
+		newname = NoName;
+	}
+	if(win->name == newname) {
+		return false; // Nothing to do
+	}
+
+	// Now we know what to call it
+	win->name = newname;
+
+#ifdef EWMH
+	// EWMH says we set an additional property on any windows where what
+	// we consider the name isn't what's in _NET_WM_NAME, so pagers etc
+	// can call it the same as we do.
+	//
+	// The parts of the text describing it conflict a little; at one
+	// place, it implies this should be set unless we're using
+	// _NET_WM_NAME, in another it seems to suggest WM_NAME should be
+	// considered applicable too.  I choose to implement it excluding
+	// both, so this only gets set if we're overriding either standard
+	// naming (probably rare).
+	if(win->name != win->names.net_wm_name && win->name != win->names.wm_name) {
+		// XXX We're not doing any checking of the encoding here...  I
+		// don't see that Xlib helps us any, so we probably have to fall
+		// back to iconv?  That came into the base in POSIX 2008, but was
+		// in XSI back into the 90's I believe?
+		XChangeProperty(dpy, win->w, XA__NET_WM_VISIBLE_NAME, XA_UTF8_STRING,
+		                8, PropModeReplace, (unsigned char *)win->name,
+		                strlen(win->name));
+	}
+	else {
+		XDeleteProperty(dpy, win->w, XA__NET_WM_VISIBLE_NAME);
+	}
+#endif // EWMH
+
+	// We set a name
+	return true;
+}
+
+
+/**
+ * [Re]set and apply changes to a window's name.  This is called after
+ * we've received a new WM_NAME (or other name-setting) property, to
+ * update our titlebars, icon managers, etc.
+ */
+void
+apply_window_name(TwmWindow *win)
+{
+	/* [Re]set ->name */
+	if(set_window_name(win) == false) {
+		// No change
+		return;
+	}
+	win->nameChanged = true;
+
+
+	/* Update the active name */
+	{
+		XRectangle inc_rect;
+		XRectangle logical_rect;
+
+		XmbTextExtents(Scr->TitleBarFont.font_set,
+		               win->name, strlen(win->name),
+		               &inc_rect, &logical_rect);
+		win->name_width = logical_rect.width;
+	}
+
+	/* recompute the priority if necessary */
+	if(Scr->AutoPriority) {
+		OtpRecomputePrefs(win);
+	}
+
+	SetupWindow(win, win->frame_x, win->frame_y,
+	            win->frame_width, win->frame_height, -1);
+
+	if(win->title_w) {
+		XClearArea(dpy, win->title_w, 0, 0, 0, 0, True);
+	}
+	if(Scr->AutoOccupy) {
+		WmgrRedoOccupation(win);
+	}
+
+#if 0
+	/* Experimental, not yet working. */
+	{
+		ColorPair cp;
+		int f, b;
+
+		f = GetColorFromList(Scr->TitleForegroundL, win->name,
+		                     &win->class, &cp.fore);
+		b = GetColorFromList(Scr->TitleBackgroundL, win->name,
+		                     &win->class, &cp.back);
+		if(f || b) {
+			if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
+				GetShadeColors(&cp);
+			}
+			win->title = cp;
+		}
+		f = GetColorFromList(Scr->BorderColorL, win->name,
+		                     &win->class, &cp.fore);
+		b = GetColorFromList(Scr->BorderColorL, win->name,
+		                     &win->class, &cp.back);
+		if(f || b) {
+			if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+				GetShadeColors(&cp);
+			}
+			win->borderC = cp;
+		}
+
+		f = GetColorFromList(Scr->BorderTileForegroundL, win->name,
+		                     &win->class, &cp.fore);
+		b = GetColorFromList(Scr->BorderTileBackgroundL, win->name,
+		                     &win->class, &cp.back);
+		if(f || b) {
+			if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
+				GetShadeColors(&cp);
+			}
+			win->border_tile = cp;
+		}
+	}
+#endif
+
+	/*
+	 * If we haven't set a separate icon name, we use the window name, so
+	 * we need to update it.
+	 */
+	if(win->names.icon_set == false) {
+		apply_window_icon_name(win);
+	}
+	AutoPopupMaybe(win);
+
+	return;
+}
+
+
+/**
+ * [Re]set a window's icon name.  As with the window name version in
+ * set_window_name(), this is mostly separate so the AddWindow() process
+ * can call it.
+ *
+ * \note As with TwmWindow::name, we never want to try free()'ing or the
+ * like TwmWindow::icon_name.
+ *
+ * \sa set_window_name() for details; this is just the icon name
+ * equivalent of it.
+ */
+bool
+set_window_icon_name(TwmWindow *win)
+{
+	char *newname = NULL;
+#define TRY(fld) { \
+                if(newname == NULL && win->names.fld != NULL) { \
+                        newname = win->names.fld; \
+                        win->names.icon_set = true; \
+                } \
+        }
+	TRY(ctwm_wm_icon_name)
+#ifdef EWMH
+	TRY(net_wm_icon_name)
+#endif
+	TRY(wm_icon_name)
+#undef TRY
+
+	// Our fallback for icon names is the window name.  Flag when we're
+	// doing that, so the window name handler can know when it needs to
+	// call us.
+	if(newname == NULL) {
+		newname = win->name;
+		win->names.icon_set = false;
+	}
+	if(win->icon_name == newname) {
+		return false; // Nothing to do
+	}
+
+	// A name is chosen
+	win->icon_name = newname;
+
+#ifdef EWMH
+	// EWMH asks for _NET_WM_VISIBLE_ICON_NAME in various cases where
+	// we're not using 'standard' properties' values.  x-ref comments above in
+	// set_window_name() about the parallel property for the window name
+	// for various caveats.
+	if(win->icon_name != win->names.net_wm_icon_name
+	                && win->icon_name != win->names.wm_icon_name) {
+		// XXX Still encoding questionable; x-ref above.
+		XChangeProperty(dpy, win->w, XA__NET_WM_VISIBLE_ICON_NAME,
+		                XA_UTF8_STRING,
+		                8, PropModeReplace, (unsigned char *)win->icon_name,
+		                strlen(win->icon_name));
+	}
+	else {
+		XDeleteProperty(dpy, win->w, XA__NET_WM_VISIBLE_ICON_NAME);
+	}
+#endif // EWMH
+
+	// Did it
+	return true;
+}
+
+
+/**
+ * [Re]set and apply changes to a window's icon name.  This is called
+ * after we've received a new WM_ICON_NAME (or other name-setting)
+ * property, to update our titlebars, icon managers, etc.
+ *
+ * \sa apply_window_name() which does the same for the window title.
+ */
+void
+apply_window_icon_name(TwmWindow *win)
+{
+	/* [Re]set ->icon_name */
+	if(set_window_icon_name(win) == false) {
+		// No change
+		return;
+	}
+
+
+	/* Lot less to do for icons... */
+	RedoIcon(Tmp_win);
+	AutoPopupMaybe(Tmp_win);
+
+	return;
 }

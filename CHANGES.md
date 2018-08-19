@@ -11,6 +11,32 @@
 1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
    have been removed; it is now just a duplicate of CLIENTHOST.
 
+### New Features
+
+1. The EWMH `_NET_WM_NAME` property is now supported, and used for the
+   window name in place of the ICCCM `WM_NAME` when set.  By default, we
+   also accept `UTF8_STRING` encoded `WM_NAME` as a result of this
+   change; see below for var to restore historical strictness.
+
+1. The EWMH `_NET_WM_ICON_NAME` property is now supported, and used for
+   the icon name in place of the ICCCM `WM_ICON_NAME` when set.  Similar
+   comments as above apply to the encodings.
+
+1. Support has been added for `CTWM_WM_NAME` and `CTWM_WM_ICON_NAME`
+   properties, which will override any window/icon names otherwise
+   specified.  This may be useful for applications that set unhelpful
+   names themselves, or for manually adjusting labelling.  These
+   properties can be set from the command line via `xprop`; as an
+   example, `xprop -f CTWM_WM_NAME 8u -set CTWM_WM_NAME "awesome
+   windowsauce"`.  See `xprop(1)` manual for details; the `s`, `t`, and
+   `u` field type specifiers will all work.
+
+1. When no icon name is set for a window, we've always used the window
+   name for the icon name as well.  But that only happened the first time
+   the window name is set; after that, the icon name is stuck at the
+   first name.  It now updates along with the window name, if no icon
+   name is set.
+
 ### New Config Options
 
 1. Added DontNameDecorations config option to disable setting names on
@@ -18,6 +44,10 @@
    have been reported to confuse xwit, and might do the same for other
    tools that don't expect to find them on non-end-app windows.  Reported
    by Frank Steiner.
+
+1. Added StrictWinNameEncoding config option to enable historical
+   behavior, where we're reject invalid property encoding for window
+   naming properties (like a `UTF8_STRING` encoded `WM_NAME`).
 
 ### Bugfixes
 

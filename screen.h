@@ -928,6 +928,11 @@ struct ScreenInfo {
 
 	bool NameDecorations;  ///< DontNameDecorations config var (inverse)
 
+	/// Whether to be strict about what encoding of window naming
+	/// properties (WM_NAME etc) we accept.  From StrictWinNameEncoding
+	/// config var.
+	bool StrictWinNameEncoding;
+
 	/// ForceFocus config var.  Forcing focus-setting on windows.
 	/// \sa ScreenInfo.ForceFocusL
 	bool      ForceFocus;

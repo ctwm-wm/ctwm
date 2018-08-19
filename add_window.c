@@ -36,8 +36,12 @@
 #include "add_window.h"
 #include "captive.h"
 #include "colormaps.h"
+#include "ctwm_atoms.h"
 #include "functions.h"
 #include "events.h"
+#ifdef EWMH
+# include "ewmh_atoms.h"
+#endif
 #include "gram.tab.h"
 #include "icons.h"
 #include "iconmgr.h"
@@ -199,10 +203,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 * name_lists generally goes by the name/class, so we need to get
 	 * these set pretty early in the process.
 	 */
-	tmp_win->name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
-	if(tmp_win->name == NULL) {
-		tmp_win->name = NoName;
-	}
+	tmp_win->names.ctwm_wm_name = GetWMPropertyString(tmp_win->w,
+	                              XA_CTWM_WM_NAME);
+#ifdef EWMH
+	tmp_win->names.net_wm_name = GetWMPropertyString(tmp_win->w,
+	                             XA__NET_WM_NAME);
+#endif
+	tmp_win->names.wm_name = GetWMPropertyString(tmp_win->w, XA_WM_NAME);
+	set_window_name(tmp_win);
 	namelen = strlen(tmp_win->name);
 
 	/* Setup class */
@@ -216,15 +224,16 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 	/* Grab the icon name too */
-	tmp_win->icon_name = GetWMPropertyString(tmp_win->w, XA_WM_ICON_NAME);
-	if(!tmp_win->icon_name) {
-		if(tmp_win->name == NoName) {
-			tmp_win->icon_name = NoName;
-		}
-		else {
-			tmp_win->icon_name = strdup(tmp_win->name);
-		}
-	}
+	tmp_win->names.ctwm_wm_icon_name = GetWMPropertyString(tmp_win->w,
+	                                   XA_CTWM_WM_ICON_NAME);
+#ifdef EWMH
+	tmp_win->names.net_wm_icon_name = GetWMPropertyString(tmp_win->w,
+	                                  XA__NET_WM_ICON_NAME);
+#endif
+	tmp_win->names.wm_icon_name = GetWMPropertyString(tmp_win->w,
+	                              XA_WM_ICON_NAME);
+	set_window_icon_name(tmp_win);
+
 
 	/* Convenience macro */
 #define CHKL(lst) IsInList(Scr->lst, tmp_win)
