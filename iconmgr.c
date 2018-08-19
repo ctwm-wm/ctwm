@@ -98,7 +98,6 @@ void CreateIconManagers(void)
 			int gravity;
 			int bw;
 			Pixel background;
-			XSizeHints sizehints;
 
 			snprintf(str, sizeof(str), "%s Icon Manager", p->name);
 
@@ -186,9 +185,13 @@ void CreateIconManagers(void)
 			        p, gx, gy,  p->width, p->height, p->twm_win->occupation);
 #endif
 
-			sizehints.flags       = PWinGravity;
-			sizehints.win_gravity = gravity;
-			XSetWMSizeHints(dpy, p->w, &sizehints, XA_WM_NORMAL_HINTS);
+			{
+				XSizeHints sizehints;
+
+				sizehints.flags       = PWinGravity;
+				sizehints.win_gravity = gravity;
+				XSetWMSizeHints(dpy, p->w, &sizehints, XA_WM_NORMAL_HINTS);
+			}
 
 			p->twm_win->mapped = false;
 			SetMapStateProp(p->twm_win, WithdrawnState);
