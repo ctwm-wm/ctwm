@@ -1845,7 +1845,8 @@ TransientOnTop `percentage`::
   The parameter (required) is a percentage and tells ctwm to put transient
   (and non-group leader) windows always on top of their leader if and only
   if their surface is smaller than this fraction of the surface of their
-  leader. The surface of a window is its width times its weight.
+  leader. The surface of a window is its width times its weight.  The
+  default is 30%.  Added in 3.0.
 
 UnknownIcon `string`::
   This variable specifies the filename of a bitmap file to be
