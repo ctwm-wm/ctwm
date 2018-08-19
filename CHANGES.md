@@ -37,6 +37,10 @@
    first name.  It now updates along with the window name, if no icon
    name is set.
 
+1. All icon manager windows will now have the TwmIconManager class set on
+   them, so they can be addressed en mass by other config like `NoTitle`
+   by that class name.
+
 ### New Config Options
 
 1. Added DontNameDecorations config option to disable setting names on
