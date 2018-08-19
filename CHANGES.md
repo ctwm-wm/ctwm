@@ -75,6 +75,11 @@
    context menu and urlbar dropdown, which would flash on and then
    disappear.
 
+1. When creating a new transient window of an existing full-screen
+   window, the OTP stacking may cause it to be stuck below the main
+   window due to the special handling of full-screen focused windows in
+   EWMH.  It should now be forced to the top.
+
 
 
 ## 4.0.1  (2017-06-05)
