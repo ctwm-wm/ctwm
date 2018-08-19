@@ -142,6 +142,7 @@ void CreateIconManagers(void)
 			{
 				char *icon_name;
 				XWMHints wmhints;
+				XClassHint clhints;
 
 				if(p->icon_name) {
 					icon_name = strdup(p->icon_name);
@@ -154,8 +155,11 @@ void CreateIconManagers(void)
 				wmhints.input         = True;
 				wmhints.flags         = InputHint | StateHint;
 
+				clhints.res_name  = icon_name;
+				clhints.res_class = "TwmIconManager";
+
 				XmbSetWMProperties(dpy, p->w, imname, icon_name, NULL, 0, NULL,
-				                   &wmhints, NULL);
+				                   &wmhints, &clhints);
 				free(icon_name);
 			}
 
