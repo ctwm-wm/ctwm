@@ -84,6 +84,11 @@
    window due to the special handling of full-screen focused windows in
    EWMH.  It should now be forced to the top.
 
+1. Building ctwm since 4.0.0 in certain locales could misorder functions
+   in the lookup table, leading to troubles parsing the config file.
+   You'd get some loud "INTERNAL ERROR" lines from ctwm when running it
+   if this were the case.  Now fixed.  Reported by Richard Levitte.
+
 
 
 ## 4.0.1  (2017-06-05)

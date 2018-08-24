@@ -29,6 +29,13 @@ if [ "X${NAWK}" != 'X' ]; then
 fi
 
 
+# Some places in the world think they're allowed to sort strings
+# differently than was done in New Jersey in 1972.  What gall.
+# LC_ALL > LC_COLLATE, so we have to use it for safety.
+LC_ALL=C
+export LC_ALL
+
+
 # We're all C here
 print_header() {
 	echo "/*"
