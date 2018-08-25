@@ -281,7 +281,7 @@ CLIENTHOST::
   The machine that is running the clients.  (ie, ctwm)
 
 HOSTNAME::
-  As of %%NEXT%%, this is a duplicate of `CLIENTHOST`.  In prior
+  As of 4.0.2, this is a duplicate of `CLIENTHOST`.  In prior
   versions, `gethostbyname()` was used to attempt to derive a canonical
   or fully-qualified version of the hostname.
 
@@ -799,7 +799,7 @@ DontNameDecorations::
   ctwm puts around the windows it manages.  These are handy to keep track
   of what's what when poking through the list of windows on the screen,
   but can confuse some tools that don't expect to find them there (xwit
-  is known to be one of them).  First appeared in %%NEXT%%.
+  is known to be one of them).  First appeared in 4.0.2.
 
 DontPaintRootWindow::
   This variable tells ctwm not to paint the root window, whatever you told in
@@ -1775,14 +1775,14 @@ StayUpMenus::
 
 StrictWinNameEncoding::
   Whether to be strict about what encodings we accept for window naming
-  properties.  Added in %%NEXT%%.
+  properties.  Added in 4.0.2.
 +
 [normal]
   This is used when translating properties relating to naming windows,
   like `WM_NAME`.  For example, according to the ICCCM, `WM_NAME` can
   only be a `STRING` or `COMPOUND_TEXT` type.  However, sloppy programs
   like Chrome may set it to a `UTF8_STRING` instead.  If this var is set,
-  ctwm will reject that, as was standard behavior prior to %%NEXT%%.
+  ctwm will reject that, as was standard behavior prior to 4.0.2.
 
 SunkFocusWindowTitle::
   This variable specifies that the title of the focus window (if exists)
@@ -3139,14 +3139,14 @@ the window name (which is what shows up in the titlebar, the `f.identify`
 window, etc), and the icon name (which shows up on the icon and on the
 icon manager).
 
-Prior to %%NEXT%%, ctwm only supported the standard ICCCM properties for
+Prior to 4.0.2, ctwm only supported the standard ICCCM properties for
 setting the window and icon names.  These are `WM_NAME` for the window
-name, and `WM_ICON_NAME` for the icon name.  As of %%NEXT%%, ctwm also
+name, and `WM_ICON_NAME` for the icon name.  As of 4.0.2, ctwm also
 supports the EWMH versions of these, which are `_NET_WM_NAME` and
 `_NET_WM_ICON_NAME`.  If the EWMH variants exist, they're used in
 preference to the older ICCCM style.
 
-As of %%NEXT%%, ctwm also supports an additional pair of properties;
+As of 4.0.2, ctwm also supports an additional pair of properties;
 `CTWM_WM_NAME` and `CTWM_WM_ICON_NAME`, which override all the others.
 These are specifically intended for the user to manually set, not for
 programs to set themselves.  This allows the user to override programs

@@ -1,15 +1,19 @@
 # CTWM Change History
 
 
-## 4.0.2  (not yet released) (xxxx-xx-xx)
+## Next release  (xxxx-xx-xx)
+
+
+
+## 4.0.2  (2018-08-25)
 
 ### Backward-Incompatible Changes And Removed Features
 
 1. The `UseThreeDIconBorders` config var has been removed.  It came in
    silently and undocumented in 3.4 and has never done anything.
 
-1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
-   have been removed; it is now just a duplicate of CLIENTHOST.
+1. The attempts to use DNS lookups for setting the `HOSTNAME` `m4` variable
+   have been removed; it is now just a duplicate of `CLIENTHOST`.
 
 ### New Features
 
@@ -37,29 +41,29 @@
    first name.  It now updates along with the window name, if no icon
    name is set.
 
-1. All icon manager windows will now have the TwmIconManager class set on
-   them, so they can be addressed en mass by other config like `NoTitle`
-   by that class name.
+1. All icon manager windows will now have the `TwmIconManager` class set
+   on them, so they can be addressed en mass by other config like
+   `NoTitle` by that class name.
 
 ### New Config Options
 
-1. Added DontNameDecorations config option to disable setting names on
+1. Added `DontNameDecorations` config option to disable setting names on
    the X windows we create for window decoration (added in 4.0.0).  These
-   have been reported to confuse xwit, and might do the same for other
+   have been reported to confuse `xwit`, and might do the same for other
    tools that don't expect to find them on non-end-app windows.  Reported
    by Frank Steiner.
 
-1. Added StrictWinNameEncoding config option to enable historical
+1. Added `StrictWinNameEncoding` config option to enable historical
    behavior, where we're reject invalid property encoding for window
    naming properties (like a `UTF8_STRING` encoded `WM_NAME`).
 
 ### Bugfixes
 
-1. Fix up broken parsing of IconifyStyle "sweep".  Bug was introduced in
-   4.0.0.
+1. Fix up broken parsing of `IconifyStyle "sweep"`.  Bug was introduced
+   in 4.0.0.
 
-1. When multiple X Screens are used, building the temporary file for M4
-   definitions could fail with an error from mkstemp().  Reported by
+1. When multiple X Screens are used, building the temporary file for m4
+   definitions could fail with an error from `mkstemp()`.  Reported by
    Manfred Knick.
 
 1. When multiple X Screens are used, the OTP code didn't recognize the
@@ -67,14 +71,14 @@
    consistency checks to trip when it didn't find all the windows it
    expected.  Reported by Terran Melconian.
 
-1. When ReverseCurrentWorkspace is set, mapping windows not on the
+1. When `ReverseCurrentWorkspace` is set, mapping windows not on the
    current workspace (e.g., via restarting ctwm, or creating new windows
    with the desktop set via EWMH properties) could segfault.  Reported by
    Sean McAllister.
 
 1. Fix some edge cases where we'd fight other apps' focus handling.  When
    an application moved focus itself to an unrelated (in X terms) window,
-   our processing would often race and re-moved the focus to the root
+   our processing would often race and re-move the focus to the root
    ourselves.  This was visible with e.g. sub-windows in Firefox for
    context menu and urlbar dropdown, which would flash on and then
    disappear.
