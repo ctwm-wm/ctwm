@@ -27,6 +27,7 @@
 #include "events.h"
 #include "event_handlers.h"
 #include "vscreen.h"
+#include "win_utils.h"
 
 #define DEBUG_OTP       0
 #if DEBUG_OTP
@@ -1635,10 +1636,29 @@ OwlEffectivePriority(OtpWinList *owl)
 
 	/*
 	 * If FULLSCREEN and focused, jam to (nearly; let the user still win
-	 * if they try) the top.
+	 * if they try) the top.  We also need to handle transients; they
+	 * might not have focus, but still need to be on top of the window
+	 * they're coming up transient for, or else they'll be hidden
+	 * forever.
 	 */
-	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN && Scr->Focus == owl->twm_win) {
-		pri = EWMH_PRI_FULLSCREEN + OTP_ZERO;
+	if(owl->pri_aflags & OTP_AFLAG_FULLSCREEN) {
+		if(Scr->Focus == owl->twm_win) {
+			// It's focused, shift it up
+			pri = EWMH_PRI_FULLSCREEN + OTP_ZERO;
+		}
+		else if(owl->twm_win->istransient) {
+			// It's a transient of something else; if that something else
+			// has the fullscreen/focus combo, we should pop this up top
+			// too.  Technically, we should perhaps test whether its
+			// parent is also OTP_AFLAG_FULLSCREEN, but if the transient
+			// has it, the parent probably does too.  Worry about that
+			// detail if it ever becomes a problem.
+			TwmWindow *parent = GetTwmWindow(owl->twm_win->transientfor);
+			if(Scr->Focus == parent) {
+				// Shift this up so we stay on top
+				pri = EWMH_PRI_FULLSCREEN + OTP_ZERO;
+			}
+		}
 	}
 #endif
 

@@ -167,7 +167,7 @@ m4_defs(Display *display, const char *host)
 	 * left inside this #ifdef for easy restoration if somebody finds a
 	 * need; enabling it is not supported or documented.  Unless somebody
 	 * comes up with a good reason to revive it, it will be removed after
-	 * %%NEXT%%.
+	 * 4.0.2.
 	 */
 	{
 		struct hostent *hostname = gethostbyname(client);

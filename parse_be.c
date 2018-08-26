@@ -127,6 +127,7 @@ typedef struct _TwmKeyword {
 #define kw0_NoDecorateTransients        75
 #define kw0_GrabServer                  76
 #define kw0_DontNameDecorations         77
+#define kw0_StrictWinNameEncoding       78
 
 #define kws_UsePPosition                1
 #define kws_IconFont                    2
@@ -425,6 +426,7 @@ static const TwmKeyword keytable[] = {
 	{ "startinmapstate",        KEYWORD, kw0_StartInMapState },
 	{ "startsqueezed",          STARTSQUEEZED, 0 },
 	{ "stayupmenus",            KEYWORD, kw0_StayUpMenus },
+	{ "strictwinnameencoding",  KEYWORD, kw0_StrictWinNameEncoding  },
 	{ "sunkfocuswindowtitle",   KEYWORD, kw0_SunkFocusWindowTitle },
 	{ "t",                      TITLE, 0 },
 	{ "threedborderwidth",      NKEYWORD, kwn_ThreeDBorderWidth },
@@ -872,6 +874,10 @@ do_single_keyword(int keyword)
 
 		case kw0_DontNameDecorations:
 			Scr->NameDecorations = false;
+			return true;
+
+		case kw0_StrictWinNameEncoding:
+			Scr->StrictWinNameEncoding = true;
 			return true;
 
 	}

@@ -69,17 +69,7 @@ WList *DownIconManager = NULL;
 
 void CreateIconManagers(void)
 {
-	IconMgr *p, *q;
-	int mask;
-	char str[100];
-	char str1[100];
-	Pixel background;
-	char *icon_name;
 	WorkSpace    *ws;
-	XWMHints      wmhints;
-	XSizeHints    sizehints;
-	int           gravity;
-	int bw;
 
 	if(Scr->NoIconManagers) {
 		return;
@@ -101,18 +91,16 @@ void CreateIconManagers(void)
 	}
 
 	ws = Scr->workSpaceMgr.workSpaceList;
-	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
-		for(p = q; p != NULL; p = p->next) {
+	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
+		for(IconMgr *p = q; p != NULL; p = p->next) {
 			int gx, gy;
+			char imname[100];
+			int mask;
+			int gravity;
+			int bw;
+			Pixel background;
 
-			snprintf(str, sizeof(str), "%s Icon Manager", p->name);
-			snprintf(str1, sizeof(str1), "%s Icons", p->name);
-			if(p->icon_name) {
-				icon_name = p->icon_name;
-			}
-			else {
-				icon_name = str1;
-			}
+			snprintf(imname, sizeof(imname), "%s Icon Manager", p->name);
 
 			if(!p->geometry || !strlen(p->geometry)) {
 				p->geometry = "+0+0";
@@ -121,7 +109,7 @@ void CreateIconManagers(void)
 			                             &gx, &gy,
 			                             (unsigned int *) &p->width, (unsigned int *)&p->height);
 
-			bw = LookInList(Scr->NoBorder, str, NULL) ? 0 :
+			bw = LookInList(Scr->NoBorder, imname, NULL) ? 0 :
 			     (Scr->ThreeDBorderWidth ? Scr->ThreeDBorderWidth : Scr->BorderWidth);
 
 			if(mask & XNegative) {
@@ -151,12 +139,32 @@ void CreateIconManagers(void)
 
 
 			/* Scr->workSpaceMgr.activeWSPC = ws; */
-			wmhints.initial_state = NormalState;
-			wmhints.input         = True;
-			wmhints.flags         = InputHint | StateHint;
 
-			XmbSetWMProperties(dpy, p->w, str, icon_name, NULL, 0, NULL,
-			                   &wmhints, NULL);
+			/* Setup various WM properties on the iconmgr's window */
+			{
+				char *icon_name;
+				XWMHints wmhints;
+				XClassHint clhints;
+
+				if(p->icon_name) {
+					icon_name = strdup(p->icon_name);
+				}
+				else {
+					asprintf(&icon_name, "%s Icons", p->name);
+				}
+
+				wmhints.initial_state = NormalState;
+				wmhints.input         = True;
+				wmhints.flags         = InputHint | StateHint;
+
+				clhints.res_name  = icon_name;
+				clhints.res_class = "TwmIconManager";
+
+				XmbSetWMProperties(dpy, p->w, imname, icon_name, NULL, 0, NULL,
+				                   &wmhints, &clhints);
+				free(icon_name);
+			}
+
 
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
 			/*
@@ -183,9 +191,13 @@ void CreateIconManagers(void)
 			        p, gx, gy,  p->width, p->height, p->twm_win->occupation);
 #endif
 
-			sizehints.flags       = PWinGravity;
-			sizehints.win_gravity = gravity;
-			XSetWMSizeHints(dpy, p->w, &sizehints, XA_WM_NORMAL_HINTS);
+			{
+				XSizeHints sizehints;
+
+				sizehints.flags       = PWinGravity;
+				sizehints.win_gravity = gravity;
+				XSetWMSizeHints(dpy, p->w, &sizehints, XA_WM_NORMAL_HINTS);
+			}
 
 			p->twm_win->mapped = false;
 			SetMapStateProp(p->twm_win, WithdrawnState);
@@ -220,8 +232,8 @@ void CreateIconManagers(void)
 	 * and this code can be removed.  X-ref comments in add_window.c
 	 * about it.
 	 */
-	for(q = Scr->iconmgr; q != NULL; q = q->nextv) {
-		for(p = q; p != NULL; p = p->next) {
+	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
+		for(IconMgr *p = q; p != NULL; p = p->next) {
 			GrabButtons(p->twm_win);
 			GrabKeys(p->twm_win);
 		}

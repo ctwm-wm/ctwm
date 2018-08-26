@@ -281,7 +281,7 @@ CLIENTHOST::
   The machine that is running the clients.  (ie, ctwm)
 
 HOSTNAME::
-  As of %%NEXT%%, this is a duplicate of `CLIENTHOST`.  In prior
+  As of 4.0.2, this is a duplicate of `CLIENTHOST`.  In prior
   versions, `gethostbyname()` was used to attempt to derive a canonical
   or fully-qualified version of the hostname.
 
@@ -431,13 +431,13 @@ AutoRaise
 }
 ------
 
-When a variable containing a list of strings representing windows is searched
-(e.g. to determine whether or not to enable autoraise as shown above), a string
-must be an exact, case-sensitive match to
-the window's name (given by the `WM_NAME` window property), resource name
-or class name (both given by the `WM_CLASS` window property).  The preceding
-example would enable autoraise on windows named ``emacs'' as well as any
-`xterm` (since they are of class ``XTerm'') or xmh windows
+When a variable containing a list of strings representing windows is
+searched (e.g. to determine whether or not to enable autoraise as shown
+above), a string must be an exact, case-sensitive match to the window's
+name (given by various window properties, such as `WM_NAME`), resource
+name or class name (both given by the `WM_CLASS` window property).  The
+preceding example would enable autoraise on windows named ``emacs'' as
+well as any `xterm` (since they are of class ``XTerm'') or xmh windows
 (which are of class ``Xmh'').
 
 String arguments that are interpreted as filenames (see the `Pixmaps`,
@@ -795,11 +795,11 @@ DontMoveOff::
   screen.  It can be overridden by the `f.forcemove` function.
 
 DontNameDecorations::
-  Disable setting WM_NAME properties on the various decoration windows
+  Disable setting `WM_NAME` properties on the various decoration windows
   ctwm puts around the windows it manages.  These are handy to keep track
   of what's what when poking through the list of windows on the screen,
   but can confuse some tools that don't expect to find them there (xwit
-  is known to be one of them).  First appeared in %%NEXT%%.
+  is known to be one of them).  First appeared in 4.0.2.
 
 DontPaintRootWindow::
   This variable tells ctwm not to paint the root window, whatever you told in
@@ -1782,6 +1782,17 @@ StayUpMenus::
   will stay on the screen when ButtonUp, if either the menu has not
   yet been entered by the pointer, or the current item is a f.title.
 
+StrictWinNameEncoding::
+  Whether to be strict about what encodings we accept for window naming
+  properties.  Added in 4.0.2.
++
+[normal]
+  This is used when translating properties relating to naming windows,
+  like `WM_NAME`.  For example, according to the ICCCM, `WM_NAME` can
+  only be a `STRING` or `COMPOUND_TEXT` type.  However, sloppy programs
+  like Chrome may set it to a `UTF8_STRING` instead.  If this var is set,
+  ctwm will reject that, as was standard behavior prior to 4.0.2.
+
 SunkFocusWindowTitle::
   This variable specifies that the title of the focus window (if exists)
   should be sunken instead of raised. Only valid if UseThreeDTitles is set.
@@ -1843,7 +1854,8 @@ TransientOnTop `percentage`::
   The parameter (required) is a percentage and tells ctwm to put transient
   (and non-group leader) windows always on top of their leader if and only
   if their surface is smaller than this fraction of the surface of their
-  leader. The surface of a window is its width times its weight.
+  leader. The surface of a window is its width times its weight.  The
+  default is 30%.  Added in 3.0.
 
 UnknownIcon `string`::
   This variable specifies the filename of a bitmap file to be
@@ -3187,6 +3199,57 @@ Using the `f.upiconmgr`, `f.downiconmgr`
 `f.righticonmgr` functions,
 the input focus can be changed between windows directly from the
 keyboard.
+
+
+== X WINDOW PROPERTIES
+
+As a window manager, ctwm reads and sets a huge variety of properties on
+the windows it manages and the windows it creates.  Most of that is
+beyond the scope of user documentation.  However, a few points are worth
+mentioning.
+
+=== Window Naming
+
+Windows get their names via X properties.  There are two types of names;
+the window name (which is what shows up in the titlebar, the `f.identify`
+window, etc), and the icon name (which shows up on the icon and on the
+icon manager).
+
+Prior to 4.0.2, ctwm only supported the standard ICCCM properties for
+setting the window and icon names.  These are `WM_NAME` for the window
+name, and `WM_ICON_NAME` for the icon name.  As of 4.0.2, ctwm also
+supports the EWMH versions of these, which are `_NET_WM_NAME` and
+`_NET_WM_ICON_NAME`.  If the EWMH variants exist, they're used in
+preference to the older ICCCM style.
+
+As of 4.0.2, ctwm also supports an additional pair of properties;
+`CTWM_WM_NAME` and `CTWM_WM_ICON_NAME`, which override all the others.
+These are specifically intended for the user to manually set, not for
+programs to set themselves.  This allows the user to override programs
+that name themselves unhelpfully, or to otherwise label things to their
+liking.
+
+You can set these via any method you'd use to set window properties.
+From the command line, the `xprop(1)` tool is widely available, if a
+little clunky.  So, for instance, to set the icon name of a window
+(changing how it looks in the icon manager), but leave the window name
+alone as the program itself normally sets it (leaving the titlebar
+normal), you could run a command like:
+
+----
+xprop -f CTWM_WM_ICON_NAME 8u -set CTWM_WM_ICON_NAME "I hate this window"
+----
+
+and then click the window you want to set it on.  Unfortunately,
+`xprop(1)` does require you to specify the property name when defining
+the format, as well as when setting it, so it's a little ugly.  The `8u`
+means you're giving a UTF-8 string.  Other possible formats are `8s` for
+a plain 7-bit `STRING` (i.e, plain ASCII), and `8t` for
+``internationalized'' ICCCM-style `COMPOUND_TEXT`.  Usually you'd just
+use UTF-8 though.  `xprop -remove CTWM_WM_ICON_NAME` and click would let
+you undo it and go back to the normal naming.  See the `xprop(1)` manual
+for more.
+
 
 == SOUNDS
 If built with the `USE_SOUND` option, ctwm is able to play sounds

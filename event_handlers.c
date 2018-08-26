@@ -1125,8 +1125,6 @@ void HandlePropertyNotify(void)
 	unsigned long valuemask;            /* mask for create windows */
 	XSetWindowAttributes attributes;    /* attributes for create windows */
 	Pixmap pm;
-	XRectangle inc_rect;
-	XRectangle logical_rect;
 	Icon *icon;
 
 
@@ -1181,89 +1179,26 @@ void HandlePropertyNotify(void)
 		case XA_WM_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_NAME);
 			if(prop == NULL) {
+				// Clear
+				FreeWMPropertyString(Tmp_win->names.wm_name);
+				Tmp_win->names.wm_name = NULL;
+				apply_window_name(Tmp_win);
 				return;
 			}
 
-			if(strcmp(Tmp_win->name, prop) == 0) {
+			if(Tmp_win->names.wm_name != NULL
+			                && strcmp(Tmp_win->names.wm_name, prop) == 0) {
 				/* No change, just free and skip out */
 				free(prop);
 				return;
 			}
 
-			/* It's changing, free the old */
-			FreeWMPropertyString(Tmp_win->name);
+			/* It's changing, free the old and bring in the new */
+			FreeWMPropertyString(Tmp_win->names.wm_name);
+			Tmp_win->names.wm_name = prop;
 
-			Tmp_win->name = prop;
-			Tmp_win->nameChanged = true;
-			XmbTextExtents(Scr->TitleBarFont.font_set,
-			               Tmp_win->name, strlen(Tmp_win->name),
-			               &inc_rect, &logical_rect);
-			Tmp_win->name_width = logical_rect.width;
-
-			/* recompute the priority if necessary */
-			if(Scr->AutoPriority) {
-				OtpRecomputePrefs(Tmp_win);
-			}
-
-			SetupWindow(Tmp_win, Tmp_win->frame_x, Tmp_win->frame_y,
-			            Tmp_win->frame_width, Tmp_win->frame_height, -1);
-
-			if(Tmp_win->title_w) {
-				XClearArea(dpy, Tmp_win->title_w, 0, 0, 0, 0, True);
-			}
-			if(Scr->AutoOccupy) {
-				WmgrRedoOccupation(Tmp_win);
-			}
-
-#if 0
-			/* Experimental, not yet working. */
-			{
-				ColorPair cp;
-				int f, b;
-
-				f = GetColorFromList(Scr->TitleForegroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->TitleBackgroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.back);
-				if(f || b) {
-					if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
-						GetShadeColors(&cp);
-					}
-					Tmp_win->title = cp;
-				}
-				f = GetColorFromList(Scr->BorderColorL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->BorderColorL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.back);
-				if(f || b) {
-					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-						GetShadeColors(&cp);
-					}
-					Tmp_win->borderC = cp;
-				}
-
-				f = GetColorFromList(Scr->BorderTileForegroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.fore);
-				b = GetColorFromList(Scr->BorderTileBackgroundL, Tmp_win->name,
-				                     &Tmp_win->class, &cp.back);
-				if(f || b) {
-					if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-						GetShadeColors(&cp);
-					}
-					Tmp_win->border_tile = cp;
-				}
-			}
-#endif
-
-			/*
-			 * if the icon name is NoName, set the name of the icon to be
-			 * the same as the window
-			 */
-			if(Tmp_win->icon_name == NoName) {
-				Tmp_win->icon_name = strdup(Tmp_win->name);
-				RedoIcon(Tmp_win);
-			}
-			AutoPopupMaybe(Tmp_win);
+			/* Kick the reset process */
+			apply_window_name(Tmp_win);
 
 			break;
 		}
@@ -1271,20 +1206,26 @@ void HandlePropertyNotify(void)
 		case XA_WM_ICON_NAME: {
 			char *prop = GetWMPropertyString(Tmp_win->w, XA_WM_ICON_NAME);
 			if(prop == NULL) {
+				// Clear
+				FreeWMPropertyString(Tmp_win->names.wm_icon_name);
+				Tmp_win->names.wm_icon_name = NULL;
+				apply_window_icon_name(Tmp_win);
 				return;
 			}
 
 			/* No change?  Nothing to do. */
-			if(strcmp(Tmp_win->icon_name, prop) == 0) {
+			if(Tmp_win->names.wm_icon_name != NULL
+			                && strcmp(Tmp_win->names.wm_icon_name, prop) == 0) {
 				free(prop);
-				break;
+				return;
 			}
 
-			/* Else, free the old one and set it */
-			FreeWMPropertyString(Tmp_win->icon_name);
-			Tmp_win->icon_name = prop;
-			RedoIcon(Tmp_win);
-			AutoPopupMaybe(Tmp_win);
+			/* It's changing, free the old and bring in the new */
+			FreeWMPropertyString(Tmp_win->names.wm_icon_name);
+			Tmp_win->names.wm_icon_name = prop;
+
+			/* And show the new */
+			apply_window_icon_name(Tmp_win);
 
 			break;
 		}
@@ -1506,7 +1447,7 @@ void HandlePropertyNotify(void)
 			GetWindowSizeHints(Tmp_win);
 			break;
 		}
-		default:
+		default: {
 			if(Event.xproperty.atom == XA_WM_COLORMAP_WINDOWS) {
 				FetchWmColormapWindows(Tmp_win);    /* frees old data */
 				break;
@@ -1527,12 +1468,68 @@ void HandlePropertyNotify(void)
 				ChangeOccupation(Tmp_win, GetMaskFromProperty(prop, nitems));
 				XFree(prop);
 			}
+			else if(Event.xproperty.atom == XA_CTWM_WM_NAME) {
+				char *prop = GetWMPropertyString(Tmp_win->w, XA_CTWM_WM_NAME);
+				if(prop == NULL) {
+					// Clearing
+					FreeWMPropertyString(Tmp_win->names.ctwm_wm_name);
+					Tmp_win->names.ctwm_wm_name = NULL;
+					apply_window_name(Tmp_win);
+					return;
+				}
+
+				if(Tmp_win->names.ctwm_wm_name != NULL
+				                && strcmp(Tmp_win->names.ctwm_wm_name,
+				                          prop) == 0) {
+					/* No change, just free and skip out */
+					free(prop);
+					return;
+				}
+
+				/* It's changing, free the old and bring in the new */
+				FreeWMPropertyString(Tmp_win->names.ctwm_wm_name);
+				Tmp_win->names.ctwm_wm_name = prop;
+
+				/* Kick the reset process */
+				apply_window_name(Tmp_win);
+
+				return;
+			}
+			else if(Event.xproperty.atom == XA_CTWM_WM_ICON_NAME) {
+				char *prop = GetWMPropertyString(Tmp_win->w,
+				                                 XA_CTWM_WM_ICON_NAME);
+				if(prop == NULL) {
+					// Clearing
+					FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name);
+					Tmp_win->names.ctwm_wm_icon_name = NULL;
+					apply_window_icon_name(Tmp_win);
+					return;
+				}
+
+				if(Tmp_win->names.ctwm_wm_icon_name != NULL
+				                && strcmp(Tmp_win->names.ctwm_wm_icon_name,
+				                          prop) == 0) {
+					/* No change, just free and skip out */
+					free(prop);
+					return;
+				}
+
+				/* It's changing, free the old and bring in the new */
+				FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name);
+				Tmp_win->names.ctwm_wm_icon_name = prop;
+
+				/* Kick the reset process */
+				apply_window_icon_name(Tmp_win);
+
+				break;
+			}
 #ifdef EWMH
 			else if(EwmhHandlePropertyNotify(&Event.xproperty, Tmp_win)) {
 				/* event handled */
 			}
 #endif /* EWMH */
 			break;
+		}
 	}
 }
 
@@ -1883,8 +1880,14 @@ void HandleDestroyNotify(void)
 		Scr->NumAutoLowers--;
 	}
 
-	FreeWMPropertyString(Tmp_win->name);        // 2
-	FreeWMPropertyString(Tmp_win->icon_name);   // 3
+	FreeWMPropertyString(Tmp_win->names.ctwm_wm_name); // 2
+	FreeWMPropertyString(Tmp_win->names.wm_name);      // 2
+	FreeWMPropertyString(Tmp_win->names.ctwm_wm_icon_name); // 3
+	FreeWMPropertyString(Tmp_win->names.wm_icon_name); // 3
+#ifdef EWMH
+	FreeWMPropertyString(Tmp_win->names.net_wm_name);      // 2
+	FreeWMPropertyString(Tmp_win->names.net_wm_icon_name); // 3
+#endif
 
 	XFree(Tmp_win->wmhints);                                    /* 4 */
 	if(Tmp_win->class.res_name && Tmp_win->class.res_name != NoName) { /* 5 */

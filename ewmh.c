@@ -34,6 +34,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 
+#include "ctwm_atoms.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"
@@ -1381,6 +1382,54 @@ int EwmhHandlePropertyNotify(XPropertyEvent *event, TwmWindow *twm_win)
 	else if(event->atom == XA__NET_WM_STRUT_PARTIAL ||
 	                event->atom == XA__NET_WM_STRUT) {
 		EwmhHandle_NET_WM_STRUTNotify(event, twm_win);
+		return 1;
+	}
+	else if(event->atom == XA__NET_WM_NAME) {
+		char *prop = GetWMPropertyString(twm_win->w, XA__NET_WM_NAME);
+		if(prop == NULL) {
+			FreeWMPropertyString(twm_win->names.net_wm_name);
+			twm_win->names.net_wm_name = NULL;
+			apply_window_name(twm_win);
+			return 1;
+		}
+
+		if(twm_win->names.net_wm_name != NULL
+		                && strcmp(twm_win->names.net_wm_name, prop) == 0) {
+			/* No change, just free and skip out */
+			free(prop);
+			return 1;
+		}
+
+		/* It's changing, free the old and bring in the new */
+		FreeWMPropertyString(twm_win->names.net_wm_name);
+		twm_win->names.net_wm_name = prop;
+
+		/* Kick the reset process */
+		apply_window_name(twm_win);
+		return 1;
+	}
+	else if(event->atom == XA__NET_WM_ICON_NAME) {
+		char *prop = GetWMPropertyString(twm_win->w, XA__NET_WM_ICON_NAME);
+		if(prop == NULL) {
+			FreeWMPropertyString(twm_win->names.net_wm_icon_name);
+			twm_win->names.net_wm_icon_name = NULL;
+			apply_window_icon_name(twm_win);
+			return 1;
+		}
+
+		if(twm_win->names.net_wm_icon_name != NULL
+		                && strcmp(twm_win->names.net_wm_icon_name, prop) == 0) {
+			/* No change, just free and skip out */
+			free(prop);
+			return 1;
+		}
+
+		/* It's changing, free the old and bring in the new */
+		FreeWMPropertyString(twm_win->names.net_wm_icon_name);
+		twm_win->names.net_wm_icon_name = prop;
+
+		/* Kick the reset process */
+		apply_window_icon_name(twm_win);
 		return 1;
 	}
 

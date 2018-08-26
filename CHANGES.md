@@ -3,29 +3,67 @@
 
 ## Next release  (xxxx-xx-xx)
 
+
+
+## 4.0.2  (2018-08-25)
+
 ### Backward-Incompatible Changes And Removed Features
 
 1. The `UseThreeDIconBorders` config var has been removed.  It came in
    silently and undocumented in 3.4 and has never done anything.
 
-1. The attempts to use DNS lookups for setting the HOSTNAME `m4` variable
-   have been removed; it is now just a duplicate of CLIENTHOST.
+1. The attempts to use DNS lookups for setting the `HOSTNAME` `m4` variable
+   have been removed; it is now just a duplicate of `CLIENTHOST`.
+
+### New Features
+
+1. The EWMH `_NET_WM_NAME` property is now supported, and used for the
+   window name in place of the ICCCM `WM_NAME` when set.  By default, we
+   also accept `UTF8_STRING` encoded `WM_NAME` as a result of this
+   change; see below for var to restore historical strictness.
+
+1. The EWMH `_NET_WM_ICON_NAME` property is now supported, and used for
+   the icon name in place of the ICCCM `WM_ICON_NAME` when set.  Similar
+   comments as above apply to the encodings.
+
+1. Support has been added for `CTWM_WM_NAME` and `CTWM_WM_ICON_NAME`
+   properties, which will override any window/icon names otherwise
+   specified.  This may be useful for applications that set unhelpful
+   names themselves, or for manually adjusting labelling.  These
+   properties can be set from the command line via `xprop`; as an
+   example, `xprop -f CTWM_WM_NAME 8u -set CTWM_WM_NAME "awesome
+   windowsauce"`.  See `xprop(1)` manual for details; the `s`, `t`, and
+   `u` field type specifiers will all work.
+
+1. When no icon name is set for a window, we've always used the window
+   name for the icon name as well.  But that only happened the first time
+   the window name is set; after that, the icon name is stuck at the
+   first name.  It now updates along with the window name, if no icon
+   name is set.
+
+1. All icon manager windows will now have the `TwmIconManager` class set
+   on them, so they can be addressed en mass by other config like
+   `NoTitle` by that class name.
 
 ### New Config Options
 
-1. Added DontNameDecorations config option to disable setting names on
+1. Added `DontNameDecorations` config option to disable setting names on
    the X windows we create for window decoration (added in 4.0.0).  These
-   have been reported to confuse xwit, and might do the same for other
+   have been reported to confuse `xwit`, and might do the same for other
    tools that don't expect to find them on non-end-app windows.  Reported
    by Frank Steiner.
 
+1. Added `StrictWinNameEncoding` config option to enable historical
+   behavior, where we're reject invalid property encoding for window
+   naming properties (like a `UTF8_STRING` encoded `WM_NAME`).
+
 ### Bugfixes
 
-1. Fix up broken parsing of IconifyStyle "sweep".  Bug was introduced in
-   4.0.0.
+1. Fix up broken parsing of `IconifyStyle "sweep"`.  Bug was introduced
+   in 4.0.0.
 
-1. When multiple X Screens are used, building the temporary file for M4
-   definitions could fail with an error from mkstemp().  Reported by
+1. When multiple X Screens are used, building the temporary file for m4
+   definitions could fail with an error from `mkstemp()`.  Reported by
    Manfred Knick.
 
 1. When multiple X Screens are used, the OTP code didn't recognize the
@@ -33,17 +71,27 @@
    consistency checks to trip when it didn't find all the windows it
    expected.  Reported by Terran Melconian.
 
-1. When ReverseCurrentWorkspace is set, mapping windows not on the
+1. When `ReverseCurrentWorkspace` is set, mapping windows not on the
    current workspace (e.g., via restarting ctwm, or creating new windows
    with the desktop set via EWMH properties) could segfault.  Reported by
    Sean McAllister.
 
 1. Fix some edge cases where we'd fight other apps' focus handling.  When
    an application moved focus itself to an unrelated (in X terms) window,
-   our processing would often race and re-moved the focus to the root
+   our processing would often race and re-move the focus to the root
    ourselves.  This was visible with e.g. sub-windows in Firefox for
    context menu and urlbar dropdown, which would flash on and then
    disappear.
+
+1. When creating a new transient window of an existing full-screen
+   window, the OTP stacking may cause it to be stuck below the main
+   window due to the special handling of full-screen focused windows in
+   EWMH.  It should now be forced to the top.
+
+1. Building ctwm since 4.0.0 in certain locales could misorder functions
+   in the lookup table, leading to troubles parsing the config file.
+   You'd get some loud "INTERNAL ERROR" lines from ctwm when running it
+   if this were the case.  Now fixed.  Reported by Richard Levitte.
 
 
 
