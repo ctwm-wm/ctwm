@@ -14,7 +14,7 @@
 #include "xrandr.h"
 
 
-RLayout *XrandrNewLayout(Display *dpy, Window rootw)
+RLayout *XrandrNewLayout(Display *disp, Window rootw)
 {
 	int i_nmonitors = 0, index;
 	XRRMonitorInfo *ps_monitors;
@@ -22,7 +22,7 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 	RAreaList *areas;
 	RArea cur_area;
 
-	ps_monitors = XRRGetMonitors(dpy, rootw, 1, &i_nmonitors);
+	ps_monitors = XRRGetMonitors(disp, rootw, 1, &i_nmonitors);
 	if(ps_monitors == NULL || i_nmonitors == 0) {
 		fprintf(stderr, "XRRGetMonitors failed");
 		return NULL;
@@ -40,7 +40,7 @@ RLayout *XrandrNewLayout(Display *dpy, Window rootw)
 		                    ps_monitors[index].width,
 		                    ps_monitors[index].height);
 
-		name = XGetAtomName(dpy, ps_monitors[index].name);
+		name = XGetAtomName(disp, ps_monitors[index].name);
 #ifdef DEBUG
 		fprintf(stderr, "NEW area: %s%s",
 		        name != NULL ? name : "",
