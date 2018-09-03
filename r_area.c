@@ -9,6 +9,7 @@
 
 #include "r_area.h"
 #include "r_area_list.h"
+#include "util.h"
 
 
 RArea RAreaNew(int x, int y, int width, int height)
