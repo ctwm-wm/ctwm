@@ -21,7 +21,6 @@
 
 #include "menus.h"  // embedded MouseButton/Func{Button,Key}
 #include "workspace_structs.h"  // embedded ScreenInfo.workSpaceMgr
-#include "r_layout.h"
 
 
 /**

@@ -16,6 +16,7 @@
 #include "icons.h"
 #include "otp.h"
 #include "r_area.h"
+#include "r_layout.h"
 #include "screen.h"
 #include "version.h"
 #include "vscreen.h"

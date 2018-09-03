@@ -17,6 +17,7 @@
 #include "otp.h"
 #include "parse.h"
 #include "r_area.h"
+#include "r_layout.h"
 #include "screen.h"
 #include "util.h"
 #include "vscreen.h"

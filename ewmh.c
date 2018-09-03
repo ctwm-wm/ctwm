@@ -46,6 +46,7 @@
 #include "list.h"
 #include "functions.h"
 #include "occupation.h"
+#include "r_layout.h"
 #include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"

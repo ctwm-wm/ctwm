@@ -38,6 +38,7 @@
 #include "drawing.h"
 #include "r_area.h"
 #include "r_area_list.h"
+#include "r_layout.h"
 #include "win_decorations.h"
 #include "win_ops.h"
 #include "win_resize.h"
