@@ -66,4 +66,9 @@ typedef struct OccupyWindow OccupyWindow;
 typedef struct OtpWinList OtpWinList;
 typedef struct OtpPreferences OtpPreferences;
 
+/* From r_structs.h */
+typedef struct RArea RArea;
+typedef struct RAreaList RAreaList;
+typedef struct RLayout RLayout;
+
 #endif /* _CTWM_TYPES_H */
