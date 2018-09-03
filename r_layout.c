@@ -2,6 +2,8 @@
  * Copyright notice...
  */
 
+#include "ctwm.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,6 +11,7 @@
 #include "r_layout.h"
 #include "r_area_list.h"
 #include "r_area.h"
+#include "util.h"
 
 
 RLayout *RLayoutNew(RAreaList *monitors)

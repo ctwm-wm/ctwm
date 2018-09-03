@@ -52,6 +52,7 @@
 #include "otp.h"
 #include "parse.h"
 #include "r_area.h"
+#include "r_layout.h"
 #include "screen.h"
 #include "session.h"
 #include "util.h"

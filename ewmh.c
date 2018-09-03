@@ -46,6 +46,8 @@
 #include "list.h"
 #include "functions.h"
 #include "occupation.h"
+#include "r_layout.h"
+#include "util.h"
 #include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
@@ -1878,11 +1880,6 @@ bool EwmhOnWindowRing(TwmWindow *twm_win)
 			return true;
 	}
 }
-
-// static inline int max(int a, int b)
-// {
-//      return a > b ? a : b;
-// }
 
 /*
  * Recalculate the effective border values from the remembered struts.

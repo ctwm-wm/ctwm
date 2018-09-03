@@ -22,6 +22,7 @@
 #include "otp.h"
 #include "r_area.h"
 #include "r_area_list.h"
+#include "r_layout.h"
 #include "screen.h"
 #include "util.h"
 #include "win_decorations.h"

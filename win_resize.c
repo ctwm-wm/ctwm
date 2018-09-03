@@ -38,6 +38,7 @@
 #include "drawing.h"
 #include "r_area.h"
 #include "r_area_list.h"
+#include "r_layout.h"
 #include "win_decorations.h"
 #include "win_ops.h"
 #include "win_resize.h"
@@ -725,7 +726,6 @@ void ConstrainSize(TwmWindow *tmp_win,
                    unsigned int *widthp, unsigned int *heightp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
-#define _min(a,b) (((a) < (b)) ? (a) : (b))
 
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
 	int baseWidth, baseHeight;
@@ -761,8 +761,8 @@ void ConstrainSize(TwmWindow *tmp_win,
 
 
 	if(tmp_win->hints.flags & PMaxSize) {
-		maxWidth = _min(Scr->MaxWindowWidth, tmp_win->hints.max_width);
-		maxHeight = _min(Scr->MaxWindowHeight, tmp_win->hints.max_height);
+		maxWidth = min(Scr->MaxWindowWidth, tmp_win->hints.max_width);
+		maxHeight = min(Scr->MaxWindowHeight, tmp_win->hints.max_height);
 	}
 	else {
 		maxWidth = Scr->MaxWindowWidth;

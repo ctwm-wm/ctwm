@@ -10,6 +10,6 @@
 #include <X11/Xlib.h>
 
 
-RLayout *XrandrNewLayout(Display *dpy, Window rootw);
+RLayout *XrandrNewLayout(Display *disp, Window rootw);
 
 #endif /* _CTWM_XRANDR_H */
