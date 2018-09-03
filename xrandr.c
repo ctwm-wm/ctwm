@@ -2,7 +2,7 @@
  * Copyright notice...
  */
 
-#include "xrandr.h"
+#include "ctwm.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +11,7 @@
 
 #include "r_area_list.h"
 #include "r_area.h"
+#include "xrandr.h"
 
 
 RLayout *XrandrNewLayout(Display *dpy, Window rootw)

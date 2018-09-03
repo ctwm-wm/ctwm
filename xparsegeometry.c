@@ -2,7 +2,7 @@
  * Copyright notice...
  */
 
-#include "xparsegeometry.h"
+#include "ctwm.h"
 
 #include <string.h>
 #include <X11/Xlib.h>
@@ -10,6 +10,7 @@
 
 #include "r_layout.h"
 #include "r_area.h"
+#include "xparsegeometry.h"
 
 
 int RLayoutXParseGeometry(RLayout *layout, const char *geometry, int *x, int *y,
