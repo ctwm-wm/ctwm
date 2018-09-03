@@ -1881,11 +1881,6 @@ bool EwmhOnWindowRing(TwmWindow *twm_win)
 	}
 }
 
-// static inline int max(int a, int b)
-// {
-//      return a > b ? a : b;
-// }
-
 /*
  * Recalculate the effective border values from the remembered struts.
  * Interestingly it is not documented how to do that.
