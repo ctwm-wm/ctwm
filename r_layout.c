@@ -270,10 +270,19 @@ RArea RLayoutGetAreaByName(RLayout *self, const char *name, int len)
 	return RAreaInvalid();
 }
 
+
+/**
+ * Generate maximal spanning RArea.
+ *
+ * This is a trivial wrapper of RAreaListBigArea() to hide knowledge of
+ * RLayout internals.  Currently only used once; maybe should just be
+ * deref'd there...
+ */
 RArea RLayoutBigArea(RLayout *self)
 {
 	return RAreaListBigArea(self->monitors);
 }
+
 
 struct monitor_edge_finder {
 	RArea *area;

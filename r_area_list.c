@@ -288,6 +288,16 @@ RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area)
 	return new;
 }
 
+
+/**
+ * Create a maximal RArea describing the union of an RAreaList.
+ *
+ * This is used to construct a giant square that contains all our
+ * monitors (and the dead area necessary to cover them).  It winds up
+ * being the equivalent of a spanning pseudo-Root window, and is used
+ * when we need to figure some sort of "overall" positioning, like when
+ * figuring "real" x/y coordinates.
+ */
 RArea RAreaListBigArea(RAreaList *self)
 {
 	RArea *area;
