@@ -59,7 +59,7 @@ RAreaInvalid()
  * Mostly used to check against sentinel values in places that may or may
  * not have a real value to work with.
  */
-int
+bool
 RAreaIsValid(RArea *self)
 {
 	return self->width >= 0 && self->height >= 0;
@@ -123,39 +123,39 @@ RAreaIntersect(RArea *self, RArea *other)
 /**
  * Do two areas intersect?
  */
-int
+bool
 RAreaIsIntersect(RArea *self, RArea *other)
 {
 	// [other][self]
 	if(RAreaX2(other) < self->x) {
-		return 0;
+		return false;
 	}
 
 	// [self][other]
 	if(other->x > RAreaX2(self)) {
-		return 0;
+		return false;
 	}
 
 	// [other]
 	// [self]
 	if(RAreaY2(other) < self->y) {
-		return 0;
+		return false;
 	}
 
 	// [self]
 	// [other]
 	if(other->y > RAreaY2(self)) {
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 
 /**
  * Is a given coordinate inside a RArea?
  */
-int
+bool
 RAreaContainsXY(RArea *self, int x, int y)
 {
 	return x >= self->x && x <= RAreaX2(self)

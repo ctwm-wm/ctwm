@@ -12,14 +12,14 @@ RArea *RAreaNewStatic(int x, int y, int width, int height);
 RArea RAreaNew(int x, int y, int width, int height);
 
 RArea RAreaInvalid(void);
-int RAreaIsValid(RArea *self);
+bool RAreaIsValid(RArea *self);
 
 int RAreaX2(RArea *self);
 int RAreaY2(RArea *self);
 int RAreaArea(RArea *self);
 RArea RAreaIntersect(RArea *self, RArea *other);
-int RAreaIsIntersect(RArea *self, RArea *other);
-int RAreaContainsXY(RArea *self, int x, int y);
+bool RAreaIsIntersect(RArea *self, RArea *other);
+bool RAreaContainsXY(RArea *self, int x, int y);
 RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other);
 RAreaList *RAreaVerticalUnion(RArea *self, RArea *other);
 
