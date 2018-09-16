@@ -163,53 +163,80 @@ RAreaContainsXY(RArea *self, int x, int y)
 }
 
 
-RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
+/**
+ * Create a list of maximal horizontal stripes of two RArea's.
+ *
+ * This yields a set of RArea's that completely cover (without overlap)
+ * the pair of input RArea's (or NULL if the inputs are disjoint).  That
+ * could be just a single RArea if e.g. they're the same height and
+ * touch/overlap horizontally, or they're the same width and
+ * touch/overlap vertically.  Otherwise it will wind up being multiple
+ * rows (2 or 3).
+ *
+ * Only used in startup to populate the RLayout.horiz list.
+ */
+RAreaList *
+RAreaHorizontalUnion(RArea *self, RArea *other)
 {
-	// [other]|[self] (perhaps common lines, but areas disjointed)
+	// If there's horizontal space between them, they can't possibly
+	// combine.
+	// [other]  [self]    or     [self]  [other]
 	if(RAreaX2(other) < self->x - 1) {
 		return NULL;
 	}
-
-	// [self]|[other] (perhaps common lines, but areas disjointed)
 	if(other->x > RAreaX2(self) + 1) {
 		return NULL;
 	}
 
-	// No lines in common
+	// No vertical overlap (though maybe they touch?)
 	// [other] or [self]
 	// [self]     [other]
 	if(RAreaY2(other) < self->y || other->y > RAreaY2(self)) {
-		// Special case where 2 areas with same width can be join vertically
+		// Special case: if they're the same width, and start at the same
+		// X coordinate, _and_ are touching each other vertically, we can
+		// combine them.
 		if(self->width == other->width && self->x == other->x) {
 			// [other]
-			// [self-]
-			if(RAreaY2(other) + 1 == self->y)
+			// [self ]
+			if(RAreaY2(other) + 1 == self->y) {
 				return RAreaListNew(
 				               1,
 				               RAreaNewStatic(self->x, other->y,
 				                              self->width, self->height + other->height),
 				               NULL);
+			}
 
-			// [self-]
+			// [self ]
 			// [other]
-			if(RAreaY2(self) + 1 == other->y)
+			if(RAreaY2(self) + 1 == other->y) {
 				return RAreaListNew(
 				               1,
 				               RAreaNewStatic(self->x, self->y,
 				                              self->width, self->height + other->height),
 				               NULL);
+			}
+
+			// Nope, there must be vertical space between us
 		}
+
+		// Can't combine
 		return NULL;
 	}
 
-	// At least one line in common
+	// If we get here, there's at least some vertical overlap, and
+	// there's no horizontal space between them (may overlap, or touch
+	// edges).  So there must be some horizontal areas we can create.
 	{
-		int min_x = min(self->x, other->x);   // most left point
-		int max_x = max(RAreaX2(self), RAreaX2(other)); // most right point
-		int max_width = max_x - min_x + 1;
+		// left- and right-most x coords, which define the maximum width
+		// a union could be.
+		const int min_x = min(self->x, other->x);
+		const int max_x = max(RAreaX2(self), RAreaX2(other));
+		const int max_width = max_x - min_x + 1;
 
 		RAreaList *res = RAreaListNew(3, NULL);
 
+		// Figure which starts higher.
+		// XXX Aren't these named backward?
 		RArea *low, *hi;
 		if(self->y < other->y) {
 			low = self;
@@ -219,20 +246,27 @@ RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 			low = other;
 			hi = self;
 		}
+		// hi now starts even with or below low
 
-		//     [   ]    [   ]            [   ]    [   ]
-		// [hi][low] or [low][hi] or [hi][low] or [low][hi]
-		//     [   ]         [  ]        [   ]         [  ]
+		//     [   ]    [   ]
+		// [hi][low] or [low][hi]
+		//     [   ]         [  ]
 
-		if(hi->y != low->y)
+		// If hi isn't even with low, there's some horizontal stripe in
+		// low that has to stand alone.
+		if(hi->y != low->y) {
 			RAreaListAdd(res, RAreaNewStatic(low->x, low->y,
 			                                 low->width, hi->y - low->y));
+		}
 
+		// Next there's a stripe across both of them.
 		RAreaListAdd(res,
 		             RAreaNewStatic(min_x, hi->y,
 		                            max_width,
 		                            min(RAreaY2(low), RAreaY2(hi)) - max(low->y, hi->y) + 1));
 
+		// If their bottoms aren't coincident, there's another stripe
+		// below them of whichever one is taller.
 		if(RAreaY2(low) != RAreaY2(hi)) {
 			//     [   ]    [   ]
 			// [hi][low] or [low][hi]
@@ -250,6 +284,7 @@ RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 				                            hi->width, RAreaY2(hi) - RAreaY2(low)));
 		}
 
+		// And there they are.
 		return res;
 	}
 }
