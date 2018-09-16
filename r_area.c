@@ -96,8 +96,13 @@ RAreaArea(RArea *self)
 }
 
 
-RArea RAreaIntersect(RArea *self, RArea *other)
+/**
+ * Return an RArea describing the intersection of two RArea's.
+ */
+RArea
+RAreaIntersect(RArea *self, RArea *other)
 {
+	// Do they even intersect?
 	if(RAreaIsIntersect(self, other)) {
 		int x1, x2, y1, y2;
 
@@ -110,10 +115,16 @@ RArea RAreaIntersect(RArea *self, RArea *other)
 		return RAreaNew(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
 	}
 
+	// Nope, so nothing
 	return RAreaInvalid();
 }
 
-int RAreaIsIntersect(RArea *self, RArea *other)
+
+/**
+ * Do two areas intersect?
+ */
+int
+RAreaIsIntersect(RArea *self, RArea *other)
 {
 	// [other][self]
 	if(RAreaX2(other) < self->x) {
@@ -140,11 +151,17 @@ int RAreaIsIntersect(RArea *self, RArea *other)
 	return 1;
 }
 
-int RAreaContainsXY(RArea *self, int x, int y)
+
+/**
+ * Is a given coordinate inside a RArea?
+ */
+int
+RAreaContainsXY(RArea *self, int x, int y)
 {
 	return x >= self->x && x <= RAreaX2(self)
 	       && y >= self->y && y <= RAreaY2(self);
 }
+
 
 RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other)
 {
@@ -326,7 +343,14 @@ RAreaList *RAreaVerticalUnion(RArea *self, RArea *other)
 	}
 }
 
-void RAreaPrint(RArea *self)
+
+/**
+ * Pretty-print an RArea.
+ *
+ * Used for dev/debug.
+ */
+void
+RAreaPrint(RArea *self)
 {
 	fprintf(stderr, "[x=%d y=%d w=%d h=%d]", self->x, self->y, self->width,
 	        self->height);
