@@ -12,44 +12,89 @@
 #include "util.h"
 
 
-RArea RAreaNew(int x, int y, int width, int height)
+/**
+ * Construct an RArea from given components.
+ */
+RArea
+RAreaNew(int x, int y, int width, int height)
 {
 	RArea area = { x, y, width, height };
 	return area;
 }
 
-RArea *RAreaNewStatic(int x, int y, int width, int height)
+
+/**
+ * Return a pointer to a static newly constructed RArea.
+ *
+ * This is a thin wrapper around RAreaNew() that returns a static
+ * pointer.  This is used in places that need to take RArea pointers, but
+ * we don't want to futz with making local intermediate vars.  Currently
+ * exclusively used inline in RAreaListNew() calls.
+ */
+RArea *
+RAreaNewStatic(int x, int y, int width, int height)
 {
 	static RArea area;
 	area = RAreaNew(x, y, width, height);
 	return &area;
 }
 
-RArea RAreaInvalid()
+
+/**
+ * Return a facially-invalid RArea.
+ *
+ * This is used in places that need a sentinel value.
+ */
+RArea
+RAreaInvalid()
 {
 	RArea area = { -1, -1, -1, -1 };
 	return area;
 }
 
-int RAreaIsValid(RArea *self)
+
+/**
+ * Is an RArea facially valid?
+ *
+ * Mostly used to check against sentinel values in places that may or may
+ * not have a real value to work with.
+ */
+int
+RAreaIsValid(RArea *self)
 {
 	return self->width >= 0 && self->height >= 0;
 }
 
-int RAreaX2(RArea *self)
+
+/**
+ * Return the right edge of an RArea.
+ */
+int
+RAreaX2(RArea *self)
 {
 	return self->x + self->width - 1;
 }
 
-int RAreaY2(RArea *self)
+
+/**
+ * Return the bottom edge of an RArea.
+ */
+int
+RAreaY2(RArea *self)
 {
 	return self->y + self->height - 1;
 }
 
-int RAreaArea(RArea *self)
+
+/**
+ * Return the area of an RArea.
+ */
+int
+RAreaArea(RArea *self)
 {
 	return self->width * self->height;
 }
+
 
 RArea RAreaIntersect(RArea *self, RArea *other)
 {
