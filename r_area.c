@@ -236,52 +236,51 @@ RAreaHorizontalUnion(RArea *self, RArea *other)
 		RAreaList *res = RAreaListNew(3, NULL);
 
 		// Figure which starts higher.
-		// XXX Aren't these named backward?
-		RArea *low, *hi;
+		RArea *top, *bot;
 		if(self->y < other->y) {
-			low = self;
-			hi = other;
+			top = self;
+			bot = other;
 		}
 		else {
-			low = other;
-			hi = self;
+			top = other;
+			bot = self;
 		}
-		// hi now starts even with or below low
+		// bot now starts even with or below top
 
-		//     [   ]    [   ]
-		// [hi][low] or [low][hi]
-		//     [   ]         [  ]
+		//      [   ]    [   ]
+		// [bot][top] or [top][bot]
+		//      [   ]         [   ]
 
-		// Room at the top before hi starts?  That's one stripe.
-		if(hi->y != low->y) {
-			RAreaListAdd(res, RAreaNewStatic(low->x, low->y,
-			                                 low->width, hi->y - low->y));
+		// Room in top before bot starts?  That's one stripe.
+		if(bot->y != top->y) {
+			RAreaListAdd(res, RAreaNewStatic(top->x, top->y,
+			                                 top->width, bot->y - top->y));
 		}
 
 		// Next there's a stripe across both of them.
 		RAreaListAdd(res,
-		             RAreaNewStatic(min_x, hi->y,
+		             RAreaNewStatic(min_x, bot->y,
 		                            max_width,
-		                            min(RAreaY2(low), RAreaY2(hi)) - max(low->y, hi->y) + 1));
+		                            min(RAreaY2(top), RAreaY2(bot)) - max(top->y, bot->y) + 1));
 
 		// If their bottoms aren't coincident, there's another stripe
 		// below them of whichever one is taller.
-		if(RAreaY2(low) != RAreaY2(hi)) {
-			if(RAreaY2(hi) < RAreaY2(low)) {
-				//     [   ]    [   ]
-				// [hi][low] or [low][hi]
-				//     [   ]    [   ]
+		if(RAreaY2(top) != RAreaY2(bot)) {
+			if(RAreaY2(bot) < RAreaY2(top)) {
+				//      [   ]    [   ]
+				// [bot][top] or [top][bot]
+				//      [   ]    [   ]
 				RAreaListAdd(res,
-				             RAreaNewStatic(low->x, RAreaY2(hi) + 1,
-				                            low->width, RAreaY2(low) - RAreaY2(hi)));
+				             RAreaNewStatic(top->x, RAreaY2(bot) + 1,
+				                            top->width, RAreaY2(top) - RAreaY2(bot)));
 			}
 			else {
-				//     [   ]    [   ]
-				// [hi][low] or [low][hi]
-				// [  ]              [  ]
+				//      [   ]    [   ]
+				// [bot][top] or [top][bot]
+				// [  ]               [   ]
 				RAreaListAdd(res,
-				             RAreaNewStatic(hi->x, RAreaY2(low) + 1,
-				                            hi->width, RAreaY2(hi) - RAreaY2(low)));
+				             RAreaNewStatic(bot->x, RAreaY2(top) + 1,
+				                            bot->width, RAreaY2(bot) - RAreaY2(top)));
 			}
 		}
 
