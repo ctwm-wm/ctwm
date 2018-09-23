@@ -150,6 +150,10 @@ include(mktar_support)
 # Pull in dtrace bits
 include(dtrace_support)
 
+# Let cmake write out compile commands for external tools.  Requires
+# cmake 3.5+, but setting an unknown var won't hurt earlier versions.
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 # Finish by outputting various information about what we've figured and
 # what we're doing for the builder's edification.
 include(show_build_info)
