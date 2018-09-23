@@ -13,7 +13,13 @@
 #include "r_area.h"
 
 
-RAreaList *RAreaListNew(int cap, ...)
+/**
+ * Create an RAreaList from a set of RArea's.
+ * \param cap Hint as to the number of RArea's being passed
+ * \param ... Sequence of RArea *
+ */
+RAreaList *
+RAreaListNew(int cap, ...)
 {
 	va_list ap;
 	RAreaList *list;
@@ -45,7 +51,12 @@ RAreaList *RAreaListNew(int cap, ...)
 	return list;
 }
 
-RAreaList *RAreaListCopy(RAreaList *self)
+
+/**
+ * Create a copy of a given RAreaList.
+ */
+RAreaList *
+RAreaListCopy(RAreaList *self)
 {
 	RAreaList *new = RAreaListNew(self->cap, NULL);
 
@@ -54,14 +65,23 @@ RAreaList *RAreaListCopy(RAreaList *self)
 	return new;
 }
 
-RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
-                                int right_margin,
-                                int top_margin, int bottom_margin)
+
+/**
+ * Create a copy of an RAreaList with given amounts cropped off the
+ * sides.  This is used principally during startup, to handle the
+ * BorderBottom/Top/Left/Right config params.
+ */
+RAreaList *
+RAreaListCopyCropped(RAreaList *self, int left_margin,
+                     int right_margin,
+                     int top_margin, int bottom_margin)
 {
 	if(left_margin > 0 || right_margin > 0
 	                || top_margin > 0 || bottom_margin > 0) {
+		// Start with a big spanning square
 		RArea big_area = RAreaListBigArea(self);
 
+		// Guard against negative margins
 		if(left_margin < 0) {
 			left_margin = 0;
 		}
@@ -75,26 +95,43 @@ RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
 			bottom_margin = 0;
 		}
 
+		// Squeeze down the big square by the asked for amounts
 		big_area.x += left_margin;
 		big_area.width -= left_margin + right_margin;
 		big_area.y += top_margin;
 		big_area.height -= top_margin + bottom_margin;
 
+		// If we cropped down to nothing, that's a RAreaList with nothing
+		// in it, so give back that.
 		if(big_area.width <= 0 || big_area.height <= 0) {
 			return RAreaListNew(0, NULL); // empty list
 		}
+
+		// Make a new RAreaList cropped down to that size.
 		return RAreaListIntersectCrop(self, &big_area);
 	}
-	return NULL; // no margin, no crop possible
+
+	// Nothing to do; our callers expect getting nothing back.
+	return NULL;
 }
 
-void RAreaListFree(RAreaList *self)
+
+/**
+ * Clean up and free an RAreaList.
+ */
+void
+RAreaListFree(RAreaList *self)
 {
 	free(self->areas);
 	free(self);
 }
 
-void RAreaListDelete(RAreaList *self, int index)
+
+/**
+ * Delete an RArea from inside an RAreaList.
+ */
+void
+RAreaListDelete(RAreaList *self, int index)
 {
 	if(index >= self->len) {
 		return;
@@ -110,7 +147,12 @@ void RAreaListDelete(RAreaList *self, int index)
 	       (self->len - index) * sizeof(RArea));
 }
 
-void RAreaListAdd(RAreaList *self, RArea *area)
+
+/**
+ * Add an RArea onto an RAreaList.
+ */
+void
+RAreaListAdd(RAreaList *self, RArea *area)
 {
 	if(self->cap == self->len) {
 		RArea *new_list = realloc(self->areas, (self->cap + 1) * sizeof(RArea));
@@ -125,7 +167,12 @@ void RAreaListAdd(RAreaList *self, RArea *area)
 	self->areas[self->len++] = *area;
 }
 
-void RAreaListAddList(RAreaList *self, RAreaList *other)
+
+/**
+ * Add the RArea's from one RAreaList onto another.
+ */
+void
+RAreaListAddList(RAreaList *self, RAreaList *other)
 {
 	if(self->cap - self->len < other->len) {
 		RArea *new_list = realloc(self->areas,
@@ -143,7 +190,12 @@ void RAreaListAddList(RAreaList *self, RAreaList *other)
 	self->len += other->len;
 }
 
-static int _cmpX(const void *av, const void *bv)
+
+/**
+ * qsort comparison function to sort by RArea.x
+ */
+static int
+_cmpX(const void *av, const void *bv)
 {
 	const RArea *a = (const RArea *)av, *b = (const RArea *)bv;
 
@@ -158,7 +210,12 @@ static int _cmpX(const void *av, const void *bv)
 	return (a->y > b->y) - (a->y < b->y);
 }
 
-void RAreaListSortX(RAreaList *self)
+
+/**
+ * Sort the RArea's in an RAreaList by their x coordinate.
+ */
+void
+RAreaListSortX(RAreaList *self)
 {
 	if(self->len <= 1) {
 		return;
@@ -167,7 +224,12 @@ void RAreaListSortX(RAreaList *self)
 	qsort(self->areas, self->len, sizeof(RArea), _cmpX);
 }
 
-static int _cmpY(const void *av, const void *bv)
+
+/**
+ * qsort comparison function to sort by RArea.t
+ */
+static int
+_cmpY(const void *av, const void *bv)
 {
 	const RArea *a = (const RArea *)av, *b = (const RArea *)bv;
 
@@ -182,7 +244,12 @@ static int _cmpY(const void *av, const void *bv)
 	return (a->x > b->x) - (a->x < b->x);
 }
 
-void RAreaListSortY(RAreaList *self)
+
+/**
+ * Sort the RArea's in an RAreaList by their y coordinate.
+ */
+void
+RAreaListSortY(RAreaList *self)
 {
 	if(self->len <= 1) {
 		return;
@@ -191,14 +258,26 @@ void RAreaListSortY(RAreaList *self)
 	qsort(self->areas, self->len, sizeof(RArea), _cmpY);
 }
 
-RAreaList *RAreaListHorizontalUnion(RAreaList *self)
+
+/**
+ * Create an RAreaList whose RArea's are the horizontal union of our
+ * RArea's.
+ */
+RAreaList *
+RAreaListHorizontalUnion(RAreaList *self)
 {
 	RAreaList *copy = RAreaListCopy(self);
 	int i, j;
 
 refine:
+	// Two areas can't form a horizontal stripe if there's any space
+	// between them.  So start by putting them all in x-coord order to be
+	// sure any gaps there are necessary.
 	RAreaListSortX(copy);
 
+	// Try HorizontalUnion'ing each area with the next one.  If we can
+	// create a union, replace them with it, and hop back to the top of
+	// the process to start over.
 	for(i = 0; i < copy->len - 1; i++) {
 		for(j = i + 1; j < copy->len; j++) {
 			RAreaList *repl = RAreaHorizontalUnion(&copy->areas[i], &copy->areas[j]);
@@ -218,12 +297,19 @@ refine:
 	return copy;
 }
 
-RAreaList *RAreaListVerticalUnion(RAreaList *self)
+
+/**
+ * Create an RAreaList whose RArea's are the vertical union of our
+ * RArea's.
+ */
+RAreaList *
+RAreaListVerticalUnion(RAreaList *self)
 {
 	RAreaList *copy = RAreaListCopy(self);
 	int i, j;
 
 refine:
+	// X-ref logic above in RAreaListHorizontalUnion()
 	RAreaListSortY(copy);
 
 	for(i = 0; i < copy->len - 1; i++) {
@@ -245,7 +331,13 @@ refine:
 	return copy;
 }
 
-RAreaList *RAreaListIntersect(RAreaList *self, RArea *area)
+
+/**
+ * Create an RAreaList of all the areas in an RAreaList that a given
+ * RArea intersects with.
+ */
+RAreaList *
+RAreaListIntersect(RAreaList *self, RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
 	int index;
@@ -259,9 +351,15 @@ RAreaList *RAreaListIntersect(RAreaList *self, RArea *area)
 	return new;
 }
 
-void RAreaListForeach(RAreaList *self,
-                      int (*func)(RArea *cur_area, void *data),
-                      void *data)
+
+/**
+ * Run a function over each RArea in an RAreaList until one returns true,
+ * allowing them a place to stash other internal data.
+ */
+void
+RAreaListForeach(RAreaList *self,
+                 int (*func)(RArea *cur_area, void *data),
+                 void *data)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 
@@ -272,7 +370,14 @@ void RAreaListForeach(RAreaList *self,
 	}
 }
 
-RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area)
+
+
+/**
+ * Create an RAreaList from another, cropped to a certain area defined by
+ * an RArea.
+ */
+RAreaList *
+RAreaListIntersectCrop(RAreaList *self, RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
 	RArea it;
@@ -298,7 +403,8 @@ RAreaList *RAreaListIntersectCrop(RAreaList *self, RArea *area)
  * when we need to figure some sort of "overall" positioning, like when
  * figuring "real" x/y coordinates.
  */
-RArea RAreaListBigArea(RAreaList *self)
+RArea
+RAreaListBigArea(RAreaList *self)
 {
 	RArea *area;
 	int index, x, y, x2, y2;
@@ -324,7 +430,15 @@ RArea RAreaListBigArea(RAreaList *self)
 	return RAreaNew(x, y, x2 - x + 1, y2 - y + 1);
 }
 
-RArea RAreaListBestTarget(RAreaList *self, RArea *area)
+
+/**
+ * Find the RArea in an RAreaList that has the largest intersection with
+ * a given RArea.  Colloquially, which area in an RAreaList does our
+ * RArea mostly fit into?  This is used to resize a window to fill one
+ * monitor, by finding which monitor it's on.
+ */
+RArea
+RAreaListBestTarget(RAreaList *self, RArea *area)
 {
 	RArea full_area = RAreaInvalid(), it;
 	int index, max_area = -1;
@@ -340,33 +454,51 @@ RArea RAreaListBestTarget(RAreaList *self, RArea *area)
 	return full_area;
 }
 
-int RAreaListMaxX(RAreaList *self)
+
+/**
+ * Find the x coordinate of the right-most RArea in an RAreaList.
+ */
+int
+RAreaListMaxX(RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int max_x = self->len ? cur_area->x : 0;
 
-	while(++cur_area < area_end)
+	while(++cur_area < area_end) {
 		if(cur_area->x > max_x) {
 			max_x = cur_area->x;
 		}
+	}
 
 	return max_x;
 }
 
-int RAreaListMaxY(RAreaList *self)
+
+/**
+ * Find the y coordinate of the bottom-most RArea in an RAreaList.
+ */
+int
+RAreaListMaxY(RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int max_y = self->len ? cur_area->y : 0;
 
-	while(++cur_area < area_end)
+	while(++cur_area < area_end) {
 		if(cur_area->y > max_y) {
 			max_y = cur_area->y;
 		}
+	}
 
 	return max_y;
 }
 
-int RAreaListMinX2(RAreaList *self)
+
+/**
+ * Find the x coordinate of the right edge of the left-most RArea in an
+ * RAreaList.
+ */
+int
+RAreaListMinX2(RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int min_x = self->len ? RAreaX2(cur_area) : 0;
@@ -379,7 +511,13 @@ int RAreaListMinX2(RAreaList *self)
 	return min_x;
 }
 
-int RAreaListMinY2(RAreaList *self)
+
+/**
+ * Find the x coordinate of the right edge of the left-most RArea in an
+ * RAreaList.
+ */
+int
+RAreaListMinY2(RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int min_y = self->len ? RAreaY2(cur_area) : 0;
@@ -392,7 +530,14 @@ int RAreaListMinY2(RAreaList *self)
 	return min_y;
 }
 
-void RAreaListPrint(RAreaList *self)
+
+/**
+ * Pretty-print an RAreaList.
+ *
+ * Used for dev/debug.
+ */
+void
+RAreaListPrint(RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	fprintf(stderr, "[len=%d cap=%d", self->len, self->cap);
