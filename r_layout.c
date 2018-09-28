@@ -14,7 +14,14 @@
 #include "util.h"
 
 
-RLayout *RLayoutNew(RAreaList *monitors)
+/**
+ * Create an RLayout for a given set of monitors.
+ *
+ * This stashes up the list of monitors, and precalculates the
+ * horizontal/vertical stripes that compose it.
+ */
+RLayout *
+RLayoutNew(RAreaList *monitors)
 {
 	RLayout *layout = malloc(sizeof(RLayout));
 	if(layout == NULL) {
@@ -29,8 +36,16 @@ RLayout *RLayoutNew(RAreaList *monitors)
 	return layout;
 }
 
-RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
-                            int top_margin, int bottom_margin)
+
+/**
+ * Create a copy of an RLayout with given amounts cropped off the sides.
+ * This is used anywhere we need to pretend our display area is smaller
+ * than it actually is (e.g., via the BorderBottom/Top/Left/Right config
+ * params)
+ */
+RLayout *
+RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
+                   int top_margin, int bottom_margin)
 {
 	RAreaList *cropped_monitors = RAreaListCopyCropped(self->monitors,
 	                              left_margin, right_margin,
@@ -42,7 +57,12 @@ RLayout *RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
 	return RLayoutNew(cropped_monitors);
 }
 
-static void _RLayoutFreeNames(RLayout *self)
+
+/**
+ * Clean up and free any RLayout.names there might be in an RLayout.
+ */
+static void
+_RLayoutFreeNames(RLayout *self)
 {
 	if(self->names != NULL) {
 		free(self->names);
@@ -50,7 +70,12 @@ static void _RLayoutFreeNames(RLayout *self)
 	}
 }
 
-void RLayoutFree(RLayout *self)
+
+/**
+ * Clean up and free an RLayout.
+ */
+void
+RLayoutFree(RLayout *self)
 {
 	RAreaListFree(self->monitors);
 	RAreaListFree(self->horiz);
@@ -59,7 +84,14 @@ void RLayoutFree(RLayout *self)
 	free(self);
 }
 
-RLayout *RLayoutSetMonitorsNames(RLayout *self, char **names)
+
+/**
+ * Set the names for our monitors in an RLayout.  This is only used for
+ * the RLayout that describes our complete monitor layout, which fills in
+ * the RANDR names for each output.
+ */
+RLayout *
+RLayoutSetMonitorsNames(RLayout *self, char **names)
 {
 	_RLayoutFreeNames(self);
 	self->names = names;
