@@ -503,10 +503,11 @@ RAreaListMinX2(RAreaList *self)
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int min_x = self->len ? RAreaX2(cur_area) : 0;
 
-	while(++cur_area < area_end)
+	while(++cur_area < area_end) {
 		if(RAreaX2(cur_area) < min_x) {
 			min_x = RAreaX2(cur_area);
 		}
+	}
 
 	return min_x;
 }
@@ -522,10 +523,11 @@ RAreaListMinY2(RAreaList *self)
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int min_y = self->len ? RAreaY2(cur_area) : 0;
 
-	while(++cur_area < area_end)
+	while(++cur_area < area_end) {
 		if(RAreaY2(cur_area) < min_y) {
 			min_y = RAreaY2(cur_area);
 		}
+	}
 
 	return min_y;
 }
