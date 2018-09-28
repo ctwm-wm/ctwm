@@ -513,7 +513,7 @@ RAreaListMinX2(RAreaList *self)
 
 
 /**
- * Find the x coordinate of the right edge of the left-most RArea in an
+ * Find the y coordinate of the bottom edge of the top-most RArea in an
  * RAreaList.
  */
 int
