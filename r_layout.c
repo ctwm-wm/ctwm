@@ -282,7 +282,7 @@ _RLayoutHorizontalIntersect(RLayout *self, RArea *area)
  * \param[in]  self   The monitor layout to work from
  * \param[in]  area   The area to be fit into the monitors
  * \param[out] top    The top of the lowest stripe area fits into.
- * \param[out] bottom The bottom of the higher stripe area fits into.
+ * \param[out] bottom The bottom of the highest stripe area fits into.
  */
 void
 RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
@@ -392,12 +392,22 @@ RLayoutFindRightEdge(RLayout *self, RArea *area)
 }
 
 
+
+/*
+ * Lookups to find areas in an RLayout by various means.
+ */
+
+/// Internal structure for callback in RLayoutGetAreaAtXY().
 struct monitor_finder_xy {
 	RArea *area;
 	int x, y;
 };
 
-static int _findMonitorByXY(RArea *cur, void *vdata)
+/**
+ * Callback util for RLayoutGetAreaAtXY().
+ */
+static int
+_findMonitorByXY(RArea *cur, void *vdata)
 {
 	struct monitor_finder_xy *data = (struct monitor_finder_xy *)vdata;
 
@@ -408,7 +418,13 @@ static int _findMonitorByXY(RArea *cur, void *vdata)
 	return 0;
 }
 
-RArea RLayoutGetAreaAtXY(RLayout *self, int x, int y)
+/**
+ * Find the RArea in a RLayout that a given coordinate falls into.  In
+ * practice, the RArea's in self are the monitors of the desktop, so this
+ * answers "Which monitor is this position on?"
+ */
+RArea
+RLayoutGetAreaAtXY(RLayout *self, int x, int y)
 {
 	struct monitor_finder_xy data = { NULL, x, y };
 
@@ -417,6 +433,16 @@ RArea RLayoutGetAreaAtXY(RLayout *self, int x, int y)
 	return data.area == NULL ? self->monitors->areas[0] : *data.area;
 }
 
+
+/**
+ * Return the index'th RArea in an RLayout, or the last one if index
+ * overflows.
+ *
+ * \todo XXX This is questionable.  This function is called in only one
+ * place, and that place calls it with index 0, so (a) it could only fail
+ * to find index if there weren't any RArea's in the RLayout, and (2) if
+ * there weren't any, it would return areas[-1] which is scary garbage...
+ */
 RArea RLayoutGetAreaIndex(RLayout *self, int index)
 {
 	if(index >= self->monitors->len) {
@@ -426,7 +452,15 @@ RArea RLayoutGetAreaIndex(RLayout *self, int index)
 	return self->monitors->areas[index];
 }
 
-RArea RLayoutGetAreaByName(RLayout *self, const char *name, int len)
+
+/**
+ * Return the RArea in self with the name given by the string of length
+ * len at name.  This is only used in RLayoutXParseGeometry() to parse a
+ * fragment of a larger string, hence the need for len.  It's used to
+ * find the monitor with a given name (RANDR output name).
+ */
+RArea
+RLayoutGetAreaByName(RLayout *self, const char *name, int len)
 {
 	if(self->names != NULL) {
 		int index;
@@ -454,12 +488,19 @@ RArea RLayoutGetAreaByName(RLayout *self, const char *name, int len)
  * RLayout internals.  Currently only used once; maybe should just be
  * deref'd there...
  */
-RArea RLayoutBigArea(RLayout *self)
+RArea
+RLayoutBigArea(RLayout *self)
 {
 	return RAreaListBigArea(self->monitors);
 }
 
 
+
+/*
+ * Now some utils for finding various edges
+ */
+
+/// Internal struct for use in FindMonitor*Edge() callbacks.
 struct monitor_edge_finder {
 	RArea *area;
 	union {
@@ -471,11 +512,19 @@ struct monitor_edge_finder {
 	int found;
 };
 
-static int _findMonitorBottomEdge(RArea *cur, void *vdata)
+
+/**
+ * Callback util for RLayoutFindMonitorBottomEdge()
+ */
+static int
+_findMonitorBottomEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
-	// Does the area intersect the current list area
+	// Does the area we're looking for intersect this piece of the
+	// RLayout, is the bottom of the area shown on it, and is the bottom
+	// of this piece the highest we've yet found that satisfies those
+	// conditions?
 	if(RAreaIsIntersect(cur, data->area)
 	                && RAreaY2(cur) > RAreaY2(data->area)
 	                && (!data->found || RAreaY2(cur) < data->u.min_y2)) {
@@ -485,7 +534,17 @@ static int _findMonitorBottomEdge(RArea *cur, void *vdata)
 	return 0;
 }
 
-int RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
+/**
+ * Find the bottom edge of the top-most monitor that contains the most of
+ * a given RArea.  Generally, the area would be a window.
+ *
+ * That is, we find the monitor whose bottom is the highest up, but that
+ * still shows the bottom edge of the window, and return that monitor's
+ * bottom.  If the bottom of the window is off all the monitors, that's
+ * just the highest-up monitor that contains the window.
+ */
+int
+RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
 {
 	struct monitor_edge_finder data = { area };
 
@@ -494,11 +553,19 @@ int RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.min_y2 : RLayoutFindBottomEdge(self, area);
 }
 
-static int _findMonitorTopEdge(RArea *cur, void *vdata)
+
+/**
+ * Callback util for RLayoutFindMonitorTopEdge()
+ */
+static int
+_findMonitorTopEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
-	// Does the area intersect the current list area
+	// Does the area we're looking for intersect this piece of the
+	// RLayout, is the top of the area shown on it, and is the top
+	// of this piece the lowest we've yet found that satisfies those
+	// conditions?
 	if(RAreaIsIntersect(cur, data->area)
 	                && cur->y < data->area->y
 	                && (!data->found || cur->y > data->u.max_y)) {
@@ -508,7 +575,17 @@ static int _findMonitorTopEdge(RArea *cur, void *vdata)
 	return 0;
 }
 
-int RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
+/**
+ * Find the top edge of the bottom-most monitor that contains the most of
+ * a given RArea.  Generally, the area would be a window.
+ *
+ * That is, we find the monitor whose top is the lowest down, but that
+ * still shows the top edge of the window, and return that monitor's top.
+ * If the top of the window is off all the monitors, that's just the
+ * lowest-down monitor that contains part of the window.
+ */
+int
+RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
 {
 	struct monitor_edge_finder data = { area };
 
@@ -517,11 +594,19 @@ int RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.max_y : RLayoutFindTopEdge(self, area);
 }
 
-static int _findMonitorLeftEdge(RArea *cur, void *vdata)
+
+/**
+ * Callback util for RLayoutFindMonitorLeftEdge()
+ */
+static int
+_findMonitorLeftEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
-	// Does the area intersect the current list area
+	// Does the area we're looking for intersect this piece of the
+	// RLayout, is the left of the area shown on it, and is the left of
+	// this piece the right-most we've yet found that satisfies those
+	// conditions?
 	if(RAreaIsIntersect(cur, data->area)
 	                && cur->x < data->area->x
 	                && (!data->found || cur->x > data->u.max_x)) {
@@ -531,7 +616,17 @@ static int _findMonitorLeftEdge(RArea *cur, void *vdata)
 	return 0;
 }
 
-int RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
+/**
+ * Find the left edge of the right-most monitor that contains the most of
+ * a given RArea.  Generally, the area would be a window.
+ *
+ * That is, we find the monitor whose left is the furthest right, but
+ * that still shows the left edge of the window, and return that
+ * monitor's left.  If the left edge of the window is off all the
+ * monitors, that's just the right-most monitor that contains the window.
+ */
+int
+RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
 {
 	struct monitor_edge_finder data = { area };
 
@@ -540,11 +635,19 @@ int RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
 	return data.found ? data.u.max_x : RLayoutFindLeftEdge(self, area);
 }
 
-static int _findMonitorRightEdge(RArea *cur, void *vdata)
+
+/**
+ * Callback util for RLayoutFindMonitorRightEdge()
+ */
+static int
+_findMonitorRightEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
-	// Does the area intersect the current list area
+	// Does the area we're looking for intersect this piece of the
+	// RLayout, is the right of the area shown on it, and is the right of
+	// this piece the left-most we've yet found that satisfies those
+	// conditions?
 	if(RAreaIsIntersect(cur, data->area)
 	                && RAreaX2(cur) > RAreaX2(data->area)
 	                && (!data->found || RAreaX2(cur) < data->u.min_x2)) {
@@ -554,7 +657,17 @@ static int _findMonitorRightEdge(RArea *cur, void *vdata)
 	return 0;
 }
 
-int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
+/**
+ * Find the right edge of the left-most monitor that contains the most of
+ * a given RArea.  Generally, the area would be a window.
+ *
+ * That is, we find the monitor whose right is the furthest left, but
+ * that still shows the right edge of the window, and return that
+ * monitor's right.  If the right edge of the window is off all the
+ * monitors, that's just the left-most monitor that contains the window.
+ */
+int
+RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
 {
 	struct monitor_edge_finder data = { area };
 
@@ -562,6 +675,8 @@ int RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
 
 	return data.found ? data.u.min_x2 : RLayoutFindRightEdge(self, area);
 }
+
+
 
 RArea RLayoutFullHoriz(RLayout *self, RArea *area)
 {
