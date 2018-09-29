@@ -269,12 +269,12 @@ _RLayoutHorizontalIntersect(RLayout *self, RArea *area)
 
 
 /**
- * Figure the position (or nearest practical position) of an areas in our
+ * Figure the position (or nearest practical position) of an area in our
  * screen layout, and return into about the bottom/top stripes it fits
  * into.
  *
  * Note that the return values (params) are slightly counterintuitive;
- * top tells you where the top of the lowest stripe the area intersects
+ * top tells you where the top of the lowest stripe that area intersects
  * with is, and bottom tells you the bottom of the highest.  This is used
  * as a backend piece of various calculations trying to be sure something
  * winds up on-screen.
@@ -301,22 +301,54 @@ RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
 	RAreaListFree(mit);
 }
 
-int RLayoutFindBottomEdge(RLayout *self, RArea *area)
+
+/**
+ * Find the bottom of the top stripe of self that area fits into.  A
+ * shortcut to get only the second return value of
+ * RLayoutFindTopBottomEdges().
+ */
+int
+RLayoutFindBottomEdge(RLayout *self, RArea *area)
 {
 	int min_y2;
 	RLayoutFindTopBottomEdges(self, area, NULL, &min_y2);
 	return min_y2;
 }
 
-int RLayoutFindTopEdge(RLayout *self, RArea *area)
+
+/**
+ * Find the top of the bottom stripe of self that area fits into.  A
+ * shortcut to get only the first return value of
+ * RLayoutFindTopBottomEdges().
+ */
+int
+RLayoutFindTopEdge(RLayout *self, RArea *area)
 {
 	int max_y;
 	RLayoutFindTopBottomEdges(self, area, &max_y, NULL);
 	return max_y;
 }
 
-void RLayoutFindLeftRightEdges(RLayout *self, RArea *area, int *left,
-                               int *right)
+
+/**
+ * Figure the position (or nearest practical position) of an area in our
+ * screen layout, and return into about the left/rightmost stripes it fits
+ * into.
+ *
+ * As with RLayoutFindTopBottomEdges(), the return values (params) are
+ * slightly counterintuitive.  left tells you where the left-side of the
+ * right-most stripe that area intersects with is, and right tells you
+ * the right side of the left-most.  This is used as a backend piece of
+ * various calculations trying to be sure something winds up on-screen.
+ *
+ * \param[in]  self   The monitor layout to work from
+ * \param[in]  area   The area to be fit into the monitors
+ * \param[out] left   The left edge of the right-most stripe area fits into.
+ * \param[out] right  The right edge of the left-most stripe area fits into.
+ */
+void
+RLayoutFindLeftRightEdges(RLayout *self, RArea *area, int *left,
+                          int *right)
 {
 	RAreaList *mit = _RLayoutHorizontalIntersect(self, area);
 
@@ -331,19 +363,34 @@ void RLayoutFindLeftRightEdges(RLayout *self, RArea *area, int *left,
 	RAreaListFree(mit);
 }
 
-int RLayoutFindLeftEdge(RLayout *self, RArea *area)
+
+/**
+ * Find the left edge of the right-most stripe of self that area fits
+ * into.  A shortcut to get only the first return value of
+ * RLayoutFindLeftRightEdges().
+ */
+int
+RLayoutFindLeftEdge(RLayout *self, RArea *area)
 {
 	int max_x;
 	RLayoutFindLeftRightEdges(self, area, &max_x, NULL);
 	return max_x;
 }
 
-int RLayoutFindRightEdge(RLayout *self, RArea *area)
+
+/**
+ * Find the right edge of the left-most stripe of self that area fits
+ * into.  A shortcut to get only the second return value of
+ * RLayoutFindLeftRightEdges().
+ */
+int
+RLayoutFindRightEdge(RLayout *self, RArea *area)
 {
 	int min_x2;
 	RLayoutFindLeftRightEdges(self, area, NULL, &min_x2);
 	return min_x2;
 }
+
 
 struct monitor_finder_xy {
 	RArea *area;
