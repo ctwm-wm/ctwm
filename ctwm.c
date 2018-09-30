@@ -403,7 +403,7 @@ int main(int argc, char **argv)
 			RAreaList *fsl;
 
 			fs = RAreaNewStatic(Scr->rootx, Scr->rooty, Scr->rootw, Scr->rooth);
-			fsl = RAreaListNew(1, fs);
+			fsl = RAreaListNew(1, fs, NULL);
 			Scr->Layout = RLayoutNew(fsl);
 		}
 #ifdef DEBUG
