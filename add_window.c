@@ -1499,6 +1499,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			RLayoutFindLeftRightEdges(Scr->BorderedLayout, &area,
 			                          &min_x, &max_right);
 
+			// These conditions would only be true if the window was
+			// completely off-screen; in that case, the RLayout* calls
+			// above would have found the closest edges to move it to.
+			// We wind up sticking it in the top-left of the
+			// bottom-right-most monitor it would touch.
 			if(area.x > max_right || area.y > max_bottom ||
 			                area.x + area.width <= min_x ||
 			                area.y + area.height <= min_y) {
