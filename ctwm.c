@@ -405,7 +405,7 @@ int main(int argc, char **argv)
 			                                                   Scr->rooth),
 			                                   NULL));
 		}
-#if 1
+#ifdef DEBUG
 		fprintf(stderr, "Full: ");
 		RLayoutPrint(Scr->Layout);
 #endif
