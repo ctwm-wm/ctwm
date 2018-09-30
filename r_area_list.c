@@ -16,7 +16,8 @@
 /**
  * Create an RAreaList from a set of RArea's.
  * \param cap Hint as to the number of RArea's being passed
- * \param ... Sequence of RArea *
+ * \param ... Sequence of RArea * to put in it.  Don't forget a trailing
+ *            NULL.
  */
 RAreaList *
 RAreaListNew(int cap, ...)
