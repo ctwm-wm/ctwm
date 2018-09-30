@@ -397,13 +397,12 @@ int main(int argc, char **argv)
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
 #endif
 		if(Scr->Layout == NULL) {
-			Scr->Layout = RLayoutNew(
-			                      RAreaListNew(1,
-			                                   RAreaNewStatic(Scr->rootx,
-			                                                   Scr->rooty,
-			                                                   Scr->rootw,
-			                                                   Scr->rooth),
-			                                   NULL));
+			RArea *fs;
+			RAreaList *fsl;
+
+			fs = RAreaNewStatic(Scr->rootx, Scr->rooty, Scr->rootw, Scr->rooth);
+			fsl = RAreaListNew(1, fs);
+			Scr->Layout = RLayoutNew(fsl);
 		}
 #ifdef DEBUG
 		fprintf(stderr, "Full: ");
