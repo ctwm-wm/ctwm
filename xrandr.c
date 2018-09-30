@@ -14,7 +14,11 @@
 #include "xrandr.h"
 
 
-RLayout *XrandrNewLayout(Display *disp, Window rootw)
+/**
+ * Use XRANDR to figure out how our monitors are laid out.
+ */
+RLayout *
+XrandrNewLayout(Display *disp, Window rootw)
 {
 	int i_nmonitors = 0, index;
 	XRRMonitorInfo *ps_monitors;
@@ -22,17 +26,20 @@ RLayout *XrandrNewLayout(Display *disp, Window rootw)
 	RAreaList *areas;
 	RArea cur_area;
 
+	// RANDR 1.5 function to get info about 'em.
 	ps_monitors = XRRGetMonitors(disp, rootw, 1, &i_nmonitors);
 	if(ps_monitors == NULL || i_nmonitors == 0) {
 		fprintf(stderr, "XRRGetMonitors failed");
 		return NULL;
 	}
 
+	// Add space for all their names (plus trailing NULL)
 	monitor_names = malloc((i_nmonitors + 1) * sizeof(char *));
 	if(monitor_names == NULL) {
 		abort();
 	}
 
+	// Add each and its name into an RAreaList
 	areas = RAreaListNew(i_nmonitors, NULL);
 	for(index = 0; index < i_nmonitors; index++) {
 		cur_area = RAreaNew(ps_monitors[index].x,
@@ -62,5 +69,7 @@ RLayout *XrandrNewLayout(Display *disp, Window rootw)
 
 	XRRFreeMonitors(ps_monitors);
 
+	// Build up an RLayout of those areas and their names, and hand it
+	// back.
 	return RLayoutSetMonitorsNames(RLayoutNew(areas), monitor_names);
 }
