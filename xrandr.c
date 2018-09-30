@@ -25,11 +25,40 @@ XrandrNewLayout(Display *disp, Window rootw)
 	char **monitor_names, *name;
 	RAreaList *areas;
 	RArea cur_area;
+	int evt_base, err_base, ver_maj, ver_min;
+	// XXX *_base and ver_* should move more globally if we start doing
+	// randr stuff anywhere else.
+
+	// If the server doesn't talk RANDR, we have nothing to do.
+	if(XRRQueryExtension(disp, &evt_base, &err_base) != True) {
+		// No RANDR
+#ifdef DEBUG
+		fprintf(stderr, "No RANDR on the server.\n");
+#endif
+		return NULL;
+	}
+
+	// XRRGetMonitors() wraps the RRGetMonitors request, which requires
+	// 1.5.
+	if(XRRQueryVersion(disp, &ver_maj, &ver_min) == 0) {
+		// Couldn't get the version
+#ifdef DEBUG
+		fprintf(stderr, "Couldn't get server RANDR version.\n");
+#endif
+		return NULL;
+	}
+	if(ver_maj < 1 || (ver_maj == 1 && ver_min < 5)) {
+#ifdef DEBUG
+		fprintf(stderr, "Server has RANDR %d.%d, we need 1.5+.\n",
+				ver_maj, ver_min);
+#endif
+		return NULL;
+	}
 
 	// RANDR 1.5 function to get info about 'em.
 	ps_monitors = XRRGetMonitors(disp, rootw, 1, &i_nmonitors);
 	if(ps_monitors == NULL || i_nmonitors == 0) {
-		fprintf(stderr, "XRRGetMonitors failed");
+		fprintf(stderr, "XRRGetMonitors failed\n");
 		return NULL;
 	}
 
