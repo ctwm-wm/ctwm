@@ -2448,8 +2448,9 @@ f.beep::
   This function sounds the keyboard bell.
 
 f.bottomzoom::
-  This function is similar to the `f.fullzoom` function, but
-  resizes the window to fill only the bottom half of the screen.
+  This function stretches the height of the window so that its bottom
+  reaches to the bottom of the screen, or restores the original size if
+  the window was already bottomzoom'd.
 
 f.changepriority `rel-value`::
   Change the priority of a window by `rel-value` (enclosed within double
@@ -2571,16 +2572,17 @@ f.forwmapiconmgr::
   but only stops at windows that are mapped.
 
 f.fullscreenzoom::
-  This function resizes the client part (the inside the frame) of the selected
-  window to the full size of the display or else restores the original size if
-  the window was already zoomed. The frame is moved just outside the screen.
-  This gives the appearance that window is shown without the frame:
-  since ctwm can't dynamically make a window borderless, this is the next best
-  thing.
+  This function is similar to the `f.fullzoom` function, except that it
+  makes the client window (the part inside the frame) the size of the
+  screen, so the window decorations are off-screen.  This gives the same
+  visual effect as the window covering the whole screen with no
+  decorations.  If the window is already fullscreenzoom'd, it restores
+  the original size.
 
 f.fullzoom::
-  This function resizes the selected window to the full size of the display or
-  else restores the original size if the window was already zoomed.
+  This function resizes the selected window to the full size of the
+  screen, or restores the original size if the window was already
+  fullzoom'd.
 
 f.function `string`::
   This function executes the user-defined function whose name is specified
@@ -2599,8 +2601,9 @@ f.hideworkspacemgr::
   Unmap the WorkSpace manager.
 
 f.horizoom::
-  This variable is similar to the `f.zoom` function except that the
-  selected window is resized to the full width of the display.
+  This function stretches the window so that it covers the whole width of
+  the screen, or restores the original size if the window was already
+  horizoom'd.
 
 f.htzoom::
   This function is a synonym for `f.topzoom`.
@@ -2651,8 +2654,9 @@ f.leftworkspace::
   manager.
 
 f.leftzoom::
-  This variable is similar to the `f.bottomzoom` function but causes
-  the selected window is only resized to the left half of the display.
+  This function stretches the left side of the window out to the left
+  edge of the screen, or restores the original size if the window was
+  already leftzoom'd.
 
 f.lower::
   This function lowers the selected window.
@@ -2836,8 +2840,9 @@ f.rightworkspace::
   manager.
 
 f.rightzoom::
-  This variable is similar to the `f.bottomzoom` function except that
-  the selected window is only resized to the right half of the display.
+  This function stretches the right side of the window out to the right
+  edge of the screen, or restores the original size if the window was
+  already rightzoom'd.
 
 f.ring::
   Selects a window and adds it to the WarpRing, or removes it if it
@@ -2944,8 +2949,9 @@ f.toggleworkspacemgr::
   it is mapped, it will be unmapped and vice versa.
 
 f.topzoom::
-  This variable is similar to the `f.bottomzoom` function except that
-  the selected window is only resized to the top half of the display.
+  This function stretches the top side of the window out to the top
+  edge of the screen, or restores the original size if the window was
+  already topzoom'd.
 
 f.trace `string`::
   Used for handling dumping debug output.  If a filename is given in
@@ -3027,8 +3033,10 @@ f.winrefresh::
   selected window is refreshed.
 
 f.zoom::
-  This function is similar to the `f.fullzoom` function, except that
-  the only the height of the selected window is changed.
+  This function stretches the window so that it covers the whole height of
+  the screen, or restores the original size if the window was already
+  zoom'd.  It's the vertical counterpart fo `f.horizoom`; perhaps
+  `f.vertzoom` would be a better name...
 
 
 == MENUS
