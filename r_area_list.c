@@ -359,7 +359,7 @@ RAreaListIntersect(RAreaList *self, RArea *area)
  */
 void
 RAreaListForeach(RAreaList *self,
-                 int (*func)(RArea *cur_area, void *data),
+                 bool (*func)(RArea *cur_area, void *data),
                  void *data)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];

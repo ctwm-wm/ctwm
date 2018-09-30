@@ -548,10 +548,11 @@ _tryToPack(RArea *final, RArea *cur_win)
 	}
 }
 
-static int _tryToPackVsEachMonitor(RArea *monitor_area, void *vfinal)
+static bool
+_tryToPackVsEachMonitor(RArea *monitor_area, void *vfinal)
 {
 	_tryToPack((RArea *)vfinal, monitor_area);
-	return 0;
+	return false;
 }
 
 void
