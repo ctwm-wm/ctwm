@@ -556,7 +556,7 @@ struct monitor_edge_finder {
 		int min_x2;
 		int min_y2;
 	} u;
-	int found;
+	bool found;
 };
 
 
@@ -576,7 +576,7 @@ _findMonitorBottomEdge(RArea *cur, void *vdata)
 	                && RAreaY2(cur) > RAreaY2(data->area)
 	                && (!data->found || RAreaY2(cur) < data->u.min_y2)) {
 		data->u.min_y2 = RAreaY2(cur);
-		data->found = 1;
+		data->found = true;
 	}
 	return false;
 }
@@ -617,7 +617,7 @@ _findMonitorTopEdge(RArea *cur, void *vdata)
 	                && cur->y < data->area->y
 	                && (!data->found || cur->y > data->u.max_y)) {
 		data->u.max_y = cur->y;
-		data->found = 1;
+		data->found = true;
 	}
 	return false;
 }
@@ -658,7 +658,7 @@ _findMonitorLeftEdge(RArea *cur, void *vdata)
 	                && cur->x < data->area->x
 	                && (!data->found || cur->x > data->u.max_x)) {
 		data->u.max_x = cur->x;
-		data->found = 1;
+		data->found = true;
 	}
 	return false;
 }
@@ -700,7 +700,7 @@ _findMonitorRightEdge(RArea *cur, void *vdata)
 	                && RAreaX2(cur) > RAreaX2(data->area)
 	                && (!data->found || RAreaX2(cur) < data->u.min_x2)) {
 		data->u.min_x2 = RAreaX2(cur);
-		data->found = 1;
+		data->found = true;
 	}
 	return 0;
 }
