@@ -162,12 +162,6 @@ vlzoom leftzoom
 vrzoom rightzoom
 htzoom topzoom
 
-xhbzoom xbottomzoom
-xhzoom  xhorizoom
-xvlzoom xleftzoom
-xvrzoom xrightzoom
-xhtzoom xtopzoom
-
 twmrc  restart
 # END(aliases)
 

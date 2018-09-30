@@ -3071,12 +3071,6 @@ f.xhorizoom::
   This variable is similar to the `f.xzoom` function except that the selected
   window is resized to the full width of the display (across all monitors).
 
-f.xhtzoom::
-  This function is a synonym for `f.xtopzoom`.
-
-f.xhzoom::
-  This function is a synonym for `f.xhorizoom`.
-
 f.xleftzoom::
   This variable is similar to the `f.xbottomzoom` function but causes the
   selected window is only resized to the left half of the display (across all
@@ -3091,12 +3085,6 @@ f.xtopzoom::
   This variable is similar to the `f.xbottomzoom` function except that the
   selected window is only resized to the top half of the display (accross all
   monitors).
-
-f.xvlzoom::
-  This function is a synonym for `f.xleftzoom`.
-
-f.xvrzoom::
-  This function is a synonym for `f.xrightzoom`.
 
 f.xzoom::
   This function is similar to the `f.xfullzoom` function, except that
