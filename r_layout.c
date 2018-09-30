@@ -680,13 +680,72 @@ RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
 
 
 
-RArea RLayoutFullHoriz(RLayout *self, RArea *area)
+/**
+ * Figure the best way to stretch an area across the full horizontal
+ * width of an RLayout.  This is the backend for the f.xhorizoom ctwm
+ * function, zooming a window to the full width of all monitors.
+ */
+RArea
+RLayoutFullHoriz(RLayout *self, RArea *area)
 {
 	int max_x, min_x2;
 
 	RLayoutFindLeftRightEdges(self, area, &max_x, &min_x2);
 
 	return RAreaNew(max_x, area->y, min_x2 - max_x + 1, area->height);
+
+	/**
+	 * This yields an area:
+	 * ~~~
+	 * TL   W
+	 *   *-----*
+	 *   |     |
+	 *  H|     |
+	 *   |     |
+	 *   *-----*
+	 * ~~~
+	 *
+	 * The precise construction of the area can be tricky.
+	 *
+	 * In the simplest case, the area is entirely in one horizontal
+	 * stripe to start with.  In that case, max_x is the left side of
+	 * that box, min_x2 is the right side, so the resulting area starts
+	 * at (left margin, area y), with the height of y and the width of
+	 * the whole stripe.  Easy.
+	 *
+	 * When it spans multiple, it's more convoluted.  Let's consider an
+	 * example layout to make it a little clearer:
+	 *
+	 * ~~~
+	 * *--------------------------*
+	 * |             |......2.....|
+	 * |                          |  <-----.
+	 * |             1 =========  |         .
+	 * *-------------*-=========--+-*        >-- 2 horiz stripes
+	 *               | =========    |       '
+	 *               |  /           |  <---'
+	 *       area  --+-'            |
+	 *               *--------------*
+	 * ~~~
+	 *
+	 * So in this case, we're trying to stretch area out as far
+	 * horizontal as it can go, crossing monitors.
+	 *
+	 * So, the top-left corner of our box (TL) has the X coordinate of
+	 * the right-most strip we started with (the lower, and the Y
+	 * coordinate of the top of the area, yielding point (1) above.
+	 *
+	 * The width W is the difference between the right of the left-most
+	 * (in this case, the top) stripe, and the left of the right-most
+	 * (the bottom) (plus 1 because math).  That's the width of the
+	 * intersecting horizontal area (2) above.
+	 *
+	 * And the height H is just the height of the original area.  And so,
+	 * our resulting area is the height of that original area (in ='s),
+	 * and stretched to the left and right until it runs into one or the
+	 * other monitor edge (1 space to the left, 2 to the right, in our
+	 * diagram).
+	 */
 }
 
 RArea RLayoutFullVert(RLayout *self, RArea *area)
