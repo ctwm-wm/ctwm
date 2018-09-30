@@ -687,7 +687,7 @@ RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
 /**
  * Callback util for RLayoutFindMonitorRightEdge()
  */
-static int
+static bool
 _findMonitorRightEdge(RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
@@ -702,7 +702,7 @@ _findMonitorRightEdge(RArea *cur, void *vdata)
 		data->u.min_x2 = RAreaX2(cur);
 		data->found = true;
 	}
-	return 0;
+	return false;
 }
 
 /**
