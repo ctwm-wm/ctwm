@@ -338,7 +338,9 @@ RLayoutFindTopEdge(RLayout *self, RArea *area)
  * As with RLayoutFindTopBottomEdges(), the return values (params) are
  * slightly counterintuitive.  left tells you where the left-side of the
  * right-most stripe that area intersects with is, and right tells you
- * the right side of the left-most.  This is used as a backend piece of
+ * the right side of the left-most.
+ *
+ * This is used as a backend piece of
  * various calculations trying to be sure something winds up on-screen.
  *
  * \param[in]  self   The monitor layout to work from
