@@ -101,19 +101,24 @@ RLayoutSetMonitorsNames(RLayout *self, char **names)
 
 /**
  * Given an RArea that doesn't reside in any of the areas in our RLayout,
- * create an maximally-tall RArea that is and that the window could go
- * into, and figure where that would fit in our RLayout.
+ * create a list of maximally-tall RArea slices out of our layout where
+ * it would wind up if we brought it onto the nearest screen edge.  This
+ * yields a RAreaList as tall as the slice[es] the window would touch if
+ * we moved it in.
+ *
+ * If we had the move the window horizontally (it was off-screen to the
+ * right or left), it results in a 1-pixel-wide slice of the right- or
+ * left-most self->vert.
+ *
+ * If we had to move it vertically (it was off to the top or bottom), it
+ * winds up being whatever horizontal intersection with self->vert would
+ * result from the window's x and width, with the full height of the
+ * involved slices.
  *
  * This is the vertical-stripe-returning counterpart of
  * _RLayoutRecenterHorizontally().
  *
- * This will create an RArea that's always the width of far_area, moved
- * horizontally as little as possible to ensure that the left or right
- * edge is on-screen, and the full height of our RLayout.  That area is
- * then RAreaListIntersect()'ed with self, yielding the set of vertical
- * stripes in self that new position will be in.
- *
- * This is called only by _RLayoutVerticalIntersect() when given an RArea
+ * This is called only by \_RLayoutVerticalIntersect() when given an RArea
  * that doesn't already intersect the RLayout.  Will probably not tell
  * you something useful if given a far_area that already _does_ intersect
  * self.
@@ -124,59 +129,84 @@ RLayoutSetMonitorsNames(RLayout *self, char **names)
 static RAreaList *
 _RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 {
-	//  |_V_|
-	//  |   |
-	// L|   |R
-	//  |___|
-	//  | V |
 	RArea big = RAreaListBigArea(self->monitors), tmp;
+
+	// We assume far_area is outside of self.  So it's in one of the
+	// three labelled areas:
+	//
+	//  |_V_|   ___ tmp.top
+	//  |   |     |
+	// L|   |R    |
+	//  |___|   ___ tmp.bottom
+	//  | V |
+	//
+	// So we'll create an RArea that's the y and height of big (a giant
+	// rectangle covering all the monitors), so that its intersection
+	// with self->vert will always cover a full vertical stripe.  Then
+	// we'll set its x/width so that it's shifted to be at least
+	// minimally inside big somehow.
 
 	// Where did it wind up?
 	if((far_area->x >= big.x && far_area->x <= RAreaX2(&big))
 	                || (RAreaX2(far_area) >= big.x && RAreaX2(far_area) <= RAreaX2(&big))) {
 		// In one of the V areas.  It's already in a horizontal position
-		// that would fit, so keep that.  Come up with a new area of that
-		// horizontal pos/width, which vertically covers the full height
-		// of self.
+		// that would fit, so we just keep x/width.
 		tmp = RAreaNew(far_area->x, big.y,
 		               far_area->width, big.height);
 	}
 	else if(RAreaX2(far_area) < big.x) {
-		// Off to the left side, so make an area that moves it over far
-		// enough to just eek into self.
+		// Off to the left side in L, so move it over just far enough
+		// that 1 pixel of it protrudes into the left side.
 		tmp = RAreaNew(big.x - far_area->width + 1, big.y,
 		               far_area->width, big.height);
 	}
 	else {
-		// Off to the right side, so move it over just enough for the
-		// left edge to be on-screen.
+		// Off to the right side in R, so move it over just far enough
+		// that 1 pixel of it protrudes into the right side.
 		tmp = RAreaNew(RAreaX2(&big), big.y,
 		               far_area->width, big.height);
 	}
 
-	// Intersect that new vertical stripe with our screen
+	// Then intersect that (full height, at least 1 pixel horizontally
+	// somewhere) with our collection of vertical stripes, to yield an
+	// answer.  If the window was off to the left or right, this will
+	// yield a 1-pixel-wide slice of either the left- or right-most
+	// ->vert of our layout.  If it were off the top of bottom, though,
+	// it'll yield some slice of 1 (or more) of our ->vert's, as wide as
+	// the window itself was.
 	return RAreaListIntersect(self->vert, &tmp);
+
+	// n.b.; _RLayoutRecenterHorizontally() is the counterpart to this
+	// with horizontal slices.  The comments in the two have been written
+	// independently with somewhat different explanatory styles, so if
+	// the description here was confusing, try reading the other one and
+	// transposing.
 }
 
 
 /**
  * Given an RArea that doesn't reside in any of the areas in our RLayout,
- * create an maximally-wide RArea that is and that the window could go
- * into, and figure where that would fit in our RLayout.
+ * create a list of maximally-wide RArea slices out of our layout where
+ * it would wind up if we brought it onto the nearest screen edge.  This
+ * yields a RAreaList as wide as the slice[es] the window would touch if
+ * we moved it in.
+ *
+ * If we had the move the window vertically (it was off-screen to the top
+ * or bottom), it results in a 1-pixel-wide slice of the top- or
+ * bottom-most self->horiz.
+ *
+ * If we had to move it horizontally (it was off to the left or right),
+ * it winds up being whatever vertical intersection with self->horiz
+ * would result from the window's y and height, with the full width of
+ * the involved slices.
  *
  * This is the horizontal-stripe-returning counterpart of
  * _RLayoutRecenterVertically().
  *
- * This will create an RArea that's always the height of far_area, moved
- * veritcally as little as possible to ensure that the top or bottom edge
- * is on-screen, and the full width of our RLayout.  That area is then
- * RAreaListIntersect()'ed with self, yielding the set of horizontal
- * stripes in self that new position will be in.
- *
- * This is called only by _RLayoutHorizontalIntersect() and
- * RLayoutFull1() when given an RArea that doesn't already intersect the
- * RLayout.  Will probably not tell you something useful if given a
- * far_area that already _does_ intersect self.
+ * This is called only by \_RLayoutVerticalIntersect() when given an RArea
+ * that doesn't already intersect the RLayout.  Will probably not tell
+ * you something useful if given a far_area that already _does_ intersect
+ * self.
  *
  * \param self     Our current monitor layout
  * \param far_area The area to act on
@@ -184,48 +214,62 @@ _RLayoutRecenterVertically(RLayout *self, RArea *far_area)
 static RAreaList *
 _RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
 {
+	RArea big = RAreaListBigArea(self->monitors), tmp;
+
+	// far_area is outside self, so it's in one of the 3 labelled areas:
+	//
 	// ___T___
 	//  |   |
 	// H|   |H
 	// _|___|_
 	//    B
-	RArea big = RAreaListBigArea(self->monitors), tmp;
+	//
+	// We create an RArea that's the x and width of big, so it always
+	// covers the entire width of any member of ->horiz.  Then we move
+	// the far_area in to the nearest edge to figure the y/height to set.
 
-	// Where is it?
 	if((far_area->y >= big.y && far_area->y <= RAreaY2(&big))
 	                || (RAreaY2(far_area) >= big.y && RAreaY2(far_area) <= RAreaY2(&big))) {
 		// In one of the H areas.  Already in a valid place vertically,
-		// so create a horizontal stripe there.
+		// so make a horizontal strip that position/tall.
 		tmp = RAreaNew(big.x, far_area->y,
 		               big.width, far_area->height);
 	}
 	else if(RAreaY2(far_area) < big.y) {
-		// Off the top (T); make a horizontal stripe low enough that the
-		// bottom of far_area winds up on-screen.
+		// Off the top (T); move it down just far enough that it's bottom
+		// protrudes 1 pixel into the top.
 		tmp = RAreaNew(big.x, big.y - far_area->height + 1,
 		               big.width, far_area->height);
 	}
 	else {
-		// Off the bottom (B); make the stripe high enough for the top of
-		// far_area to peek on-screen.
+		// Off the bottom (B); move it up just enough that it's top
+		// protrudes 1 pixel into the bottom.
 		tmp = RAreaNew(big.x, RAreaY2(&big),
 		               big.width, far_area->height);
 	}
 
-	// And find which horizontal stripes of the screen that falls into.
+	// And intersect that RArea with self->horiz.  This results in a
+	// full-width overlap with 1 pixel at the bottom of the bottom-most,
+	// 1 pixel at the top of the top-most, or 1..(far_area->height)
+	// overlap somewhere.  In that last case (far_area was in H), the
+	// intersection may yield multiple areas.
 	return RAreaListIntersect(self->horiz, &tmp);
+
+	// n.b.; _RLayoutRecenterVertically() is the counterpart to this with
+	// vertical slices.  The comments in the two have been written
+	// independently with somewhat different explanatory styles, so if
+	// the description here was confusing, try reading the other one and
+	// transposing.
 }
 
 
 /**
  * Find which vertical regions of our monitor layout a given RArea (often
- * a window) is in.  If it's not in any, shift it horizontally until it'd
- * be inside in that dimension, and return the vertical stripes that
- * horizontal extent would be in.
+ * a window) is in.  If it's completely off the screen, we move it until
+ * it's just over the nearest edge, and return the vertical stripe(s) it
+ * would be in then.
  *
- * Note that for our purposes, it doesn't matter whether the RArea is
- * _vertically_ within the RLayout.  This function is used only by
- * RLayoutFindTopBottomEdges()
+ * This function is used only by RLayoutFindTopBottomEdges()
  */
 static RAreaList *
 _RLayoutVerticalIntersect(RLayout *self, RArea *area)
@@ -244,13 +288,11 @@ _RLayoutVerticalIntersect(RLayout *self, RArea *area)
 
 /**
  * Find which horizontal regions of our monitor layout a given RArea
- * (often a window) is in.  If it's not in any, shift it vertically until
- * it'd be inside in that dimension, and return the horizontal stripes
- * that vertical extent would be in.
+ * (often a window) is in.  If it's completely off the screen, we move it
+ * until it's just over the nearest edge, and return the horizontal
+ * stripe(s) it would be in then.
  *
- * Note that for our purposes, it doesn't matter whether the RArea is
- * _horizontally_ within the RLayout.  This function is used only by
- * RLayoutFindLeftRightEdges()
+ * This function is used only by RLayoutFindLeftRightEdges()
  */
 static RAreaList *
 _RLayoutHorizontalIntersect(RLayout *self, RArea *area)
