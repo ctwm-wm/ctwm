@@ -2468,8 +2468,8 @@ f.beep::
 
 f.bottomzoom::
   This function stretches the bottom side of the window out to the bottom
-  edge of the current monitor, or restores the original size if the window was
-  already bottomzoom'd.
+  edge of the current monitor, or restores the original size if the
+  window was already bottomzoom'd.
 
 f.changepriority `rel-value`::
   Change the priority of a window by `rel-value` (enclosed within double
@@ -2593,15 +2593,15 @@ f.forwmapiconmgr::
 f.fullscreenzoom::
   This function is similar to the `f.fullzoom` function, except that it
   makes the client window (the part inside the frame) the size of the
-  current monitor, so the window decorations are off-screen.  This gives the same
-  visual effect as the window covering the whole screen with no
+  current monitor, so the window decorations are off-screen.  This gives
+  the same visual effect as the window covering the whole screen with no
   decorations.  If the window is already fullscreenzoom'd, it restores
   the original size.
 
 f.fullzoom::
   This function resizes the selected window to the full size of the
-  current monitor, or restores the original size if the window was already
-  fullzoom'd.
+  current monitor, or restores the original size if the window was
+  already fullzoom'd.
 
 f.function `string`::
   This function executes the user-defined function whose name is specified
@@ -2621,8 +2621,8 @@ f.hideworkspacemgr::
 
 f.horizoom::
   This function stretches the window so that it covers the whole width of
-  the current monitor, or restores the original size if the window was already
-  horizoom'd.
+  the current monitor, or restores the original size if the window was
+  already horizoom'd.
 
 f.htzoom::
   This function is a synonym for `f.topzoom`.
@@ -2674,8 +2674,8 @@ f.leftworkspace::
 
 f.leftzoom::
   This function stretches the left side of the window out to the left
-  edge of the current monitor, or restores the original size if the window was
-  already leftzoom'd.
+  edge of the current monitor, or restores the original size if the
+  window was already leftzoom'd.
 
 f.lower::
   This function lowers the selected window.
@@ -2864,8 +2864,8 @@ f.rightworkspace::
 
 f.rightzoom::
   This function stretches the right side of the window out to the right
-  edge of the current monitor, or restores the original size if the window was
-  already rightzoom'd.
+  edge of the current monitor, or restores the original size if the
+  window was already rightzoom'd.
 
 f.ring::
   Selects a window and adds it to the WarpRing, or removes it if it
@@ -2972,8 +2972,8 @@ f.toggleworkspacemgr::
   it is mapped, it will be unmapped and vice versa.
 
 f.topzoom::
-  This function stretches the top side of the window out to the top
-  edge of the current monitor, or restores the original size if the window was
+  This function stretches the top side of the window out to the top edge
+  of the current monitor, or restores the original size if the window was
   already topzoom'd.
 
 f.trace `string`::
@@ -3088,9 +3088,9 @@ f.xzoom::
   monitors.
 
 f.zoom::
-  This function stretches the window so that it covers the whole height of
-  the current monitor, or restores the original size if the window was already
-  zoom'd.  It's the vertical counterpart fo `f.horizoom`; perhaps
+  This function stretches the window so that it covers the whole height
+  of the current monitor, or restores the original size if the window was
+  already zoom'd.  It's the vertical counterpart fo `f.horizoom`; perhaps
   `f.vertzoom` would be a better name...
 
 
