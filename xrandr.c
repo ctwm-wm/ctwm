@@ -33,6 +33,11 @@ XrandrNewLayout(Display *disp, Window rootw)
 		return NULL;
 	}
 
+	// Useful note: vtwm also apparently has RANDR support.  It uses
+	// XRRGetScreenResources() and looping XRRGetCrtcInfo() to load info
+	// about the screen, and its conditionals suggest that's RANDR 1.2.
+	// Look into that if we decide to worry about earlier versions.
+
 	// Add space for all their names (plus trailing NULL)
 	monitor_names = malloc((i_nmonitors + 1) * sizeof(char *));
 	if(monitor_names == NULL) {
