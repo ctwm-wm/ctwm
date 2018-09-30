@@ -277,8 +277,8 @@ _RLayoutVerticalIntersect(RLayout *self, RArea *area)
 	RAreaList *mit = RAreaListIntersect(self->vert, area);
 
 	if(mit->len == 0) {
-		// Not in any of the areas; find the nearest horizontal shift to
-		// put in in one.
+		// Not on screen.  Move it to just over the nearest edge so it
+		// is, and give the slices it's in then.
 		RAreaListFree(mit);
 		mit = _RLayoutRecenterVertically(self, area);
 	}
@@ -300,9 +300,9 @@ _RLayoutHorizontalIntersect(RLayout *self, RArea *area)
 	RAreaList *mit = RAreaListIntersect(self->horiz, area);
 
 	if(mit->len == 0) {
+		// Not on screen.  Move it to just over the nearest edge so it
+		// is, and give the slices it's in then.
 		RAreaListFree(mit);
-
-		// Out of screen, recenter the window
 		mit = _RLayoutRecenterHorizontally(self, area);
 	}
 
