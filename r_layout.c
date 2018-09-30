@@ -748,93 +748,155 @@ RLayoutFullHoriz(RLayout *self, RArea *area)
 	 */
 }
 
-RArea RLayoutFullVert(RLayout *self, RArea *area)
+
+/**
+ * Figure the best way to stretch an area across the full vertical height
+ * of an RLayout.  This is the backend for the f.xzoom ctwm function,
+ * zooming a window to the full height of all monitors.
+ */
+RArea
+RLayoutFullVert(RLayout *self, RArea *area)
 {
 	int max_y, min_y2;
 
 	RLayoutFindTopBottomEdges(self, area, &max_y, &min_y2);
 
 	return RAreaNew(area->x, max_y, area->width, min_y2 - max_y + 1);
+
+	// X-ref long comment above in RLayoutFullHoriz() for worked example.
+	// This is just rotated 90 degrees, but the logic works out about the
+	// same.
 }
 
-RArea RLayoutFull(RLayout *self, RArea *area)
+
+/**
+ * Figure the best way to stretch an area across the largest horizontal
+ * and vertical space it can from its current position.  Essentially,
+ * stretch it in all directions until it hits the edge of our available
+ * space.
+ *
+ * This is the backend for the f.xfullzoom function.
+ */
+RArea
+RLayoutFull(RLayout *self, RArea *area)
 {
 	RArea full_horiz, full_vert, full1, full2;
 
+	// Get the boxes for full horizontal and vertical zooms, using the
+	// above functions.
 	full_horiz = RLayoutFullHoriz(self, area);
 	full_vert = RLayoutFullVert(self, area);
 
+	// Now stretch each of those in the other direction...
 	full1 = RLayoutFullVert(self, &full_horiz);
 	full2 = RLayoutFullHoriz(self, &full_vert);
 
+	// And return whichever was bigger.
 	return RAreaArea(&full1) > RAreaArea(&full2) ? full1 : full2;
 }
 
-RArea RLayoutFullHoriz1(RLayout *self, RArea *area)
+
+
+/**
+ * Figure the best way to stretch an area horizontally without crossing
+ * monitors.
+ *
+ * This is the backend for the f.horizoom ctwm function.
+ */
+RArea
+RLayoutFullHoriz1(RLayout *self, RArea *area)
 {
+	// Cheat by using RLayoutFull1() to find the RArea for the monitor
+	// it's most on.
 	RArea target = RLayoutFull1(self, area);
 	int max_y, min_y2;
 
-	max_y = max(area->y, target.y);
-	min_y2 = min(RAreaY2(area), RAreaY2(&target));
+	// We're stretching horizontally, so the x and width of target (that
+	// monitor) are already right.  But we have to figure the y and
+	// height...
 
-	// target.x OK
+	// Generally, the y is the window's original y, unless we had to move
+	// it down to get onto the target monitor.  XXX Wait, what if we
+	// moved it _up_?
+	max_y = max(area->y, target.y);
 	target.y = max_y;
-	// target.width OK
+
+	// The bottom would be the bottom of the area, clipped to the bottom
+	// of the monitor.  So the height is the diff.
+	min_y2 = min(RAreaY2(area), RAreaY2(&target));
 	target.height = min_y2 - max_y + 1;
 
 	return target;
 }
 
-RArea RLayoutFullVert1(RLayout *self, RArea *area)
+
+/**
+ * Figure the best way to stretch an area vertically without crossing
+ * monitors.
+ *
+ * This is the backend for the f.zoom ctwm function.
+ */
+RArea
+RLayoutFullVert1(RLayout *self, RArea *area)
 {
+	// Let RLayoutFull1() find the right monitor.
 	RArea target = RLayoutFull1(self, area);
 	int max_x, min_x2;
 
-	max_x = max(area->x, target.x);
-	min_x2 = min(RAreaX2(area), RAreaX2(&target));
+	// Stretching vertically, so the y/height of the monitor are already
+	// right.
 
+	// x is where the window was, unless we had to move it right to get
+	// onto the monitor.  XXX What if we moved it left?
+	max_x = max(area->x, target.x);
 	target.x = max_x;
-	// target.y OK
+
+	// Right side is where it was, unless we have to clip to the monitor.
+	min_x2 = min(RAreaX2(area), RAreaX2(&target));
 	target.width = min_x2 - max_x + 1;
-	// target.height OK
 
 	return target;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      RLayoutFull1 - resize the area to fill only one monitor
- *
- *  Returned Value:
- *      new resized area (need to be freed)
- *
- *  Inputs:
- *      self    - layout
- *      area    - area to resize
- *
- ***********************************************************************
- */
 
-RArea RLayoutFull1(RLayout *self, RArea *area)
+/**
+ * Figure the best way to resize an area to fill one monitor.
+ *
+ * This is the backend for the f.fullzoom ctwm function.
+ *
+ * \param self  Monitor layout
+ * \param area  Area (window) to zoom out
+ */
+RArea
+RLayoutFull1(RLayout *self, RArea *area)
 {
 	RArea target;
 	RAreaList *mit = RAreaListIntersect(self->monitors, area);
+	// Start with a list of all the monitors the window is on now.
 
 	if(mit->len == 0) {
+		// Not on any screens.  Find the "nearest" place it would wind
+		// up.
 		RAreaListFree(mit);
-
-		// Out of screen, recenter the window
 		mit = _RLayoutRecenterHorizontally(self, area);
 	}
 
+	// Of the monitors it's on, find the one that it's "most" on, and
+	// return the RArea of it.
 	target = RAreaListBestTarget(mit, area);
 	RAreaListFree(mit);
 	return target;
 }
 
-void RLayoutPrint(RLayout *self)
+
+
+/**
+ * Pretty-print an RLayout.
+ *
+ * Used for dev/debug.
+ */
+void
+RLayoutPrint(RLayout *self)
 {
 	fprintf(stderr, "[monitors=");
 	RAreaListPrint(self->monitors);
