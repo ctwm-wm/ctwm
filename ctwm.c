@@ -397,6 +397,8 @@ int main(int argc, char **argv)
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
 #endif
 		if(Scr->Layout == NULL) {
+			// No RANDR, so as far as we know, the layout is just one
+			// monitor with our full size.
 			RArea *fs;
 			RAreaList *fsl;
 
