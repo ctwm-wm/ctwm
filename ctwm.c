@@ -61,10 +61,9 @@
 #include "captive.h"
 #ifdef XRANDR
 #include "xrandr.h"
-#else
+#endif
 #include "r_area.h"
 #include "r_area_list.h"
-#endif
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
@@ -385,19 +384,17 @@ int main(int argc, char **argv)
 
 #ifdef XRANDR
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
-		if(Scr->Layout == NULL) {
-			continue;
-		}
-#else
-		Scr->Layout = RLayoutNew(
-		                      RAreaListNew(1,
-		                                   RAreaNewStatic(Scr->rootx,
-		                                                   Scr->rooty,
-		                                                   Scr->rootw,
-		                                                   Scr->rooth),
-		                                   NULL));
 #endif
-#ifdef DEBUG
+		if(Scr->Layout == NULL) {
+			Scr->Layout = RLayoutNew(
+			                      RAreaListNew(1,
+			                                   RAreaNewStatic(Scr->rootx,
+			                                                   Scr->rooty,
+			                                                   Scr->rootw,
+			                                                   Scr->rooth),
+			                                   NULL));
+		}
+#if 1
 		fprintf(stderr, "Full: ");
 		RLayoutPrint(Scr->Layout);
 #endif
