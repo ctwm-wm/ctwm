@@ -382,6 +382,17 @@ int main(int argc, char **argv)
 		Scr->XineramaRoot = croot;
 		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
+		Scr->rootx  = crootx;
+		Scr->rooty  = crooty;
+		Scr->rootw  = crootw;
+		Scr->rooth  = crooth;
+
+		Scr->crootx = crootx;
+		Scr->crooty = crooty;
+		Scr->crootw = crootw;
+		Scr->crooth = crooth;
+
+
 #ifdef XRANDR
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
 #endif
@@ -430,16 +441,6 @@ int main(int argc, char **argv)
 		Scr->TBInfo.width  = 0;    /* is set or not */
 		Scr->TBInfo.leftx  = 0;
 		Scr->TBInfo.titlex = 0;
-
-		Scr->rootx  = crootx;
-		Scr->rooty  = crooty;
-		Scr->rootw  = crootw;
-		Scr->rooth  = crooth;
-
-		Scr->crootx = crootx;
-		Scr->crooty = crooty;
-		Scr->crootw = crootw;
-		Scr->crooth = crooth;
 
 		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
 		Scr->MaxWindowHeight = 32767 - Scr->rooth;
