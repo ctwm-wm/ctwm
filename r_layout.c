@@ -312,14 +312,16 @@ _RLayoutHorizontalIntersect(RLayout *self, RArea *area)
 
 /**
  * Figure the position (or nearest practical position) of an area in our
- * screen layout, and return into about the bottom/top stripes it fits
+ * screen layout, and return info about the bottom/top stripes it fits
  * into.
  *
  * Note that the return values (params) are slightly counterintuitive;
  * top tells you where the top of the lowest stripe that area intersects
- * with is, and bottom tells you the bottom of the highest.  This is used
- * as a backend piece of various calculations trying to be sure something
- * winds up on-screen.
+ * with is, and bottom tells you the bottom of the highest.
+ *
+ * This is used as a backend piece of various calculations trying to be
+ * sure something winds up on-screen and when figuring out how to zoom
+ * it.
  *
  * \param[in]  self   The monitor layout to work from
  * \param[in]  area   The area to be fit into the monitors
@@ -374,7 +376,7 @@ RLayoutFindTopEdge(RLayout *self, RArea *area)
 
 /**
  * Figure the position (or nearest practical position) of an area in our
- * screen layout, and return into about the left/rightmost stripes it fits
+ * screen layout, and return info about the left/rightmost stripes it fits
  * into.
  *
  * As with RLayoutFindTopBottomEdges(), the return values (params) are
@@ -382,8 +384,9 @@ RLayoutFindTopEdge(RLayout *self, RArea *area)
  * right-most stripe that area intersects with is, and right tells you
  * the right side of the left-most.
  *
- * This is used as a backend piece of
- * various calculations trying to be sure something winds up on-screen.
+ * This is used as a backend piece of various calculations trying to be
+ * sure something winds up on-screen and when figuring out how to zoom
+ * it.
  *
  * \param[in]  self   The monitor layout to work from
  * \param[in]  area   The area to be fit into the monitors
