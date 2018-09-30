@@ -761,7 +761,8 @@ RLayoutFullHoriz(RLayout *self, RArea *area)
 	 * the whole stripe.  Easy.
 	 *
 	 * When it spans multiple, it's more convoluted.  Let's consider an
-	 * example layout to make it a little clearer:
+	 * example layout (of horizontal stripes, so that top stripe may be
+	 * across 2 monitors) to make it a little clearer:
 	 *
 	 * ~~~
 	 * *--------------------------*
@@ -776,7 +777,7 @@ RLayoutFullHoriz(RLayout *self, RArea *area)
 	 * ~~~
 	 *
 	 * So in this case, we're trying to stretch area out as far
-	 * horizontal as it can go, crossing monitors.
+	 * horizontal as it can go, crossing monitors if possible.
 	 *
 	 * So, the top-left corner of our box (TL) has the X coordinate of
 	 * the right-most strip we started with (the lower, and the Y
