@@ -588,7 +588,7 @@ _findMonitorBottomEdge(RArea *cur, void *vdata)
  * That is, we find the monitor whose bottom is the highest up, but that
  * still shows the bottom edge of the window, and return that monitor's
  * bottom.  If the bottom of the window is off all the monitors, that's
- * just the highest-up monitor that contains the window.
+ * just the highest-ending monitor that contains the window.
  */
 int
 RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
@@ -629,7 +629,7 @@ _findMonitorTopEdge(RArea *cur, void *vdata)
  * That is, we find the monitor whose top is the lowest down, but that
  * still shows the top edge of the window, and return that monitor's top.
  * If the top of the window is off all the monitors, that's just the
- * lowest-down monitor that contains part of the window.
+ * lowest-ending monitor that contains part of the window.
  */
 int
 RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
@@ -670,7 +670,8 @@ _findMonitorLeftEdge(RArea *cur, void *vdata)
  * That is, we find the monitor whose left is the furthest right, but
  * that still shows the left edge of the window, and return that
  * monitor's left.  If the left edge of the window is off all the
- * monitors, that's just the right-most monitor that contains the window.
+ * monitors, that's just the right-most-ending monitor that contains the
+ * window.
  */
 int
 RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
@@ -711,7 +712,8 @@ _findMonitorRightEdge(RArea *cur, void *vdata)
  * That is, we find the monitor whose right is the furthest left, but
  * that still shows the right edge of the window, and return that
  * monitor's right.  If the right edge of the window is off all the
- * monitors, that's just the left-most monitor that contains the window.
+ * monitors, that's just the left-most-ending monitor that contains the
+ * window.
  */
 int
 RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
