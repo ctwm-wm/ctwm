@@ -3050,45 +3050,36 @@ f.winrefresh::
   selected window is refreshed.
 
 f.xbottomzoom::
-  This function is similar to the `f.xfullzoom` function, but
-  resizes the window to fill only the bottom half of the screen (across all
-  monitors).
+  This function is similar to the `f.bottomzoom` function, but will cross
+  monitors.
 
 f.xfullscreenzoom::
-  This function resizes the client part (the inside the frame) of the selected
-  window to the full size of the display (across all monitors) or else
-  restores the original size if the window was already zoomed. The frame is
-  moved just outside the screen. This gives the appearance that window is
-  shown without the frame: since ctwm can't dynamically make a window
-  borderless, this is the next best thing.
+  This function is similar to the `f.fullscreenzoom` function, but will
+  cross monitors.
 
 f.xfullzoom::
-  This function resizes the selected window to the full size of the display
-  (across all monitors) or else restores the original size if the window was
-  already zoomed.
+  This function is similar to the `f.fullzoom` function, but will cross
+  monitors.
 
 f.xhorizoom::
-  This variable is similar to the `f.xzoom` function except that the selected
-  window is resized to the full width of the display (across all monitors).
+  This function is similar to the `f.horizoom` function, but will cross
+  monitors.
 
 f.xleftzoom::
-  This variable is similar to the `f.xbottomzoom` function but causes the
-  selected window is only resized to the left half of the display (across all
-  monitors).
+  This function is similar to the `f.leftzoom` function, but will cross
+  monitors.
 
 f.xrightzoom::
-  This variable is similar to the `f.xbottomzoom` function except that the
-  selected window is only resized to the right half of the display (across all
-  monitors).
+  This function is similar to the `f.rightzoom` function, but will cross
+  monitors.
 
 f.xtopzoom::
-  This variable is similar to the `f.xbottomzoom` function except that the
-  selected window is only resized to the top half of the display (accross all
-  monitors).
+  This function is similar to the `f.topzoom` function, but will cross
+  monitors.
 
 f.xzoom::
-  This function is similar to the `f.xfullzoom` function, except that
-  the only the height of the selected window is changed.
+  This function is similar to the `f.zoom` function, but will cross
+  monitors.
 
 f.zoom::
   This function is similar to the `f.fullzoom` function, except that
