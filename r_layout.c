@@ -473,7 +473,7 @@ _findMonitorByXY(RArea *cur, void *vdata)
 RArea
 RLayoutGetAreaAtXY(RLayout *self, int x, int y)
 {
-	struct monitor_finder_xy data = { NULL, x, y };
+	struct monitor_finder_xy data = { .area = NULL, .x = x, .y = y };
 
 	RAreaListForeach(self->monitors, _findMonitorByXY, &data);
 
@@ -593,7 +593,7 @@ _findMonitorBottomEdge(RArea *cur, void *vdata)
 int
 RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
 {
-	struct monitor_edge_finder data = { area };
+	struct monitor_edge_finder data = { .area = area };
 
 	RAreaListForeach(self->monitors, _findMonitorBottomEdge, &data);
 
@@ -634,7 +634,7 @@ _findMonitorTopEdge(RArea *cur, void *vdata)
 int
 RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
 {
-	struct monitor_edge_finder data = { area };
+	struct monitor_edge_finder data = { .area = area };
 
 	RAreaListForeach(self->monitors, _findMonitorTopEdge, &data);
 
@@ -676,7 +676,7 @@ _findMonitorLeftEdge(RArea *cur, void *vdata)
 int
 RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
 {
-	struct monitor_edge_finder data = { area };
+	struct monitor_edge_finder data = { .area = area };
 
 	RAreaListForeach(self->monitors, _findMonitorLeftEdge, &data);
 
@@ -718,7 +718,7 @@ _findMonitorRightEdge(RArea *cur, void *vdata)
 int
 RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
 {
-	struct monitor_edge_finder data = { area };
+	struct monitor_edge_finder data = { .area = area };
 
 	RAreaListForeach(self->monitors, _findMonitorRightEdge, &data);
 
