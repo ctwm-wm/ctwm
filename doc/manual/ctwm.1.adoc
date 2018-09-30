@@ -2448,9 +2448,9 @@ f.beep::
   This function sounds the keyboard bell.
 
 f.bottomzoom::
-  This function stretches the height of the window so that its bottom
-  reaches to the bottom of the screen, or restores the original size if
-  the window was already bottomzoom'd.
+  This function stretches the bottom side of the window out to the bottom
+  edge of the screen, or restores the original size if the window was
+  already bottomzoom'd.
 
 f.changepriority `rel-value`::
   Change the priority of a window by `rel-value` (enclosed within double
