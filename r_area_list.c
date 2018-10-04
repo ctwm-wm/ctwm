@@ -13,6 +13,16 @@
 #include "r_area.h"
 
 
+/*
+ * Prototype internal funcs
+ */
+
+/* Comparison routines used in sorts */
+static int _cmpX(const void *av, const void *bv);
+static int _cmpY(const void *av, const void *bv);
+
+
+
 /**
  * Create an RAreaList from a set of RArea's.
  * \param cap Hint as to the number of RArea's being passed
