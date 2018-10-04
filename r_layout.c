@@ -14,6 +14,24 @@
 #include "util.h"
 
 
+/*
+ * Prototype internal funcs
+ */
+static void _RLayoutFreeNames(RLayout *self);
+static RAreaList * _RLayoutRecenterVertically(RLayout *self, RArea *far_area);
+static RAreaList * _RLayoutRecenterHorizontally(RLayout *self, RArea *far_area);
+static RAreaList * _RLayoutVerticalIntersect(RLayout *self, RArea *area);
+static RAreaList * _RLayoutHorizontalIntersect(RLayout *self, RArea *area);
+
+/* Foreach() callbacks used in various lookups */
+static bool _findMonitorByXY(RArea *cur, void *vdata);
+static bool _findMonitorBottomEdge(RArea *cur, void *vdata);
+static bool _findMonitorTopEdge(RArea *cur, void *vdata);
+static bool _findMonitorLeftEdge(RArea *cur, void *vdata);
+static bool _findMonitorRightEdge(RArea *cur, void *vdata);
+
+
+
 /**
  * Create an RLayout for a given set of monitors.
  *
