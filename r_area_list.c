@@ -16,10 +16,16 @@
 /*
  * Prototype internal funcs
  */
+static RAreaList *RAreaListCopy(RAreaList *self);
+static void RAreaListDelete(RAreaList *self, int index);
+static void RAreaListAddList(RAreaList *self, RAreaList *other);
+static RAreaList * RAreaListIntersectCrop(RAreaList *self, RArea *area);
 
-/* Comparison routines used in sorts */
+/* Sorts and their internal comparison routines */
 static int _cmpX(const void *av, const void *bv);
+static void RAreaListSortX(RAreaList *self);
 static int _cmpY(const void *av, const void *bv);
+static void RAreaListSortY(RAreaList *self);
 
 
 
@@ -66,7 +72,7 @@ RAreaListNew(int cap, ...)
 /**
  * Create a copy of a given RAreaList.
  */
-RAreaList *
+static RAreaList *
 RAreaListCopy(RAreaList *self)
 {
 	RAreaList *new = RAreaListNew(self->cap, NULL);
@@ -141,7 +147,7 @@ RAreaListFree(RAreaList *self)
 /**
  * Delete an RArea from inside an RAreaList.
  */
-void
+static void
 RAreaListDelete(RAreaList *self, int index)
 {
 	if(index >= self->len) {
@@ -182,7 +188,7 @@ RAreaListAdd(RAreaList *self, RArea *area)
 /**
  * Add the RArea's from one RAreaList onto another.
  */
-void
+static void
 RAreaListAddList(RAreaList *self, RAreaList *other)
 {
 	if(self->cap - self->len < other->len) {
@@ -225,7 +231,7 @@ _cmpX(const void *av, const void *bv)
 /**
  * Sort the RArea's in an RAreaList by their x coordinate.
  */
-void
+static void
 RAreaListSortX(RAreaList *self)
 {
 	if(self->len <= 1) {
@@ -259,7 +265,7 @@ _cmpY(const void *av, const void *bv)
 /**
  * Sort the RArea's in an RAreaList by their y coordinate.
  */
-void
+static void
 RAreaListSortY(RAreaList *self)
 {
 	if(self->len <= 1) {
@@ -387,7 +393,7 @@ RAreaListForeach(RAreaList *self,
  * Create an RAreaList from another, cropped to a certain area defined by
  * an RArea.
  */
-RAreaList *
+static RAreaList *
 RAreaListIntersectCrop(RAreaList *self, RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
