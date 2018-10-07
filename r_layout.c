@@ -18,17 +18,21 @@
  * Prototype internal funcs
  */
 static void _RLayoutFreeNames(RLayout *self);
-static RAreaList *_RLayoutRecenterVertically(RLayout *self, RArea *far_area);
-static RAreaList *_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area);
-static RAreaList *_RLayoutVerticalIntersect(RLayout *self, RArea *area);
-static RAreaList *_RLayoutHorizontalIntersect(RLayout *self, RArea *area);
+static RAreaList *_RLayoutRecenterVertically(const RLayout *self,
+		const RArea *far_area);
+static RAreaList *_RLayoutRecenterHorizontally(const RLayout *self,
+		const RArea *far_area);
+static RAreaList *_RLayoutVerticalIntersect(const RLayout *self,
+		const RArea *area);
+static RAreaList *_RLayoutHorizontalIntersect(const RLayout *self,
+		const RArea *area);
 
 /* Foreach() callbacks used in various lookups */
-static bool _findMonitorByXY(RArea *cur, void *vdata);
-static bool _findMonitorBottomEdge(RArea *cur, void *vdata);
-static bool _findMonitorTopEdge(RArea *cur, void *vdata);
-static bool _findMonitorLeftEdge(RArea *cur, void *vdata);
-static bool _findMonitorRightEdge(RArea *cur, void *vdata);
+static bool _findMonitorByXY(const RArea *cur, void *vdata);
+static bool _findMonitorBottomEdge(const RArea *cur, void *vdata);
+static bool _findMonitorTopEdge(const RArea *cur, void *vdata);
+static bool _findMonitorLeftEdge(const RArea *cur, void *vdata);
+static bool _findMonitorRightEdge(const RArea *cur, void *vdata);
 
 
 
@@ -145,7 +149,7 @@ RLayoutSetMonitorsNames(RLayout *self, char **names)
  * \param far_area The area to act on
  */
 static RAreaList *
-_RLayoutRecenterVertically(RLayout *self, RArea *far_area)
+_RLayoutRecenterVertically(const RLayout *self, const RArea *far_area)
 {
 	RArea big = RAreaListBigArea(self->monitors), tmp;
 
@@ -230,7 +234,7 @@ _RLayoutRecenterVertically(RLayout *self, RArea *far_area)
  * \param far_area The area to act on
  */
 static RAreaList *
-_RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
+_RLayoutRecenterHorizontally(const RLayout *self, const RArea *far_area)
 {
 	RArea big = RAreaListBigArea(self->monitors), tmp;
 
@@ -290,7 +294,7 @@ _RLayoutRecenterHorizontally(RLayout *self, RArea *far_area)
  * This function is used only by RLayoutFindTopBottomEdges()
  */
 static RAreaList *
-_RLayoutVerticalIntersect(RLayout *self, RArea *area)
+_RLayoutVerticalIntersect(const RLayout *self, const RArea *area)
 {
 	RAreaList *mit = RAreaListIntersect(self->vert, area);
 
@@ -313,7 +317,7 @@ _RLayoutVerticalIntersect(RLayout *self, RArea *area)
  * This function is used only by RLayoutFindLeftRightEdges()
  */
 static RAreaList *
-_RLayoutHorizontalIntersect(RLayout *self, RArea *area)
+_RLayoutHorizontalIntersect(const RLayout *self, const RArea *area)
 {
 	RAreaList *mit = RAreaListIntersect(self->horiz, area);
 
@@ -472,12 +476,12 @@ struct monitor_finder_xy {
  * Callback util for RLayoutGetAreaAtXY().
  */
 static bool
-_findMonitorByXY(RArea *cur, void *vdata)
+_findMonitorByXY(const RArea *cur, void *vdata)
 {
 	struct monitor_finder_xy *data = (struct monitor_finder_xy *)vdata;
 
 	if(RAreaContainsXY(cur, data->x, data->y)) {
-		data->area = cur;
+		*data->area = *cur;
 		return true;
 	}
 	return false;
@@ -580,7 +584,7 @@ struct monitor_edge_finder {
  * Callback util for RLayoutFindMonitorBottomEdge()
  */
 static bool
-_findMonitorBottomEdge(RArea *cur, void *vdata)
+_findMonitorBottomEdge(const RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -621,7 +625,7 @@ RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
  * Callback util for RLayoutFindMonitorTopEdge()
  */
 static bool
-_findMonitorTopEdge(RArea *cur, void *vdata)
+_findMonitorTopEdge(const RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -662,7 +666,7 @@ RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
  * Callback util for RLayoutFindMonitorLeftEdge()
  */
 static bool
-_findMonitorLeftEdge(RArea *cur, void *vdata)
+_findMonitorLeftEdge(const RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
@@ -704,7 +708,7 @@ RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
  * Callback util for RLayoutFindMonitorRightEdge()
  */
 static bool
-_findMonitorRightEdge(RArea *cur, void *vdata)
+_findMonitorRightEdge(const RArea *cur, void *vdata)
 {
 	struct monitor_edge_finder *data = (struct monitor_edge_finder *)vdata;
 
