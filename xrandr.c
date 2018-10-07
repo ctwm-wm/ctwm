@@ -20,7 +20,7 @@
 RLayout *
 XrandrNewLayout(Display *disp, Window rootw)
 {
-	int i_nmonitors = 0, index;
+	int i_nmonitors = 0;
 	XRRMonitorInfo *ps_monitors;
 	char **monitor_names, *name;
 	RAreaList *areas;
@@ -75,13 +75,13 @@ XrandrNewLayout(Display *disp, Window rootw)
 
 	// Add each and its name into an RAreaList
 	areas = RAreaListNew(i_nmonitors, NULL);
-	for(index = 0; index < i_nmonitors; index++) {
-		cur_area = RAreaNew(ps_monitors[index].x,
-		                    ps_monitors[index].y,
-		                    ps_monitors[index].width,
-		                    ps_monitors[index].height);
+	for(int i = 0; i < i_nmonitors; i++) {
+		cur_area = RAreaNew(ps_monitors[i].x,
+		                    ps_monitors[i].y,
+		                    ps_monitors[i].width,
+		                    ps_monitors[i].height);
 
-		name = XGetAtomName(disp, ps_monitors[index].name);
+		name = XGetAtomName(disp, ps_monitors[i].name);
 #ifdef DEBUG
 		fprintf(stderr, "NEW area: %s%s",
 		        name != NULL ? name : "",
@@ -90,11 +90,11 @@ XrandrNewLayout(Display *disp, Window rootw)
 		fprintf(stderr, "\n");
 #endif
 		if(name != NULL) {
-			monitor_names[index] = strdup(name);
+			monitor_names[i] = strdup(name);
 			XFree(name);
 		}
 		else {
-			monitor_names[index] = strdup("");
+			monitor_names[i] = strdup("");
 		}
 
 		RAreaListAdd(areas, &cur_area);

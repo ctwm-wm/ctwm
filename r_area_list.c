@@ -357,11 +357,10 @@ RAreaList *
 RAreaListIntersect(RAreaList *self, RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
-	int index;
 
-	for(index = 0; index < self->len; index++) {
-		if(RAreaIsIntersect(&self->areas[index], area)) {
-			RAreaListAdd(new, &self->areas[index]);
+	for(int i = 0; i < self->len; i++) {
+		if(RAreaIsIntersect(&self->areas[i], area)) {
+			RAreaListAdd(new, &self->areas[i]);
 		}
 	}
 
@@ -398,10 +397,9 @@ RAreaListIntersectCrop(RAreaList *self, RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
 	RArea it;
-	int index;
 
-	for(index = 0; index < self->len; index++) {
-		it = RAreaIntersect(&self->areas[index], area);
+	for(int i = 0; i < self->len; i++) {
+		it = RAreaIntersect(&self->areas[i], area);
 		if(RAreaIsValid(&it)) {
 			RAreaListAdd(new, &it);
 		}
@@ -424,22 +422,22 @@ RArea
 RAreaListBigArea(RAreaList *self)
 {
 	RArea *area;
-	int index, x, y, x2, y2;
+	int i, x, y, x2, y2;
 
-	for(index = 0, area = self->areas; index < self->len; area++, index++) {
-		if(index == 0 || area->x < x) {
+	for(i = 0, area = self->areas; i < self->len; area++, i++) {
+		if(i == 0 || area->x < x) {
 			x = area->x;
 		}
 
-		if(index == 0 || area->y < y) {
+		if(i == 0 || area->y < y) {
 			y = area->y;
 		}
 
-		if(index == 0 || RAreaX2(area) > x2) {
+		if(i == 0 || RAreaX2(area) > x2) {
 			x2 = RAreaX2(area);
 		}
 
-		if(index == 0 || RAreaY2(area) > y2) {
+		if(i == 0 || RAreaY2(area) > y2) {
 			y2 = RAreaY2(area);
 		}
 	}
@@ -458,13 +456,13 @@ RArea
 RAreaListBestTarget(RAreaList *self, RArea *area)
 {
 	RArea full_area = RAreaInvalid(), it;
-	int index, max_area = -1;
+	int max_area = -1;
 
-	for(index = 0; index < self->len; index++) {
-		it = RAreaIntersect(area, &self->areas[index]);
+	for(int i = 0; i < self->len; i++) {
+		it = RAreaIntersect(area, &self->areas[i]);
 		if(RAreaIsValid(&it) && (max_area < 0 || RAreaArea(&it) > max_area)) {
 			max_area = RAreaArea(&it);
-			full_area = self->areas[index];
+			full_area = self->areas[i];
 		}
 	}
 

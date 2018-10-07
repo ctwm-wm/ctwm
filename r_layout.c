@@ -528,16 +528,14 @@ RArea
 RLayoutGetAreaByName(RLayout *self, const char *name, int len)
 {
 	if(self->names != NULL) {
-		int index;
-
 		if(len < 0) {
 			len = strlen(name);
 		}
 
-		for(index = 0; index < self->monitors->len
-		                && self->names[index] != NULL; index++) {
-			if(strncmp(self->names[index], name, len) == 0) {
-				return self->monitors->areas[index];
+		for(int i = 0; i < self->monitors->len
+		                && self->names[i] != NULL; i++) {
+			if(strncmp(self->names[i], name, len) == 0) {
+				return self->monitors->areas[i];
 			}
 		}
 	}
