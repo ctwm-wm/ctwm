@@ -68,7 +68,7 @@ XrandrNewLayout(Display *disp, Window rootw)
 	// Look into that if we decide to worry about earlier versions.
 
 	// Add space for all their names (plus trailing NULL)
-	monitor_names = malloc((i_nmonitors + 1) * sizeof(char *));
+	monitor_names = calloc((i_nmonitors + 1), sizeof(char *));
 	if(monitor_names == NULL) {
 		abort();
 	}
@@ -99,7 +99,6 @@ XrandrNewLayout(Display *disp, Window rootw)
 
 		RAreaListAdd(areas, &cur_area);
 	}
-	monitor_names[index] = NULL;
 
 	XRRFreeMonitors(ps_monitors);
 
