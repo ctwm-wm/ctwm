@@ -798,11 +798,12 @@ RLayoutFullHoriz(RLayout *self, RArea *area)
 	 * horizontal as it can go, crossing monitors if possible.
 	 *
 	 * So, the top-left corner of our box (TL) has the X coordinate of
-	 * the right-most strip we started with (the lower, and the Y
-	 * coordinate of the top of the area, yielding point (1) above.
+	 * the right-most strip we started with (the lower), and the Y
+	 * coordinate of the top of the area, yielding point (1) above (not
+	 * the asterisk; specifically where (1) sits).
 	 *
-	 * The width W is the difference between the right of the left-most
-	 * (in this case, the top) stripe, and the left of the right-most
+	 * The width W is the difference between the right of the left-most-ending
+	 * (in this case, the top) stripe, and the left of the right-most-starting
 	 * (the bottom) (plus 1 because math).  That's the width of the
 	 * intersecting horizontal area (2) above.
 	 *
