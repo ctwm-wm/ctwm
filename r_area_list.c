@@ -19,7 +19,7 @@
 static RAreaList *RAreaListCopy(const RAreaList *self);
 static void RAreaListDelete(RAreaList *self, int index);
 static void RAreaListAddList(RAreaList *self, const RAreaList *other);
-static RAreaList * RAreaListIntersectCrop(RAreaList *self, const RArea *area);
+static RAreaList *RAreaListIntersectCrop(const RAreaList *self, const RArea *area);
 
 /* Sorts and their internal comparison routines */
 static int _cmpX(const void *av, const void *bv);
@@ -89,7 +89,7 @@ RAreaListCopy(const RAreaList *self)
  * BorderBottom/Top/Left/Right config params.
  */
 RAreaList *
-RAreaListCopyCropped(RAreaList *self, int left_margin,
+RAreaListCopyCropped(const RAreaList *self, int left_margin,
                      int right_margin,
                      int top_margin, int bottom_margin)
 {
@@ -169,7 +169,7 @@ RAreaListDelete(RAreaList *self, int index)
  * Add an RArea onto an RAreaList.
  */
 void
-RAreaListAdd(RAreaList *self, RArea *area)
+RAreaListAdd(RAreaList *self, const RArea *area)
 {
 	if(self->cap == self->len) {
 		RArea *new_list = realloc(self->areas, (self->cap + 1) * sizeof(RArea));
@@ -281,7 +281,7 @@ RAreaListSortY(const RAreaList *self)
  * RArea's.
  */
 RAreaList *
-RAreaListHorizontalUnion(RAreaList *self)
+RAreaListHorizontalUnion(const RAreaList *self)
 {
 	RAreaList *copy = RAreaListCopy(self);
 
@@ -319,7 +319,7 @@ refine:
  * RArea's.
  */
 RAreaList *
-RAreaListVerticalUnion(RAreaList *self)
+RAreaListVerticalUnion(const RAreaList *self)
 {
 	RAreaList *copy = RAreaListCopy(self);
 
@@ -352,7 +352,7 @@ refine:
  * RArea intersects with.
  */
 RAreaList *
-RAreaListIntersect(RAreaList *self, RArea *area)
+RAreaListIntersect(const RAreaList *self, const RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
 
@@ -371,7 +371,7 @@ RAreaListIntersect(RAreaList *self, RArea *area)
  * allowing them a place to stash other internal data.
  */
 void
-RAreaListForeach(RAreaList *self,
+RAreaListForeach(const RAreaList *self,
                  bool (*func)(RArea *cur_area, void *data),
                  void *data)
 {
@@ -391,7 +391,7 @@ RAreaListForeach(RAreaList *self,
  * an RArea.
  */
 static RAreaList *
-RAreaListIntersectCrop(RAreaList *self, const RArea *area)
+RAreaListIntersectCrop(const RAreaList *self, const RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
 
@@ -416,7 +416,7 @@ RAreaListIntersectCrop(RAreaList *self, const RArea *area)
  * figuring "real" x/y coordinates.
  */
 RArea
-RAreaListBigArea(RAreaList *self)
+RAreaListBigArea(const RAreaList *self)
 {
 	int x, y, x2, y2;
 
@@ -450,13 +450,13 @@ RAreaListBigArea(RAreaList *self)
  * monitor, by finding which monitor it's on.
  */
 RArea
-RAreaListBestTarget(RAreaList *self, RArea *area)
+RAreaListBestTarget(const RAreaList *self, const RArea *area)
 {
-	RArea full_area = RAreaInvalid(), it;
+	RArea full_area = RAreaInvalid();
 	int max_area = -1;
 
 	for(int i = 0; i < self->len; i++) {
-		it = RAreaIntersect(area, &self->areas[i]);
+		RArea it = RAreaIntersect(area, &self->areas[i]);
 		if(RAreaIsValid(&it) && (max_area < 0 || RAreaArea(&it) > max_area)) {
 			max_area = RAreaArea(&it);
 			full_area = self->areas[i];
@@ -471,7 +471,7 @@ RAreaListBestTarget(RAreaList *self, RArea *area)
  * Find the x coordinate of the right-most RArea in an RAreaList.
  */
 int
-RAreaListMaxX(RAreaList *self)
+RAreaListMaxX(const RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int max_x = self->len ? cur_area->x : 0;
@@ -490,7 +490,7 @@ RAreaListMaxX(RAreaList *self)
  * Find the y coordinate of the bottom-most RArea in an RAreaList.
  */
 int
-RAreaListMaxY(RAreaList *self)
+RAreaListMaxY(const RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int max_y = self->len ? cur_area->y : 0;
@@ -510,7 +510,7 @@ RAreaListMaxY(RAreaList *self)
  * RAreaList.
  */
 int
-RAreaListMinX2(RAreaList *self)
+RAreaListMinX2(const RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int min_x = self->len ? RAreaX2(cur_area) : 0;
@@ -530,7 +530,7 @@ RAreaListMinX2(RAreaList *self)
  * RAreaList.
  */
 int
-RAreaListMinY2(RAreaList *self)
+RAreaListMinY2(const RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int min_y = self->len ? RAreaY2(cur_area) : 0;
@@ -551,7 +551,7 @@ RAreaListMinY2(RAreaList *self)
  * Used for dev/debug.
  */
 void
-RAreaListPrint(RAreaList *self)
+RAreaListPrint(const RAreaList *self)
 {
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	fprintf(stderr, "[len=%d cap=%d", self->len, self->cap);

@@ -12,27 +12,28 @@ RAreaList *RAreaListNew(int cap, ...);
 
 void RAreaListFree(RAreaList *self);
 
-RAreaList *RAreaListCopyCropped(RAreaList *self, int left_margin,
+RAreaList *RAreaListCopyCropped(const RAreaList *self, int left_margin,
                                 int right_margin,
                                 int top_margin, int bottom_margin);
 
-void RAreaListAdd(RAreaList *self, RArea *area);
+void RAreaListAdd(RAreaList *self, const RArea *area);
 
-RAreaList *RAreaListHorizontalUnion(RAreaList *self);
-RAreaList *RAreaListVerticalUnion(RAreaList *self);
+RAreaList *RAreaListHorizontalUnion(const RAreaList *self);
+RAreaList *RAreaListVerticalUnion(const RAreaList *self);
 
-RAreaList *RAreaListIntersect(RAreaList *self, RArea *area);
-void RAreaListForeach(RAreaList *self, bool (*func)(RArea *area, void *data),
+RAreaList *RAreaListIntersect(const RAreaList *self, const RArea *area);
+void RAreaListForeach(const RAreaList *self,
+                      bool (*func)(RArea *area, void *data),
                       void *data);
 
-RArea RAreaListBigArea(RAreaList *self);
-RArea RAreaListBestTarget(RAreaList *self, RArea *area);
+RArea RAreaListBigArea(const RAreaList *self);
+RArea RAreaListBestTarget(const RAreaList *self, const RArea *area);
 
-int RAreaListMaxX(RAreaList *self);
-int RAreaListMaxY(RAreaList *self);
-int RAreaListMinX2(RAreaList *self);
-int RAreaListMinY2(RAreaList *self);
+int RAreaListMaxX(const RAreaList *self);
+int RAreaListMaxY(const RAreaList *self);
+int RAreaListMinX2(const RAreaList *self);
+int RAreaListMinY2(const RAreaList *self);
 
-void RAreaListPrint(RAreaList *self);
+void RAreaListPrint(const RAreaList *self);
 
 #endif  /* _CTWM_R_AREA_LIST_H */
