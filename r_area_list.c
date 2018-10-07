@@ -284,7 +284,6 @@ RAreaList *
 RAreaListHorizontalUnion(RAreaList *self)
 {
 	RAreaList *copy = RAreaListCopy(self);
-	int i, j;
 
 refine:
 	// Two areas can't form a horizontal stripe if there's any space
@@ -295,8 +294,8 @@ refine:
 	// Try HorizontalUnion'ing each area with the next one.  If we can
 	// create a union, replace them with it, and hop back to the top of
 	// the process to start over.
-	for(i = 0; i < copy->len - 1; i++) {
-		for(j = i + 1; j < copy->len; j++) {
+	for(int i = 0; i < copy->len - 1; i++) {
+		for(int j = i + 1; j < copy->len; j++) {
 			RAreaList *repl = RAreaHorizontalUnion(&copy->areas[i], &copy->areas[j]);
 			if(repl != NULL) {
 				if(repl->len) {
@@ -323,14 +322,13 @@ RAreaList *
 RAreaListVerticalUnion(RAreaList *self)
 {
 	RAreaList *copy = RAreaListCopy(self);
-	int i, j;
 
 refine:
 	// X-ref logic above in RAreaListHorizontalUnion()
 	RAreaListSortY(copy);
 
-	for(i = 0; i < copy->len - 1; i++) {
-		for(j = i + 1; j < copy->len; j++) {
+	for(int i = 0; i < copy->len - 1; i++) {
+		for(int j = i + 1; j < copy->len; j++) {
 			RAreaList *repl = RAreaVerticalUnion(&copy->areas[i], &copy->areas[j]);
 			if(repl != NULL) {
 				if(repl->len) {
