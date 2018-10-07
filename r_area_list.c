@@ -19,7 +19,7 @@
 static RAreaList *RAreaListCopy(const RAreaList *self);
 static void RAreaListDelete(RAreaList *self, int index);
 static void RAreaListAddList(RAreaList *self, const RAreaList *other);
-static RAreaList * RAreaListIntersectCrop(RAreaList *self, RArea *area);
+static RAreaList * RAreaListIntersectCrop(RAreaList *self, const RArea *area);
 
 /* Sorts and their internal comparison routines */
 static int _cmpX(const void *av, const void *bv);
@@ -391,13 +391,12 @@ RAreaListForeach(RAreaList *self,
  * an RArea.
  */
 static RAreaList *
-RAreaListIntersectCrop(RAreaList *self, RArea *area)
+RAreaListIntersectCrop(RAreaList *self, const RArea *area)
 {
 	RAreaList *new = RAreaListNew(self->len, NULL);
-	RArea it;
 
 	for(int i = 0; i < self->len; i++) {
-		it = RAreaIntersect(&self->areas[i], area);
+		RArea it = RAreaIntersect(&self->areas[i], area);
 		if(RAreaIsValid(&it)) {
 			RAreaListAdd(new, &it);
 		}
