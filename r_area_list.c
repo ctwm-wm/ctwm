@@ -373,10 +373,10 @@ RAreaListIntersect(const RAreaList *self, const RArea *area)
  */
 void
 RAreaListForeach(const RAreaList *self,
-                 bool (*func)(RArea *cur_area, void *data),
+                 bool (*func)(const RArea *cur_area, void *data),
                  void *data)
 {
-	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
+	const RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 
 	while(cur_area < area_end) {
 		if(func(cur_area++, data)) {

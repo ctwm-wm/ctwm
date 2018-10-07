@@ -23,7 +23,7 @@ RAreaList *RAreaListVerticalUnion(const RAreaList *self);
 
 RAreaList *RAreaListIntersect(const RAreaList *self, const RArea *area);
 void RAreaListForeach(const RAreaList *self,
-                      bool (*func)(RArea *area, void *data),
+                      bool (*func)(const RArea *area, void *data),
                       void *data);
 
 RArea RAreaListBigArea(const RAreaList *self);

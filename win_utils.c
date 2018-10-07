@@ -512,7 +512,7 @@ MoveResizeSizeWindow(int x, int y, unsigned int width, unsigned int height)
  * XXX In desperate need of better commenting.
  */
 static void
-_tryToPack(RArea *final, RArea *cur_win)
+_tryToPack(RArea *final, const RArea *cur_win)
 {
 	if(final->x >= cur_win->x + cur_win->width) {
 		return;
@@ -549,7 +549,7 @@ _tryToPack(RArea *final, RArea *cur_win)
 }
 
 static bool
-_tryToPackVsEachMonitor(RArea *monitor_area, void *vfinal)
+_tryToPackVsEachMonitor(const RArea *monitor_area, void *vfinal)
 {
 	_tryToPack((RArea *)vfinal, monitor_area);
 	return false;
