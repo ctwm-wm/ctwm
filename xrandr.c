@@ -50,7 +50,7 @@ XrandrNewLayout(Display *disp, Window rootw)
 	if(ver_maj < 1 || (ver_maj == 1 && ver_min < 5)) {
 #ifdef DEBUG
 		fprintf(stderr, "Server has RANDR %d.%d, we need 1.5+.\n",
-				ver_maj, ver_min);
+		        ver_maj, ver_min);
 #endif
 		return NULL;
 	}
