@@ -16,16 +16,16 @@
 /*
  * Prototype internal funcs
  */
-static RAreaList *RAreaListCopy(RAreaList *self);
+static RAreaList *RAreaListCopy(const RAreaList *self);
 static void RAreaListDelete(RAreaList *self, int index);
-static void RAreaListAddList(RAreaList *self, RAreaList *other);
+static void RAreaListAddList(RAreaList *self, const RAreaList *other);
 static RAreaList * RAreaListIntersectCrop(RAreaList *self, RArea *area);
 
 /* Sorts and their internal comparison routines */
 static int _cmpX(const void *av, const void *bv);
-static void RAreaListSortX(RAreaList *self);
+static void RAreaListSortX(const RAreaList *self);
 static int _cmpY(const void *av, const void *bv);
-static void RAreaListSortY(RAreaList *self);
+static void RAreaListSortY(const RAreaList *self);
 
 
 
@@ -73,7 +73,7 @@ RAreaListNew(int cap, ...)
  * Create a copy of a given RAreaList.
  */
 static RAreaList *
-RAreaListCopy(RAreaList *self)
+RAreaListCopy(const RAreaList *self)
 {
 	RAreaList *new = RAreaListNew(self->cap, NULL);
 
@@ -189,7 +189,7 @@ RAreaListAdd(RAreaList *self, RArea *area)
  * Add the RArea's from one RAreaList onto another.
  */
 static void
-RAreaListAddList(RAreaList *self, RAreaList *other)
+RAreaListAddList(RAreaList *self, const RAreaList *other)
 {
 	if(self->cap - self->len < other->len) {
 		RArea *new_list = realloc(self->areas,
@@ -232,7 +232,7 @@ _cmpX(const void *av, const void *bv)
  * Sort the RArea's in an RAreaList by their x coordinate.
  */
 static void
-RAreaListSortX(RAreaList *self)
+RAreaListSortX(const RAreaList *self)
 {
 	if(self->len <= 1) {
 		return;
@@ -266,7 +266,7 @@ _cmpY(const void *av, const void *bv)
  * Sort the RArea's in an RAreaList by their y coordinate.
  */
 static void
-RAreaListSortY(RAreaList *self)
+RAreaListSortY(const RAreaList *self)
 {
 	if(self->len <= 1) {
 		return;
