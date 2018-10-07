@@ -66,7 +66,7 @@ RLayoutNew(RAreaList *monitors)
  * params)
  */
 RLayout *
-RLayoutCopyCropped(RLayout *self, int left_margin, int right_margin,
+RLayoutCopyCropped(const RLayout *self, int left_margin, int right_margin,
                    int top_margin, int bottom_margin)
 {
 	RAreaList *cropped_monitors = RAreaListCopyCropped(self->monitors,
@@ -351,7 +351,7 @@ _RLayoutHorizontalIntersect(const RLayout *self, const RArea *area)
  * \param[out] bottom The bottom of the highest stripe area fits into.
  */
 void
-RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
+RLayoutFindTopBottomEdges(const RLayout *self, const RArea *area, int *top,
                           int *bottom)
 {
 	RAreaList *mit = _RLayoutVerticalIntersect(self, area);
@@ -374,7 +374,7 @@ RLayoutFindTopBottomEdges(RLayout *self, RArea *area, int *top,
  * RLayoutFindTopBottomEdges().
  */
 int
-RLayoutFindBottomEdge(RLayout *self, RArea *area)
+RLayoutFindBottomEdge(const RLayout *self, const RArea *area)
 {
 	int min_y2;
 	RLayoutFindTopBottomEdges(self, area, NULL, &min_y2);
@@ -388,7 +388,7 @@ RLayoutFindBottomEdge(RLayout *self, RArea *area)
  * RLayoutFindTopBottomEdges().
  */
 int
-RLayoutFindTopEdge(RLayout *self, RArea *area)
+RLayoutFindTopEdge(const RLayout *self, const RArea *area)
 {
 	int max_y;
 	RLayoutFindTopBottomEdges(self, area, &max_y, NULL);
@@ -416,7 +416,7 @@ RLayoutFindTopEdge(RLayout *self, RArea *area)
  * \param[out] right  The right edge of the left-most stripe area fits into.
  */
 void
-RLayoutFindLeftRightEdges(RLayout *self, RArea *area, int *left,
+RLayoutFindLeftRightEdges(const RLayout *self, const RArea *area, int *left,
                           int *right)
 {
 	RAreaList *mit = _RLayoutHorizontalIntersect(self, area);
@@ -439,7 +439,7 @@ RLayoutFindLeftRightEdges(RLayout *self, RArea *area, int *left,
  * RLayoutFindLeftRightEdges().
  */
 int
-RLayoutFindLeftEdge(RLayout *self, RArea *area)
+RLayoutFindLeftEdge(const RLayout *self, const RArea *area)
 {
 	int max_x;
 	RLayoutFindLeftRightEdges(self, area, &max_x, NULL);
@@ -453,7 +453,7 @@ RLayoutFindLeftEdge(RLayout *self, RArea *area)
  * RLayoutFindLeftRightEdges().
  */
 int
-RLayoutFindRightEdge(RLayout *self, RArea *area)
+RLayoutFindRightEdge(const RLayout *self, const RArea *area)
 {
 	int min_x2;
 	RLayoutFindLeftRightEdges(self, area, NULL, &min_x2);
@@ -493,7 +493,7 @@ _findMonitorByXY(const RArea *cur, void *vdata)
  * answers "Which monitor is this position on?"
  */
 RArea
-RLayoutGetAreaAtXY(RLayout *self, int x, int y)
+RLayoutGetAreaAtXY(const RLayout *self, int x, int y)
 {
 	struct monitor_finder_xy data = { .area = NULL, .x = x, .y = y };
 
@@ -512,7 +512,7 @@ RLayoutGetAreaAtXY(RLayout *self, int x, int y)
  * to find index if there weren't any RArea's in the RLayout, and (2) if
  * there weren't any, it would return areas[-1] which is scary garbage...
  */
-RArea RLayoutGetAreaIndex(RLayout *self, int index)
+RArea RLayoutGetAreaIndex(const RLayout *self, int index)
 {
 	if(index >= self->monitors->len) {
 		index = self->monitors->len - 1;
@@ -529,7 +529,7 @@ RArea RLayoutGetAreaIndex(RLayout *self, int index)
  * find the monitor with a given name (RANDR output name).
  */
 RArea
-RLayoutGetAreaByName(RLayout *self, const char *name, int len)
+RLayoutGetAreaByName(const RLayout *self, const char *name, int len)
 {
 	if(self->names != NULL) {
 		if(len < 0) {
@@ -556,7 +556,7 @@ RLayoutGetAreaByName(RLayout *self, const char *name, int len)
  * deref'd there...
  */
 RArea
-RLayoutBigArea(RLayout *self)
+RLayoutBigArea(const RLayout *self)
 {
 	return RAreaListBigArea(self->monitors);
 }
@@ -569,7 +569,7 @@ RLayoutBigArea(RLayout *self)
 
 /// Internal struct for use in FindMonitor*Edge() callbacks.
 struct monitor_edge_finder {
-	RArea *area;
+	const RArea *area;
 	union {
 		int max_x;
 		int max_y;
@@ -611,7 +611,7 @@ _findMonitorBottomEdge(const RArea *cur, void *vdata)
  * just the highest-ending monitor that contains the window.
  */
 int
-RLayoutFindMonitorBottomEdge(RLayout *self, RArea *area)
+RLayoutFindMonitorBottomEdge(const RLayout *self, const RArea *area)
 {
 	struct monitor_edge_finder data = { .area = area };
 
@@ -652,7 +652,7 @@ _findMonitorTopEdge(const RArea *cur, void *vdata)
  * lowest-ending monitor that contains part of the window.
  */
 int
-RLayoutFindMonitorTopEdge(RLayout *self, RArea *area)
+RLayoutFindMonitorTopEdge(const RLayout *self, const RArea *area)
 {
 	struct monitor_edge_finder data = { .area = area };
 
@@ -694,7 +694,7 @@ _findMonitorLeftEdge(const RArea *cur, void *vdata)
  * window.
  */
 int
-RLayoutFindMonitorLeftEdge(RLayout *self, RArea *area)
+RLayoutFindMonitorLeftEdge(const RLayout *self, const RArea *area)
 {
 	struct monitor_edge_finder data = { .area = area };
 
@@ -736,7 +736,7 @@ _findMonitorRightEdge(const RArea *cur, void *vdata)
  * window.
  */
 int
-RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
+RLayoutFindMonitorRightEdge(const RLayout *self, const RArea *area)
 {
 	struct monitor_edge_finder data = { .area = area };
 
@@ -753,7 +753,7 @@ RLayoutFindMonitorRightEdge(RLayout *self, RArea *area)
  * function, zooming a window to the full width of all monitors.
  */
 RArea
-RLayoutFullHoriz(RLayout *self, RArea *area)
+RLayoutFullHoriz(const RLayout *self, const RArea *area)
 {
 	int max_x, min_x2;
 
@@ -824,7 +824,7 @@ RLayoutFullHoriz(RLayout *self, RArea *area)
  * zooming a window to the full height of all monitors.
  */
 RArea
-RLayoutFullVert(RLayout *self, RArea *area)
+RLayoutFullVert(const RLayout *self, const RArea *area)
 {
 	int max_y, min_y2;
 
@@ -847,7 +847,7 @@ RLayoutFullVert(RLayout *self, RArea *area)
  * This is the backend for the f.xfullzoom function.
  */
 RArea
-RLayoutFull(RLayout *self, RArea *area)
+RLayoutFull(const RLayout *self, const RArea *area)
 {
 	RArea full_horiz, full_vert, full1, full2;
 
@@ -873,7 +873,7 @@ RLayoutFull(RLayout *self, RArea *area)
  * This is the backend for the f.horizoom ctwm function.
  */
 RArea
-RLayoutFullHoriz1(RLayout *self, RArea *area)
+RLayoutFullHoriz1(const RLayout *self, const RArea *area)
 {
 	// Cheat by using RLayoutFull1() to find the RArea for the monitor
 	// it's most on.
@@ -906,7 +906,7 @@ RLayoutFullHoriz1(RLayout *self, RArea *area)
  * This is the backend for the f.zoom ctwm function.
  */
 RArea
-RLayoutFullVert1(RLayout *self, RArea *area)
+RLayoutFullVert1(const RLayout *self, const RArea *area)
 {
 	// Let RLayoutFull1() find the right monitor.
 	RArea target = RLayoutFull1(self, area);
@@ -937,7 +937,7 @@ RLayoutFullVert1(RLayout *self, RArea *area)
  * \param area  Area (window) to zoom out
  */
 RArea
-RLayoutFull1(RLayout *self, RArea *area)
+RLayoutFull1(const RLayout *self, const RArea *area)
 {
 	RArea target;
 	RAreaList *mit = RAreaListIntersect(self->monitors, area);
@@ -965,7 +965,7 @@ RLayoutFull1(RLayout *self, RArea *area)
  * Used for dev/debug.
  */
 void
-RLayoutPrint(RLayout *self)
+RLayoutPrint(const RLayout *self)
 {
 	fprintf(stderr, "[monitors=");
 	RAreaListPrint(self->monitors);
