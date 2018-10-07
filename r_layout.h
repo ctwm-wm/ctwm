@@ -11,7 +11,8 @@
 RLayout *RLayoutNew(RAreaList *monitors);
 void RLayoutFree(RLayout *self);
 
-RLayout *RLayoutCopyCropped(const RLayout *self, int left_margin, int right_margin,
+RLayout *RLayoutCopyCropped(const RLayout *self, int left_margin,
+                            int right_margin,
                             int top_margin, int bottom_margin);
 
 RLayout *RLayoutSetMonitorsNames(RLayout *self, char **names);
@@ -25,7 +26,8 @@ void RLayoutFindTopBottomEdges(const RLayout *self, const RArea *area, int *top,
                                int *bottom);
 int RLayoutFindBottomEdge(const RLayout *self, const RArea *area);
 int RLayoutFindTopEdge(const RLayout *self, const RArea *area);
-void RLayoutFindLeftRightEdges(const RLayout *self, const RArea *area, int *left,
+void RLayoutFindLeftRightEdges(const RLayout *self, const RArea *area,
+                               int *left,
                                int *right);
 int RLayoutFindLeftEdge(const RLayout *self, const RArea *area);
 int RLayoutFindRightEdge(const RLayout *self, const RArea *area);

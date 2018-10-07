@@ -19,13 +19,13 @@
  */
 static void _RLayoutFreeNames(RLayout *self);
 static RAreaList *_RLayoutRecenterVertically(const RLayout *self,
-		const RArea *far_area);
+                const RArea *far_area);
 static RAreaList *_RLayoutRecenterHorizontally(const RLayout *self,
-		const RArea *far_area);
+                const RArea *far_area);
 static RAreaList *_RLayoutVerticalIntersect(const RLayout *self,
-		const RArea *area);
+                const RArea *area);
 static RAreaList *_RLayoutHorizontalIntersect(const RLayout *self,
-		const RArea *area);
+                const RArea *area);
 
 /* Foreach() callbacks used in various lookups */
 static bool _findMonitorByXY(const RArea *cur, void *vdata);
