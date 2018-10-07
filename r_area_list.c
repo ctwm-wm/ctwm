@@ -376,10 +376,8 @@ RAreaListForeach(const RAreaList *self,
                  bool (*func)(const RArea *cur_area, void *data),
                  void *data)
 {
-	const RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
-
-	while(cur_area < area_end) {
-		if(func(cur_area++, data)) {
+	for(int i = 0 ; i < self->len ; i++) {
+		if(func(&(self->areas[i]), data) == true) {
 			break;
 		}
 	}
