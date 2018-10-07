@@ -12,17 +12,17 @@ RArea *RAreaNewStatic(int x, int y, int width, int height);
 RArea RAreaNew(int x, int y, int width, int height);
 
 RArea RAreaInvalid(void);
-bool RAreaIsValid(RArea *self);
+bool RAreaIsValid(const RArea *self);
 
-int RAreaX2(RArea *self);
-int RAreaY2(RArea *self);
-int RAreaArea(RArea *self);
-RArea RAreaIntersect(RArea *self, RArea *other);
-bool RAreaIsIntersect(RArea *self, RArea *other);
-bool RAreaContainsXY(RArea *self, int x, int y);
-RAreaList *RAreaHorizontalUnion(RArea *self, RArea *other);
-RAreaList *RAreaVerticalUnion(RArea *self, RArea *other);
+int RAreaX2(const RArea *self);
+int RAreaY2(const RArea *self);
+int RAreaArea(const RArea *self);
+RArea RAreaIntersect(const RArea *self, const RArea *other);
+bool RAreaIsIntersect(const RArea *self, const RArea *other);
+bool RAreaContainsXY(const RArea *self, int x, int y);
+RAreaList *RAreaHorizontalUnion(const RArea *self, const RArea *other);
+RAreaList *RAreaVerticalUnion(const RArea *self, const RArea *other);
 
-void RAreaPrint(RArea *self);
+void RAreaPrint(const RArea *self);
 
 #endif  /* _CTWM_R_AREA_H */

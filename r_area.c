@@ -60,7 +60,7 @@ RAreaInvalid()
  * not have a real value to work with.
  */
 bool
-RAreaIsValid(RArea *self)
+RAreaIsValid(const RArea *self)
 {
 	return self->width >= 0 && self->height >= 0;
 }
@@ -70,7 +70,7 @@ RAreaIsValid(RArea *self)
  * Return the right edge of an RArea.
  */
 int
-RAreaX2(RArea *self)
+RAreaX2(const RArea *self)
 {
 	return self->x + self->width - 1;
 }
@@ -80,7 +80,7 @@ RAreaX2(RArea *self)
  * Return the bottom edge of an RArea.
  */
 int
-RAreaY2(RArea *self)
+RAreaY2(const RArea *self)
 {
 	return self->y + self->height - 1;
 }
@@ -90,7 +90,7 @@ RAreaY2(RArea *self)
  * Return the area of an RArea.
  */
 int
-RAreaArea(RArea *self)
+RAreaArea(const RArea *self)
 {
 	return self->width * self->height;
 }
@@ -100,7 +100,7 @@ RAreaArea(RArea *self)
  * Return an RArea describing the intersection of two RArea's.
  */
 RArea
-RAreaIntersect(RArea *self, RArea *other)
+RAreaIntersect(const RArea *self, const RArea *other)
 {
 	// Do they even intersect?
 	if(RAreaIsIntersect(self, other)) {
@@ -124,7 +124,7 @@ RAreaIntersect(RArea *self, RArea *other)
  * Do two areas intersect?
  */
 bool
-RAreaIsIntersect(RArea *self, RArea *other)
+RAreaIsIntersect(const RArea *self, const RArea *other)
 {
 	// [other][self]
 	if(RAreaX2(other) < self->x) {
@@ -156,7 +156,7 @@ RAreaIsIntersect(RArea *self, RArea *other)
  * Is a given coordinate inside a RArea?
  */
 bool
-RAreaContainsXY(RArea *self, int x, int y)
+RAreaContainsXY(const RArea *self, int x, int y)
 {
 	return x >= self->x && x <= RAreaX2(self)
 	       && y >= self->y && y <= RAreaY2(self);
@@ -176,7 +176,7 @@ RAreaContainsXY(RArea *self, int x, int y)
  * Only used in startup to populate the RLayout.horiz list.
  */
 RAreaList *
-RAreaHorizontalUnion(RArea *self, RArea *other)
+RAreaHorizontalUnion(const RArea *self, const RArea *other)
 {
 	// If there's horizontal space between them, they can't possibly
 	// combine.
@@ -236,7 +236,7 @@ RAreaHorizontalUnion(RArea *self, RArea *other)
 		RAreaList *res = RAreaListNew(3, NULL);
 
 		// Figure which starts higher.
-		RArea *top, *bot;
+		const RArea *top, *bot;
 		if(self->y < other->y) {
 			top = self;
 			bot = other;
@@ -301,7 +301,7 @@ RAreaHorizontalUnion(RArea *self, RArea *other)
  * Only used in startup to populate the RLayout.vert list.
  */
 RAreaList *
-RAreaVerticalUnion(RArea *self, RArea *other)
+RAreaVerticalUnion(const RArea *self, const RArea *other)
 {
 	// Vertical space between them; can't possibly combine.
 	if(RAreaY2(other) < self->y - 1) {
@@ -352,7 +352,7 @@ RAreaVerticalUnion(RArea *self, RArea *other)
 		RAreaList *res = RAreaListNew(3, NULL);
 
 		// Which starts left-most
-		RArea *left, *right;
+		const RArea *left, *right;
 		if(self->x < other->x) {
 			left = self;
 			right = other;
@@ -408,7 +408,7 @@ RAreaVerticalUnion(RArea *self, RArea *other)
  * Used for dev/debug.
  */
 void
-RAreaPrint(RArea *self)
+RAreaPrint(const RArea *self)
 {
 	fprintf(stderr, "[x=%d y=%d w=%d h=%d]", self->x, self->y, self->width,
 	        self->height);
