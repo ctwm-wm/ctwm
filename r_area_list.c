@@ -419,10 +419,10 @@ RAreaListIntersectCrop(RAreaList *self, RArea *area)
 RArea
 RAreaListBigArea(RAreaList *self)
 {
-	RArea *area;
-	int i, x, y, x2, y2;
+	int x, y, x2, y2;
 
-	for(i = 0, area = self->areas; i < self->len; area++, i++) {
+	for(int i = 0 ; i < self->len ; i++) {
+		const RArea *area = &(self->areas[i]);
 		if(i == 0 || area->x < x) {
 			x = area->x;
 		}
