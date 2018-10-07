@@ -802,10 +802,10 @@ RLayoutFullHoriz(RLayout *self, RArea *area)
 	 * coordinate of the top of the area, yielding point (1) above (not
 	 * the asterisk; specifically where (1) sits).
 	 *
-	 * The width W is the difference between the right of the left-most-ending
-	 * (in this case, the top) stripe, and the left of the right-most-starting
-	 * (the bottom) (plus 1 because math).  That's the width of the
-	 * intersecting horizontal area (2) above.
+	 * The width W is the difference between the right of the
+	 * left-most-ending (in this case, the top) stripe, and the left of
+	 * the right-most-starting (the bottom) (plus 1 because math).
+	 * That's the width of the intersecting horizontal area (2) above.
 	 *
 	 * And the height H is just the height of the original area.  And so,
 	 * our resulting area is the height of that original area (in ='s),
