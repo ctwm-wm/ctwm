@@ -480,6 +480,9 @@ RAreaListMaxX(const RAreaList *self)
 	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	int max_x = self->len ? cur_area->x : 0;
 
+	// While a for(i=0 ; i<self->len ; i++) loop is generally nicer for
+	// these iterations, it winds up being a little trickier here, so we
+	// leave it as a pointer-stepper.
 	while(++cur_area < area_end) {
 		if(cur_area->x > max_x) {
 			max_x = cur_area->x;
