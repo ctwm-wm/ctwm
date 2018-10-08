@@ -548,7 +548,8 @@ RLayoutGetAreaAtXY(const RLayout *self, int x, int y)
  * Return the index'th RArea in an RLayout, or RAreaInvalid() with an out
  * of range index.
  */
-RArea RLayoutGetAreaIndex(const RLayout *self, int index)
+RArea
+RLayoutGetAreaIndex(const RLayout *self, int index)
 {
 	if(index >= self->monitors->len || index < 0) {
 		return RAreaInvalid();
