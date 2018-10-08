@@ -13,7 +13,7 @@ option(USE_M4     "Enable m4 support"                  ON )
 option(USE_RPLAY  "Enable librplay sound support"      OFF)
 option(USE_SREGEX "Use regex from libc"                ON )
 option(USE_EWMH   "Support some Extended Window Manager Hints"  ON )
-option(USE_XRANDR15 "Enable Xrandr 1.5 support"        ON )
+option(USE_XRANDR "Enable Xrandr support"              ON )
 
 
 
@@ -123,8 +123,8 @@ else()
 endif(USE_SREGEX)
 
 
-# Is Xrandr 1.5 available?
-if(USE_XRANDR15)
+# Is Xrandr of a suitable version available?
+if(USE_XRANDR)
 	if(NOT X11_Xrandr_FOUND)
 		message(FATAL_ERROR "Couldn't find Xrandr libs")
 	endif(NOT X11_Xrandr_FOUND)
@@ -147,4 +147,4 @@ if(USE_XRANDR15)
 	message(STATUS "Enabling Xrandr support: ${X11_Xrandr_LIB}")
 else()
 	message(STATUS "Disabling Xrandr support.")
-endif(USE_XRANDR15)
+endif(USE_XRANDR)

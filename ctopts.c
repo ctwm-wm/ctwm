@@ -32,7 +32,7 @@ static char *ctopts[] = {
 	"EWMH",
 #endif
 #ifdef XRANDR
-	"XRANDR15",
+	"XRANDR",
 #endif
 #ifdef DEBUG
 	"DEBUG",
