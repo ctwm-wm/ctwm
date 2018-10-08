@@ -419,6 +419,11 @@ RAreaListBigArea(const RAreaList *self)
 {
 	int x, y, x2, y2;
 
+	// Guard; probably impossible
+	if(self->len < 1) {
+		return RAreaInvalid();
+	}
+
 	for(int i = 0 ; i < self->len ; i++) {
 		const RArea *area = &(self->areas[i]);
 		if(i == 0 || area->x < x) {
