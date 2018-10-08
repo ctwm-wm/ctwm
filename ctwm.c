@@ -371,8 +371,6 @@ int main(int argc, char **argv)
 			continue;
 		}
 
-		numManaged ++;
-
 		Scr->screen = scrnum;
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
@@ -764,6 +762,8 @@ int main(int argc, char **argv)
 
 		FirstScreen = false;
 		Scr->FirstTime = false;
+
+		numManaged++; // Succeeded in adding one more
 	} /* for */
 
 	if(numManaged == 0) {
