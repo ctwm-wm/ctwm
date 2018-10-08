@@ -1011,6 +1011,16 @@ RLayoutBigArea(const RLayout *self)
 
 
 /**
+ * How many monitors does a given RLayout contain?
+ */
+int
+RLayoutNumMonitors(const RLayout *self)
+{
+	return self->monitors->len;
+}
+
+
+/**
  * Pretty-print an RLayout.
  *
  * Used for dev/debug.

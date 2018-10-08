@@ -410,6 +410,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Full: ");
 		RLayoutPrint(Scr->Layout);
 #endif
+		if(RLayoutNumMonitors(Scr->Layout) < 1) {
+			fprintf(stderr, "Error: No monitors found on screen %d!\n", scrnum);
+			continue;
+		}
 
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 

@@ -44,6 +44,7 @@ RArea RLayoutFullVert1(const RLayout *self, const RArea *area);
 RArea RLayoutFull1(const RLayout *self, const RArea *area);
 
 RArea RLayoutBigArea(const RLayout *self);
+int RLayoutNumMonitors(const RLayout *self);
 void RLayoutPrint(const RLayout *self);
 
 #endif  /* _CTWM_R_LAYOUT_H */
