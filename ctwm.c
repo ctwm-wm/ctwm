@@ -730,6 +730,15 @@ int main(int argc, char **argv)
 		attributes.bit_gravity = NorthWestGravity;
 
 		{
+			// Stick the SizeWindow at the top left of the first monitor
+			// we found on this Screen.  That _may_ not be (0,0) (imagine
+			// a shorter left and taller right monitor, with their bottom
+			// edges lined up instead of top), so we have to look up what
+			// that coordinate is.  If we're CenterFeedbackWindow'ing,
+			// the window will have to move between monitors depending on
+			// where the window we're moving is (starts), but
+			// MoveResizeSizeWindow() will handle that.  If not, it
+			// always stays in the top-left of the first display.
 			RArea area = RLayoutGetAreaIndex(Scr->Layout, 0);
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root,
 			                                area.x, area.y,
