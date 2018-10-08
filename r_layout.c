@@ -545,18 +545,13 @@ RLayoutGetAreaAtXY(const RLayout *self, int x, int y)
 
 
 /**
- * Return the index'th RArea in an RLayout, or the last one if index
- * overflows.
- *
- * \todo XXX This is questionable.  This function is called in only one
- * place, and that place calls it with index 0, so (a) it could only fail
- * to find index if there weren't any RArea's in the RLayout, and (2) if
- * there weren't any, it would return areas[-1] which is scary garbage...
+ * Return the index'th RArea in an RLayout, or RAreaInvalid() with an out
+ * of range index.
  */
 RArea RLayoutGetAreaIndex(const RLayout *self, int index)
 {
-	if(index >= self->monitors->len) {
-		index = self->monitors->len - 1;
+	if(index >= self->monitors->len || index < 0) {
+		return RAreaInvalid();
 	}
 
 	return self->monitors->areas[index];
