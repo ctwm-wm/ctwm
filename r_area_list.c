@@ -560,11 +560,13 @@ RAreaListMinY2(const RAreaList *self)
 void
 RAreaListPrint(const RAreaList *self)
 {
-	RArea *cur_area = &self->areas[0], *area_end = &self->areas[self->len];
 	fprintf(stderr, "[len=%d cap=%d", self->len, self->cap);
-	while(cur_area < area_end) {
+
+	for(int i = 0 ; i < self->len ; i++) {
+		RArea *area = &self->areas[i];
 		fprintf(stderr, " ");
-		RAreaPrint(cur_area++);
+		RAreaPrint(area);
 	}
+
 	fprintf(stderr, "]");
 }
