@@ -610,10 +610,7 @@ struct monitor_edge_finder {
 	bool found;
 };
 
-
-/**
- * Callback util for RLayoutFindMonitorBottomEdge()
- */
+/// Callback util for RLayoutFindMonitorBottomEdge()
 static bool
 _findMonitorBottomEdge(const RArea *cur, void *vdata)
 {
@@ -652,9 +649,7 @@ RLayoutFindMonitorBottomEdge(const RLayout *self, const RArea *area)
 }
 
 
-/**
- * Callback util for RLayoutFindMonitorTopEdge()
- */
+/// Callback util for RLayoutFindMonitorTopEdge()
 static bool
 _findMonitorTopEdge(const RArea *cur, void *vdata)
 {
@@ -693,9 +688,7 @@ RLayoutFindMonitorTopEdge(const RLayout *self, const RArea *area)
 }
 
 
-/**
- * Callback util for RLayoutFindMonitorLeftEdge()
- */
+/// Callback util for RLayoutFindMonitorLeftEdge()
 static bool
 _findMonitorLeftEdge(const RArea *cur, void *vdata)
 {
@@ -735,9 +728,7 @@ RLayoutFindMonitorLeftEdge(const RLayout *self, const RArea *area)
 }
 
 
-/**
- * Callback util for RLayoutFindMonitorRightEdge()
- */
+/// Callback util for RLayoutFindMonitorRightEdge()
 static bool
 _findMonitorRightEdge(const RArea *cur, void *vdata)
 {
