@@ -20,7 +20,6 @@ RLayout *RLayoutSetMonitorsNames(RLayout *self, char **names);
 RArea RLayoutGetAreaAtXY(const RLayout *self, int x, int y);
 RArea RLayoutGetAreaIndex(const RLayout *self, int index);
 RArea RLayoutGetAreaByName(const RLayout *self, const char *name, int len);
-RArea RLayoutBigArea(const RLayout *self);
 
 void RLayoutFindTopBottomEdges(const RLayout *self, const RArea *area, int *top,
                                int *bottom);
@@ -44,6 +43,7 @@ RArea RLayoutFullHoriz1(const RLayout *self, const RArea *area);
 RArea RLayoutFullVert1(const RLayout *self, const RArea *area);
 RArea RLayoutFull1(const RLayout *self, const RArea *area);
 
+RArea RLayoutBigArea(const RLayout *self);
 void RLayoutPrint(const RLayout *self);
 
 #endif  /* _CTWM_R_LAYOUT_H */

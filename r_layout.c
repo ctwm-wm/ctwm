@@ -36,6 +36,15 @@ static bool _findMonitorRightEdge(const RArea *cur, void *vdata);
 
 
 
+
+/************************
+ *
+ * First, some funcs for creating and destroying RLayout's in various
+ * ways.
+ *
+ ************************/
+
+
 /**
  * Create an RLayout for a given set of monitors.
  *
@@ -119,6 +128,16 @@ RLayoutSetMonitorsNames(RLayout *self, char **names)
 	self->names = names;
 	return self;
 }
+
+
+
+/************************
+ *
+ * Next, a few util funcs for dealing with RArea's that are outside our
+ * RLayout, but we want to find the nearest way to move them inside, then
+ * return a list of which RArea's they'd be intersecting with.
+ *
+ ************************/
 
 
 /**
@@ -285,6 +304,17 @@ _RLayoutRecenterHorizontally(const RLayout *self, const RArea *far_area)
 }
 
 
+
+/************************
+ *
+ * Some wrappers called when we need to Insersect an RArea with our
+ * RLayout, but also handle the case (using the above funcs) when the
+ * RArea doesn't Intersect our layout by finding the nearest border we
+ * could shuffle it over.
+ *
+ ************************/
+
+
 /**
  * Find which vertical regions of our monitor layout a given RArea (often
  * a window) is in.  If it's completely off the screen, we move it until
@@ -330,6 +360,16 @@ _RLayoutHorizontalIntersect(const RLayout *self, const RArea *area)
 
 	return mit;
 }
+
+
+
+/************************
+ *
+ * Some funcs using the above (layers of) utils to find info about which
+ * stripes of the RLayout an Area appears in.   These are used mostly as
+ * backend utils for figuring various f.*zoom's.
+ *
+ ************************/
 
 
 /**
@@ -462,9 +502,12 @@ RLayoutFindRightEdge(const RLayout *self, const RArea *area)
 
 
 
-/*
+/************************
+ *
  * Lookups to find areas in an RLayout by various means.
- */
+ *
+ ************************/
+
 
 /// Internal structure for callback in RLayoutGetAreaAtXY().
 struct monitor_finder_xy {
@@ -472,9 +515,7 @@ struct monitor_finder_xy {
 	int x, y;
 };
 
-/**
- * Callback util for RLayoutGetAreaAtXY().
- */
+/// Callback util for RLayoutGetAreaAtXY().
 static bool
 _findMonitorByXY(const RArea *cur, void *vdata)
 {
@@ -548,24 +589,14 @@ RLayoutGetAreaByName(const RLayout *self, const char *name, int len)
 }
 
 
-/**
- * Generate maximal spanning RArea.
+
+/************************
  *
- * This is a trivial wrapper of RAreaListBigArea() to hide knowledge of
- * RLayout internals.  Currently only used once; maybe should just be
- * deref'd there...
- */
-RArea
-RLayoutBigArea(const RLayout *self)
-{
-	return RAreaListBigArea(self->monitors);
-}
+ * Now some utils for finding various edges of the monitors a given RArea
+ * intersects with.
+ *
+ ************************/
 
-
-
-/*
- * Now some utils for finding various edges
- */
 
 /// Internal struct for use in FindMonitor*Edge() callbacks.
 struct monitor_edge_finder {
@@ -745,6 +776,14 @@ RLayoutFindMonitorRightEdge(const RLayout *self, const RArea *area)
 	return data.found ? data.u.min_x2 : RLayoutFindRightEdge(self, area);
 }
 
+
+
+/************************
+ *
+ * Backend funcs called by the f.*zoom handlers to figure the area we
+ * should zoom into.
+ *
+ ************************/
 
 
 /**
@@ -957,6 +996,27 @@ RLayoutFull1(const RLayout *self, const RArea *area)
 	return target;
 }
 
+
+
+/************************
+ *
+ * Finally, some small misc utils.
+ *
+ ************************/
+
+
+/**
+ * Generate maximal spanning RArea.
+ *
+ * This is a trivial wrapper of RAreaListBigArea() to hide knowledge of
+ * RLayout internals.  Currently only used once; maybe should just be
+ * deref'd there...
+ */
+RArea
+RLayoutBigArea(const RLayout *self)
+{
+	return RAreaListBigArea(self->monitors);
+}
 
 
 /**
