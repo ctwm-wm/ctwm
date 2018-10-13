@@ -336,50 +336,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->flags |= IconPositionHint;
 	}
 
-
-	/*
-	 * If we have WM_HINTS, but they don't tell us anything about focus,
-	 * force it to true for our purposes.
-	 *
-	 * CL: Having with not willing focus cause problems with AutoSqueeze
-	 * and a few others things. So I suppress it. And the whole focus
-	 * thing is buggy anyway.
-	 */
-	if(!(tmp_win->wmhints->flags & InputHint)) {
-		tmp_win->wmhints->input = True;
-	}
-
-	/*
-	 * Now we're expecting to give the window focus if it asked for it
-	 * via WM_HINTS, if it didn't say anything one way or the other in
-	 * WM_HINTS, or if it didn't give us any WM_HINTS at all.  But if it
-	 * explicitly asked not to, we don't give it unless overridden by
-	 * config.
-	 */
-	if(Scr->ForceFocus || CHKL(ForceFocusL)) {
-		tmp_win->wmhints->input = True;
-	}
-
-
-	/* Setup group bits */
-	if(tmp_win->wmhints->flags & WindowGroupHint) {
-		tmp_win->group = tmp_win->wmhints->window_group;
-		if(tmp_win->group) {
-			/*
-			 * GTK windows often have a spurious "group leader" window which is
-			 * never reported to us and therefore does not really exist.  This
-			 * is annoying because we treat group members a lot like transient
-			 * windows.  Look for that here. It is in fact a duplicate of the
-			 * WM_CLIENT_LEADER property.
-			 */
-			if(tmp_win->group != w && !GetTwmWindow(tmp_win->group)) {
-				tmp_win->group = 0;
-			}
-		}
-	}
-	else {
-		tmp_win->group = 0;
-	}
+	/* Munge as necessary for other stuff */
+	munge_wmhints(tmp_win, tmp_win->wmhints);
 
 
 	/*
