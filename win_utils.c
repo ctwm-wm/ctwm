@@ -956,8 +956,8 @@ munge_wmhints(TwmWindow *win, XWMHints *hints)
 	 * and a few others things. So I suppress it. And the whole focus
 	 * thing is buggy anyway.
 	 */
-	if(!(win->wmhints->flags & InputHint)) {
-		win->wmhints->input = True;
+	if(!(hints->flags & InputHint)) {
+		hints->input = True;
 	}
 
 	/*
@@ -968,13 +968,13 @@ munge_wmhints(TwmWindow *win, XWMHints *hints)
 	 * config.
 	 */
 	if(Scr->ForceFocus || IsInList(Scr->ForceFocusL, win)) {
-		win->wmhints->input = True;
+		hints->input = True;
 	}
 
 
 	/* Setup group bits */
-	if(win->wmhints->flags & WindowGroupHint) {
-		win->group = win->wmhints->window_group;
+	if(hints->flags & WindowGroupHint) {
+		win->group = hints->window_group;
 		if(win->group) {
 			/*
 			 * GTK windows often have a spurious "group leader" window which is
