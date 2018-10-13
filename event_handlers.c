@@ -1246,7 +1246,7 @@ void HandlePropertyNotify(void)
 				}
 
 				XFree(Tmp_win->wmhints);
-				Tmp_win->wmhints = nhints;
+				Tmp_win->wmhints = munge_wmhints(Tmp_win, nhints);
 			}
 
 			if(Tmp_win->wmhints->flags & WindowGroupHint) {
