@@ -12,6 +12,10 @@
    `WM_HINTS` later and still don't give us a hint, where we wound up not
    re-overriding previously.  Reported for `xvile` by Wayne Cuddy.
 
+1. The font height estimation changes in 4.0.0 were not applied correctly
+   when UseThreeDMenus was set, leading to some odd vertical misalignment
+   of the text with some fonts.  Reported by Wayne Cuddy.
+
 
 
 ## 4.0.2  (2018-08-25)
