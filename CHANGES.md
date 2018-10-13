@@ -3,6 +3,15 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### Bugfixes
+
+1. Perform various manipulations and overrides of `WM_HINTS` property
+   when it gets reset during runtime, like we do when initially adopting
+   the window.  The most visible effect of this was in windows that don't
+   give a focus hint (which we override to give focus), but then reset
+   `WM_HINTS` later and still don't give us a hint, where we wound up not
+   re-overriding previously.  Reported for `xvile` by Wayne Cuddy.
+
 
 
 ## 4.0.2  (2018-08-25)
