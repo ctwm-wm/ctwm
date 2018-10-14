@@ -39,7 +39,7 @@ if(CTFCONVERT AND CTFMERGE)
 	# here, since it hasn't been created at this point in the process.
 	# So we just have to hope.  mk_ctf_info.sh will warn us if things
 	# change...
-	set(CODIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/ctwm.dir)
+	set(CODIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/ctwmlib.dir)
 
 	add_custom_command(TARGET ctwm POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E env

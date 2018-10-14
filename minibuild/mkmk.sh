@@ -19,6 +19,9 @@ gfiles=`sed \
 	-e 's/#.*//' -e 's/[[:space:]]*//' -e '/^$/d' \
 	${rtdir}/cmake_files/basic_vars.cmake`
 
+# Extra file needed to build the binary
+ngfiles="${ngfiles} ctwm_wrap.c"
+
 
 # Non-generated files that are optional; separate so they don't end up in
 # OFILES in the main run

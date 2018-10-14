@@ -39,6 +39,7 @@
 
 
 #include "ctwm_atoms.h"
+#include "ctwm_main.h"
 #include "clargs.h"
 #include "add_window.h"
 #include "gc.h"
@@ -156,7 +157,8 @@ SIGNAL_T ChildExit(int signum);
  ***********************************************************************
  */
 
-int main(int argc, char **argv)
+int
+ctwm_main(int argc, char *argv[])
 {
 	Window croot, parent, *children;
 	unsigned int nchildren;

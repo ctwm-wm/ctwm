@@ -22,7 +22,7 @@ set(CTWMSRC
 	clicktofocus.c
 	colormaps.c
 	ctopts.c
-	ctwm.c
+	ctwm_main.c
 	cursor.c
 	drawing.c
 	event_core.c
