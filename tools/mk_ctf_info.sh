@@ -6,7 +6,7 @@
 odir=$1
 ctwmbin=$2
 
-if [ ! -r "${odir}/ctwm.c.o" ]; then
+if [ ! -r "${odir}/ctwm_main.c.o" ]; then
 	echo "No object files in ${odir}, bailing!  You'll get no CTF info."
 	exit;
 fi

@@ -18,6 +18,7 @@
 # include "ewmh_atoms.h"
 #endif
 #include "icons.h"
+#include "list.h"
 #include "occupation.h"
 #include "otp.h"
 #include "r_area.h"
@@ -1030,6 +1031,63 @@ gen_synthetic_wmhints(TwmWindow *win)
 	hints->flags = InputHint | StateHint;
 	hints->input = True;
 	hints->initial_state = NormalState;
+
+	return hints;
+}
+
+
+/**
+ * Perform whatever adaptations of WM_HINTS info we do.
+ *
+ * Most of these relate to focus, but we also fiddle with group
+ * membership.
+ */
+XWMHints *
+munge_wmhints(TwmWindow *win, XWMHints *hints)
+{
+	/*
+	 * If we have WM_HINTS, but they don't tell us anything about focus,
+	 * force it to true for our purposes.
+	 *
+	 * CL: Having with not willing focus cause problems with AutoSqueeze
+	 * and a few others things. So I suppress it. And the whole focus
+	 * thing is buggy anyway.
+	 */
+	if(!(hints->flags & InputHint)) {
+		hints->input = True;
+	}
+
+	/*
+	 * Now we're expecting to give the window focus if it asked for it
+	 * via WM_HINTS, if it didn't say anything one way or the other in
+	 * WM_HINTS, or if it didn't give us any WM_HINTS at all.  But if it
+	 * explicitly asked not to, we don't give it unless overridden by
+	 * config.
+	 */
+	if(Scr->ForceFocus || IsInList(Scr->ForceFocusL, win)) {
+		hints->input = True;
+	}
+
+
+	/* Setup group bits */
+	if(hints->flags & WindowGroupHint) {
+		win->group = hints->window_group;
+		if(win->group) {
+			/*
+			 * GTK windows often have a spurious "group leader" window which is
+			 * never reported to us and therefore does not really exist.  This
+			 * is annoying because we treat group members a lot like transient
+			 * windows.  Look for that here. It is in fact a duplicate of the
+			 * WM_CLIENT_LEADER property.
+			 */
+			if(win->group != win->w && !GetTwmWindow(win->group)) {
+				win->group = 0;
+			}
+		}
+	}
+	else {
+		win->group = 0;
+	}
 
 	return hints;
 }

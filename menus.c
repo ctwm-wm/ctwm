@@ -280,7 +280,8 @@ Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 	               &ink_rect, &logical_rect);
 
 	y_offset = mi->item_num * Scr->EntryHeight + Scr->MenuShadowDepth;
-	text_y = y_offset + Scr->MenuFont.y + 2;
+	text_y = y_offset + (Scr->EntryHeight - logical_rect.height) / 2
+	         - logical_rect.y;
 
 	if(mi->func != F_TITLE) {
 		int x, y;

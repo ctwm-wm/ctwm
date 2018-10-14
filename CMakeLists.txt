@@ -120,9 +120,14 @@ include(doxygen)
 include(ctags)
 
 
-# And link up the actual ctwm binary.
-add_executable(ctwm ${CTWMSRC})
+# And link up the actual ctwm binary.  We actually build a libctwmlib
+# with all our contents except the trivial main() wrapper, then build
+# ctwm with that; this makes it easy to build other binaries (like tests)
+# with access to all our internal funcs.
+add_library(ctwmlib STATIC ${CTWMSRC})
+add_executable(ctwm "ctwm_wrap.c")
 target_link_libraries(ctwm ${CTWMLIBS})
+target_link_libraries(ctwm ctwmlib)
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
