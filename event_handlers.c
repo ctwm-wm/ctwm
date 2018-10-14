@@ -1249,13 +1249,6 @@ void HandlePropertyNotify(void)
 				Tmp_win->wmhints = munge_wmhints(Tmp_win, nhints);
 			}
 
-			if(Tmp_win->wmhints->flags & WindowGroupHint) {
-				Tmp_win->group = Tmp_win->wmhints->window_group;
-				if(Tmp_win->group && !GetTwmWindow(Tmp_win->group)) {
-					Tmp_win->group = 0;        /* see comment in AddWindow() */
-				}
-			}
-
 			icon = Tmp_win->icon;
 
 			/*
