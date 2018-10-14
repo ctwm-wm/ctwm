@@ -65,6 +65,7 @@
 #endif
 #include "r_area.h"
 #include "r_area_list.h"
+#include "r_layout.h"
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
