@@ -255,7 +255,11 @@ my ($suc, $fail) = (0,0);
 my @fails;
 DOBUILDS: for my $bo (@builds)
 {
-	my $bret = one_build($bo, ++$sdn);
+	my $ostr = mk_build_str($bo);
+	$sdn++;
+	print "  $sdn: $ostr\n";
+
+	my $bret = one_build($bo, $sdn);
 
 	# If we died from a signal, give up totally
 	if($bret->{sig})
@@ -305,9 +309,7 @@ sub one_build
 		txtdir => '',
 	);
 
-	my $ostr = mk_build_str($opts);
 	$ret{tstdir} = $tstdir = "$tmpdir/@{[$sdn]}";
-	$ret{stdstr} .= "  $sdn: $ostr\n";
 	mkdir $tstdir or die "mkdir($tstdir): $!";
 
 
