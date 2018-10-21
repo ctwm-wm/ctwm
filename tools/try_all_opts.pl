@@ -271,7 +271,7 @@ $fm->run_on_finish(sub{
 	if($bret->{sig})
 	{
 		print $bret->{errstr};
-		die "Signal $bret->{sig} in child, dying...";
+		die "$ident: Signal $bret->{sig} in child, dying...";
 	}
 
 	if($bret->{ok})
@@ -339,6 +339,7 @@ sub one_build
 	my ($stdout, $stderr);
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
 	chdir $tstdir;
+	$? = 0 if $clopts->{dryrun}; # So it's known
 	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
 	chdir $ORIGDIR;
 	if($? & 127)
