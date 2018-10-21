@@ -211,60 +211,23 @@ my ($suc, $fail) = (0,0);
 my @fails;
 DOBUILDS: for my $bo (@builds)
 {
-	$KEEPDIR = $opts{k};
-	$tstdir = "$tmpdir/@{[++$sdn]}";
-	print "  $sdn: $bo\n";
-	mkdir $tstdir or die "mkdir($tstdir): $!";
+	my $bret = one_build($bo, ++$sdn);
 
-
-	# Prep build
-	my @cmd = ('cmake', split(/ /, $reset), split(/ /, $bo), $mypath);
-	my ($stdout, $stderr);
-	print "    @{[join ' ', @cmd]}\n" if $opts{verbose};
-	chdir $tstdir;
-	run3 \@cmd, undef, \$stdout, \$stderr unless $opts{dryrun};
-	chdir $ORIGDIR;
-	die "cmake died from signal, giving up...\n" if $? & 127;
-	if($? >> 8)
+	if($bret->{ok})
 	{
-		# Er, cmake failed..
-		$KEEPDIR = 1;
-		print "    cmake failed!\n---\n$stdout\n---\n$stderr\n---\n";
-		$fail++;
-		push @fails, $bo;
-		sleep .1;
-		next;
+		# Succeeded; print success and clean up unless we're --keep'ing
+		print $bret->{stdstr};
+		$suc++;
+		remove_tree($bret->{tstdir}) unless $opts{keep};
 	}
-
-	# And kick it off
-	@cmd = ('make', '-C', $tstdir);
-	push @cmd, "-j$opts{jobs}" if $opts{jobs};
-	push @cmd, 'ctwm';
-
-	$stdout = $stderr = undef;
-	print "    @{[join ' ', @cmd]}\n" if $opts{verbose};
-	run3 \@cmd, undef, \$stdout, \$stderr unless $opts{dryrun};
-	die "make died from signal, giving up...\n" if $? & 127;
-	if($? >> 8)
+	else
 	{
-		# Build failed  :(
-		$KEEPDIR = 1;
-		print "    make failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		# Failed; print failures and mark things to not be cleaned up.
+		print $bret->{stdstr};
+		print $bret->{errstr};
 		$fail++;
-		push @fails, $bo;
-		next;
+		$tmpdir->unlink_on_destroy(0) if $opts{keep};
 	}
-
-	# OK
-	print "    OK.\n";
-	$suc++;
-}
-continue
-{
-	# Cleanup if we should.  If we shouldn't, tell the global tempdir not
-	# to cleanup either
-	$tmpdir->unlink_on_destroy(0) if $KEEPDIR;
-	remove_tree($tstdir) unless $KEEPDIR;
 }
 
 
@@ -277,3 +240,68 @@ if(@fails)
 	exit 1;
 }
 exit 0;
+
+
+
+sub one_build
+{
+	my ($opts, $sdn) = @_;
+	my %ret = (
+		ok  => 0,
+		sig => 0,
+		stdstr => '',
+		errstr => '',
+		txtdir => '',
+	);
+
+	$ret{tstdir} = $tstdir = "$tmpdir/@{[$sdn]}";
+	$ret{stdstr} .= "  $sdn: $opts\n";
+	mkdir $tstdir or die "mkdir($tstdir): $!";
+
+
+	# Prep build
+	my @cmd = ('cmake', split(/ /, $reset), split(/ /, $opts), $mypath);
+	my ($stdout, $stderr);
+	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $opts{verbose};
+	chdir $tstdir;
+	run3 \@cmd, undef, \$stdout, \$stderr unless $opts{dryrun};
+	chdir $ORIGDIR;
+	if($? & 127)
+	{
+		$ret{sig} = $? & 127;
+		$ret{errstr} = "cmake died from signal, giving up...\n";
+		return \%ret;
+	}
+	if($? >> 8)
+	{
+		# Er, cmake failed..
+		$ret{errstr} = "    cmake failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		return \%ret;
+	}
+
+	# And kick it off
+	@cmd = ('make', '-C', $tstdir);
+	push @cmd, "-j$opts{jobs}" if $opts{jobs};
+	push @cmd, 'ctwm';
+
+	$stdout = $stderr = undef;
+	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $opts{verbose};
+	run3 \@cmd, undef, \$stdout, \$stderr unless $opts{dryrun};
+	if($? & 127)
+	{
+		$ret{sig} = $? & 127;
+		$ret{errstr} = "make died from signal, giving up...\n";
+		return \%ret;
+	}
+	if($? >> 8)
+	{
+		# Build failed  :(
+		$ret{errstr} = "    make failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		return \%ret;
+	}
+
+	# OK
+	$ret{ok} = 1;
+	$ret{stdstr} .= "    OK.\n";
+	return \%ret;
+}
