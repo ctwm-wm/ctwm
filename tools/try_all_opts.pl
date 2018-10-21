@@ -155,10 +155,18 @@ print "Building from $mypath\n";
 # Generate cmake-y option defs
 sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
 
-# Build a reset string to pre-disable everything.  This is useful when
-# for some reason, one or more options can't be built, to make sure
-# they're turned off.
-my $reset = join " ", map { mkopts($_) } @skip;
+# Build a reset string to pre-disable everything but the option[s] we
+# care about.  This is somewhat useful in ensuring a deterministic
+# minimal build, altering just the option[s] in question.
+sub mk_resets
+{
+	my $setstr = shift;
+	my @skip= split / /, $setstr;
+	s/^-D([^=]+)=.*$/$1/ for @skip;
+
+	my @notskip = grep { my $x = $_; !grep { $_ eq $x } @skip } keys %OPTS;
+	return map { mkopts($_) } sort @notskip;
+}
 
 # Build our list of options
 my @builds;
@@ -274,7 +282,10 @@ sub one_build
 
 
 	# Prep build
-	my @cmd = ('cmake', split(/ /, $reset), split(/ /, $opts), $mypath);
+	my @cmopts;
+	push @cmopts, mk_resets($opts);
+	push @cmopts, split(/ /, $opts);
+	my @cmd = ('cmake', @cmopts, $mypath);
 	my ($stdout, $stderr);
 	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $opts{verbose};
 	chdir $tstdir;
