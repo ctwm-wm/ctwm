@@ -290,7 +290,7 @@ $fm->run_on_finish(sub{
 
 		$fail++;
 		push @fails, $bret->{bstr};
-		$tmpdir->unlink_on_destroy(0) if $CLOPTS{keep};
+		$tmpdir->unlink_on_destroy(0) unless $CLOPTS{keep};
 	}
 	return;
 });
