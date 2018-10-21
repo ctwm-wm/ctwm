@@ -205,7 +205,7 @@ if($CLOPTS{all})
 		# Else pull the first thing off the list and make its pair.
 		my $base = shift @_;
 		my @base = ( {$base => 0}, {$base => 1} );
-		$_dbgret->(@base) if @_ == 0;
+		#$_dbgret->(@base) if @_ == 0;
 
 		# Was that the last?  Then we're done.
 		return @base if @_ == 0;
@@ -223,7 +223,7 @@ if($CLOPTS{all})
 				push @rets, {%$b, %$s};
 			}
 		}
-		$_dbgret->(@rets);
+		#$_dbgret->(@rets);
 		return @rets;
 	};
 
