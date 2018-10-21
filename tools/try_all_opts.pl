@@ -160,9 +160,11 @@ sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
 # they're turned off.
 my $reset = join " ", map { mkopts($_) } @skip;
 
-# Generate powerset
+# Build our list of options
 my @builds;
+if($opts{all})
 {
+	# Generate powerset
 	my $dbgshift = 2;
 	my $_dbgret = sub {
 		printf("%*s%s\n", $dbgshift, "", $_) for ("Rets:", @_);
@@ -192,7 +194,11 @@ my @builds;
 	};
 
 	@builds = $bss->(@use);
-
+}
+else
+{
+	# Just try on/off on each individually
+	push @builds, mkopts($_, 0), mkopts($_, 1) for @use;
 }
 
 print("Builds: @{[scalar @builds]}\n",
