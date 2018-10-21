@@ -4,6 +4,7 @@
 
 set(CTWMBIN "${CMAKE_BINARY_DIR}/ctwm")
 add_custom_target(test_bins)
+add_dependencies(test_bins ctwm)
 
 
 # Add some infrastructure for building executables for unit tests

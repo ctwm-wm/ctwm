@@ -23,7 +23,7 @@ man-pdf doxygen doxyclean tags: build/Makefile
 # Make sure everything's build before running tests
 .PHONY: test
 test:
-	( cd build && ${MAKE} ctwm test_bins )
+	( cd build && ${MAKE} test_bins )
 	( cd build && ${MAKE} CTEST_OUTPUT_ON_FAILURE=1 ${@} )
 
 # Reindent files
