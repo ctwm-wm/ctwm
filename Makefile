@@ -1,5 +1,5 @@
 # This just shortcuts stuff through to cmake
-all build ctwm man man-html man-all install clean test: build/Makefile
+all build ctwm man man-html man-all install clean: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
 build/Makefile cmake: CMakeLists.txt
@@ -18,6 +18,12 @@ allclean distclean:
 # Add'l thunks to cmake
 .PHONY: tags
 man-pdf doxygen doxyclean tags: build/Makefile
+	( cd build && ${MAKE} ${@} )
+
+# Make sure everything's build before running tests
+.PHONY: test
+test:
+	( cd build && ${MAKE} ctwm )
 	( cd build && ${MAKE} ${@} )
 
 # Reindent files
