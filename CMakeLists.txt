@@ -159,6 +159,10 @@ include(dtrace_support)
 # cmake 3.5+, but setting an unknown var won't hurt earlier versions.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
+# Include tests
+enable_testing()
+add_subdirectory(tests)
+
 # Finish by outputting various information about what we've figured and
 # what we're doing for the builder's edification.
 include(show_build_info)
