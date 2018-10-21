@@ -157,7 +157,7 @@ sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
 
 # Build a reset string to pre-disable everything but the option[s] we
 # care about.  This is somewhat useful in ensuring a deterministic
-# minimal build, altering just the option[s] in question.
+# minimal build excepting the requisite pieces.
 sub mk_resets
 {
 	my $setstr = shift;
@@ -165,7 +165,7 @@ sub mk_resets
 	s/^-D([^=]+)=.*$/$1/ for @skip;
 
 	my @notskip = grep { my $x = $_; !grep { $_ eq $x } @skip } keys %OPTS;
-	return map { mkopts($_) } sort @notskip;
+	return map { mkopts($_, 0) } sort @notskip;
 }
 
 # Build our list of options
