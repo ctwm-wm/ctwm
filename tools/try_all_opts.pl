@@ -9,6 +9,7 @@ use File::Basename qw(dirname);
 use File::Path qw(remove_tree);
 use Cwd qw(abs_path getcwd);
 use IPC::Run3;
+use Parallel::ForkManager;
 
 # Try a matrix of all build options.  The various req's are intended to
 # be quick&dirty tests to see if it's worth trying an option on the
@@ -61,12 +62,13 @@ my %CLOPTS;
 		'include|I=s@',  # Extra include path(s)
 		'keep|k',        # Keep output dir
 		'verbose|v',     # Verbosity
-		'jobs|j=i',      # -j to pass to make
+		'jobs|j=i',      # Parallel jobs to run
 		'all|a',         # Try all combos rather than all options
 		'dryrun|d',      # Don't exec anything
 	);
 	GetOptions(\%CLOPTS, @clopts);
 }
+$CLOPTS{jobs} //= 1;
 
 # Extra include dirs given?
 push @INCDIRS, @{$CLOPTS{include}} if $CLOPTS{include};
@@ -249,17 +251,21 @@ my $tmpdir = File::Temp->newdir("ctwm-opts-XXXXXXXX",
 		DIR => $tmpbase, CLEANUP => !$CLOPTS{keep});
 print "Testing in $tmpdir...\n";
 
-my $sdn = 0;
-my ($KEEPDIR, $tstdir);
+
+# Now setup the actual running
 my ($suc, $fail) = (0,0);
 my @fails;
-DOBUILDS: for my $bo (@builds)
-{
-	my $ostr = mk_build_str($bo);
-	$sdn++;
-	print "  $sdn: $ostr\n";
 
-	my $bret = one_build($bo, $sdn);
+my $fm = Parallel::ForkManager->new($CLOPTS{jobs}, $tmpdir);
+$fm->run_on_finish(sub{
+	my ($pid, $excode, $ident, $exsig, $coredump, $bret) = @_;
+	unless(defined $bret && ref $bret eq 'HASH')
+	{
+		warn "Child $ident didn't return anything!";
+		$fail++;
+		push @fails, "(unknown: $ident)";
+		return;
+	}
 
 	# If we died from a signal, give up totally
 	if($bret->{sig})
@@ -272,6 +278,7 @@ DOBUILDS: for my $bo (@builds)
 	{
 		# Succeeded; print success and clean up unless we're --keep'ing
 		print $bret->{stdstr};
+
 		$suc++;
 		remove_tree($bret->{tstdir}) unless $CLOPTS{keep};
 	}
@@ -280,10 +287,17 @@ DOBUILDS: for my $bo (@builds)
 		# Failed; print failures and mark things to not be cleaned up.
 		print $bret->{stdstr};
 		print $bret->{errstr};
+
 		$fail++;
+		push @fails, $bret->{bstr};
 		$tmpdir->unlink_on_destroy(0) if $CLOPTS{keep};
 	}
-}
+	return;
+});
+
+my $sdn = 0;
+$fm->start_child(++$sdn, sub { return one_build($_, $sdn); }) for @builds;
+$fm->wait_all_children();
 
 
 print "\n\n$suc succeeeded, $fail failed.\n";
@@ -307,10 +321,13 @@ sub one_build
 		stdstr => '',
 		errstr => '',
 		txtdir => '',
+		bstr => mk_build_str($opts),
 	);
 
-	$ret{tstdir} = $tstdir = "$tmpdir/@{[$sdn]}";
+	my $tstdir = $ret{tstdir} = "$tmpdir/@{[$sdn]}";
 	mkdir $tstdir or die "mkdir($tstdir): $!";
+
+	print "  $sdn: @{[join ' ', $ret{bstr}]}\n";
 
 
 	# Prep build
@@ -337,9 +354,7 @@ sub one_build
 	}
 
 	# And kick it off
-	@cmd = ('make', '-C', $tstdir);
-	push @cmd, "-j$CLOPTS{jobs}" if $CLOPTS{jobs};
-	push @cmd, 'ctwm';
+	@cmd = ('make', '-C', $tstdir, 'ctwm');
 
 	$stdout = $stderr = undef;
 	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $CLOPTS{verbose};
@@ -359,6 +374,6 @@ sub one_build
 
 	# OK
 	$ret{ok} = 1;
-	$ret{stdstr} .= "    OK.\n";
+	$ret{stdstr} .= "    $sdn: OK.\n";
 	return \%ret;
 }
