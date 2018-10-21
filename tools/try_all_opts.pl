@@ -277,7 +277,7 @@ $fm->run_on_finish(sub{
 	if($bret->{ok})
 	{
 		# Succeeded; print success and clean up unless we're --keep'ing
-		print $bret->{stdstr};
+		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
 
 		$suc++;
 		remove_tree($bret->{tstdir}) unless $CLOPTS{keep};
@@ -285,7 +285,7 @@ $fm->run_on_finish(sub{
 	else
 	{
 		# Failed; print failures and mark things to not be cleaned up.
-		print $bret->{stdstr};
+		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
 		print $bret->{errstr};
 
 		$fail++;
@@ -296,7 +296,8 @@ $fm->run_on_finish(sub{
 });
 
 my $sdn = 0;
-$fm->start_child(++$sdn, sub { return one_build($_, $sdn); }) for @builds;
+$fm->start_child(++$sdn, sub { return one_build($_, $sdn, \%CLOPTS); })
+		for @builds;
 $fm->wait_all_children();
 
 
@@ -314,13 +315,13 @@ exit 0;
 
 sub one_build
 {
-	my ($opts, $sdn) = @_;
+	my ($opts, $sdn, $clopts) = @_;
 	my %ret = (
 		ok  => 0,
 		sig => 0,
-		stdstr => '',
+		stdstr => [],
 		errstr => '',
-		txtdir => '',
+		tstdir => '',
 		bstr => mk_build_str($opts),
 	);
 
@@ -336,9 +337,9 @@ sub one_build
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
 	my ($stdout, $stderr);
-	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $CLOPTS{verbose};
+	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
 	chdir $tstdir;
-	run3 \@cmd, undef, \$stdout, \$stderr unless $CLOPTS{dryrun};
+	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
 	chdir $ORIGDIR;
 	if($? & 127)
 	{
@@ -349,7 +350,7 @@ sub one_build
 	if($? >> 8)
 	{
 		# Er, cmake failed..
-		$ret{errstr} = "    cmake failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		$ret{errstr} = "cmake failed!\n---\n$stdout\n---\n$stderr\n---\n";
 		return \%ret;
 	}
 
@@ -357,8 +358,8 @@ sub one_build
 	@cmd = ('make', '-C', $tstdir, 'ctwm');
 
 	$stdout = $stderr = undef;
-	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $CLOPTS{verbose};
-	run3 \@cmd, undef, \$stdout, \$stderr unless $CLOPTS{dryrun};
+	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
+	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
 	if($? & 127)
 	{
 		$ret{sig} = $? & 127;
@@ -368,12 +369,12 @@ sub one_build
 	if($? >> 8)
 	{
 		# Build failed  :(
-		$ret{errstr} = "    make failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		$ret{errstr} = "make failed!\n---\n$stdout\n---\n$stderr\n---\n";
 		return \%ret;
 	}
 
 	# OK
 	$ret{ok} = 1;
-	$ret{stdstr} .= "    $sdn: OK.\n";
+	push @{$ret{stdstr}}, "OK.";
 	return \%ret;
 }
