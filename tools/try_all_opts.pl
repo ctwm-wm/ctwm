@@ -151,13 +151,13 @@ die "No usable options!\n" unless @use;
 print "Building from $mypath\n";
 
 
+# Generate cmake-y option defs
+sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
+
 # Generate powerset
 my @builds;
 my $reset;
 {
-	# Make a cmake-y option definition
-	my $mkopts = sub { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; };
-
 	my $dbgshift = 2;
 	my $_dbgret = sub {
 		printf("%*s%s\n", $dbgshift, "", $_) for ("Rets:", @_);
@@ -171,7 +171,7 @@ my $reset;
 		#print "  bss(" . join(" ", @_) . ")\n";
 		return () if @_ == 0;
 		my $base = shift @_;
-		my @base = ($mkopts->($base, 0), $mkopts->($base, 1));
+		my @base = (mkopts($base, 0), mkopts($base, 1));
 		#$_dbgret->(@base) if @_ == 0;
 		return @base if @_ == 0;
 
@@ -191,7 +191,7 @@ my $reset;
 	# Also build a reset string to pre-disable everything.  This is
 	# useful when for some reason, one or more options can't be built, to
 	# make sure they're turned off.
-	$reset = join " ", map { $mkopts->($_) } @skip;
+	$reset = join " ", map { mkopts($_) } @skip;
 }
 
 print("Builds: @{[scalar @builds]}\n",
