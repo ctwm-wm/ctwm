@@ -60,6 +60,7 @@ my @opts = (
 	'keep|k',        # Keep output dir
 	'verbose|v',     # Verbosity
 	'jobs|j=i',      # -j to pass to make
+	'all|a',         # Try all combos rather than all options
 	'dryrun|d',      # Don't exec anything
 );
 GetOptions(\%opts, @opts);
@@ -154,9 +155,13 @@ print "Building from $mypath\n";
 # Generate cmake-y option defs
 sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
 
+# Build a reset string to pre-disable everything.  This is useful when
+# for some reason, one or more options can't be built, to make sure
+# they're turned off.
+my $reset = join " ", map { mkopts($_) } @skip;
+
 # Generate powerset
 my @builds;
-my $reset;
 {
 	my $dbgshift = 2;
 	my $_dbgret = sub {
@@ -188,10 +193,6 @@ my $reset;
 
 	@builds = $bss->(@use);
 
-	# Also build a reset string to pre-disable everything.  This is
-	# useful when for some reason, one or more options can't be built, to
-	# make sure they're turned off.
-	$reset = join " ", map { mkopts($_) } @skip;
 }
 
 print("Builds: @{[scalar @builds]}\n",
