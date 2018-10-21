@@ -2,10 +2,17 @@
 # Automated tests
 #
 
-# First a few simple smoke tests of the built binary
+set(CTWMBIN "${CMAKE_BINARY_DIR}/ctwm")
+
+# First a simple smoke test of the built binary
 add_test(NAME run-info
-	COMMAND ${CMAKE_BINARY_DIR}/ctwm --info
+	COMMAND ${CTWMBIN} --info
 	)
 set_tests_properties(run-info PROPERTIES
 	PASS_REGULAR_EXPRESSION "Twm version: "
 	)
+
+
+# Try parsing the system.ctwmrc
+add_test(NAME cfgchk
+	COMMAND ${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc)
