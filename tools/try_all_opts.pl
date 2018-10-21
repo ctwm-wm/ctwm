@@ -55,19 +55,21 @@ my $ORIGDIR = getcwd();
 
 # Command line args
 use Getopt::Long qw(:config no_ignore_case bundling);
-my %opts;
-my @opts = (
-	'include|I=s@',  # Extra include path(s)
-	'keep|k',        # Keep output dir
-	'verbose|v',     # Verbosity
-	'jobs|j=i',      # -j to pass to make
-	'all|a',         # Try all combos rather than all options
-	'dryrun|d',      # Don't exec anything
-);
-GetOptions(\%opts, @opts);
+my %CLOPTS;
+{
+	my @clopts = (
+		'include|I=s@',  # Extra include path(s)
+		'keep|k',        # Keep output dir
+		'verbose|v',     # Verbosity
+		'jobs|j=i',      # -j to pass to make
+		'all|a',         # Try all combos rather than all options
+		'dryrun|d',      # Don't exec anything
+	);
+	GetOptions(\%CLOPTS, @clopts);
+}
 
 # Extra include dirs given?
-push @INCDIRS, @{$opts{include}} if $opts{include};
+push @INCDIRS, @{$CLOPTS{include}} if $CLOPTS{include};
 
 
 # Allow spec'ing just a subset on the command line.
@@ -91,7 +93,7 @@ die "No options to work with" unless @DO_OPTS;
 
 
 # OK, now see which options are usable.
-print "Checking over options...\n" if $opts{verbose};
+print "Checking over options...\n" if $CLOPTS{verbose};
 my @use;
 OCHECK: for my $k (@DO_OPTS)
 {
@@ -108,11 +110,11 @@ OCHECK: for my $k (@DO_OPTS)
 		if($? >> 8)
 		{
 			# Non-zero exit; not found
-			print "  $k: $e not found in path, skipping.\n" if $opts{verbose};
+			print "  $k: $e not found in path, skipping.\n" if $CLOPTS{verbose};
 		}
 		else
 		{
-			print "  $k: $e OK, adding.\n" if $opts{verbose};
+			print "  $k: $e OK, adding.\n" if $CLOPTS{verbose};
 			push @use, $k;
 		}
 		next OCHECK;
@@ -127,18 +129,18 @@ OCHECK: for my $k (@DO_OPTS)
 		{
 			if(-r "$d/$i")
 			{
-				print"  $k: $i found in $d, adding.\n" if $opts{verbose};
+				print"  $k: $i found in $d, adding.\n" if $CLOPTS{verbose};
 				push @use, $k;
 				next OCHECK;
 			}
 		}
 
-		print "  $k: $i not found, skipping.\n" if $opts{verbose};
+		print "  $k: $i not found, skipping.\n" if $CLOPTS{verbose};
 		next OCHECK;
 	}
 
 	# Everything else has no requirements we bother to check
-	print "  $k: OK\n" if $opts{verbose};
+	print "  $k: OK\n" if $CLOPTS{verbose};
 	push @use, $k;
 }
 
@@ -181,7 +183,7 @@ sub mk_reset_str
 
 # Build our list of options
 my @builds;
-if($opts{all})
+if($CLOPTS{all})
 {
 	# Generate powerset
 	my $dbgshift = 2;
@@ -235,7 +237,7 @@ else
 
 print("Builds to run: @{[scalar @builds]}\n");
 
-if($opts{verbose})
+if($CLOPTS{verbose})
 {
 	print((map "  @{[mk_build_str($_)]}\n", @builds), "\n");
 }
@@ -244,7 +246,7 @@ if($opts{verbose})
 # Create a tempdir
 my $tmpbase = $ENV{TMPDIR} // "/tmp";
 my $tmpdir = File::Temp->newdir("ctwm-opts-XXXXXXXX",
-		DIR => $tmpbase, CLEANUP => !$opts{keep});
+		DIR => $tmpbase, CLEANUP => !$CLOPTS{keep});
 print "Testing in $tmpdir...\n";
 
 my $sdn = 0;
@@ -267,7 +269,7 @@ DOBUILDS: for my $bo (@builds)
 		# Succeeded; print success and clean up unless we're --keep'ing
 		print $bret->{stdstr};
 		$suc++;
-		remove_tree($bret->{tstdir}) unless $opts{keep};
+		remove_tree($bret->{tstdir}) unless $CLOPTS{keep};
 	}
 	else
 	{
@@ -275,7 +277,7 @@ DOBUILDS: for my $bo (@builds)
 		print $bret->{stdstr};
 		print $bret->{errstr};
 		$fail++;
-		$tmpdir->unlink_on_destroy(0) if $opts{keep};
+		$tmpdir->unlink_on_destroy(0) if $CLOPTS{keep};
 	}
 }
 
@@ -315,9 +317,9 @@ sub one_build
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
 	my ($stdout, $stderr);
-	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $opts{verbose};
+	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $CLOPTS{verbose};
 	chdir $tstdir;
-	run3 \@cmd, undef, \$stdout, \$stderr unless $opts{dryrun};
+	run3 \@cmd, undef, \$stdout, \$stderr unless $CLOPTS{dryrun};
 	chdir $ORIGDIR;
 	if($? & 127)
 	{
@@ -334,12 +336,12 @@ sub one_build
 
 	# And kick it off
 	@cmd = ('make', '-C', $tstdir);
-	push @cmd, "-j$opts{jobs}" if $opts{jobs};
+	push @cmd, "-j$CLOPTS{jobs}" if $CLOPTS{jobs};
 	push @cmd, 'ctwm';
 
 	$stdout = $stderr = undef;
-	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $opts{verbose};
-	run3 \@cmd, undef, \$stdout, \$stderr unless $opts{dryrun};
+	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $CLOPTS{verbose};
+	run3 \@cmd, undef, \$stdout, \$stderr unless $CLOPTS{dryrun};
 	if($? & 127)
 	{
 		$ret{sig} = $? & 127;
