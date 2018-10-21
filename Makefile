@@ -24,7 +24,7 @@ man-pdf doxygen doxyclean tags: build/Makefile
 .PHONY: test
 test:
 	( cd build && ${MAKE} ctwm )
-	( cd build && ${MAKE} ${@} )
+	( cd build && ${MAKE} CTEST_OUTPUT_ON_FAILURE=1 ${@} )
 
 # Reindent files
 indent:
