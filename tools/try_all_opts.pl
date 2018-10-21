@@ -213,6 +213,13 @@ DOBUILDS: for my $bo (@builds)
 {
 	my $bret = one_build($bo, ++$sdn);
 
+	# If we died from a signal, give up totally
+	if($bret->{sig})
+	{
+		print $bret->{errstr};
+		die "Signal $bret->{sig} in child, dying...";
+	}
+
 	if($bret->{ok})
 	{
 		# Succeeded; print success and clean up unless we're --keep'ing
