@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+use Data::Dumper;
 use File::Temp qw//;
 use File::Spec qw//;
 use File::Basename qw(dirname);
@@ -154,17 +155,27 @@ print "Building from $mypath\n";
 
 # Generate cmake-y option defs
 sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
+sub mk_build_strs
+{
+	my $opts = shift;
+	die "Bad coder!  Bad!" unless ref $opts eq 'HASH';
+	return map { mkopts($_, $opts->{$_}) } sort keys %$opts;
+}
+sub mk_build_str
+{
+	my $opts = shift;
+	die "Bad coder!  Bad!" unless ref $opts eq 'HASH';
+	return join(' ', mk_build_strs($opts));
+}
 
 # Build a reset string to pre-disable everything but the option[s] we
 # care about.  This is somewhat useful in ensuring a deterministic
 # minimal build excepting the requisite pieces.
-sub mk_resets
+sub mk_reset_str
 {
-	my $setstr = shift;
-	my @skip= split / /, $setstr;
-	s/^-D([^=]+)=.*$/$1/ for @skip;
-
-	my @notskip = grep { my $x = $_; !grep { $_ eq $x } @skip } keys %OPTS;
+	my $skip = shift;
+	die "Bad coder!  Bad!" unless ref $skip eq 'HASH';
+	my @notskip = grep { !defined($skip->{$_}) } keys %OPTS;
 	return map { mkopts($_, 0) } sort @notskip;
 }
 
@@ -175,29 +186,42 @@ if($opts{all})
 	# Generate powerset
 	my $dbgshift = 2;
 	my $_dbgret = sub {
-		printf("%*s%s\n", $dbgshift, "", $_) for ("Rets:", @_);
+		printf("%*s%s\n", $dbgshift, "", "Rets:");
+		printf("%*s%s\n", $dbgshift, "", Dumper \@_);
 	};
 
-	# Build all subsets.  Each invocation returns a string of cmake -D's.
+	# Build all subsets.  Each invocation returns an array of hashes of
+	# the build options groupings.
 	my $bss;
 	$bss = sub {
 		$dbgshift++;
-
 		#print "  bss(" . join(" ", @_) . ")\n";
+
+		# Nothing left?  We're done.
 		return () if @_ == 0;
+
+		# Else pull the first thing off the list and make its pair.
 		my $base = shift @_;
-		my @base = (mkopts($base, 0), mkopts($base, 1));
-		#$_dbgret->(@base) if @_ == 0;
+		my @base = ( {$base => 0}, {$base => 1} );
+		$_dbgret->(@base) if @_ == 0;
+
+		# Was that the last?  Then we're done.
 		return @base if @_ == 0;
 
+		# Else there's more.  Recurse.
 		my @subsubs = $bss->(@_);
 		$dbgshift--;
+
+		# Pair up each of our @base with each of the returned.
 		my @rets;
 		for my $b (@base)
 		{
-			push @rets, "$b $_" for @subsubs;
+			for my $s (@subsubs)
+			{
+				push @rets, {%$b, %$s};
+			}
 		}
-		#$_dbgret->(@rets);
+		$_dbgret->(@rets);
 		return @rets;
 	};
 
@@ -206,12 +230,15 @@ if($opts{all})
 else
 {
 	# Just try on/off on each individually
-	push @builds, mkopts($_, 0), mkopts($_, 1) for @use;
+	push @builds, {$_ => 0}, {$_ => 1} for @use;
 }
 
-print("Builds: @{[scalar @builds]}\n",
-		(map "  $_\n", @builds),
-		"\n") if $opts{verbose};
+print("Builds to run: @{[scalar @builds]}\n");
+
+if($opts{verbose})
+{
+	print((map "  @{[mk_build_str($_)]}\n", @builds), "\n");
+}
 
 
 # Create a tempdir
@@ -276,15 +303,16 @@ sub one_build
 		txtdir => '',
 	);
 
+	my $ostr = mk_build_str($opts);
 	$ret{tstdir} = $tstdir = "$tmpdir/@{[$sdn]}";
-	$ret{stdstr} .= "  $sdn: $opts\n";
+	$ret{stdstr} .= "  $sdn: $ostr\n";
 	mkdir $tstdir or die "mkdir($tstdir): $!";
 
 
 	# Prep build
 	my @cmopts;
-	push @cmopts, mk_resets($opts);
-	push @cmopts, split(/ /, $opts);
+	push @cmopts, mk_reset_str($opts);
+	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
 	my ($stdout, $stderr);
 	$ret{stdstr} .= "    @{[join ' ', @cmd]}\n" if $opts{verbose};
