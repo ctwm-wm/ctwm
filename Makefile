@@ -20,6 +20,12 @@ allclean distclean:
 man-pdf doxygen doxyclean tags: build/Makefile
 	( cd build && ${MAKE} ${@} )
 
+# Make sure everything's build before running tests
+.PHONY: test
+test:
+	( cd build && ${MAKE} test_bins )
+	( cd build && ${MAKE} CTEST_OUTPUT_ON_FAILURE=1 ${@} )
+
 # Reindent files
 indent:
 	astyle -n --options=tools/ctwm.astyle *.h *.c
