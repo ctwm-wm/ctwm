@@ -160,8 +160,11 @@ include(dtrace_support)
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 # Include tests
-enable_testing()
-add_subdirectory(tests)
+include(CTest)
+if(BUILD_TESTING)
+	enable_testing()
+	add_subdirectory(tests)
+endif()
 
 # Finish by outputting various information about what we've figured and
 # what we're doing for the builder's edification.
