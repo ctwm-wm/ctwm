@@ -35,6 +35,10 @@ my %OPTS = (
 	USE_EWMH =>  {
 		desc => 'EWMH support',
 	},
+	USE_XRANDR =>  {
+		desc => 'XRANDR support',
+		req_i => 'X11/extensions/Xrandr.h',
+	},
 );
 
 # Default include paths to check
