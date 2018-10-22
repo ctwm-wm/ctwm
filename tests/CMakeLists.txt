@@ -40,3 +40,6 @@ add_test(NAME cfgchk
 
 # A first run at a unit test
 add_subdirectory(util_expand)
+
+# RLayout stuff
+add_subdirectory(layout)
