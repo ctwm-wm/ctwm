@@ -97,31 +97,6 @@ die "No usable options!\n" unless @use;
 print "Building from $mypath\n";
 
 
-# Generate cmake-y option defs
-sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
-sub mk_build_strs
-{
-	my $opts = shift;
-	die "Bad coder!  Bad!" unless ref $opts eq 'HASH';
-	return map { mkopts($_, $opts->{$_}) } sort keys %$opts;
-}
-sub mk_build_str
-{
-	my $opts = shift;
-	die "Bad coder!  Bad!" unless ref $opts eq 'HASH';
-	return join(' ', mk_build_strs($opts));
-}
-
-# Build a reset string to pre-disable everything but the option[s] we
-# care about.  This is somewhat useful in ensuring a deterministic
-# minimal build excepting the requisite pieces.
-sub mk_reset_str
-{
-	my $skip = shift;
-	die "Bad coder!  Bad!" unless ref $skip eq 'HASH';
-	my @notskip = grep { !defined($skip->{$_}) } keys %OPTS;
-	return map { mkopts($_, 0) } sort @notskip;
-}
 
 # Build our list of options
 my @builds;
@@ -343,6 +318,34 @@ sub check_opts
 	}
 
 	return @use;
+}
+
+
+# Various ways we generate cmake-y option defs
+sub mkopts { return "-D$_[0]=@{[$_[1] ? 'ON ' : 'OFF']}"; }
+sub mk_build_strs
+{
+	my $opts = shift;
+	die "Bad coder!  Bad!" unless ref $opts eq 'HASH';
+	return map { mkopts($_, $opts->{$_}) } sort keys %$opts;
+}
+sub mk_build_str
+{
+	my $opts = shift;
+	die "Bad coder!  Bad!" unless ref $opts eq 'HASH';
+	return join(' ', mk_build_strs($opts));
+}
+
+
+# Build a reset string to pre-disable everything but the option[s] we
+# care about.  This is somewhat useful in ensuring a deterministic
+# minimal build excepting the requisite pieces.
+sub mk_reset_str
+{
+	my $skip = shift;
+	die "Bad coder!  Bad!" unless ref $skip eq 'HASH';
+	my @notskip = grep { !defined($skip->{$_}) } keys %OPTS;
+	return map { mkopts($_, 0) } sort @notskip;
 }
 
 
