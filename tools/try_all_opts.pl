@@ -120,46 +120,10 @@ my ($suc, $fail) = (0,0);
 my @fails;
 
 my $fm = Parallel::ForkManager->new($CLOPTS{jobs}, $tmpdir);
-$fm->run_on_finish(sub{
-	my ($pid, $excode, $ident, $exsig, $coredump, $bret) = @_;
-	unless(defined $bret && ref $bret eq 'HASH')
-	{
-		warn "Child $ident didn't return anything!";
-		$fail++;
-		push @fails, "(unknown: $ident)";
-		return;
-	}
-
-	# If we died from a signal, give up totally
-	if($bret->{sig})
-	{
-		print $bret->{errstr};
-		die "$ident: Signal $bret->{sig} in child, dying...";
-	}
-
-	if($bret->{ok})
-	{
-		# Succeeded; print success and clean up unless we're --keep'ing
-		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
-
-		$suc++;
-		remove_tree($bret->{tstdir}) unless $CLOPTS{keep};
-	}
-	else
-	{
-		# Failed; print failures and mark things to not be cleaned up.
-		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
-		print $bret->{errstr};
-
-		$fail++;
-		push @fails, $bret->{bstr};
-		$tmpdir->unlink_on_destroy(0) unless $CLOPTS{keep};
-	}
-	return;
-});
+$fm->run_on_finish(sub { return one_build_finish(@_); });
 
 my $sdn = 0;
-$fm->start_child(++$sdn, sub { return one_build($_, $sdn, \%CLOPTS); })
+$fm->start_child(++$sdn, sub { return do_one_build($_, $sdn, \%CLOPTS); })
 		for @builds;
 $fm->wait_all_children();
 
@@ -358,8 +322,49 @@ sub mk_build_option_matrix
 }
 
 
+# Process the results of a single build (inside P:FM's world)
+sub one_build_finish
+{
+	my ($pid, $excode, $ident, $exsig, $coredump, $bret) = @_;
+	unless(defined $bret && ref $bret eq 'HASH')
+	{
+		warn "Child $ident didn't return anything!";
+		$fail++;
+		push @fails, "(unknown: $ident)";
+		return;
+	}
 
-sub one_build
+	# If we died from a signal, give up totally
+	if($bret->{sig})
+	{
+		print $bret->{errstr};
+		die "$ident: Signal $bret->{sig} in child, dying...";
+	}
+
+	if($bret->{ok})
+	{
+		# Succeeded; print success and clean up unless we're --keep'ing
+		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
+
+		$suc++;
+		remove_tree($bret->{tstdir}) unless $CLOPTS{keep};
+	}
+	else
+	{
+		# Failed; print failures and mark things to not be cleaned up.
+		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
+		print $bret->{errstr};
+
+		$fail++;
+		push @fails, $bret->{bstr};
+		$tmpdir->unlink_on_destroy(0) unless $CLOPTS{keep};
+	}
+	return;
+}
+
+
+# Do a single build (inside a P::FM child)
+sub do_one_build
 {
 	my ($opts, $sdn, $clopts) = @_;
 	my %ret = (
