@@ -55,19 +55,7 @@ my $ORIGDIR = getcwd();
 
 
 # Command line args
-use Getopt::Long qw(:config no_ignore_case bundling);
-my %CLOPTS;
-{
-	my @clopts = (
-		'include|I=s@',  # Extra include path(s)
-		'keep|k',        # Keep output dir
-		'verbose|v',     # Verbosity
-		'jobs|j=i',      # Parallel jobs to run
-		'all|a',         # Try all combos rather than all options
-		'dryrun|d',      # Don't exec anything
-	);
-	GetOptions(\%CLOPTS, @clopts);
-}
+my %CLOPTS = parse_clargs();
 $CLOPTS{jobs} //= 1;
 
 # Extra include dirs given?
@@ -263,6 +251,26 @@ if(@fails)
 }
 exit 0;
 
+
+
+# Command-line parsing
+sub parse_clargs
+{
+	use Getopt::Long qw(:config no_ignore_case bundling);
+
+	my @clopts = (
+		'include|I=s@',  # Extra include path(s)
+		'keep|k',        # Keep output dir
+		'verbose|v',     # Verbosity
+		'jobs|j=i',      # Parallel jobs to run
+		'all|a',         # Try all combos rather than all options
+		'dryrun|d',      # Don't exec anything
+	);
+	my %opts;
+	GetOptions(\%opts, @clopts);
+
+	return %opts;
+}
 
 
 # Check over the list of options we're being asked for, make sure they're
