@@ -99,59 +99,7 @@ print "Building from $mypath\n";
 
 
 # Build our list of options
-my @builds;
-if($CLOPTS{all})
-{
-	# Generate powerset
-	my $dbgshift = 2;
-	my $_dbgret = sub {
-		printf("%*s%s\n", $dbgshift, "", "Rets:");
-		printf("%*s%s\n", $dbgshift, "", Dumper \@_);
-	};
-
-	# Build all subsets.  Each invocation returns an array of hashes of
-	# the build options groupings.
-	my $bss;
-	$bss = sub {
-		$dbgshift++;
-		#print "  bss(" . join(" ", @_) . ")\n";
-
-		# Nothing left?  We're done.
-		return () if @_ == 0;
-
-		# Else pull the first thing off the list and make its pair.
-		my $base = shift @_;
-		my @base = ( {$base => 0}, {$base => 1} );
-		#$_dbgret->(@base) if @_ == 0;
-
-		# Was that the last?  Then we're done.
-		return @base if @_ == 0;
-
-		# Else there's more.  Recurse.
-		my @subsubs = $bss->(@_);
-		$dbgshift--;
-
-		# Pair up each of our @base with each of the returned.
-		my @rets;
-		for my $b (@base)
-		{
-			for my $s (@subsubs)
-			{
-				push @rets, {%$b, %$s};
-			}
-		}
-		#$_dbgret->(@rets);
-		return @rets;
-	};
-
-	@builds = $bss->(@use);
-}
-else
-{
-	# Just try on/off on each individually
-	push @builds, {$_ => 0}, {$_ => 1} for @use;
-}
-
+my @builds = mk_build_option_matrix();
 print("Builds to run: @{[scalar @builds]}\n");
 
 if($CLOPTS{verbose})
@@ -346,6 +294,67 @@ sub mk_reset_str
 	die "Bad coder!  Bad!" unless ref $skip eq 'HASH';
 	my @notskip = grep { !defined($skip->{$_}) } keys %OPTS;
 	return map { mkopts($_, 0) } sort @notskip;
+}
+
+
+# Work up the list of what build option configs we want to try.
+sub mk_build_option_matrix
+{
+	my @builds;
+
+	if($CLOPTS{all})
+	{
+		# Generate powerset
+		my $dbgshift = 2;
+		my $_dbgret = sub {
+			printf("%*s%s\n", $dbgshift, "", "Rets:");
+			printf("%*s%s\n", $dbgshift, "", Dumper \@_);
+		};
+
+		# Build all subsets.  Each invocation returns an array of hashes of
+		# the build options groupings.
+		my $bss;
+		$bss = sub {
+			$dbgshift++;
+			#print "  bss(" . join(" ", @_) . ")\n";
+
+			# Nothing left?  We're done.
+			return () if @_ == 0;
+
+			# Else pull the first thing off the list and make its pair.
+			my $base = shift @_;
+			my @base = ( {$base => 0}, {$base => 1} );
+			#$_dbgret->(@base) if @_ == 0;
+
+			# Was that the last?  Then we're done.
+			return @base if @_ == 0;
+
+			# Else there's more.  Recurse.
+			my @subsubs = $bss->(@_);
+			$dbgshift--;
+
+			# Pair up each of our @base with each of the returned.
+			my @rets;
+			for my $b (@base)
+			{
+				for my $s (@subsubs)
+				{
+					push @rets, {%$b, %$s};
+				}
+			}
+			#$_dbgret->(@rets);
+			return @rets;
+		};
+
+		@builds = $bss->(@use);
+	}
+	else
+	{
+		# Just try on/off on each individually
+		push @builds, {$_ => 0}, {$_ => 1} for @use;
+	}
+
+	return @builds;
 }
 
 
