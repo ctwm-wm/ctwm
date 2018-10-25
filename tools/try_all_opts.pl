@@ -96,55 +96,7 @@ die "No options to work with" unless @DO_OPTS;
 
 # OK, now see which options are usable.
 print "Checking over options...\n" if $CLOPTS{verbose};
-my @use;
-OCHECK: for my $k (@DO_OPTS)
-{
-	my %o = %{$OPTS{$k}};
-
-	if($o{req_e})
-	{
-		# Requires an executable
-		my $e = $o{req_e};
-		
-		# File::Which is one way, but it's not in core, and it's easy
-		# enough to hack a version, so...
-		my $rstr = `which $e`;
-		if($? >> 8)
-		{
-			# Non-zero exit; not found
-			print "  $k: $e not found in path, skipping.\n" if $CLOPTS{verbose};
-		}
-		else
-		{
-			print "  $k: $e OK, adding.\n" if $CLOPTS{verbose};
-			push @use, $k;
-		}
-		next OCHECK;
-	}
-
-	if($o{req_i})
-	{
-		# Requires an include file
-		my $i = $o{req_i};
-
-		for my $d (@INCDIRS)
-		{
-			if(-r "$d/$i")
-			{
-				print"  $k: $i found in $d, adding.\n" if $CLOPTS{verbose};
-				push @use, $k;
-				next OCHECK;
-			}
-		}
-
-		print "  $k: $i not found, skipping.\n" if $CLOPTS{verbose};
-		next OCHECK;
-	}
-
-	# Everything else has no requirements we bother to check
-	print "  $k: OK\n" if $CLOPTS{verbose};
-	push @use, $k;
-}
+my @use = check_opts(@DO_OPTS);
 
 # Which aren't we using?
 my @skip = sort grep { my $x = $_; !grep { $_ eq $x } @use } keys %OPTS;
@@ -310,6 +262,73 @@ if(@fails)
 	exit 1;
 }
 exit 0;
+
+
+
+# Check over the list of options we're being asked for, make sure they're
+# all options we know about, and weed out any that we don't think we can
+# do on the current system.
+sub check_opts
+{
+	my @do_opts = @_;
+	my @use;
+
+	OCHECK: for my $k (@do_opts)
+	{
+		my $_o = $OPTS{$k};
+
+		# Should be impossible; command-line chosen opts are checked
+		# before we get here...
+		die "Unexpected option: $k" unless $_o;
+		my %o = %$_o;
+
+		if($o{req_e})
+		{
+			# Requires an executable
+			my $e = $o{req_e};
+
+			# File::Which is one way, but it's not in core, and it's easy
+			# enough to hack a version, so...
+			my $rstr = `which $e`;
+			if($? >> 8)
+			{
+				# Non-zero exit; not found
+				print "  $k: $e not found in path, skipping.\n" if $CLOPTS{verbose};
+			}
+			else
+			{
+				print "  $k: $e OK, adding.\n" if $CLOPTS{verbose};
+				push @use, $k;
+			}
+			next OCHECK;
+		}
+
+		if($o{req_i})
+		{
+			# Requires an include file
+			my $i = $o{req_i};
+
+			for my $d (@INCDIRS)
+			{
+				if(-r "$d/$i")
+				{
+					print"  $k: $i found in $d, adding.\n" if $CLOPTS{verbose};
+					push @use, $k;
+					next OCHECK;
+				}
+			}
+
+			print "  $k: $i not found, skipping.\n" if $CLOPTS{verbose};
+			next OCHECK;
+		}
+
+		# Everything else has no requirements we bother to check
+		print "  $k: OK\n" if $CLOPTS{verbose};
+		push @use, $k;
+	}
+
+	return @use;
+}
 
 
 
