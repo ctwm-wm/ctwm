@@ -42,7 +42,7 @@ my @INCDIRS = qw( /usr/include /usr/local/include );
 
 # Assume normal $PATH is where executables should be looked for.
 
-# Build from this tree
+# Build from the tree we're running from
 my @mypath = File::Spec->splitdir(abs_path(dirname($0)));
 while(@mypath && ! -r "@{[File::Spec->catfile(@mypath, 'ctwm.h')]}")
 {
@@ -54,15 +54,15 @@ my $ORIGDIR = getcwd();
 
 
 
-# Command line args
+# Parse command line args
 my %CLOPTS = parse_clargs();
-$CLOPTS{jobs} //= 1;
 
-# Extra include dirs given?
+# Default and adjust globals
+$CLOPTS{jobs} //= 1;
 push @INCDIRS, @{$CLOPTS{include}} if $CLOPTS{include};
 
 
-# Allow spec'ing just a subset on the command line.
+# Run the subset given on the command line, or everything.
 my @DO_OPTS;
 if(@ARGV)
 {
@@ -82,7 +82,7 @@ die "No options to work with" unless @DO_OPTS;
 
 
 
-# OK, now see which options are usable.
+# Check which options we think can build on this system.
 print "Checking over options...\n" if $CLOPTS{verbose};
 my @use = check_opts(@DO_OPTS);
 
@@ -98,7 +98,7 @@ print "Building from $mypath\n";
 
 
 
-# Build our list of options
+# Get the built-out list of configurations to try.
 my @builds = mk_build_option_matrix();
 print("Builds to run: @{[scalar @builds]}\n");
 
@@ -115,7 +115,7 @@ my $tmpdir = File::Temp->newdir("ctwm-opts-XXXXXXXX",
 print "Testing in $tmpdir...\n";
 
 
-# Now setup the actual running
+# Now, actually running them.
 my ($suc, $fail) = (0,0);
 my @fails;
 
@@ -128,6 +128,7 @@ $fm->start_child(++$sdn, sub { return do_one_build($_, $sdn, \%CLOPTS); })
 $fm->wait_all_children();
 
 
+# Summarize results.
 print "\n\n$suc succeeeded, $fail failed.\n";
 if(@fails)
 {
