@@ -50,8 +50,6 @@ while(@mypath && ! -r "@{[File::Spec->catfile(@mypath, 'ctwm.h')]}")
 }
 die "Didn't find ctwm.h!" unless @mypath;
 my $mypath = File::Spec->catdir(@mypath);
-my $ORIGDIR = getcwd();
-
 
 
 # Parse command line args
@@ -369,12 +367,17 @@ sub do_one_build
 {
 	my ($opts, $sdn, $clopts) = @_;
 	my %ret = (
+		# Summary/state bits
 		ok  => 0,
 		sig => 0,
-		stdstr => [],
-		errstr => '',
 		tstdir => '',
 		bstr => mk_build_str($opts),
+
+		# Normal success messages
+		stdstr => [],
+
+		# Error message
+		errstr => '',
 	);
 
 	my $tstdir = $ret{tstdir} = "$tmpdir/@{[$sdn]}";
@@ -383,50 +386,61 @@ sub do_one_build
 	print "  $sdn: @{[join ' ', $ret{bstr}]}\n";
 
 
-	# Prep build
+	# Run the cmake step
 	my @cmopts;
 	push @cmopts, mk_reset_str($opts);
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
 	my ($stdout, $stderr);
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
+
+	# Have to chdir for cmake; make can just use -C
+	my $origdir = getcwd();
 	chdir $tstdir;
-	$? = 0 if $clopts->{dryrun}; # So it's known
+	$? = 0; # Be sure it's clean for dryrun case
 	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
-	chdir $ORIGDIR;
+	chdir $origdir;
+
+	# Died from a signal?  Stop right away.
 	if($? & 127)
 	{
 		$ret{sig} = $? & 127;
 		$ret{errstr} = "cmake died from signal, giving up...\n";
 		return \%ret;
 	}
+
+	# Failed in some way?
 	if($? >> 8)
 	{
-		# Er, cmake failed..
 		$ret{errstr} = "cmake failed!\n---\n$stdout\n---\n$stderr\n---\n";
 		return \%ret;
 	}
 
-	# And kick it off
+
+	# OK, cmake step worked.  Now try the build.
 	@cmd = ('make', '-C', $tstdir, 'ctwm');
 
 	$stdout = $stderr = undef;
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
 	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
+
+	# Signal?
 	if($? & 127)
 	{
 		$ret{sig} = $? & 127;
 		$ret{errstr} = "make died from signal, giving up...\n";
 		return \%ret;
 	}
+
+	# Fail?
 	if($? >> 8)
 	{
-		# Build failed  :(
 		$ret{errstr} = "make failed!\n---\n$stdout\n---\n$stderr\n---\n";
 		return \%ret;
 	}
 
-	# OK
+
+	# If we get here, the build completed fine!
 	$ret{ok} = 1;
 	push @{$ret{stdstr}}, "OK.";
 	return \%ret;
