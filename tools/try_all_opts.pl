@@ -402,13 +402,13 @@ sub one_build_finish
 		# Failed; print failures and mark things to not be cleaned up.
 		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
 
-		my $failed = 0;
+		my $hasout = 0;
 		my (@out, @err);
 		if(!$bret->{detail}{cmake}{ok})
 		{
 			# Configuring failed
 			print "    $ident: -> cmake failed.\n";
-			$failed = 1;
+			$hasout = 1;
 			@out = @{$bret->{detail}{cmake}{stdout}};
 			@err = @{$bret->{detail}{cmake}{stderr}};
 		}
@@ -416,7 +416,7 @@ sub one_build_finish
 		{
 			# Building failed
 			print "    $ident: -> make failed.\n";
-			$failed = 1;
+			$hasout = 1;
 			@out = @{$bret->{detail}{make}{stdout}};
 			@err = @{$bret->{detail}{make}{stderr}};
 		}
@@ -424,10 +424,10 @@ sub one_build_finish
 		{
 			# XXX Dunno.  Programmer screwed up...
 			print "    $ident: -> Unknown failure.\n";
-			$failed = 0;
+			$hasout = 0;
 		}
 
-		if($failed)
+		if($hasout)
 		{
 			print "    $ident: stdout:\n"
 			    .  join("\n", map { "    $ident:   $_" } @out) . "\n"
