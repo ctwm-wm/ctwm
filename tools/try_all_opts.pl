@@ -10,6 +10,7 @@ use File::Path qw(remove_tree);
 use Cwd qw(abs_path getcwd);
 use IPC::Run3;
 use Parallel::ForkManager;
+use JSON;
 
 # Try a matrix of all build options.  The various req's are intended to
 # be quick&dirty tests to see if it's worth trying an option on the
@@ -58,6 +59,9 @@ my %CLOPTS = parse_clargs();
 # Default and adjust globals
 $CLOPTS{jobs} //= 1;
 push @INCDIRS, @{$CLOPTS{include}} if $CLOPTS{include};
+
+die "Output file $CLOPTS{output} already exists"
+		if($CLOPTS{output} && -e $CLOPTS{output});
 
 
 # Run the subset given on the command line, or everything.
@@ -116,6 +120,7 @@ print "Testing in $tmpdir...\n";
 # Now, actually running them.
 my ($suc, $fail) = (0,0);
 my @fails;
+my @fullres;
 
 my $fm = Parallel::ForkManager->new($CLOPTS{jobs}, $tmpdir);
 $fm->run_on_finish(sub { return one_build_finish(@_); });
@@ -128,14 +133,25 @@ $fm->wait_all_children();
 
 # Summarize results.
 print "\n\n$suc succeeeded, $fail failed.\n";
+my $ex = 0;
 if(@fails)
 {
 	print " Failed option combinations:\n";
 	print "  $_\n" for @fails;
 	print "\nBuild artifacts left in $tmpdir\n";
-	exit 1;
+	$ex = 1;
 }
-exit 0;
+
+if($CLOPTS{output})
+{
+	open my $of, '>', $CLOPTS{output} or die "Can't save to $CLOPTS{output}: $!";
+	my $js = JSON->new->utf8->pretty->canonical;
+	print $of $js->encode(\@fullres);
+	close $of;
+	print "Output details stored into $CLOPTS{output}\n";
+}
+
+exit $ex;
 
 
 
@@ -159,6 +175,7 @@ sub parse_clargs
 		'all|a',         # Try all combos rather than all options
 		'dryrun|d',      # Don't exec anything
 		'help|h',        # Show help and exit
+		'output|o=s',    # Dump JSON of our tracking
 	);
 	my %opts;
 	GetOptions(\%opts, @clopts);
@@ -177,6 +194,7 @@ $0 [--options] [BUILD_FLAGS]
     --include  -I  Extra include dirs to search for guessing which options
                      can be tried on this system.
     --jobs     -j  Number of parallel jobs to run.
+    --output   -o  Dump details of the run into a JSON file.
 
   Flags:
     --all      -a  Try all combinations of options on/off, rather than all
@@ -361,6 +379,9 @@ sub one_build_finish
 		return;
 	}
 
+	# Stash up full output
+	$fullres[$ident] = $bret;
+
 	# If we died from a signal, give up totally
 	if($bret->{sig})
 	{
@@ -380,7 +401,40 @@ sub one_build_finish
 	{
 		# Failed; print failures and mark things to not be cleaned up.
 		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
-		print $bret->{errstr};
+
+		my $hasout = 0;
+		my (@out, @err);
+		if(!$bret->{detail}{cmake}{ok})
+		{
+			# Configuring failed
+			print "    $ident: -> cmake failed.\n";
+			$hasout = 1;
+			@out = @{$bret->{detail}{cmake}{stdout}};
+			@err = @{$bret->{detail}{cmake}{stderr}};
+		}
+		elsif(!$bret->{detail}{make}{ok})
+		{
+			# Building failed
+			print "    $ident: -> make failed.\n";
+			$hasout = 1;
+			@out = @{$bret->{detail}{make}{stdout}};
+			@err = @{$bret->{detail}{make}{stderr}};
+		}
+		else
+		{
+			# XXX Dunno.  Programmer screwed up...
+			print "    $ident: -> Unknown failure.\n";
+			$hasout = 0;  # Unnecessary, but be explicit.
+		}
+
+		if($hasout)
+		{
+			print "    $ident: stdout:\n"
+			    .  join("\n", map { "    $ident:   $_" } @out) . "\n"
+			    . "    $ident: stderr:\n"
+			    .  join("\n", map { "    $ident:   $_" } @err) . "\n"
+			    ;
+		}
 
 		$fail++;
 		push @fails, $bret->{bstr};
@@ -412,13 +466,14 @@ sub do_one_build
 		detail => {
 			cmake => {
 				ok     => 0,
-				stdout => '',
-				stderr => '',
+				cmd    => [],
+				stdout => [],
+				stderr => [],
 			},
 			make => {
 				ok     => 0,
-				stdout => '',
-				stderr => '',
+				stdout => [],
+				stderr => [],
 			},
 		},
 	);
@@ -435,15 +490,18 @@ sub do_one_build
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
+	$ret{detail}{cmake}{cmd} = [@cmd];
 
 	# Have to chdir for cmake; make can just use -C
 	my $origdir = getcwd();
 	chdir $tstdir;
 	$? = 0; # Be sure it's clean for dryrun case
 
-	$stdout = \$ret{detail}{cmake}{stdout};
-	$stderr = \$ret{detail}{cmake}{stderr};
+	$stdout = $ret{detail}{cmake}{stdout};
+	$stderr = $ret{detail}{cmake}{stderr};
 	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
+	chomp @$stdout;
+	chomp @$stderr;
 
 	chdir $origdir;
 
@@ -458,7 +516,6 @@ sub do_one_build
 	# Failed in some way?
 	if($? >> 8)
 	{
-		$ret{errstr} = "cmake failed!\n---\n$$stdout\n---\n$$stderr\n---\n";
 		return \%ret;
 	}
 
@@ -472,9 +529,11 @@ sub do_one_build
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
 	$? = 0; # Be sure it's clean for dryrun case
 
-	$stdout = \$ret{detail}{make}{stdout};
-	$stderr = \$ret{detail}{make}{stderr};
+	$stdout = $ret{detail}{make}{stdout};
+	$stderr = $ret{detail}{make}{stderr};
 	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
+	chomp @$stdout;
+	chomp @$stderr;
 
 	# Signal?
 	if($? & 127)
@@ -487,7 +546,6 @@ sub do_one_build
 	# Fail?
 	if($? >> 8)
 	{
-		$ret{errstr} = "make failed!\n---\n$$stdout\n---\n$$stderr\n---\n";
 		return \%ret;
 	}
 
