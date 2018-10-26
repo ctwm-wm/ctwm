@@ -10,7 +10,7 @@ use File::Path qw(remove_tree);
 use Cwd qw(abs_path getcwd);
 use IPC::Run3;
 use Parallel::ForkManager;
-use JSON;  # JSON::PP is in core as of 5.14.
+use JSON;
 
 # Try a matrix of all build options.  The various req's are intended to
 # be quick&dirty tests to see if it's worth trying an option on the
