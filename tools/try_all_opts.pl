@@ -384,7 +384,36 @@ sub one_build_finish
 	{
 		# Failed; print failures and mark things to not be cleaned up.
 		print map { "    $ident: $_\n" } @{$bret->{stdstr}};
-		print $bret->{errstr};
+
+		my $failed = 0;
+		my (@out, @err);
+		if(!$bret->{detail}{cmake}{ok})
+		{
+			# Configuring failed
+			print "    $ident: -> cmake failed.\n";
+			$failed = 1;
+			@out = @{$bret->{detail}{cmake}{stdout}};
+			@err = @{$bret->{detail}{cmake}{stderr}};
+		}
+		elsif(!$bret->{detail}{make}{ok})
+		{
+			# Building failed
+			print "    $ident: -> make failed.\n";
+			$failed = 1;
+			@out = @{$bret->{detail}{make}{stdout}};
+			@err = @{$bret->{detail}{make}{stderr}};
+		}
+
+		if($failed)
+		{
+			chomp @out;
+			chomp @err;
+			print "    $ident: stdout:\n"
+			    .  join("\n", map { "    $ident:   $_" } @out) . "\n"
+			    . "    $ident: stderr:\n"
+			    .  join("\n", map { "    $ident:   $_" } @err) . "\n"
+			    ;
+		}
 
 		$fail++;
 		push @fails, $bret->{bstr};
@@ -464,9 +493,6 @@ sub do_one_build
 	# Failed in some way?
 	if($? >> 8)
 	{
-		$ret{errstr} = "cmake failed!\n---\n"
-		             . join('', @$stdout) . "\n---\n"
-		             . join('', @$stderr) . "\n---\n";
 		return \%ret;
 	}
 
@@ -495,9 +521,6 @@ sub do_one_build
 	# Fail?
 	if($? >> 8)
 	{
-		$ret{errstr} = "make failed!\n---\n"
-		             . join('', @$stdout) . "\n---\n"
-		             . join('', @$stderr) . "\n---\n";
 		return \%ret;
 	}
 
