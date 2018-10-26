@@ -10,6 +10,7 @@ use File::Path qw(remove_tree);
 use Cwd qw(abs_path getcwd);
 use IPC::Run3;
 use Parallel::ForkManager;
+use JSON;  # JSON::PP is in core as of 5.14.
 
 # Try a matrix of all build options.  The various req's are intended to
 # be quick&dirty tests to see if it's worth trying an option on the
@@ -58,6 +59,9 @@ my %CLOPTS = parse_clargs();
 # Default and adjust globals
 $CLOPTS{jobs} //= 1;
 push @INCDIRS, @{$CLOPTS{include}} if $CLOPTS{include};
+
+die "Output file $CLOPTS{output} already exists"
+		if($CLOPTS{output} && -e $CLOPTS{output});
 
 
 # Run the subset given on the command line, or everything.
@@ -136,6 +140,16 @@ if(@fails)
 	print "\nBuild artifacts left in $tmpdir\n";
 	exit 1;
 }
+
+if($CLOPTS{output})
+{
+	open my $of, '>', $CLOPTS{output} or die "Can't save to $CLOPTS{output}: $!";
+	my $js = JSON->new->utf8->pretty->canonical;
+	print $of $js->encode(\@fullres);
+	close $of;
+	print "Output details stored into $CLOPTS{output}\n";
+}
+
 exit 0;
 
 
@@ -160,6 +174,7 @@ sub parse_clargs
 		'all|a',         # Try all combos rather than all options
 		'dryrun|d',      # Don't exec anything
 		'help|h',        # Show help and exit
+		'output|o=s',    # Dump JSON of our tracking
 	);
 	my %opts;
 	GetOptions(\%opts, @clopts);
@@ -178,6 +193,7 @@ $0 [--options] [BUILD_FLAGS]
     --include  -I  Extra include dirs to search for guessing which options
                      can be tried on this system.
     --jobs     -j  Number of parallel jobs to run.
+    --output   -o  Dump details of the run into a JSON file.
 
   Flags:
     --all      -a  Try all combinations of options on/off, rather than all
