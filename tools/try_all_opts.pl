@@ -366,6 +366,7 @@ sub one_build_finish
 sub do_one_build
 {
 	my ($opts, $sdn, $clopts) = @_;
+	my ($stdout, $stderr);
 	my %ret = (
 		# Summary/state bits
 		ok  => 0,
@@ -376,8 +377,22 @@ sub do_one_build
 		# Normal success messages
 		stdstr => [],
 
-		# Error message
+		# Error message in string form
 		errstr => '',
+
+		# Structured info about steps
+		detail => {
+			cmake => {
+				ok     => 0,
+				stdout => '',
+				stderr => '',
+			},
+			make => {
+				ok     => 0,
+				stdout => '',
+				stderr => '',
+			},
+		},
 	);
 
 	my $tstdir = $ret{tstdir} = "$tmpdir/@{[$sdn]}";
@@ -391,14 +406,17 @@ sub do_one_build
 	push @cmopts, mk_reset_str($opts);
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
-	my ($stdout, $stderr);
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
 
 	# Have to chdir for cmake; make can just use -C
 	my $origdir = getcwd();
 	chdir $tstdir;
 	$? = 0; # Be sure it's clean for dryrun case
-	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
+
+	$stdout = \$ret{detail}{cmake}{stdout};
+	$stderr = \$ret{detail}{cmake}{stderr};
+	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
+
 	chdir $origdir;
 
 	# Died from a signal?  Stop right away.
@@ -412,17 +430,23 @@ sub do_one_build
 	# Failed in some way?
 	if($? >> 8)
 	{
-		$ret{errstr} = "cmake failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		$ret{errstr} = "cmake failed!\n---\n$$stdout\n---\n$$stderr\n---\n";
 		return \%ret;
 	}
+
+	# OK!
+	$ret{detail}{cmake}{ok} = 1;
 
 
 	# OK, cmake step worked.  Now try the build.
 	@cmd = ('make', '-C', $tstdir, 'ctwm');
 
-	$stdout = $stderr = undef;
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
-	run3 \@cmd, undef, \$stdout, \$stderr unless $clopts->{dryrun};
+	$? = 0; # Be sure it's clean for dryrun case
+
+	$stdout = \$ret{detail}{make}{stdout};
+	$stderr = \$ret{detail}{make}{stderr};
+	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
 
 	# Signal?
 	if($? & 127)
@@ -435,9 +459,12 @@ sub do_one_build
 	# Fail?
 	if($? >> 8)
 	{
-		$ret{errstr} = "make failed!\n---\n$stdout\n---\n$stderr\n---\n";
+		$ret{errstr} = "make failed!\n---\n$$stdout\n---\n$$stderr\n---\n";
 		return \%ret;
 	}
+
+	# OK!
+	$ret{detail}{make}{ok} = 1;
 
 
 	# If we get here, the build completed fine!
