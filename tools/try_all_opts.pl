@@ -420,6 +420,12 @@ sub one_build_finish
 			@out = @{$bret->{detail}{make}{stdout}};
 			@err = @{$bret->{detail}{make}{stderr}};
 		}
+		else
+		{
+			# XXX Dunno.  Programmer screwed up...
+			print "    $ident: -> Unknown failure.\n";
+			$failed = 0;
+		}
 
 		if($failed)
 		{
