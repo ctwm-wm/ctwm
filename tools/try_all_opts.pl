@@ -133,12 +133,13 @@ $fm->wait_all_children();
 
 # Summarize results.
 print "\n\n$suc succeeeded, $fail failed.\n";
+my $ex = 0;
 if(@fails)
 {
 	print " Failed option combinations:\n";
 	print "  $_\n" for @fails;
 	print "\nBuild artifacts left in $tmpdir\n";
-	exit 1;
+	$ex = 1;
 }
 
 if($CLOPTS{output})
@@ -150,7 +151,7 @@ if($CLOPTS{output})
 	print "Output details stored into $CLOPTS{output}\n";
 }
 
-exit 0;
+exit $ex;
 
 
 
