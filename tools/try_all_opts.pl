@@ -116,6 +116,7 @@ print "Testing in $tmpdir...\n";
 # Now, actually running them.
 my ($suc, $fail) = (0,0);
 my @fails;
+my @fullres;
 
 my $fm = Parallel::ForkManager->new($CLOPTS{jobs}, $tmpdir);
 $fm->run_on_finish(sub { return one_build_finish(@_); });
@@ -360,6 +361,9 @@ sub one_build_finish
 		push @fails, "(unknown: $ident)";
 		return;
 	}
+
+	# Stash up full output
+	$fullres[$ident] = $bret;
 
 	# If we died from a signal, give up totally
 	if($bret->{sig})
