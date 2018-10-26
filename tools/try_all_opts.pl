@@ -424,7 +424,7 @@ sub one_build_finish
 		{
 			# XXX Dunno.  Programmer screwed up...
 			print "    $ident: -> Unknown failure.\n";
-			$hasout = 0;
+			$hasout = 0;  # Unnecessary, but be explicit.
 		}
 
 		if($hasout)
