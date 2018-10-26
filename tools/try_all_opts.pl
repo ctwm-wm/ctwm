@@ -158,9 +158,37 @@ sub parse_clargs
 		'jobs|j=i',      # Parallel jobs to run
 		'all|a',         # Try all combos rather than all options
 		'dryrun|d',      # Don't exec anything
+		'help|h',        # Show help and exit
 	);
 	my %opts;
 	GetOptions(\%opts, @clopts);
+
+	# Help output
+	if($opts{help})
+	{
+		print <<"_EOF_";
+$0 [--options] [BUILD_FLAGS]
+
+  If BUILD_FLAGS is given, the given flags will be the ones tried in the
+  appropriate combinations.  With no BUILD_FLAGS, all configured options
+  will be tried.
+
+  Options taking args:
+    --include  -I  Extra include dirs to search for guessing which options
+                     can be tried on this system.
+    --jobs     -j  Number of parallel jobs to run.
+
+  Flags:
+    --all      -a  Try all combinations of options on/off, rather than all
+                     options individually on/off.
+    --dryrun   -d  Don't actually do builds, just show what would be done.
+    --keep     -k  Keep temp dir around.
+    --verbose  -v  More verbose output.
+    --help     -h  This message.
+
+_EOF_
+		exit(0);
+	}
 
 	return %opts;
 }
