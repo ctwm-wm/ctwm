@@ -422,8 +422,6 @@ sub one_build_finish
 
 		if($failed)
 		{
-			chomp @out;
-			chomp @err;
 			print "    $ident: stdout:\n"
 			    .  join("\n", map { "    $ident:   $_" } @out) . "\n"
 			    . "    $ident: stderr:\n"
@@ -495,6 +493,8 @@ sub do_one_build
 	$stdout = $ret{detail}{cmake}{stdout};
 	$stderr = $ret{detail}{cmake}{stderr};
 	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
+	chomp @$stdout;
+	chomp @$stderr;
 
 	chdir $origdir;
 
@@ -525,6 +525,8 @@ sub do_one_build
 	$stdout = $ret{detail}{make}{stdout};
 	$stderr = $ret{detail}{make}{stderr};
 	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
+	chomp @$stdout;
+	chomp @$stderr;
 
 	# Signal?
 	if($? & 127)
