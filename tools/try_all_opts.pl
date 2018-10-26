@@ -416,6 +416,7 @@ sub do_one_build
 		detail => {
 			cmake => {
 				ok     => 0,
+				cmd    => [],
 				stdout => '',
 				stderr => '',
 			},
@@ -439,6 +440,7 @@ sub do_one_build
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
+	$ret{detail}{cmake}{cmd} = [@cmd];
 
 	# Have to chdir for cmake; make can just use -C
 	my $origdir = getcwd();
