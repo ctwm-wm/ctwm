@@ -417,13 +417,13 @@ sub do_one_build
 			cmake => {
 				ok     => 0,
 				cmd    => [],
-				stdout => '',
-				stderr => '',
+				stdout => [],
+				stderr => [],
 			},
 			make => {
 				ok     => 0,
-				stdout => '',
-				stderr => '',
+				stdout => [],
+				stderr => [],
 			},
 		},
 	);
@@ -447,8 +447,8 @@ sub do_one_build
 	chdir $tstdir;
 	$? = 0; # Be sure it's clean for dryrun case
 
-	$stdout = \$ret{detail}{cmake}{stdout};
-	$stderr = \$ret{detail}{cmake}{stderr};
+	$stdout = $ret{detail}{cmake}{stdout};
+	$stderr = $ret{detail}{cmake}{stderr};
 	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
 
 	chdir $origdir;
@@ -464,7 +464,9 @@ sub do_one_build
 	# Failed in some way?
 	if($? >> 8)
 	{
-		$ret{errstr} = "cmake failed!\n---\n$$stdout\n---\n$$stderr\n---\n";
+		$ret{errstr} = "cmake failed!\n---\n"
+		             . join('', @$stdout) . "\n---\n"
+		             . join('', @$stderr) . "\n---\n";
 		return \%ret;
 	}
 
@@ -478,8 +480,8 @@ sub do_one_build
 	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
 	$? = 0; # Be sure it's clean for dryrun case
 
-	$stdout = \$ret{detail}{make}{stdout};
-	$stderr = \$ret{detail}{make}{stderr};
+	$stdout = $ret{detail}{make}{stdout};
+	$stderr = $ret{detail}{make}{stderr};
 	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
 
 	# Signal?
@@ -493,7 +495,9 @@ sub do_one_build
 	# Fail?
 	if($? >> 8)
 	{
-		$ret{errstr} = "make failed!\n---\n$$stdout\n---\n$$stderr\n---\n";
+		$ret{errstr} = "make failed!\n---\n"
+		             . join('', @$stdout) . "\n---\n"
+		             . join('', @$stderr) . "\n---\n";
 		return \%ret;
 	}
 
