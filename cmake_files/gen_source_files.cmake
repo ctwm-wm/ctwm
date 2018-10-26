@@ -102,6 +102,7 @@ if(IS_BZR_CO AND HAS_BZR)
 		DEPENDS ${version_c_in} ${BZR_DIRSTATE_FILE} ${rw_ver_bzr}
 		COMMAND ${rw_ver_bzr} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current WT state."
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	)
 elseif(IS_GIT_CO AND HAS_GIT)
 	# We're in a git tree, so write in the git revision info
@@ -110,6 +111,7 @@ elseif(IS_GIT_CO AND HAS_GIT)
 		DEPENDS ${version_c_in} ${GIT_INDEX_FILE} ${rw_ver_git}
 		COMMAND ${rw_ver_git} < ${version_c_in} > ${version_c}
 		COMMENT "Generating version.c from current git state."
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	)
 elseif(EXISTS ${version_c_gen})
 	# There's a prebuilt one to use; commonly this means we're building
