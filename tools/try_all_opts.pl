@@ -433,6 +433,7 @@ sub one_build_finish
 			    .  join("\n", map { "    $ident:   $_" } @out) . "\n"
 			    . "    $ident: stderr:\n"
 			    .  join("\n", map { "    $ident:   $_" } @err) . "\n"
+			    . "    $ident: FAIL\n"
 			    ;
 		}
 
