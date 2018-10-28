@@ -174,6 +174,7 @@ sub parse_clargs
 		'jobs|j=i',      # Parallel jobs to run
 		'all|a',         # Try all combos rather than all options
 		'dryrun|d',      # Don't exec anything
+		'test|t',        # Run tests
 		'help|h',        # Show help and exit
 		'output|o=s',    # Dump JSON of our tracking
 	);
@@ -201,6 +202,7 @@ $0 [--options] [BUILD_FLAGS]
                      options individually on/off.
     --dryrun   -d  Don't actually do builds, just show what would be done.
     --keep     -k  Keep temp dir around.
+    --test     -t  Run tests
     --verbose  -v  More verbose output.
     --help     -h  This message.
 
@@ -420,6 +422,14 @@ sub one_build_finish
 			@out = @{$bret->{detail}{make}{stdout}};
 			@err = @{$bret->{detail}{make}{stderr}};
 		}
+		elsif($CLOPTS{test} && !$bret->{detail}{test}{ok})
+		{
+			# Tests failed
+			print "    $ident: -> test failed.\n";
+			$hasout = 1;
+			@out = @{$bret->{detail}{test}{stdout}};
+			@err = @{$bret->{detail}{test}{stderr}};
+		}
 		else
 		{
 			# XXX Dunno.  Programmer screwed up...
@@ -472,6 +482,11 @@ sub do_one_build
 				stderr => [],
 			},
 			make => {
+				ok     => 0,
+				stdout => [],
+				stderr => [],
+			},
+			test => {
 				ok     => 0,
 				stdout => [],
 				stderr => [],
@@ -554,6 +569,16 @@ sub do_one_build
 	if(!$dostep->('make', \@cmd))
 	{
 		return \%ret;
+	}
+
+
+	# Maybe we're running tests
+	if($clopts->{test})
+	{
+		if(!$dostep->('test', ['make', 'test_bins', 'test']))
+		{
+			return \%ret;
+		}
 	}
 
 
