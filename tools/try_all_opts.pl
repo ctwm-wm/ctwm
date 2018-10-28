@@ -484,73 +484,77 @@ sub do_one_build
 	print "  $sdn: @{[join ' ', $ret{bstr}]}\n";
 
 
+	# Wrap up the common bits of each step
+	my $dostep = sub {
+		my ($step, $cmd) = @_;
+
+		# $step should be a thing we named detail for in $ret
+		die "Internal error: unconfigured step '$step'"
+				unless ref $ret{detail}{$step} eq 'HASH';
+		my $d = $ret{detail}{$step};
+
+		# Stash up command (with an explicit copy JIC)
+		push @{$ret{stdstr}}, "@{[join ' ', @$cmd]}" if $clopts->{verbose};
+		$d->{cmd} = [@$cmd];
+
+		# There doesn't seem to be any way around cd'ing for cmake.  make
+		# has -C, but just for consistency...
+		my $origdir = getcwd();
+		chdir $tstdir;
+
+		# Init to known state for dryrun case
+		$? = 0;
+
+		# Now run the thing
+		my($stdout, $stderr) = @$d{qw/stdout stderr/};
+		run3 $cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
+		chomp @$stdout;
+		chomp @$stderr;
+
+		chdir $origdir;
+
+		# Died from a signal?  Stop right away.
+		if($? & 127)
+		{
+			$ret{sig} = $? & 127;
+			$ret{errstr} = "$step died from signal, giving up...\n";
+			return 0; # false
+		}
+
+		# Failed in some way?
+		if($? >> 8)
+		{
+			return 0; # false
+		}
+
+		# OK!
+		$d->{ok} = 1;
+		return 1; # true
+	};
+
+
+
 	# Run the cmake step
 	my @cmopts;
 	push @cmopts, mk_reset_str($opts);
 	push @cmopts, mk_build_strs($opts);
 	my @cmd = ('cmake', @cmopts, $mypath);
-	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
-	$ret{detail}{cmake}{cmd} = [@cmd];
 
-	# Have to chdir for cmake; make can just use -C
-	my $origdir = getcwd();
-	chdir $tstdir;
-	$? = 0; # Be sure it's clean for dryrun case
-
-	$stdout = $ret{detail}{cmake}{stdout};
-	$stderr = $ret{detail}{cmake}{stderr};
-	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
-	chomp @$stdout;
-	chomp @$stderr;
-
-	chdir $origdir;
-
-	# Died from a signal?  Stop right away.
-	if($? & 127)
+	if(!$dostep->('cmake', \@cmd))
 	{
-		$ret{sig} = $? & 127;
-		$ret{errstr} = "cmake died from signal, giving up...\n";
+		# Failed somehow
 		return \%ret;
 	}
-
-	# Failed in some way?
-	if($? >> 8)
-	{
-		return \%ret;
-	}
-
-	# OK!
-	$ret{detail}{cmake}{ok} = 1;
 
 
 	# OK, cmake step worked.  Now try the build.
 	@cmd = ('make', '-C', $tstdir, 'ctwm');
 
-	push @{$ret{stdstr}}, "@{[join ' ', @cmd]}" if $clopts->{verbose};
-	$? = 0; # Be sure it's clean for dryrun case
-
-	$stdout = $ret{detail}{make}{stdout};
-	$stderr = $ret{detail}{make}{stderr};
-	run3 \@cmd, undef, $stdout, $stderr unless $clopts->{dryrun};
-	chomp @$stdout;
-	chomp @$stderr;
-
-	# Signal?
-	if($? & 127)
-	{
-		$ret{sig} = $? & 127;
-		$ret{errstr} = "make died from signal, giving up...\n";
-		return \%ret;
-	}
-
-	# Fail?
-	if($? >> 8)
+	if(!$dostep->('make', \@cmd))
 	{
 		return \%ret;
 	}
 
-	# OK!
-	$ret{detail}{make}{ok} = 1;
 
 
 	# If we get here, the build completed fine!
