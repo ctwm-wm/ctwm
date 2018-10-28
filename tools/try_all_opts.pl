@@ -12,6 +12,8 @@ use IPC::Run3;
 use Parallel::ForkManager;
 use JSON;
 
+my $cmdline = [$0, @ARGV];
+
 # Try a matrix of all build options.  The various req's are intended to
 # be quick&dirty tests to see if it's worth trying an option on the
 # system.
@@ -146,7 +148,7 @@ if($CLOPTS{output})
 {
 	open my $of, '>', $CLOPTS{output} or die "Can't save to $CLOPTS{output}: $!";
 	my $js = JSON->new->utf8->pretty->canonical;
-	print $of $js->encode(\@fullres);
+	print $of $js->encode({commandline => $cmdline, results => \@fullres});
 	close $of;
 	print "Output details stored into $CLOPTS{output}\n";
 }
