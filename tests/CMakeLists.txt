@@ -34,8 +34,38 @@ set_tests_properties(run-info PROPERTIES
 
 
 # Try parsing the system.ctwmrc
+# Have to support skipping if no $DISPLAY is set, since we require
+# talking to the X server to get far enough to cfgchk.  Should really
+# find a way around that, but it's a lot more involved than you'd think,
+# so 'till then...
 add_test(NAME cfgchk
-	COMMAND ${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc)
+	COMMAND sh -c "[ -z \"\$DISPLAY\" ] && exit 99 ; ${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc"
+	)
+set_tests_properties(cfgchk PROPERTIES
+	# XXX Requires cmake 3.0...
+	SKIP_RETURN_CODE 99
+	)
+
+
+# Simple test of m4 preprocessing, but we skip if built without m4.
+# XXX Gotta skip if no $DISPLAY here too.  Fix that   :(
+# XXX This seems like the simplest way of actually "skip"'ing a test
+# based on configure options.  That's nuts.  REQUIRED_FILES sounds like
+# it would, but actually causes the test to "not run" and be considered
+# failed   :(
+if(USE_M4)
+	set(_test_m4_cmd
+		"[ -z \"\$DISPLAY\" ] && exit 99 \\; ${CTWMBIN} --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc"
+		)
+else()
+	set(_test_m4_cmd "echo Built without m4, skipping \\; exit 99")
+endif()
+add_test(NAME test_m4
+	COMMAND sh -c ${_test_m4_cmd}
+	)
+set_tests_properties(test_m4 PROPERTIES
+	SKIP_RETURN_CODE 99
+	)
 
 
 # A first run at a unit test
