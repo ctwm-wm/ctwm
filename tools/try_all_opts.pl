@@ -301,12 +301,17 @@ sub mk_build_str
 # Build a reset string to pre-disable everything but the option[s] we
 # care about.  This is somewhat useful in ensuring a deterministic
 # minimal build excepting the requisite pieces.
+sub mk_resets
+{
+	my $skip = shift;
+	die "Bad coder!  Bad!" unless ref $skip eq 'HASH';
+	return grep { !defined($skip->{$_}) } keys %OPTS;
+}
 sub mk_reset_str
 {
 	my $skip = shift;
 	die "Bad coder!  Bad!" unless ref $skip eq 'HASH';
-	my @notskip = grep { !defined($skip->{$_}) } keys %OPTS;
-	return map { mkopts($_, 0) } sort @notskip;
+	return map { mkopts($_, 0) } mk_resets($skip);
 }
 
 
@@ -467,7 +472,8 @@ sub do_one_build
 		ok  => 0,
 		sig => 0,
 		tstdir => '',
-		bstr => mk_build_str($opts),
+		bopts  => { %$opts, map { $_ => 0 } mk_resets($opts) },
+		bstr   => mk_build_str($opts),
 
 		# Normal success messages
 		stdstr => [],
