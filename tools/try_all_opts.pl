@@ -577,7 +577,8 @@ sub do_one_build
 	# Maybe we're running tests
 	if($clopts->{test})
 	{
-		if(!$dostep->('test', ['make', 'test_bins', 'test']))
+		@cmd = ('make', 'CTEST_OUTPUT_ON_FAILURE=1', 'test_bins', 'test');
+		if(!$dostep->('test', \@cmd))
 		{
 			return \%ret;
 		}
