@@ -553,22 +553,23 @@ sub do_one_build
 
 
 	# Run the cmake step
-	my @cmopts;
-	push @cmopts, mk_reset_str($opts);
-	push @cmopts, mk_build_strs($opts);
-	my @cmd = ('cmake', @cmopts, $mypath);
-
-	if(!$dostep->('cmake', \@cmd))
 	{
-		# Failed somehow
-		return \%ret;
+		my @cmd = (
+			'cmake',
+			mk_reset_str($opts),
+			mk_build_strs($opts),
+			$mypath
+		);
+		if(!$dostep->('cmake', \@cmd))
+		{
+			# Failed somehow
+			return \%ret;
+		}
 	}
 
 
 	# OK, cmake step worked.  Now try the build.
-	@cmd = ('make', '-C', $tstdir, 'ctwm');
-
-	if(!$dostep->('make', \@cmd))
+	if(!$dostep->('make', ['make', 'ctwm']))
 	{
 		return \%ret;
 	}
@@ -577,7 +578,7 @@ sub do_one_build
 	# Maybe we're running tests
 	if($clopts->{test})
 	{
-		@cmd = ('make', 'CTEST_OUTPUT_ON_FAILURE=1', 'test_bins', 'test');
+		my @cmd = ('make', 'CTEST_OUTPUT_ON_FAILURE=1', 'test_bins', 'test');
 		if(!$dostep->('test', \@cmd))
 		{
 			return \%ret;
