@@ -34,8 +34,17 @@ set_tests_properties(run-info PROPERTIES
 
 
 # Try parsing the system.ctwmrc
+# Have to support skipping if no $DISPLAY is set, since we require
+# talking to the X server to get far enough to cfgchk.  Should really
+# find a way around that, but it's a lot more involved than you'd think,
+# so 'till then...
 add_test(NAME cfgchk
-	COMMAND ${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc)
+	COMMAND sh -c "[ -z \"\$DISPLAY\" ] && exit 99 ; ${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc"
+	)
+set_tests_properties(cfgchk PROPERTIES
+	# XXX Requires cmake 3.0...
+	SKIP_RETURN_CODE 99
+	)
 
 
 # A first run at a unit test
