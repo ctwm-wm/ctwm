@@ -117,8 +117,6 @@ bool
 ParseTwmrc(char *filename)
 {
 	int i;
-	char *home = NULL;
-	int homelen = 0;
 	char *cp = NULL;
 	char tmpfilename[257];
 
@@ -150,39 +148,35 @@ ParseTwmrc(char *filename)
 
 			case 2:                       /* ~/.ctwmrc.screennum */
 				if(!filename) {
-					home = getenv("HOME");
-					if(home) {
-						homelen = strlen(home);
+					if(Home) {
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.ctwmrc.%d",
-						        home, Scr->screen);
+						        Home, Scr->screen);
 						break;
 					}
 				}
 				continue;
 
 			case 3:                       /* ~/.ctwmrc */
-				if(home) {
-					tmpfilename[homelen + 8] = '\0';
+				if(Home) {
+					tmpfilename[HomeLen + 8] = '\0';
 				}
 				break;
 
 			case 4:                       /* ~/.twmrc.screennum */
 				if(!filename) {
-					home = getenv("HOME");
-					if(home) {
-						homelen = strlen(home);
+					if(Home) {
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.twmrc.%d",
-						        home, Scr->screen);
+						        Home, Scr->screen);
 						break;
 					}
 				}
 				continue;
 
 			case 5:                       /* ~/.twmrc */
-				if(home) {
-					tmpfilename[homelen + 7] = '\0'; /* C.L. */
+				if(Home) {
+					tmpfilename[HomeLen + 7] = '\0'; /* C.L. */
 				}
 				break;
 
