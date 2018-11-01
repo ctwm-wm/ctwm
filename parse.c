@@ -143,20 +143,18 @@ LoadTwmrc(char *filename)
 				if(filename) {
 					cp = tmpfilename;
 					sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
-				}
-				else {
-					cp = filename;
-				}
 
-				if((ret = ParseTwmrc(cp)) == -1) {
-					continue;
+					if((ret = ParseTwmrc(cp)) == -1) {
+						continue;
+					}
 				}
 				break;
 
 			case 1:                       /* -f filename */
-				cp = filename;
-				if((ret = ParseTwmrc(cp)) == -1) {
-					continue;
+				if(filename) {
+					if((ret = ParseTwmrc(filename)) == -1) {
+						continue;
+					}
 				}
 				break;
 
@@ -254,6 +252,10 @@ LoadTwmrc(char *filename)
 static int
 ParseTwmrc(const char *filename)
 {
+#if 0
+	fprintf(stderr, "%s(): Trying %s\n", __func__, filename);
+#endif
+
 	twmrc = fopen(filename, "r");
 
 	if(!twmrc) {
