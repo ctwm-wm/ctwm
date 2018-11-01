@@ -227,27 +227,25 @@ DONE_TRYING:
 static int
 ParseTwmrc(const char *filename)
 {
+	bool status;
+
 #if 0
 	fprintf(stderr, "%s(): Trying %s\n", __func__, filename);
 #endif
 
+	/* See if we can open the file */
+	if(!filename) {
+		return -1;
+	}
 	twmrc = fopen(filename, "r");
-
 	if(!twmrc) {
 		return -1;
 	}
 
-	bool status;
+
+	/* Got it.  Kick off the parsing, however we do it. */
 #ifdef USEM4
 	FILE *raw = NULL;
-#endif
-
-
-
-	/*
-	 * Kick off the parsing, however we do it.
-	 */
-#ifdef USEM4
 	if(CLarg.GoThroughM4) {
 		/*
 		 * Hold onto raw filehandle so we can fclose() it below, and
