@@ -140,6 +140,10 @@ LoadTwmrc(char *filename)
 	if(filename) {
 		/* -f filename.# */
 		asprintf(&tryname, "%s.%d", filename, Scr->screen);
+		if(tryname == NULL) {
+			// Oh, we're _screwed_...
+			return false;
+		}
 		TRY(tryname);
 
 		/* -f filename */
@@ -153,6 +157,9 @@ LoadTwmrc(char *filename)
 		/* ~/.ctwmrc.screennum */
 		free(tryname);
 		asprintf(&tryname, "%s/.ctwmrc.%d", Home, Scr->screen);
+		if(tryname == NULL) {
+			return false;
+		}
 		TRY(tryname);
 
 		// All later attempts are guaranteed shorter strings than that,
