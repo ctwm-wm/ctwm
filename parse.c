@@ -122,8 +122,7 @@ int yydebug = 1;
 bool
 LoadTwmrc(char *filename)
 {
-	int i;
-	int ret;
+	int ret = -1;
 	const char *cp = NULL;
 	char tmpfilename[257];
 
@@ -137,83 +136,51 @@ LoadTwmrc(char *filename)
 	 *   5.  .twmrc
 	 *   6.  system.ctwmrc
 	 */
-	for(i = 0 ; i < 7 ; i++) {
-		switch(i) {
-			case 0:                       /* -f filename.# */
-				if(filename) {
-					cp = tmpfilename;
-					sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
+#define TRY(fn) if((ret = ParseTwmrc(fn)) != -1) { goto DONE_TRYING; }
 
-					if((ret = ParseTwmrc(cp)) == -1) {
-						continue;
-					}
-				}
-				break;
+	if(filename) {
+		/* -f filename.# */
+		cp = tmpfilename;
+		sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
+		TRY(cp);
 
-			case 1:                       /* -f filename */
-				if(filename) {
-					if((ret = ParseTwmrc(filename)) == -1) {
-						continue;
-					}
-				}
-				break;
+		/* -f filename */
+		TRY(filename);
 
-			case 2:                       /* ~/.ctwmrc.screennum */
-				if(!filename) {
-					if(Home) {
-						cp = tmpfilename;
-						sprintf(tmpfilename, "%s/.ctwmrc.%d",
-						        Home, Scr->screen);
-						if((ret = ParseTwmrc(cp)) == -1) {
-							continue;
-						}
-						break;
-					}
-				}
-				continue;
-
-			case 3:                       /* ~/.ctwmrc */
-				if(Home) {
-					tmpfilename[HomeLen + 8] = '\0';
-					if((ret = ParseTwmrc(cp)) == -1) {
-						continue;
-					}
-				}
-				break;
-
-			case 4:                       /* ~/.twmrc.screennum */
-				if(!filename) {
-					if(Home) {
-						cp = tmpfilename;
-						sprintf(tmpfilename, "%s/.twmrc.%d",
-						        Home, Scr->screen);
-						if((ret = ParseTwmrc(cp)) == -1) {
-							continue;
-						}
-						break;
-					}
-				}
-				continue;
-
-			case 5:                       /* ~/.twmrc */
-				if(Home) {
-					tmpfilename[HomeLen + 7] = '\0'; /* C.L. */
-					if((ret = ParseTwmrc(cp)) == -1) {
-						continue;
-					}
-				}
-				break;
-
-			case 6:                       /* system.twmrc */
-				cp = SYSTEM_INIT_FILE;
-				if((ret = ParseTwmrc(cp)) == -1) {
-					continue;
-				}
-				break;
-		}
+		/* If we didn't get either from -f, we failed */
+		goto DONE_TRYING;
 	}
 
+	if(Home) {
+		/* ~/.ctwmrc.screennum */
+		cp = tmpfilename;
+		sprintf(tmpfilename, "%s/.ctwmrc.%d",
+				Home, Scr->screen);
+		TRY(cp);
 
+		/* ~/.ctwmrc */
+		tmpfilename[HomeLen + 8] = '\0';
+		TRY(cp);
+
+		/* ~/.twmrc.screennum */
+		cp = tmpfilename;
+		sprintf(tmpfilename, "%s/.twmrc.%d",
+				Home, Scr->screen);
+		TRY(cp);
+
+		/* ~/.twmrc */
+		tmpfilename[HomeLen + 7] = '\0';
+		TRY(cp);
+	}
+
+	/* system.twmrc */
+	cp = SYSTEM_INIT_FILE;
+	TRY(cp);
+
+#undef TRY
+
+
+DONE_TRYING:
 	/*
 	 * If we wound up with -1 all the way, we totally failed to find a
 	 * file to work with.  Fall back to builtin config.
