@@ -94,6 +94,9 @@ int (*twmInputFunc)(void);              /* used in lexer */
 static int twmrc_lineno;
 
 
+/* Actual file loader */
+static bool ParseTwmrc(const char *filename);
+
 /* lex plumbing funcs */
 static bool doparse(int (*ifunc)(void), const char *srctypename,
                     const char *srcname);
@@ -114,10 +117,16 @@ int yydebug = 1;
  * Principle entry point from top-level code to parse the config file
  */
 bool
-ParseTwmrc(char *filename)
+LoadTwmrc(char *filename_hint)
+{
+	return ParseTwmrc(filename_hint);
+}
+
+static bool
+ParseTwmrc(const char *filename)
 {
 	int i;
-	char *cp = NULL;
+	const char *cp = NULL;
 	char tmpfilename[257];
 
 	/*
