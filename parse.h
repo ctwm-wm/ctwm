@@ -25,7 +25,7 @@ extern bool ParseError;    /* error parsing the .twmrc file */
 /* Needed in the lexer */
 extern int (*twmInputFunc)(void);
 
-bool LoadTwmrc(char *filename);
+bool LoadTwmrc(const char *filename);
 void twmrc_error_prefix(void);
 
 /*
