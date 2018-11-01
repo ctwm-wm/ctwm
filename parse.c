@@ -66,6 +66,9 @@ extern int yyparse(void);
 extern int yyparse(void);
 #endif
 
+// Because of how this winds up shared with callback funcs in the
+// parsing, it's difficult to unwind from being global, so just accept
+// it.
 static FILE *twmrc;
 
 static int ptr = 0;
@@ -74,14 +77,14 @@ static int len = 0;
 static char buff[BUF_LEN + 1];
 static const char **stringListSource, *currentString;
 
+#ifdef NON_FLEX_LEX
 /*
- * While there are (were) referenced in a number of places through the
+ * While these are (were) referenced in a number of places through the
  * file, overflowlen is initialized to 0, only possibly changed in
  * twmUnput(), and unless it's non-zero, neither is otherwise touched.
  * So this is purely a twmUnput()-related var, and with flex, never used
  * for anything.
  */
-#ifdef NON_FLEX_LEX
 static char overflowbuff[20];           /* really only need one */
 static int overflowlen;
 #endif
