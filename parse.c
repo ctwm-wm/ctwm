@@ -117,7 +117,7 @@ int yydebug = 1;
 
 
 /*
- * Principle entry point from top-level code to parse the config file
+ * Principal entry point from top-level code to parse the config file
  */
 bool
 LoadTwmrc(const char *filename)
