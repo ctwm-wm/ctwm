@@ -123,8 +123,7 @@ bool
 LoadTwmrc(char *filename)
 {
 	int ret = -1;
-	const char *cp = NULL;
-	char tmpfilename[257];
+	char *tryname = NULL;
 
 	/*
 	 * Check for the twmrc file in the following order:
@@ -140,52 +139,63 @@ LoadTwmrc(char *filename)
 
 	if(filename) {
 		/* -f filename.# */
-		cp = tmpfilename;
-		sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
-		TRY(cp);
+		asprintf(&tryname, "%s.%d", filename, Scr->screen);
+		TRY(tryname);
 
 		/* -f filename */
 		TRY(filename);
 
-		/* If we didn't get either from -f, we failed */
-		goto DONE_TRYING;
+		/* If we didn't get either from -f, don't try the ~ bits */
+		goto TRY_FALLBACK;
 	}
 
 	if(Home) {
 		/* ~/.ctwmrc.screennum */
-		cp = tmpfilename;
-		sprintf(tmpfilename, "%s/.ctwmrc.%d",
-		        Home, Scr->screen);
-		TRY(cp);
+		free(tryname);
+		asprintf(&tryname, "%s/.ctwmrc.%d", Home, Scr->screen);
+		TRY(tryname);
+
+		// All later attempts are guaranteed shorter strings than that,
+		// so we can just keep sprintf'ing over it.
 
 		/* ~/.ctwmrc */
-		tmpfilename[HomeLen + 8] = '\0';
-		TRY(cp);
+		sprintf(tryname, "%s/.ctwmrc", Home);
+		TRY(tryname);
 
 		/* ~/.twmrc.screennum */
-		cp = tmpfilename;
-		sprintf(tmpfilename, "%s/.twmrc.%d",
-		        Home, Scr->screen);
-		TRY(cp);
+		sprintf(tryname, "%s/.twmrc.%d", Home, Scr->screen);
+		TRY(tryname);
 
 		/* ~/.twmrc */
-		tmpfilename[HomeLen + 7] = '\0';
-		TRY(cp);
+		sprintf(tryname, "%s/.twmrc", Home);
+		TRY(tryname);
 	}
 
+TRY_FALLBACK:
 	/* system.twmrc */
-	cp = SYSTEM_INIT_FILE;
-	TRY(cp);
-
-#undef TRY
+	if((ret = ParseTwmrc(SYSTEM_INIT_FILE)) != -1) {
+		if(ret && filename) {
+			// If we were -f'ing, fell back to the system default, and
+			// that succeeeded, we warn.  It's "normal"(ish) to not have
+			// a personal twmrc and fall back...
+			fprintf(stderr,
+			        "%s:  unable to open twmrc file %s, using %s instead\n",
+			        ProgramName, filename, SYSTEM_INIT_FILE);
+		}
+		goto DONE_TRYING;
+	}
 
 
 DONE_TRYING:
+#undef TRY
+	free(tryname);
+
 	/*
 	 * If we wound up with -1 all the way, we totally failed to find a
 	 * file to work with.  Fall back to builtin config.
 	 */
 	if(ret == -1) {
+		// Only warn if -f.
 		if(filename) {
 			fprintf(stderr,
 			        "%s:  unable to open twmrc file %s, using built-in defaults instead\n",
@@ -194,15 +204,6 @@ DONE_TRYING:
 		return ParseStringList(defTwmrc);
 	}
 
-	/*
-	 * If we wound up opening a config file that wasn't the filename
-	 * we were passed, make sure the user knows about it.
-	 */
-	if(filename && strncmp(cp, filename, strlen(filename)) != 0) {
-		fprintf(stderr,
-		        "%s:  unable to open twmrc file %s, using %s instead\n",
-		        ProgramName, filename, cp);
-	}
 
 	/* Better have a useful value in ret... */
 	return ret;
