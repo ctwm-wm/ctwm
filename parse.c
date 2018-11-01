@@ -134,7 +134,7 @@ LoadTwmrc(char *filename)
 	 *   5.  .twmrc
 	 *   6.  system.ctwmrc
 	 */
-	for(twmrc = NULL, i = 0; !twmrc && i < 7; i++) {
+	for(i = 0 ; i < 7 ; i++) {
 		switch(i) {
 			case 0:                       /* -f filename.# */
 				if(filename) {
