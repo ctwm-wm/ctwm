@@ -155,7 +155,7 @@ LoadTwmrc(char *filename)
 		/* ~/.ctwmrc.screennum */
 		cp = tmpfilename;
 		sprintf(tmpfilename, "%s/.ctwmrc.%d",
-				Home, Scr->screen);
+		        Home, Scr->screen);
 		TRY(cp);
 
 		/* ~/.ctwmrc */
@@ -165,7 +165,7 @@ LoadTwmrc(char *filename)
 		/* ~/.twmrc.screennum */
 		cp = tmpfilename;
 		sprintf(tmpfilename, "%s/.twmrc.%d",
-				Home, Scr->screen);
+		        Home, Scr->screen);
 		TRY(cp);
 
 		/* ~/.twmrc */
