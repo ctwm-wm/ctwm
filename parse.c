@@ -136,7 +136,7 @@ LoadTwmrc(char *filename)
 	 *   5.  .twmrc
 	 *   6.  system.ctwmrc
 	 */
-#define TRY(fn) if((ret = ParseTwmrc(fn)) != -1) { goto DONE_TRYING; }
+#define TRY(fn) if((ret = ParseTwmrc(fn)) != -1) { goto DONE_TRYING; }  (void)0
 
 	if(filename) {
 		/* -f filename.# */
