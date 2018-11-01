@@ -95,7 +95,7 @@ static int twmrc_lineno;
 
 
 /* Actual file loader */
-static bool ParseTwmrc(const char *filename);
+static int ParseTwmrc(const char *filename);
 
 /* lex plumbing funcs */
 static bool doparse(int (*ifunc)(void), const char *srctypename,
@@ -117,15 +117,10 @@ int yydebug = 1;
  * Principle entry point from top-level code to parse the config file
  */
 bool
-LoadTwmrc(char *filename_hint)
-{
-	return ParseTwmrc(filename_hint);
-}
-
-static bool
-ParseTwmrc(const char *filename)
+LoadTwmrc(char *filename)
 {
 	int i;
+	int ret;
 	const char *cp = NULL;
 	char tmpfilename[257];
 
@@ -149,10 +144,15 @@ ParseTwmrc(const char *filename)
 				else {
 					cp = filename;
 				}
+
+				if((ret = ParseTwmrc(cp)) == -1)
+					continue;
 				break;
 
 			case 1:                       /* -f filename */
 				cp = filename;
+				if((ret = ParseTwmrc(cp)) == -1)
+					continue;
 				break;
 
 			case 2:                       /* ~/.ctwmrc.screennum */
@@ -161,6 +161,8 @@ ParseTwmrc(const char *filename)
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.ctwmrc.%d",
 						        Home, Scr->screen);
+						if((ret = ParseTwmrc(cp)) == -1)
+							continue;
 						break;
 					}
 				}
@@ -169,6 +171,8 @@ ParseTwmrc(const char *filename)
 			case 3:                       /* ~/.ctwmrc */
 				if(Home) {
 					tmpfilename[HomeLen + 8] = '\0';
+					if((ret = ParseTwmrc(cp)) == -1)
+						continue;
 				}
 				break;
 
@@ -178,6 +182,8 @@ ParseTwmrc(const char *filename)
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.twmrc.%d",
 						        Home, Scr->screen);
+						if((ret = ParseTwmrc(cp)) == -1)
+							continue;
 						break;
 					}
 				}
@@ -186,34 +192,68 @@ ParseTwmrc(const char *filename)
 			case 5:                       /* ~/.twmrc */
 				if(Home) {
 					tmpfilename[HomeLen + 7] = '\0'; /* C.L. */
+					if((ret = ParseTwmrc(cp)) == -1)
+						continue;
 				}
 				break;
 
 			case 6:                       /* system.twmrc */
 				cp = SYSTEM_INIT_FILE;
+				if((ret = ParseTwmrc(cp)) == -1)
+					continue;
 				break;
-		}
-
-		if(cp) {
-			twmrc = fopen(cp, "r");
 		}
 	}
 
-	if(twmrc) {
+
+	/*
+	 * If we wound up with -1 all the way, we totally failed to find a
+	 * file to work with.  Fall back to builtin config.
+	 */
+	if(ret == -1) {
+		if(filename) {
+			fprintf(stderr,
+			        "%s:  unable to open twmrc file %s, using built-in defaults instead\n",
+			        ProgramName, filename);
+		}
+		return ParseStringList(defTwmrc);
+	}
+
+	/*
+	 * If we wound up opening a config file that wasn't the filename
+	 * we were passed, make sure the user knows about it.
+	 */
+	if(filename && strncmp(cp, filename, strlen(filename)) != 0) {
+		fprintf(stderr,
+		        "%s:  unable to open twmrc file %s, using %s instead\n",
+		        ProgramName, filename, cp);
+	}
+
+	/* Better have a useful value in ret... */
+	return ret;
+}
+
+
+/**
+ * Try parsing a file as a ctwmrc.
+ *
+ * \param filename The filename to try opening and parsing.
+ * \return -1,0,1.  0/1 should be treated as false/true for whether
+ * parsing the file succeeded.  -1 means the file couldn't be opened.
+ */
+static int
+ParseTwmrc(const char *filename)
+{
+	twmrc = fopen(filename, "r");
+
+	if(!twmrc)
+		return -1;
+
 		bool status;
 #ifdef USEM4
 		FILE *raw = NULL;
 #endif
 
-		/*
-		 * If we wound up opening a config file that wasn't the filename
-		 * we were passed, make sure the user knows about it.
-		 */
-		if(filename && strncmp(cp, filename, strlen(filename)) != 0) {
-			fprintf(stderr,
-			        "%s:  unable to open twmrc file %s, using %s instead\n",
-			        ProgramName, filename, cp);
-		}
 
 
 		/*
@@ -228,32 +268,19 @@ ParseTwmrc(const char *filename)
 			raw = twmrc;
 			twmrc = start_m4(raw);
 		}
-		status = doparse(m4twmFileInput, "file", cp);
+		status = doparse(m4twmFileInput, "file", filename);
 		wait(0);
 		fclose(twmrc);
 		if(raw) {
 			fclose(raw);
 		}
 #else
-		status = doparse(twmFileInput, "file", cp);
+		status = doparse(twmFileInput, "file", filename);
 		fclose(twmrc);
 #endif
 
 		/* And we're done */
 		return status;
-	}
-	else {
-		/*
-		 * Couldn't find anything to open, fall back to our builtin
-		 * config.
-		 */
-		if(filename) {
-			fprintf(stderr,
-			        "%s:  unable to open twmrc file %s, using built-in defaults instead\n",
-			        ProgramName, filename);
-		}
-		return ParseStringList(defTwmrc);
-	}
 
 	/* NOTREACHED */
 }
