@@ -116,8 +116,18 @@ int yydebug = 1;
 #endif
 
 
-/*
- * Principal entry point from top-level code to parse the config file
+/**
+ * Principal entry point from top-level code to parse the config file.
+ * This tries the various permutations of config files we could load.
+ * For most possible names, we try loading `$NAME.$SCREENNUM` before
+ * trying `$NAME`.  If a `-f filename` is given on the command line, it's
+ * passed in here, and the normal `~/.[c]twmrc*` attempts are skipped if
+ * it's not found.
+ *
+ * \param filename A filename given in the -f command-line argument (or
+ * NULL)
+ * \return true/false for whether a valid config was parsed out from
+ * somewhere.
  */
 bool
 LoadTwmrc(const char *filename)
@@ -129,6 +139,7 @@ LoadTwmrc(const char *filename)
 	 * Check for the twmrc file in the following order:
 	 *   0.  -f filename.#
 	 *   1.  -f filename
+	 *       (skip to 6 if -f was given)
 	 *   2.  .ctwmrc.#
 	 *   3.  .ctwmrc
 	 *   4.  .twmrc.#
