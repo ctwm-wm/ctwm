@@ -145,14 +145,16 @@ LoadTwmrc(char *filename)
 					cp = filename;
 				}
 
-				if((ret = ParseTwmrc(cp)) == -1)
+				if((ret = ParseTwmrc(cp)) == -1) {
 					continue;
+				}
 				break;
 
 			case 1:                       /* -f filename */
 				cp = filename;
-				if((ret = ParseTwmrc(cp)) == -1)
+				if((ret = ParseTwmrc(cp)) == -1) {
 					continue;
+				}
 				break;
 
 			case 2:                       /* ~/.ctwmrc.screennum */
@@ -161,8 +163,9 @@ LoadTwmrc(char *filename)
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.ctwmrc.%d",
 						        Home, Scr->screen);
-						if((ret = ParseTwmrc(cp)) == -1)
+						if((ret = ParseTwmrc(cp)) == -1) {
 							continue;
+						}
 						break;
 					}
 				}
@@ -171,8 +174,9 @@ LoadTwmrc(char *filename)
 			case 3:                       /* ~/.ctwmrc */
 				if(Home) {
 					tmpfilename[HomeLen + 8] = '\0';
-					if((ret = ParseTwmrc(cp)) == -1)
+					if((ret = ParseTwmrc(cp)) == -1) {
 						continue;
+					}
 				}
 				break;
 
@@ -182,8 +186,9 @@ LoadTwmrc(char *filename)
 						cp = tmpfilename;
 						sprintf(tmpfilename, "%s/.twmrc.%d",
 						        Home, Scr->screen);
-						if((ret = ParseTwmrc(cp)) == -1)
+						if((ret = ParseTwmrc(cp)) == -1) {
 							continue;
+						}
 						break;
 					}
 				}
@@ -192,15 +197,17 @@ LoadTwmrc(char *filename)
 			case 5:                       /* ~/.twmrc */
 				if(Home) {
 					tmpfilename[HomeLen + 7] = '\0'; /* C.L. */
-					if((ret = ParseTwmrc(cp)) == -1)
+					if((ret = ParseTwmrc(cp)) == -1) {
 						continue;
+					}
 				}
 				break;
 
 			case 6:                       /* system.twmrc */
 				cp = SYSTEM_INIT_FILE;
-				if((ret = ParseTwmrc(cp)) == -1)
+				if((ret = ParseTwmrc(cp)) == -1) {
 					continue;
+				}
 				break;
 		}
 	}
@@ -246,41 +253,42 @@ ParseTwmrc(const char *filename)
 {
 	twmrc = fopen(filename, "r");
 
-	if(!twmrc)
+	if(!twmrc) {
 		return -1;
+	}
 
-		bool status;
+	bool status;
 #ifdef USEM4
-		FILE *raw = NULL;
+	FILE *raw = NULL;
 #endif
 
 
 
+	/*
+	 * Kick off the parsing, however we do it.
+	 */
+#ifdef USEM4
+	if(CLarg.GoThroughM4) {
 		/*
-		 * Kick off the parsing, however we do it.
+		 * Hold onto raw filehandle so we can fclose() it below, and
+		 * swap twmrc over to the output from m4
 		 */
-#ifdef USEM4
-		if(CLarg.GoThroughM4) {
-			/*
-			 * Hold onto raw filehandle so we can fclose() it below, and
-			 * swap twmrc over to the output from m4
-			 */
-			raw = twmrc;
-			twmrc = start_m4(raw);
-		}
-		status = doparse(m4twmFileInput, "file", filename);
-		wait(0);
-		fclose(twmrc);
-		if(raw) {
-			fclose(raw);
-		}
+		raw = twmrc;
+		twmrc = start_m4(raw);
+	}
+	status = doparse(m4twmFileInput, "file", filename);
+	wait(0);
+	fclose(twmrc);
+	if(raw) {
+		fclose(raw);
+	}
 #else
-		status = doparse(twmFileInput, "file", filename);
-		fclose(twmrc);
+	status = doparse(twmFileInput, "file", filename);
+	fclose(twmrc);
 #endif
 
-		/* And we're done */
-		return status;
+	/* And we're done */
+	return status;
 
 	/* NOTREACHED */
 }
