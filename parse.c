@@ -66,6 +66,9 @@ extern int yyparse(void);
 extern int yyparse(void);
 #endif
 
+// Because of how this winds up shared with callback funcs in the
+// parsing, it's difficult to unwind from being global, so just accept
+// it.
 static FILE *twmrc;
 
 static int ptr = 0;
@@ -74,14 +77,14 @@ static int len = 0;
 static char buff[BUF_LEN + 1];
 static const char **stringListSource, *currentString;
 
+#ifdef NON_FLEX_LEX
 /*
- * While there are (were) referenced in a number of places through the
+ * While these are (were) referenced in a number of places through the
  * file, overflowlen is initialized to 0, only possibly changed in
  * twmUnput(), and unless it's non-zero, neither is otherwise touched.
  * So this is purely a twmUnput()-related var, and with flex, never used
  * for anything.
  */
-#ifdef NON_FLEX_LEX
 static char overflowbuff[20];           /* really only need one */
 static int overflowlen;
 #endif
@@ -93,6 +96,9 @@ int (*twmInputFunc)(void);              /* used in lexer */
 
 static int twmrc_lineno;
 
+
+/* Actual file loader */
+static int ParseTwmrc(const char *filename);
 
 /* lex plumbing funcs */
 static bool doparse(int (*ifunc)(void), const char *srctypename,
@@ -110,140 +116,104 @@ int yydebug = 1;
 #endif
 
 
-/*
- * Principle entry point from top-level code to parse the config file
+/**
+ * Principal entry point from top-level code to parse the config file.
+ * This tries the various permutations of config files we could load.
+ * For most possible names, we try loading `$NAME.$SCREENNUM` before
+ * trying `$NAME`.  If a `-f filename` is given on the command line, it's
+ * passed in here, and the normal `~/.[c]twmrc*` attempts are skipped if
+ * it's not found.
+ *
+ * \param filename A filename given in the -f command-line argument (or
+ * NULL)
+ * \return true/false for whether a valid config was parsed out from
+ * somewhere.
  */
 bool
-ParseTwmrc(char *filename)
+LoadTwmrc(const char *filename)
 {
-	int i;
-	char *home = NULL;
-	int homelen = 0;
-	char *cp = NULL;
-	char tmpfilename[257];
+	int ret = -1;
+	char *tryname = NULL;
 
 	/*
 	 * Check for the twmrc file in the following order:
 	 *   0.  -f filename.#
 	 *   1.  -f filename
+	 *       (skip to 6 if -f was given)
 	 *   2.  .ctwmrc.#
 	 *   3.  .ctwmrc
 	 *   4.  .twmrc.#
 	 *   5.  .twmrc
 	 *   6.  system.ctwmrc
 	 */
-	for(twmrc = NULL, i = 0; !twmrc && i < 7; i++) {
-		switch(i) {
-			case 0:                       /* -f filename.# */
-				if(filename) {
-					cp = tmpfilename;
-					sprintf(tmpfilename, "%s.%d", filename, Scr->screen);
-				}
-				else {
-					cp = filename;
-				}
-				break;
+#define TRY(fn) if((ret = ParseTwmrc(fn)) != -1) { goto DONE_TRYING; }  (void)0
 
-			case 1:                       /* -f filename */
-				cp = filename;
-				break;
-
-			case 2:                       /* ~/.ctwmrc.screennum */
-				if(!filename) {
-					home = getenv("HOME");
-					if(home) {
-						homelen = strlen(home);
-						cp = tmpfilename;
-						sprintf(tmpfilename, "%s/.ctwmrc.%d",
-						        home, Scr->screen);
-						break;
-					}
-				}
-				continue;
-
-			case 3:                       /* ~/.ctwmrc */
-				if(home) {
-					tmpfilename[homelen + 8] = '\0';
-				}
-				break;
-
-			case 4:                       /* ~/.twmrc.screennum */
-				if(!filename) {
-					home = getenv("HOME");
-					if(home) {
-						homelen = strlen(home);
-						cp = tmpfilename;
-						sprintf(tmpfilename, "%s/.twmrc.%d",
-						        home, Scr->screen);
-						break;
-					}
-				}
-				continue;
-
-			case 5:                       /* ~/.twmrc */
-				if(home) {
-					tmpfilename[homelen + 7] = '\0'; /* C.L. */
-				}
-				break;
-
-			case 6:                       /* system.twmrc */
-				cp = SYSTEM_INIT_FILE;
-				break;
+	if(filename) {
+		/* -f filename.# */
+		asprintf(&tryname, "%s.%d", filename, Scr->screen);
+		if(tryname == NULL) {
+			// Oh, we're _screwed_...
+			return false;
 		}
+		TRY(tryname);
 
-		if(cp) {
-			twmrc = fopen(cp, "r");
-		}
+		/* -f filename */
+		TRY(filename);
+
+		/* If we didn't get either from -f, don't try the ~ bits */
+		goto TRY_FALLBACK;
 	}
 
-	if(twmrc) {
-		bool status;
-#ifdef USEM4
-		FILE *raw = NULL;
-#endif
+	if(Home) {
+		/* ~/.ctwmrc.screennum */
+		free(tryname);
+		asprintf(&tryname, "%s/.ctwmrc.%d", Home, Scr->screen);
+		if(tryname == NULL) {
+			return false;
+		}
+		TRY(tryname);
 
-		/*
-		 * If we wound up opening a config file that wasn't the filename
-		 * we were passed, make sure the user knows about it.
-		 */
-		if(filename && strncmp(cp, filename, strlen(filename)) != 0) {
+		// All later attempts are guaranteed shorter strings than that,
+		// so we can just keep sprintf'ing over it.
+
+		/* ~/.ctwmrc */
+		sprintf(tryname, "%s/.ctwmrc", Home);
+		TRY(tryname);
+
+		/* ~/.twmrc.screennum */
+		sprintf(tryname, "%s/.twmrc.%d", Home, Scr->screen);
+		TRY(tryname);
+
+		/* ~/.twmrc */
+		sprintf(tryname, "%s/.twmrc", Home);
+		TRY(tryname);
+	}
+
+TRY_FALLBACK:
+	/* system.twmrc */
+	if((ret = ParseTwmrc(SYSTEM_INIT_FILE)) != -1) {
+		if(ret && filename) {
+			// If we were -f'ing, fell back to the system default, and
+			// that succeeeded, we warn.  It's "normal"(ish) to not have
+			// a personal twmrc and fall back...
 			fprintf(stderr,
 			        "%s:  unable to open twmrc file %s, using %s instead\n",
-			        ProgramName, filename, cp);
+			        ProgramName, filename, SYSTEM_INIT_FILE);
 		}
-
-
-		/*
-		 * Kick off the parsing, however we do it.
-		 */
-#ifdef USEM4
-		if(CLarg.GoThroughM4) {
-			/*
-			 * Hold onto raw filehandle so we can fclose() it below, and
-			 * swap twmrc over to the output from m4
-			 */
-			raw = twmrc;
-			twmrc = start_m4(raw);
-		}
-		status = doparse(m4twmFileInput, "file", cp);
-		wait(0);
-		fclose(twmrc);
-		if(raw) {
-			fclose(raw);
-		}
-#else
-		status = doparse(twmFileInput, "file", cp);
-		fclose(twmrc);
-#endif
-
-		/* And we're done */
-		return status;
+		goto DONE_TRYING;
 	}
-	else {
-		/*
-		 * Couldn't find anything to open, fall back to our builtin
-		 * config.
-		 */
+
+
+DONE_TRYING:
+#undef TRY
+	free(tryname);
+
+	/*
+	 * If we wound up with -1 all the way, we totally failed to find a
+	 * file to work with.  Fall back to builtin config.
+	 */
+	if(ret == -1) {
+		// Only warn if -f.
 		if(filename) {
 			fprintf(stderr,
 			        "%s:  unable to open twmrc file %s, using built-in defaults instead\n",
@@ -251,6 +221,63 @@ ParseTwmrc(char *filename)
 		}
 		return ParseStringList(defTwmrc);
 	}
+
+
+	/* Better have a useful value in ret... */
+	return ret;
+}
+
+
+/**
+ * Try parsing a file as a ctwmrc.
+ *
+ * \param filename The filename to try opening and parsing.
+ * \return -1,0,1.  0/1 should be treated as false/true for whether
+ * parsing the file succeeded.  -1 means the file couldn't be opened.
+ */
+static int
+ParseTwmrc(const char *filename)
+{
+	bool status;
+
+#if 0
+	fprintf(stderr, "%s(): Trying %s\n", __func__, filename);
+#endif
+
+	/* See if we can open the file */
+	if(!filename) {
+		return -1;
+	}
+	twmrc = fopen(filename, "r");
+	if(!twmrc) {
+		return -1;
+	}
+
+
+	/* Got it.  Kick off the parsing, however we do it. */
+#ifdef USEM4
+	FILE *raw = NULL;
+	if(CLarg.GoThroughM4) {
+		/*
+		 * Hold onto raw filehandle so we can fclose() it below, and
+		 * swap twmrc over to the output from m4
+		 */
+		raw = twmrc;
+		twmrc = start_m4(raw);
+	}
+	status = doparse(m4twmFileInput, "file", filename);
+	wait(0);
+	fclose(twmrc);
+	if(raw) {
+		fclose(raw);
+	}
+#else
+	status = doparse(twmFileInput, "file", filename);
+	fclose(twmrc);
+#endif
+
+	/* And we're done */
+	return status;
 
 	/* NOTREACHED */
 }

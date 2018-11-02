@@ -199,7 +199,7 @@ m4_defs(Display *display, const char *host)
 		user = "unknown";
 	}
 	WR_DEF("USER", user);
-	WR_DEF("HOME", getenv("HOME"));
+	WR_DEF("HOME", Home);
 
 	/*
 	 * ctwm meta
