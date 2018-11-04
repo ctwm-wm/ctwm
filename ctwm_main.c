@@ -703,7 +703,7 @@ ctwm_main(int argc, char *argv[])
 		MakeMenus();
 
 		// Load up the images for titlebar buttons
-		InitTitlebarButtons();          /* menus are now loaded! */
+		InitTitlebarButtons();
 
 		XGrabServer(dpy);
 		XSync(dpy, 0);
@@ -782,6 +782,16 @@ ctwm_main(int argc, char *argv[])
 					SimulateMapRequest(children[i]);
 				}
 			}
+
+			/*
+			 * At this point, we've adopted all the windows currently on
+			 * the screen (aside from those we're intentionally not).
+			 * Note that this happens _before_ the various other windows
+			 * we create below, which is why they don't wind up getting
+			 * TwmWindow's tied to them or show up in icon managers, etc.
+			 * We'd need to actually make it _explicit_ that those
+			 * windows aren't tracked by us if we changed that order...
+			 */
 		}
 
 
@@ -872,6 +882,8 @@ ctwm_main(int argc, char *argv[])
 			                                CopyFromParent,
 			                                valuemask, &attributes);
 		}
+
+		// Create util window used in animation
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
 		                                       Scr->rootw, Scr->rooth, 0, 0, 0);
 
