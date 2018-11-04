@@ -160,25 +160,8 @@ SIGNAL_T ChildExit(int signum);
 int
 ctwm_main(int argc, char *argv[])
 {
-	Window croot, parent, *children;
-	unsigned int nchildren;
-	int i, j;
-	unsigned long valuemask;    /* mask for create windows */
-	XSetWindowAttributes attributes;    /* attributes for create windows */
-	int numManaged, firstscrn, lastscrn, scrnum;
+	int numManaged, firstscrn, lastscrn;
 	int zero = 0;
-	char *welcomefile;
-	bool screenmasked;
-	static int crootx = 100;
-	static int crooty = 100;
-	static unsigned int crootw = 1280;
-	static unsigned int crooth =  768;
-	/*    static unsigned int crootw = 2880; */
-	/*    static unsigned int crooth = 1200; */
-	IconRegion *ir;
-
-	XRectangle ink_rect;
-	XRectangle logical_rect;
 
 	setlocale(LC_ALL, "");
 
@@ -287,8 +270,19 @@ ctwm_main(int argc, char *argv[])
 	sound_init();
 #endif
 
-	for(scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
+	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
+		Window croot, parent, *children;
+		unsigned int nchildren;
 		unsigned long attrmask;
+		int crootx, crooty;
+		unsigned int crootw, crooth;
+		bool screenmasked;
+		char *welcomefile;
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+		XRectangle ink_rect;
+		XRectangle logical_rect;
+
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
 			if(CLarg.capwin && XGetWindowAttributes(dpy, CLarg.capwin, &wa)) {
@@ -300,6 +294,12 @@ ctwm_main(int argc, char *argv[])
 				                      &junk);
 			}
 			else {
+				// Fake up default size.  Probably Ideally should be
+				// configurable, but even more ideally we wouldn't have
+				// captive...
+				crootx = crooty = 100;
+				crootw = 1280;
+				crooth = 768;
 				croot = CreateCaptiveRootWindow(crootx, crooty, crootw, crooth);
 			}
 		}
@@ -573,7 +573,7 @@ ctwm_main(int argc, char *argv[])
 			Scr->ThreeDBorderWidth = 0;
 		}
 
-		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
+		for(IconRegion *ir = Scr->FirstRegion; ir; ir = ir->next) {
 			if(ir->TitleJustification == TJ_UNDEF) {
 				ir->TitleJustification = Scr->IconJustification;
 			}
@@ -622,13 +622,13 @@ ctwm_main(int argc, char *argv[])
 		/*
 		 * weed out icon windows
 		 */
-		for(i = 0; i < nchildren; i++) {
+		for(int i = 0; i < nchildren; i++) {
 			if(children[i]) {
 				XWMHints *wmhintsp = XGetWMHints(dpy, children[i]);
 
 				if(wmhintsp) {
 					if(wmhintsp->flags & IconWindowHint) {
-						for(j = 0; j < nchildren; j++) {
+						for(int j = 0; j < nchildren; j++) {
 							if(children[j] == wmhintsp->icon_window) {
 								children[j] = None;
 								break;
@@ -643,7 +643,7 @@ ctwm_main(int argc, char *argv[])
 		/*
 		 * map all of the non-override windows
 		 */
-		for(i = 0; i < nchildren; i++) {
+		for(int i = 0; i < nchildren; i++) {
 			if(children[i] && MappedNotOverride(children[i])) {
 				XUnmapWindow(dpy, children[i]);
 				SimulateMapRequest(children[i]);
