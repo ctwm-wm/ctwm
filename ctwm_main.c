@@ -229,7 +229,7 @@ ctwm_main(int argc, char *argv[])
 			exit(1);
 		}
 
-		if(fcntl(ConnectionNumber(dpy), F_SETFD, 1) == -1) {
+		if(fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) == -1) {
 			fprintf(stderr,
 			        "%s:  unable to mark display connection as close-on-exec\n",
 			        ProgramName);
