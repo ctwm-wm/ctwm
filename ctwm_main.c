@@ -161,7 +161,6 @@ int
 ctwm_main(int argc, char *argv[])
 {
 	int numManaged, firstscrn, lastscrn;
-	int zero = 0;
 
 	setlocale(LC_ALL, "");
 
@@ -213,22 +212,32 @@ ctwm_main(int argc, char *argv[])
 	NoClass.res_name = NoName;
 	NoClass.res_class = NoName;
 
-	XtToolkitInitialize();
-	appContext = XtCreateApplicationContext();
 
-	if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-	                         NULL, 0, &zero, NULL))) {
-		fprintf(stderr, "%s:  unable to open display \"%s\"\n",
-		        ProgramName, XDisplayName(CLarg.display_name));
-		exit(1);
+	/*
+	 * Initialize our X connection and state bits.
+	 */
+	{
+		int zero = 0; // Fakey
+
+		XtToolkitInitialize();
+		appContext = XtCreateApplicationContext();
+
+		if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
+		                         NULL, 0, &zero, NULL))) {
+			fprintf(stderr, "%s:  unable to open display \"%s\"\n",
+			        ProgramName, XDisplayName(CLarg.display_name));
+			exit(1);
+		}
+
+		if(fcntl(ConnectionNumber(dpy), F_SETFD, 1) == -1) {
+			fprintf(stderr,
+			        "%s:  unable to mark display connection as close-on-exec\n",
+			        ProgramName);
+			exit(1);
+		}
 	}
 
-	if(fcntl(ConnectionNumber(dpy), F_SETFD, 1) == -1) {
-		fprintf(stderr,
-		        "%s:  unable to mark display connection as close-on-exec\n",
-		        ProgramName);
-		exit(1);
-	}
+
 	if(CLarg.restore_filename) {
 		ReadWinConfigFile(CLarg.restore_filename);
 	}
