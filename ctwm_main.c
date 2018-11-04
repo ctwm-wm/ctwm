@@ -89,8 +89,8 @@ static bool RedirectError;      /* true ==> another window manager running */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
 static int TwmErrorHandler(Display *display, XErrorEvent *event);
-static Window CreateRootWindow(int x, int y,
-                               unsigned int width, unsigned int height);
+static Window CreateCaptiveRootWindow(int x, int y,
+                                      unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
 static bool MappedNotOverride(Window w);
@@ -300,7 +300,7 @@ ctwm_main(int argc, char *argv[])
 				                      &junk);
 			}
 			else {
-				croot = CreateRootWindow(crootx, crooty, crootw, crooth);
+				croot = CreateCaptiveRootWindow(crootx, crooty, crootw, crooth);
 			}
 		}
 		else {
@@ -1248,8 +1248,9 @@ void InternUsefulAtoms(void)
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
 }
 
-static Window CreateRootWindow(int x, int y,
-                               unsigned int width, unsigned int height)
+static Window
+CreateCaptiveRootWindow(int x, int y,
+                        unsigned int width, unsigned int height)
 {
 	int         scrnum;
 	Window      ret;
