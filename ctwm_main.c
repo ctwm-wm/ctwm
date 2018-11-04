@@ -202,13 +202,16 @@ ctwm_main(int argc, char *argv[])
 
 #undef newhandler
 
+	// Various bits of code care about $HOME
 	Home = getenv("HOME");
 	if(Home == NULL) {
 		Home = "./";
 	}
-
 	HomeLen = strlen(Home);
 
+
+	// XXX This is only used in AddWindow(), and is probably bogus to
+	// have globally....
 	NoClass.res_name = NoName;
 	NoClass.res_class = NoName;
 
@@ -238,10 +241,15 @@ ctwm_main(int argc, char *argv[])
 	}
 
 
+	// Load session stuff
 	if(CLarg.restore_filename) {
 		ReadWinConfigFile(CLarg.restore_filename);
 	}
+
+	// Load up info about X extensions
 	HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
+
+	// Allocate contexts/atoms/etc we use
 	TwmContext = XUniqueContext();
 	MenuContext = XUniqueContext();
 	ScreenContext = XUniqueContext();
@@ -250,10 +258,8 @@ ctwm_main(int argc, char *argv[])
 	InternUsefulAtoms();
 
 
-	/* Set up the per-screen global information. */
-
+	// Prep up the per-screen global info
 	NumScreens = ScreenCount(dpy);
-
 	if(CLarg.MultiScreen) {
 		firstscrn = 0;
 		lastscrn = NumScreens - 1;
@@ -262,16 +268,19 @@ ctwm_main(int argc, char *argv[])
 		firstscrn = lastscrn = DefaultScreen(dpy);
 	}
 
-	/* for simplicity, always allocate NumScreens ScreenInfo struct pointers */
+	// For simplicity, pre-allocate NumScreens ScreenInfo struct pointers
 	ScreenList = calloc(NumScreens, sizeof(ScreenInfo *));
 	if(ScreenList == NULL) {
 		fprintf(stderr, "%s: Unable to allocate memory for screen list, exiting.\n",
 		        ProgramName);
 		exit(1);
 	}
-	numManaged = 0;
+
+	// Initialize
 	PreviousScreen = DefaultScreen(dpy);
-	FirstScreen = true;
+
+
+	// Do a little early initialization
 #ifdef EWMH
 	EwmhInit();
 #endif /* EWMH */
@@ -279,6 +288,9 @@ ctwm_main(int argc, char *argv[])
 	sound_init();
 #endif
 
+	// Start looping over the screens
+	numManaged = 0;
+	FirstScreen = true;
 	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		Window croot;
 		unsigned long attrmask;
@@ -760,23 +772,38 @@ ctwm_main(int argc, char *argv[])
 		Scr->FirstTime = false;
 	} /* for */
 
+
+	// We're not much of a window manager if we didn't get stuff to
+	// manage...
 	if(numManaged == 0) {
 		if(CLarg.MultiScreen && NumScreens > 0)
 			fprintf(stderr, "%s:  unable to find any unmanaged screens\n",
 			        ProgramName);
 		exit(1);
 	}
+
+	// Hook up session
 	ConnectToSessionManager(CLarg.client_id);
+
 #ifdef SOUNDS
+	// Announce ourselves
 	sound_load_list();
 	play_startup_sound();
 #endif
 
+	// Hard-reset this flag.
+	// XXX This doesn't seem right?
 	RestartPreviousState = true;
+
+	// Do some late initialization
 	HandlingEvents = true;
 	InitEvents();
 	StartAnimation();
+
+	// Main loop.
 	HandleEvents();
+
+	// Should never get here...
 	fprintf(stderr, "Shouldn't return from HandleEvents()!\n");
 	exit(1);
 }
