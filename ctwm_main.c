@@ -271,8 +271,7 @@ ctwm_main(int argc, char *argv[])
 #endif
 
 	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
-		Window croot, parent, *children;
-		unsigned int nchildren;
+		Window croot;
 		unsigned long attrmask;
 		int crootx, crooty;
 		unsigned int crootw, crooth;
@@ -618,37 +617,50 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitScreenLate(Scr);
 #endif /* EWMH */
 
-		XQueryTree(dpy, Scr->Root, &croot, &parent, &children, &nchildren);
-		/*
-		 * weed out icon windows
-		 */
-		for(int i = 0; i < nchildren; i++) {
-			if(children[i]) {
-				XWMHints *wmhintsp = XGetWMHints(dpy, children[i]);
 
-				if(wmhintsp) {
-					if(wmhintsp->flags & IconWindowHint) {
-						for(int j = 0; j < nchildren; j++) {
-							if(children[j] == wmhintsp->icon_window) {
-								children[j] = None;
-								break;
+		/*
+		 * Look up and handle all the windows on the screen.
+		 */
+		{
+			Window parent, *children;
+			unsigned int nchildren;
+
+			XQueryTree(dpy, Scr->Root, &croot, &parent, &children, &nchildren);
+
+			/* Weed out icon windows */
+			for(int i = 0; i < nchildren; i++) {
+				if(children[i]) {
+					XWMHints *wmhintsp = XGetWMHints(dpy, children[i]);
+
+					if(wmhintsp) {
+						if(wmhintsp->flags & IconWindowHint) {
+							for(int j = 0; j < nchildren; j++) {
+								if(children[j] == wmhintsp->icon_window) {
+									children[j] = None;
+									break;
+								}
 							}
 						}
+						XFree(wmhintsp);
 					}
-					XFree(wmhintsp);
+				}
+			}
+
+			/*
+			 * Map all of the non-override windows.  This winds down
+			 * into AddWindow() and friends through SimulateMapRequest(),
+			 * so this is where we actually adopt the windows on the
+			 * screen.
+			 */
+			for(int i = 0; i < nchildren; i++) {
+				if(children[i] && MappedNotOverride(children[i])) {
+					XUnmapWindow(dpy, children[i]);
+					SimulateMapRequest(children[i]);
 				}
 			}
 		}
 
-		/*
-		 * map all of the non-override windows
-		 */
-		for(int i = 0; i < nchildren; i++) {
-			if(children[i] && MappedNotOverride(children[i])) {
-				XUnmapWindow(dpy, children[i]);
-				SimulateMapRequest(children[i]);
-			}
-		}
+
 		if(Scr->ShowWorkspaceManager && Scr->workSpaceManagerActive) {
 			VirtualScreen *vs;
 			if(Scr->WindowMask) {
