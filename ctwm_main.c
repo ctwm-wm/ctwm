@@ -279,8 +279,6 @@ ctwm_main(int argc, char *argv[])
 		char *welcomefile;
 		unsigned long valuemask;
 		XSetWindowAttributes attributes;
-		XRectangle ink_rect;
-		XRectangle logical_rect;
 
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
@@ -695,15 +693,22 @@ ctwm_main(int argc, char *argv[])
 		                      CopyFromParent, CopyFromParent,
 		                      valuemask, &attributes);
 
-		XmbTextExtents(Scr->SizeFont.font_set,
-		               " 8888 x 8888 ", 13,
-		               &ink_rect, &logical_rect);
-		Scr->SizeStringWidth = logical_rect.width;
-		valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
-		attributes.bit_gravity = NorthWestGravity;
-
+		/*
+		 * Setup the Size/Position window for showing during resize/move
+		 * operations.
+		 */
 		{
 			int sx, sy;
+			XRectangle ink_rect;
+			XRectangle logical_rect;
+
+			XmbTextExtents(Scr->SizeFont.font_set,
+			               " 8888 x 8888 ", 13,
+			               &ink_rect, &logical_rect);
+			Scr->SizeStringWidth = logical_rect.width;
+			valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
+			attributes.bit_gravity = NorthWestGravity;
+
 			if(Scr->CenterFeedbackWindow) {
 				sx = (Scr->rootw / 2) - (Scr->SizeStringWidth / 2);
 				sy = (Scr->rooth / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
