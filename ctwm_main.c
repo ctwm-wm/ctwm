@@ -277,8 +277,6 @@ ctwm_main(int argc, char *argv[])
 		unsigned int crootw, crooth;
 		bool screenmasked;
 		char *welcomefile;
-		unsigned long valuemask;
-		XSetWindowAttributes attributes;
 
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
@@ -680,18 +678,27 @@ ctwm_main(int argc, char *argv[])
 		if(!Scr->BeNiceToColormap) {
 			GetShadeColors(&Scr->DefaultC);
 		}
-		attributes.border_pixel = Scr->DefaultC.fore;
-		attributes.background_pixel = Scr->DefaultC.back;
-		attributes.event_mask = (ExposureMask | ButtonPressMask |
-		                         KeyPressMask | ButtonReleaseMask);
-		NewFontCursor(&attributes.cursor, "hand2");
-		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask | CWCursor);
-		Scr->InfoWindow.win =
-		        XCreateWindow(dpy, Scr->Root, 0, 0,
-		                      5, 5,
-		                      0, 0,
-		                      CopyFromParent, CopyFromParent,
-		                      valuemask, &attributes);
+
+		/*
+		 * Setup the Info window, used for f.identify and f.version.
+		 */
+		{
+			unsigned long valuemask;
+			XSetWindowAttributes attributes;
+
+			attributes.border_pixel = Scr->DefaultC.fore;
+			attributes.background_pixel = Scr->DefaultC.back;
+			attributes.event_mask = (ExposureMask | ButtonPressMask |
+			                         KeyPressMask | ButtonReleaseMask);
+			NewFontCursor(&attributes.cursor, "hand2");
+			valuemask = (CWBorderPixel | CWBackPixel | CWEventMask | CWCursor);
+			Scr->InfoWindow.win =
+			        XCreateWindow(dpy, Scr->Root, 0, 0,
+			                      5, 5,
+			                      0, 0,
+			                      CopyFromParent, CopyFromParent,
+			                      valuemask, &attributes);
+		}
 
 		/*
 		 * Setup the Size/Position window for showing during resize/move
@@ -701,6 +708,8 @@ ctwm_main(int argc, char *argv[])
 			int sx, sy;
 			XRectangle ink_rect;
 			XRectangle logical_rect;
+			unsigned long valuemask;
+			XSetWindowAttributes attributes;
 
 			XmbTextExtents(Scr->SizeFont.font_set,
 			               " 8888 x 8888 ", 13,
