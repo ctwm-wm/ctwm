@@ -990,7 +990,6 @@ static void InitVariables(void)
 	Scr->workSpaceManagerActive = false;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
-	Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
 #define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
 	SETFB(DefaultC)
