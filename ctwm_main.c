@@ -372,6 +372,7 @@ ctwm_main(int argc, char *argv[])
 		Scr->rooth = Scr->crooth = crooth;
 		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
 		Scr->MaxWindowHeight = 32767 - Scr->rooth;
+		Scr->MaxIconTitleWidth = Scr->rootw;
 
 		// Generally we're trying to take over managing the screen.
 		Scr->takeover = true;
@@ -975,12 +976,17 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->screen = scrnum;
 	scr->XineramaRoot = scr->Root = croot;
 
-	// Sentinel values for defaulting
+	// Flags used in the code to keep track of where in various processes
+	// (especially startup) we are.
+	scr->HaveFonts = false;
+
+	// Sentinel values for defaulting config values
 	scr->FramePadding = -100;
 	scr->TitlePadding = -100;
 	scr->ButtonIndent = -100;
 	scr->TBInfo.border = -100;
 
+	// Default values for all sorts of config params
 	scr->SizeStringOffset = 0;
 	scr->ThreeDBorderWidth = 6;
 	scr->BorderWidth = BW;
@@ -1040,7 +1046,7 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->Highlight = true;
 	scr->StackMode = true;
 	scr->TitleHighlight = true;
-	scr->MoveDelta = 1;         /* so that f.deltastop will work */
+	scr->MoveDelta = 1;
 	scr->MoveOffResistance = -1;
 	scr->MovePackResistance = 20;
 	scr->ZoomCount = 8;
@@ -1050,11 +1056,7 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->NoIconManagers = false;
 	scr->ClientBorderWidth = false;
 	scr->SqueezeTitle = false;
-	scr->FirstRegion = NULL;
-	scr->LastRegion = NULL;
-	scr->FirstWindowRegion = NULL;
 	scr->FirstTime = true;
-	scr->HaveFonts = false;             /* i.e. not loaded yet */
 	scr->CaseSensitive = true;
 	scr->WarpUnmapped = false;
 	scr->WindowRingAll = false;
@@ -1075,7 +1077,6 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->IconRegionAlignement = IRA_CENTER;
 	scr->TitleJustification = TJ_LEFT;
 	scr->IconifyStyle = ICONIFY_NORMAL;
-	scr->MaxIconTitleWidth = scr->rootw;
 	scr->ReallyMoveInWorkspaceManager = false;
 	scr->ShowWinWhenMovingInWmgr = false;
 	scr->ReverseCurrentWorkspace = false;
@@ -1085,7 +1086,7 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->CenterFeedbackWindow = false;
 	scr->ShrinkIconTitles = false;
 	scr->AutoRaiseIcons = false;
-	scr->AutoFocusToTransients = false; /* kai */
+	scr->AutoFocusToTransients = false;
 	scr->OpenWindowTimeout = 0;
 	scr->RaiseWhenAutoUnSqueeze = false;
 	scr->RaiseOnClick = false;
@@ -1097,17 +1098,15 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->NoWarpToMenuTitle = false;
 	scr->DontToggleWorkspaceManagerState = false;
 	scr->NameDecorations = true;
-#ifdef EWMH
-	scr->PreferredIconWidth = 48;
-	scr->PreferredIconHeight = 48;
-#endif
-
 	scr->ForceFocus = false;
-
 	scr->BorderTop    = 0;
 	scr->BorderBottom = 0;
 	scr->BorderLeft   = 0;
 	scr->BorderRight  = 0;
+#ifdef EWMH
+	scr->PreferredIconWidth = 48;
+	scr->PreferredIconHeight = 48;
+#endif
 
 	/* setup default fonts; overridden by defaults from system.twmrc */
 
