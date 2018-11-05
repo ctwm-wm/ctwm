@@ -370,15 +370,17 @@ ctwm_main(int argc, char *argv[])
 		Scr->rooty = Scr->crooty = crooty;
 		Scr->rootw = Scr->crootw = crootw;
 		Scr->rooth = Scr->crooth = crooth;
-		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
-		Scr->MaxWindowHeight = 32767 - Scr->rooth;
+
+		// Don't allow icon titles wider than the screen
 		Scr->MaxIconTitleWidth = Scr->rootw;
 
-		// Generally we're trying to take over managing the screen.
-		Scr->takeover = true;
+		// XXX I don't think these make sense...
+		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
+		Scr->MaxWindowHeight = 32767 - Scr->rooth;
+
+		// Not trying to take over if we're just checking config or
+		// making a new captive ctwm.
 		if(CLarg.cfgchk || CLarg.is_captive) {
-			// Not if we're just checking config or making a new captive
-			// ctwm, though.
 			Scr->takeover = false;
 		}
 
@@ -979,6 +981,10 @@ InitScreenInfo(int scrnum, Window croot)
 	// Flags used in the code to keep track of where in various processes
 	// (especially startup) we are.
 	scr->HaveFonts = false;
+
+	// We're a WM, we're usually trying to take over (x-ref later code in
+	// caller)
+	Scr->takeover = true;
 
 	// Sentinel values for defaulting config values
 	scr->FramePadding = -100;
