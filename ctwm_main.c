@@ -459,7 +459,7 @@ ctwm_main(int argc, char *argv[])
 			Scr->RootColormaps.number_cwins = 1;
 			Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
 			Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, true,
-					false);
+			                              false);
 			Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 
 			// Initialize storage for all maps the Screen can hold
@@ -470,7 +470,7 @@ ctwm_main(int argc, char *argv[])
 
 			// Setup which we're using
 			Scr->StdCmapInfo.head = Scr->StdCmapInfo.tail
-				= Scr->StdCmapInfo.mru = NULL;
+			                        = Scr->StdCmapInfo.mru = NULL;
 			Scr->StdCmapInfo.mruindex = 0;
 			LocateStandardColormaps();
 		}
