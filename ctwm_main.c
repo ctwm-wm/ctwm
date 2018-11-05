@@ -587,36 +587,25 @@ ctwm_main(int argc, char *argv[])
 
 		/*
 		 * Various decoration default overrides for 3d/2d.  Values that
-		 * [presumtively] look "nide" on 75/100dpi displays.
+		 * [presumtively] look "nice" on 75/100dpi displays.  -100 is a
+		 * sentinel value we set before the config file parsing; since
+		 * these defaults differ for 3d vs not, we can't just set them as
+		 * default before the parse.
 		 */
+#define SETDEF(fld, num) if(Scr->fld == -100) { Scr->fld = num; }
 		if(Scr->use3Dtitles) {
-			if(Scr->FramePadding  == -100) {
-				Scr->FramePadding  = 0;
-			}
-			if(Scr->TitlePadding  == -100) {
-				Scr->TitlePadding  = 0;
-			}
-			if(Scr->ButtonIndent  == -100) {
-				Scr->ButtonIndent  = 0;
-			}
-			if(Scr->TBInfo.border == -100) {
-				Scr->TBInfo.border = 0;
-			}
+			SETDEF(FramePadding,  0);
+			SETDEF(TitlePadding,  0);
+			SETDEF(ButtonIndent,  0);
+			SETDEF(TBInfo.border, 0);
 		}
 		else {
-			if(Scr->FramePadding  == -100) {
-				Scr->FramePadding  = 2;
-			}
-			if(Scr->TitlePadding  == -100) {
-				Scr->TitlePadding  = 8;
-			}
-			if(Scr->ButtonIndent  == -100) {
-				Scr->ButtonIndent  = 1;
-			}
-			if(Scr->TBInfo.border == -100) {
-				Scr->TBInfo.border = 1;
-			}
+			SETDEF(FramePadding,  2);
+			SETDEF(TitlePadding,  8);
+			SETDEF(ButtonIndent,  1);
+			SETDEF(TBInfo.border, 1);
 		}
+#undef SETDEF
 
 		// These values are meaningless in !3d cases, so always zero them
 		// out.
