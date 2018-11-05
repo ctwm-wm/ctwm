@@ -932,51 +932,7 @@ ctwm_main(int argc, char *argv[])
 
 static void InitVariables(void)
 {
-	FreeList(&Scr->BorderColorL);
-	FreeList(&Scr->IconBorderColorL);
-	FreeList(&Scr->BorderTileForegroundL);
-	FreeList(&Scr->BorderTileBackgroundL);
-	FreeList(&Scr->TitleForegroundL);
-	FreeList(&Scr->TitleBackgroundL);
-	FreeList(&Scr->IconForegroundL);
-	FreeList(&Scr->IconBackgroundL);
-	FreeList(&Scr->IconManagerFL);
-	FreeList(&Scr->IconManagerBL);
-	FreeList(&Scr->IconMgrs);
-	FreeList(&Scr->AutoPopupL);
-	FreeList(&Scr->NoBorder);
-	FreeList(&Scr->NoIconTitle);
-	FreeList(&Scr->NoTitle);
-	FreeList(&Scr->OccupyAll);
-	FreeList(&Scr->MakeTitle);
-	FreeList(&Scr->AutoRaise);
-	FreeList(&Scr->WarpOnDeIconify);
-	FreeList(&Scr->AutoLower);
-	FreeList(&Scr->IconNames);
-	FreeList(&Scr->NoHighlight);
-	FreeList(&Scr->NoStackModeL);
 	OtpScrInitData(Scr);
-	FreeList(&Scr->NoTitleHighlight);
-	FreeList(&Scr->DontIconify);
-	FreeList(&Scr->IconMgrNoShow);
-	FreeList(&Scr->IconMgrShow);
-	FreeList(&Scr->IconifyByUn);
-	FreeList(&Scr->StartIconified);
-	FreeList(&Scr->IconManagerHighlightL);
-	FreeList(&Scr->SqueezeTitleL);
-	FreeList(&Scr->DontSqueezeTitleL);
-	FreeList(&Scr->WindowRingL);
-	FreeList(&Scr->WindowRingExcludeL);
-	FreeList(&Scr->WarpCursorL);
-	FreeList(&Scr->DontSave);
-	FreeList(&Scr->UnmapByMovingFarAway);
-	FreeList(&Scr->DontSetInactive);
-	FreeList(&Scr->AutoSqueeze);
-	FreeList(&Scr->StartSqueezed);
-	FreeList(&Scr->AlwaysSqueezeToGravityL);
-	FreeList(&Scr->IconMenuDontShow);
-	FreeList(&Scr->VirtualScreens);
-	FreeList(&Scr->IgnoreTransientL);
 
 	NewFontCursor(&Scr->FrameCursor, "top_left_arrow");
 	NewFontCursor(&Scr->TitleCursor, "top_left_arrow");
@@ -1136,12 +1092,9 @@ static void InitVariables(void)
 #ifdef EWMH
 	Scr->PreferredIconWidth = 48;
 	Scr->PreferredIconHeight = 48;
-	FreeList(&Scr->EWMHIgnore);
 #endif
-	FreeList(&Scr->MWMIgnore);
 
 	Scr->ForceFocus = false;
-	FreeList(&Scr->ForceFocusL);
 
 	Scr->BorderTop    = 0;
 	Scr->BorderBottom = 0;
