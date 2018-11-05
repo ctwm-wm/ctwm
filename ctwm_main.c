@@ -461,9 +461,6 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		// Sentinel value for later code
-		Scr->TBInfo.border = -100;
-
 		// Default values of config params
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 		Scr->IconDirectory     = NULL;
@@ -1023,11 +1020,12 @@ static void InitVariables(void)
 	Scr->IconBorderColor = Scr->Black;
 	Scr->IconManagerHighlight = Scr->Black;
 
-	Scr->FramePadding =
-	        -100;   /* trick to have different default value if ThreeDTitles
-                                is set or not */
+	// Sentinel values for defaulting
+	Scr->FramePadding = -100;
 	Scr->TitlePadding = -100;
 	Scr->ButtonIndent = -100;
+	Scr->TBInfo.border = -100;
+
 	Scr->SizeStringOffset = 0;
 	Scr->ThreeDBorderWidth = 6;
 	Scr->BorderWidth = BW;
