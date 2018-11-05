@@ -969,12 +969,9 @@ InitScreenInfo(int scrnum, Window croot)
 		return NULL;
 	}
 
+	// Basic pieces about where on X we are
 	scr->screen = scrnum;
 	scr->XineramaRoot = scr->Root = croot;
-
-	scr->workSpaceManagerActive = false;
-	scr->Ring = NULL;
-	scr->RingLeader = NULL;
 
 	// Sentinel values for defaulting
 	scr->FramePadding = -100;
@@ -993,7 +990,6 @@ InitScreenInfo(int scrnum, Window croot)
 	scr->UsePPosition = PPOS_OFF;
 	scr->UseSunkTitlePixmap = false;
 	scr->FocusRoot = true;
-	scr->Focus = NULL;
 	scr->WarpCursor = false;
 	scr->ForceIcon = false;
 	scr->NoGrabServer = true;
