@@ -351,7 +351,6 @@ ctwm_main(int argc, char *argv[])
 		// add; x-ref assign_var_savecolor() call below.
 		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
-		XSync(dpy, 0); /* Flush possible previous errors */
 
 		Scr = ScreenList[scrnum] = InitScreenInfo(scrnum, croot);
 		if(Scr == NULL) {
@@ -400,7 +399,12 @@ ctwm_main(int argc, char *argv[])
 		 * SubstructureRedirect and ButtonPress bits, this also serves to
 		 * mutex who is The WM for the root window, and thus (aside from
 		 * captive) the Screen.
+		 *
+		 * To catch whether that failed, we set a special one-shot error
+		 * handler to flip a var that we test to find out whether the
+		 * redirect failed.
 		 */
+		XSync(dpy, 0); // Flush possible previous errors
 		RedirectError = false;
 		XSetErrorHandler(CatchRedirectError);
 		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
@@ -413,7 +417,9 @@ ctwm_main(int argc, char *argv[])
 			attrmask |= StructureNotifyMask;
 		}
 		XSelectInput(dpy, croot, attrmask);
-		XSync(dpy, 0);
+		XSync(dpy, 0); // Flush the RedirectError, if we had one
+
+		// Back to our normal handler
 		XSetErrorHandler(TwmErrorHandler);
 
 		if(RedirectError && Scr->takeover) {
@@ -425,6 +431,13 @@ ctwm_main(int argc, char *argv[])
 			else {
 				fprintf(stderr, "?\n");
 			}
+
+			// XSetErrorHandler() isn't local to the Screen; it's for the
+			// whole connection.  We wind up in a slightly weird state
+			// once we've set it up, but decided we aren't taking over
+			// this screen, but resetting it would be a little weird too,
+			// because maybe we have taken over some other screen.  So,
+			// just throw up our hands.
 			continue;
 		}
 
