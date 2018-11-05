@@ -503,6 +503,10 @@ ctwm_main(int argc, char *argv[])
 		// The first time around, we focus onto the root [of the first
 		// Screen].  Maybe we should revisit this...
 		if(FirstScreen) {
+			// XXX This func also involves a lot of stuff that isn't
+			// setup yet, and probably only works by accident.  Maybe we
+			// should just manually extract out the couple bits we
+			// actually want to run?
 			SetFocus(NULL, CurrentTime);
 		}
 		FirstScreen = false;
