@@ -658,6 +658,22 @@ ctwm_main(int argc, char *argv[])
 		// Put the results of SaveColor{} into _MIT_PRIORITY_COLORS.
 		assign_var_savecolor();
 
+		// Setup cursor values that weren't give in the config
+#define DEFCURSOR(name, val) if(!Scr->name) NewFontCursor(&Scr->name, val)
+		DEFCURSOR(FrameCursor,   "top_left_arrow");
+		DEFCURSOR(TitleCursor,   "top_left_arrow");
+		DEFCURSOR(IconCursor,    "top_left_arrow");
+		DEFCURSOR(IconMgrCursor, "top_left_arrow");
+		DEFCURSOR(MoveCursor,    "fleur");
+		DEFCURSOR(ResizeCursor,  "fleur");
+		DEFCURSOR(MenuCursor,    "sb_left_arrow");
+		DEFCURSOR(ButtonCursor,  "hand2");
+		DEFCURSOR(WaitCursor,    "watch");
+		DEFCURSOR(SelectCursor,  "dot");
+		DEFCURSOR(DestroyCursor, "pirate");
+		DEFCURSOR(AlterCursor,   "question_arrow");
+#undef DEFCURSOR
+
 		// Load up fonts for the screen.
 		//
 		// XXX HaveFonts is kinda stupid, however it gets useful in one
@@ -933,19 +949,6 @@ ctwm_main(int argc, char *argv[])
 static void InitVariables(void)
 {
 	OtpScrInitData(Scr);
-
-	NewFontCursor(&Scr->FrameCursor, "top_left_arrow");
-	NewFontCursor(&Scr->TitleCursor, "top_left_arrow");
-	NewFontCursor(&Scr->IconCursor, "top_left_arrow");
-	NewFontCursor(&Scr->IconMgrCursor, "top_left_arrow");
-	NewFontCursor(&Scr->MoveCursor, "fleur");
-	NewFontCursor(&Scr->ResizeCursor, "fleur");
-	NewFontCursor(&Scr->MenuCursor, "sb_left_arrow");
-	NewFontCursor(&Scr->ButtonCursor, "hand2");
-	NewFontCursor(&Scr->WaitCursor, "watch");
-	NewFontCursor(&Scr->SelectCursor, "dot");
-	NewFontCursor(&Scr->DestroyCursor, "pirate");
-	NewFontCursor(&Scr->AlterCursor, "question_arrow");
 
 	Scr->workSpaceManagerActive = false;
 	Scr->Ring = NULL;
