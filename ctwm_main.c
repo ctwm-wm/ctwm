@@ -705,9 +705,6 @@ ctwm_main(int argc, char *argv[])
 		// Load up the images for titlebar buttons
 		InitTitlebarButtons();
 
-		XGrabServer(dpy);
-		XSync(dpy, 0);
-
 		// Allocate controls for WindowRegion's.  Has to follow
 		// workspaces setup, but doesn't talk to X.
 		CreateWindowRegions();
@@ -887,9 +884,6 @@ ctwm_main(int argc, char *argv[])
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
 		                                       Scr->rootw, Scr->rooth, 0, 0, 0);
 
-
-		// Done with the bits we need the server grabbed for
-		XUngrabServer(dpy);
 
 		// Clear out the splash screen if we had one
 		if(Scr->ShowWelcomeWindow) {
