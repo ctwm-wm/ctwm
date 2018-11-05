@@ -391,6 +391,9 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitScreenEarly(Scr);
 #endif /* EWMH */
 
+		// Early OTP setup
+		OtpScrInitData(Scr);
+
 
 		/*
 		 * Subscribe to various events on the root window.  Because X
@@ -948,8 +951,6 @@ ctwm_main(int argc, char *argv[])
 
 static void InitVariables(void)
 {
-	OtpScrInitData(Scr);
-
 	Scr->workSpaceManagerActive = false;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
