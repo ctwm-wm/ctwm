@@ -984,7 +984,7 @@ InitScreenInfo(int scrnum, Window croot)
 
 	// We're a WM, we're usually trying to take over (x-ref later code in
 	// caller)
-	Scr->takeover = true;
+	scr->takeover = true;
 
 	// Sentinel values for defaulting config values
 	scr->FramePadding = -100;
