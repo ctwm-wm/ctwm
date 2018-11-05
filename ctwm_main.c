@@ -91,7 +91,7 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event);
 static Window CreateCaptiveRootWindow(int x, int y,
                                       unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
-static void InitVariables(void);
+static void InitVariables(int scrnum, Window croot);
 static bool MappedNotOverride(Window w);
 
 Cursor  UpperLeftCursor;
@@ -363,13 +363,12 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
+		InitVariables(scrnum, croot);
 
 		/*
 		 * Initialize bits of Scr struct that we can hard-know or are
 		 * needed in these early initialization steps.
 		 */
-		Scr->screen = scrnum;
-		Scr->XineramaRoot = Scr->Root = croot;
 		Scr->rootx = Scr->crootx = crootx;
 		Scr->rooty = Scr->crooty = crooty;
 		Scr->rootw = Scr->crootw = crootw;
@@ -502,6 +501,21 @@ ctwm_main(int argc, char *argv[])
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
+		Scr->MenuShadowColor = Scr->Black;
+		Scr->IconBorderColor = Scr->Black;
+		Scr->IconManagerHighlight = Scr->Black;
+
+#define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
+		SETFB(DefaultC)
+		SETFB(BorderColorC)
+		SETFB(BorderTileC)
+		SETFB(TitleC)
+		SETFB(MenuC)
+		SETFB(MenuTitleC)
+		SETFB(IconC)
+		SETFB(IconManagerC)
+#undef SETFB
+
 
 		// The first time around, we focus onto the root [of the first
 		// Screen].  Maybe we should revisit this...
@@ -531,7 +545,6 @@ ctwm_main(int argc, char *argv[])
 		}
 
 		// More inits
-		InitVariables();
 		InitMenus();
 		InitWorkSpaceManager();
 
@@ -949,26 +962,15 @@ ctwm_main(int argc, char *argv[])
  ***********************************************************************
  */
 
-static void InitVariables(void)
+static void
+InitVariables(int scrnum, Window croot)
 {
+	Scr->screen = scrnum;
+	Scr->XineramaRoot = Scr->Root = croot;
+
 	Scr->workSpaceManagerActive = false;
 	Scr->Ring = NULL;
 	Scr->RingLeader = NULL;
-
-#define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
-	SETFB(DefaultC)
-	SETFB(BorderColorC)
-	SETFB(BorderTileC)
-	SETFB(TitleC)
-	SETFB(MenuC)
-	SETFB(MenuTitleC)
-	SETFB(IconC)
-	SETFB(IconManagerC)
-#undef SETFB
-
-	Scr->MenuShadowColor = Scr->Black;
-	Scr->IconBorderColor = Scr->Black;
-	Scr->IconManagerHighlight = Scr->Black;
 
 	// Sentinel values for defaulting
 	Scr->FramePadding = -100;
