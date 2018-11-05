@@ -257,6 +257,21 @@ ctwm_main(int argc, char *argv[])
 
 	InternUsefulAtoms();
 
+	// Allocate/define common cursors
+	NewFontCursor(&TopLeftCursor, "top_left_corner");
+	NewFontCursor(&TopRightCursor, "top_right_corner");
+	NewFontCursor(&BottomLeftCursor, "bottom_left_corner");
+	NewFontCursor(&BottomRightCursor, "bottom_right_corner");
+	NewFontCursor(&LeftCursor, "left_side");
+	NewFontCursor(&RightCursor, "right_side");
+	NewFontCursor(&TopCursor, "top_side");
+	NewFontCursor(&BottomCursor, "bottom_side");
+
+	NewFontCursor(&UpperLeftCursor, "top_left_corner");
+	NewFontCursor(&RightButt, "rightbutton");
+	NewFontCursor(&LeftButt, "leftbutton");
+	NewFontCursor(&MiddleButt, "middlebutton");
+
 
 	// Prep up the per-screen global info
 	NumScreens = ScreenCount(dpy);
@@ -486,26 +501,9 @@ ctwm_main(int argc, char *argv[])
 
 
 		// The first time around, we focus onto the root [of the first
-		// Screen], and setup some cursors.  XXX Unclear if this is
-		// really the best place to do this...
+		// Screen].  Maybe we should revisit this...
 		if(FirstScreen) {
 			SetFocus(NULL, CurrentTime);
-
-			/* define cursors */
-
-			NewFontCursor(&TopLeftCursor, "top_left_corner");
-			NewFontCursor(&TopRightCursor, "top_right_corner");
-			NewFontCursor(&BottomLeftCursor, "bottom_left_corner");
-			NewFontCursor(&BottomRightCursor, "bottom_right_corner");
-			NewFontCursor(&LeftCursor, "left_side");
-			NewFontCursor(&RightCursor, "right_side");
-			NewFontCursor(&TopCursor, "top_side");
-			NewFontCursor(&BottomCursor, "bottom_side");
-
-			NewFontCursor(&UpperLeftCursor, "top_left_corner");
-			NewFontCursor(&RightButt, "rightbutton");
-			NewFontCursor(&LeftButt, "leftbutton");
-			NewFontCursor(&MiddleButt, "middlebutton");
 		}
 		FirstScreen = false;
 
