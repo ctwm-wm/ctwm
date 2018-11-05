@@ -619,12 +619,14 @@ ctwm_main(int argc, char *argv[])
 			if(Scr->TBInfo.border == -100) {
 				Scr->TBInfo.border = 1;
 			}
-			Scr->TitleShadowDepth       = 0;
-			Scr->TitleButtonShadowDepth = 0;
 		}
 
 		// These values are meaningless in !3d cases, so always zero them
 		// out.
+		if(! Scr->use3Dtitles) {
+			Scr->TitleShadowDepth       = 0;
+			Scr->TitleButtonShadowDepth = 0;
+		}
 		if(! Scr->use3Dborders) {
 			Scr->BorderShadowDepth = 0;
 		}
