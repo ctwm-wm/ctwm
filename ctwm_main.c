@@ -353,7 +353,6 @@ ctwm_main(int argc, char *argv[])
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 		XSync(dpy, 0); /* Flush possible previous errors */
 
-		/* Note:  ScreenInfo struct is calloc'ed to initialize to zero. */
 		Scr = ScreenList[scrnum] = InitScreenInfo(scrnum, croot);
 		if(Scr == NULL) {
 			fprintf(stderr,
@@ -968,6 +967,9 @@ InitScreenInfo(int scrnum, Window croot)
 	if(scr == NULL) {
 		return NULL;
 	}
+	// Because of calloc(), it's already all 0 bytes, which are NULL and
+	// false and 0 and similar.  Some following initializations are
+	// nugatory because of that, but are left for clarity.
 
 	// Basic pieces about where on X we are
 	scr->screen = scrnum;
