@@ -91,7 +91,8 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event);
 static Window CreateCaptiveRootWindow(int x, int y,
                                       unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
-ScreenInfo *InitScreenInfo(int scrnum, Window croot);
+ScreenInfo *InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
+                           unsigned int crootw, unsigned int crooth);
 static bool MappedNotOverride(Window w);
 
 Cursor  UpperLeftCursor;
@@ -357,7 +358,8 @@ ctwm_main(int argc, char *argv[])
 		 * Create ScreenInfo for this Screen, and populate various
 		 * default/initial config.
 		 */
-		Scr = ScreenList[scrnum] = InitScreenInfo(scrnum, croot);
+		Scr = ScreenList[scrnum] = InitScreenInfo(scrnum, croot,
+		                           crootx, crooty, crootw, crooth);
 		if(Scr == NULL) {
 			fprintf(stderr,
 			        "%s: unable to allocate memory for ScreenInfo structure"
@@ -365,22 +367,6 @@ ctwm_main(int argc, char *argv[])
 			        ProgramName, scrnum);
 			continue;
 		}
-
-		/*
-		 * Initialize bits of Scr struct that we can hard-know or are
-		 * needed in these early initialization steps.
-		 */
-		Scr->rootx = Scr->crootx = crootx;
-		Scr->rooty = Scr->crooty = crooty;
-		Scr->rootw = Scr->crootw = crootw;
-		Scr->rooth = Scr->crooth = crooth;
-
-		// Don't allow icon titles wider than the screen
-		Scr->MaxIconTitleWidth = Scr->rootw;
-
-		// XXX I don't think these make sense...
-		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
-		Scr->MaxWindowHeight = 32767 - Scr->rooth;
 
 		// Not trying to take over if we're just checking config or
 		// making a new captive ctwm.
@@ -981,7 +967,8 @@ ctwm_main(int argc, char *argv[])
  */
 
 ScreenInfo *
-InitScreenInfo(int scrnum, Window croot)
+InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
+               unsigned int crootw, unsigned int crooth)
 {
 	ScreenInfo *scr;
 	scr = calloc(1, sizeof(ScreenInfo));
@@ -992,9 +979,22 @@ InitScreenInfo(int scrnum, Window croot)
 	// false and 0 and similar.  Some following initializations are
 	// nugatory because of that, but are left for clarity.
 
-	// Basic pieces about where on X we are
+	// Basic pieces about the X screen we're talking about, and some
+	// derived dimension-related bits.
 	scr->screen = scrnum;
 	scr->XineramaRoot = scr->Root = croot;
+	scr->rootx = scr->crootx = crootx;
+	scr->rooty = scr->crooty = crooty;
+	scr->rootw = scr->crootw = crootw;
+	scr->rooth = scr->crooth = crooth;
+
+	// Don't allow icon titles wider than the screen
+	scr->MaxIconTitleWidth = scr->rootw;
+
+	// XXX I don't think these make sense...
+	scr->MaxWindowWidth  = 32767 - scr->rootw;
+	scr->MaxWindowHeight = 32767 - scr->rooth;
+
 
 	// Flags used in the code to keep track of where in various processes
 	// (especially startup) we are.
