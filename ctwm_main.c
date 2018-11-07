@@ -352,6 +352,11 @@ ctwm_main(int argc, char *argv[])
 		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
+
+		/*
+		 * Create ScreenInfo for this Screen, and populate various
+		 * default/initial config.
+		 */
 		Scr = ScreenList[scrnum] = InitScreenInfo(scrnum, croot);
 		if(Scr == NULL) {
 			fprintf(stderr,
