@@ -705,7 +705,7 @@ ctwm_main(int argc, char *argv[])
 		// if you define the fonts too late, they wouldn't have been set
 		// by then, and we won't [re]try them now...    arg.
 		if(!Scr->HaveFonts) {
-			CreateFonts();
+			CreateFonts(Scr);
 		}
 
 		// Adjust settings for titlebar.  Must follow CreateFonts() call
@@ -1154,9 +1154,9 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 }
 
 
-void CreateFonts(void)
+void CreateFonts(ScreenInfo *scr)
 {
-#define LOADFONT(fld) (GetFont(&Scr->fld##Font))
+#define LOADFONT(fld) (GetFont(&scr->fld##Font))
 	LOADFONT(TitleBar);
 	LOADFONT(Menu);
 	LOADFONT(Icon);

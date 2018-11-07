@@ -318,7 +318,7 @@ struct WindowBox {
 
 void Reborder(Time tim);
 SIGNAL_T Done(int signum) __attribute__((noreturn));
-void CreateFonts(void);
+void CreateFonts(ScreenInfo *scr);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
 extern char *ProgramName;
