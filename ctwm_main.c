@@ -1166,7 +1166,7 @@ void CreateFonts(ScreenInfo *scr)
 	LOADFONT(workSpaceMgr.window);
 #undef LOADFONT
 
-	Scr->HaveFonts = true;
+	scr->HaveFonts = true;
 }
 
 
