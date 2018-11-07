@@ -1132,25 +1132,23 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	scr->PreferredIconHeight = 48;
 #endif
 
-	/* setup default fonts; overridden by defaults from system.twmrc */
 
-#   define DEFAULT_NICE_FONT "-*-helvetica-bold-r-normal-*-*-120-*"
-#   define DEFAULT_FAST_FONT "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-*"
+	// Setup default fonts in case the config file doesn't
+#define DEFAULT_NICE_FONT "-*-helvetica-bold-r-normal-*-*-120-*"
+#define DEFAULT_FAST_FONT "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-*"
+#define SETFONT(fld, var) (scr->fld##Font.basename = DEFAULT_##var##_FONT)
 
-	scr->TitleBarFont.font_set = NULL;
-	scr->TitleBarFont.basename = DEFAULT_NICE_FONT;
-	scr->MenuFont.font_set = NULL;
-	scr->MenuFont.basename = DEFAULT_NICE_FONT;
-	scr->IconFont.font_set = NULL;
-	scr->IconFont.basename = DEFAULT_NICE_FONT;
-	scr->SizeFont.font_set = NULL;
-	scr->SizeFont.basename = DEFAULT_FAST_FONT;
-	scr->IconManagerFont.font_set = NULL;
-	scr->IconManagerFont.basename = DEFAULT_NICE_FONT;
-	scr->DefaultFont.font_set = NULL;
-	scr->DefaultFont.basename = DEFAULT_FAST_FONT;
-	scr->workSpaceMgr.windowFont.font_set = NULL;
-	scr->workSpaceMgr.windowFont.basename = DEFAULT_FAST_FONT;
+	SETFONT(TitleBar,    NICE);
+	SETFONT(Menu,        NICE);
+	SETFONT(Icon,        NICE);
+	SETFONT(Size,        FAST);
+	SETFONT(IconManager, NICE);
+	SETFONT(Default,     FAST);
+	SETFONT(workSpaceMgr.window, FAST);
+
+#undef SETFONT
+#undef DEFAULT_FAST_FONT
+#undef DEFAULT_NICE_FONT
 
 	return scr;
 }
@@ -1158,13 +1156,16 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 
 void CreateFonts(void)
 {
-	GetFont(&Scr->TitleBarFont);
-	GetFont(&Scr->MenuFont);
-	GetFont(&Scr->IconFont);
-	GetFont(&Scr->SizeFont);
-	GetFont(&Scr->IconManagerFont);
-	GetFont(&Scr->DefaultFont);
-	GetFont(&Scr->workSpaceMgr.windowFont);
+#define LOADFONT(fld) (GetFont(&Scr->fld##Font))
+	LOADFONT(TitleBar);
+	LOADFONT(Menu);
+	LOADFONT(Icon);
+	LOADFONT(Size);
+	LOADFONT(IconManager);
+	LOADFONT(Default);
+	LOADFONT(workSpaceMgr.window);
+#undef LOADFONT
+
 	Scr->HaveFonts = true;
 }
 
