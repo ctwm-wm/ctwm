@@ -958,14 +958,25 @@ ctwm_main(int argc, char *argv[])
 }
 
 
-/***********************************************************************
+/**
+ * Initialize ScreenInfo for a Screen.  This allocates the struct,
+ * assigns in the info we pass it about the screen and dimensions, and
+ * then puts in our various default/fallback/sentinel/etc values to
+ * prepare it for later use.
  *
- *  Procedure:
- *      InitScreenInfo - initialize twm variables
+ * It is intentional that this doesn't do any of the initialization that
+ * involves calling out to X functions; it operates as a pure function.
+ * This makes it easier to use it to fake up a ScreenInfo for something
+ * that isn't actually an X Screen, for testing etc.
  *
- ***********************************************************************
+ * \param scrnum The Screen number (e.g, :0.0 -> 0)
+ * \param croot  The X Window for the Screen's root window
+ * \param crootx Root X coordinate
+ * \param crooty Root Y coordinate
+ * \param crootw Root width
+ * \param crooth Root height
+ * \return Allocated and populated ScreenInfo
  */
-
 ScreenInfo *
 InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
                unsigned int crootw, unsigned int crooth)
