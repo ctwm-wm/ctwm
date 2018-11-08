@@ -374,6 +374,9 @@ ctwm_main(int argc, char *argv[])
 			Scr->takeover = false;
 		}
 
+		// Other misc adjustments to default config.
+		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
+
 
 #ifdef EWMH
 		// Early EWMH setup
@@ -1136,7 +1139,6 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	scr->BorderLeft   = 0;
 	scr->BorderRight  = 0;
 	scr->PixmapDirectory   = PIXMAP_DIRECTORY;
-	scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 #ifdef EWMH
 	scr->PreferredIconWidth = 48;
 	scr->PreferredIconHeight = 48;
