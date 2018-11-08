@@ -1158,14 +1158,14 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 
 
 	// WorkSpaceManager stuff
-	scr->workSpaceMgr.count         = 0;
-	scr->workSpaceMgr.workSpaceList = NULL;
 	scr->workSpaceMgr.initialstate  = WMS_map;
-	scr->workSpaceMgr.geometry      = NULL;
 	scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
-	scr->workSpaceMgr.windowcpgiven = false;
+	scr->workSpaceMgr.vspace        = scr->WMgrVertButtonIndent;
+	scr->workSpaceMgr.hspace        = scr->WMgrHorizButtonIndent;
 
 	scr->workSpaceMgr.occupyWindow = calloc(1, sizeof(OccupyWindow));
+	scr->workSpaceMgr.occupyWindow->vspace    = scr->WMgrVertButtonIndent;
+	scr->workSpaceMgr.occupyWindow->hspace    = scr->WMgrHorizButtonIndent;
 	scr->workSpaceMgr.occupyWindow->name      = "Occupy Window";
 	scr->workSpaceMgr.occupyWindow->icon_name = "Occupy Window Icon";
 

@@ -71,11 +71,6 @@ void
 InitWorkSpaceManager(void)
 {
 
-	Scr->workSpaceMgr.occupyWindow->vspace    = Scr->WMgrVertButtonIndent;
-	Scr->workSpaceMgr.occupyWindow->hspace    = Scr->WMgrHorizButtonIndent;
-	Scr->workSpaceMgr.vspace    = Scr->WMgrVertButtonIndent;
-	Scr->workSpaceMgr.hspace    = Scr->WMgrHorizButtonIndent;
-
 	if(MapWListContext == None) {
 		MapWListContext = XUniqueContext();
 	}
