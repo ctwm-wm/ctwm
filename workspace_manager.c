@@ -64,13 +64,11 @@ static Cursor handCursor = None;
  */
 
 /*
- * Basic setup of Scr->workSpaceMgr structures.  Called (for each screen)
- * early in startup, prior to config file parsing.
+ * Allocate an X Context for WSM stuff.
  */
 void
-InitWorkSpaceManager(void)
+InitWorkSpaceManagerContext(void)
 {
-
 	if(MapWListContext == None) {
 		MapWListContext = XUniqueContext();
 	}
