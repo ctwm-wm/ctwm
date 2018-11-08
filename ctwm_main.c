@@ -645,8 +645,12 @@ ctwm_main(int argc, char *argv[])
 			Scr->ThreeDBorderWidth = 0;
 		}
 
-		// Setup colors for 3d bits.
+		// Setup colors stuff
 		if(!Scr->BeNiceToColormap) {
+			// Default pair
+			GetShadeColors(&Scr->DefaultC);
+
+			// Various conditionally 3d bits
 			if(Scr->use3Dtitles) {
 				GetShadeColors(&Scr->TitleC);
 			}
@@ -838,12 +842,6 @@ ctwm_main(int argc, char *argv[])
 				}
 				vs->wsw->twm_win->mapped = true;
 			}
-		}
-
-
-		// Setup shading for default ColorPair
-		if(!Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->DefaultC);
 		}
 
 
