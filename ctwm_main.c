@@ -515,6 +515,9 @@ ctwm_main(int argc, char *argv[])
 		SETFB(MenuTitleC)
 		SETFB(IconC)
 		SETFB(IconManagerC)
+		SETFB(workSpaceMgr.windowcp)
+		SETFB(workSpaceMgr.curColors)
+		SETFB(workSpaceMgr.defColors)
 #undef SETFB
 
 
@@ -1150,6 +1153,22 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #endif
 
 
+	// WorkSpaceManager stuff
+	scr->workSpaceMgr.count         = 0;
+	scr->workSpaceMgr.workSpaceList = NULL;
+	scr->workSpaceMgr.initialstate  = WMS_map;
+	scr->workSpaceMgr.geometry      = NULL;
+	scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
+	scr->workSpaceMgr.windowcpgiven = false;
+
+	scr->workSpaceMgr.occupyWindow = calloc(1, sizeof(OccupyWindow));
+	scr->workSpaceMgr.occupyWindow->name      = "Occupy Window";
+	scr->workSpaceMgr.occupyWindow->icon_name = "Occupy Window Icon";
+
+	scr->workSpaceMgr.name      = "WorkSpaceManager";
+	scr->workSpaceMgr.icon_name = "WorkSpaceManager Icon";
+
+
 	// Setup default fonts in case the config file doesn't
 #define DEFAULT_NICE_FONT "-*-helvetica-bold-r-normal-*-*-120-*"
 #define DEFAULT_FAST_FONT "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-*"
@@ -1161,7 +1180,8 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	SETFONT(Size,        FAST);
 	SETFONT(IconManager, NICE);
 	SETFONT(Default,     FAST);
-	SETFONT(workSpaceMgr.window, FAST);
+	scr->workSpaceMgr.windowFont.basename =
+	        "-adobe-courier-medium-r-normal--10-100-75-75-m-60-iso8859-1";
 
 #undef SETFONT
 #undef DEFAULT_FAST_FONT
