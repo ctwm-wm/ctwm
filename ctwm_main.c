@@ -646,17 +646,19 @@ ctwm_main(int argc, char *argv[])
 		}
 
 		// Setup colors for 3d bits.
-		if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->TitleC);
-		}
-		if(Scr->use3Dmenus   && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->MenuC);
-		}
-		if(Scr->use3Dmenus   && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->MenuTitleC);
-		}
-		if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->BorderColorC);
+		if(!Scr->BeNiceToColormap) {
+			if(Scr->use3Dtitles) {
+				GetShadeColors(&Scr->TitleC);
+			}
+			if(Scr->use3Dmenus) {
+				GetShadeColors(&Scr->MenuC);
+			}
+			if(Scr->use3Dmenus) {
+				GetShadeColors(&Scr->MenuTitleC);
+			}
+			if(Scr->use3Dborders) {
+				GetShadeColors(&Scr->BorderColorC);
+			}
 		}
 
 		// Defaults for IconRegion bits that aren't set.
