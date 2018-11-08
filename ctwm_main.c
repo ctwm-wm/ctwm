@@ -496,7 +496,9 @@ ctwm_main(int argc, char *argv[])
 			Scr->Monochrome = COLOR;
 		}
 
-		// Setup default colors
+
+		// With the colormap/monochrome bits set, we can setup our
+		// default color bits.
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
@@ -524,8 +526,8 @@ ctwm_main(int argc, char *argv[])
 			// should just manually extract out the couple bits we
 			// actually want to run?
 			SetFocus(NULL, CurrentTime);
+			FirstScreen = false;
 		}
-		FirstScreen = false;
 
 		// Create default icon manager memory bits (in the first
 		// workspace)
