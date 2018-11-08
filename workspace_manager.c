@@ -104,7 +104,6 @@ InitWorkSpaceManager(void)
 	        "-adobe-courier-medium-r-normal--10-100-75-75-m-60-iso8859-1";
 	/*"-adobe-courier-bold-r-normal--8-80-75-75-m-50-iso8859-1";*/
 
-	XrmInitialize();
 	if(MapWListContext == None) {
 		MapWListContext = XUniqueContext();
 	}

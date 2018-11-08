@@ -754,6 +754,10 @@ ctwm_main(int argc, char *argv[])
 		// setup WindowBox's
 		createWindowBoxes();
 
+		// Initialize Xrm stuff; things with setting occupation etc use
+		// Xrm bits.
+		XrmInitialize();
+
 #ifdef EWMH
 		// Set EWMH-related properties on various root-ish windows, for
 		// other programs to read to find out how we view the world.
