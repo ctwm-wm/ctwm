@@ -255,6 +255,7 @@ ctwm_main(int argc, char *argv[])
 	MenuContext = XUniqueContext();
 	ScreenContext = XUniqueContext();
 	ColormapContext = XUniqueContext();
+	InitWorkSpaceManagerContext();
 
 	InternUsefulAtoms();
 
@@ -547,9 +548,6 @@ ctwm_main(int argc, char *argv[])
 			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
-
-		// More inits
-		InitWorkSpaceManagerContext();
 
 
 		/*
