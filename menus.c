@@ -85,27 +85,6 @@ static void DestroyMenu(MenuRoot *menu);
 /***********************************************************************
  *
  *  Procedure:
- *      InitMenus - initialize menu roots
- *
- ***********************************************************************
- */
-
-void InitMenus(void)
-{
-	Scr->DefaultFunction.func = 0;
-	Scr->WindowFunction.func  = 0;
-	Scr->ChangeWorkspaceFunction.func  = 0;
-	Scr->DeIconifyFunction.func  = 0;
-	Scr->IconifyFunction.func  = 0;
-
-	Scr->FuncKeyRoot.next = NULL;
-	Scr->FuncButtonRoot.next = NULL;
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
  *      AddFuncKey - add a function key to the list
  *
  *  Inputs:

@@ -546,7 +546,6 @@ ctwm_main(int argc, char *argv[])
 		}
 
 		// More inits
-		InitMenus();
 		InitWorkSpaceManager();
 
 
