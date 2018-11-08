@@ -993,6 +993,10 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// false and 0 and similar.  Some following initializations are
 	// nugatory because of that, but are left for clarity.
 
+	// Poison the global Scr to protect against typos
+#define Scr StupidProgrammer
+
+
 	// Basic pieces about the X screen we're talking about, and some
 	// derived dimension-related bits.
 	scr->screen = scrnum;
@@ -1187,6 +1191,8 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #undef DEFAULT_FAST_FONT
 #undef DEFAULT_NICE_FONT
 
+	// Cleanup poisoning
+#undef Scr
 	return scr;
 }
 
