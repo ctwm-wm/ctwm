@@ -333,7 +333,7 @@ ctwm_main(int argc, char *argv[])
 				                      &junk);
 			}
 			else {
-				// Fake up default size.  Probably Ideally should be
+				// Fake up default size.  Probably ideally should be
 				// configurable, but even more ideally we wouldn't have
 				// captive...
 				crootx = crooty = 100;
@@ -351,8 +351,12 @@ ctwm_main(int argc, char *argv[])
 			crooth = DisplayHeight(dpy, scrnum);
 		}
 
-		// Initialize to empty.  SaveColor{} will set extra values to
-		// add; x-ref assign_var_savecolor() call below.
+		// Initialize to empty.  This gets populated with SaveColor{}
+		// results.  String values get done via assign_var_savecolor()
+		// call below, but keyword choicse wind up getting put in on the
+		// fly during config file parsing, so we have to clear it before
+		// we get to the config.
+		// XXX Maybe we should change that...
 		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
@@ -553,7 +557,7 @@ ctwm_main(int argc, char *argv[])
 
 
 		/*
-		 * Parse config file
+		 * Load up config file
 		 */
 		if(CLarg.cfgchk) {
 			if(LoadTwmrc(CLarg.InitFile) == false) {
