@@ -304,6 +304,7 @@ ctwm_main(int argc, char *argv[])
 #ifdef SOUNDS
 	sound_init();
 #endif
+	InitEvents();
 
 	// Start looping over the screens
 	numManaged = 0;
@@ -947,7 +948,6 @@ ctwm_main(int argc, char *argv[])
 
 	// Do some late initialization
 	HandlingEvents = true;
-	InitEvents();
 	StartAnimation();
 
 	// Main loop.
