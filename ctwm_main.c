@@ -302,6 +302,7 @@ ctwm_main(int argc, char *argv[])
 	EwmhInit();
 #endif /* EWMH */
 #ifdef SOUNDS
+	// Needs init'ing before we get to config parsing
 	sound_init();
 #endif
 	InitEvents();
