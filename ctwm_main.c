@@ -380,6 +380,9 @@ ctwm_main(int argc, char *argv[])
 			Scr->takeover = false;
 		}
 
+		// Other misc adjustments to default config.
+		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
+
 
 #ifdef EWMH
 		// Early EWMH setup
@@ -449,6 +452,9 @@ ctwm_main(int argc, char *argv[])
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
 		Scr->RealRoot = RootWindow(dpy, scrnum);
 
+		// Now that we have d_depth...
+		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
+
 
 #ifdef XRANDR
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
@@ -511,12 +517,6 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		// Default values of config params
-		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
-		Scr->IconDirectory     = NULL;
-		Scr->PixmapDirectory   = PIXMAP_DIRECTORY;
-		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
-
 		// Are we monochrome?  Or do we care this millennium?
 		if(CLarg.Monochrome || DisplayCells(dpy, scrnum) < 3) {
 			Scr->Monochrome = MONOCHROME;
@@ -524,11 +524,6 @@ ctwm_main(int argc, char *argv[])
 		else {
 			Scr->Monochrome = COLOR;
 		}
-
-		// Flag which basically means "initial screen setup time".
-		// XXX Not clear to what extent this should even exist; a lot of
-		// uses are fairly bogus.
-		Scr->FirstTime = true;
 
 		// Setup default colors
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
@@ -1056,6 +1051,11 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// (especially startup) we are.
 	scr->HaveFonts = false;
 
+	// Flag which basically means "initial screen setup time".
+	// XXX Not clear to what extent this should even exist; a lot of
+	// uses are fairly bogus.
+	scr->FirstTime = true;
+
 	// We're a WM, we're usually trying to take over (x-ref later code in
 	// caller)
 	scr->takeover = true;
@@ -1183,6 +1183,7 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	scr->BorderBottom = 0;
 	scr->BorderLeft   = 0;
 	scr->BorderRight  = 0;
+	scr->PixmapDirectory   = PIXMAP_DIRECTORY;
 #ifdef EWMH
 	scr->PreferredIconWidth = 48;
 	scr->PreferredIconHeight = 48;
