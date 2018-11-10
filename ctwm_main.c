@@ -95,8 +95,8 @@ static bool RedirectError;      /* true ==> another window manager running */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
 /* for everything else */
 static int TwmErrorHandler(Display *display, XErrorEvent *event);
-static Window CreateRootWindow(int x, int y,
-                               unsigned int width, unsigned int height);
+static Window CreateCaptiveRootWindow(int x, int y,
+                                      unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
 static bool MappedNotOverride(Window w);
@@ -166,25 +166,8 @@ SIGNAL_T ChildExit(int signum);
 int
 ctwm_main(int argc, char *argv[])
 {
-	Window croot, parent, *children;
-	unsigned int nchildren;
-	int i, j;
-	unsigned long valuemask;    /* mask for create windows */
-	XSetWindowAttributes attributes;    /* attributes for create windows */
-	int numManaged, firstscrn, lastscrn, scrnum;
+	int numManaged, firstscrn, lastscrn;
 	int zero = 0;
-	char *welcomefile;
-	bool screenmasked;
-	static int crootx = 100;
-	static int crooty = 100;
-	static unsigned int crootw = 1280;
-	static unsigned int crooth =  768;
-	/*    static unsigned int crootw = 2880; */
-	/*    static unsigned int crooth = 1200; */
-	IconRegion *ir;
-
-	XRectangle ink_rect;
-	XRectangle logical_rect;
 
 	setlocale(LC_ALL, "");
 
@@ -293,8 +276,18 @@ ctwm_main(int argc, char *argv[])
 	sound_init();
 #endif
 
-	for(scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
+	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
+		Window croot;
 		unsigned long attrmask;
+		int crootx, crooty;
+		unsigned int crootw, crooth;
+		bool screenmasked;
+		char *welcomefile;
+		unsigned long valuemask;
+		XSetWindowAttributes attributes;
+		XRectangle ink_rect;
+		XRectangle logical_rect;
+
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
 			if(CLarg.capwin && XGetWindowAttributes(dpy, CLarg.capwin, &wa)) {
@@ -306,7 +299,13 @@ ctwm_main(int argc, char *argv[])
 				                      &junk);
 			}
 			else {
-				croot = CreateRootWindow(crootx, crooty, crootw, crooth);
+				// Fake up default size.  Probably Ideally should be
+				// configurable, but even more ideally we wouldn't have
+				// captive...
+				crootx = crooty = 100;
+				crootw = 1280;
+				crooth = 768;
+				croot = CreateCaptiveRootWindow(crootx, crooty, crootw, crooth);
 			}
 		}
 		else {
@@ -617,7 +616,7 @@ ctwm_main(int argc, char *argv[])
 			Scr->ThreeDBorderWidth = 0;
 		}
 
-		for(ir = Scr->FirstRegion; ir; ir = ir->next) {
+		for(IconRegion *ir = Scr->FirstRegion; ir; ir = ir->next) {
 			if(ir->TitleJustification == TJ_UNDEF) {
 				ir->TitleJustification = Scr->IconJustification;
 			}
@@ -662,37 +661,50 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitScreenLate(Scr);
 #endif /* EWMH */
 
-		XQueryTree(dpy, Scr->Root, &croot, &parent, &children, &nchildren);
-		/*
-		 * weed out icon windows
-		 */
-		for(i = 0; i < nchildren; i++) {
-			if(children[i]) {
-				XWMHints *wmhintsp = XGetWMHints(dpy, children[i]);
 
-				if(wmhintsp) {
-					if(wmhintsp->flags & IconWindowHint) {
-						for(j = 0; j < nchildren; j++) {
-							if(children[j] == wmhintsp->icon_window) {
-								children[j] = None;
-								break;
+		/*
+		 * Look up and handle all the windows on the screen.
+		 */
+		{
+			Window parent, *children;
+			unsigned int nchildren;
+
+			XQueryTree(dpy, Scr->Root, &croot, &parent, &children, &nchildren);
+
+			/* Weed out icon windows */
+			for(int i = 0; i < nchildren; i++) {
+				if(children[i]) {
+					XWMHints *wmhintsp = XGetWMHints(dpy, children[i]);
+
+					if(wmhintsp) {
+						if(wmhintsp->flags & IconWindowHint) {
+							for(int j = 0; j < nchildren; j++) {
+								if(children[j] == wmhintsp->icon_window) {
+									children[j] = None;
+									break;
+								}
 							}
 						}
+						XFree(wmhintsp);
 					}
-					XFree(wmhintsp);
+				}
+			}
+
+			/*
+			 * Map all of the non-override windows.  This winds down
+			 * into AddWindow() and friends through SimulateMapRequest(),
+			 * so this is where we actually adopt the windows on the
+			 * screen.
+			 */
+			for(int i = 0; i < nchildren; i++) {
+				if(children[i] && MappedNotOverride(children[i])) {
+					XUnmapWindow(dpy, children[i]);
+					SimulateMapRequest(children[i]);
 				}
 			}
 		}
 
-		/*
-		 * map all of the non-override windows
-		 */
-		for(i = 0; i < nchildren; i++) {
-			if(children[i] && MappedNotOverride(children[i])) {
-				XUnmapWindow(dpy, children[i]);
-				SimulateMapRequest(children[i]);
-			}
-		}
+
 		if(Scr->ShowWorkspaceManager && Scr->workSpaceManagerActive) {
 			VirtualScreen *vs;
 			if(Scr->WindowMask) {
@@ -1292,8 +1304,9 @@ void InternUsefulAtoms(void)
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
 }
 
-static Window CreateRootWindow(int x, int y,
-                               unsigned int width, unsigned int height)
+static Window
+CreateCaptiveRootWindow(int x, int y,
+                        unsigned int width, unsigned int height)
 {
 	int         scrnum;
 	Window      ret;
