@@ -1021,10 +1021,12 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// MaxWindowSize in the config will override whatever's here anyway.
 	scr->MaxWindowWidth  = 32767 - (scr->rootx + scr->rootw);
 	scr->MaxWindowHeight = 32767 - (scr->rooty + scr->rooth);
-	if(scr->MaxWindowWidth < 4096)
+	if(scr->MaxWindowWidth < 4096) {
 		scr->MaxWindowWidth = 4096;
-	if(scr->MaxWindowHeight < 4096)
+	}
+	if(scr->MaxWindowHeight < 4096) {
 		scr->MaxWindowHeight = 4096;
+	}
 
 
 	// Flags used in the code to keep track of where in various processes
