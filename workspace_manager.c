@@ -64,47 +64,11 @@ static Cursor handCursor = None;
  */
 
 /*
- * Basic setup of Scr->workSpaceMgr structures.  Called (for each screen)
- * early in startup, prior to config file parsing.
+ * Allocate an X Context for WSM stuff.
  */
 void
-InitWorkSpaceManager(void)
+InitWorkSpaceManagerContext(void)
 {
-	Scr->workSpaceMgr.count         = 0;
-	Scr->workSpaceMgr.workSpaceList = NULL;
-	Scr->workSpaceMgr.initialstate  = WMS_map;
-	Scr->workSpaceMgr.geometry      = NULL;
-	Scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
-	Scr->workSpaceMgr.windowcp.back = Scr->White;
-	Scr->workSpaceMgr.windowcp.fore = Scr->Black;
-	Scr->workSpaceMgr.windowcpgiven = false;
-
-	Scr->workSpaceMgr.occupyWindow = calloc(1, sizeof(OccupyWindow));
-	Scr->workSpaceMgr.occupyWindow->name      = "Occupy Window";
-	Scr->workSpaceMgr.occupyWindow->icon_name = "Occupy Window Icon";
-	Scr->workSpaceMgr.occupyWindow->geometry  = NULL;
-	Scr->workSpaceMgr.occupyWindow->columns   = 0;
-	Scr->workSpaceMgr.occupyWindow->twm_win   = NULL;
-	Scr->workSpaceMgr.occupyWindow->vspace    = Scr->WMgrVertButtonIndent;
-	Scr->workSpaceMgr.occupyWindow->hspace    = Scr->WMgrHorizButtonIndent;
-
-	Scr->workSpaceMgr.curColors.back  = Scr->Black;
-	Scr->workSpaceMgr.curColors.fore  = Scr->White;
-	Scr->workSpaceMgr.defColors.back  = Scr->White;
-	Scr->workSpaceMgr.defColors.fore  = Scr->Black;
-	Scr->workSpaceMgr.curImage        = NULL;
-	Scr->workSpaceMgr.curPaint        = false;
-	Scr->workSpaceMgr.defImage        = NULL;
-	Scr->workSpaceMgr.vspace          = Scr->WMgrVertButtonIndent;
-	Scr->workSpaceMgr.hspace          = Scr->WMgrHorizButtonIndent;
-	Scr->workSpaceMgr.name            = "WorkSpaceManager";
-	Scr->workSpaceMgr.icon_name       = "WorkSpaceManager Icon";
-
-	Scr->workSpaceMgr.windowFont.basename =
-	        "-adobe-courier-medium-r-normal--10-100-75-75-m-60-iso8859-1";
-	/*"-adobe-courier-bold-r-normal--8-80-75-75-m-50-iso8859-1";*/
-
-	XrmInitialize();
 	if(MapWListContext == None) {
 		MapWListContext = XUniqueContext();
 	}
