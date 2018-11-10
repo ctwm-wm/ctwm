@@ -948,6 +948,11 @@ ctwm_main(int argc, char *argv[])
 			valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
 			attributes.bit_gravity = NorthWestGravity;
 
+			if(Scr->SaveUnder) {
+				attributes.save_under = True;
+				valuemask |= CWSaveUnder;
+			}
+
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root,
 			                                area.x, area.y,
 			                                Scr->SizeStringWidth,
