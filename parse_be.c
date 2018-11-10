@@ -657,6 +657,7 @@ do_single_keyword(int keyword)
 			Scr->SaveUnder = false;
 			return true;
 
+		// XXX Shouldn't these be in Scr too?
 		case kw0_RestartPreviousState:
 			RestartPreviousState = true;
 			return true;

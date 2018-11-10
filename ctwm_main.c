@@ -167,7 +167,6 @@ int
 ctwm_main(int argc, char *argv[])
 {
 	int numManaged, firstscrn, lastscrn;
-	int zero = 0;
 
 	setlocale(LC_ALL, "");
 
@@ -209,36 +208,54 @@ ctwm_main(int argc, char *argv[])
 
 #undef newhandler
 
+	// Various bits of code care about $HOME
 	Home = getenv("HOME");
 	if(Home == NULL) {
 		Home = "./";
 	}
-
 	HomeLen = strlen(Home);
 
+
+	// XXX This is only used in AddWindow(), and is probably bogus to
+	// have globally....
 	NoClass.res_name = NoName;
 	NoClass.res_class = NoName;
 
-	XtToolkitInitialize();
-	appContext = XtCreateApplicationContext();
 
-	if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-	                         NULL, 0, &zero, NULL))) {
-		fprintf(stderr, "%s:  unable to open display \"%s\"\n",
-		        ProgramName, XDisplayName(CLarg.display_name));
-		exit(1);
+	/*
+	 * Initialize our X connection and state bits.
+	 */
+	{
+		int zero = 0; // Fakey
+
+		XtToolkitInitialize();
+		appContext = XtCreateApplicationContext();
+
+		if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
+		                         NULL, 0, &zero, NULL))) {
+			fprintf(stderr, "%s:  unable to open display \"%s\"\n",
+			        ProgramName, XDisplayName(CLarg.display_name));
+			exit(1);
+		}
+
+		if(fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) == -1) {
+			fprintf(stderr,
+			        "%s:  unable to mark display connection as close-on-exec\n",
+			        ProgramName);
+			exit(1);
+		}
 	}
 
-	if(fcntl(ConnectionNumber(dpy), F_SETFD, 1) == -1) {
-		fprintf(stderr,
-		        "%s:  unable to mark display connection as close-on-exec\n",
-		        ProgramName);
-		exit(1);
-	}
+
+	// Load session stuff
 	if(CLarg.restore_filename) {
 		ReadWinConfigFile(CLarg.restore_filename);
 	}
+
+	// Load up info about X extensions
 	HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
+
+	// Allocate contexts/atoms/etc we use
 	TwmContext = XUniqueContext();
 	MenuContext = XUniqueContext();
 	ScreenContext = XUniqueContext();
@@ -247,10 +264,8 @@ ctwm_main(int argc, char *argv[])
 	InternUsefulAtoms();
 
 
-	/* Set up the per-screen global information. */
-
+	// Prep up the per-screen global info
 	NumScreens = ScreenCount(dpy);
-
 	if(CLarg.MultiScreen) {
 		firstscrn = 0;
 		lastscrn = NumScreens - 1;
@@ -259,16 +274,19 @@ ctwm_main(int argc, char *argv[])
 		firstscrn = lastscrn = DefaultScreen(dpy);
 	}
 
-	/* for simplicity, always allocate NumScreens ScreenInfo struct pointers */
+	// For simplicity, pre-allocate NumScreens ScreenInfo struct pointers
 	ScreenList = calloc(NumScreens, sizeof(ScreenInfo *));
 	if(ScreenList == NULL) {
 		fprintf(stderr, "%s: Unable to allocate memory for screen list, exiting.\n",
 		        ProgramName);
 		exit(1);
 	}
-	numManaged = 0;
+
+	// Initialize
 	PreviousScreen = DefaultScreen(dpy);
-	FirstScreen = true;
+
+
+	// Do a little early initialization
 #ifdef EWMH
 	EwmhInit();
 #endif /* EWMH */
@@ -276,6 +294,9 @@ ctwm_main(int argc, char *argv[])
 	sound_init();
 #endif
 
+	// Start looping over the screens
+	numManaged = 0;
+	FirstScreen = true;
 	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		Window croot;
 		unsigned long attrmask;
@@ -283,8 +304,6 @@ ctwm_main(int argc, char *argv[])
 		unsigned int crootw, crooth;
 		bool screenmasked;
 		char *welcomefile;
-		unsigned long valuemask;
-		XSetWindowAttributes attributes;
 
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
@@ -724,18 +743,27 @@ ctwm_main(int argc, char *argv[])
 		if(!Scr->BeNiceToColormap) {
 			GetShadeColors(&Scr->DefaultC);
 		}
-		attributes.border_pixel = Scr->DefaultC.fore;
-		attributes.background_pixel = Scr->DefaultC.back;
-		attributes.event_mask = (ExposureMask | ButtonPressMask |
-		                         KeyPressMask | ButtonReleaseMask);
-		NewFontCursor(&attributes.cursor, "hand2");
-		valuemask = (CWBorderPixel | CWBackPixel | CWEventMask | CWCursor);
-		Scr->InfoWindow.win =
-		        XCreateWindow(dpy, Scr->Root, 0, 0,
-		                      5, 5,
-		                      0, 0,
-		                      CopyFromParent, CopyFromParent,
-		                      valuemask, &attributes);
+
+		/*
+		 * Setup the Info window, used for f.identify and f.version.
+		 */
+		{
+			unsigned long valuemask;
+			XSetWindowAttributes attributes;
+
+			attributes.border_pixel = Scr->DefaultC.fore;
+			attributes.background_pixel = Scr->DefaultC.back;
+			attributes.event_mask = (ExposureMask | ButtonPressMask |
+			                         KeyPressMask | ButtonReleaseMask);
+			NewFontCursor(&attributes.cursor, "hand2");
+			valuemask = (CWBorderPixel | CWBackPixel | CWEventMask | CWCursor);
+			Scr->InfoWindow.win =
+			        XCreateWindow(dpy, Scr->Root, 0, 0,
+			                      5, 5,
+			                      0, 0,
+			                      CopyFromParent, CopyFromParent,
+			                      valuemask, &attributes);
+		}
 
 		/*
 		 * Setup the Size/Position window for showing during resize/move
@@ -754,6 +782,8 @@ ctwm_main(int argc, char *argv[])
 			RArea area = RLayoutGetAreaIndex(Scr->Layout, 0);
 			XRectangle ink_rect;
 			XRectangle logical_rect;
+			unsigned long valuemask;
+			XSetWindowAttributes attributes;
 
 			XmbTextExtents(Scr->SizeFont.font_set,
 			               " 8888 x 8888 ", 13,
@@ -786,23 +816,38 @@ ctwm_main(int argc, char *argv[])
 		numManaged++; // Succeeded in adding one more
 	} /* for */
 
+
+	// We're not much of a window manager if we didn't get stuff to
+	// manage...
 	if(numManaged == 0) {
 		if(CLarg.MultiScreen && NumScreens > 0)
 			fprintf(stderr, "%s:  unable to find any unmanaged screens\n",
 			        ProgramName);
 		exit(1);
 	}
+
+	// Hook up session
 	ConnectToSessionManager(CLarg.client_id);
+
 #ifdef SOUNDS
+	// Announce ourselves
 	sound_load_list();
 	play_startup_sound();
 #endif
 
+	// Hard-reset this flag.
+	// XXX This doesn't seem right?
 	RestartPreviousState = true;
+
+	// Do some late initialization
 	HandlingEvents = true;
 	InitEvents();
 	StartAnimation();
+
+	// Main loop.
 	HandleEvents();
+
+	// Should never get here...
 	fprintf(stderr, "Shouldn't return from HandleEvents()!\n");
 	exit(1);
 }
