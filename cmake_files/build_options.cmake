@@ -129,7 +129,7 @@ if(USE_XRANDR)
 		message(FATAL_ERROR "Couldn't find Xrandr libs")
 	endif(NOT X11_Xrandr_FOUND)
 
-	# We need XrrGetMonitors()
+	# We need XRRGetMonitors()
 	set(OLD_CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES})
 	set(OLD_CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
 	set(CMAKE_REQUIRED_INCLUDES  ${X11_Xrandr_INCLUDE_PATH})
