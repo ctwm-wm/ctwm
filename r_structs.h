@@ -47,9 +47,10 @@ struct RLayout {
 	RAreaList *horiz; ///< List of all unique horizontal regions
 	RAreaList *vert;  ///< List of all unique vertical regions
 
-	/// List of names of the monitors.  names[i] -> monitors->areas[i].
-	/// This is used for looking up geometries with output names via
-	/// RLayoutXParseGeometry(); e.g, "HDMI1:800x600+20+50".
+	/// List of names of the monitors.  `names[i]` corresponds with
+	/// `monitors->areas[i]`.  This is used for looking up geometries
+	/// with output names via RLayoutXParseGeometry(); e.g,
+	/// "HDMI1:800x600+20+50".
 	char **names;
 };
 
