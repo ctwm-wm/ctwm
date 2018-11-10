@@ -493,7 +493,6 @@ ctwm_main(int argc, char *argv[])
 		// right Scr for events etc.
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
-
 		// Init captive bits
 		if(CLarg.is_captive) {
 			Scr->CaptiveRoot = croot;
