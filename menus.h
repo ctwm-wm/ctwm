@@ -136,7 +136,6 @@ extern int MenuDepth;
 #define COLORMAP_PREV "prev"
 #define COLORMAP_DEFAULT "default"
 
-void InitMenus(void);
 MenuRoot *NewMenuRoot(char *name);
 MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
                     MenuRoot *sub, int func, char *fore, char *back);

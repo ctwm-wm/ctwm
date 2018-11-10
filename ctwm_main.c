@@ -261,6 +261,7 @@ ctwm_main(int argc, char *argv[])
 	MenuContext = XUniqueContext();
 	ScreenContext = XUniqueContext();
 	ColormapContext = XUniqueContext();
+	InitWorkSpaceManagerContext();
 
 	InternUsefulAtoms();
 
@@ -307,8 +308,10 @@ ctwm_main(int argc, char *argv[])
 	EwmhInit();
 #endif /* EWMH */
 #ifdef SOUNDS
+	// Needs init'ing before we get to config parsing
 	sound_init();
 #endif
+	InitEvents();
 
 	// Start looping over the screens
 	numManaged = 0;
@@ -336,7 +339,7 @@ ctwm_main(int argc, char *argv[])
 				                      &junk);
 			}
 			else {
-				// Fake up default size.  Probably Ideally should be
+				// Fake up default size.  Probably ideally should be
 				// configurable, but even more ideally we wouldn't have
 				// captive...
 				crootx = crooty = 100;
@@ -354,8 +357,12 @@ ctwm_main(int argc, char *argv[])
 			crooth = DisplayHeight(dpy, scrnum);
 		}
 
-		// Initialize to empty.  SaveColor{} will set extra values to
-		// add; x-ref assign_var_savecolor() call below.
+		// Initialize to empty.  This gets populated with SaveColor{}
+		// results.  String values get done via assign_var_savecolor()
+		// call below, but keyword choicse wind up getting put in on the
+		// fly during config file parsing, so we have to clear it before
+		// we get to the config.
+		// XXX Maybe we should change that...
 		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
@@ -525,7 +532,9 @@ ctwm_main(int argc, char *argv[])
 			Scr->Monochrome = COLOR;
 		}
 
-		// Setup default colors
+
+		// With the colormap/monochrome bits set, we can setup our
+		// default color bits.
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
@@ -542,6 +551,9 @@ ctwm_main(int argc, char *argv[])
 		SETFB(MenuTitleC)
 		SETFB(IconC)
 		SETFB(IconManagerC)
+		SETFB(workSpaceMgr.windowcp)
+		SETFB(workSpaceMgr.curColors)
+		SETFB(workSpaceMgr.defColors)
 #undef SETFB
 
 
@@ -553,8 +565,8 @@ ctwm_main(int argc, char *argv[])
 			// should just manually extract out the couple bits we
 			// actually want to run?
 			SetFocus(NULL, CurrentTime);
+			FirstScreen = false;
 		}
-		FirstScreen = false;
 
 		// Create default icon manager memory bits (in the first
 		// workspace)
@@ -572,13 +584,9 @@ ctwm_main(int argc, char *argv[])
 			MaskScreen(welcomefile);
 		}
 
-		// More inits
-		InitMenus();
-		InitWorkSpaceManager();
-
 
 		/*
-		 * Parse config file
+		 * Load up config file
 		 */
 		if(CLarg.cfgchk) {
 			if(LoadTwmrc(CLarg.InitFile) == false) {
@@ -625,7 +633,7 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitVirtualRoots(Scr);
 #endif /* EWMH */
 
-		// Setup WSM[s]
+		// Setup WSM[s] (per-vscreen)
 		ConfigureWorkSpaceManager();
 
 		// If the config wants us to show the splash screen and we
@@ -690,18 +698,24 @@ ctwm_main(int argc, char *argv[])
 			Scr->ThreeDBorderWidth = 0;
 		}
 
-		// Setup colors for 3d bits.
-		if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->TitleC);
-		}
-		if(Scr->use3Dmenus   && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->MenuC);
-		}
-		if(Scr->use3Dmenus   && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->MenuTitleC);
-		}
-		if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->BorderColorC);
+		// Setup colors stuff
+		if(!Scr->BeNiceToColormap) {
+			// Default pair
+			GetShadeColors(&Scr->DefaultC);
+
+			// Various conditionally 3d bits
+			if(Scr->use3Dtitles) {
+				GetShadeColors(&Scr->TitleC);
+			}
+			if(Scr->use3Dmenus) {
+				GetShadeColors(&Scr->MenuC);
+			}
+			if(Scr->use3Dmenus) {
+				GetShadeColors(&Scr->MenuTitleC);
+			}
+			if(Scr->use3Dborders) {
+				GetShadeColors(&Scr->BorderColorC);
+			}
 		}
 
 		// Defaults for IconRegion bits that aren't set.
@@ -800,6 +814,10 @@ ctwm_main(int argc, char *argv[])
 		// setup WindowBox's
 		createWindowBoxes();
 
+		// Initialize Xrm stuff; things with setting occupation etc use
+		// Xrm bits.
+		XrmInitialize();
+
 #ifdef EWMH
 		// Set EWMH-related properties on various root-ish windows, for
 		// other programs to read to find out how we view the world.
@@ -877,12 +895,6 @@ ctwm_main(int argc, char *argv[])
 				}
 				vs->wsw->twm_win->mapped = true;
 			}
-		}
-
-
-		// Setup shading for default ColorPair
-		if(!Scr->BeNiceToColormap) {
-			GetShadeColors(&Scr->DefaultC);
 		}
 
 
@@ -986,7 +998,6 @@ ctwm_main(int argc, char *argv[])
 
 	// Do some late initialization
 	HandlingEvents = true;
-	InitEvents();
 	StartAnimation();
 
 	// Main loop.
@@ -1030,6 +1041,10 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// false and 0 and similar.  Some following initializations are
 	// nugatory because of that, but are left for clarity.
 
+	// Poison the global Scr to protect against typos
+#define Scr StupidProgrammer
+
+
 	// Basic pieces about the X screen we're talking about, and some
 	// derived dimension-related bits.
 	scr->screen = scrnum;
@@ -1042,9 +1057,21 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// Don't allow icon titles wider than the screen
 	scr->MaxIconTitleWidth = scr->rootw;
 
-	// XXX I don't think these make sense...
-	scr->MaxWindowWidth  = 32767 - scr->rootw;
-	scr->MaxWindowHeight = 32767 - scr->rooth;
+	// Attempt to come up with a sane default for the max sizes.  Start
+	// by limiting so that a window with its left/top on the right/bottom
+	// edge of the screen can't extend further than X can address (signed
+	// 16-bit).  However, when your screen size starts approaching that
+	// limit, reducing the max window sizes too much gets stupid too, so
+	// set an arbitrary floor on how low this will take it.
+	// MaxWindowSize in the config will override whatever's here anyway.
+	scr->MaxWindowWidth  = 32767 - (scr->rootx + scr->rootw);
+	scr->MaxWindowHeight = 32767 - (scr->rooty + scr->rooth);
+	if(scr->MaxWindowWidth < 4096) {
+		scr->MaxWindowWidth = 4096;
+	}
+	if(scr->MaxWindowHeight < 4096) {
+		scr->MaxWindowHeight = 4096;
+	}
 
 
 	// Flags used in the code to keep track of where in various processes
@@ -1190,6 +1217,22 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #endif
 
 
+	// WorkSpaceManager stuff
+	scr->workSpaceMgr.initialstate  = WMS_map;
+	scr->workSpaceMgr.buttonStyle   = STYLE_NORMAL;
+	scr->workSpaceMgr.vspace        = scr->WMgrVertButtonIndent;
+	scr->workSpaceMgr.hspace        = scr->WMgrHorizButtonIndent;
+
+	scr->workSpaceMgr.occupyWindow = calloc(1, sizeof(OccupyWindow));
+	scr->workSpaceMgr.occupyWindow->vspace    = scr->WMgrVertButtonIndent;
+	scr->workSpaceMgr.occupyWindow->hspace    = scr->WMgrHorizButtonIndent;
+	scr->workSpaceMgr.occupyWindow->name      = "Occupy Window";
+	scr->workSpaceMgr.occupyWindow->icon_name = "Occupy Window Icon";
+
+	scr->workSpaceMgr.name      = "WorkSpaceManager";
+	scr->workSpaceMgr.icon_name = "WorkSpaceManager Icon";
+
+
 	// Setup default fonts in case the config file doesn't
 #define DEFAULT_NICE_FONT "-*-helvetica-bold-r-normal-*-*-120-*"
 #define DEFAULT_FAST_FONT "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-*"
@@ -1201,12 +1244,15 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	SETFONT(Size,        FAST);
 	SETFONT(IconManager, NICE);
 	SETFONT(Default,     FAST);
-	SETFONT(workSpaceMgr.window, FAST);
+	scr->workSpaceMgr.windowFont.basename =
+	        "-adobe-courier-medium-r-normal--10-100-75-75-m-60-iso8859-1";
 
 #undef SETFONT
 #undef DEFAULT_FAST_FONT
 #undef DEFAULT_NICE_FONT
 
+	// Cleanup poisoning
+#undef Scr
 	return scr;
 }
 
