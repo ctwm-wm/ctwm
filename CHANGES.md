@@ -3,6 +3,17 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### New Features
+
+1. Support for understanding multi-monitor layouts as something other
+   than a single giant rectangle added.  RANDR X extension is supported
+   for determining how your monitors are laid out.  The various
+   `f.\*zoom` functions now zoom on the monitor the window is currently
+   on, and new `f.x\*zoom` functions are added to zoom across your entire
+   display.  Various internal geometries can be specified
+   RANDR-output-relative; see doc of e.g. `IconManagers`.  Contributed by
+   Maxime Soulé <<btik-ctwm@scoubidou.com>>.
+
 ### Bugfixes
 
 1. Perform various manipulations and overrides of `WM_HINTS` property
