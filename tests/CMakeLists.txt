@@ -11,7 +11,15 @@ add_dependencies(test_bins ctwm)
 macro(ctwm_simple_unit_test BIN)
 	# Building and linking it
 	add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
-	target_link_libraries(${BIN} ${CTWMLIBS} ctwmlib)
+	target_link_libraries(${BIN} ctwmlib)
+
+	# Few of our tests really need any of the X or other libs we pull in.
+	# However, most of the .o's for ctwm itself are going to have some
+	# ref out to them somewhere, so any tests that wind up pulling
+	# functions from those are going to make the linker want to resolve
+	# them when we link ${BIN}.  So just unconditionally add them and
+	# don't worry about which tests may not actually need 'em.
+	target_link_libraries(${BIN} ${CTWMLIBS})
 
 	# Add to pre-test target
 	add_dependencies(test_bins ${BIN})

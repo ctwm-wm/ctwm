@@ -511,7 +511,7 @@ ctwm_main(int argc, char *argv[])
 
 		/* Parse it once for each screen. */
 		if(CLarg.cfgchk) {
-			if(ParseTwmrc(CLarg.InitFile) == false) {
+			if(LoadTwmrc(CLarg.InitFile) == false) {
 				/* Error return */
 				fprintf(stderr, "Errors found\n");
 				exit(1);
@@ -522,7 +522,7 @@ ctwm_main(int argc, char *argv[])
 			}
 		}
 		else {
-			ParseTwmrc(CLarg.InitFile);
+			LoadTwmrc(CLarg.InitFile);
 		}
 
 		/* At least one border around the screen */
