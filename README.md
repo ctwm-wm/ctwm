@@ -119,7 +119,7 @@ USE_RPLAY
 
 USE_XRANDR
 :       Enables the use of multi-monitors of different sizes via
-        libXrandr.  Disable if libXrandr isn't present or lesser than 1.5.
+        libXrandr.  Disable if libXrandr isn't present or is older than 1.5.
         (**ON** by default)
 
 
