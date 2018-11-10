@@ -1012,9 +1012,19 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// Don't allow icon titles wider than the screen
 	scr->MaxIconTitleWidth = scr->rootw;
 
-	// XXX I don't think these make sense...
-	scr->MaxWindowWidth  = 32767 - scr->rootw;
-	scr->MaxWindowHeight = 32767 - scr->rooth;
+	// Attempt to come up with a sane default for the max sizes.  Start
+	// by limiting so that a window with its left/top on the right/bottom
+	// edge of the screen can't extend further than X can address (signed
+	// 16-bit).  However, when your screen size starts approaching that
+	// limit, reducing the max window sizes too much gets stupid too, so
+	// set an arbitrary floor on how low this will take it.
+	// MaxWindowSize in the config will override whatever's here anyway.
+	scr->MaxWindowWidth  = 32767 - (scr->rootx + scr->rootw);
+	scr->MaxWindowHeight = 32767 - (scr->rooty + scr->rooth);
+	if(scr->MaxWindowWidth < 4096)
+		scr->MaxWindowWidth = 4096;
+	if(scr->MaxWindowHeight < 4096)
+		scr->MaxWindowHeight = 4096;
 
 
 	// Flags used in the code to keep track of where in various processes
