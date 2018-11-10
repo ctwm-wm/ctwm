@@ -97,7 +97,8 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event);
 static Window CreateCaptiveRootWindow(int x, int y,
                                       unsigned int width, unsigned int height);
 static void InternUsefulAtoms(void);
-static void InitVariables(void);
+ScreenInfo *InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
+                           unsigned int crootw, unsigned int crooth);
 static bool MappedNotOverride(Window w);
 
 Cursor  UpperLeftCursor;
@@ -263,6 +264,21 @@ ctwm_main(int argc, char *argv[])
 
 	InternUsefulAtoms();
 
+	// Allocate/define common cursors
+	NewFontCursor(&TopLeftCursor, "top_left_corner");
+	NewFontCursor(&TopRightCursor, "top_right_corner");
+	NewFontCursor(&BottomLeftCursor, "bottom_left_corner");
+	NewFontCursor(&BottomRightCursor, "bottom_right_corner");
+	NewFontCursor(&LeftCursor, "left_side");
+	NewFontCursor(&RightCursor, "right_side");
+	NewFontCursor(&TopCursor, "top_side");
+	NewFontCursor(&BottomCursor, "bottom_side");
+
+	NewFontCursor(&UpperLeftCursor, "top_left_corner");
+	NewFontCursor(&RightButt, "rightbutton");
+	NewFontCursor(&LeftButt, "leftbutton");
+	NewFontCursor(&MiddleButt, "middlebutton");
+
 
 	// Prep up the per-screen global info
 	NumScreens = ScreenCount(dpy);
@@ -342,10 +358,14 @@ ctwm_main(int argc, char *argv[])
 		// add; x-ref assign_var_savecolor() call below.
 		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
-		XSync(dpy, 0); /* Flush possible previous errors */
 
-		/* Note:  ScreenInfo struct is calloc'ed to initialize to zero. */
-		Scr = ScreenList[scrnum] = calloc(1, sizeof(ScreenInfo));
+
+		/*
+		 * Create ScreenInfo for this Screen, and populate various
+		 * default/initial config.
+		 */
+		Scr = ScreenList[scrnum] = InitScreenInfo(scrnum, croot,
+		                           crootx, crooty, crootw, crooth);
 		if(Scr == NULL) {
 			fprintf(stderr,
 			        "%s: unable to allocate memory for ScreenInfo structure"
@@ -354,25 +374,9 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
-
-		/*
-		 * Initialize bits of Scr struct that we can hard-know or are
-		 * needed in these early initialization steps.
-		 */
-		Scr->screen = scrnum;
-		Scr->XineramaRoot = Scr->Root = croot;
-		Scr->rootx = Scr->crootx = crootx;
-		Scr->rooty = Scr->crooty = crooty;
-		Scr->rootw = Scr->crootw = crootw;
-		Scr->rooth = Scr->crooth = crooth;
-		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
-		Scr->MaxWindowHeight = 32767 - Scr->rooth;
-
-		// Generally we're trying to take over managing the screen.
-		Scr->takeover = true;
+		// Not trying to take over if we're just checking config or
+		// making a new captive ctwm.
 		if(CLarg.cfgchk || CLarg.is_captive) {
-			// Not if we're just checking config or making a new captive
-			// ctwm, though.
 			Scr->takeover = false;
 		}
 
@@ -382,6 +386,9 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitScreenEarly(Scr);
 #endif /* EWMH */
 
+		// Early OTP setup
+		OtpScrInitData(Scr);
+
 
 		/*
 		 * Subscribe to various events on the root window.  Because X
@@ -389,7 +396,12 @@ ctwm_main(int argc, char *argv[])
 		 * SubstructureRedirect and ButtonPress bits, this also serves to
 		 * mutex who is The WM for the root window, and thus (aside from
 		 * captive) the Screen.
+		 *
+		 * To catch whether that failed, we set a special one-shot error
+		 * handler to flip a var that we test to find out whether the
+		 * redirect failed.
 		 */
+		XSync(dpy, 0); // Flush possible previous errors
 		RedirectError = false;
 		XSetErrorHandler(CatchRedirectError);
 		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
@@ -402,7 +414,9 @@ ctwm_main(int argc, char *argv[])
 			attrmask |= StructureNotifyMask;
 		}
 		XSelectInput(dpy, croot, attrmask);
-		XSync(dpy, 0);
+		XSync(dpy, 0); // Flush the RedirectError, if we had one
+
+		// Back to our normal handler
 		XSetErrorHandler(TwmErrorHandler);
 
 		if(RedirectError && Scr->takeover) {
@@ -414,6 +428,13 @@ ctwm_main(int argc, char *argv[])
 			else {
 				fprintf(stderr, "?\n");
 			}
+
+			// XSetErrorHandler() isn't local to the Screen; it's for the
+			// whole connection.  We wind up in a slightly weird state
+			// once we've set it up, but decided we aren't taking over
+			// this screen, but resetting it would be a little weird too,
+			// because maybe we have taken over some other screen.  So,
+			// just throw up our hands.
 			continue;
 		}
 
@@ -473,7 +494,7 @@ ctwm_main(int argc, char *argv[])
 			Scr->RootColormaps.number_cwins = 1;
 			Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
 			Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, true,
-					false);
+			                              false);
 			Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 
 			// Initialize storage for all maps the Screen can hold
@@ -484,14 +505,11 @@ ctwm_main(int argc, char *argv[])
 
 			// Setup which we're using
 			Scr->StdCmapInfo.head = Scr->StdCmapInfo.tail
-				= Scr->StdCmapInfo.mru = NULL;
+			                        = Scr->StdCmapInfo.mru = NULL;
 			Scr->StdCmapInfo.mruindex = 0;
 			LocateStandardColormaps();
 		}
 
-
-		// Sentinel value for later code
-		Scr->TBInfo.border = -100;
 
 		// Default values of config params
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
@@ -516,28 +534,30 @@ ctwm_main(int argc, char *argv[])
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
+		Scr->MenuShadowColor = Scr->Black;
+		Scr->IconBorderColor = Scr->Black;
+		Scr->IconManagerHighlight = Scr->Black;
+
+#define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
+		SETFB(DefaultC)
+		SETFB(BorderColorC)
+		SETFB(BorderTileC)
+		SETFB(TitleC)
+		SETFB(MenuC)
+		SETFB(MenuTitleC)
+		SETFB(IconC)
+		SETFB(IconManagerC)
+#undef SETFB
+
 
 		// The first time around, we focus onto the root [of the first
-		// Screen], and setup some cursors.  XXX Unclear if this is
-		// really the best place to do this...
+		// Screen].  Maybe we should revisit this...
 		if(FirstScreen) {
+			// XXX This func also involves a lot of stuff that isn't
+			// setup yet, and probably only works by accident.  Maybe we
+			// should just manually extract out the couple bits we
+			// actually want to run?
 			SetFocus(NULL, CurrentTime);
-
-			/* define cursors */
-
-			NewFontCursor(&TopLeftCursor, "top_left_corner");
-			NewFontCursor(&TopRightCursor, "top_right_corner");
-			NewFontCursor(&BottomLeftCursor, "bottom_left_corner");
-			NewFontCursor(&BottomRightCursor, "bottom_right_corner");
-			NewFontCursor(&LeftCursor, "left_side");
-			NewFontCursor(&RightCursor, "right_side");
-			NewFontCursor(&TopCursor, "top_side");
-			NewFontCursor(&BottomCursor, "bottom_side");
-
-			NewFontCursor(&UpperLeftCursor, "top_left_corner");
-			NewFontCursor(&RightButt, "rightbutton");
-			NewFontCursor(&LeftButt, "leftbutton");
-			NewFontCursor(&MiddleButt, "middlebutton");
 		}
 		FirstScreen = false;
 
@@ -558,7 +578,6 @@ ctwm_main(int argc, char *argv[])
 		}
 
 		// More inits
-		InitVariables();
 		InitMenus();
 		InitWorkSpaceManager();
 
@@ -637,41 +656,32 @@ ctwm_main(int argc, char *argv[])
 
 		/*
 		 * Various decoration default overrides for 3d/2d.  Values that
-		 * [presumtively] look "nide" on 75/100dpi displays.
+		 * [presumtively] look "nice" on 75/100dpi displays.  -100 is a
+		 * sentinel value we set before the config file parsing; since
+		 * these defaults differ for 3d vs not, we can't just set them as
+		 * default before the parse.
 		 */
+#define SETDEF(fld, num) if(Scr->fld == -100) { Scr->fld = num; }
 		if(Scr->use3Dtitles) {
-			if(Scr->FramePadding  == -100) {
-				Scr->FramePadding  = 0;
-			}
-			if(Scr->TitlePadding  == -100) {
-				Scr->TitlePadding  = 0;
-			}
-			if(Scr->ButtonIndent  == -100) {
-				Scr->ButtonIndent  = 0;
-			}
-			if(Scr->TBInfo.border == -100) {
-				Scr->TBInfo.border = 0;
-			}
+			SETDEF(FramePadding,  0);
+			SETDEF(TitlePadding,  0);
+			SETDEF(ButtonIndent,  0);
+			SETDEF(TBInfo.border, 0);
 		}
 		else {
-			if(Scr->FramePadding  == -100) {
-				Scr->FramePadding  = 2;
-			}
-			if(Scr->TitlePadding  == -100) {
-				Scr->TitlePadding  = 8;
-			}
-			if(Scr->ButtonIndent  == -100) {
-				Scr->ButtonIndent  = 1;
-			}
-			if(Scr->TBInfo.border == -100) {
-				Scr->TBInfo.border = 1;
-			}
-			Scr->TitleShadowDepth       = 0;
-			Scr->TitleButtonShadowDepth = 0;
+			SETDEF(FramePadding,  2);
+			SETDEF(TitlePadding,  8);
+			SETDEF(ButtonIndent,  1);
+			SETDEF(TBInfo.border, 1);
 		}
+#undef SETDEF
 
 		// These values are meaningless in !3d cases, so always zero them
 		// out.
+		if(! Scr->use3Dtitles) {
+			Scr->TitleShadowDepth       = 0;
+			Scr->TitleButtonShadowDepth = 0;
+		}
 		if(! Scr->use3Dborders) {
 			Scr->BorderShadowDepth = 0;
 		}
@@ -715,6 +725,22 @@ ctwm_main(int argc, char *argv[])
 		// Put the results of SaveColor{} into _MIT_PRIORITY_COLORS.
 		assign_var_savecolor();
 
+		// Setup cursor values that weren't give in the config
+#define DEFCURSOR(name, val) if(!Scr->name) NewFontCursor(&Scr->name, val)
+		DEFCURSOR(FrameCursor,   "top_left_arrow");
+		DEFCURSOR(TitleCursor,   "top_left_arrow");
+		DEFCURSOR(IconCursor,    "top_left_arrow");
+		DEFCURSOR(IconMgrCursor, "top_left_arrow");
+		DEFCURSOR(MoveCursor,    "fleur");
+		DEFCURSOR(ResizeCursor,  "fleur");
+		DEFCURSOR(MenuCursor,    "sb_left_arrow");
+		DEFCURSOR(ButtonCursor,  "hand2");
+		DEFCURSOR(WaitCursor,    "watch");
+		DEFCURSOR(SelectCursor,  "dot");
+		DEFCURSOR(DestroyCursor, "pirate");
+		DEFCURSOR(AlterCursor,   "question_arrow");
+#undef DEFCURSOR
+
 		// Load up fonts for the screen.
 		//
 		// XXX HaveFonts is kinda stupid, however it gets useful in one
@@ -726,7 +752,7 @@ ctwm_main(int argc, char *argv[])
 		// if you define the fonts too late, they wouldn't have been set
 		// by then, and we won't [re]try them now...    arg.
 		if(!Scr->HaveFonts) {
-			CreateFonts();
+			CreateFonts(Scr);
 		}
 
 		// Adjust settings for titlebar.  Must follow CreateFonts() call
@@ -750,10 +776,7 @@ ctwm_main(int argc, char *argv[])
 		MakeMenus();
 
 		// Load up the images for titlebar buttons
-		InitTitlebarButtons();          /* menus are now loaded! */
-
-		XGrabServer(dpy);
-		XSync(dpy, 0);
+		InitTitlebarButtons();
 
 		// Allocate controls for WindowRegion's.  Has to follow
 		// workspaces setup, but doesn't talk to X.
@@ -829,6 +852,16 @@ ctwm_main(int argc, char *argv[])
 					SimulateMapRequest(children[i]);
 				}
 			}
+
+			/*
+			 * At this point, we've adopted all the windows currently on
+			 * the screen (aside from those we're intentionally not).
+			 * Note that this happens _before_ the various other windows
+			 * we create below, which is why they don't wind up getting
+			 * TwmWindow's tied to them or show up in icon managers, etc.
+			 * We'd need to actually make it _explicit_ that those
+			 * windows aren't tracked by us if we changed that order...
+			 */
 		}
 
 
@@ -917,12 +950,11 @@ ctwm_main(int argc, char *argv[])
 			                                CopyFromParent,
 			                                valuemask, &attributes);
 		}
+
+		// Create util window used in animation
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
 		                                       Scr->rootw, Scr->rooth, 0, 0, 0);
 
-
-		// Done with the bits we need the server grabbed for
-		XUngrabServer(dpy);
 
 		// Clear out the splash screen if we had one
 		if(Scr->ShowWelcomeWindow) {
@@ -971,264 +1003,226 @@ ctwm_main(int argc, char *argv[])
 }
 
 
-/***********************************************************************
+/**
+ * Initialize ScreenInfo for a Screen.  This allocates the struct,
+ * assigns in the info we pass it about the screen and dimensions, and
+ * then puts in our various default/fallback/sentinel/etc values to
+ * prepare it for later use.
  *
- *  Procedure:
- *      InitVariables - initialize twm variables
+ * It is intentional that this doesn't do any of the initialization that
+ * involves calling out to X functions; it operates as a pure function.
+ * This makes it easier to use it to fake up a ScreenInfo for something
+ * that isn't actually an X Screen, for testing etc.
  *
- ***********************************************************************
+ * \param scrnum The Screen number (e.g, :0.0 -> 0)
+ * \param croot  The X Window for the Screen's root window
+ * \param crootx Root X coordinate
+ * \param crooty Root Y coordinate
+ * \param crootw Root width
+ * \param crooth Root height
+ * \return Allocated and populated ScreenInfo
  */
-
-static void InitVariables(void)
+ScreenInfo *
+InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
+               unsigned int crootw, unsigned int crooth)
 {
-	FreeList(&Scr->BorderColorL);
-	FreeList(&Scr->IconBorderColorL);
-	FreeList(&Scr->BorderTileForegroundL);
-	FreeList(&Scr->BorderTileBackgroundL);
-	FreeList(&Scr->TitleForegroundL);
-	FreeList(&Scr->TitleBackgroundL);
-	FreeList(&Scr->IconForegroundL);
-	FreeList(&Scr->IconBackgroundL);
-	FreeList(&Scr->IconManagerFL);
-	FreeList(&Scr->IconManagerBL);
-	FreeList(&Scr->IconMgrs);
-	FreeList(&Scr->AutoPopupL);
-	FreeList(&Scr->NoBorder);
-	FreeList(&Scr->NoIconTitle);
-	FreeList(&Scr->NoTitle);
-	FreeList(&Scr->OccupyAll);
-	FreeList(&Scr->MakeTitle);
-	FreeList(&Scr->AutoRaise);
-	FreeList(&Scr->WarpOnDeIconify);
-	FreeList(&Scr->AutoLower);
-	FreeList(&Scr->IconNames);
-	FreeList(&Scr->NoHighlight);
-	FreeList(&Scr->NoStackModeL);
-	OtpScrInitData(Scr);
-	FreeList(&Scr->NoTitleHighlight);
-	FreeList(&Scr->DontIconify);
-	FreeList(&Scr->IconMgrNoShow);
-	FreeList(&Scr->IconMgrShow);
-	FreeList(&Scr->IconifyByUn);
-	FreeList(&Scr->StartIconified);
-	FreeList(&Scr->IconManagerHighlightL);
-	FreeList(&Scr->SqueezeTitleL);
-	FreeList(&Scr->DontSqueezeTitleL);
-	FreeList(&Scr->WindowRingL);
-	FreeList(&Scr->WindowRingExcludeL);
-	FreeList(&Scr->WarpCursorL);
-	FreeList(&Scr->DontSave);
-	FreeList(&Scr->UnmapByMovingFarAway);
-	FreeList(&Scr->DontSetInactive);
-	FreeList(&Scr->AutoSqueeze);
-	FreeList(&Scr->StartSqueezed);
-	FreeList(&Scr->AlwaysSqueezeToGravityL);
-	FreeList(&Scr->IconMenuDontShow);
-	FreeList(&Scr->VirtualScreens);
-	FreeList(&Scr->IgnoreTransientL);
+	ScreenInfo *scr;
+	scr = calloc(1, sizeof(ScreenInfo));
+	if(scr == NULL) {
+		return NULL;
+	}
+	// Because of calloc(), it's already all 0 bytes, which are NULL and
+	// false and 0 and similar.  Some following initializations are
+	// nugatory because of that, but are left for clarity.
 
-	NewFontCursor(&Scr->FrameCursor, "top_left_arrow");
-	NewFontCursor(&Scr->TitleCursor, "top_left_arrow");
-	NewFontCursor(&Scr->IconCursor, "top_left_arrow");
-	NewFontCursor(&Scr->IconMgrCursor, "top_left_arrow");
-	NewFontCursor(&Scr->MoveCursor, "fleur");
-	NewFontCursor(&Scr->ResizeCursor, "fleur");
-	NewFontCursor(&Scr->MenuCursor, "sb_left_arrow");
-	NewFontCursor(&Scr->ButtonCursor, "hand2");
-	NewFontCursor(&Scr->WaitCursor, "watch");
-	NewFontCursor(&Scr->SelectCursor, "dot");
-	NewFontCursor(&Scr->DestroyCursor, "pirate");
-	NewFontCursor(&Scr->AlterCursor, "question_arrow");
+	// Basic pieces about the X screen we're talking about, and some
+	// derived dimension-related bits.
+	scr->screen = scrnum;
+	scr->XineramaRoot = scr->Root = croot;
+	scr->rootx = scr->crootx = crootx;
+	scr->rooty = scr->crooty = crooty;
+	scr->rootw = scr->crootw = crootw;
+	scr->rooth = scr->crooth = crooth;
 
-	Scr->workSpaceManagerActive = false;
-	Scr->Ring = NULL;
-	Scr->RingLeader = NULL;
-	Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
+	// Don't allow icon titles wider than the screen
+	scr->MaxIconTitleWidth = scr->rootw;
 
-#define SETFB(fld) Scr->fld.fore = Scr->Black; Scr->fld.back = Scr->White;
-	SETFB(DefaultC)
-	SETFB(BorderColorC)
-	SETFB(BorderTileC)
-	SETFB(TitleC)
-	SETFB(MenuC)
-	SETFB(MenuTitleC)
-	SETFB(IconC)
-	SETFB(IconManagerC)
-#undef SETFB
+	// XXX I don't think these make sense...
+	scr->MaxWindowWidth  = 32767 - scr->rootw;
+	scr->MaxWindowHeight = 32767 - scr->rooth;
 
-	Scr->MenuShadowColor = Scr->Black;
-	Scr->IconBorderColor = Scr->Black;
-	Scr->IconManagerHighlight = Scr->Black;
 
-	Scr->FramePadding =
-	        -100;   /* trick to have different default value if ThreeDTitles
-                                is set or not */
-	Scr->TitlePadding = -100;
-	Scr->ButtonIndent = -100;
-	Scr->SizeStringOffset = 0;
-	Scr->ThreeDBorderWidth = 6;
-	Scr->BorderWidth = BW;
-	Scr->IconBorderWidth = BW;
-	Scr->NumAutoRaises = 0;
-	Scr->NumAutoLowers = 0;
-	Scr->TransientOnTop = 30;
-	Scr->NoDefaults = false;
-	Scr->UsePPosition = PPOS_OFF;
-	Scr->UseSunkTitlePixmap = false;
-	Scr->FocusRoot = true;
-	Scr->Focus = NULL;
-	Scr->WarpCursor = false;
-	Scr->ForceIcon = false;
-	Scr->NoGrabServer = true;
-	Scr->NoRaiseMove = false;
-	Scr->NoRaiseResize = false;
-	Scr->NoRaiseDeicon = false;
-	Scr->RaiseOnWarp = true;
-	Scr->DontMoveOff = false;
-	Scr->DoZoom = false;
-	Scr->TitleFocus = true;
-	Scr->IconManagerFocus = true;
-	Scr->StayUpMenus = false;
-	Scr->WarpToDefaultMenuEntry = false;
-	Scr->ClickToFocus = false;
-	Scr->SloppyFocus = false;
-	Scr->SaveWorkspaceFocus = false;
-	Scr->NoIconTitlebar = false;
-	Scr->NoTitlebar = false;
-	Scr->DecorateTransients = true;
-	Scr->IconifyByUnmapping = false;
-	Scr->ShowIconManager = false;
-	Scr->ShowWorkspaceManager = false;
-	Scr->WMgrButtonShadowDepth = 2;
-	Scr->WMgrVertButtonIndent  = 5;
-	Scr->WMgrHorizButtonIndent = 5;
-	Scr->BorderShadowDepth = 2;
-	Scr->TitleShadowDepth = 2;
-	Scr->TitleButtonShadowDepth = 2;
-	Scr->MenuShadowDepth = 2;
-	Scr->IconManagerShadowDepth = 2;
-	Scr->AutoOccupy = false;
-	Scr->TransientHasOccupation = false;
-	Scr->DontPaintRootWindow = false;
-	Scr->IconManagerDontShow = false;
-	Scr->BackingStore = false;
-	Scr->SaveUnder = true;
-	Scr->RandomPlacement = RP_ALL;
-	Scr->RandomDisplacementX = 30;
-	Scr->RandomDisplacementY = 30;
-	Scr->DoOpaqueMove = true;
-	Scr->OpaqueMove = false;
-	Scr->OpaqueMoveThreshold = 200;
-	Scr->OpaqueResize = false;
-	Scr->DoOpaqueResize = true;
-	Scr->OpaqueResizeThreshold = 1000;
-	Scr->Highlight = true;
-	Scr->StackMode = true;
-	Scr->TitleHighlight = true;
-	Scr->MoveDelta = 1;         /* so that f.deltastop will work */
-	Scr->MoveOffResistance = -1;
-	Scr->MovePackResistance = 20;
-	Scr->ZoomCount = 8;
-	Scr->SortIconMgr = true;
-	Scr->Shadow = true;
-	Scr->InterpolateMenuColors = false;
-	Scr->NoIconManagers = false;
-	Scr->ClientBorderWidth = false;
-	Scr->SqueezeTitle = false;
-	Scr->FirstRegion = NULL;
-	Scr->LastRegion = NULL;
-	Scr->FirstWindowRegion = NULL;
-	Scr->FirstTime = true;
-	Scr->HaveFonts = false;             /* i.e. not loaded yet */
-	Scr->CaseSensitive = true;
-	Scr->WarpUnmapped = false;
-	Scr->WindowRingAll = false;
-	Scr->WarpRingAnyWhere = true;
-	Scr->ShortAllWindowsMenus = false;
-	Scr->use3Diconmanagers = false;
-	Scr->use3Dmenus = false;
-	Scr->use3Dtitles = false;
-	Scr->use3Dborders = false;
-	Scr->use3Dwmap = false;
-	Scr->SunkFocusWindowTitle = false;
-	Scr->ClearShadowContrast = 50;
-	Scr->DarkShadowContrast  = 40;
-	Scr->BeNiceToColormap = false;
-	Scr->BorderCursors = false;
-	Scr->IconJustification = TJ_CENTER;
-	Scr->IconRegionJustification = IRJ_CENTER;
-	Scr->IconRegionAlignement = IRA_CENTER;
-	Scr->TitleJustification = TJ_LEFT;
-	Scr->IconifyStyle = ICONIFY_NORMAL;
-	Scr->MaxIconTitleWidth = Scr->rootw;
-	Scr->ReallyMoveInWorkspaceManager = false;
-	Scr->ShowWinWhenMovingInWmgr = false;
-	Scr->ReverseCurrentWorkspace = false;
-	Scr->DontWarpCursorInWMap = false;
-	Scr->XMoveGrid = 1;
-	Scr->YMoveGrid = 1;
-	Scr->CenterFeedbackWindow = false;
-	Scr->ShrinkIconTitles = false;
-	Scr->AutoRaiseIcons = false;
-	Scr->AutoFocusToTransients = false; /* kai */
-	Scr->OpenWindowTimeout = 0;
-	Scr->RaiseWhenAutoUnSqueeze = false;
-	Scr->RaiseOnClick = false;
-	Scr->RaiseOnClickButton = 1;
-	Scr->IgnoreModifier = 0;
-	Scr->IgnoreCaseInMenuSelection = false;
-	Scr->PackNewWindows = false;
-	Scr->AlwaysSqueezeToGravity = false;
-	Scr->NoWarpToMenuTitle = false;
-	Scr->DontToggleWorkspaceManagerState = false;
-	Scr->NameDecorations = true;
+	// Flags used in the code to keep track of where in various processes
+	// (especially startup) we are.
+	scr->HaveFonts = false;
+
+	// We're a WM, we're usually trying to take over (x-ref later code in
+	// caller)
+	scr->takeover = true;
+
+	// Sentinel values for defaulting config values
+	scr->FramePadding = -100;
+	scr->TitlePadding = -100;
+	scr->ButtonIndent = -100;
+	scr->TBInfo.border = -100;
+
+	// Default values for all sorts of config params
+	scr->SizeStringOffset = 0;
+	scr->ThreeDBorderWidth = 6;
+	scr->BorderWidth = BW;
+	scr->IconBorderWidth = BW;
+	scr->NumAutoRaises = 0;
+	scr->NumAutoLowers = 0;
+	scr->TransientOnTop = 30;
+	scr->NoDefaults = false;
+	scr->UsePPosition = PPOS_OFF;
+	scr->UseSunkTitlePixmap = false;
+	scr->FocusRoot = true;
+	scr->WarpCursor = false;
+	scr->ForceIcon = false;
+	scr->NoGrabServer = true;
+	scr->NoRaiseMove = false;
+	scr->NoRaiseResize = false;
+	scr->NoRaiseDeicon = false;
+	scr->RaiseOnWarp = true;
+	scr->DontMoveOff = false;
+	scr->DoZoom = false;
+	scr->TitleFocus = true;
+	scr->IconManagerFocus = true;
+	scr->StayUpMenus = false;
+	scr->WarpToDefaultMenuEntry = false;
+	scr->ClickToFocus = false;
+	scr->SloppyFocus = false;
+	scr->SaveWorkspaceFocus = false;
+	scr->NoIconTitlebar = false;
+	scr->NoTitlebar = false;
+	scr->DecorateTransients = true;
+	scr->IconifyByUnmapping = false;
+	scr->ShowIconManager = false;
+	scr->ShowWorkspaceManager = false;
+	scr->WMgrButtonShadowDepth = 2;
+	scr->WMgrVertButtonIndent  = 5;
+	scr->WMgrHorizButtonIndent = 5;
+	scr->BorderShadowDepth = 2;
+	scr->TitleShadowDepth = 2;
+	scr->TitleButtonShadowDepth = 2;
+	scr->MenuShadowDepth = 2;
+	scr->IconManagerShadowDepth = 2;
+	scr->AutoOccupy = false;
+	scr->TransientHasOccupation = false;
+	scr->DontPaintRootWindow = false;
+	scr->IconManagerDontShow = false;
+	scr->BackingStore = false;
+	scr->SaveUnder = true;
+	scr->RandomPlacement = RP_ALL;
+	scr->RandomDisplacementX = 30;
+	scr->RandomDisplacementY = 30;
+	scr->DoOpaqueMove = true;
+	scr->OpaqueMove = false;
+	scr->OpaqueMoveThreshold = 200;
+	scr->OpaqueResize = false;
+	scr->DoOpaqueResize = true;
+	scr->OpaqueResizeThreshold = 1000;
+	scr->Highlight = true;
+	scr->StackMode = true;
+	scr->TitleHighlight = true;
+	scr->MoveDelta = 1;
+	scr->MoveOffResistance = -1;
+	scr->MovePackResistance = 20;
+	scr->ZoomCount = 8;
+	scr->SortIconMgr = true;
+	scr->Shadow = true;
+	scr->InterpolateMenuColors = false;
+	scr->NoIconManagers = false;
+	scr->ClientBorderWidth = false;
+	scr->SqueezeTitle = false;
+	scr->FirstTime = true;
+	scr->CaseSensitive = true;
+	scr->WarpUnmapped = false;
+	scr->WindowRingAll = false;
+	scr->WarpRingAnyWhere = true;
+	scr->ShortAllWindowsMenus = false;
+	scr->use3Diconmanagers = false;
+	scr->use3Dmenus = false;
+	scr->use3Dtitles = false;
+	scr->use3Dborders = false;
+	scr->use3Dwmap = false;
+	scr->SunkFocusWindowTitle = false;
+	scr->ClearShadowContrast = 50;
+	scr->DarkShadowContrast  = 40;
+	scr->BeNiceToColormap = false;
+	scr->BorderCursors = false;
+	scr->IconJustification = TJ_CENTER;
+	scr->IconRegionJustification = IRJ_CENTER;
+	scr->IconRegionAlignement = IRA_CENTER;
+	scr->TitleJustification = TJ_LEFT;
+	scr->IconifyStyle = ICONIFY_NORMAL;
+	scr->ReallyMoveInWorkspaceManager = false;
+	scr->ShowWinWhenMovingInWmgr = false;
+	scr->ReverseCurrentWorkspace = false;
+	scr->DontWarpCursorInWMap = false;
+	scr->XMoveGrid = 1;
+	scr->YMoveGrid = 1;
+	scr->CenterFeedbackWindow = false;
+	scr->ShrinkIconTitles = false;
+	scr->AutoRaiseIcons = false;
+	scr->AutoFocusToTransients = false;
+	scr->OpenWindowTimeout = 0;
+	scr->RaiseWhenAutoUnSqueeze = false;
+	scr->RaiseOnClick = false;
+	scr->RaiseOnClickButton = 1;
+	scr->IgnoreModifier = 0;
+	scr->IgnoreCaseInMenuSelection = false;
+	scr->PackNewWindows = false;
+	scr->AlwaysSqueezeToGravity = false;
+	scr->NoWarpToMenuTitle = false;
+	scr->DontToggleWorkspaceManagerState = false;
+	scr->NameDecorations = true;
+	scr->ForceFocus = false;
+	scr->BorderTop    = 0;
+	scr->BorderBottom = 0;
+	scr->BorderLeft   = 0;
+	scr->BorderRight  = 0;
 #ifdef EWMH
-	Scr->PreferredIconWidth = 48;
-	Scr->PreferredIconHeight = 48;
-	FreeList(&Scr->EWMHIgnore);
+	scr->PreferredIconWidth = 48;
+	scr->PreferredIconHeight = 48;
 #endif
-	FreeList(&Scr->MWMIgnore);
 
-	Scr->ForceFocus = false;
-	FreeList(&Scr->ForceFocusL);
 
-	Scr->BorderTop    = 0;
-	Scr->BorderBottom = 0;
-	Scr->BorderLeft   = 0;
-	Scr->BorderRight  = 0;
+	// Setup default fonts in case the config file doesn't
+#define DEFAULT_NICE_FONT "-*-helvetica-bold-r-normal-*-*-120-*"
+#define DEFAULT_FAST_FONT "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-*"
+#define SETFONT(fld, var) (scr->fld##Font.basename = DEFAULT_##var##_FONT)
 
-	/* setup default fonts; overridden by defaults from system.twmrc */
+	SETFONT(TitleBar,    NICE);
+	SETFONT(Menu,        NICE);
+	SETFONT(Icon,        NICE);
+	SETFONT(Size,        FAST);
+	SETFONT(IconManager, NICE);
+	SETFONT(Default,     FAST);
+	SETFONT(workSpaceMgr.window, FAST);
 
-#   define DEFAULT_NICE_FONT "-*-helvetica-bold-r-normal-*-*-120-*"
-#   define DEFAULT_FAST_FONT "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-*"
+#undef SETFONT
+#undef DEFAULT_FAST_FONT
+#undef DEFAULT_NICE_FONT
 
-	Scr->TitleBarFont.font_set = NULL;
-	Scr->TitleBarFont.basename = DEFAULT_NICE_FONT;
-	Scr->MenuFont.font_set = NULL;
-	Scr->MenuFont.basename = DEFAULT_NICE_FONT;
-	Scr->IconFont.font_set = NULL;
-	Scr->IconFont.basename = DEFAULT_NICE_FONT;
-	Scr->SizeFont.font_set = NULL;
-	Scr->SizeFont.basename = DEFAULT_FAST_FONT;
-	Scr->IconManagerFont.font_set = NULL;
-	Scr->IconManagerFont.basename = DEFAULT_NICE_FONT;
-	Scr->DefaultFont.font_set = NULL;
-	Scr->DefaultFont.basename = DEFAULT_FAST_FONT;
-	Scr->workSpaceMgr.windowFont.font_set = NULL;
-	Scr->workSpaceMgr.windowFont.basename = DEFAULT_FAST_FONT;
+	return scr;
 }
 
 
-void CreateFonts(void)
+void CreateFonts(ScreenInfo *scr)
 {
-	GetFont(&Scr->TitleBarFont);
-	GetFont(&Scr->MenuFont);
-	GetFont(&Scr->IconFont);
-	GetFont(&Scr->SizeFont);
-	GetFont(&Scr->IconManagerFont);
-	GetFont(&Scr->DefaultFont);
-	GetFont(&Scr->workSpaceMgr.windowFont);
-	Scr->HaveFonts = true;
+#define LOADFONT(fld) (GetFont(&scr->fld##Font))
+	LOADFONT(TitleBar);
+	LOADFONT(Menu);
+	LOADFONT(Icon);
+	LOADFONT(Size);
+	LOADFONT(IconManager);
+	LOADFONT(Default);
+	LOADFONT(workSpaceMgr.window);
+#undef LOADFONT
+
+	scr->HaveFonts = true;
 }
 
 

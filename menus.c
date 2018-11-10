@@ -805,7 +805,7 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 	tmp->separated = false;
 
 	if(!Scr->HaveFonts) {
-		CreateFonts();
+		CreateFonts(Scr);
 	}
 
 	XmbTextExtents(Scr->MenuFont.font_set,
