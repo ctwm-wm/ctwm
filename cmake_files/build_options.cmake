@@ -129,19 +129,21 @@ if(USE_XRANDR)
 		message(FATAL_ERROR "Couldn't find Xrandr libs")
 	endif(NOT X11_Xrandr_FOUND)
 
+	# We need XrrGetMonitors()
 	set(OLD_CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES})
 	set(OLD_CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
 	set(CMAKE_REQUIRED_INCLUDES  ${X11_Xrandr_INCLUDE_PATH})
 	set(CMAKE_REQUIRED_LIBRARIES ${X11_Xrandr_LIB})
-
 	check_symbol_exists(XRRGetMonitors "X11/extensions/Xrandr.h" HAVE_XRRGETMONITORS)
+	set(CMAKE_REQUIRED_INCLUDES ${OLD_CMAKE_REQUIRED_INCLUDES})
+	set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
+
 	if(NOT HAVE_XRRGETMONITORS)
 	       message(FATAL_ERROR "Xrandr lib does not implement XRRGetMonitors, Xrandr 1.5 needed")
 	endif(NOT HAVE_XRRGETMONITORS)
 
-	set(CMAKE_REQUIRED_INCLUDES ${OLD_CMAKE_REQUIRED_INCLUDES})
-	set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
-
+	# Got it
+	include_directories(${X11_Xrandr_INCLUDE_PATH})
 	list(APPEND CTWMLIBS ${X11_Xrandr_LIB})
 	list(APPEND CTWMSRC xrandr.c)
 	message(STATUS "Enabling Xrandr support: ${X11_Xrandr_LIB}")
