@@ -290,6 +290,9 @@ m4_defs(Display *display, const char *host)
 #ifdef EWMH
 	WR_DEF("EWMH", "Yes");
 #endif
+#ifdef XRANDR
+	WR_DEF("XRANDR", "Yes");
+#endif
 	/* Since this is no longer an option, it should be removed in the future */
 	WR_DEF("I18N", "Yes");
 
