@@ -6,7 +6,7 @@
 #define _CTWM_WORKMGR_H
 
 /* General creation/WSM drawing */
-void InitWorkSpaceManager(void);
+void InitWorkSpaceManagerContext(void);
 void ConfigureWorkSpaceManager(void);
 void CreateWorkSpaceManager(void);
 void PaintWorkSpaceManager(VirtualScreen *vs);

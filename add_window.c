@@ -216,7 +216,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	set_window_name(tmp_win);
 	namelen = strlen(tmp_win->name);
 
-	/* Setup class */
+	/* Setup class.  x-ref XXX in ctwm_main() about NoClass */
 	tmp_win->class = NoClass;
 	XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
 	if(tmp_win->class.res_name == NULL) {

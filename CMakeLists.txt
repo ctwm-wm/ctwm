@@ -126,8 +126,13 @@ include(ctags)
 # with access to all our internal funcs.
 add_library(ctwmlib STATIC ${CTWMSRC})
 add_executable(ctwm "ctwm_wrap.c")
-target_link_libraries(ctwm ${CTWMLIBS})
+
+# Keep ctwmlib before the shared libs.  With some ld(1)'s and build
+# environments that set --as-needed, having it after means that ld will
+# have already discarded all the shared libs as "unused" before it gets
+# to all the actual ctwm objects that need the symbols.
 target_link_libraries(ctwm ctwmlib)
+target_link_libraries(ctwm ${CTWMLIBS})
 
 # This doesn't really serve much purpose at the moment, so it's not even
 # documented, but the code exists.  So make it buildable.
