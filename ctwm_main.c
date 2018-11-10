@@ -467,7 +467,7 @@ ctwm_main(int argc, char *argv[])
 			Scr->Layout = RLayoutNew(fsl);
 		}
 #ifdef DEBUG
-		fprintf(stderr, "Full: ");
+		fprintf(stderr, "Layout: ");
 		RLayoutPrint(Scr->Layout);
 #endif
 		if(RLayoutNumMonitors(Scr->Layout) < 1) {
