@@ -462,6 +462,10 @@ ctwm_main(int argc, char *argv[])
 		// Now that we have d_depth...
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 
+		// Stash up a ref to our Scr on the root, so we can find the
+		// right Scr for events etc.
+		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
+
 
 #ifdef XRANDR
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
@@ -485,9 +489,6 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
-		// Stash up a ref to our Scr on the root, so we can find the
-		// right Scr for events etc.
-		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		// Init captive bits
 		if(CLarg.is_captive) {
