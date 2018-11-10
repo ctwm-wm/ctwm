@@ -285,8 +285,6 @@ ctwm_main(int argc, char *argv[])
 		char *welcomefile;
 		unsigned long valuemask;
 		XSetWindowAttributes attributes;
-		XRectangle ink_rect;
-		XRectangle logical_rect;
 
 		if(CLarg.is_captive) {
 			XWindowAttributes wa;
@@ -739,13 +737,10 @@ ctwm_main(int argc, char *argv[])
 		                      CopyFromParent, CopyFromParent,
 		                      valuemask, &attributes);
 
-		XmbTextExtents(Scr->SizeFont.font_set,
-		               " 8888 x 8888 ", 13,
-		               &ink_rect, &logical_rect);
-		Scr->SizeStringWidth = logical_rect.width;
-		valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
-		attributes.bit_gravity = NorthWestGravity;
-
+		/*
+		 * Setup the Size/Position window for showing during resize/move
+		 * operations.
+		 */
 		{
 			// Stick the SizeWindow at the top left of the first monitor
 			// we found on this Screen.  That _may_ not be (0,0) (imagine
@@ -757,6 +752,16 @@ ctwm_main(int argc, char *argv[])
 			// MoveResizeSizeWindow() will handle that.  If not, it
 			// always stays in the top-left of the first display.
 			RArea area = RLayoutGetAreaIndex(Scr->Layout, 0);
+			XRectangle ink_rect;
+			XRectangle logical_rect;
+
+			XmbTextExtents(Scr->SizeFont.font_set,
+			               " 8888 x 8888 ", 13,
+			               &ink_rect, &logical_rect);
+			Scr->SizeStringWidth = logical_rect.width;
+			valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
+			attributes.bit_gravity = NorthWestGravity;
+
 			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root,
 			                                area.x, area.y,
 			                                Scr->SizeStringWidth,
