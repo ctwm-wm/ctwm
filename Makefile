@@ -39,7 +39,7 @@ docs_clean doc_clean:
 
 .SUFFIXES: ${.SUFFIXES} .html .md
 .md.html:
-	multimarkdown -ao ${@} ${<}
+	multimarkdown -afo ${@} ${<}
 
 
 # asciidoc files
