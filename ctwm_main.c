@@ -89,7 +89,6 @@ int ShapeEventBase, ShapeErrorBase;
 ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
-static bool FirstScreen;        /* true ==> first screen of display */
 static bool RedirectError;      /* true ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
@@ -167,6 +166,7 @@ int
 ctwm_main(int argc, char *argv[])
 {
 	int numManaged, firstscrn, lastscrn;
+	bool FirstScreen;
 
 	setlocale(LC_ALL, "");
 
@@ -305,7 +305,11 @@ ctwm_main(int argc, char *argv[])
 		bool screenmasked;
 		char *welcomefile;
 
+		/*
+		 * First, setup the root window for the screen.
+		 */
 		if(CLarg.is_captive) {
+			// Captive ctwm.  We make a fake root.
 			XWindowAttributes wa;
 			if(CLarg.capwin && XGetWindowAttributes(dpy, CLarg.capwin, &wa)) {
 				Window junk;
@@ -326,6 +330,7 @@ ctwm_main(int argc, char *argv[])
 			}
 		}
 		else {
+			// Normal; get the real display's root.
 			croot  = RootWindow(dpy, scrnum);
 			crootx = 0;
 			crooty = 0;
@@ -333,7 +338,8 @@ ctwm_main(int argc, char *argv[])
 			crooth = DisplayHeight(dpy, scrnum);
 		}
 
-		/* Make sure property priority colors is empty */
+		// Initialize to empty.  SaveColor{} will set extra values to
+		// add; x-ref assign_var_savecolor() call below.
 		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 		XSync(dpy, 0); /* Flush possible previous errors */
@@ -348,21 +354,42 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
+
 		/*
-		 * Generally, we're taking over the screen, but not always.  If
-		 * we're just checking the config, we're not trying to take it
-		 * over.  Nor are we if we're creating a captive ctwm.
+		 * Initialize bits of Scr struct that we can hard-know or are
+		 * needed in these early initialization steps.
 		 */
+		Scr->screen = scrnum;
+		Scr->XineramaRoot = Scr->Root = croot;
+		Scr->rootx = Scr->crootx = crootx;
+		Scr->rooty = Scr->crooty = crooty;
+		Scr->rootw = Scr->crootw = crootw;
+		Scr->rooth = Scr->crooth = crooth;
+		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
+		Scr->MaxWindowHeight = 32767 - Scr->rooth;
+
+		// Generally we're trying to take over managing the screen.
 		Scr->takeover = true;
 		if(CLarg.cfgchk || CLarg.is_captive) {
+			// Not if we're just checking config or making a new captive
+			// ctwm, though.
 			Scr->takeover = false;
 		}
 
-		Scr->screen = scrnum;
-		Scr->XineramaRoot = croot;
+
 #ifdef EWMH
+		// Early EWMH setup
 		EwmhInitScreenEarly(Scr);
 #endif /* EWMH */
+
+
+		/*
+		 * Subscribe to various events on the root window.  Because X
+		 * only allows a single client to subscribe to
+		 * SubstructureRedirect and ButtonPress bits, this also serves to
+		 * mutex who is The WM for the root window, and thus (aside from
+		 * captive) the Screen.
+		 */
 		RedirectError = false;
 		XSetErrorHandler(CatchRedirectError);
 		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
@@ -390,24 +417,16 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
-		Scr->screen = scrnum;
+
+		// We now manage it (or are in the various special circumstances
+		// where it's near enough).
+		numManaged ++;
+
+
+		// Now we can stash some info about the screen
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
 		Scr->RealRoot = RootWindow(dpy, scrnum);
-		Scr->CaptiveRoot = CLarg.is_captive ? croot : None;
-		Scr->Root = croot;
-		Scr->XineramaRoot = croot;
-		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
-
-		Scr->rootx  = crootx;
-		Scr->rooty  = crooty;
-		Scr->rootw  = crootw;
-		Scr->rooth  = crooth;
-
-		Scr->crootx = crootx;
-		Scr->crooty = crooty;
-		Scr->crootw = crootw;
-		Scr->crooth = crooth;
 
 
 #ifdef XRANDR
@@ -432,9 +451,13 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
+		// Stash up a ref to our Scr on the root, so we can find the
+		// right Scr for events etc.
 		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
+		// Init captive bits
 		if(CLarg.is_captive) {
+			Scr->CaptiveRoot = croot;
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
 			if(Scr->captivename) {
 				XmbSetWMProperties(dpy, croot,
@@ -442,33 +465,41 @@ ctwm_main(int argc, char *argv[])
 				                   NULL, 0, NULL, NULL, NULL);
 			}
 		}
-		Scr->RootColormaps.number_cwins = 1;
-		Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
-		Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, true, false);
-		Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 
-		Scr->cmapInfo.cmaps = NULL;
-		Scr->cmapInfo.maxCmaps = MaxCmapsOfScreen(ScreenOfDisplay(dpy, Scr->screen));
-		Scr->cmapInfo.root_pushes = 0;
-		InstallColormaps(0, &Scr->RootColormaps);
 
-		Scr->StdCmapInfo.head = Scr->StdCmapInfo.tail =  Scr->StdCmapInfo.mru = NULL;
-		Scr->StdCmapInfo.mruindex = 0;
-		LocateStandardColormaps();
+		// Init some colormap bits
+		{
+			// 1 on the root
+			Scr->RootColormaps.number_cwins = 1;
+			Scr->RootColormaps.cwins = malloc(sizeof(ColormapWindow *));
+			Scr->RootColormaps.cwins[0] = CreateColormapWindow(Scr->Root, true,
+					false);
+			Scr->RootColormaps.cwins[0]->visibility = VisibilityPartiallyObscured;
 
-		Scr->TBInfo.nleft  = Scr->TBInfo.nright = 0;
-		Scr->TBInfo.head   = NULL;
-		Scr->TBInfo.border =
-		        -100; /* trick to have different default value if ThreeDTitles */
-		Scr->TBInfo.width  = 0;    /* is set or not */
-		Scr->TBInfo.leftx  = 0;
-		Scr->TBInfo.titlex = 0;
+			// Initialize storage for all maps the Screen can hold
+			Scr->cmapInfo.cmaps = NULL;
+			Scr->cmapInfo.maxCmaps = MaxCmapsOfScreen(ScreenOfDisplay(dpy, Scr->screen));
+			Scr->cmapInfo.root_pushes = 0;
+			InstallColormaps(0, &Scr->RootColormaps);
 
-		Scr->MaxWindowWidth  = 32767 - Scr->rootw;
-		Scr->MaxWindowHeight = 32767 - Scr->rooth;
+			// Setup which we're using
+			Scr->StdCmapInfo.head = Scr->StdCmapInfo.tail
+				= Scr->StdCmapInfo.mru = NULL;
+			Scr->StdCmapInfo.mruindex = 0;
+			LocateStandardColormaps();
+		}
 
+
+		// Sentinel value for later code
+		Scr->TBInfo.border = -100;
+
+		// Default values of config params
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
+		Scr->IconDirectory     = NULL;
+		Scr->PixmapDirectory   = PIXMAP_DIRECTORY;
+		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
+		// Are we monochrome?  Or do we care this millennium?
 		if(CLarg.Monochrome || DisplayCells(dpy, scrnum) < 3) {
 			Scr->Monochrome = MONOCHROME;
 		}
@@ -476,11 +507,19 @@ ctwm_main(int argc, char *argv[])
 			Scr->Monochrome = COLOR;
 		}
 
-		/* setup default colors */
+		// Flag which basically means "initial screen setup time".
+		// XXX Not clear to what extent this should even exist; a lot of
+		// uses are fairly bogus.
 		Scr->FirstTime = true;
+
+		// Setup default colors
 		GetColor(Scr->Monochrome, &(Scr->Black), "black");
 		GetColor(Scr->Monochrome, &(Scr->White), "white");
 
+
+		// The first time around, we focus onto the root [of the first
+		// Screen], and setup some cursors.  XXX Unclear if this is
+		// really the best place to do this...
 		if(FirstScreen) {
 			SetFocus(NULL, CurrentTime);
 
@@ -500,32 +539,33 @@ ctwm_main(int argc, char *argv[])
 			NewFontCursor(&LeftButt, "leftbutton");
 			NewFontCursor(&MiddleButt, "middlebutton");
 		}
+		FirstScreen = false;
 
-		Scr->iconmgr = NULL;
+		// Create default icon manager memory bits (in the first
+		// workspace)
 		AllocateIconManager("TWM", "Icons", "", 1);
 
-		Scr->IconDirectory = NULL;
-		Scr->PixmapDirectory = PIXMAP_DIRECTORY;
-		Scr->siconifyPm = None;
-		Scr->pullPm = None;
-		Scr->tbpm.xlogo = None;
-		Scr->tbpm.resize = None;
-		Scr->tbpm.question = None;
-		Scr->tbpm.menu = None;
-		Scr->tbpm.delete = None;
 
-		Scr->WindowMask = (Window) 0;
+		/*
+		 * Mask over the screen with our welcome window stuff if we were
+		 * asked to on the command line/environment; too early to get
+		 * info from config file about it.
+		 */
 		screenmasked = false;
-		/* XXX Happens before config parse, so ignores DontShowWW param */
 		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
+
+		// More inits
 		InitVariables();
 		InitMenus();
 		InitWorkSpaceManager();
 
-		/* Parse it once for each screen. */
+
+		/*
+		 * Parse config file
+		 */
 		if(CLarg.cfgchk) {
 			if(LoadTwmrc(CLarg.InitFile) == false) {
 				/* Error return */
@@ -540,6 +580,7 @@ ctwm_main(int argc, char *argv[])
 		else {
 			LoadTwmrc(CLarg.InitFile);
 		}
+
 
 		/* At least one border around the screen */
 		Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
@@ -558,25 +599,46 @@ ctwm_main(int argc, char *argv[])
 		RLayoutPrint(Scr->BorderedLayout);
 #endif
 
+
+		/*
+		 * Setup stuff relating to VirtualScreens.  If something to do
+		 * with it is set in the config, this all implements stuff needed
+		 * for that.  If not, InitVirtualScreens() creates a single one
+		 * mirroring our real root.
+		 */
 		InitVirtualScreens(Scr);
 #ifdef EWMH
 		EwmhInitVirtualRoots(Scr);
 #endif /* EWMH */
+
+		// Setup WSM[s]
 		ConfigureWorkSpaceManager();
 
-		if(Scr->ShowWelcomeWindow && ! screenmasked) {
+		// If the config wants us to show the splash screen and we
+		// haven't already, do it now.
+		if(Scr->ShowWelcomeWindow && !screenmasked) {
 			MaskScreen(NULL);
 		}
+
+
+
+		/*
+		 * Do various setup based on the results from the config file.
+		 */
 		if(Scr->ClickToFocus) {
 			Scr->FocusRoot  = false;
 			Scr->TitleFocus = false;
 		}
 
-
 		if(Scr->use3Dborders) {
 			Scr->ClientBorderWidth = false;
 		}
 
+
+		/*
+		 * Various decoration default overrides for 3d/2d.  Values that
+		 * [presumtively] look "nide" on 75/100dpi displays.
+		 */
 		if(Scr->use3Dtitles) {
 			if(Scr->FramePadding  == -100) {
 				Scr->FramePadding  = 0;
@@ -593,13 +655,13 @@ ctwm_main(int argc, char *argv[])
 		}
 		else {
 			if(Scr->FramePadding  == -100) {
-				Scr->FramePadding  = 2;        /* values that look */
+				Scr->FramePadding  = 2;
 			}
 			if(Scr->TitlePadding  == -100) {
-				Scr->TitlePadding  = 8;        /* "nice" on */
+				Scr->TitlePadding  = 8;
 			}
 			if(Scr->ButtonIndent  == -100) {
-				Scr->ButtonIndent  = 1;        /* 75 and 100dpi displays */
+				Scr->ButtonIndent  = 1;
 			}
 			if(Scr->TBInfo.border == -100) {
 				Scr->TBInfo.border = 1;
@@ -607,6 +669,9 @@ ctwm_main(int argc, char *argv[])
 			Scr->TitleShadowDepth       = 0;
 			Scr->TitleButtonShadowDepth = 0;
 		}
+
+		// These values are meaningless in !3d cases, so always zero them
+		// out.
 		if(! Scr->use3Dborders) {
 			Scr->BorderShadowDepth = 0;
 		}
@@ -616,7 +681,11 @@ ctwm_main(int argc, char *argv[])
 		if(! Scr->use3Diconmanagers) {
 			Scr->IconManagerShadowDepth = 0;
 		}
+		if(! Scr->use3Dborders) {
+			Scr->ThreeDBorderWidth = 0;
+		}
 
+		// Setup colors for 3d bits.
 		if(Scr->use3Dtitles  && !Scr->BeNiceToColormap) {
 			GetShadeColors(&Scr->TitleC);
 		}
@@ -629,10 +698,8 @@ ctwm_main(int argc, char *argv[])
 		if(Scr->use3Dborders && !Scr->BeNiceToColormap) {
 			GetShadeColors(&Scr->BorderColorC);
 		}
-		if(! Scr->use3Dborders) {
-			Scr->ThreeDBorderWidth = 0;
-		}
 
+		// Defaults for IconRegion bits that aren't set.
 		for(IconRegion *ir = Scr->FirstRegion; ir; ir = ir->next) {
 			if(ir->TitleJustification == TJ_UNDEF) {
 				ir->TitleJustification = Scr->IconJustification;
@@ -645,13 +712,25 @@ ctwm_main(int argc, char *argv[])
 			}
 		}
 
-		assign_var_savecolor(); /* storeing pixels for twmrc "entities" */
+		// Put the results of SaveColor{} into _MIT_PRIORITY_COLORS.
+		assign_var_savecolor();
+
+		// Load up fonts for the screen.
+		//
+		// XXX HaveFonts is kinda stupid, however it gets useful in one
+		// place: when loading button bindings, we make some sort of
+		// "menu" for things (x-ref GotButton()), and the menu gen code
+		// needs to load font stuff, so if that happened in the config
+		// process, we would have already run CreateFonts().  Of course,
+		// that's a order-dependent bit of the config file parsing too;
+		// if you define the fonts too late, they wouldn't have been set
+		// by then, and we won't [re]try them now...    arg.
 		if(!Scr->HaveFonts) {
 			CreateFonts();
 		}
-		CreateGCs();
-		MakeMenus();
 
+		// Adjust settings for titlebar.  Must follow CreateFonts() call
+		// so we know these bits are populated
 		Scr->TitleBarFont.y += Scr->FramePadding;
 		Scr->TitleHeight = Scr->TitleBarFont.height + Scr->FramePadding * 2;
 		if(Scr->use3Dtitles) {
@@ -662,19 +741,50 @@ ctwm_main(int argc, char *argv[])
 			Scr->TitleHeight++;
 		}
 
+		// Setup GC's for drawing, so we can start making stuff we have
+		// to actually draw.  Could move earlier, has to preceed a lot of
+		// following.
+		CreateGCs();
+
+		// Create and draw the menus we config'd
+		MakeMenus();
+
+		// Load up the images for titlebar buttons
 		InitTitlebarButtons();          /* menus are now loaded! */
 
 		XGrabServer(dpy);
 		XSync(dpy, 0);
 
+		// Allocate controls for WindowRegion's.  Has to follow
+		// workspaces setup, but doesn't talk to X.
 		CreateWindowRegions();
+
+		// Copy the icon managers over to workspaces past the first as
+		// necessary.  AllocateIconManager() and the config parsing
+		// already made them on the first WS.
 		AllocateOtherIconManagers();
+
+		// Create the windows for our icon managers now that all our
+		// tracking for it is setup.
 		CreateIconManagers();
+
+		// Create the WSM window (per-vscreen) and stash info on the root
+		// about our WS's.
 		CreateWorkSpaceManager();
+
+		// Create the f.occupy window
 		CreateOccupyWindow();
+
+		// Setup TwmWorkspaces menu.  Needs workspaces setup, as well as
+		// menus made.
 		MakeWorkspacesMenu();
+
+		// setup WindowBox's
 		createWindowBoxes();
+
 #ifdef EWMH
+		// Set EWMH-related properties on various root-ish windows, for
+		// other programs to read to find out how we view the world.
 		EwmhInitScreenLate(Scr);
 #endif /* EWMH */
 
@@ -722,6 +832,7 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
+		// Show the WSM window if we should
 		if(Scr->ShowWorkspaceManager && Scr->workSpaceManagerActive) {
 			VirtualScreen *vs;
 			if(Scr->WindowMask) {
@@ -740,9 +851,12 @@ ctwm_main(int argc, char *argv[])
 			}
 		}
 
+
+		// Setup shading for default ColorPair
 		if(!Scr->BeNiceToColormap) {
 			GetShadeColors(&Scr->DefaultC);
 		}
+
 
 		/*
 		 * Setup the Info window, used for f.identify and f.version.
@@ -764,6 +878,7 @@ ctwm_main(int argc, char *argv[])
 			                      CopyFromParent, CopyFromParent,
 			                      valuemask, &attributes);
 		}
+
 
 		/*
 		 * Setup the Size/Position window for showing during resize/move
@@ -805,16 +920,19 @@ ctwm_main(int argc, char *argv[])
 		Scr->ShapeWindow = XCreateSimpleWindow(dpy, Scr->Root, 0, 0,
 		                                       Scr->rootw, Scr->rooth, 0, 0, 0);
 
+
+		// Done with the bits we need the server grabbed for
 		XUngrabServer(dpy);
+
+		// Clear out the splash screen if we had one
 		if(Scr->ShowWelcomeWindow) {
 			UnmaskScreen();
 		}
 
-		FirstScreen = false;
+		// Done setting up this Screen.  x-ref XXX's about whether this
+		// element is worth anything...
 		Scr->FirstTime = false;
-
-		numManaged++; // Succeeded in adding one more
-	} /* for */
+	} // for each screen on display
 
 
 	// We're not much of a window manager if we didn't get stuff to

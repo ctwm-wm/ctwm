@@ -898,12 +898,13 @@ struct ScreenInfo {
 	bool HaveFonts;
 
 	/// Some sort of attempt to determine whether this is the first
-	/// config file we've parsed, but also used in some color getting for
-	/// obscure reasons.  This needs careful consideration and auditing;
-	/// it may be just bogus.  X-ref work vtwm did in adjusting its use
-	/// in GetColor() to avoid all the save/restore dances on calls
-	/// around it, and the \#ifdef inside GetColor().  \todo Evaulate to
-	/// determine whether it should exist.
+	/// config file we've parsed for this screen (which is bogus, since
+	/// we only parse one file for each screen!), but also used in some
+	/// color getting for obscure reasons.  This needs careful
+	/// consideration and auditing; it may be just bogus.  X-ref work
+	/// vtwm did in adjusting its use in GetColor() to avoid all the
+	/// save/restore dances on calls around it, and the \#ifdef inside
+	/// GetColor().  \todo Evaulate to determine whether it should exist.
 	bool FirstTime;
 
 	bool  CaseSensitive; ///< NoCaseSensitive config var (inverse)
