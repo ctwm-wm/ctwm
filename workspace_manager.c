@@ -29,6 +29,8 @@
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
+#include "xparsegeometry.h"
+
 
 #include "gram.tab.h"
 
@@ -313,7 +315,7 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 			bheight = 22;
 
 			/* Adjust to WSMGeometry if specified */
-			mask = XParseGeometry(geometry, &x, &y, &width, &height);
+			mask = RLayoutXParseGeometry(Scr->Layout, geometry, &x, &y, &width, &height);
 			if(mask & WidthValue) {
 				bwidth = (width - (columns * hspace)) / columns;
 			}

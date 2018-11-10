@@ -60,6 +60,12 @@
 #include "cursor.h"
 #include "windowbox.h"
 #include "captive.h"
+#ifdef XRANDR
+#include "xrandr.h"
+#endif
+#include "r_area.h"
+#include "r_area_list.h"
+#include "r_layout.h"
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
@@ -443,6 +449,33 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
+		/*
+		 * Figure out the layout of our various monitors if RANDR is
+		 * around and can tell us.
+		 */
+#ifdef XRANDR
+		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+#endif
+		if(Scr->Layout == NULL) {
+			// No RANDR, so as far as we know, the layout is just one
+			// monitor with our full size.
+			RArea *fs;
+			RAreaList *fsl;
+
+			fs = RAreaNewStatic(Scr->rootx, Scr->rooty, Scr->rootw, Scr->rooth);
+			fsl = RAreaListNew(1, fs, NULL);
+			Scr->Layout = RLayoutNew(fsl);
+		}
+#ifdef DEBUG
+		fprintf(stderr, "Layout: ");
+		RLayoutPrint(Scr->Layout);
+#endif
+		if(RLayoutNumMonitors(Scr->Layout) < 1) {
+			fprintf(stderr, "Error: No monitors found on screen %d!\n", scrnum);
+			continue;
+		}
+
+
 		// We now manage it (or are in the various special circumstances
 		// where it's near enough).
 		numManaged ++;
@@ -573,6 +606,24 @@ ctwm_main(int argc, char *argv[])
 		else {
 			LoadTwmrc(CLarg.InitFile);
 		}
+
+
+		/* At least one border around the screen */
+		Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
+		                      Scr->BorderLeft, Scr->BorderRight,
+		                      Scr->BorderTop, Scr->BorderBottom);
+		if(Scr->BorderedLayout == NULL) {
+			Scr->BorderedLayout = Scr->Layout;        // nothing to crop
+		}
+		else if(Scr->BorderedLayout->monitors->len == 0) {
+			fprintf(stderr,
+			        "Borders too large! correct BorderLeft, BorderRight, BorderTop and/or BorderBottom parameters\n");
+			exit(1);
+		}
+#ifdef DEBUG
+		fprintf(stderr, "Bordered: ");
+		RLayoutPrint(Scr->BorderedLayout);
+#endif
 
 
 		/*
@@ -878,7 +929,16 @@ ctwm_main(int argc, char *argv[])
 		 * operations.
 		 */
 		{
-			int sx, sy;
+			// Stick the SizeWindow at the top left of the first monitor
+			// we found on this Screen.  That _may_ not be (0,0) (imagine
+			// a shorter left and taller right monitor, with their bottom
+			// edges lined up instead of top), so we have to look up what
+			// that coordinate is.  If we're CenterFeedbackWindow'ing,
+			// the window will have to move between monitors depending on
+			// where the window we're moving is (starts), but
+			// MoveResizeSizeWindow() will handle that.  If not, it
+			// always stays in the top-left of the first display.
+			RArea area = RLayoutGetAreaIndex(Scr->Layout, 0);
 			XRectangle ink_rect;
 			XRectangle logical_rect;
 			unsigned long valuemask;
@@ -891,19 +951,13 @@ ctwm_main(int argc, char *argv[])
 			valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
 			attributes.bit_gravity = NorthWestGravity;
 
-			if(Scr->CenterFeedbackWindow) {
-				sx = (Scr->rootw / 2) - (Scr->SizeStringWidth / 2);
-				sy = (Scr->rooth / 2) - ((Scr->SizeFont.height + SIZE_VINDENT * 2) / 2);
-				if(Scr->SaveUnder) {
-					attributes.save_under = True;
-					valuemask |= CWSaveUnder;
-				}
+			if(Scr->SaveUnder) {
+				attributes.save_under = True;
+				valuemask |= CWSaveUnder;
 			}
-			else {
-				sx = 0;
-				sy = 0;
-			}
-			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root, sx, sy,
+
+			Scr->SizeWindow = XCreateWindow(dpy, Scr->Root,
+			                                area.x, area.y,
 			                                Scr->SizeStringWidth,
 			                                (Scr->SizeFont.height +
 			                                 SIZE_VINDENT * 2),

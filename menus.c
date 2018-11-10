@@ -112,6 +112,10 @@ AddFuncKey(char *name, int cont, int nmods, int func,
 	 */
 	if((keysym = XStringToKeysym(name)) == NoSymbol ||
 	                (keycode = XKeysymToKeycode(dpy, keysym)) == 0) {
+		fprintf(stderr, "ignore %s key binding (%s)\n", name,
+		        keysym == NoSymbol
+		        ? "key symbol not found"
+		        : "key code not found");
 		return false;
 	}
 
@@ -523,7 +527,7 @@ void UpdateMenu(void)
 		              &x_root, &y_root, &x, &y, &JunkMask);
 
 		/* if we haven't received the enter notify yet, wait */
-		if(ActiveMenu && !ActiveMenu->entered) {
+		if(!ActiveMenu->entered) {
 			continue;
 		}
 
@@ -1381,23 +1385,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	/*
 	* clip to screen
 	*/
-	clipped = false;
-	if(x + menu->width > Scr->rootw) {
-		x = Scr->rootw - menu->width;
-		clipped = true;
-	}
-	if(x < 0) {
-		x = 0;
-		clipped = true;
-	}
-	if(y + menu->height > Scr->rooth) {
-		y = Scr->rooth - menu->height;
-		clipped = true;
-	}
-	if(y < 0) {
-		y = 0;
-		clipped = true;
-	}
+	clipped = ConstrainByLayout(Scr->Layout, -1, &x, menu->width, &y, menu->height);
 	MenuOrigins[MenuDepth].x = x;
 	MenuOrigins[MenuDepth].y = y;
 	MenuDepth++;

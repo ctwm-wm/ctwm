@@ -51,6 +51,8 @@
 #include "occupation.h"
 #include "otp.h"
 #include "parse.h"
+#include "r_area.h"
+#include "r_layout.h"
 #include "screen.h"
 #include "session.h"
 #include "util.h"
@@ -62,6 +64,7 @@
 #include "win_resize.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
+#include "xparsegeometry.h"
 
 
 int AddingX;
@@ -703,9 +706,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	{
 		char *geom = LookInListWin(Scr->WindowGeometries, tmp_win);
 		if(geom) {
-			int mask = XParseGeometry(geom, &tmp_win->attr.x, &tmp_win->attr.y,
-			                          (unsigned int *) &tmp_win->attr.width,
-			                          (unsigned int *) &tmp_win->attr.height);
+			int mask = RLayoutXParseGeometry(Scr->Layout, geom,
+			                                 &tmp_win->attr.x, &tmp_win->attr.y,
+			                                 (unsigned int *) &tmp_win->attr.width,
+			                                 (unsigned int *) &tmp_win->attr.height);
 
 			if(mask & XNegative) {
 				tmp_win->attr.x += Scr->rootw - tmp_win->attr.width;
@@ -1007,8 +1011,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				Scr->SizeStringOffset = width + logical_rect.width;
 			}
 
-			XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
-			              Scr->SizeStringWidth + SIZE_HINDENT, height);
+			MoveResizeSizeWindow(AddingX, AddingY,
+			                     Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
+			                     height);
 			XMapRaised(dpy, Scr->SizeWindow);
 			InstallRootColormap();
 			FB(Scr->DefaultC.fore, Scr->DefaultC.back);
@@ -1036,8 +1041,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			 * The TryTo*() and DoResize() calls below rely on having
 			 * frame_{width,height} set, so set them.
 			 */
-			tmp_win->frame_width  = AddingW;
-			tmp_win->frame_height = AddingH;
+			tmp_win->frame_width  = AddingW - bw2;
+			tmp_win->frame_height = AddingH - bw2;
 			/*SetFocus (NULL, CurrentTime);*/
 			while(1) {
 				if(Scr->OpenWindowTimeout) {
@@ -1119,8 +1124,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					               ": ", 2,  NULL, &logical_rect);
 					Scr->SizeStringOffset = width + logical_rect.width;
 
-					XResizeWindow(dpy, Scr->SizeWindow, Scr->SizeStringOffset +
-					              Scr->SizeStringWidth + SIZE_HINDENT, height);
+					MoveResizeSizeWindow(event.xbutton.x_root, event.xbutton.y_root,
+					                     Scr->SizeStringOffset + Scr->SizeStringWidth + SIZE_HINDENT,
+					                     height);
 
 					XmbDrawImageString(dpy, Scr->SizeWindow, Scr->SizeFont.font_set,
 					                   Scr->NormalGC, width,
@@ -1206,18 +1212,23 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					}
 				}
 				else if(event.xbutton.button == Button3) {
-					int maxw = Scr->rootw - Scr->BorderRight  - AddingX - bw2;
-					int maxh = Scr->rooth - Scr->BorderBottom - AddingY - bw2;
+					RArea area;
+					int max_bottom, max_right;
+
+					area = RAreaNew(AddingX, AddingY, AddingW, AddingH);
+
+					max_bottom = RLayoutFindMonitorBottomEdge(Scr->BorderedLayout, &area) - bw2;
+					max_right = RLayoutFindMonitorRightEdge(Scr->BorderedLayout, &area) - bw2;
 
 					/*
 					 * Make window go to bottom of screen, and clip to right edge.
 					 * This is useful when popping up large windows and fixed
 					 * column text windows.
 					 */
-					if(AddingW > maxw) {
-						AddingW = maxw;
+					if(AddingX + AddingW - 1 > max_right) {
+						AddingW = max_right - AddingX + 1;
 					}
-					AddingH = maxh;
+					AddingH = max_bottom - AddingY + 1;
 
 					ConstrainSize(tmp_win, &AddingW, &AddingH);   /* w/o borders */
 					AddingW += bw2;
@@ -1433,12 +1444,30 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 
 		/* No matter what, make sure SOME part of the window is on-screen */
-		if((tmp_win->frame_x > Scr->rootw) ||
-		                (tmp_win->frame_y > Scr->rooth) ||
-		                ((int)(tmp_win->frame_x + tmp_win->frame_width)  < 0) ||
-		                ((int)(tmp_win->frame_y + tmp_win->frame_height) < 0)) {
-			tmp_win->frame_x = 0;
-			tmp_win->frame_y = 0;
+		{
+			RArea area;
+			int min_x, min_y, max_bottom, max_right;
+
+			area = RAreaNew(tmp_win->frame_x, tmp_win->frame_y,
+			                (int)tmp_win->frame_width,
+			                (int)tmp_win->frame_height);
+
+			RLayoutFindTopBottomEdges(Scr->BorderedLayout, &area,
+			                          &min_y, &max_bottom);
+			RLayoutFindLeftRightEdges(Scr->BorderedLayout, &area,
+			                          &min_x, &max_right);
+
+			// These conditions would only be true if the window was
+			// completely off-screen; in that case, the RLayout* calls
+			// above would have found the closest edges to move it to.
+			// We wind up sticking it in the top-left of the
+			// bottom-right-most monitor it would touch.
+			if(area.x > max_right || area.y > max_bottom ||
+			                area.x + area.width <= min_x ||
+			                area.y + area.height <= min_y) {
+				tmp_win->frame_x = min_x;
+				tmp_win->frame_y = min_y;
+			}
 		}
 
 		/* May need adjusting for vscreens too */

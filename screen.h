@@ -204,6 +204,11 @@ struct ScreenInfo {
 	Window RealRoot;
 	/// @}
 
+	/// Layout of our roow window and monitor(s).
+	RLayout *Layout;
+	/// Layout taking into account Border{Top,Left,Right,Bottom} config
+	/// params.
+	RLayout *BorderedLayout;
 
 	/**
 	 * Dimensions/coordinates window.  This is the small window (usually

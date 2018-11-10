@@ -46,6 +46,8 @@
 #include "list.h"
 #include "functions.h"
 #include "occupation.h"
+#include "r_layout.h"
+#include "util.h"
 #include "vscreen.h"
 #include "win_iconify.h"
 #include "win_ops.h"
@@ -1879,11 +1881,6 @@ bool EwmhOnWindowRing(TwmWindow *twm_win)
 	}
 }
 
-static inline int max(int a, int b)
-{
-	return a > b ? a : b;
-}
-
 /*
  * Recalculate the effective border values from the remembered struts.
  * Interestingly it is not documented how to do that.
@@ -1911,6 +1908,13 @@ static void EwmhRecalculateStrut(void)
 	Scr->BorderRight  = right;
 	Scr->BorderTop    = top;
 	Scr->BorderBottom = bottom;
+
+	// Bordered layout may have changed
+	Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
+	                      left, right, top, bottom);
+	if(Scr->BorderedLayout == NULL) {
+		Scr->BorderedLayout = Scr->Layout;        // nothing to crop
+	}
 
 	EwmhSet_NET_WORKAREA(Scr);
 }

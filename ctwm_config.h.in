@@ -61,3 +61,9 @@
 #ifdef USE_SREGEX
 # define USE_SYS_REGEX
 #endif
+
+/* Is usable xrandr available? */
+#cmakedefine USE_XRANDR
+#ifdef USE_XRANDR
+# define XRANDR
+#endif

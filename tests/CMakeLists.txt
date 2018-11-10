@@ -78,3 +78,6 @@ set_tests_properties(test_m4 PROPERTIES
 
 # A first run at a unit test
 add_subdirectory(util_expand)
+
+# RLayout stuff
+add_subdirectory(layout)
