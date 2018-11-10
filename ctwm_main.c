@@ -449,24 +449,10 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		// We now manage it (or are in the various special circumstances
-		// where it's near enough).
-		numManaged ++;
-
-
-		// Now we can stash some info about the screen
-		Scr->d_depth = DefaultDepth(dpy, scrnum);
-		Scr->d_visual = DefaultVisual(dpy, scrnum);
-		Scr->RealRoot = RootWindow(dpy, scrnum);
-
-		// Now that we have d_depth...
-		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
-
-		// Stash up a ref to our Scr on the root, so we can find the
-		// right Scr for events etc.
-		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
-
-
+		/*
+		 * Figure out the layout of our various monitors if RANDR is
+		 * around and can tell us.
+		 */
 #ifdef XRANDR
 		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
 #endif
@@ -488,6 +474,24 @@ ctwm_main(int argc, char *argv[])
 			fprintf(stderr, "Error: No monitors found on screen %d!\n", scrnum);
 			continue;
 		}
+
+
+		// We now manage it (or are in the various special circumstances
+		// where it's near enough).
+		numManaged ++;
+
+
+		// Now we can stash some info about the screen
+		Scr->d_depth = DefaultDepth(dpy, scrnum);
+		Scr->d_visual = DefaultVisual(dpy, scrnum);
+		Scr->RealRoot = RootWindow(dpy, scrnum);
+
+		// Now that we have d_depth...
+		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
+
+		// Stash up a ref to our Scr on the root, so we can find the
+		// right Scr for events etc.
+		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 
 		// Init captive bits
