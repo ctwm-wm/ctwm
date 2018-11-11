@@ -47,7 +47,7 @@ set_tests_properties(run-info PROPERTIES
 # find a way around that, but it's a lot more involved than you'd think,
 # so 'till then...
 add_test(NAME cfgchk
-	COMMAND sh -c "[ -z \"\$DISPLAY\" ] && exit 99 ; ${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc"
+	COMMAND sh -c "${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc"
 	)
 set_tests_properties(cfgchk PROPERTIES
 	# XXX Requires cmake 3.0...
@@ -63,7 +63,7 @@ set_tests_properties(cfgchk PROPERTIES
 # failed   :(
 if(USE_M4)
 	set(_test_m4_cmd
-		"[ -z \"\$DISPLAY\" ] && exit 99 \\; ${CTWMBIN} --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc"
+		"${CTWMBIN} --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc"
 		)
 else()
 	set(_test_m4_cmd "echo Built without m4, skipping \\; exit 99")
