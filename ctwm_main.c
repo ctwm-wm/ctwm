@@ -426,11 +426,10 @@ ctwm_main(int argc, char *argv[])
 		/*
 		 * Now, the process of actually "taking over" the display.
 		 */
+		if(takeover) {
 #ifdef EWMH
 		// Early EWMH setup.  This tries to do the EWMH display takeover.
-		if(takeover) {
 			EwmhInitScreenEarly(Scr);
-		}
 #endif /* EWMH */
 
 
@@ -486,6 +485,7 @@ ctwm_main(int argc, char *argv[])
 		// We now manage it (or are in the various special circumstances
 		// where it's near enough).
 		numManaged ++;
+		}
 
 
 
