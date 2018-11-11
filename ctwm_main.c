@@ -509,10 +509,6 @@ ctwm_main(int argc, char *argv[])
 		// Now that we have d_depth...
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 
-		// Stash up a ref to our Scr on the root, so we can find the
-		// right Scr for events etc.
-		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
-
 		// Init captive bits
 		if(CLarg.is_captive) {
 			Scr->CaptiveRoot = croot;
@@ -809,6 +805,10 @@ ctwm_main(int argc, char *argv[])
 		/*
 		 * Now we can start making various things.
 		 */
+
+		// Stash up a ref to our Scr on the root, so we can find the
+		// right Scr for events etc.
+		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		// Setup GC's for drawing, so we can start making stuff we have
 		// to actually draw.  Could move earlier, has to preceed a lot of
