@@ -302,6 +302,14 @@ void GetFont(MyFont *font)
 	int fnum;
 	char *basename2;
 
+	// In special cases where we have no dpy, I don't think we're going
+	// to need details here, so just leave things untouched.  We may need
+	// to stub in some magic values; deal with that when we run into the
+	// case.
+	if(dpy == NULL) {
+		return;
+	}
+
 	if(font->font_set != NULL) {
 		XFreeFontSet(dpy, font->font_set);
 	}
