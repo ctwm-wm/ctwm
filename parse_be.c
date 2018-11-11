@@ -1575,6 +1575,17 @@ put_pixel_on_root(Pixel pixel)
 }
 
 /*
+ * Stash for SaveColor{} values during config parsing.
+ */
+typedef struct _cnode {
+	int i;
+	char *sname;
+	struct _cnode *next;
+} Cnode;
+static Cnode *chead = NULL;
+
+
+/*
  * do_string_savecolor() save a color from a string in the twmrc file.
  */
 void
@@ -1589,13 +1600,6 @@ do_string_savecolor(int colormode, char *s)
 /*
  * do_var_savecolor() save a color from a var in the twmrc file.
  */
-typedef struct _cnode {
-	int i;
-	char *sname;
-	struct _cnode *next;
-} Cnode;
-static Cnode *chead = NULL;
-
 void
 do_var_savecolor(int key)
 {
