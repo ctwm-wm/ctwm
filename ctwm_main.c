@@ -610,7 +610,7 @@ ctwm_main(int argc, char *argv[])
 		 * info from config file about it.
 		 */
 		screenmasked = false;
-		if(dpy && Scr->ShowWelcomeWindow
+		if(dpy && takeover && Scr->ShowWelcomeWindow
 		                && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = true;
 			MaskScreen(welcomefile);
