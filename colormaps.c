@@ -270,7 +270,10 @@ CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 	XWindowAttributes attributes;
 
 	cwin = malloc(sizeof(ColormapWindow));
-	if(cwin) {
+	if(cwin == NULL) {
+		return NULL;
+	}
+
 		if(!XGetWindowAttributes(dpy, w, &attributes) ||
 		                XSaveContext(dpy, w, ColormapContext, (XPointer) cwin)) {
 			free(cwin);
@@ -312,7 +315,6 @@ CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 			XSelectInput(dpy, w, attributes.your_event_mask |
 			             (ColormapChangeMask | VisibilityChangeMask));
 		}
-	}
 
 	return (cwin);
 }
