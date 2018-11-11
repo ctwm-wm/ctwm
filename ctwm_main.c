@@ -532,7 +532,10 @@ ctwm_main(int argc, char *argv[])
 
 			// Initialize storage for all maps the Screen can hold
 			Scr->cmapInfo.cmaps = NULL;
-			Scr->cmapInfo.maxCmaps = MaxCmapsOfScreen(ScreenOfDisplay(dpy, Scr->screen));
+			if(dpy) {
+				Scr->cmapInfo.maxCmaps = MaxCmapsOfScreen(ScreenOfDisplay(dpy,
+				                         Scr->screen));
+			}
 			Scr->cmapInfo.root_pushes = 0;
 			InstallColormaps(0, &Scr->RootColormaps);
 
@@ -540,7 +543,9 @@ ctwm_main(int argc, char *argv[])
 			Scr->StdCmapInfo.head = Scr->StdCmapInfo.tail
 			                        = Scr->StdCmapInfo.mru = NULL;
 			Scr->StdCmapInfo.mruindex = 0;
-			LocateStandardColormaps();
+			if(dpy) {
+				LocateStandardColormaps();
+			}
 		}
 
 

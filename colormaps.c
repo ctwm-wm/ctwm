@@ -123,6 +123,12 @@ InstallColormaps(int type, Colormaps *cmaps)
 			cmap->state |= CM_INSTALL;
 		}
 	}
+
+	// Hack: special-case startup
+	if(!dpy) {
+		return true;
+	}
+
 	Scr->cmapInfo.first_req = NextRequest(dpy);
 
 	for(; n > 0 && maxcwin >= &cwins[0]; maxcwin--) {
