@@ -1579,6 +1579,7 @@ put_pixel_on_root(Pixel pixel)
  */
 typedef struct _cnode {
 	int i;
+	int cmode;
 	char *sname;
 	struct _cnode *next;
 } Cnode;
@@ -1588,12 +1589,13 @@ static Cnode *chead = NULL;
  * Add a SaveColor{} entry to our stash.
  */
 static void
-add_cnode(int kwcl, char *colname)
+add_cnode(int kwcl, int cmode, char *colname)
 {
 	Cnode *cnew;
 
 	cnew = calloc(1, sizeof(Cnode));
 	cnew->i     = kwcl;
+	cnew->cmode = cmode;
 	cnew->sname = colname;
 
 	if(!chead) {
@@ -1614,10 +1616,7 @@ add_cnode(int kwcl, char *colname)
 void
 do_string_savecolor(int colormode, char *s)
 {
-	Pixel p;
-	GetColor(colormode, &p, s);
-	put_pixel_on_root(p);
-	return;
+	add_cnode(0, colormode, s);
 }
 
 /*
@@ -1626,7 +1625,7 @@ do_string_savecolor(int colormode, char *s)
 void
 do_var_savecolor(int key)
 {
-	add_cnode(key, NULL);
+	add_cnode(key, 0, NULL);
 }
 
 /*
@@ -1680,6 +1679,12 @@ assign_var_savecolor(void)
 			case kwcl_MapWindowBackground:
 				put_pixel_on_root(Scr->workSpaceMgr.windowcp.back);
 				break;
+			case 0: {
+				// This means it's a string, not one of our keywords
+				Pixel p;
+				GetColor(cp->cmode, &p, cp->sname);
+				put_pixel_on_root(p);
+			}
 		}
 
 		cp = cp->next;
