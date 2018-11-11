@@ -168,6 +168,7 @@ ctwm_main(int argc, char *argv[])
 {
 	int numManaged, firstscrn, lastscrn;
 	bool FirstScreen;
+	bool takeover = true;
 
 	setlocale(LC_ALL, "");
 
@@ -189,6 +190,11 @@ ctwm_main(int argc, char *argv[])
 	clargs_parse(argc, argv);
 	clargs_check();
 	/* If we get this far, it was all good */
+
+	/* Some clargs mean we're not actually trying to take over the screen */
+		if(CLarg.cfgchk || CLarg.is_captive) {
+			takeover = false;
+		}
 
 
 #define newhandler(sig, action) \
@@ -322,7 +328,6 @@ ctwm_main(int argc, char *argv[])
 		int crootx, crooty;
 		unsigned int crootw, crooth;
 		bool screenmasked;
-		bool takeover = true;
 		char *welcomefile;
 
 		/*
@@ -380,12 +385,6 @@ ctwm_main(int argc, char *argv[])
 			        " for screen %d.\n",
 			        ProgramName, scrnum);
 			continue;
-		}
-
-		// Not trying to take over if we're just checking config or
-		// making a new captive ctwm.
-		if(CLarg.cfgchk || CLarg.is_captive) {
-			takeover = false;
 		}
 
 		// Other misc adjustments to default config.
