@@ -324,7 +324,6 @@ ctwm_main(int argc, char *argv[])
 	FirstScreen = true;
 	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		Window croot;
-		unsigned long attrmask;
 		int crootx, crooty;
 		unsigned int crootw, crooth;
 		bool screenmasked;
@@ -427,6 +426,8 @@ ctwm_main(int argc, char *argv[])
 		 * Now, the process of actually "taking over" the display.
 		 */
 		if(takeover) {
+			unsigned long attrmask;
+
 #ifdef EWMH
 			// Early EWMH setup.  This tries to do the EWMH display takeover.
 			EwmhInitScreenEarly(Scr);
@@ -456,7 +457,7 @@ ctwm_main(int argc, char *argv[])
 			if(CLarg.is_captive) {
 				attrmask |= StructureNotifyMask;
 			}
-			XSelectInput(dpy, croot, attrmask);
+			XSelectInput(dpy, Scr->Root, attrmask);
 			XSync(dpy, 0); // Flush the RedirectError, if we had one
 
 			// Back to our normal handler
