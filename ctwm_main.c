@@ -428,63 +428,63 @@ ctwm_main(int argc, char *argv[])
 		 */
 		if(takeover) {
 #ifdef EWMH
-		// Early EWMH setup.  This tries to do the EWMH display takeover.
+			// Early EWMH setup.  This tries to do the EWMH display takeover.
 			EwmhInitScreenEarly(Scr);
-#endif /* EWMH */
+#endif
 
 
-		/*
-		 * Subscribe to various events on the root window.  Because X
-		 * only allows a single client to subscribe to
-		 * SubstructureRedirect and ButtonPress bits, this also serves to
-		 * mutex who is The WM for the root window, and thus (aside from
-		 * captive) the Screen.
-		 *
-		 * To catch whether that failed, we set a special one-shot error
-		 * handler to flip a var that we test to find out whether the
-		 * redirect failed.
-		 */
-		XSync(dpy, 0); // Flush possible previous errors
-		RedirectError = false;
-		XSetErrorHandler(CatchRedirectError);
-		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
-		           SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
-		           ButtonReleaseMask;
+			/*
+			 * Subscribe to various events on the root window.  Because X
+			 * only allows a single client to subscribe to
+			 * SubstructureRedirect and ButtonPress bits, this also serves to
+			 * mutex who is The WM for the root window, and thus (aside from
+			 * captive) the Screen.
+			 *
+			 * To catch whether that failed, we set a special one-shot error
+			 * handler to flip a var that we test to find out whether the
+			 * redirect failed.
+			 */
+			XSync(dpy, 0); // Flush possible previous errors
+			RedirectError = false;
+			XSetErrorHandler(CatchRedirectError);
+			attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
+			           SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
+			           ButtonReleaseMask;
 #ifdef EWMH
-		attrmask |= StructureNotifyMask;
-#endif /* EWMH */
-		if(CLarg.is_captive) {
 			attrmask |= StructureNotifyMask;
-		}
-		XSelectInput(dpy, croot, attrmask);
-		XSync(dpy, 0); // Flush the RedirectError, if we had one
-
-		// Back to our normal handler
-		XSetErrorHandler(TwmErrorHandler);
-
-		if(RedirectError && takeover) {
-			fprintf(stderr, "%s:  another window manager is already running",
-			        ProgramName);
-			if(CLarg.MultiScreen && NumScreens > 0) {
-				fprintf(stderr, " on screen %d?\n", scrnum);
+#endif
+			if(CLarg.is_captive) {
+				attrmask |= StructureNotifyMask;
 			}
-			else {
-				fprintf(stderr, "?\n");
+			XSelectInput(dpy, croot, attrmask);
+			XSync(dpy, 0); // Flush the RedirectError, if we had one
+
+			// Back to our normal handler
+			XSetErrorHandler(TwmErrorHandler);
+
+			if(RedirectError && takeover) {
+				fprintf(stderr, "%s:  another window manager is already running",
+				        ProgramName);
+				if(CLarg.MultiScreen && NumScreens > 0) {
+					fprintf(stderr, " on screen %d?\n", scrnum);
+				}
+				else {
+					fprintf(stderr, "?\n");
+				}
+
+				// XSetErrorHandler() isn't local to the Screen; it's for the
+				// whole connection.  We wind up in a slightly weird state
+				// once we've set it up, but decided we aren't taking over
+				// this screen, but resetting it would be a little weird too,
+				// because maybe we have taken over some other screen.  So,
+				// just throw up our hands.
+				continue;
 			}
 
-			// XSetErrorHandler() isn't local to the Screen; it's for the
-			// whole connection.  We wind up in a slightly weird state
-			// once we've set it up, but decided we aren't taking over
-			// this screen, but resetting it would be a little weird too,
-			// because maybe we have taken over some other screen.  So,
-			// just throw up our hands.
-			continue;
-		}
 
-
-		// We now manage it (or are in the various special circumstances
-		// where it's near enough).
-		numManaged ++;
+			// We now manage it (or are in the various special circumstances
+			// where it's near enough).
+			numManaged ++;
 		}
 
 
