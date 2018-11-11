@@ -103,15 +103,16 @@ AddFuncKey(char *name, int cont, int nmods, int func,
            MenuRoot *menu, char *win_name, char *action)
 {
 	FuncKey *tmp;
-	KeySym keysym;
-	KeyCode keycode;
+	KeySym keysym = None;
+	KeyCode keycode = None;
 
 	/*
 	 * Don't let a 0 keycode go through, since that means AnyKey to the
 	 * XGrabKey call in GrabKeys().
 	 */
-	if((keysym = XStringToKeysym(name)) == NoSymbol ||
-	                (keycode = XKeysymToKeycode(dpy, keysym)) == 0) {
+	keysym = XStringToKeysym(name);
+	keycode = XKeysymToKeycode(dpy, keysym);
+	if(keysym == NoSymbol || keycode == 0) {
 		fprintf(stderr, "ignore %s key binding (%s)\n", name,
 		        keysym == NoSymbol
 		        ? "key symbol not found"
