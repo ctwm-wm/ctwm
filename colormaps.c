@@ -123,6 +123,12 @@ InstallColormaps(int type, Colormaps *cmaps)
 			cmap->state |= CM_INSTALL;
 		}
 	}
+
+	// Hack: special-case startup
+	if(!dpy) {
+		return true;
+	}
+
 	Scr->cmapInfo.first_req = NextRequest(dpy);
 
 	for(; n > 0 && maxcwin >= &cwins[0]; maxcwin--) {
@@ -270,48 +276,63 @@ CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 	XWindowAttributes attributes;
 
 	cwin = malloc(sizeof(ColormapWindow));
-	if(cwin) {
-		if(!XGetWindowAttributes(dpy, w, &attributes) ||
-		                XSaveContext(dpy, w, ColormapContext, (XPointer) cwin)) {
+	if(cwin == NULL) {
+		return NULL;
+	}
+
+	// Common
+	cwin->w = w;
+
+	/*
+	 * Assume that windows in colormap list are
+	 * obscured if we are creating the parent window.
+	 * Otherwise, we assume they are unobscured.
+	 */
+	cwin->visibility = creating_parent ?
+	                   VisibilityPartiallyObscured : VisibilityUnobscured;
+	cwin->refcnt = 1;
+
+
+	// Stub for special cases
+	if(dpy == NULL) {
+		cwin->colormap = NULL;
+		cwin->colormap = calloc(1, sizeof(TwmColormap));
+		cwin->colormap->refcnt = 1;
+
+		return cwin;
+	}
+
+
+	if(!XGetWindowAttributes(dpy, w, &attributes) ||
+	                XSaveContext(dpy, w, ColormapContext, (XPointer) cwin)) {
+		free(cwin);
+		return (NULL);
+	}
+
+	if(XFindContext(dpy, attributes.colormap,  ColormapContext,
+	                (XPointer *)&cwin->colormap) == XCNOENT) {
+		cwin->colormap = cmap = CreateTwmColormap(attributes.colormap);
+		if(!cmap) {
+			XDeleteContext(dpy, w, ColormapContext);
 			free(cwin);
 			return (NULL);
 		}
+	}
+	else {
+		cwin->colormap->refcnt++;
+	}
 
-		if(XFindContext(dpy, attributes.colormap,  ColormapContext,
-		                (XPointer *)&cwin->colormap) == XCNOENT) {
-			cwin->colormap = cmap = CreateTwmColormap(attributes.colormap);
-			if(!cmap) {
-				XDeleteContext(dpy, w, ColormapContext);
-				free(cwin);
-				return (NULL);
-			}
-		}
-		else {
-			cwin->colormap->refcnt++;
-		}
-
-		cwin->w = w;
-		/*
-		 * Assume that windows in colormap list are
-		 * obscured if we are creating the parent window.
-		 * Otherwise, we assume they are unobscured.
-		 */
-		cwin->visibility = creating_parent ?
-		                   VisibilityPartiallyObscured : VisibilityUnobscured;
-		cwin->refcnt = 1;
-
-		/*
-		 * If this is a ColormapWindow property window and we
-		 * are not monitoring ColormapNotify or VisibilityNotify
-		 * events, we need to.
-		 */
-		if(property_window &&
-		                (attributes.your_event_mask &
-		                 (ColormapChangeMask | VisibilityChangeMask)) !=
-		                (ColormapChangeMask | VisibilityChangeMask)) {
-			XSelectInput(dpy, w, attributes.your_event_mask |
-			             (ColormapChangeMask | VisibilityChangeMask));
-		}
+	/*
+	 * If this is a ColormapWindow property window and we
+	 * are not monitoring ColormapNotify or VisibilityNotify
+	 * events, we need to.
+	 */
+	if(property_window &&
+	                (attributes.your_event_mask &
+	                 (ColormapChangeMask | VisibilityChangeMask)) !=
+	                (ColormapChangeMask | VisibilityChangeMask)) {
+		XSelectInput(dpy, w, attributes.your_event_mask |
+		             (ColormapChangeMask | VisibilityChangeMask));
 	}
 
 	return (cwin);

@@ -316,7 +316,6 @@ struct WindowBox {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-void Reborder(Time tim);
 SIGNAL_T Done(int signum) __attribute__((noreturn));
 void CreateFonts(ScreenInfo *scr);
 

@@ -326,6 +326,18 @@ clargs_check(void)
 		usage();
 	}
 
+	/*
+	 * Being captive and --cfgchk'ing is kinda meaningless.  There's no
+	 * reason to create a window just to destroy things, and it never
+	 * adds anything.  And it's one more way we're forcing changes on the
+	 * X side before we parse the actual config, so let's just disallow
+	 * it.
+	 */
+	if(CLarg.is_captive && CLarg.cfgchk) {
+		fprintf(stderr, "--window is incompatible with --cfgchk.\n");
+		usage();
+	}
+
 	/* Guess that's it */
 	return;
 }

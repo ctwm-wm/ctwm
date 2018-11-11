@@ -103,15 +103,19 @@ AddFuncKey(char *name, int cont, int nmods, int func,
            MenuRoot *menu, char *win_name, char *action)
 {
 	FuncKey *tmp;
-	KeySym keysym;
-	KeyCode keycode;
+	KeySym keysym = NoSymbol;
+	KeyCode keycode = 0;
 
 	/*
 	 * Don't let a 0 keycode go through, since that means AnyKey to the
-	 * XGrabKey call in GrabKeys().
+	 * XGrabKey call in GrabKeys().  Conditionalize on dpy to handle
+	 * special cases where we don't have a server to talk to.
 	 */
-	if((keysym = XStringToKeysym(name)) == NoSymbol ||
-	                (keycode = XKeysymToKeycode(dpy, keysym)) == 0) {
+	keysym = XStringToKeysym(name);
+	if(dpy) {
+		keycode = XKeysymToKeycode(dpy, keysym);
+	}
+	if(keysym == NoSymbol || (dpy && keycode == 0)) {
 		fprintf(stderr, "ignore %s key binding (%s)\n", name,
 		        keysym == NoSymbol
 		        ? "key symbol not found"
@@ -787,10 +791,16 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 		CreateFonts(Scr);
 	}
 
-	XmbTextExtents(Scr->MenuFont.font_set,
-	               itemname, tmp->strlen,
-	               &ink_rect, &logical_rect);
-	width = logical_rect.width;
+	if(dpy) {
+		XmbTextExtents(Scr->MenuFont.font_set,
+		               itemname, tmp->strlen,
+		               &ink_rect, &logical_rect);
+		width = logical_rect.width;
+	}
+	else {
+		// Fake for non-dpy cases
+		width = 25;
+	}
 
 	if(width <= 0) {
 		width = 1;

@@ -118,6 +118,12 @@ void NewFontCursor(Cursor *cp, const char *str)
 {
 	int i;
 
+	if(dpy == NULL) {
+		// Handle special cases like --cfgchk
+		*cp = None;
+		return;
+	}
+
 	for(i = 0; i < sizeof(cursor_names) / sizeof(struct _CursorName); i++) {
 		if(strcmp(str, cursor_names[i].name) == 0) {
 			if(cursor_names[i].cursor == None)
@@ -139,6 +145,12 @@ int NewBitmapCursor(Cursor *cp, char *source, char *mask)
 	unsigned int sw, sh, mw, mh;
 	Pixmap spm, mpm;
 	Colormap cmap = Scr->RootColormaps.cwins[0]->colormap->c;
+
+	if(dpy == NULL) {
+		// Handle special cases like --cfgchk
+		*cp = None;
+		return 0;
+	}
 
 	fore.pixel = Scr->Black;
 	XQueryColor(dpy, cmap, &fore);

@@ -149,6 +149,13 @@ GetColor(int kind, Pixel *what, const char *name)
 	XColor color;
 	Colormap cmap = Scr->RootColormaps.cwins[0]->colormap->c;
 
+	// If we have no valid X connection (generally means a --cfgchk or
+	// similar run; wont' happen in normal operations), just stub out.
+	if(dpy == NULL) {
+		*what = 0;
+		return;
+	}
+
 #ifndef TOM
 	if(!Scr->FirstTime) {
 		return;
@@ -223,7 +230,8 @@ gotit:
 	return;
 }
 
-void GetShadeColors(ColorPair *cp)
+void
+GetShadeColors(ColorPair *cp)
 {
 	XColor      xcol;
 	Colormap    cmap = Scr->RootColormaps.cwins[0]->colormap->c;
@@ -231,6 +239,14 @@ void GetShadeColors(ColorPair *cp)
 	float       clearfactor;
 	float       darkfactor;
 	char        clearcol [32], darkcol [32];
+
+	// If we have no valid X connection (generally means a --cfgchk or
+	// similar run; wont' happen in normal operations), just stub out.
+	if(dpy == NULL) {
+		cp->shadc = 0;
+		cp->shadd = 0;
+		return;
+	}
 
 	clearfactor = (float) Scr->ClearShadowContrast / 100.0;
 	darkfactor  = (100.0 - (float) Scr->DarkShadowContrast)  / 100.0;
@@ -285,6 +301,14 @@ void GetFont(MyFont *font)
 	int descent;
 	int fnum;
 	char *basename2;
+
+	// In special cases where we have no dpy, I don't think we're going
+	// to need details here, so just leave things untouched.  We may need
+	// to stub in some magic values; deal with that when we run into the
+	// case.
+	if(dpy == NULL) {
+		return;
+	}
 
 	if(font->font_set != NULL) {
 		XFreeFontSet(dpy, font->font_set);

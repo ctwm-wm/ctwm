@@ -89,6 +89,8 @@ int ShapeEventBase, ShapeErrorBase;
 ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
+static bool cfgerrs = false;    ///< Whether there were config parsing errors
+
 static bool RedirectError;      /* true ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
@@ -99,6 +101,7 @@ static Window CreateCaptiveRootWindow(int x, int y,
 static void InternUsefulAtoms(void);
 ScreenInfo *InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
                            unsigned int crootw, unsigned int crooth);
+static bool takeover_screen(ScreenInfo *scr);
 static bool MappedNotOverride(Window w);
 
 Cursor  UpperLeftCursor;
@@ -168,6 +171,8 @@ ctwm_main(int argc, char *argv[])
 {
 	int numManaged, firstscrn, lastscrn;
 	bool FirstScreen;
+	bool takeover = true;
+	bool nodpyok = false;
 
 	setlocale(LC_ALL, "");
 
@@ -189,6 +194,16 @@ ctwm_main(int argc, char *argv[])
 	clargs_parse(argc, argv);
 	clargs_check();
 	/* If we get this far, it was all good */
+
+	/* Some clargs mean we're not actually trying to take over the screen */
+	if(CLarg.cfgchk || CLarg.is_captive) {
+		takeover = false;
+	}
+
+	/* And some mean we actually don't care if we lack an X server */
+	if(CLarg.cfgchk) {
+		nodpyok = true;
+	}
 
 
 #define newhandler(sig, action) \
@@ -233,17 +248,23 @@ ctwm_main(int argc, char *argv[])
 		appContext = XtCreateApplicationContext();
 
 		if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-		                         NULL, 0, &zero, NULL))) {
+		                         NULL, 0, &zero, NULL)) && !nodpyok) {
 			fprintf(stderr, "%s:  unable to open display \"%s\"\n",
 			        ProgramName, XDisplayName(CLarg.display_name));
 			exit(1);
 		}
 
-		if(fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) == -1) {
+		if(dpy && fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) == -1) {
 			fprintf(stderr,
 			        "%s:  unable to mark display connection as close-on-exec\n",
 			        ProgramName);
 			exit(1);
+		}
+
+		if(!dpy) {
+			// At least warn
+			fprintf(stderr, "%s: Can't connect to X server, proceeding anyway...\n",
+					ProgramName);
 		}
 	}
 
@@ -253,17 +274,27 @@ ctwm_main(int argc, char *argv[])
 		ReadWinConfigFile(CLarg.restore_filename);
 	}
 
-	// Load up info about X extensions
-	HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 
-	// Allocate contexts/atoms/etc we use
-	TwmContext = XUniqueContext();
-	MenuContext = XUniqueContext();
-	ScreenContext = XUniqueContext();
-	ColormapContext = XUniqueContext();
-	InitWorkSpaceManagerContext();
+	if(dpy) {
+		// Load up info about X extensions
+		HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 
-	InternUsefulAtoms();
+		// Allocate contexts/atoms/etc we use
+		TwmContext = XUniqueContext();
+		MenuContext = XUniqueContext();
+		ScreenContext = XUniqueContext();
+		ColormapContext = XUniqueContext();
+		InitWorkSpaceManagerContext();
+
+		InternUsefulAtoms();
+
+		NumScreens = ScreenCount(dpy);
+		PreviousScreen = DefaultScreen(dpy);
+	}
+	else {
+		NumScreens = 1;
+		PreviousScreen = 0;
+	}
 
 	// Allocate/define common cursors
 	NewFontCursor(&TopLeftCursor, "top_left_corner");
@@ -282,10 +313,12 @@ ctwm_main(int argc, char *argv[])
 
 
 	// Prep up the per-screen global info
-	NumScreens = ScreenCount(dpy);
 	if(CLarg.MultiScreen) {
 		firstscrn = 0;
 		lastscrn = NumScreens - 1;
+	}
+	else if(!dpy) {
+		firstscrn = lastscrn = 0;
 	}
 	else {
 		firstscrn = lastscrn = DefaultScreen(dpy);
@@ -299,13 +332,12 @@ ctwm_main(int argc, char *argv[])
 		exit(1);
 	}
 
-	// Initialize
-	PreviousScreen = DefaultScreen(dpy);
-
 
 	// Do a little early initialization
 #ifdef EWMH
-	EwmhInit();
+	if(dpy) {
+		EwmhInit();
+	}
 #endif /* EWMH */
 #ifdef SOUNDS
 	// Needs init'ing before we get to config parsing
@@ -313,16 +345,18 @@ ctwm_main(int argc, char *argv[])
 #endif
 	InitEvents();
 
+
+
 	// Start looping over the screens
 	numManaged = 0;
 	FirstScreen = true;
 	for(int scrnum = firstscrn ; scrnum <= lastscrn; scrnum++) {
 		Window croot;
-		unsigned long attrmask;
 		int crootx, crooty;
 		unsigned int crootw, crooth;
 		bool screenmasked;
 		char *welcomefile;
+
 
 		/*
 		 * First, setup the root window for the screen.
@@ -350,21 +384,21 @@ ctwm_main(int argc, char *argv[])
 		}
 		else {
 			// Normal; get the real display's root.
-			croot  = RootWindow(dpy, scrnum);
 			crootx = 0;
 			crooty = 0;
-			crootw = DisplayWidth(dpy, scrnum);
-			crooth = DisplayHeight(dpy, scrnum);
+
+			if(dpy) {
+				croot  = RootWindow(dpy, scrnum);
+				crootw = DisplayWidth(dpy, scrnum);
+				crooth = DisplayHeight(dpy, scrnum);
+			}
+			else {
+				croot = None;
+				crootw = 1280;
+				crooth = 768;
+			}
 		}
 
-		// Initialize to empty.  This gets populated with SaveColor{}
-		// results.  String values get done via assign_var_savecolor()
-		// call below, but keyword choicse wind up getting put in on the
-		// fly during config file parsing, so we have to clear it before
-		// we get to the config.
-		// XXX Maybe we should change that...
-		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
-		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
 
 		/*
@@ -381,72 +415,9 @@ ctwm_main(int argc, char *argv[])
 			continue;
 		}
 
-		// Not trying to take over if we're just checking config or
-		// making a new captive ctwm.
-		if(CLarg.cfgchk || CLarg.is_captive) {
-			Scr->takeover = false;
-		}
-
 		// Other misc adjustments to default config.
 		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
-
-#ifdef EWMH
-		// Early EWMH setup
-		EwmhInitScreenEarly(Scr);
-#endif /* EWMH */
-
-		// Early OTP setup
-		OtpScrInitData(Scr);
-
-
-		/*
-		 * Subscribe to various events on the root window.  Because X
-		 * only allows a single client to subscribe to
-		 * SubstructureRedirect and ButtonPress bits, this also serves to
-		 * mutex who is The WM for the root window, and thus (aside from
-		 * captive) the Screen.
-		 *
-		 * To catch whether that failed, we set a special one-shot error
-		 * handler to flip a var that we test to find out whether the
-		 * redirect failed.
-		 */
-		XSync(dpy, 0); // Flush possible previous errors
-		RedirectError = false;
-		XSetErrorHandler(CatchRedirectError);
-		attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
-		           SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
-		           ButtonReleaseMask;
-#ifdef EWMH
-		attrmask |= StructureNotifyMask;
-#endif /* EWMH */
-		if(CLarg.is_captive) {
-			attrmask |= StructureNotifyMask;
-		}
-		XSelectInput(dpy, croot, attrmask);
-		XSync(dpy, 0); // Flush the RedirectError, if we had one
-
-		// Back to our normal handler
-		XSetErrorHandler(TwmErrorHandler);
-
-		if(RedirectError && Scr->takeover) {
-			fprintf(stderr, "%s:  another window manager is already running",
-			        ProgramName);
-			if(CLarg.MultiScreen && NumScreens > 0) {
-				fprintf(stderr, " on screen %d?\n", scrnum);
-			}
-			else {
-				fprintf(stderr, "?\n");
-			}
-
-			// XSetErrorHandler() isn't local to the Screen; it's for the
-			// whole connection.  We wind up in a slightly weird state
-			// once we've set it up, but decided we aren't taking over
-			// this screen, but resetting it would be a little weird too,
-			// because maybe we have taken over some other screen.  So,
-			// just throw up our hands.
-			continue;
-		}
 
 
 		/*
@@ -454,7 +425,9 @@ ctwm_main(int argc, char *argv[])
 		 * around and can tell us.
 		 */
 #ifdef XRANDR
-		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+		if(dpy) {
+			Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+		}
 #endif
 		if(Scr->Layout == NULL) {
 			// No RANDR, so as far as we know, the layout is just one
@@ -476,24 +449,32 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		// We now manage it (or are in the various special circumstances
-		// where it's near enough).
-		numManaged ++;
-
 
 		// Now we can stash some info about the screen
-		Scr->d_depth = DefaultDepth(dpy, scrnum);
-		Scr->d_visual = DefaultVisual(dpy, scrnum);
-		Scr->RealRoot = RootWindow(dpy, scrnum);
+		if(dpy) {
+			Scr->d_depth = DefaultDepth(dpy, scrnum);
+			Scr->d_visual = DefaultVisual(dpy, scrnum);
+			Scr->RealRoot = RootWindow(dpy, scrnum);
+			{
+				// Stash these for m4
+				Screen *tscr = ScreenOfDisplay(dpy, scrnum);
+				Scr->mm_w = tscr->mwidth;
+				Scr->mm_h = tscr->mheight;
+			}
+		}
+		else {
+			// Standin; fake the values we need in m4 parsing
+			Scr->d_visual = calloc(1, sizeof(Visual));
+			Scr->d_visual->bits_per_rgb = 8;
+			Scr->d_visual->class = TrueColor;
+		}
+
 
 		// Now that we have d_depth...
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 
-		// Stash up a ref to our Scr on the root, so we can find the
-		// right Scr for events etc.
-		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
-
-		// Init captive bits
+		// Init captive bits.  We stick this name into m4 props, so do it
+		// before config processing.
 		if(CLarg.is_captive) {
 			Scr->CaptiveRoot = croot;
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
@@ -505,7 +486,9 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		// Init some colormap bits
+		// Init some colormap bits.  We need this before we get into the
+		// config parsing, since various things in there poke into
+		// colormaps.
 		{
 			// 1 on the root
 			Scr->RootColormaps.number_cwins = 1;
@@ -516,7 +499,10 @@ ctwm_main(int argc, char *argv[])
 
 			// Initialize storage for all maps the Screen can hold
 			Scr->cmapInfo.cmaps = NULL;
-			Scr->cmapInfo.maxCmaps = MaxCmapsOfScreen(ScreenOfDisplay(dpy, Scr->screen));
+			if(dpy) {
+				Scr->cmapInfo.maxCmaps = MaxCmapsOfScreen(ScreenOfDisplay(dpy,
+				                         Scr->screen));
+			}
 			Scr->cmapInfo.root_pushes = 0;
 			InstallColormaps(0, &Scr->RootColormaps);
 
@@ -524,12 +510,14 @@ ctwm_main(int argc, char *argv[])
 			Scr->StdCmapInfo.head = Scr->StdCmapInfo.tail
 			                        = Scr->StdCmapInfo.mru = NULL;
 			Scr->StdCmapInfo.mruindex = 0;
-			LocateStandardColormaps();
+			if(dpy) {
+				LocateStandardColormaps();
+			}
 		}
 
 
 		// Are we monochrome?  Or do we care this millennium?
-		if(CLarg.Monochrome || DisplayCells(dpy, scrnum) < 3) {
+		if(CLarg.Monochrome || (dpy && DisplayCells(dpy, scrnum) < 3)) {
 			Scr->Monochrome = MONOCHROME;
 		}
 		else {
@@ -563,7 +551,7 @@ ctwm_main(int argc, char *argv[])
 
 		// The first time around, we focus onto the root [of the first
 		// Screen].  Maybe we should revisit this...
-		if(FirstScreen) {
+		if(dpy && FirstScreen) {
 			// XXX This func also involves a lot of stuff that isn't
 			// setup yet, and probably only works by accident.  Maybe we
 			// should just manually extract out the couple bits we
@@ -583,32 +571,75 @@ ctwm_main(int argc, char *argv[])
 		 * info from config file about it.
 		 */
 		screenmasked = false;
-		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
+		if(dpy && takeover && Scr->ShowWelcomeWindow
+		                && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
 
 
+
 		/*
 		 * Load up config file
 		 */
-		if(CLarg.cfgchk) {
-			if(LoadTwmrc(CLarg.InitFile) == false) {
-				/* Error return */
-				fprintf(stderr, "Errors found\n");
-				exit(1);
+		{
+			bool ok = LoadTwmrc(CLarg.InitFile);
+
+			// cfgchk just displays whether there are errors, then moves
+			// on.
+			if(CLarg.cfgchk) {
+				if(ok) {
+					fprintf(stderr, "%d: No errors found\n", scrnum);
+				}
+				else {
+					fprintf(stderr, "%d: Errors found\n", scrnum);
+					cfgerrs = true;
+				}
+				continue;
 			}
-			else {
-				fprintf(stderr, "No errors found\n");
-				exit(0);
-			}
-		}
-		else {
-			LoadTwmrc(CLarg.InitFile);
+
+			// In non-config-check mode, we historically proceed even if
+			// there were errors, so keep doing that...
 		}
 
 
-		/* At least one border around the screen */
+
+		/*
+		 * Since we've loaded the config, go ahead and take over the
+		 * screen.
+		 */
+		if(takeover) {
+			if(takeover_screen(Scr) != true) {
+				// Well, move on to the next one, maybe we'll get it...
+				if(screenmasked) {
+					UnmaskScreen();
+				}
+				continue;
+			}
+
+			// Well, we got this one
+			numManaged++;
+		}
+
+
+
+		/*
+		 * Do various setup based on the results from the config file.
+		 */
+
+		// Few simple var defaults
+		if(Scr->ClickToFocus) {
+			Scr->FocusRoot  = false;
+			Scr->TitleFocus = false;
+		}
+
+		if(Scr->use3Dborders) {
+			Scr->ClientBorderWidth = false;
+		}
+
+
+		// Now that we know what Border's there may be, create our
+		// BorderedLayout.
 		Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
 		                      Scr->BorderLeft, Scr->BorderRight,
 		                      Scr->BorderTop, Scr->BorderBottom);
@@ -644,20 +675,6 @@ ctwm_main(int argc, char *argv[])
 		// haven't already, do it now.
 		if(Scr->ShowWelcomeWindow && !screenmasked) {
 			MaskScreen(NULL);
-		}
-
-
-
-		/*
-		 * Do various setup based on the results from the config file.
-		 */
-		if(Scr->ClickToFocus) {
-			Scr->FocusRoot  = false;
-			Scr->TitleFocus = false;
-		}
-
-		if(Scr->use3Dborders) {
-			Scr->ClientBorderWidth = false;
 		}
 
 
@@ -779,6 +796,16 @@ ctwm_main(int argc, char *argv[])
 		if(!(Scr->TitleHeight & 1)) {
 			Scr->TitleHeight++;
 		}
+
+
+
+		/*
+		 * Now we can start making various things.
+		 */
+
+		// Stash up a ref to our Scr on the root, so we can find the
+		// right Scr for events etc.
+		XSaveContext(dpy, Scr->Root, ScreenContext, (XPointer) Scr);
 
 		// Setup GC's for drawing, so we can start making stuff we have
 		// to actually draw.  Could move earlier, has to preceed a lot of
@@ -983,6 +1010,12 @@ ctwm_main(int argc, char *argv[])
 	} // for each screen on display
 
 
+	// If we're just checking the config, there's nothing more to do.
+	if(CLarg.cfgchk) {
+		exit(cfgerrs);
+	}
+
+
 	// We're not much of a window manager if we didn't get stuff to
 	// manage...
 	if(numManaged == 0) {
@@ -1016,6 +1049,7 @@ ctwm_main(int argc, char *argv[])
 	fprintf(stderr, "Shouldn't return from HandleEvents()!\n");
 	exit(1);
 }
+
 
 
 /**
@@ -1091,10 +1125,6 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// XXX Not clear to what extent this should even exist; a lot of
 	// uses are fairly bogus.
 	scr->FirstTime = true;
-
-	// We're a WM, we're usually trying to take over (x-ref later code in
-	// caller)
-	scr->takeover = true;
 
 	// Sentinel values for defaulting config values
 	scr->FramePadding = -100;
@@ -1223,7 +1253,19 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #ifdef EWMH
 	scr->PreferredIconWidth = 48;
 	scr->PreferredIconHeight = 48;
+
+	scr->ewmh_CLIENT_LIST_used = 0;
+	scr->ewmh_CLIENT_LIST_size = 16;
+	scr->ewmh_CLIENT_LIST = calloc(scr->ewmh_CLIENT_LIST_size,
+	                               sizeof(scr->ewmh_CLIENT_LIST[0]));
+	if(scr->ewmh_CLIENT_LIST == NULL) {
+		free(scr);
+		return NULL;
+	}
 #endif
+
+	// OTP structure bits
+	OtpScrInitData(scr);
 
 
 	// WorkSpaceManager stuff
@@ -1260,13 +1302,95 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #undef DEFAULT_FAST_FONT
 #undef DEFAULT_NICE_FONT
 
+
+	// Set some fallback values that we set from the X server, for
+	// special cases where we may not actually be talking to one.
+	scr->d_depth = 24;
+	scr->RealRoot = croot;
+	scr->mm_w = 406; // 16 in
+	scr->mm_h = 229; // 9 in
+	scr->Monochrome = COLOR;
+
 	// Cleanup poisoning
 #undef Scr
 	return scr;
 }
 
 
-void CreateFonts(ScreenInfo *scr)
+
+/**
+ * Take over as WM for a screen
+ */
+static bool
+takeover_screen(ScreenInfo *scr)
+{
+	unsigned long attrmask;
+
+#ifdef EWMH
+	// Early EWMH setup.  This tries to do the EWMH display takeover.
+	EwmhInitScreenEarly(scr);
+#endif
+
+
+	/*
+	 * Subscribe to various events on the root window.  Because X
+	 * only allows a single client to subscribe to
+	 * SubstructureRedirect and ButtonPress bits, this also serves to
+	 * mutex who is The WM for the root window, and thus (aside from
+	 * captive) the Screen.
+	 *
+	 * To catch whether that failed, we set a special one-shot error
+	 * handler to flip a var that we test to find out whether the
+	 * redirect failed.
+	 */
+	XSync(dpy, 0); // Flush possible previous errors
+	RedirectError = false;
+	XSetErrorHandler(CatchRedirectError);
+	attrmask = ColormapChangeMask | EnterWindowMask |
+	           PropertyChangeMask | SubstructureRedirectMask |
+	           KeyPressMask | ButtonPressMask | ButtonReleaseMask;
+#ifdef EWMH
+	attrmask |= StructureNotifyMask;
+#endif
+	if(CLarg.is_captive) {
+		attrmask |= StructureNotifyMask;
+	}
+	XSelectInput(dpy, scr->Root, attrmask);
+	XSync(dpy, 0); // Flush the RedirectError, if we had one
+
+	// Back to our normal handler
+	XSetErrorHandler(TwmErrorHandler);
+
+	if(RedirectError) {
+		fprintf(stderr, "%s: another window manager is already running",
+		        ProgramName);
+		if(CLarg.MultiScreen && NumScreens > 0) {
+			fprintf(stderr, " on screen %d?\n", scr->screen);
+		}
+		else {
+			fprintf(stderr, "?\n");
+		}
+
+		// XSetErrorHandler() isn't local to the Screen; it's for the
+		// whole connection.  We wind up in a slightly weird state
+		// once we've set it up, but decided we aren't taking over
+		// this screen, but resetting it would be a little weird too,
+		// because maybe we have taken over some other screen.  So,
+		// just throw up our hands.
+		return false;
+
+	}
+
+	return true;
+}
+
+
+
+/**
+ * Load up our various defined fonts
+ */
+void
+CreateFonts(ScreenInfo *scr)
 {
 #define LOADFONT(fld) (GetFont(&scr->fld##Font))
 	LOADFONT(TitleBar);
@@ -1282,7 +1406,8 @@ void CreateFonts(ScreenInfo *scr)
 }
 
 
-void RestoreWithdrawnLocation(TwmWindow *tmp)
+void
+RestoreWithdrawnLocation(TwmWindow *tmp)
 {
 	int gravx, gravy;
 	unsigned int bw, mask;
@@ -1354,27 +1479,9 @@ void RestoreWithdrawnLocation(TwmWindow *tmp)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      Done - cleanup and exit twm
- *
- *  Returned Value:
- *      none
- *
- *  Inputs:
- *      none
- *
- *  Outputs:
- *      none
- *
- *  Special Considerations:
- *      none
- *
- ***********************************************************************
- */
 
-void Reborder(Time mytime)
+static void
+Reborder(Time mytime)
 {
 	TwmWindow *tmp;                     /* temp twm window structure */
 	int scrnum;
@@ -1400,7 +1507,12 @@ void Reborder(Time mytime)
 	SetFocus(NULL, mytime);
 }
 
-SIGNAL_T Done(int signum)
+
+/**
+ * Cleanup and exit twm
+ */
+SIGNAL_T
+Done(int signum)
 {
 #ifdef SOUNDS
 	play_exit_sound();
@@ -1417,7 +1529,8 @@ SIGNAL_T Done(int signum)
 	exit(0);
 }
 
-SIGNAL_T Crash(int signum)
+SIGNAL_T
+Crash(int signum)
 {
 	Reborder(CurrentTime);
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
@@ -1438,13 +1551,15 @@ SIGNAL_T Crash(int signum)
 }
 
 
-SIGNAL_T Restart(int signum)
+SIGNAL_T
+Restart(int signum)
 {
 	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
 	RestartFlag = true;
 }
 
-void DoRestart(Time t)
+void
+DoRestart(Time t)
 {
 	RestartFlag = false;
 
@@ -1480,6 +1595,8 @@ ChildExit(int signum)
 }
 #endif
 
+
+
 /*
  * Error Handlers.  If a client dies, we'll get a BadWindow error (except for
  * GetGeometry which returns BadDrawable) for most operations that we do before
@@ -1488,7 +1605,8 @@ ChildExit(int signum)
 
 static XErrorEvent LastErrorEvent;
 
-static int TwmErrorHandler(Display *display, XErrorEvent *event)
+static int
+TwmErrorHandler(Display *display, XErrorEvent *event)
 {
 	LastErrorEvent = *event;
 
@@ -1503,25 +1621,26 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event)
 
 
 /* ARGSUSED*/
-static int CatchRedirectError(Display *display, XErrorEvent *event)
+static int
+CatchRedirectError(Display *display, XErrorEvent *event)
 {
 	RedirectError = true;
 	LastErrorEvent = *event;
 	return 0;
 }
 
-/*
- * XA_MIT_PRIORITY_COLORS     Create priority colors if necessary.
- * XA_WM_END_OF_ANIMATION     Used to throttle animation.
- */
 
 Atom XCTWMAtom[NUM_CTWM_XATOMS];
-
-void InternUsefulAtoms(void)
+void
+InternUsefulAtoms(void)
 {
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
 }
 
+
+/**
+ * Create a new window to use for a captive ctwm.
+ */
 static Window
 CreateCaptiveRootWindow(int x, int y,
                         unsigned int width, unsigned int height)
@@ -1548,7 +1667,8 @@ CreateCaptiveRootWindow(int x, int y,
 }
 
 
-/*
+
+/**
  * Return true if a window is not set to override_redirect ("Hey!  WM!
  * Leave those wins alone!"), and isn't unmapped.  Used during startup to
  * fake mapping for wins that should be up.
