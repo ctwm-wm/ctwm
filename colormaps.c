@@ -274,6 +274,29 @@ CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 		return NULL;
 	}
 
+	// Common
+	cwin->w = w;
+
+	/*
+	 * Assume that windows in colormap list are
+	 * obscured if we are creating the parent window.
+	 * Otherwise, we assume they are unobscured.
+	 */
+	cwin->visibility = creating_parent ?
+	                   VisibilityPartiallyObscured : VisibilityUnobscured;
+	cwin->refcnt = 1;
+
+
+	// Stub for special cases
+	if(dpy == NULL) {
+		cwin->colormap = NULL;
+		cwin->colormap = calloc(1, sizeof(TwmColormap));
+		cwin->colormap->refcnt = 1;
+
+		return cwin;
+	}
+
+
 	if(!XGetWindowAttributes(dpy, w, &attributes) ||
 	                XSaveContext(dpy, w, ColormapContext, (XPointer) cwin)) {
 		free(cwin);
@@ -292,16 +315,6 @@ CreateColormapWindow(Window w, bool creating_parent, bool property_window)
 	else {
 		cwin->colormap->refcnt++;
 	}
-
-	cwin->w = w;
-	/*
-	 * Assume that windows in colormap list are
-	 * obscured if we are creating the parent window.
-	 * Otherwise, we assume they are unobscured.
-	 */
-	cwin->visibility = creating_parent ?
-	                   VisibilityPartiallyObscured : VisibilityUnobscured;
-	cwin->refcnt = 1;
 
 	/*
 	 * If this is a ColormapWindow property window and we
