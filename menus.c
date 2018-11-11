@@ -791,10 +791,16 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 		CreateFonts(Scr);
 	}
 
-	XmbTextExtents(Scr->MenuFont.font_set,
-	               itemname, tmp->strlen,
-	               &ink_rect, &logical_rect);
-	width = logical_rect.width;
+	if(dpy) {
+		XmbTextExtents(Scr->MenuFont.font_set,
+		               itemname, tmp->strlen,
+		               &ink_rect, &logical_rect);
+		width = logical_rect.width;
+	}
+	else {
+		// Fake for non-dpy cases
+		width = 25;
+	}
 
 	if(width <= 0) {
 		width = 1;
