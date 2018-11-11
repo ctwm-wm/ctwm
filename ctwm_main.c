@@ -192,9 +192,9 @@ ctwm_main(int argc, char *argv[])
 	/* If we get this far, it was all good */
 
 	/* Some clargs mean we're not actually trying to take over the screen */
-		if(CLarg.cfgchk || CLarg.is_captive) {
-			takeover = false;
-		}
+	if(CLarg.cfgchk || CLarg.is_captive) {
+		takeover = false;
+	}
 
 
 #define newhandler(sig, action) \
