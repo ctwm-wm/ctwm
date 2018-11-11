@@ -480,6 +480,13 @@ ctwm_main(int argc, char *argv[])
 		Scr->d_depth = DefaultDepth(dpy, scrnum);
 		Scr->d_visual = DefaultVisual(dpy, scrnum);
 		Scr->RealRoot = RootWindow(dpy, scrnum);
+		{
+			// Stash these for m4
+			Screen *tscr = ScreenOfDisplay(dpy, scrnum);
+			Scr->mm_w = tscr->mwidth;
+			Scr->mm_h = tscr->mheight;
+		}
+
 
 		// Now that we have d_depth...
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;

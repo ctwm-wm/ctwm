@@ -114,6 +114,9 @@ struct ScreenInfo {
 	int rootw; ///< Copy of DisplayWidth(dpy, screen)
 	int rooth; ///< Copy of DisplayHeight(dpy, screen)
 
+	int mm_w;  ///< Physical mm width of the root
+	int mm_h;  ///< Physical mm height of the root
+
 	/**
 	 * \defgroup scr_captive_bits Captive ctwm bits
 	 * These are various fields related to running a captive ctwm (i.e.,

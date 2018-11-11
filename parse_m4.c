@@ -90,8 +90,6 @@ start_m4(FILE *fraw)
 static char *
 m4_defs(Display *display, const char *host)
 {
-	Screen *screen;
-	Visual *visual;
 	char client[MAXHOSTNAME];
 	char *vc, *color;
 	char *tmp_name;
@@ -214,26 +212,33 @@ m4_defs(Display *display, const char *host)
 	/*
 	 * X server meta
 	 */
-	WR_NUM("VERSION", ProtocolVersion(display));
-	WR_NUM("REVISION", ProtocolRevision(display));
-	WR_DEF("VENDOR", ServerVendor(display));
-	WR_NUM("RELEASE", VendorRelease(display));
+	if(display) {
+		WR_NUM("VERSION", ProtocolVersion(display));
+		WR_NUM("REVISION", ProtocolRevision(display));
+		WR_DEF("VENDOR", ServerVendor(display));
+		WR_NUM("RELEASE", VendorRelease(display));
+	}
+	else {
+		// Standin numbers
+		WR_NUM("VERSION", 11);
+		WR_NUM("REVISION", 0);
+		WR_DEF("VENDOR", "Your Friendly Local Ctwm");
+		WR_NUM("RELEASE", 123456789);
+	}
 
 	/*
 	 * Information about the display
 	 */
-	screen = ScreenOfDisplay(display, Scr->screen);
-	visual = DefaultVisualOfScreen(screen);
-	WR_NUM("WIDTH", screen->width);
-	WR_NUM("HEIGHT", screen->height);
+	WR_NUM("WIDTH", Scr->rootw);
+	WR_NUM("HEIGHT", Scr->rooth);
 #define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
-	WR_NUM("X_RESOLUTION", Resolution(screen->width, screen->mwidth));
-	WR_NUM("Y_RESOLUTION", Resolution(screen->height, screen->mheight));
+	WR_NUM("X_RESOLUTION", Resolution(Scr->rootw, Scr->mm_w));
+	WR_NUM("Y_RESOLUTION", Resolution(Scr->rooth, Scr->mm_h));
 #undef Resolution
-	WR_NUM("PLANES", DisplayPlanes(display, Scr->screen));
-	WR_NUM("BITS_PER_RGB", visual->bits_per_rgb);
+	WR_NUM("PLANES", Scr->d_depth);
+	WR_NUM("BITS_PER_RGB", Scr->d_visual->bits_per_rgb);
 	color = "Yes";
-	switch(visual->class) {
+	switch(Scr->d_visual->class) {
 		case(StaticGray):
 			vc = "StaticGray";
 			color = "No";
