@@ -200,20 +200,19 @@ ctwm_main(int argc, char *argv[])
 	}
 
 
-#define newhandler(sig, action) \
-    if (signal (sig, SIG_IGN) != SIG_IGN) signal (sig, action)
-
-	newhandler(SIGINT, Done);
+	/*
+	 * Hook up signal handlers
+	 */
+	signal(SIGINT, Done);
 	signal(SIGHUP, Restart);
-	newhandler(SIGQUIT, Done);
-	newhandler(SIGTERM, Done);
+	signal(SIGQUIT, Done);
+	signal(SIGTERM, Done);
 	signal(SIGALRM, SIG_IGN);
 
 	// This should be set by default, but just in case; explicitly don't
 	// leave zombies.
 	signal(SIGCHLD, SIG_IGN);
 
-#undef newhandler
 
 	// Various bits of code care about $HOME
 	Home = getenv("HOME");
