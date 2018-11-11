@@ -986,13 +986,15 @@ ctwm_main(int argc, char *argv[])
 	} // for each screen on display
 
 
+	// If we're just checking the config, there's nothing more to do.
+	if(CLarg.cfgchk) {
+		exit(cfgerrs);
+	}
+
+
 	// We're not much of a window manager if we didn't get stuff to
 	// manage...
 	if(numManaged == 0) {
-		if(CLarg.cfgchk) {
-			// Expected
-			exit(cfgerrs);
-		}
 		if(CLarg.MultiScreen && NumScreens > 0)
 			fprintf(stderr, "%s:  unable to find any unmanaged screens\n",
 			        ProgramName);
