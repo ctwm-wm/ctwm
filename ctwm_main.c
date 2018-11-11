@@ -539,7 +539,7 @@ ctwm_main(int argc, char *argv[])
 
 
 		// Are we monochrome?  Or do we care this millennium?
-		if(CLarg.Monochrome || DisplayCells(dpy, scrnum) < 3) {
+		if(CLarg.Monochrome || (dpy && DisplayCells(dpy, scrnum) < 3)) {
 			Scr->Monochrome = MONOCHROME;
 		}
 		else {
@@ -593,7 +593,8 @@ ctwm_main(int argc, char *argv[])
 		 * info from config file about it.
 		 */
 		screenmasked = false;
-		if(Scr->ShowWelcomeWindow && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
+		if(dpy && Scr->ShowWelcomeWindow
+		                && (welcomefile = getenv("CTWM_WELCOME_FILE"))) {
 			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
@@ -1294,6 +1295,7 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	scr->RealRoot = croot;
 	scr->mm_w = 406; // 16 in
 	scr->mm_h = 229; // 9 in
+	scr->Monochrome = COLOR;
 
 	// Cleanup poisoning
 #undef Scr
