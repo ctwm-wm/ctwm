@@ -382,6 +382,33 @@ ctwm_main(int argc, char *argv[])
 		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
 
 
+		/*
+		 * Figure out the layout of our various monitors if RANDR is
+		 * around and can tell us.
+		 */
+#ifdef XRANDR
+		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+#endif
+		if(Scr->Layout == NULL) {
+			// No RANDR, so as far as we know, the layout is just one
+			// monitor with our full size.
+			RArea *fs;
+			RAreaList *fsl;
+
+			fs = RAreaNewStatic(Scr->rootx, Scr->rooty, Scr->rootw, Scr->rooth);
+			fsl = RAreaListNew(1, fs, NULL);
+			Scr->Layout = RLayoutNew(fsl);
+		}
+#ifdef DEBUG
+		fprintf(stderr, "Layout: ");
+		RLayoutPrint(Scr->Layout);
+#endif
+		if(RLayoutNumMonitors(Scr->Layout) < 1) {
+			fprintf(stderr, "Error: No monitors found on screen %d!\n", scrnum);
+			continue;
+		}
+
+
 #ifdef EWMH
 		// Early EWMH setup.  This tries to do the EWMH display takeover.
 		if(takeover) {
@@ -438,33 +465,6 @@ ctwm_main(int argc, char *argv[])
 			// this screen, but resetting it would be a little weird too,
 			// because maybe we have taken over some other screen.  So,
 			// just throw up our hands.
-			continue;
-		}
-
-
-		/*
-		 * Figure out the layout of our various monitors if RANDR is
-		 * around and can tell us.
-		 */
-#ifdef XRANDR
-		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
-#endif
-		if(Scr->Layout == NULL) {
-			// No RANDR, so as far as we know, the layout is just one
-			// monitor with our full size.
-			RArea *fs;
-			RAreaList *fsl;
-
-			fs = RAreaNewStatic(Scr->rootx, Scr->rooty, Scr->rootw, Scr->rooth);
-			fsl = RAreaListNew(1, fs, NULL);
-			Scr->Layout = RLayoutNew(fsl);
-		}
-#ifdef DEBUG
-		fprintf(stderr, "Layout: ");
-		RLayoutPrint(Scr->Layout);
-#endif
-		if(RLayoutNumMonitors(Scr->Layout) < 1) {
-			fprintf(stderr, "Error: No monitors found on screen %d!\n", scrnum);
 			continue;
 		}
 
