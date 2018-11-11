@@ -27,10 +27,6 @@
 #include <unistd.h>
 #include <locale.h>
 
-#ifdef __WAIT_FOR_CHILDS
-#  include <sys/wait.h>
-#endif
-
 #include <fcntl.h>
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -153,9 +149,6 @@ bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool RestartFlag = false;
 void Restart(int signum);
-#ifdef __WAIT_FOR_CHILDS
-void ChildExit(int signum);
-#endif
 
 /***********************************************************************
  *
@@ -212,10 +205,11 @@ ctwm_main(int argc, char *argv[])
 	signal(SIGHUP, Restart);
 	newhandler(SIGQUIT, Done);
 	newhandler(SIGTERM, Done);
-#ifdef __WAIT_FOR_CHILDS
-	newhandler(SIGCHLD, ChildExit);
-#endif
 	signal(SIGALRM, SIG_IGN);
+
+	// This should be set by default, but just in case; explicitly don't
+	// leave zombies.
+	signal(SIGCHLD, SIG_IGN);
 
 #undef newhandler
 
@@ -1550,24 +1544,6 @@ DoRestart(Time t)
 	execvp(*Argv, Argv);
 	fprintf(stderr, "%s:  unable to restart:  %s\n", ProgramName, *Argv);
 }
-
-#ifdef __WAIT_FOR_CHILDS
-/*
- * Handler for SIGCHLD. Needed to avoid zombies when an .xinitrc
- * execs ctwm as the last client. (All processes forked off from
- * within .xinitrc have been inherited by ctwm during the exec.)
- * Jens Schweikhardt <jens@kssun3.rus.uni-stuttgart.de>
- */
-void
-ChildExit(int signum)
-{
-	int Errno = errno;
-	signal(SIGCHLD, ChildExit);  /* reestablish because we're a one-shot */
-	waitpid(-1, NULL, WNOHANG);   /* reap dead child, ignore status */
-	errno = Errno;               /* restore errno for interrupted sys calls */
-}
-#endif
-
 
 
 /*
