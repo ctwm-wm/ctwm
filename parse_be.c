@@ -1584,6 +1584,29 @@ typedef struct _cnode {
 } Cnode;
 static Cnode *chead = NULL;
 
+/**
+ * Add a SaveColor{} entry to our stash.
+ */
+static void
+add_cnode(int kwcl, char *colname)
+{
+	Cnode *cnew;
+
+	cnew = calloc(1, sizeof(Cnode));
+	cnew->i     = kwcl;
+	cnew->sname = colname;
+
+	if(!chead) {
+		chead = cnew;
+	}
+	else {
+		cnew->next = chead;
+		chead = cnew;
+	}
+
+	return;
+}
+
 
 /*
  * do_string_savecolor() save a color from a string in the twmrc file.
@@ -1603,23 +1626,7 @@ do_string_savecolor(int colormode, char *s)
 void
 do_var_savecolor(int key)
 {
-	Cnode *cptrav, *cpnew;
-	if(!chead) {
-		chead = calloc(1, sizeof(Cnode));
-		chead->i = key;
-		chead->next = NULL;
-	}
-	else {
-		cptrav = chead;
-		while(cptrav->next != NULL) {
-			cptrav = cptrav->next;
-		}
-		cpnew = calloc(1, sizeof(Cnode));
-		cpnew->i = key;
-		cpnew->next = NULL;
-		cptrav->next = cpnew;
-	}
-	return;
+	add_cnode(key, NULL);
 }
 
 /*
