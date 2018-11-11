@@ -89,6 +89,8 @@ int ShapeEventBase, ShapeErrorBase;
 ScreenInfo **ScreenList;        /* structures for each screen */
 ScreenInfo *Scr = NULL;         /* the cur and prev screens */
 int PreviousScreen;             /* last screen that we were on */
+static bool cfgerrs = false;    ///< Whether there were config parsing errors
+
 static bool RedirectError;      /* true ==> another window manager running */
 /* for settting RedirectError */
 static int CatchRedirectError(Display *display, XErrorEvent *event);
@@ -423,21 +425,6 @@ ctwm_main(int argc, char *argv[])
 
 
 
-		/*
-		 * Now, the process of actually "taking over" the display.
-		 */
-		if(takeover) {
-			if(takeover_screen(Scr) != true) {
-				// Well, move on to the next one, maybe we'll get it...
-				continue;
-			}
-
-			// Well, we got this one
-			numManaged++;
-		}
-
-
-
 		// Now we can stash some info about the screen
 		if(dpy) {
 			Scr->d_depth = DefaultDepth(dpy, scrnum);
@@ -570,19 +557,44 @@ ctwm_main(int argc, char *argv[])
 		/*
 		 * Load up config file
 		 */
-		if(CLarg.cfgchk) {
-			if(LoadTwmrc(CLarg.InitFile) == false) {
-				/* Error return */
-				fprintf(stderr, "Errors found\n");
-				exit(1);
+		{
+			bool ok = LoadTwmrc(CLarg.InitFile);
+
+			// cfgchk just displays whether there are errors, then moves
+			// on.
+			if(CLarg.cfgchk) {
+				if(ok) {
+					fprintf(stderr, "%d: No errors found\n", scrnum);
+					continue;
+				}
+				else {
+					fprintf(stderr, "%d: Errors found\n", scrnum);
+					cfgerrs = true;
+					continue;
+				}
 			}
-			else {
-				fprintf(stderr, "No errors found\n");
-				exit(0);
-			}
+
+			// In non-config-check mode, we historically proceed even if
+			// there were errors, so keep doing that...
 		}
-		else {
-			LoadTwmrc(CLarg.InitFile);
+
+
+
+		/*
+		 * Since we've loaded the config, go ahead and take over the
+		 * screen.
+		 */
+		if(takeover) {
+			if(takeover_screen(Scr) != true) {
+				// Well, move on to the next one, maybe we'll get it...
+				if(screenmasked) {
+					UnmaskScreen();
+				}
+				continue;
+			}
+
+			// Well, we got this one
+			numManaged++;
 		}
 
 
@@ -977,6 +989,10 @@ ctwm_main(int argc, char *argv[])
 	// We're not much of a window manager if we didn't get stuff to
 	// manage...
 	if(numManaged == 0) {
+		if(CLarg.cfgchk) {
+			// Expected
+			exit(cfgerrs);
+		}
 		if(CLarg.MultiScreen && NumScreens > 0)
 			fprintf(stderr, "%s:  unable to find any unmanaged screens\n",
 			        ProgramName);
