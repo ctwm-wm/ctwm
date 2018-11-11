@@ -50,9 +50,6 @@
 #define  __attribute__(x)  /*NOTHING*/
 #endif
 
-/* signal(3) handlers have been void since c89 */
-#define SIGNAL_T void
-
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
 
@@ -316,7 +313,7 @@ struct WindowBox {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-SIGNAL_T Done(int signum) __attribute__((noreturn));
+void Done(int signum) __attribute__((noreturn));
 void CreateFonts(ScreenInfo *scr);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);

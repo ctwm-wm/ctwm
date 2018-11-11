@@ -152,10 +152,10 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool RestartFlag = false;
-SIGNAL_T Restart(int signum);
-SIGNAL_T Crash(int signum);
+void Restart(int signum);
+void Crash(int signum);
 #ifdef __WAIT_FOR_CHILDS
-SIGNAL_T ChildExit(int signum);
+void ChildExit(int signum);
 #endif
 
 /***********************************************************************
@@ -1511,7 +1511,7 @@ Reborder(Time mytime)
 /**
  * Cleanup and exit twm
  */
-SIGNAL_T
+void
 Done(int signum)
 {
 #ifdef SOUNDS
@@ -1529,7 +1529,7 @@ Done(int signum)
 	exit(0);
 }
 
-SIGNAL_T
+void
 Crash(int signum)
 {
 	Reborder(CurrentTime);
@@ -1551,7 +1551,7 @@ Crash(int signum)
 }
 
 
-SIGNAL_T
+void
 Restart(int signum)
 {
 	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
@@ -1585,7 +1585,7 @@ DoRestart(Time t)
  * within .xinitrc have been inherited by ctwm during the exec.)
  * Jens Schweikhardt <jens@kssun3.rus.uni-stuttgart.de>
  */
-SIGNAL_T
+void
 ChildExit(int signum)
 {
 	int Errno = errno;
