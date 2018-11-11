@@ -1627,6 +1627,8 @@ assign_var_savecolor(void)
 {
 	Cnode *cp = chead;
 	while(cp != NULL) {
+		Cnode *tmp_cp = cp;
+
 		switch(cp->i) {
 			case kwcl_BorderColor:
 				put_pixel_on_root(Scr->BorderColorC.back);
@@ -1668,10 +1670,11 @@ assign_var_savecolor(void)
 				put_pixel_on_root(Scr->workSpaceMgr.windowcp.back);
 				break;
 		}
+
 		cp = cp->next;
+		free(tmp_cp);
 	}
 	if(chead) {
-		free(chead);
 		chead = NULL;
 	}
 }
