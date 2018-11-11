@@ -1591,6 +1591,7 @@ do_string_savecolor(int colormode, char *s)
  */
 typedef struct _cnode {
 	int i;
+	char *sname;
 	struct _cnode *next;
 } Cnode;
 static Cnode *chead = NULL;
@@ -1600,7 +1601,7 @@ do_var_savecolor(int key)
 {
 	Cnode *cptrav, *cpnew;
 	if(!chead) {
-		chead = malloc(sizeof(Cnode));
+		chead = calloc(1, sizeof(Cnode));
 		chead->i = key;
 		chead->next = NULL;
 	}
@@ -1609,7 +1610,7 @@ do_var_savecolor(int key)
 		while(cptrav->next != NULL) {
 			cptrav = cptrav->next;
 		}
-		cpnew = malloc(sizeof(Cnode));
+		cpnew = calloc(1, sizeof(Cnode));
 		cpnew->i = key;
 		cpnew->next = NULL;
 		cptrav->next = cpnew;
