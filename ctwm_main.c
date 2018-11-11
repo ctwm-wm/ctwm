@@ -153,7 +153,6 @@ bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool RestartFlag = false;
 void Restart(int signum);
-void Crash(int signum);
 #ifdef __WAIT_FOR_CHILDS
 void ChildExit(int signum);
 #endif
@@ -217,10 +216,6 @@ ctwm_main(int argc, char *argv[])
 	newhandler(SIGCHLD, ChildExit);
 #endif
 	signal(SIGALRM, SIG_IGN);
-#ifdef NOTRAP
-	signal(SIGSEGV, Crash);
-	signal(SIGBUS,  Crash);
-#endif
 
 #undef newhandler
 
@@ -1528,28 +1523,6 @@ Done(int signum)
 	XCloseDisplay(dpy);
 	exit(0);
 }
-
-void
-Crash(int signum)
-{
-	Reborder(CurrentTime);
-	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
-	if(CLarg.is_captive) {
-		RemoveFromCaptiveList(Scr->captivename);
-	}
-	XCloseDisplay(dpy);
-
-	fprintf(stderr, "\nCongratulations, you have found a bug in ctwm\n");
-	fprintf(stderr, "If a core file was generated in your directory,\n");
-	fprintf(stderr, "can you please try extract the stack trace,\n");
-	fprintf(stderr,
-	        "and mail the results, and a description of what you were doing,\n");
-	fprintf(stderr, "to ctwm@ctwm.org.  Thank you for your support.\n");
-	fprintf(stderr, "...exiting ctwm now.\n\n");
-
-	abort();
-}
-
 
 void
 Restart(int signum)
