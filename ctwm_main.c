@@ -603,7 +603,24 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		/* At least one border around the screen */
+
+		/*
+		 * Do various setup based on the results from the config file.
+		 */
+
+		// Few simple var defaults
+		if(Scr->ClickToFocus) {
+			Scr->FocusRoot  = false;
+			Scr->TitleFocus = false;
+		}
+
+		if(Scr->use3Dborders) {
+			Scr->ClientBorderWidth = false;
+		}
+
+
+		// Now that we know what Border's there may be, create our
+		// BorderedLayout.
 		Scr->BorderedLayout = RLayoutCopyCropped(Scr->Layout,
 		                      Scr->BorderLeft, Scr->BorderRight,
 		                      Scr->BorderTop, Scr->BorderBottom);
@@ -639,20 +656,6 @@ ctwm_main(int argc, char *argv[])
 		// haven't already, do it now.
 		if(Scr->ShowWelcomeWindow && !screenmasked) {
 			MaskScreen(NULL);
-		}
-
-
-
-		/*
-		 * Do various setup based on the results from the config file.
-		 */
-		if(Scr->ClickToFocus) {
-			Scr->FocusRoot  = false;
-			Scr->TitleFocus = false;
-		}
-
-		if(Scr->use3Dborders) {
-			Scr->ClientBorderWidth = false;
 		}
 
 
@@ -774,6 +777,12 @@ ctwm_main(int argc, char *argv[])
 		if(!(Scr->TitleHeight & 1)) {
 			Scr->TitleHeight++;
 		}
+
+
+
+		/*
+		 * Now we can start making various things.
+		 */
 
 		// Setup GC's for drawing, so we can start making stuff we have
 		// to actually draw.  Could move earlier, has to preceed a lot of
