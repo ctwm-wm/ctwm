@@ -447,9 +447,9 @@ ctwm_main(int argc, char *argv[])
 			XSync(dpy, 0); // Flush possible previous errors
 			RedirectError = false;
 			XSetErrorHandler(CatchRedirectError);
-			attrmask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
-			           SubstructureRedirectMask | KeyPressMask | ButtonPressMask |
-			           ButtonReleaseMask;
+			attrmask = ColormapChangeMask | EnterWindowMask |
+			           PropertyChangeMask | SubstructureRedirectMask |
+			           KeyPressMask | ButtonPressMask | ButtonReleaseMask;
 #ifdef EWMH
 			attrmask |= StructureNotifyMask;
 #endif
@@ -463,7 +463,7 @@ ctwm_main(int argc, char *argv[])
 			XSetErrorHandler(TwmErrorHandler);
 
 			if(RedirectError && takeover) {
-				fprintf(stderr, "%s:  another window manager is already running",
+				fprintf(stderr, "%s: another window manager is already running",
 				        ProgramName);
 				if(CLarg.MultiScreen && NumScreens > 0) {
 					fprintf(stderr, " on screen %d?\n", scrnum);
