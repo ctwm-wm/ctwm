@@ -570,11 +570,12 @@ InsertRGBColormap(Atom a, XStandardColormap *maps, int nmaps,
 			        ProgramName, (unsigned long) sizeof(StdCmap));
 			return;
 		}
+		replace = false;  // Didn't find one, can't replace
 	}
 
 	if(replace) {                       /* just update contents */
 		if(sc->maps) {
-			XFree(maps);
+			XFree(sc->maps);
 		}
 		if(sc == Scr->StdCmapInfo.mru) {
 			Scr->StdCmapInfo.mru = NULL;
