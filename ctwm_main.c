@@ -172,6 +172,7 @@ ctwm_main(int argc, char *argv[])
 	int numManaged, firstscrn, lastscrn;
 	bool FirstScreen;
 	bool takeover = true;
+	bool nodpyok = false;
 
 	setlocale(LC_ALL, "");
 
@@ -197,6 +198,11 @@ ctwm_main(int argc, char *argv[])
 	/* Some clargs mean we're not actually trying to take over the screen */
 	if(CLarg.cfgchk || CLarg.is_captive) {
 		takeover = false;
+	}
+
+	/* And some mean we actually don't care if we lack an X server */
+	if(CLarg.cfgchk) {
+		nodpyok = true;
 	}
 
 
@@ -242,17 +248,23 @@ ctwm_main(int argc, char *argv[])
 		appContext = XtCreateApplicationContext();
 
 		if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-		                         NULL, 0, &zero, NULL))) {
+		                         NULL, 0, &zero, NULL)) && !nodpyok) {
 			fprintf(stderr, "%s:  unable to open display \"%s\"\n",
 			        ProgramName, XDisplayName(CLarg.display_name));
 			exit(1);
 		}
 
-		if(fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) == -1) {
+		if(dpy && fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) == -1) {
 			fprintf(stderr,
 			        "%s:  unable to mark display connection as close-on-exec\n",
 			        ProgramName);
 			exit(1);
+		}
+
+		if(!dpy) {
+			// At least warn
+			fprintf(stderr, "%s: Can't connect to X server, proceeding anyway...\n",
+					ProgramName);
 		}
 	}
 
@@ -262,17 +274,27 @@ ctwm_main(int argc, char *argv[])
 		ReadWinConfigFile(CLarg.restore_filename);
 	}
 
-	// Load up info about X extensions
-	HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 
-	// Allocate contexts/atoms/etc we use
-	TwmContext = XUniqueContext();
-	MenuContext = XUniqueContext();
-	ScreenContext = XUniqueContext();
-	ColormapContext = XUniqueContext();
-	InitWorkSpaceManagerContext();
+	if(dpy) {
+		// Load up info about X extensions
+		HasShape = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 
-	InternUsefulAtoms();
+		// Allocate contexts/atoms/etc we use
+		TwmContext = XUniqueContext();
+		MenuContext = XUniqueContext();
+		ScreenContext = XUniqueContext();
+		ColormapContext = XUniqueContext();
+		InitWorkSpaceManagerContext();
+
+		InternUsefulAtoms();
+
+		NumScreens = ScreenCount(dpy);
+		PreviousScreen = DefaultScreen(dpy);
+	}
+	else {
+		NumScreens = 1;
+		PreviousScreen = 0;
+	}
 
 	// Allocate/define common cursors
 	NewFontCursor(&TopLeftCursor, "top_left_corner");
@@ -291,10 +313,12 @@ ctwm_main(int argc, char *argv[])
 
 
 	// Prep up the per-screen global info
-	NumScreens = ScreenCount(dpy);
 	if(CLarg.MultiScreen) {
 		firstscrn = 0;
 		lastscrn = NumScreens - 1;
+	}
+	else if(!dpy) {
+		firstscrn = lastscrn = 0;
 	}
 	else {
 		firstscrn = lastscrn = DefaultScreen(dpy);
@@ -308,19 +332,20 @@ ctwm_main(int argc, char *argv[])
 		exit(1);
 	}
 
-	// Initialize
-	PreviousScreen = DefaultScreen(dpy);
-
 
 	// Do a little early initialization
 #ifdef EWMH
-	EwmhInit();
+	if(dpy) {
+		EwmhInit();
+	}
 #endif /* EWMH */
 #ifdef SOUNDS
 	// Needs init'ing before we get to config parsing
 	sound_init();
 #endif
 	InitEvents();
+
+
 
 	// Start looping over the screens
 	numManaged = 0;
