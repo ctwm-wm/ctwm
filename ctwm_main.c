@@ -1060,6 +1060,7 @@ ctwm_main(int argc, char *argv[])
 }
 
 
+
 /**
  * Initialize ScreenInfo for a Screen.  This allocates the struct,
  * assigns in the info we pass it about the screen and dimensions, and
@@ -1325,7 +1326,12 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 }
 
 
-void CreateFonts(ScreenInfo *scr)
+
+/**
+ * Load up our various defined fonts
+ */
+void
+CreateFonts(ScreenInfo *scr)
 {
 #define LOADFONT(fld) (GetFont(&scr->fld##Font))
 	LOADFONT(TitleBar);
@@ -1341,7 +1347,8 @@ void CreateFonts(ScreenInfo *scr)
 }
 
 
-void RestoreWithdrawnLocation(TwmWindow *tmp)
+void
+RestoreWithdrawnLocation(TwmWindow *tmp)
 {
 	int gravx, gravy;
 	unsigned int bw, mask;
@@ -1413,27 +1420,9 @@ void RestoreWithdrawnLocation(TwmWindow *tmp)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      Done - cleanup and exit twm
- *
- *  Returned Value:
- *      none
- *
- *  Inputs:
- *      none
- *
- *  Outputs:
- *      none
- *
- *  Special Considerations:
- *      none
- *
- ***********************************************************************
- */
 
-void Reborder(Time mytime)
+static void
+Reborder(Time mytime)
 {
 	TwmWindow *tmp;                     /* temp twm window structure */
 	int scrnum;
@@ -1459,7 +1448,12 @@ void Reborder(Time mytime)
 	SetFocus(NULL, mytime);
 }
 
-SIGNAL_T Done(int signum)
+
+/**
+ * Cleanup and exit twm
+ */
+SIGNAL_T
+Done(int signum)
 {
 #ifdef SOUNDS
 	play_exit_sound();
@@ -1476,7 +1470,8 @@ SIGNAL_T Done(int signum)
 	exit(0);
 }
 
-SIGNAL_T Crash(int signum)
+SIGNAL_T
+Crash(int signum)
 {
 	Reborder(CurrentTime);
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
@@ -1539,6 +1534,8 @@ ChildExit(int signum)
 }
 #endif
 
+
+
 /*
  * Error Handlers.  If a client dies, we'll get a BadWindow error (except for
  * GetGeometry which returns BadDrawable) for most operations that we do before
@@ -1547,7 +1544,8 @@ ChildExit(int signum)
 
 static XErrorEvent LastErrorEvent;
 
-static int TwmErrorHandler(Display *display, XErrorEvent *event)
+static int
+TwmErrorHandler(Display *display, XErrorEvent *event)
 {
 	LastErrorEvent = *event;
 
@@ -1562,25 +1560,26 @@ static int TwmErrorHandler(Display *display, XErrorEvent *event)
 
 
 /* ARGSUSED*/
-static int CatchRedirectError(Display *display, XErrorEvent *event)
+static int
+CatchRedirectError(Display *display, XErrorEvent *event)
 {
 	RedirectError = true;
 	LastErrorEvent = *event;
 	return 0;
 }
 
-/*
- * XA_MIT_PRIORITY_COLORS     Create priority colors if necessary.
- * XA_WM_END_OF_ANIMATION     Used to throttle animation.
- */
 
 Atom XCTWMAtom[NUM_CTWM_XATOMS];
-
-void InternUsefulAtoms(void)
+void
+InternUsefulAtoms(void)
 {
 	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
 }
 
+
+/**
+ * Create a new window to use for a captive ctwm.
+ */
 static Window
 CreateCaptiveRootWindow(int x, int y,
                         unsigned int width, unsigned int height)
@@ -1607,7 +1606,8 @@ CreateCaptiveRootWindow(int x, int y,
 }
 
 
-/*
+
+/**
  * Return true if a window is not set to override_redirect ("Hey!  WM!
  * Leave those wins alone!"), and isn't unmapped.  Used during startup to
  * fake mapping for wins that should be up.
