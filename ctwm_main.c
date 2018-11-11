@@ -477,14 +477,22 @@ ctwm_main(int argc, char *argv[])
 
 
 		// Now we can stash some info about the screen
-		Scr->d_depth = DefaultDepth(dpy, scrnum);
-		Scr->d_visual = DefaultVisual(dpy, scrnum);
-		Scr->RealRoot = RootWindow(dpy, scrnum);
-		{
-			// Stash these for m4
-			Screen *tscr = ScreenOfDisplay(dpy, scrnum);
-			Scr->mm_w = tscr->mwidth;
-			Scr->mm_h = tscr->mheight;
+		if(dpy) {
+			Scr->d_depth = DefaultDepth(dpy, scrnum);
+			Scr->d_visual = DefaultVisual(dpy, scrnum);
+			Scr->RealRoot = RootWindow(dpy, scrnum);
+			{
+				// Stash these for m4
+				Screen *tscr = ScreenOfDisplay(dpy, scrnum);
+				Scr->mm_w = tscr->mwidth;
+				Scr->mm_h = tscr->mheight;
+			}
+		}
+		else {
+			// Standin; fake the values we need in m4 parsing
+			Scr->d_visual = calloc(1, sizeof(Visual));
+			Scr->d_visual->bits_per_rgb = 8;
+			Scr->d_visual->class = TrueColor;
 		}
 
 
@@ -1278,6 +1286,14 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #undef SETFONT
 #undef DEFAULT_FAST_FONT
 #undef DEFAULT_NICE_FONT
+
+
+	// Set some fallback values that we set from the X server, for
+	// special cases where we may not actually be talking to one.
+	scr->d_depth = 24;
+	scr->RealRoot = croot;
+	scr->mm_w = 406; // 16 in
+	scr->mm_h = 229; // 9 in
 
 	// Cleanup poisoning
 #undef Scr
