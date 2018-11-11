@@ -1223,6 +1223,15 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 #ifdef EWMH
 	scr->PreferredIconWidth = 48;
 	scr->PreferredIconHeight = 48;
+
+	scr->ewmh_CLIENT_LIST_used = 0;
+	scr->ewmh_CLIENT_LIST_size = 16;
+	scr->ewmh_CLIENT_LIST = calloc(scr->ewmh_CLIENT_LIST_size,
+	                               sizeof(scr->ewmh_CLIENT_LIST[0]));
+	if(scr->ewmh_CLIENT_LIST == NULL) {
+		free(scr);
+		return NULL;
+	}
 #endif
 
 

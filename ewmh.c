@@ -311,14 +311,6 @@ bool EwmhInitScreenEarly(ScreenInfo *scr)
 {
 	XSetWindowAttributes attrib;
 
-	scr->ewmh_CLIENT_LIST_used = 0;
-	scr->ewmh_CLIENT_LIST_size = 16;
-	scr->ewmh_CLIENT_LIST = calloc(scr->ewmh_CLIENT_LIST_size,
-	                               sizeof(scr->ewmh_CLIENT_LIST[0]));
-	if(scr->ewmh_CLIENT_LIST == NULL) {
-		return false;
-	}
-
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "EwmhInitScreenEarly: XCreateWindow\n");
 #endif
@@ -346,8 +338,6 @@ bool EwmhInitScreenEarly(ScreenInfo *scr)
 #endif
 		return false;
 	}
-
-	scr->ewmhStruts = NULL;
 
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "EwmhInitScreenEarly: return true\n");
