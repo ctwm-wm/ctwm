@@ -509,7 +509,8 @@ ctwm_main(int argc, char *argv[])
 		// Now that we have d_depth...
 		Scr->XORvalue = (((unsigned long) 1) << Scr->d_depth) - 1;
 
-		// Init captive bits
+		// Init captive bits.  We stick this name into m4 props, so do it
+		// before config processing.
 		if(CLarg.is_captive) {
 			Scr->CaptiveRoot = croot;
 			Scr->captivename = AddToCaptiveList(CLarg.captivename);
@@ -521,7 +522,9 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
-		// Init some colormap bits
+		// Init some colormap bits.  We need this before we get into the
+		// config parsing, since various things in there poke into
+		// colormaps.
 		{
 			// 1 on the root
 			Scr->RootColormaps.number_cwins = 1;
