@@ -142,6 +142,7 @@ int JunkX, JunkY;
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 char *ProgramName;
+size_t ProgramNameLen;
 int Argc;
 char **Argv;
 
@@ -169,6 +170,7 @@ ctwm_main(int argc, char *argv[])
 	setlocale(LC_ALL, "");
 
 	ProgramName = argv[0];
+	ProgramNameLen = strlen(ProgramName);
 	Argc = argc;
 	Argv = argv;
 
@@ -1521,7 +1523,10 @@ Done(int signum)
 void
 Restart(int signum)
 {
-	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
+	// Signal handler; stdio isn't async-signal-safe, write(2) is
+	const char srf[] = ":  signal received, setting restart flag\n";
+	write(2, ProgramName, ProgramNameLen);
+	write(2, srf, sizeof(srf));
 	RestartFlag = true;
 }
 
