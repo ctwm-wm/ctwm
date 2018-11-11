@@ -356,11 +356,19 @@ ctwm_main(int argc, char *argv[])
 		}
 		else {
 			// Normal; get the real display's root.
-			croot  = RootWindow(dpy, scrnum);
 			crootx = 0;
 			crooty = 0;
-			crootw = DisplayWidth(dpy, scrnum);
-			crooth = DisplayHeight(dpy, scrnum);
+
+			if(dpy) {
+				croot  = RootWindow(dpy, scrnum);
+				crootw = DisplayWidth(dpy, scrnum);
+				crooth = DisplayHeight(dpy, scrnum);
+			}
+			else {
+				croot = None;
+				crootw = 1280;
+				crooth = 768;
+			}
 		}
 
 
@@ -387,7 +395,9 @@ ctwm_main(int argc, char *argv[])
 		 * around and can tell us.
 		 */
 #ifdef XRANDR
-		Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+		if(dpy) {
+			Scr->Layout = XrandrNewLayout(dpy, Scr->XineramaRoot);
+		}
 #endif
 		if(Scr->Layout == NULL) {
 			// No RANDR, so as far as we know, the layout is just one
