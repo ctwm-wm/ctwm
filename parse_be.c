@@ -1592,13 +1592,13 @@ do_string_savecolor(int colormode, char *s)
 typedef struct _cnode {
 	int i;
 	struct _cnode *next;
-} Cnode, *Cptr;
-static Cptr chead = NULL;
+} Cnode;
+static Cnode *chead = NULL;
 
 void
 do_var_savecolor(int key)
 {
-	Cptr cptrav, cpnew;
+	Cnode *cptrav, *cpnew;
 	if(!chead) {
 		chead = malloc(sizeof(Cnode));
 		chead->i = key;
@@ -1624,7 +1624,7 @@ do_var_savecolor(int key)
 void
 assign_var_savecolor(void)
 {
-	Cptr cp = chead;
+	Cnode *cp = chead;
 	while(cp != NULL) {
 		switch(cp->i) {
 			case kwcl_BorderColor:
