@@ -363,15 +363,6 @@ ctwm_main(int argc, char *argv[])
 			crooth = DisplayHeight(dpy, scrnum);
 		}
 
-		// Initialize to empty.  This gets populated with SaveColor{}
-		// results.  String values get done via assign_var_savecolor()
-		// call below, but keyword choicse wind up getting put in on the
-		// fly during config file parsing, so we have to clear it before
-		// we get to the config.
-		// XXX Maybe we should change that...
-		XChangeProperty(dpy, croot, XA__MIT_PRIORITY_COLORS,
-		                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
-
 
 		/*
 		 * Create ScreenInfo for this Screen, and populate various

@@ -1640,6 +1640,12 @@ void
 assign_var_savecolor(void)
 {
 	Cnode *cp = chead;
+
+	// Start with an empty property
+	XChangeProperty(dpy, Scr->Root, XA__MIT_PRIORITY_COLORS,
+	                XA_CARDINAL, 32, PropModeReplace, NULL, 0);
+
+	// Loop over, stash 'em, and clean up
 	while(cp != NULL) {
 		Cnode *tmp_cp = cp;
 
