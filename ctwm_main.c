@@ -1492,13 +1492,15 @@ Crash(int signum)
 }
 
 
-SIGNAL_T Restart(int signum)
+SIGNAL_T
+Restart(int signum)
 {
 	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
 	RestartFlag = true;
 }
 
-void DoRestart(Time t)
+void
+DoRestart(Time t)
 {
 	RestartFlag = false;
 
