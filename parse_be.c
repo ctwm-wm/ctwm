@@ -1548,12 +1548,13 @@ do_color_keyword(int keyword, int colormode, char *s)
 static void
 put_pixel_on_root(Pixel pixel)
 {
-	int           i, addPixel = 1;
+	bool addone = true;
 	Atom          retAtom;
 	int           retFormat;
 	unsigned long nPixels, retAfter;
 	Pixel        *retProp;
 
+	// Get current list
 	if(XGetWindowProperty(dpy, Scr->Root, XA__MIT_PRIORITY_COLORS, 0, 8192,
 	                      False, XA_CARDINAL, &retAtom,
 	                      &retFormat, &nPixels, &retAfter,
@@ -1561,17 +1562,20 @@ put_pixel_on_root(Pixel pixel)
 		return;
 	}
 
-	for(i = 0; i < nPixels; i++)
+	// See if we already have this one
+	for(int i = 0; i < nPixels; i++) {
 		if(pixel == retProp[i]) {
-			addPixel = 0;
+			addone = false;
 		}
-
+	}
 	XFree(retProp);
 
-	if(addPixel)
+	// If not, append it
+	if(addone) {
 		XChangeProperty(dpy, Scr->Root, XA__MIT_PRIORITY_COLORS,
 		                XA_CARDINAL, 32, PropModeAppend,
 		                (unsigned char *)&pixel, 1);
+	}
 }
 
 /*
