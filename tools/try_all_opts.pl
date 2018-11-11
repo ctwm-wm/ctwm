@@ -123,6 +123,10 @@ my $tmpdir = File::Temp->newdir("ctwm-opts-XXXXXXXX",
 print "Testing in $tmpdir...\n";
 
 
+# Clear $DISPLAY
+delete $ENV{DISPLAY};
+
+
 # Now, actually running them.
 my ($suc, $fail) = (0,0);
 my @fails;
