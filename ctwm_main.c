@@ -590,13 +590,12 @@ ctwm_main(int argc, char *argv[])
 			if(CLarg.cfgchk) {
 				if(ok) {
 					fprintf(stderr, "%d: No errors found\n", scrnum);
-					continue;
 				}
 				else {
 					fprintf(stderr, "%d: Errors found\n", scrnum);
 					cfgerrs = true;
-					continue;
 				}
+				continue;
 			}
 
 			// In non-config-check mode, we historically proceed even if
