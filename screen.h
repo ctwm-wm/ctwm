@@ -96,10 +96,6 @@ struct TitlebarPixmaps {
 struct ScreenInfo {
 	int screen;       ///< Which screen (i.e., the x after the dot in ":0.x")
 
-	/// Whether we're taking over this screen.  Usually true, unless
-	/// running captive or \--cfgchk
-	bool takeover;
-
 	int d_depth;      ///< Copy of DefaultDepth(dpy, screen)
 	Visual *d_visual; ///< Copy of DefaultVisual(dpy, screen)
 	int Monochrome;   ///< Is the display monochrome?

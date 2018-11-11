@@ -322,6 +322,7 @@ ctwm_main(int argc, char *argv[])
 		int crootx, crooty;
 		unsigned int crootw, crooth;
 		bool screenmasked;
+		bool takeover = true;
 		char *welcomefile;
 
 		/*
@@ -384,7 +385,7 @@ ctwm_main(int argc, char *argv[])
 		// Not trying to take over if we're just checking config or
 		// making a new captive ctwm.
 		if(CLarg.cfgchk || CLarg.is_captive) {
-			Scr->takeover = false;
+			takeover = false;
 		}
 
 		// Other misc adjustments to default config.
@@ -393,7 +394,7 @@ ctwm_main(int argc, char *argv[])
 
 #ifdef EWMH
 		// Early EWMH setup.  This tries to do the EWMH display takeover.
-		if(Scr->takeover) {
+		if(takeover) {
 			EwmhInitScreenEarly(Scr);
 		}
 #endif /* EWMH */
@@ -431,7 +432,7 @@ ctwm_main(int argc, char *argv[])
 		// Back to our normal handler
 		XSetErrorHandler(TwmErrorHandler);
 
-		if(RedirectError && Scr->takeover) {
+		if(RedirectError && takeover) {
 			fprintf(stderr, "%s:  another window manager is already running",
 			        ProgramName);
 			if(CLarg.MultiScreen && NumScreens > 0) {
@@ -1093,10 +1094,6 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 	// XXX Not clear to what extent this should even exist; a lot of
 	// uses are fairly bogus.
 	scr->FirstTime = true;
-
-	// We're a WM, we're usually trying to take over (x-ref later code in
-	// caller)
-	scr->takeover = true;
 
 	// Sentinel values for defaulting config values
 	scr->FramePadding = -100;
