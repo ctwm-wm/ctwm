@@ -409,15 +409,16 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
+
+		/*
+		 * Now, the process of actually "taking over" the display.
+		 */
 #ifdef EWMH
 		// Early EWMH setup.  This tries to do the EWMH display takeover.
 		if(takeover) {
 			EwmhInitScreenEarly(Scr);
 		}
 #endif /* EWMH */
-
-		// Early OTP setup.  Just setting up memory bits.
-		OtpScrInitData(Scr);
 
 
 		/*
@@ -472,6 +473,7 @@ ctwm_main(int argc, char *argv[])
 		// We now manage it (or are in the various special circumstances
 		// where it's near enough).
 		numManaged ++;
+
 
 
 		// Now we can stash some info about the screen
@@ -1222,6 +1224,9 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 		return NULL;
 	}
 #endif
+
+	// OTP structure bits
+	OtpScrInitData(scr);
 
 
 	// WorkSpaceManager stuff
