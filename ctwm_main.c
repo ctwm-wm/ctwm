@@ -330,6 +330,7 @@ ctwm_main(int argc, char *argv[])
 		bool screenmasked;
 		char *welcomefile;
 
+
 		/*
 		 * First, setup the root window for the screen.
 		 */
@@ -372,6 +373,7 @@ ctwm_main(int argc, char *argv[])
 		}
 
 
+
 		/*
 		 * Create ScreenInfo for this Screen, and populate various
 		 * default/initial config.
@@ -388,6 +390,7 @@ ctwm_main(int argc, char *argv[])
 
 		// Other misc adjustments to default config.
 		Scr->ShowWelcomeWindow = CLarg.ShowWelcomeWindow;
+
 
 
 		/*
@@ -612,6 +615,7 @@ ctwm_main(int argc, char *argv[])
 			screenmasked = true;
 			MaskScreen(welcomefile);
 		}
+
 
 
 		/*
