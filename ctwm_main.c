@@ -392,9 +392,10 @@ ctwm_main(int argc, char *argv[])
 
 
 #ifdef EWMH
-		// Early EWMH setup.  This includes trying to do the EWMH display
-		// takeover.
-		EwmhInitScreenEarly(Scr);
+		// Early EWMH setup.  This tries to do the EWMH display takeover.
+		if(Scr->takeover) {
+			EwmhInitScreenEarly(Scr);
+		}
 #endif /* EWMH */
 
 		// Early OTP setup.  Just setting up memory bits.

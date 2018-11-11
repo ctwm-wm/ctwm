@@ -195,11 +195,6 @@ static bool EwmhReplaceWM(ScreenInfo *scr)
 	Atom wmAtom;
 	Window selectionOwner;
 
-	/* If we're not trying to take over the screen, don't do this at all */
-	if(!scr->takeover) {
-		return false;
-	}
-
 	snprintf(atomname, sizeof(atomname), "WM_S%d", scr->screen);
 	wmAtom = XInternAtom(dpy, atomname, False);
 
