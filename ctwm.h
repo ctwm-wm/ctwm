@@ -318,6 +318,7 @@ void CreateFonts(ScreenInfo *scr);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
 extern char *ProgramName;
+extern size_t ProgramNameLen;
 extern Display *dpy;
 extern XtAppContext appContext;
 extern Window ResizeWindow;     /* the window we are resizing */

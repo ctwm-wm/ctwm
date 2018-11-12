@@ -62,6 +62,7 @@
 #include "r_area.h"
 #include "r_area_list.h"
 #include "r_layout.h"
+#include "signals.h"
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
@@ -149,7 +150,6 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool RestartFlag = false;
-void Restart(int signum);
 
 /***********************************************************************
  *
@@ -203,15 +203,7 @@ ctwm_main(int argc, char *argv[])
 	/*
 	 * Hook up signal handlers
 	 */
-	signal(SIGINT, Done);
-	signal(SIGHUP, Restart);
-	signal(SIGQUIT, Done);
-	signal(SIGTERM, Done);
-	signal(SIGALRM, SIG_IGN);
-
-	// This should be set by default, but just in case; explicitly don't
-	// leave zombies.
-	signal(SIGCHLD, SIG_IGN);
+	setup_signal_handlers();
 
 
 	// Various bits of code care about $HOME
@@ -1517,16 +1509,6 @@ Done(int signum)
 	}
 	XCloseDisplay(dpy);
 	exit(0);
-}
-
-void
-Restart(int signum)
-{
-	// Signal handler; stdio isn't async-signal-safe, write(2) is
-	const char srf[] = ":  signal received, setting restart flag\n";
-	write(2, ProgramName, ProgramNameLen);
-	write(2, srf, sizeof(srf));
-	RestartFlag = true;
 }
 
 void

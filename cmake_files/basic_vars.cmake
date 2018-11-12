@@ -59,6 +59,7 @@ set(CTWMSRC
 	r_area_list.c
 	r_layout.c
 	session.c
+	signals.c
 	util.c
 	vscreen.c
 	win_decorations.c
