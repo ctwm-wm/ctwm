@@ -23,6 +23,7 @@ set(CTWMSRC
 	colormaps.c
 	ctopts.c
 	ctwm_main.c
+	ctwm_shutdown.c
 	cursor.c
 	drawing.c
 	event_core.c

@@ -67,6 +67,7 @@
 #include <X11/Xatom.h>
 
 #include "ctwm_atoms.h"
+#include "ctwm_shutdown.h"
 #include "icons.h"
 #include "list.h"
 #include "screen.h"

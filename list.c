@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ctwm_shutdown.h"
 #include "screen.h"
 #include "list.h"
 #include "util.h"

@@ -35,6 +35,7 @@
 #include <X11/extensions/shape.h>
 
 #include "ctwm_atoms.h"
+#include "ctwm_shutdown.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"

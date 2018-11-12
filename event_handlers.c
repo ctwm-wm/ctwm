@@ -37,6 +37,7 @@
 #include "clicktofocus.h"
 #include "colormaps.h"
 #include "ctwm_atoms.h"
+#include "ctwm_shutdown.h"
 #include "events.h"
 #include "event_handlers.h"
 #include "event_internal.h"

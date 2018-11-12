@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "ctwm_shutdown.h"
 #include "signals.h"
 
 

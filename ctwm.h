@@ -313,10 +313,8 @@ struct WindowBox {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-void Done(void) __attribute__((noreturn));
 void CreateFonts(ScreenInfo *scr);
 
-void RestoreWithdrawnLocation(TwmWindow *tmp);
 extern char *ProgramName;
 extern size_t ProgramNameLen;
 extern Display *dpy;
@@ -358,7 +356,6 @@ extern char **Argv;
 extern bool RestartPreviousState;
 
 extern bool SignalFlag;    ///< Some signal flag has been set
-void DoRestart(Time t);         /* Function to perform a restart */
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))
 
