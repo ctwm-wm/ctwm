@@ -71,7 +71,7 @@ handle_signal_flag(Time t)
 	// Shutting down?
 	if(sig_shutdown) {
 		// Doit
-		Done(0);
+		Done();
 
 		// Can't return!
 		fprintf(stderr, "%s: Done() shouldn't return!\n", ProgramName);

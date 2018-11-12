@@ -313,7 +313,7 @@ struct WindowBox {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-void Done(int signum) __attribute__((noreturn));
+void Done(void) __attribute__((noreturn));
 void CreateFonts(ScreenInfo *scr);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);

@@ -1494,7 +1494,7 @@ Reborder(Time mytime)
  * Cleanup and exit twm
  */
 void
-Done(int signum)
+Done(void)
 {
 #ifdef SOUNDS
 	play_exit_sound();
