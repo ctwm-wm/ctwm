@@ -45,6 +45,7 @@
 #include "iconmgr.h"
 #include "image.h"
 #include "screen.h"
+#include "signals.h"
 #include "util.h"
 #include "version.h"
 #include "win_utils.h"
@@ -221,8 +222,8 @@ CtwmNextEvent(Display *display, XEvent *event)
 
 #define NEXTEVENT XtAppNextEvent(appContext, event)
 
-	if(RestartFlag) {
-		DoRestart(CurrentTime);
+	if(SignalFlag) {
+		handle_signal_flag(CurrentTime);
 	}
 	if(XEventsQueued(display, QueuedAfterFlush) != 0) {
 		NEXTEVENT;
@@ -233,8 +234,8 @@ CtwmNextEvent(Display *display, XEvent *event)
 	if(animate) {
 		TryToAnimate();
 	}
-	if(RestartFlag) {
-		DoRestart(CurrentTime);
+	if(SignalFlag) {
+		handle_signal_flag(CurrentTime);
 	}
 	if(! MaybeAnimate) {
 		NEXTEVENT;
@@ -253,8 +254,8 @@ CtwmNextEvent(Display *display, XEvent *event)
 			timeout = AnimateTimeout;
 		}
 		found = select(fd + 1, &mask, NULL, NULL, tout);
-		if(RestartFlag) {
-			DoRestart(CurrentTime);
+		if(SignalFlag) {
+			handle_signal_flag(CurrentTime);
 		}
 		if(found < 0) {
 			if(errno != EINTR) {
@@ -270,8 +271,8 @@ CtwmNextEvent(Display *display, XEvent *event)
 			if(animate) {
 				TryToAnimate();
 			}
-			if(RestartFlag) {
-				DoRestart(CurrentTime);
+			if(SignalFlag) {
+				handle_signal_flag(CurrentTime);
 			}
 			if(! MaybeAnimate) {
 				NEXTEVENT;

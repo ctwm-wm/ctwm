@@ -41,6 +41,21 @@ setup_signal_handlers(void)
 }
 
 
+/**
+ * Handle stuff set by a signal flag.  Could be a Restart, could be a
+ * Shutdown...
+ */
+void
+handle_signal_flag(Time t)
+{
+	if(RestartFlag) {
+		DoRestart(t);
+		// Shouldn't return, but exec() might fail...
+		return;
+	}
+}
+
+
 
 /*
  * Internal backend bits
@@ -56,5 +71,6 @@ sh_restart(int signum)
 	const char srf[] = ":  signal received, setting restart flag\n";
 	write(2, ProgramName, ProgramNameLen);
 	write(2, srf, sizeof(srf));
-	RestartFlag = true;
+
+	SignalFlag = RestartFlag = true;
 }
