@@ -23,13 +23,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <unistd.h>
 #include <locale.h>
-
-#ifdef __WAIT_FOR_CHILDS
-#  include <sys/wait.h>
-#endif
 
 #include <fcntl.h>
 #include <X11/Xproto.h>
@@ -66,6 +61,7 @@
 #include "r_area.h"
 #include "r_area_list.h"
 #include "r_layout.h"
+#include "signals.h"
 #include "vscreen.h"
 #include "win_decorations_init.h"
 #include "win_ops.h"
@@ -146,17 +142,11 @@ int JunkX, JunkY;
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 char *ProgramName;
+size_t ProgramNameLen;
 int Argc;
 char **Argv;
 
 bool RestartPreviousState = true;      /* try to restart in previous state */
-
-bool RestartFlag = false;
-SIGNAL_T Restart(int signum);
-SIGNAL_T Crash(int signum);
-#ifdef __WAIT_FOR_CHILDS
-SIGNAL_T ChildExit(int signum);
-#endif
 
 /***********************************************************************
  *
@@ -177,6 +167,7 @@ ctwm_main(int argc, char *argv[])
 	setlocale(LC_ALL, "");
 
 	ProgramName = argv[0];
+	ProgramNameLen = strlen(ProgramName);
 	Argc = argc;
 	Argv = argv;
 
@@ -206,23 +197,11 @@ ctwm_main(int argc, char *argv[])
 	}
 
 
-#define newhandler(sig, action) \
-    if (signal (sig, SIG_IGN) != SIG_IGN) signal (sig, action)
+	/*
+	 * Hook up signal handlers
+	 */
+	setup_signal_handlers();
 
-	newhandler(SIGINT, Done);
-	signal(SIGHUP, Restart);
-	newhandler(SIGQUIT, Done);
-	newhandler(SIGTERM, Done);
-#ifdef __WAIT_FOR_CHILDS
-	newhandler(SIGCHLD, ChildExit);
-#endif
-	signal(SIGALRM, SIG_IGN);
-#ifdef NOTRAP
-	signal(SIGSEGV, Crash);
-	signal(SIGBUS,  Crash);
-#endif
-
-#undef newhandler
 
 	// Various bits of code care about $HOME
 	Home = getenv("HOME");
@@ -1511,8 +1490,8 @@ Reborder(Time mytime)
 /**
  * Cleanup and exit twm
  */
-SIGNAL_T
-Done(int signum)
+void
+Done(void)
 {
 #ifdef SOUNDS
 	play_exit_sound();
@@ -1529,40 +1508,9 @@ Done(int signum)
 	exit(0);
 }
 
-SIGNAL_T
-Crash(int signum)
-{
-	Reborder(CurrentTime);
-	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
-	if(CLarg.is_captive) {
-		RemoveFromCaptiveList(Scr->captivename);
-	}
-	XCloseDisplay(dpy);
-
-	fprintf(stderr, "\nCongratulations, you have found a bug in ctwm\n");
-	fprintf(stderr, "If a core file was generated in your directory,\n");
-	fprintf(stderr, "can you please try extract the stack trace,\n");
-	fprintf(stderr,
-	        "and mail the results, and a description of what you were doing,\n");
-	fprintf(stderr, "to ctwm@ctwm.org.  Thank you for your support.\n");
-	fprintf(stderr, "...exiting ctwm now.\n\n");
-
-	abort();
-}
-
-
-SIGNAL_T
-Restart(int signum)
-{
-	fprintf(stderr, "%s:  setting restart flag\n", ProgramName);
-	RestartFlag = true;
-}
-
 void
 DoRestart(Time t)
 {
-	RestartFlag = false;
-
 	StopAnimation();
 	XSync(dpy, 0);
 	Reborder(t);
@@ -1577,24 +1525,6 @@ DoRestart(Time t)
 	execvp(*Argv, Argv);
 	fprintf(stderr, "%s:  unable to restart:  %s\n", ProgramName, *Argv);
 }
-
-#ifdef __WAIT_FOR_CHILDS
-/*
- * Handler for SIGCHLD. Needed to avoid zombies when an .xinitrc
- * execs ctwm as the last client. (All processes forked off from
- * within .xinitrc have been inherited by ctwm during the exec.)
- * Jens Schweikhardt <jens@kssun3.rus.uni-stuttgart.de>
- */
-SIGNAL_T
-ChildExit(int signum)
-{
-	int Errno = errno;
-	signal(SIGCHLD, ChildExit);  /* reestablish because we're a one-shot */
-	waitpid(-1, NULL, WNOHANG);   /* reap dead child, ignore status */
-	errno = Errno;               /* restore errno for interrupted sys calls */
-}
-#endif
-
 
 
 /*

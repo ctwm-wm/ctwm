@@ -50,9 +50,6 @@
 #define  __attribute__(x)  /*NOTHING*/
 #endif
 
-/* signal(3) handlers have been void since c89 */
-#define SIGNAL_T void
-
 #define BW 2                    /* border width */
 #define BW2 4                   /* border width  * 2 */
 
@@ -316,11 +313,12 @@ struct WindowBox {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-SIGNAL_T Done(int signum) __attribute__((noreturn));
+void Done(void) __attribute__((noreturn));
 void CreateFonts(ScreenInfo *scr);
 
 void RestoreWithdrawnLocation(TwmWindow *tmp);
 extern char *ProgramName;
+extern size_t ProgramNameLen;
 extern Display *dpy;
 extern XtAppContext appContext;
 extern Window ResizeWindow;     /* the window we are resizing */
@@ -359,7 +357,7 @@ extern char **Argv;
 
 extern bool RestartPreviousState;
 
-extern bool RestartFlag;        /* Flag that is set when SIGHUP is caught */
+extern bool SignalFlag;    ///< Some signal flag has been set
 void DoRestart(Time t);         /* Function to perform a restart */
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))

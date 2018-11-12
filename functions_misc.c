@@ -189,7 +189,7 @@ DFHANDLER(altcontext)
  */
 DFHANDLER(quit)
 {
-	Done(0);
+	Done();
 }
 
 DFHANDLER(restart)
