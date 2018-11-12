@@ -14,6 +14,10 @@
 static void sh_restart(int signum);
 
 
+// Internal flags for which signals have called us
+static bool sig_restart = false;
+
+
 /**
  * Setup signal handlers (run during startup)
  */
@@ -48,8 +52,13 @@ setup_signal_handlers(void)
 void
 handle_signal_flag(Time t)
 {
-	if(RestartFlag) {
+	if(sig_restart) {
+		// In case it fails, don't loop
+		sig_restart = false;
+
+		// Handle
 		DoRestart(t);
+
 		// Shouldn't return, but exec() might fail...
 		return;
 	}
@@ -72,5 +81,5 @@ sh_restart(int signum)
 	write(2, ProgramName, ProgramNameLen);
 	write(2, srf, sizeof(srf));
 
-	SignalFlag = RestartFlag = true;
+	SignalFlag = sig_restart = true;
 }

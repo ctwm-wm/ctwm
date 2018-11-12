@@ -358,7 +358,6 @@ extern char **Argv;
 extern bool RestartPreviousState;
 
 extern bool SignalFlag;    ///< Some signal flag has been set
-extern bool RestartFlag;   ///< Flag that is set when SIGHUP is caught
 extern bool ShutdownFlag;  ///< Flag that is set when shutdown signal is caught
 void DoRestart(Time t);         /* Function to perform a restart */
 

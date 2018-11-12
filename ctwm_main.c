@@ -150,7 +150,6 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool SignalFlag = false;
-bool RestartFlag = false;
 bool ShutdownFlag = false;
 
 /***********************************************************************
@@ -1516,8 +1515,6 @@ Done(int signum)
 void
 DoRestart(Time t)
 {
-	RestartFlag = false;
-
 	StopAnimation();
 	XSync(dpy, 0);
 	Reborder(t);
