@@ -93,13 +93,9 @@ takeover_screen(ScreenInfo *scr)
  * manipulating the client's window.
  */
 
-static XErrorEvent LastErrorEvent;
-
 static int
 TwmErrorHandler(Display *display, XErrorEvent *event)
 {
-	LastErrorEvent = *event;
-
 	if(CLarg.PrintErrorMessages &&                 /* don't be too obnoxious */
 	                event->error_code != BadWindow &&       /* watch for dead puppies */
 	                (event->request_code != X_GetGeometry &&         /* of all styles */
@@ -115,6 +111,5 @@ static int
 CatchRedirectError(Display *display, XErrorEvent *event)
 {
 	RedirectError = true;
-	LastErrorEvent = *event;
 	return 0;
 }
