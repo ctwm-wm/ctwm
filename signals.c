@@ -5,17 +5,21 @@
 #include "ctwm.h"
 
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "signals.h"
-#include "unistd.h"
 
 
 /* Our backends */
 static void sh_restart(int signum);
+static void sh_shutdown(int signum);
 
 
 // Internal flags for which signals have called us
 static bool sig_restart = false;
+static bool sig_shutdown = false;
 
 
 /**
@@ -26,9 +30,9 @@ setup_signal_handlers(void)
 {
 	// INT/QUIT/TERM: shutdown
 	// XXX Wildly unsafe handler; to be reworked
-	signal(SIGINT, Done);
-	signal(SIGQUIT, Done);
-	signal(SIGTERM, Done);
+	signal(SIGINT,  sh_shutdown);
+	signal(SIGQUIT, sh_shutdown);
+	signal(SIGTERM, sh_shutdown);
 
 	// SIGHUP: restart
 	signal(SIGHUP, sh_restart);
@@ -52,6 +56,7 @@ setup_signal_handlers(void)
 void
 handle_signal_flag(Time t)
 {
+	// Restarting?
 	if(sig_restart) {
 		// In case it fails, don't loop
 		sig_restart = false;
@@ -62,6 +67,21 @@ handle_signal_flag(Time t)
 		// Shouldn't return, but exec() might fail...
 		return;
 	}
+
+	// Shutting down?
+	if(sig_shutdown) {
+		// Doit
+		Done(0);
+
+		// Can't return!
+		fprintf(stderr, "%s: Done() shouldn't return!\n", ProgramName);
+		exit(1);
+	}
+
+	// ???
+	fprintf(stderr, "%s: Internal error: unexpected signal flag.\n",
+			ProgramName);
+	return;
 }
 
 
@@ -83,3 +103,18 @@ sh_restart(int signum)
 
 	SignalFlag = sig_restart = true;
 }
+
+/**
+ * Set flag to shutdown.  Backend for SIGTERM etc.
+ */
+static void
+sh_shutdown(int signum)
+{
+	// Signal handler; stdio isn't async-signal-safe, write(2) is
+	const char srf[] = ":  signal received, setting shutdown flag\n";
+	write(2, ProgramName, ProgramNameLen);
+	write(2, srf, sizeof(srf));
+
+	SignalFlag = sig_shutdown = true;
+}
+

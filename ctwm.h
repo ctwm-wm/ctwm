@@ -358,7 +358,6 @@ extern char **Argv;
 extern bool RestartPreviousState;
 
 extern bool SignalFlag;    ///< Some signal flag has been set
-extern bool ShutdownFlag;  ///< Flag that is set when shutdown signal is caught
 void DoRestart(Time t);         /* Function to perform a restart */
 
 #define OCCUPY(w, b) ((b == NULL) ? 1 : (w->occupation & (1 << b->number)))

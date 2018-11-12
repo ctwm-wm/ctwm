@@ -150,7 +150,6 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 bool SignalFlag = false;
-bool ShutdownFlag = false;
 
 /***********************************************************************
  *
