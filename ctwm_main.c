@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <unistd.h>
 #include <locale.h>
 
@@ -148,8 +147,6 @@ int Argc;
 char **Argv;
 
 bool RestartPreviousState = true;      /* try to restart in previous state */
-
-bool SignalFlag = false;
 
 /***********************************************************************
  *

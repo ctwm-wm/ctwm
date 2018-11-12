@@ -21,6 +21,10 @@ static void sh_shutdown(int signum);
 static bool sig_restart = false;
 static bool sig_shutdown = false;
 
+// External flag for whether some signal handler has set a flag that
+// needs to trigger an action.
+bool SignalFlag = false;
+
 
 /**
  * Setup signal handlers (run during startup)
