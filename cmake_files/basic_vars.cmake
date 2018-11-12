@@ -24,6 +24,7 @@ set(CTWMSRC
 	ctopts.c
 	ctwm_main.c
 	ctwm_shutdown.c
+	ctwm_takeover.c
 	cursor.c
 	drawing.c
 	event_core.c
