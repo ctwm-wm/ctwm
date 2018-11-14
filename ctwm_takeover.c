@@ -47,7 +47,10 @@ takeover_screen(ScreenInfo *scr)
 	 * handler to flip a var that we test to find out whether the
 	 * redirect failed.
 	 */
-	XSync(dpy, 0); // Flush possible previous errors
+	// Flush out any previous errors
+	XSync(dpy, 0);
+
+	// Set our event listening mask
 	RedirectError = false;
 	XSetErrorHandler(CatchRedirectError);
 	attrmask = ColormapChangeMask | EnterWindowMask |
@@ -60,11 +63,16 @@ takeover_screen(ScreenInfo *scr)
 		attrmask |= StructureNotifyMask;
 	}
 	XSelectInput(dpy, scr->Root, attrmask);
-	XSync(dpy, 0); // Flush the RedirectError, if we had one
 
-	// Back to our normal handler
+	// Make sure we flush out any errors that may have caused.  This
+	// ensures our RedirectError flag will be set if the server sent us
+	// one.
+	XSync(dpy, 0);
+
+	// Go ahead and set our normal-operation error handler.
 	XSetErrorHandler(TwmErrorHandler);
 
+	// So, did we fail?
 	if(RedirectError) {
 		fprintf(stderr, "%s: another window manager is already running",
 		        ProgramName);
@@ -82,9 +90,9 @@ takeover_screen(ScreenInfo *scr)
 		// because maybe we have taken over some other screen.  So,
 		// just throw up our hands.
 		return false;
-
 	}
 
+	// Nope, it's ours!
 	return true;
 }
 
