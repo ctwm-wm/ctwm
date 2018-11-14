@@ -142,14 +142,13 @@ char **Argv;
 
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
-/***********************************************************************
- *
- *  Procedure:
- *      main - start of twm
- *
- ***********************************************************************
- */
 
+
+
+/**
+ * Start up ctwm.  This is effectively main(), just wrapped for various
+ * unimportant reasons.
+ */
 int
 ctwm_main(int argc, char *argv[])
 {
