@@ -1290,26 +1290,6 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 
 
 
-/**
- * Load up our various defined fonts
- */
-void
-CreateFonts(ScreenInfo *scr)
-{
-#define LOADFONT(fld) (GetFont(&scr->fld##Font))
-	LOADFONT(TitleBar);
-	LOADFONT(Menu);
-	LOADFONT(Icon);
-	LOADFONT(Size);
-	LOADFONT(IconManager);
-	LOADFONT(Default);
-	LOADFONT(workSpaceMgr.window);
-#undef LOADFONT
-
-	scr->HaveFonts = true;
-}
-
-
 Atom XCTWMAtom[NUM_CTWM_XATOMS];
 void
 InternUsefulAtoms(void)

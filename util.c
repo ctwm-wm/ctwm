@@ -376,6 +376,26 @@ GetFont(MyFont *font)
 }
 
 
+/**
+ * Load up our various defined fonts
+ */
+void
+CreateFonts(ScreenInfo *scr)
+{
+#define LOADFONT(fld) (GetFont(&scr->fld##Font))
+	LOADFONT(TitleBar);
+	LOADFONT(Menu);
+	LOADFONT(Icon);
+	LOADFONT(Size);
+	LOADFONT(IconManager);
+	LOADFONT(Default);
+	LOADFONT(workSpaceMgr.window);
+#undef LOADFONT
+
+	scr->HaveFonts = true;
+}
+
+
 
 #if 0
 static void move_to_head(TwmWindow *t)

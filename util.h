@@ -62,6 +62,7 @@ void GetColor(int kind, Pixel *what, const char *name);
 void GetShadeColors(ColorPair *cp);
 void GetFont(MyFont *font);
 bool UpdateFont(MyFont *font, int height);
+void CreateFonts(ScreenInfo *scr);
 #if 0
 void move_to_after(TwmWindow *t, TwmWindow *after);
 #endif

@@ -313,8 +313,6 @@ struct WindowBox {
 #define DoesWmDeleteWindow      (1L << 2)
 
 
-void CreateFonts(ScreenInfo *scr);
-
 extern char *ProgramName;
 extern size_t ProgramNameLen;
 extern Display *dpy;
