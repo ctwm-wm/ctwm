@@ -308,9 +308,9 @@ UpdateFont(MyFont *font, int height)
 
 
 /**
- * Load up fontsets from the X server.
+ * Load up fontsets from the X server.  Only used by CreateFonts() below.
  */
-void
+static void
 GetFont(MyFont *font)
 {
 	char *deffontname = "fixed,*";
