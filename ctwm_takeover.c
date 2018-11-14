@@ -12,10 +12,12 @@
 #include "screen.h"
 
 
-static bool RedirectError;      /* true ==> another window manager running */
-/* for settting RedirectError */
+/// Flag for "we got an error trying to take over".  Set in temporary
+/// error handler.
+static bool RedirectError;
+
+// Our special during-takeover and normal operating error handlers.
 static int CatchRedirectError(Display *display, XErrorEvent *event);
-/* for everything else */
 static int TwmErrorHandler(Display *display, XErrorEvent *event);
 
 
