@@ -85,7 +85,7 @@ handle_signal_flag(Time t)
 
 	// ???
 	fprintf(stderr, "%s: Internal error: unexpected signal flag.\n",
-			ProgramName);
+	        ProgramName);
 	return;
 }
 

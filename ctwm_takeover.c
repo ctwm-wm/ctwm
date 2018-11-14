@@ -133,7 +133,7 @@ TwmErrorHandler(Display *display, XErrorEvent *event)
 	// being the big one?) where we'll get a BadDrawable.  This isn't
 	// really an "error", just a harmless race.
 	if(event->error_code == BadWindow
-			|| (event->request_code == X_GetGeometry && event->error_code != BadDrawable)) {
+	                || (event->request_code == X_GetGeometry && event->error_code != BadDrawable)) {
 		return 0;
 	}
 

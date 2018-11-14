@@ -236,7 +236,7 @@ ctwm_main(int argc, char *argv[])
 		if(!dpy) {
 			// At least warn
 			fprintf(stderr, "%s: Can't connect to X server, proceeding anyway...\n",
-					ProgramName);
+			        ProgramName);
 		}
 	}
 
