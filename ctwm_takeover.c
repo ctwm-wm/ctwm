@@ -87,29 +87,48 @@ takeover_screen(ScreenInfo *scr)
 }
 
 
-/*
- * Error Handlers.  If a client dies, we'll get a BadWindow error (except for
- * GetGeometry which returns BadDrawable) for most operations that we do before
- * manipulating the client's window.
- */
 
+/**
+ * Temporary error handler used during startup.  We expect an
+ * error if we fail to take over some of the XSelectInput() events
+ * we're trying to (which only 1 thing at a time is allowed to).
+ * Probably that would be a BadAccess error type?  But really, any error
+ * means we're in trouble and should skip over the display, so we don't
+ * check any more deeply...
+ */
 static int
-TwmErrorHandler(Display *display, XErrorEvent *event)
+CatchRedirectError(Display *display, XErrorEvent *event)
 {
-	if(CLarg.PrintErrorMessages &&                 /* don't be too obnoxious */
-	                event->error_code != BadWindow &&       /* watch for dead puppies */
-	                (event->request_code != X_GetGeometry &&         /* of all styles */
-	                 event->error_code != BadDrawable)) {
-		XmuPrintDefaultErrorMessage(display, event, stderr);
-	}
+	// Set the global flag
+	RedirectError = true;
 	return 0;
 }
 
 
-/* ARGSUSED*/
+/**
+ * Error handler used in normal operation.  Or, perhaps, error ignorer
+ * used in normal operation.  If run with `-v`, we'll print out a lot of
+ * the errors we might get, though we always skip several.
+ */
 static int
-CatchRedirectError(Display *display, XErrorEvent *event)
+TwmErrorHandler(Display *display, XErrorEvent *event)
 {
-	RedirectError = true;
+	if(!CLarg.PrintErrorMessages) {
+		// Not `-v`?  Always be silent.
+		return 0;
+	}
+
+	// If a client dies and we try to touch it before we notice, we get a
+	// BadWindow error for most operations, except a few (GetGeometry
+	// being the big one?) where we'll get a BadDrawable.  This isn't
+	// really an "error", just a harmless race.
+	if(event->error_code == BadWindow
+			|| (event->request_code == X_GetGeometry && event->error_code != BadDrawable)) {
+		return 0;
+	}
+
+	// Else, we're `-v`'d, and it wasn't one of our 'expected' bits, so
+	// talk about it.
+	XmuPrintDefaultErrorMessage(display, event, stderr);
 	return 0;
 }
