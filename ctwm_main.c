@@ -78,6 +78,8 @@ XtAppContext appContext;        /* Xt application context */
 Display *dpy;                   /* which display are we talking to */
 Window ResizeWindow;            /* the window we are resizing */
 
+Atom XCTWMAtom[NUM_CTWM_XATOMS]; ///< Our various common atoms
+
 int NumScreens;                 /* number of screens in ScreenList */
 bool HasShape;                  /* server supports shape extension? */
 int ShapeEventBase, ShapeErrorBase;
@@ -88,7 +90,6 @@ static bool cfgerrs = false;    ///< Whether there were config parsing errors
 
 static Window CreateCaptiveRootWindow(int x, int y,
                                       unsigned int width, unsigned int height);
-static void InternUsefulAtoms(void);
 ScreenInfo *InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
                            unsigned int crootw, unsigned int crooth);
 static bool MappedNotOverride(Window w);
@@ -258,7 +259,8 @@ ctwm_main(int argc, char *argv[])
 		ColormapContext = XUniqueContext();
 		InitWorkSpaceManagerContext();
 
-		InternUsefulAtoms();
+		// Load up our standard set of atoms
+		XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
 
 		NumScreens = ScreenCount(dpy);
 		PreviousScreen = DefaultScreen(dpy);
@@ -1289,13 +1291,6 @@ InitScreenInfo(int scrnum, Window croot, int crootx, int crooty,
 }
 
 
-
-Atom XCTWMAtom[NUM_CTWM_XATOMS];
-void
-InternUsefulAtoms(void)
-{
-	XInternAtoms(dpy, XCTWMAtomNames, NUM_CTWM_XATOMS, False, XCTWMAtom);
-}
 
 
 /**
