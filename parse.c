@@ -266,7 +266,6 @@ ParseTwmrc(const char *filename)
 		twmrc = start_m4(raw);
 	}
 	status = doparse(m4twmFileInput, "file", filename);
-	wait(NULL);
 	fclose(twmrc);
 	if(raw) {
 		fclose(raw);
