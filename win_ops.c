@@ -222,7 +222,7 @@ Squeeze(TwmWindow *tmp_win)
 	             ? tmp_win->hints.win_gravity : NorthWestGravity);
 	long eventMask;
 	if(tmp_win->squeezed) {
-		tmp_win->squeezed = False;
+		tmp_win->squeezed = false;
 #ifdef EWMH
 		EwmhSet_NET_WM_STATE(tmp_win, EWMH_STATE_SHADED);
 #endif /* EWMH */
