@@ -511,7 +511,7 @@ RLayoutFindRightEdge(const RLayout *self, const RArea *area)
 
 /// Internal structure for callback in RLayoutGetAreaAtXY().
 struct monitor_finder_xy {
-	RArea *area;
+	const RArea *area;
 	int x, y;
 };
 
@@ -522,7 +522,7 @@ _findMonitorByXY(const RArea *cur, void *vdata)
 	struct monitor_finder_xy *data = (struct monitor_finder_xy *)vdata;
 
 	if(RAreaContainsXY(cur, data->x, data->y)) {
-		*data->area = *cur;
+		data->area = cur;
 		return true;
 	}
 	return false;
