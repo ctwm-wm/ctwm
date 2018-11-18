@@ -2188,6 +2188,9 @@ void HandleUnmapNotify(void)
 			}
 		}
 		else {
+			// Couldn't XTranslateCoordinates(), so the window isn't on
+			// the Screen we think it is.  Move it onto that root and
+			// then try releaseing it.
 			XReparentWindow(dpy, Event.xunmap.window, Tmp_win->attr.root,
 			                dstx, dsty);
 			RestoreWithdrawnLocation(Tmp_win);

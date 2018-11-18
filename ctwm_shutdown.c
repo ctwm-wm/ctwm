@@ -27,39 +27,58 @@ static void Reborder(Time mytime);
 
 
 /**
- * ???
+ * Put a window back where it should be if we don't (any longer) control
+ * it.  Essentially cancels out the repositioning due to our frame and
+ * decorations, and restores the original border it had before we put our
+ * own on it.
  */
 void
 RestoreWithdrawnLocation(TwmWindow *tmp)
 {
-	int gravx, gravy;
-	unsigned int bw, mask;
 	XWindowChanges xwc;
+	unsigned int bw;
 
+	// If this window is "unmapped" by moving it way offscreen, and is in
+	// that state, move it back onto the window.
 	if(tmp->UnmapByMovingFarAway && !visible(tmp)) {
 		XMoveWindow(dpy, tmp->frame, tmp->frame_x, tmp->frame_y);
 	}
+
+	// If it's squeezed, unsqueeze it.
 	if(tmp->squeezed) {
 		Squeeze(tmp);
 	}
+
+	// Look up geometry bits.  Failure means ???  Maybe the window
+	// disappeared on us?
 	if(XGetGeometry(dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y,
 	                &JunkWidth, &JunkHeight, &bw, &JunkDepth)) {
+		int gravx, gravy;
+		unsigned int mask;
 
+		// Get gravity bits to know how to move stuff around when we take
+		// away the decorations.
 		GetGravityOffsets(tmp, &gravx, &gravy);
+
+		// Shift for stripping out the titlebar and 3d borders
 		if(gravy < 0) {
 			xwc.y -= tmp->title_height;
 		}
 		xwc.x += gravx * tmp->frame_bw3D;
 		xwc.y += gravy * tmp->frame_bw3D;
 
+		// If the window used to have a border size different from what
+		// it has now (from us), restore the old.
 		if(bw != tmp->old_bw) {
 			int xoff, yoff;
 
 			if(!Scr->ClientBorderWidth) {
+				// We used BorderWidth
 				xoff = gravx;
 				yoff = gravy;
 			}
 			else {
+				// We used the original
 				xoff = 0;
 				yoff = 0;
 			}
@@ -67,12 +86,21 @@ RestoreWithdrawnLocation(TwmWindow *tmp)
 			xwc.x -= (xoff + 1) * tmp->old_bw;
 			xwc.y -= (yoff + 1) * tmp->old_bw;
 		}
+
+		// Strip out our 2d borders, if we had a size other than the
+		// win's original.
 		if(!Scr->ClientBorderWidth) {
 			xwc.x += gravx * tmp->frame_bw;
 			xwc.y += gravy * tmp->frame_bw;
 		}
 
+
+		// Now put together the adjustment.  We'll always be moving the
+		// X/Y coords.
 		mask = (CWX | CWY);
+		// xwc.[xy] already set
+
+		// May be changing the border.
 		if(bw != tmp->old_bw) {
 			xwc.border_width = tmp->old_bw;
 			mask |= CWBorderWidth;
@@ -85,20 +113,27 @@ RestoreWithdrawnLocation(TwmWindow *tmp)
 		}
 #endif
 
+		// If it's in a WindowBox, reparent it back up to our real root.
 		if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
 			int xbox, ybox;
+			unsigned int j_bw;
 			if(XGetGeometry(dpy, tmp->frame, &JunkRoot, &xbox, &ybox,
-			                &JunkWidth, &JunkHeight, &bw, &JunkDepth)) {
+			                &JunkWidth, &JunkHeight, &j_bw, &JunkDepth)) {
 				ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
 			}
 		}
+
+		// Do the move (and possibly reborder
 		XConfigureWindow(dpy, tmp->w, mask, &xwc);
 
+		// If it came with a pre-made icon window, hide it
 		if(tmp->wmhints->flags & IconWindowHint) {
 			XUnmapWindow(dpy, tmp->wmhints->icon_window);
 		}
-
 	}
+
+	// Done
+	return;
 }
 
 
