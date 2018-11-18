@@ -23,7 +23,7 @@
 #include "win_utils.h"
 
 
-static void Reborder(Time mytime);
+static void RestoreForShutdown(Time mytime);
 
 
 /**
@@ -33,7 +33,7 @@ static void Reborder(Time mytime);
  * own on it.
  */
 void
-RestoreWithdrawnLocation(TwmWindow *tmp)
+RestoreWinConfig(TwmWindow *tmp)
 {
 	XWindowChanges xwc;
 	unsigned int bw;
@@ -141,7 +141,7 @@ RestoreWithdrawnLocation(TwmWindow *tmp)
  * Restore some window positions/etc in preparation for going away.
  */
 static void
-Reborder(Time mytime)
+RestoreForShutdown(Time mytime)
 {
 	ScreenInfo *savedScr = Scr;  // We need Scr flipped around...
 
@@ -159,7 +159,7 @@ Reborder(Time mytime)
 		// and map them all, since we won't be around to help the user
 		// map any that are currently iconificed.
 		for(TwmWindow *tmp = Scr->FirstWindow; tmp != NULL; tmp = tmp->next) {
-			RestoreWithdrawnLocation(tmp);
+			RestoreWinConfig(tmp);
 			XMapWindow(dpy, tmp->w);
 		}
 
@@ -190,7 +190,7 @@ Done(void)
 #ifdef SOUNDS
 	play_exit_sound();
 #endif
-	Reborder(CurrentTime);
+	RestoreForShutdown(CurrentTime);
 #ifdef EWMH
 	EwmhTerminate();
 #endif /* EWMH */
@@ -211,7 +211,7 @@ DoRestart(Time t)
 {
 	StopAnimation();
 	XSync(dpy, 0);
-	Reborder(t);
+	RestoreForShutdown(t);
 	XSync(dpy, 0);
 
 	if(smcConn) {

@@ -2193,7 +2193,7 @@ void HandleUnmapNotify(void)
 			// then try releaseing it.
 			XReparentWindow(dpy, Event.xunmap.window, Tmp_win->attr.root,
 			                dstx, dsty);
-			RestoreWithdrawnLocation(Tmp_win);
+			RestoreWinConfig(Tmp_win);
 		}
 		XRemoveFromSaveSet(dpy, Event.xunmap.window);
 		XSelectInput(dpy, Event.xunmap.window, NoEventMask);

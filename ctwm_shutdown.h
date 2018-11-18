@@ -4,7 +4,7 @@
 #ifndef _CTWM_SHUTDOWN_H
 #define _CTWM_SHUTDOWN_H
 
-void RestoreWithdrawnLocation(TwmWindow *tmp);
+void RestoreWinConfig(TwmWindow *tmp);
 void Done(void) __attribute__((noreturn));
 void DoRestart(Time t);         /* Function to perform a restart */
 
