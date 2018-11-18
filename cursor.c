@@ -117,15 +117,15 @@ static struct _CursorName {
 void NewFontCursor(Cursor *cp, const char *str)
 {
 	int i;
-
-	if(dpy == NULL) {
-		// Handle special cases like --cfgchk
-		*cp = None;
-		return;
-	}
+	const Display *ldpy = dpy;  // Give compiler help to hoist
 
 	for(i = 0; i < sizeof(cursor_names) / sizeof(struct _CursorName); i++) {
 		if(strcmp(str, cursor_names[i].name) == 0) {
+			if(ldpy == NULL) {
+				// No display connection, but we found it
+				*cp = None;
+				return;
+			}
 			if(cursor_names[i].cursor == None)
 				cursor_names[i].cursor = XCreateFontCursor(dpy,
 				                         cursor_names[i].shape);
