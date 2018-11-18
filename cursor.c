@@ -126,9 +126,10 @@ void NewFontCursor(Cursor *cp, const char *str)
 				*cp = None;
 				return;
 			}
-			if(cursor_names[i].cursor == None)
+			if(cursor_names[i].cursor == None) {
 				cursor_names[i].cursor = XCreateFontCursor(dpy,
 				                         cursor_names[i].shape);
+			}
 			*cp = cursor_names[i].cursor;
 			return;
 		}
