@@ -156,11 +156,8 @@ RestoreForShutdown(Time mytime)
 		InstallColormaps(0, &Scr->RootColormaps);
 
 		// Put all the windows back where they'd be if we weren't here
-		// and map them all, since we won't be around to help the user
-		// map any that are currently iconificed.
 		for(TwmWindow *tmp = Scr->FirstWindow; tmp != NULL; tmp = tmp->next) {
 			RestoreWinConfig(tmp);
-			XMapWindow(dpy, tmp->w);
 		}
 
 		// We're not actually "letting to" of the windows, by reparenting
