@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "ctwm_shutdown.h"
 #include "signals.h"
 
 
@@ -75,16 +76,16 @@ handle_signal_flag(Time t)
 	// Shutting down?
 	if(sig_shutdown) {
 		// Doit
-		Done();
+		DoShutdown();
 
 		// Can't return!
-		fprintf(stderr, "%s: Done() shouldn't return!\n", ProgramName);
+		fprintf(stderr, "%s: DoShutdown() shouldn't return!\n", ProgramName);
 		exit(1);
 	}
 
 	// ???
 	fprintf(stderr, "%s: Internal error: unexpected signal flag.\n",
-			ProgramName);
+	        ProgramName);
 	return;
 }
 

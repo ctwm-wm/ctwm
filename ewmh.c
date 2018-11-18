@@ -35,6 +35,7 @@
 #include <X11/extensions/shape.h>
 
 #include "ctwm_atoms.h"
+#include "ctwm_shutdown.h"
 #include "ewmh_atoms.h"
 #include "screen.h"
 #include "events.h"
@@ -541,7 +542,7 @@ void EwmhSelectionClear(XSelectionClearEvent *sev)
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "sev->window = %x\n", (unsigned)sev->window);
 #endif
-	Done();
+	DoShutdown();
 }
 
 /*

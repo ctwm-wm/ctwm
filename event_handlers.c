@@ -37,6 +37,7 @@
 #include "clicktofocus.h"
 #include "colormaps.h"
 #include "ctwm_atoms.h"
+#include "ctwm_shutdown.h"
 #include "events.h"
 #include "event_handlers.h"
 #include "event_internal.h"
@@ -2187,9 +2188,12 @@ void HandleUnmapNotify(void)
 			}
 		}
 		else {
+			// Couldn't XTranslateCoordinates(), so the window isn't on
+			// the Screen we think it is.  Move it onto that root and
+			// then try releaseing it.
 			XReparentWindow(dpy, Event.xunmap.window, Tmp_win->attr.root,
 			                dstx, dsty);
-			RestoreWithdrawnLocation(Tmp_win);
+			RestoreWinConfig(Tmp_win);
 		}
 		XRemoveFromSaveSet(dpy, Event.xunmap.window);
 		XSelectInput(dpy, Event.xunmap.window, NoEventMask);

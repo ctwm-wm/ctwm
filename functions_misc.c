@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "animate.h"
+#include "ctwm_shutdown.h"
 #include "functions.h"
 #include "functions_defs.h"
 #include "functions_internal.h"
@@ -189,7 +190,7 @@ DFHANDLER(altcontext)
  */
 DFHANDLER(quit)
 {
-	Done();
+	DoShutdown();
 }
 
 DFHANDLER(restart)

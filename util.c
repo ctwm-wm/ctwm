@@ -143,6 +143,13 @@ ExpandFilename(const char *name)
 }
 
 
+
+/*
+ * Some color utils
+ */
+/**
+ * Get info from the server about a given color.
+ */
 void
 GetColor(int kind, Pixel *what, const char *name)
 {
@@ -230,6 +237,10 @@ gotit:
 	return;
 }
 
+
+/**
+ * Try and create a 'shaded' version of a color for prettier UI.
+ */
 void
 GetShadeColors(ColorPair *cp)
 {
@@ -269,6 +280,14 @@ GetShadeColors(ColorPair *cp)
 	Scr->FirstTime = save;
 }
 
+
+
+/*
+ * Various font utils
+ */
+/**
+ * Try adjusting a font's height.  Used in drawing the icon manager.
+ */
 bool
 UpdateFont(MyFont *font, int height)
 {
@@ -287,7 +306,12 @@ UpdateFont(MyFont *font, int height)
 	return (prev != font->avg_height);
 }
 
-void GetFont(MyFont *font)
+
+/**
+ * Load up fontsets from the X server.  Only used by CreateFonts() below.
+ */
+static void
+GetFont(MyFont *font)
 {
 	char *deffontname = "fixed,*";
 	char **missing_charset_list_return;
@@ -350,6 +374,27 @@ void GetFont(MyFont *font)
 	font->avg_fheight = 0.0;
 	font->avg_count = 0;
 }
+
+
+/**
+ * Load up our various defined fonts
+ */
+void
+CreateFonts(ScreenInfo *scr)
+{
+#define LOADFONT(fld) (GetFont(&scr->fld##Font))
+	LOADFONT(TitleBar);
+	LOADFONT(Menu);
+	LOADFONT(Icon);
+	LOADFONT(Size);
+	LOADFONT(IconManager);
+	LOADFONT(Default);
+	LOADFONT(workSpaceMgr.window);
+#undef LOADFONT
+
+	scr->HaveFonts = true;
+}
+
 
 
 #if 0
@@ -419,6 +464,10 @@ void move_to_after(TwmWindow *t, TwmWindow *after)
 #endif
 
 
+
+/**
+ * Backend for f.rescuewindows
+ */
 void RescueWindows(void)
 {
 	TwmWindow *twm_win = Scr->FirstWindow;
@@ -495,7 +544,13 @@ void RescueWindows(void)
 	}
 }
 
-void DebugTrace(char *file)
+
+
+/**
+ * Backend for f.trace
+ */
+void
+DebugTrace(char *file)
 {
 	if(!file) {
 		return;
@@ -517,6 +572,7 @@ void DebugTrace(char *file)
 		fprintf(stderr, "logging events to : %s\n", file);
 	}
 }
+
 
 
 /*
