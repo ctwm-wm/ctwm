@@ -244,4 +244,5 @@ DoRestart(Time t)
 
 	// We should probably un-RestoreForShutdown() etc.  If that exec
 	// fails, we're in a really weird state...
+	XBell(dpy, 0);
 }
