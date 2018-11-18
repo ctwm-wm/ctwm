@@ -182,10 +182,10 @@ RestoreForShutdown(Time mytime)
 
 
 /**
- * Cleanup and exit twm
+ * Cleanup and exit ctwm
  */
 void
-Done(void)
+DoShutdown(void)
 {
 #ifdef SOUNDS
 	play_exit_sound();

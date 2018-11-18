@@ -1067,7 +1067,7 @@ void DieCB(SmcConn smcCon, SmPointer clientData)
 {
 	SmcCloseConnection(smcCon, 0, NULL);
 	XtRemoveInput(iceInputId);
-	Done();
+	DoShutdown();
 }
 
 /*===[ Save Complete SM Call Back ]==========================================*/

@@ -72,7 +72,7 @@ void AddToList(name_list **list_head, const char *name, void *ptr)
 	if(nptr == NULL) {
 		fprintf(stderr, "unable to allocate %lu bytes for name_list\n",
 		        (unsigned long) sizeof(name_list));
-		Done();
+		DoShutdown();
 	}
 
 	nptr->next = *list_head;

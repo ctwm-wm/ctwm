@@ -542,7 +542,7 @@ void EwmhSelectionClear(XSelectionClearEvent *sev)
 #ifdef DEBUG_EWMH
 	fprintf(stderr, "sev->window = %x\n", (unsigned)sev->window);
 #endif
-	Done();
+	DoShutdown();
 }
 
 /*

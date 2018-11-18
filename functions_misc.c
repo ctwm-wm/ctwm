@@ -190,7 +190,7 @@ DFHANDLER(altcontext)
  */
 DFHANDLER(quit)
 {
-	Done();
+	DoShutdown();
 }
 
 DFHANDLER(restart)
