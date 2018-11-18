@@ -143,27 +143,33 @@ RestoreWithdrawnLocation(TwmWindow *tmp)
 static void
 Reborder(Time mytime)
 {
-	TwmWindow *tmp;                     /* temp twm window structure */
-	int scrnum;
-	ScreenInfo *savedScreen;            /* Its better to avoid coredumps */
-
-	/* put a border back around all windows */
+	ScreenInfo *savedScr = Scr;  // We need Scr flipped around...
 
 	XGrabServer(dpy);
-	savedScreen = Scr;
-	for(scrnum = 0; scrnum < NumScreens; scrnum++) {
+
+	for(int scrnum = 0; scrnum < NumScreens; scrnum++) {
 		if((Scr = ScreenList[scrnum]) == NULL) {
 			continue;
 		}
 
-		InstallColormaps(0, &Scr->RootColormaps);       /* force reinstall */
-		for(tmp = Scr->FirstWindow; tmp != NULL; tmp = tmp->next) {
+		// Force reinstalling any colormaps
+		InstallColormaps(0, &Scr->RootColormaps);
+
+		// Put all the windows back where they'd be if we weren't here
+		// and map them all, since we won't be around to help the user
+		// map any that are currently iconificed.
+		for(TwmWindow *tmp = Scr->FirstWindow; tmp != NULL; tmp = tmp->next) {
 			RestoreWithdrawnLocation(tmp);
 			XMapWindow(dpy, tmp->w);
 		}
 	}
-	Scr = savedScreen;
+
 	XUngrabServer(dpy);
+
+	// Restore
+	Scr = savedScr;
+
+	// Focus away from any windows
 	SetFocus(NULL, mytime);
 }
 
