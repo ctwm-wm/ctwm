@@ -187,17 +187,29 @@ RestoreForShutdown(Time mytime)
 void
 DoShutdown(void)
 {
+
 #ifdef SOUNDS
+	// Denounce ourselves
 	play_exit_sound();
 #endif
+
+	// Restore windows/colormaps for our absence.
 	RestoreForShutdown(CurrentTime);
+
 #ifdef EWMH
+	// Clean up EWMH properties
 	EwmhTerminate();
-#endif /* EWMH */
+#endif
+
+	// Clean up our list of workspaces
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
+
+	// Shut down captive stuff
 	if(CLarg.is_captive) {
 		RemoveFromCaptiveList(Scr->captivename);
 	}
+
+	// Close up shop
 	XCloseDisplay(dpy);
 	exit(0);
 }
@@ -209,17 +221,27 @@ DoShutdown(void)
 void
 DoRestart(Time t)
 {
+	// Don't try to do any further animating
 	StopAnimation();
 	XSync(dpy, 0);
+
+	// Replace all the windows/colormaps as if we were going away.  'cuz
+	// we are.
 	RestoreForShutdown(t);
 	XSync(dpy, 0);
 
+	// Shut down session management connection cleanly.
 	if(smcConn) {
 		SmcCloseConnection(smcConn, 0, NULL);
 	}
 
-	fprintf(stderr, "%s:  restarting:  %s\n",
-	        ProgramName, *Argv);
+	// Re-run ourself
+	fprintf(stderr, "%s:  restarting:  %s\n", ProgramName, *Argv);
 	execvp(*Argv, Argv);
+
+	// Uh oh, we shouldn't get here...
 	fprintf(stderr, "%s:  unable to restart:  %s\n", ProgramName, *Argv);
+
+	// We should probably un-RestoreForShutdown() etc.  If that exec
+	// fails, we're in a really weird state...
 }
