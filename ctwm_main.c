@@ -594,6 +594,12 @@ ctwm_main(int argc, char *argv[])
 			numManaged++;
 		}
 
+		// If the config wants us to show the splash screen and we
+		// haven't already, do it now.
+		if(Scr->ShowWelcomeWindow && !screenmasked) {
+			MaskScreen(NULL);
+		}
+
 
 
 		/*
@@ -643,12 +649,6 @@ ctwm_main(int argc, char *argv[])
 
 		// Setup WSM[s] (per-vscreen)
 		ConfigureWorkSpaceManager();
-
-		// If the config wants us to show the splash screen and we
-		// haven't already, do it now.
-		if(Scr->ShowWelcomeWindow && !screenmasked) {
-			MaskScreen(NULL);
-		}
 
 
 		/*
