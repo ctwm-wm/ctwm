@@ -123,7 +123,7 @@ RestoreWinConfig(TwmWindow *tmp)
 			}
 		}
 
-		// Do the move (and possibly reborder
+		// Do the move and possible reborder
 		XConfigureWindow(dpy, tmp->w, mask, &xwc);
 
 		// If it came with a pre-made icon window, hide it
