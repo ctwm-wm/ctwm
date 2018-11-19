@@ -2092,31 +2092,45 @@ void HandleMapNotify(void)
 	 * the client would think that the window has a chance of being viewable
 	 * when it really isn't.
 	 */
-
 	XGrabServer(dpy);
+
+	// Mapping the window, hide its icon
 	if(Tmp_win->icon && Tmp_win->icon->w) {
 		XUnmapWindow(dpy, Tmp_win->icon->w);
 	}
+
+	// Map up the titlebar and everything else inside the frame
 	if(Tmp_win->title_w) {
 		XMapSubwindows(dpy, Tmp_win->title_w);
 	}
 	XMapSubwindows(dpy, Tmp_win->frame);
-	if(Scr->Focus != Tmp_win && Tmp_win->hilite_wl) {
-		XUnmapWindow(dpy, Tmp_win->hilite_wl);
+
+	// If it's not focused, unmap the hilite's.  Else, unmap the
+	// lolite's.
+	if(Scr->Focus != Tmp_win) {
+		if(Tmp_win->hilite_wl) {
+			XUnmapWindow(dpy, Tmp_win->hilite_wl);
+		}
+		if(Tmp_win && Tmp_win->hilite_wr) {
+			XUnmapWindow(dpy, Tmp_win->hilite_wr);
+		}
 	}
-	if(Scr->Focus != Tmp_win && Tmp_win->hilite_wr) {
-		XUnmapWindow(dpy, Tmp_win->hilite_wr);
-	}
-	if(Scr->Focus == Tmp_win && Tmp_win->lolite_wl) {
-		XUnmapWindow(dpy, Tmp_win->lolite_wl);
-	}
-	if(Scr->Focus == Tmp_win && Tmp_win->lolite_wr) {
-		XUnmapWindow(dpy, Tmp_win->lolite_wr);
+	else {
+		if(Tmp_win->lolite_wl) {
+			XUnmapWindow(dpy, Tmp_win->lolite_wl);
+		}
+		if(Tmp_win->lolite_wr) {
+			XUnmapWindow(dpy, Tmp_win->lolite_wr);
+		}
 	}
 
+	// Now map the frame itself (which brings all the rest into view)
 	XMapWindow(dpy, Tmp_win->frame);
+
 	XUngrabServer(dpy);
 	XFlush(dpy);
+
+	// Set the flags
 	Tmp_win->mapped = true;
 	Tmp_win->isicon = false;
 	Tmp_win->icon_on = false;
