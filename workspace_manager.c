@@ -141,6 +141,9 @@ CreateWorkSpaceManager(void)
 		// [re]starting in.
 		vsmapbuf = CtwmGetVScreenMap(dpy, Scr->Root);
 		if(vsmapbuf != NULL) {
+			// Property is a comma-separate list of the history, and we
+			// only care about the most recent, so chop off anything but
+			// the first.
 			vsmap = strtok(vsmapbuf, ",");
 		}
 		else {
