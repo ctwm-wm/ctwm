@@ -1011,11 +1011,11 @@ ctwm_main(int argc, char *argv[])
 	// XXX This doesn't seem right?
 	RestartPreviousState = true;
 
-	// Do some late initialization
-	HandlingEvents = true;
+	// Set vars to enable animation bits
 	StartAnimation();
 
 	// Main loop.
+	HandlingEvents = true;
 	HandleEvents();
 
 	// Should never get here...
