@@ -117,6 +117,9 @@ RestoreWinConfig(TwmWindow *tmp)
 		if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
 			int xbox, ybox;
 			unsigned int j_bw;
+			// XXX This isn't right, right?  This will give coords
+			// relative to the window box, but we're using them relative
+			// to the real screen root?
 			if(XGetGeometry(dpy, tmp->frame, &JunkRoot, &xbox, &ybox,
 			                &JunkWidth, &JunkHeight, &j_bw, &JunkDepth)) {
 				ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
