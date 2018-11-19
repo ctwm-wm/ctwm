@@ -83,11 +83,9 @@ InitWorkSpaceManagerContext(void)
  * (and after config file processing).
  */
 void
-ConfigureWorkSpaceManager(void)
+ConfigureWorkSpaceManager(ScreenInfo *scr)
 {
-	VirtualScreen *vs;
-
-	for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
+	for(VirtualScreen *vs = scr->vScreenList; vs != NULL; vs = vs->next) {
 		/*
 		 * Make sure this is all properly initialized to nothing.  Otherwise
 		 * bad and undefined behavior can show up in certain cases (e.g.,
@@ -96,7 +94,7 @@ ConfigureWorkSpaceManager(void)
 		 * e.g.  f.menu "TwmWindows".)
 		 */
 		WorkSpaceWindow *wsw = calloc(1, sizeof(WorkSpaceWindow));
-		wsw->state = Scr->workSpaceMgr.initialstate;
+		wsw->state = scr->workSpaceMgr.initialstate;
 		vs->wsw = wsw;
 	}
 }

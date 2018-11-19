@@ -648,7 +648,7 @@ ctwm_main(int argc, char *argv[])
 #endif /* EWMH */
 
 		// Setup WSM[s] (per-vscreen)
-		ConfigureWorkSpaceManager();
+		ConfigureWorkSpaceManager(Scr);
 
 
 		/*
