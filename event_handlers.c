@@ -3114,7 +3114,7 @@ void HandleEnterNotify(void)
 				Scr->rooth = vs->h;
 				Scr->currentvs = vs;
 #if 0
-				fprintf(stderr, "entering new vs : 0x%x, 0x%x, %d, %d, %d, %d\n",
+				fprintf(stderr, "entering new vs : %p, 0x%lx, %d, %d, %d, %d\n",
 				        vs, Scr->Root, vs->x, vs->y, vs->w, vs->h);
 #endif
 				return;
