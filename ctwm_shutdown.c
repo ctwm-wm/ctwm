@@ -158,9 +158,21 @@ RestoreForShutdown(Time mytime)
 		// Force reinstalling any colormaps
 		InstallColormaps(0, &Scr->RootColormaps);
 
-		// Put all the windows back where they'd be if we weren't here
-		for(TwmWindow *tmp = Scr->FirstWindow; tmp != NULL; tmp = tmp->next) {
-			RestoreWinConfig(tmp);
+		// Pull all the windows out of their frames and reposition them
+		// where the frame was.  This will preserve their positions when
+		// we restart, or put them back where they were before we
+		// started.  Do it from the bottom up of our stacking order to
+		// preserve the stacking.
+		//
+		// XXX We used to call RestoreWinConfig() instead of this, which
+		// does a lot more work, but doesn't reparent.  However, I can't
+		// tell that it's actually _useful_ work, compared to just "put
+		// where the frame is".  And it won't preserve the stacking
+		// position; we need to reparent back to the root to be able to
+		// set the bare windows' stacking.
+		for(TwmWindow *tw = OtpBottomWin() ; tw != NULL
+		                ; tw = OtpNextWinUp(tw)) {
+			XReparentWindow(dpy, tw->w, Scr->Root, tw->frame_x, tw->frame_y);
 		}
 
 		// We're not actually "letting to" of the windows, by reparenting
