@@ -2099,14 +2099,12 @@ void HandleMapNotify(void)
 		XUnmapWindow(dpy, Tmp_win->icon->w);
 	}
 
-	// Map up the titlebar and everything else inside the frame
-	if(Tmp_win->title_w) {
-		XMapSubwindows(dpy, Tmp_win->title_w);
-	}
+	// Map up everything inside the frame (not the frame itself, so if it
+	// wasn't already up, nothing will show yet)
 	XMapSubwindows(dpy, Tmp_win->frame);
 
-	// If it's not focused, unmap the hilite's.  Else, unmap the
-	// lolite's.
+	// Choose which of the hi/lolite's should be left up, based on the
+	// focus
 	if(Scr->Focus != Tmp_win) {
 		if(Tmp_win->hilite_wl) {
 			XUnmapWindow(dpy, Tmp_win->hilite_wl);
