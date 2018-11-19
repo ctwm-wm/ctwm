@@ -174,13 +174,6 @@ RestoreForShutdown(Time mytime)
 		                ; tw = OtpNextWinUp(tw)) {
 			XReparentWindow(dpy, tw->w, Scr->Root, tw->frame_x, tw->frame_y);
 		}
-
-		// We're not actually "letting to" of the windows, by reparenting
-		// out of the frame, or cleaning up the TwmWindow struct, etc.
-		// This only gets called in preparation for us going away by
-		// shutting down or restarting, so cleaning up our internal state
-		// is a waste of time.  And X's SaveSet handling will deal with
-		// reparenting the windows back away from us when we go away.
 	}
 
 	XUngrabServer(dpy);
