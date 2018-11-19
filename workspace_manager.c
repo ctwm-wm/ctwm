@@ -133,7 +133,7 @@ CreateWorkSpaceManager(void)
 	 * each vscreen (since they have to be displayed simultaneously).
 	 */
 	{
-		WorkSpace *ws, *fws;
+		WorkSpace *ws;
 		char *vsmapbuf, *vsmap;
 
 		// Get the workspace name that's up on this vscreen.  This is
@@ -156,12 +156,7 @@ CreateWorkSpaceManager(void)
 		ws = Scr->workSpaceMgr.workSpaceList;
 		for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 			WorkSpaceWindow *wsw = vs->wsw;
-			if(vsmap) {
-				fws = GetWorkspace(vsmap);
-			}
-			else {
-				fws = NULL;
-			}
+			WorkSpace *fws = GetWorkspace(vsmap);
 			if(fws) {
 				wsw->currentwspc = fws;
 				vsmap = strtok(NULL, ",");
