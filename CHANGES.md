@@ -32,6 +32,9 @@
    to colors are a likely suspect).  Checking configs for multi-Screen
    setups will now properly check all of them as well.
 
+1. When restarting ctwm, the icon managers for the current workspace will
+   now initially show up, rather than those for first WS.
+
 
 
 ## 4.0.2  (2018-08-25)
