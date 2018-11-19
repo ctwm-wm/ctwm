@@ -2206,6 +2206,8 @@ void HandleUnmapNotify(void)
 			// Didn't get reparented, so we should do it ourselves
 			XReparentWindow(dpy, Event.xunmap.window, Tmp_win->attr.root,
 			                dstx, dsty);
+			// XXX Need to think more about just what the roots and
+			// coords are here...
 			RestoreWinConfig(Tmp_win);
 		}
 		XRemoveFromSaveSet(dpy, Event.xunmap.window);
