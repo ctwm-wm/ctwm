@@ -77,9 +77,9 @@ InitWorkSpaceManagerContext(void)
 }
 
 
-/*
+/**
  * Prep up structures for WSM windows in each VS.  Called (for each
- * screen) in startup after InitVirtualScreens() has setup the VS stuff
+ * Screen) in startup after InitVirtualScreens() has setup the VS stuff
  * (and after config file processing).
  */
 void
