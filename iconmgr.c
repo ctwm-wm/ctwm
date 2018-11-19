@@ -39,6 +39,7 @@
 #include "otp.h"
 #include "add_window.h"
 #include "gram.tab.h"
+#include "vscreen.h"
 #include "win_decorations.h"
 #include "win_resize.h"
 #include "win_utils.h"
@@ -172,24 +173,24 @@ void CreateIconManagers(void)
 
 
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
-			/*
-			 * SetupOccupation() called from AddWindow() doesn't setup
-			 * occupation for icon managers, nor clear vs if occupation lacks.
-			 *
-			 * There is no Scr->currentvs->wsw->currentwspc set up this
-			 * early, so we can't check with that; the best check we can do
-			 * is use ws->number.  This may be incorrect when re-starting
-			 * ctwm.
-			 */
+
+			// SetupOccupation() called from AddWindow() doesn't setup
+			// occupation for icon managers, nor clear vs if occupation
+			// lacks.  So make it occupy the one we're setting up, or the
+			// 1st if we ran out somehow...
 			if(ws) {
 				p->twm_win->occupation = 1 << ws->number;
-				if(ws->number > 0) {
+
+				// ConfigureWorkSpaceManager() ran before us, so we can
+				// tell whether we're in the ws to reveal this IM.
+				if(ws->number != Scr->currentvs->wsw->currentwspc->number) {
 					p->twm_win->vs = NULL;
 				}
 			}
 			else {
 				p->twm_win->occupation = 1;
 			}
+
 #ifdef DEBUG_ICONMGR
 			fprintf(stderr,
 			        "CreateIconManagers: IconMgr %p: twm_win=%p win=0x%lx "
