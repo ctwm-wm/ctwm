@@ -187,9 +187,9 @@ void CreateIconManagers(void)
 			}
 #ifdef DEBUG_ICONMGR
 			fprintf(stderr,
-			        "CreateIconManagers: IconMgr %p: twm_win=%p name='%s' "
-			        "x=%d y=%d w=%d h=%d occupation=%x\n",
-			        p, p->twm_win, p->name,
+			        "CreateIconManagers: IconMgr %p: twm_win=%p win=0x%lx "
+			        "name='%s' x=%d y=%d w=%d h=%d occupation=%x\n",
+			        p, p->twm_win, p->twm_win->w,p->name,
 			        gx, gy,  p->width, p->height, p->twm_win->occupation);
 #endif
 
