@@ -136,6 +136,9 @@ CreateWorkSpaceManager(void)
 		WorkSpace *ws, *fws;
 		char *vsmapbuf, *vsmap;
 
+		// Get the workspace name that's up on this vscreen.  This is
+		// where the startup process actually sets what workspace we're
+		// [re]starting in.
 		vsmapbuf = CtwmGetVScreenMap(dpy, Scr->Root);
 		if(vsmapbuf != NULL) {
 			vsmap = strtok(vsmapbuf, ",");
