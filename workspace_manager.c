@@ -133,7 +133,7 @@ CreateWorkSpaceManager(void)
 	 * each vscreen (since they have to be displayed simultaneously).
 	 */
 	{
-		WorkSpace *ws;
+		WorkSpace *ws = Scr->workSpaceMgr.workSpaceList;
 		char *vsmapbuf, *vsmap;
 
 		// Get the workspace name that's up on this vscreen.  This is
@@ -141,9 +141,9 @@ CreateWorkSpaceManager(void)
 		// [re]starting in.
 		vsmapbuf = CtwmGetVScreenMap(dpy, Scr->Root);
 		if(vsmapbuf != NULL) {
-			// Property is a comma-separate list of the history, and we
-			// only care about the most recent, so chop off anything but
-			// the first.
+			// Property is a comma-separate list of the workspaces for
+			// each vscreen, in magic order.  So we start by chopping off
+			// the first and then re-chop in the loop below.
 			vsmap = strtok(vsmapbuf, ",");
 		}
 		else {
@@ -156,10 +156,13 @@ CreateWorkSpaceManager(void)
 		 * disappear in that case depending on what's changed.
 		 * (depending on where they were on the actual screen.
 		 */
-		ws = Scr->workSpaceMgr.workSpaceList;
 		for(VirtualScreen *vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 			WorkSpaceWindow *wsw = vs->wsw;
 			WorkSpace *fws = GetWorkspace(vsmap);
+
+			// If we have a current ws for this vs, assign it in, and
+			// loop onward to the ws for the next vs.  For any we don't
+			// have a default for, the default ws is the first.
 			if(fws) {
 				wsw->currentwspc = fws;
 				vsmap = strtok(NULL, ",");
@@ -168,6 +171,8 @@ CreateWorkSpaceManager(void)
 				wsw->currentwspc = ws;
 				ws = ws->next;
 			}
+
+			// Build up the WSM window.
 			CreateWorkSpaceManagerWindow(vs);
 		}
 
