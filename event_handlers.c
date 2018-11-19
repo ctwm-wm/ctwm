@@ -2192,17 +2192,18 @@ void HandleUnmapNotify(void)
 		                  ReparentNotify, &ev);
 		SetMapStateProp(Tmp_win, WithdrawnState);
 		if(reparented) {
-			if(Tmp_win->old_bw) XSetWindowBorderWidth(dpy,
-				                Event.xunmap.window,
-				                Tmp_win->old_bw);
+			// It got reparented, get rid of our alterations.
+			if(Tmp_win->old_bw) {
+				XSetWindowBorderWidth(dpy,
+				                      Event.xunmap.window,
+				                      Tmp_win->old_bw);
+			}
 			if(Tmp_win->wmhints->flags & IconWindowHint) {
 				XUnmapWindow(dpy, Tmp_win->wmhints->icon_window);
 			}
 		}
 		else {
-			// Couldn't XTranslateCoordinates(), so the window isn't on
-			// the Screen we think it is.  Move it onto that root and
-			// then try releaseing it.
+			// Didn't get reparented, so we should do it ourselves
 			XReparentWindow(dpy, Event.xunmap.window, Tmp_win->attr.root,
 			                dstx, dsty);
 			RestoreWinConfig(Tmp_win);
