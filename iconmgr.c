@@ -90,6 +90,11 @@ void CreateIconManagers(void)
 		Scr->siconifyPm = Create2DIconManagerIcon();
 	}
 
+	// This loop is confusing.  The inner for() loops p over the ->next
+	// elements in the list, which is all the iconmgr's in the workspace.
+	// The outer for() loops q over the ->nextv (<-- extra 'v' on the
+	// end), which is a link to the head of the iconmgr list for the
+	// _next_ workspace.
 	ws = Scr->workSpaceMgr.workSpaceList;
 	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
 		for(IconMgr *p = q; p != NULL; p = p->next) {
