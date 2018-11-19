@@ -647,7 +647,8 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitVirtualRoots(Scr);
 #endif /* EWMH */
 
-		// Setup WSM[s] (per-vscreen)
+		// Setup WSM[s] (per-vscreen).  This also sets up the about the
+		// workspaces for each vscreen and which is currently displayed.
 		ConfigureWorkSpaceManager(Scr);
 
 
