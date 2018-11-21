@@ -35,9 +35,6 @@ static void RestoreForShutdown(Time mytime);
 void
 RestoreWinConfig(TwmWindow *tmp)
 {
-	XWindowChanges xwc;
-	unsigned int bw;
-
 	// If this window is "unmapped" by moving it way offscreen, and is in
 	// that state, move it back onto the window.
 	if(tmp->UnmapByMovingFarAway && !visible(tmp)) {
@@ -51,10 +48,13 @@ RestoreWinConfig(TwmWindow *tmp)
 
 	// Look up geometry bits.  Failure means ???  Maybe the window
 	// disappeared on us?
-	if(XGetGeometry(dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y,
-	                &JunkWidth, &JunkHeight, &bw, &JunkDepth)) {
+	if(XGetGeometry(dpy, tmp->w, &JunkRoot, &JunkX, &JunkY,
+	                &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth)) {
 		int gravx, gravy;
 		int newx, newy;
+
+		// Things adjusting by the border have to move our border size,
+		// but subtract away from that the old border we're restoring.
 		const int borders = tmp->frame_bw + tmp->frame_bw3D - tmp->old_bw;
 
 		// Get gravity bits to know how to move stuff around when we take
