@@ -57,12 +57,6 @@ RestoreWinConfig(TwmWindow *tmp)
 		int newx, newy;
 		const int borders = tmp->frame_bw + tmp->frame_bw3D - tmp->old_bw;
 
-fprintf(stderr, "%s: border %d/%d title %d frame +%d+%d xwc +%d+%d\n",
-		tmp->name,
-		tmp->frame_bw, tmp->frame_bw3D, tmp->title_height,
-		tmp->frame_x, tmp->frame_y,
-		xwc.x, xwc.y);
-
 		// Get gravity bits to know how to move stuff around when we take
 		// away the decorations.
 		GetGravityOffsets(tmp, &gravx, &gravy);
