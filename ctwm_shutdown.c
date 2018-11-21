@@ -55,6 +55,11 @@ RestoreWinConfig(TwmWindow *tmp)
 	                &JunkWidth, &JunkHeight, &bw, &JunkDepth)) {
 		int gravx, gravy;
 		unsigned int mask;
+fprintf(stderr, "%s: border %d/%d title %d frame +%d+%d xwc +%d+%d\n",
+		tmp->name,
+		tmp->frame_bw, tmp->frame_bw3D, tmp->title_height,
+		tmp->frame_x, tmp->frame_y,
+		xwc.x, xwc.y);
 
 		// Get gravity bits to know how to move stuff around when we take
 		// away the decorations.
