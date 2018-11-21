@@ -28,9 +28,11 @@ static void RestoreForShutdown(Time mytime);
 
 /**
  * Put a window back where it should be if we don't (any longer) control
- * it.  Essentially cancels out the repositioning due to our frame and
- * decorations, and restores the original border it had before we put our
- * own on it.
+ * it and reparent it back up to the root.  This leaves it where it was
+ * before we started (well, adjusted by any moves we've made to it
+ * since), and placed so that if we restart and take it back over, it'll
+ * wind up right where it is now, so restarting doesn't shift windows all
+ * over the place.
  */
 void
 RestoreWinConfig(TwmWindow *tmp)
