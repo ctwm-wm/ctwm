@@ -60,6 +60,18 @@ RestoreWinConfig(TwmWindow *tmp)
 		// away the decorations.
 		GetGravityOffsets(tmp, &gravx, &gravy);
 
+		// We have to move the window to where it should be "outside" of
+		// our frame.  This varies depending on the window gravity
+		// detail, and we have to account for that, since on re-startup
+		// we'll be doing it to resposition it after we re-wrap it.
+		// e.g., in simple "NorthWest" gravity, we just make the frame
+		// start where the window did, and shift the app window right (by
+		// the border width) and down (by the border width + titlebar).
+		// However, "SouthEast" gravity gets shifted left and up by the
+		// order width, so the bottom right corner of the frame is where
+		// the windows' was.  Compare a window with geometry "+0+0" with
+		// one using "-0-0".
+
 		// Shift for stripping out the titlebar and 3d borders
 		if(gravy < 0) {
 			xwc.y -= tmp->title_height;
