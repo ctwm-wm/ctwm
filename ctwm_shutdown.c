@@ -35,6 +35,13 @@ static void RestoreForShutdown(Time mytime);
 void
 RestoreWinConfig(TwmWindow *tmp)
 {
+	int gravx, gravy;
+	int newx, newy;
+
+	// Things adjusting by the border have to move our border size, but
+	// subtract away from that the old border we're restoring.
+	const int borders = tmp->frame_bw + tmp->frame_bw3D - tmp->old_bw;
+
 	// If this window is "unmapped" by moving it way offscreen, and is in
 	// that state, move it back onto the window.
 	if(tmp->UnmapByMovingFarAway && !visible(tmp)) {
@@ -53,102 +60,96 @@ RestoreWinConfig(TwmWindow *tmp)
 		// Well, give up...
 		return;
 	}
-		int gravx, gravy;
-		int newx, newy;
 
-		// Things adjusting by the border have to move our border size,
-		// but subtract away from that the old border we're restoring.
-		const int borders = tmp->frame_bw + tmp->frame_bw3D - tmp->old_bw;
+	// Get gravity bits to know how to move stuff around when we take
+	// away the decorations.
+	GetGravityOffsets(tmp, &gravx, &gravy);
 
-		// Get gravity bits to know how to move stuff around when we take
-		// away the decorations.
-		GetGravityOffsets(tmp, &gravx, &gravy);
-
-		// We want to move the window to where it should be "outside" of
-		// our frame.  This varies depending on the window gravity
-		// detail, and we have to account for that, since on re-startup
-		// we'll be doing it to resposition it after we re-wrap it.
-		//
-		// e.g., in simple "NorthWest" gravity, we just made the frame
-		// start where the window did, and shifted the app window right
-		// (by the border width) and down (by the border width +
-		// titlebar).  However, "SouthEast" gravity means the bottom
-		// right of the frame is where thw windows' was, and the window
-		// itself shifted left/up by the border.  Compare a window with
-		// specified geometry "+0+0" with one using "-0-0".
-		newx = tmp->frame_x;
-		newy = tmp->frame_y;
+	// We want to move the window to where it should be "outside" of our
+	// frame.  This varies depending on the window gravity detail, and we
+	// have to account for that, since on re-startup we'll be doing it to
+	// resposition it after we re-wrap it.
+	//
+	// e.g., in simple "NorthWest" gravity, we just made the frame start
+	// where the window did, and shifted the app window right (by the
+	// border width) and down (by the border width + titlebar).  However,
+	// "SouthEast" gravity means the bottom right of the frame is where
+	// thw windows' was, and the window itself shifted left/up by the
+	// border.  Compare a window with specified geometry "+0+0" with one
+	// using "-0-0".
+	newx = tmp->frame_x;
+	newy = tmp->frame_y;
 
 
-		// So, first consider the north/south gravity.  If gravity is
-		// North, we put the top of the frame where the window was and
-		// shifted everything inside down, so the top of the frame now is
-		// where the window should be put.  With South-y gravity, the
-		// window should wind up at the bottom of the frame, which means
-		// we need to shift it down by the titlebar height, plus twice
-		// the border width.  But if the vertical gravity is neutral,
-		// then the window needs to wind up staying right where it is,
-		// because we built the frame around it without moving it.
-		//
-		// Previous code here (and code elsewhere) expressed this
-		// calculation by the rather confusing idiom ((gravy + 1) *
-		// border_width), which gives the right answer, but is confusing
-		// as hell...
-		if(gravy < 0) {
-			// North; where the frame starts (already set)
+	// So, first consider the north/south gravity.  If gravity is North,
+	// we put the top of the frame where the window was and shifted
+	// everything inside down, so the top of the frame now is where the
+	// window should be put.  With South-y gravity, the window should
+	// wind up at the bottom of the frame, which means we need to shift
+	// it down by the titlebar height, plus twice the border width.  But
+	// if the vertical gravity is neutral, then the window needs to wind
+	// up staying right where it is, because we built the frame around it
+	// without moving it.
+	//
+	// Previous code here (and code elsewhere) expressed this calculation
+	// by the rather confusing idiom ((gravy + 1) * border_width), which
+	// gives the right answer, but is confusing as hell...
+	if(gravy < 0) {
+		// North; where the frame starts (already set)
+	}
+	else if(gravy > 0) {
+		// South; shift down title + 2*border
+		newy += tmp->title_height + 2 * borders;
+	}
+	else {
+		// Neutral; down by the titlebar + border.
+		newy += tmp->title_height + borders;
+	}
+
+
+	// Now east/west.  West means align with the frame start, easy means
+	// align with the frame right edge, neutral means where it already
+	// is.
+	if(gravx < 0) {
+		// West; it's already right
+	}
+	else if(gravx > 0) {
+		// East; shift over by 2*border
+		newx += 2 * borders;
+	}
+	else {
+		// Neutral; over by the left border
+		newx += borders;
+	}
+
+
+	// If it's in a WindowBox, reparent the frame back up to our real root
+	if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
+		int xbox, ybox;
+		unsigned int j_bw;
+
+		// XXX This isn't right, right?  This will give coords relative
+		// to the window box, but we're using them relative to the real
+		// screen root?
+		if(XGetGeometry(dpy, tmp->frame, &JunkRoot, &xbox, &ybox,
+		                &JunkWidth, &JunkHeight, &j_bw, &JunkDepth)) {
+			ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
 		}
-		else if(gravy > 0) {
-			// South; shift down title + 2*border
-			newy += tmp->title_height + 2 * borders;
-		}
-		else {
-			// Neutral; down by the titlebar + border.
-			newy += tmp->title_height + borders;
-		}
+	}
 
 
-		// Now east/west.  West means align with the frame start, easy
-		// means align with the frame right edge, neutral means where it
-		// already is.
-		if(gravx < 0) {
-			// West; it's already right
-		}
-		else if(gravx > 0) {
-			// East; shift over by 2*border
-			newx += 2 * borders;
-		}
-		else {
-			// Neutral; over by the left border
-			newx += borders;
-		}
+	// Restore the original window border if there were one
+	if(tmp->old_bw) {
+		XSetWindowBorderWidth(dpy, tmp->w, tmp->old_bw);
+	}
 
+	// Reparent and move back to where it otter be
+	XReparentWindow(dpy, tmp->w, Scr->Root, newx, newy);
 
-		// If it's in a WindowBox, reparent the frame back up to our real root
-		if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
-			int xbox, ybox;
-			unsigned int j_bw;
-			// XXX This isn't right, right?  This will give coords
-			// relative to the window box, but we're using them relative
-			// to the real screen root?
-			if(XGetGeometry(dpy, tmp->frame, &JunkRoot, &xbox, &ybox,
-			                &JunkWidth, &JunkHeight, &j_bw, &JunkDepth)) {
-				ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
-			}
-		}
-
-
-		// Restore the original window border if there were one
-		if(tmp->old_bw) {
-			XSetWindowBorderWidth(dpy, tmp->w, tmp->old_bw);
-		}
-
-		// Reparent and move back to where it otter be
-		XReparentWindow(dpy, tmp->w, Scr->Root, newx, newy);
-
-		// If it came with a pre-made icon window, hide it
-		if(tmp->wmhints->flags & IconWindowHint) {
-			XUnmapWindow(dpy, tmp->wmhints->icon_window);
-		}
+	// If it came with a pre-made icon window, hide it
+	if(tmp->wmhints->flags & IconWindowHint) {
+		XUnmapWindow(dpy, tmp->wmhints->icon_window);
+	}
 
 	// Done
 	return;
