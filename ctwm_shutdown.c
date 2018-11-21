@@ -172,7 +172,11 @@ RestoreForShutdown(Time mytime)
 		// set the bare windows' stacking.
 		for(TwmWindow *tw = OtpBottomWin() ; tw != NULL
 		                ; tw = OtpNextWinUp(tw)) {
-			XReparentWindow(dpy, tw->w, Scr->Root, tw->frame_x, tw->frame_y);
+			if(tw->isiconmgr || tw->iswspmgr || tw->isoccupy) {
+				// Don't bother with internals...
+				continue;
+			}
+			RestoreWinConfig(tw);
 		}
 	}
 
