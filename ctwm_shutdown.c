@@ -46,10 +46,13 @@ RestoreWinConfig(TwmWindow *tmp)
 		Squeeze(tmp);
 	}
 
-	// Look up geometry bits.  Failure means ???  Maybe the window
-	// disappeared on us?
+	// This is apparently our standard "is this window still around?"
+	// idiom.
 	if(XGetGeometry(dpy, tmp->w, &JunkRoot, &JunkX, &JunkY,
-	                &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth)) {
+	                &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0) {
+		// Well, give up...
+		return;
+	}
 		int gravx, gravy;
 		int newx, newy;
 
@@ -146,7 +149,6 @@ RestoreWinConfig(TwmWindow *tmp)
 		if(tmp->wmhints->flags & IconWindowHint) {
 			XUnmapWindow(dpy, tmp->wmhints->icon_window);
 		}
-	}
 
 	// Done
 	return;
