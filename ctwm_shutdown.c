@@ -76,9 +76,10 @@ RestoreWinConfig(TwmWindow *tmp)
 	// where the window did, and shifted the app window right (by the
 	// border width) and down (by the border width + titlebar).  However,
 	// "SouthEast" gravity means the bottom right of the frame is where
-	// thw windows' was, and the window itself shifted left/up by the
-	// border.  Compare a window with specified geometry "+0+0" with one
-	// using "-0-0".
+	// the windows' was, and the window itself shifted left/up by the
+	// border.  Compare e.g. an xterm with -geometry "+0+0" with one
+	// using "-0-0" as an easy trick to make windows with different
+	// geoms.
 	newx = tmp->frame_x;
 	newy = tmp->frame_y;
 
@@ -109,11 +110,11 @@ RestoreWinConfig(TwmWindow *tmp)
 	}
 
 
-	// Now east/west.  West means align with the frame start, easy means
+	// Now east/west.  West means align with the frame start, east means
 	// align with the frame right edge, neutral means where it already
 	// is.
 	if(gravx < 0) {
-		// West; it's already right
+		// West; it's already correct
 	}
 	else if(gravx > 0) {
 		// East; shift over by 2*border
