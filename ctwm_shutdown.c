@@ -177,10 +177,10 @@ RestoreForShutdown(Time mytime)
 		InstallColormaps(0, &Scr->RootColormaps);
 
 		// Pull all the windows out of their frames and reposition them
-		// where the frame was.  This will preserve their positions when
-		// we restart, or put them back where they were before we
-		// started.  Do it from the bottom up of our stacking order to
-		// preserve the stacking.
+		// where the frame was, with approprate adjustments for gravity.
+		// This will preserve their positions when we restart, or put
+		// them back where they were before we started.  Do it from the
+		// bottom up of our stacking order to preserve the stacking.
 		for(TwmWindow *tw = OtpBottomWin() ; tw != NULL
 		                ; tw = OtpNextWinUp(tw)) {
 			if(tw->isiconmgr || tw->iswspmgr || tw->isoccupy) {
