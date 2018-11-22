@@ -28,15 +28,21 @@ static void RestoreForShutdown(Time mytime);
 
 /**
  * Put a window back where it should be if we don't (any longer) control
- * it.  Essentially cancels out the repositioning due to our frame and
- * decorations, and restores the original border it had before we put our
- * own on it.
+ * it and reparent it back up to the root.  This leaves it where it was
+ * before we started (well, adjusted by any moves we've made to it
+ * since), and placed so that if we restart and take it back over, it'll
+ * wind up right where it is now, so restarting doesn't shift windows all
+ * over the place.
  */
 void
 RestoreWinConfig(TwmWindow *tmp)
 {
-	XWindowChanges xwc;
-	unsigned int bw;
+	int gravx, gravy;
+	int newx, newy;
+
+	// Things adjusting by the border have to move our border size, but
+	// subtract away from that the old border we're restoring.
+	const int borders = tmp->frame_bw + tmp->frame_bw3D - tmp->old_bw;
 
 	// If this window is "unmapped" by moving it way offscreen, and is in
 	// that state, move it back onto the window.
@@ -49,87 +55,103 @@ RestoreWinConfig(TwmWindow *tmp)
 		Squeeze(tmp);
 	}
 
-	// Look up geometry bits.  Failure means ???  Maybe the window
-	// disappeared on us?
-	if(XGetGeometry(dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y,
-	                &JunkWidth, &JunkHeight, &bw, &JunkDepth)) {
-		int gravx, gravy;
-		unsigned int mask;
+	// This is apparently our standard "is this window still around?"
+	// idiom.
+	if(XGetGeometry(dpy, tmp->w, &JunkRoot, &JunkX, &JunkY,
+	                &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0) {
+		// Well, give up...
+		return;
+	}
 
-		// Get gravity bits to know how to move stuff around when we take
-		// away the decorations.
-		GetGravityOffsets(tmp, &gravx, &gravy);
+	// Get gravity bits to know how to move stuff around when we take
+	// away the decorations.
+	GetGravityOffsets(tmp, &gravx, &gravy);
 
-		// Shift for stripping out the titlebar and 3d borders
-		if(gravy < 0) {
-			xwc.y -= tmp->title_height;
+	// We want to move the window to where it should be "outside" of our
+	// frame.  This varies depending on the window gravity detail, and we
+	// have to account for that, since on re-startup we'll be doing it to
+	// resposition it after we re-wrap it.
+	//
+	// e.g., in simple "NorthWest" gravity, we just made the frame start
+	// where the window did, and shifted the app window right (by the
+	// border width) and down (by the border width + titlebar).  However,
+	// "SouthEast" gravity means the bottom right of the frame is where
+	// the windows' was, and the window itself shifted left/up by the
+	// border.  Compare e.g. an xterm with -geometry "+0+0" with one
+	// using "-0-0" as an easy trick to make windows with different
+	// geoms.
+	newx = tmp->frame_x;
+	newy = tmp->frame_y;
+
+
+	// So, first consider the north/south gravity.  If gravity is North,
+	// we put the top of the frame where the window was and shifted
+	// everything inside down, so the top of the frame now is where the
+	// window should be put.  With South-y gravity, the window should
+	// wind up at the bottom of the frame, which means we need to shift
+	// it down by the titlebar height, plus twice the border width.  But
+	// if the vertical gravity is neutral, then the window needs to wind
+	// up staying right where it is, because we built the frame around it
+	// without moving it.
+	//
+	// Previous code here (and code elsewhere) expressed this calculation
+	// by the rather confusing idiom ((gravy + 1) * border_width), which
+	// gives the right answer, but is confusing as hell...
+	if(gravy < 0) {
+		// North; where the frame starts (already set)
+	}
+	else if(gravy > 0) {
+		// South; shift down title + 2*border
+		newy += tmp->title_height + 2 * borders;
+	}
+	else {
+		// Neutral; down by the titlebar + border.
+		newy += tmp->title_height + borders;
+	}
+
+
+	// Now east/west.  West means align with the frame start, east means
+	// align with the frame right edge, neutral means where it already
+	// is.
+	if(gravx < 0) {
+		// West; it's already correct
+	}
+	else if(gravx > 0) {
+		// East; shift over by 2*border
+		newx += 2 * borders;
+	}
+	else {
+		// Neutral; over by the left border
+		newx += borders;
+	}
+
+
+	// If it's in a WindowBox, reparent the frame back up to our real root
+	if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
+		int xbox, ybox;
+		unsigned int j_bw;
+
+		// XXX This isn't right, right?  This will give coords relative
+		// to the window box, but we're using them relative to the real
+		// screen root?
+		if(XGetGeometry(dpy, tmp->frame, &JunkRoot, &xbox, &ybox,
+		                &JunkWidth, &JunkHeight, &j_bw, &JunkDepth)) {
+			ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
 		}
-		xwc.x += gravx * tmp->frame_bw3D;
-		xwc.y += gravy * tmp->frame_bw3D;
-
-		// If the window used to have a border size different from what
-		// it has now (from us), restore the old.
-		if(bw != tmp->old_bw) {
-			int xoff, yoff;
-
-			if(!Scr->ClientBorderWidth) {
-				// We used BorderWidth
-				xoff = gravx;
-				yoff = gravy;
-			}
-			else {
-				// We used the original
-				xoff = 0;
-				yoff = 0;
-			}
-
-			xwc.x -= (xoff + 1) * tmp->old_bw;
-			xwc.y -= (yoff + 1) * tmp->old_bw;
-		}
-
-		// Strip out our 2d borders, if we had a size other than the
-		// win's original.
-		if(!Scr->ClientBorderWidth) {
-			xwc.x += gravx * tmp->frame_bw;
-			xwc.y += gravy * tmp->frame_bw;
-		}
+	}
 
 
-		// Now put together the adjustment.  We'll always be moving the
-		// X/Y coords.
-		mask = (CWX | CWY);
-		// xwc.[xy] already set
+	// Restore the original window border if there were one
+	if(tmp->old_bw) {
+		XSetWindowBorderWidth(dpy, tmp->w, tmp->old_bw);
+	}
 
-		// May be changing the border.
-		if(bw != tmp->old_bw) {
-			xwc.border_width = tmp->old_bw;
-			mask |= CWBorderWidth;
-		}
+	// Reparent and move back to where it otter be
+	XReparentWindow(dpy, tmp->w, Scr->Root, newx, newy);
 
-#if 0
-		if(tmp->vs) {
-			xwc.x += tmp->vs->x;
-			xwc.y += tmp->vs->y;
-		}
-#endif
-
-		// If it's in a WindowBox, reparent it back up to our real root.
-		if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
-			int xbox, ybox;
-			unsigned int j_bw;
-			if(XGetGeometry(dpy, tmp->frame, &JunkRoot, &xbox, &ybox,
-			                &JunkWidth, &JunkHeight, &j_bw, &JunkDepth)) {
-				ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
-			}
-		}
-
-		// Do the move (and possibly reborder
-		XConfigureWindow(dpy, tmp->w, mask, &xwc);
-
-		// If it came with a pre-made icon window, hide it
-		if(tmp->wmhints->flags & IconWindowHint) {
-			XUnmapWindow(dpy, tmp->wmhints->icon_window);
-		}
+	// If it came with a pre-made icon window, hide it
+	if(tmp->wmhints->flags & IconWindowHint) {
+		XUnmapWindow(dpy, tmp->wmhints->icon_window);
 	}
 
 	// Done
@@ -155,20 +177,19 @@ RestoreForShutdown(Time mytime)
 		// Force reinstalling any colormaps
 		InstallColormaps(0, &Scr->RootColormaps);
 
-		// Put all the windows back where they'd be if we weren't here
-		// and map them all, since we won't be around to help the user
-		// map any that are currently iconificed.
-		for(TwmWindow *tmp = Scr->FirstWindow; tmp != NULL; tmp = tmp->next) {
-			RestoreWinConfig(tmp);
-			XMapWindow(dpy, tmp->w);
+		// Pull all the windows out of their frames and reposition them
+		// where the frame was, with approprate adjustments for gravity.
+		// This will preserve their positions when we restart, or put
+		// them back where they were before we started.  Do it from the
+		// bottom up of our stacking order to preserve the stacking.
+		for(TwmWindow *tw = OtpBottomWin() ; tw != NULL
+		                ; tw = OtpNextWinUp(tw)) {
+			if(tw->isiconmgr || tw->iswspmgr || tw->isoccupy) {
+				// Don't bother with internals...
+				continue;
+			}
+			RestoreWinConfig(tw);
 		}
-
-		// We're not actually "letting to" of the windows, by reparenting
-		// out of the frame, or cleaning up the TwmWindow struct, etc.
-		// This only gets called in preparation for us going away by
-		// shutting down or restarting, so cleaning up our internal state
-		// is a waste of time.  And X's SaveSet handling will deal with
-		// reparenting the windows back away from us when we go away.
 	}
 
 	XUngrabServer(dpy);

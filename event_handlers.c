@@ -2092,31 +2092,43 @@ void HandleMapNotify(void)
 	 * the client would think that the window has a chance of being viewable
 	 * when it really isn't.
 	 */
-
 	XGrabServer(dpy);
+
+	// Mapping the window, hide its icon
 	if(Tmp_win->icon && Tmp_win->icon->w) {
 		XUnmapWindow(dpy, Tmp_win->icon->w);
 	}
-	if(Tmp_win->title_w) {
-		XMapSubwindows(dpy, Tmp_win->title_w);
-	}
+
+	// Map up everything inside the frame (not the frame itself, so if it
+	// wasn't already up, nothing will show yet)
 	XMapSubwindows(dpy, Tmp_win->frame);
-	if(Scr->Focus != Tmp_win && Tmp_win->hilite_wl) {
-		XUnmapWindow(dpy, Tmp_win->hilite_wl);
+
+	// Choose which of the hi/lolite's should be left up, based on the
+	// focus
+	if(Scr->Focus != Tmp_win) {
+		if(Tmp_win->hilite_wl) {
+			XUnmapWindow(dpy, Tmp_win->hilite_wl);
+		}
+		if(Tmp_win && Tmp_win->hilite_wr) {
+			XUnmapWindow(dpy, Tmp_win->hilite_wr);
+		}
 	}
-	if(Scr->Focus != Tmp_win && Tmp_win->hilite_wr) {
-		XUnmapWindow(dpy, Tmp_win->hilite_wr);
-	}
-	if(Scr->Focus == Tmp_win && Tmp_win->lolite_wl) {
-		XUnmapWindow(dpy, Tmp_win->lolite_wl);
-	}
-	if(Scr->Focus == Tmp_win && Tmp_win->lolite_wr) {
-		XUnmapWindow(dpy, Tmp_win->lolite_wr);
+	else {
+		if(Tmp_win->lolite_wl) {
+			XUnmapWindow(dpy, Tmp_win->lolite_wl);
+		}
+		if(Tmp_win->lolite_wr) {
+			XUnmapWindow(dpy, Tmp_win->lolite_wr);
+		}
 	}
 
+	// Now map the frame itself (which brings all the rest into view)
 	XMapWindow(dpy, Tmp_win->frame);
+
 	XUngrabServer(dpy);
 	XFlush(dpy);
+
+	// Set the flags
 	Tmp_win->mapped = true;
 	Tmp_win->isicon = false;
 	Tmp_win->icon_on = false;
@@ -2180,19 +2192,22 @@ void HandleUnmapNotify(void)
 		                  ReparentNotify, &ev);
 		SetMapStateProp(Tmp_win, WithdrawnState);
 		if(reparented) {
-			if(Tmp_win->old_bw) XSetWindowBorderWidth(dpy,
-				                Event.xunmap.window,
-				                Tmp_win->old_bw);
+			// It got reparented, get rid of our alterations.
+			if(Tmp_win->old_bw) {
+				XSetWindowBorderWidth(dpy,
+				                      Event.xunmap.window,
+				                      Tmp_win->old_bw);
+			}
 			if(Tmp_win->wmhints->flags & IconWindowHint) {
 				XUnmapWindow(dpy, Tmp_win->wmhints->icon_window);
 			}
 		}
 		else {
-			// Couldn't XTranslateCoordinates(), so the window isn't on
-			// the Screen we think it is.  Move it onto that root and
-			// then try releaseing it.
+			// Didn't get reparented, so we should do it ourselves
 			XReparentWindow(dpy, Event.xunmap.window, Tmp_win->attr.root,
 			                dstx, dsty);
+			// XXX Need to think more about just what the roots and
+			// coords are here...
 			RestoreWinConfig(Tmp_win);
 		}
 		XRemoveFromSaveSet(dpy, Event.xunmap.window);
@@ -3114,7 +3129,7 @@ void HandleEnterNotify(void)
 				Scr->rooth = vs->h;
 				Scr->currentvs = vs;
 #if 0
-				fprintf(stderr, "entering new vs : 0x%x, 0x%x, %d, %d, %d, %d\n",
+				fprintf(stderr, "entering new vs : %p, 0x%lx, %d, %d, %d, %d\n",
 				        vs, Scr->Root, vs->x, vs->y, vs->w, vs->h);
 #endif
 				return;

@@ -39,6 +39,7 @@
 #include "otp.h"
 #include "add_window.h"
 #include "gram.tab.h"
+#include "vscreen.h"
 #include "win_decorations.h"
 #include "win_resize.h"
 #include "win_utils.h"
@@ -90,6 +91,11 @@ void CreateIconManagers(void)
 		Scr->siconifyPm = Create2DIconManagerIcon();
 	}
 
+	// This loop is confusing.  The inner for() loops p over the ->next
+	// elements in the list, which is all the iconmgr's in the workspace.
+	// The outer for() loops q over the ->nextv (<-- extra 'v' on the
+	// end), which is a link to the head of the iconmgr list for the
+	// _next_ workspace.
 	ws = Scr->workSpaceMgr.workSpaceList;
 	for(IconMgr *q = Scr->iconmgr; q != NULL; q = q->nextv) {
 		for(IconMgr *p = q; p != NULL; p = p->next) {
@@ -167,28 +173,30 @@ void CreateIconManagers(void)
 
 
 			p->twm_win = AddWindow(p->w, AWT_ICON_MANAGER, p, Scr->currentvs);
-			/*
-			 * SetupOccupation() called from AddWindow() doesn't setup
-			 * occupation for icon managers, nor clear vs if occupation lacks.
-			 *
-			 * There is no Scr->currentvs->wsw->currentwspc set up this
-			 * early, so we can't check with that; the best check we can do
-			 * is use ws->number.  This may be incorrect when re-starting
-			 * ctwm.
-			 */
+
+			// SetupOccupation() called from AddWindow() doesn't setup
+			// occupation for icon managers, nor clear vs if occupation
+			// lacks.  So make it occupy the one we're setting up, or the
+			// 1st if we ran out somehow...
 			if(ws) {
 				p->twm_win->occupation = 1 << ws->number;
-				if(ws->number > 0) {
+
+				// ConfigureWorkSpaceManager() ran before us, so we can
+				// tell whether we're in the ws to reveal this IM.
+				if(ws->number != Scr->currentvs->wsw->currentwspc->number) {
 					p->twm_win->vs = NULL;
 				}
 			}
 			else {
 				p->twm_win->occupation = 1;
 			}
+
 #ifdef DEBUG_ICONMGR
 			fprintf(stderr,
-			        "CreateIconManagers: IconMgr %p: x=%d y=%d w=%d h=%d occupation=%x\n",
-			        p, gx, gy,  p->width, p->height, p->twm_win->occupation);
+			        "CreateIconManagers: IconMgr %p: twm_win=%p win=0x%lx "
+			        "name='%s' x=%d y=%d w=%d h=%d occupation=%x\n",
+			        p, p->twm_win, p->twm_win->w, p->name,
+			        gx, gy,  p->width, p->height, p->twm_win->occupation);
 #endif
 
 			{

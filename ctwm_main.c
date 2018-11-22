@@ -594,6 +594,12 @@ ctwm_main(int argc, char *argv[])
 			numManaged++;
 		}
 
+		// If the config wants us to show the splash screen and we
+		// haven't already, do it now.
+		if(Scr->ShowWelcomeWindow && !screenmasked) {
+			MaskScreen(NULL);
+		}
+
 
 
 		/*
@@ -641,14 +647,9 @@ ctwm_main(int argc, char *argv[])
 		EwmhInitVirtualRoots(Scr);
 #endif /* EWMH */
 
-		// Setup WSM[s] (per-vscreen)
-		ConfigureWorkSpaceManager();
-
-		// If the config wants us to show the splash screen and we
-		// haven't already, do it now.
-		if(Scr->ShowWelcomeWindow && !screenmasked) {
-			MaskScreen(NULL);
-		}
+		// Setup WSM[s] (per-vscreen).  This also sets up the about the
+		// workspaces for each vscreen and which is currently displayed.
+		ConfigureWorkSpaceManager(Scr);
 
 
 		/*
@@ -1011,11 +1012,11 @@ ctwm_main(int argc, char *argv[])
 	// XXX This doesn't seem right?
 	RestartPreviousState = true;
 
-	// Do some late initialization
-	HandlingEvents = true;
+	// Set vars to enable animation bits
 	StartAnimation();
 
 	// Main loop.
+	HandlingEvents = true;
 	HandleEvents();
 
 	// Should never get here...
