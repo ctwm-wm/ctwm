@@ -11,7 +11,7 @@ add_dependencies(test_bins ctwm)
 function(ctwm_simple_unit_test TNAME)
 	set(_options )
 	set(_arg_one BIN WORKING_DIRECTORY)
-	set(_arg_multi BIN_ARGS)
+	set(_arg_multi ARGS)
 	cmake_parse_arguments(_ARGS "${_opts}" "${_arg_one}" "${_arg_multi}"
 		${ARGN})
 
@@ -39,7 +39,7 @@ function(ctwm_simple_unit_test TNAME)
 
 	# And add the test itself
 	add_test(NAME ${TNAME}
-		COMMAND $<TARGET_FILE:${BIN}> ${_ARGS_BIN_ARGS}
+		COMMAND $<TARGET_FILE:${BIN}> ${_ARGS_ARGS}
 		WORKING_DIRECTORY ${_ARGS_WORKING_DIRECTORY}
 		)
 endfunction()
