@@ -58,6 +58,20 @@ function(ctwm_simple_unit_test TNAME)
 endfunction()
 
 
+# Simple wrapper for when we want to explicitly skip a test (as opposed
+# to just silently not doing it; better UX to say we're skipping one and
+# why...)
+#
+# XXX This seems like the simplest way of actually "skip"'ing a test
+# based on configure options.  That's nuts.  REQUIRED_FILES sounds like
+# it would, but actually causes the test to "not run" and be considered
+# failed   :(
+function(ctwm_skip_unit_test TNAME REASON)
+	add_test(NAME ${TNAME} COMMAND sh -c "echo Skipped: ${REASON} ; exit 99")
+	set_tests_properties(${TNAME} PROPERTIES SKIP_RETURN_CODE 99)
+endfunction()
+
+
 
 # First a simple smoke test of the built binary
 ctwm_simple_unit_test(run-info
@@ -83,24 +97,15 @@ ctwm_simple_unit_test(cfgchk
 
 
 # Simple test of m4 preprocessing, but we skip if built without m4.
-# XXX Gotta skip if no $DISPLAY here too.  Fix that   :(
-# XXX This seems like the simplest way of actually "skip"'ing a test
-# based on configure options.  That's nuts.  REQUIRED_FILES sounds like
-# it would, but actually causes the test to "not run" and be considered
-# failed   :(
 if(USE_M4)
-	set(_test_m4_cmd
-		"${CTWMBIN} --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc"
+	ctwm_simple_unit_test(test_m4
+		BIN ${CTWMBIN}
+		BINPATH ${CTWMPATH}
+		ARGS --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc
 		)
 else()
-	set(_test_m4_cmd "echo Built without m4, skipping \\; exit 99")
+	ctwm_skip_unit_test(test_m4 "Built without USE_M4")
 endif()
-add_test(NAME test_m4
-	COMMAND sh -c ${_test_m4_cmd}
-	)
-set_tests_properties(test_m4 PROPERTIES
-	SKIP_RETURN_CODE 99
-	)
 
 
 # A first run at a unit test
