@@ -10,9 +10,9 @@ add_dependencies(test_bins ctwm)
 # Add some infrastructure for building executables for unit tests
 function(ctwm_simple_unit_test TNAME)
 	set(_options )
-	set(_arg_one BIN)
-	set(_arg_multi )
-	cmake_parse_arguments(_ARGS "${_opts}", "${_arg_one}" "${_arg_multi}"
+	set(_arg_one BIN WORKING_DIRECTORY)
+	set(_arg_multi BIN_ARGS)
+	cmake_parse_arguments(_ARGS "${_opts}" "${_arg_one}" "${_arg_multi}"
 		${ARGN})
 
 	# The binary to build
@@ -39,7 +39,8 @@ function(ctwm_simple_unit_test TNAME)
 
 	# And add the test itself
 	add_test(NAME ${TNAME}
-		COMMAND $<TARGET_FILE:${BIN}>
+		COMMAND $<TARGET_FILE:${BIN}> ${_ARGS_BIN_ARGS}
+		WORKING_DIRECTORY ${_ARGS_WORKING_DIRECTORY}
 		)
 endfunction()
 
