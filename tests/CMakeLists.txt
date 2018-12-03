@@ -8,7 +8,7 @@ add_dependencies(test_bins ctwm)
 
 
 # Add some infrastructure for building executables for unit tests
-macro(ctwm_simple_unit_test BIN)
+function(ctwm_simple_unit_test BIN)
 	# Building and linking it
 	add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
 	target_link_libraries(${BIN} ctwmlib)
@@ -28,7 +28,7 @@ macro(ctwm_simple_unit_test BIN)
 	add_test(NAME ${BIN}
 		COMMAND $<TARGET_FILE:${BIN}>
 		)
-endmacro()
+endfunction()
 
 
 
