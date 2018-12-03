@@ -10,36 +10,44 @@ add_dependencies(test_bins ctwm)
 # Add some infrastructure for building executables for unit tests
 function(ctwm_simple_unit_test TNAME)
 	set(_options )
-	set(_arg_one BIN WORKING_DIRECTORY)
+	set(_arg_one PREBIN BIN WORKING_DIRECTORY)
 	set(_arg_multi ARGS)
 	cmake_parse_arguments(_ARGS "${_opts}" "${_arg_one}" "${_arg_multi}"
 		${ARGN})
 
 	# The binary to build
-	if(_ARGS_BIN)
+	if(_ARGS_PREBIN)
+		set(BIN "${_ARGS_PREBIN}")
+		set(BIN_RUN "${_ARGS_PREBIN}")
+	elseif(_ARGS_BIN)
 		set(BIN "${_ARGS_BIN}")
+		set(BIN_RUN $<TARGET_FILE:${BIN}>)
 	else()
 		set(BIN "${TNAME}")
+		set(BIN_RUN $<TARGET_FILE:${BIN}>)
 	endif()
+	message(STATUS "mk ${TNAME}, bin ${BIN}")
 
 	# Building and linking it
-	add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
-	target_link_libraries(${BIN} ctwmlib)
+	if(NOT _ARGS_PREBIN)
+		add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
+		target_link_libraries(${BIN} ctwmlib)
 
-	# Few of our tests really need any of the X or other libs we pull in.
-	# However, most of the .o's for ctwm itself are going to have some
-	# ref out to them somewhere, so any tests that wind up pulling
-	# functions from those are going to make the linker want to resolve
-	# them when we link ${TNAME}.  So just unconditionally add them and
-	# don't worry about which tests may not actually need 'em.
-	target_link_libraries(${BIN} ${CTWMLIBS})
+		# Few of our tests really need any of the X or other libs we pull in.
+		# However, most of the .o's for ctwm itself are going to have some
+		# ref out to them somewhere, so any tests that wind up pulling
+		# functions from those are going to make the linker want to resolve
+		# them when we link ${TNAME}.  So just unconditionally add them and
+		# don't worry about which tests may not actually need 'em.
+		target_link_libraries(${BIN} ${CTWMLIBS})
 
-	# Add to pre-test target
-	add_dependencies(test_bins ${BIN})
+		# Add to pre-test target
+		add_dependencies(test_bins ${BIN})
+	endif()
 
 	# And add the test itself
 	add_test(NAME ${TNAME}
-		COMMAND $<TARGET_FILE:${BIN}> ${_ARGS_ARGS}
+		COMMAND ${BIN_RUN} ${_ARGS_ARGS}
 		WORKING_DIRECTORY ${_ARGS_WORKING_DIRECTORY}
 		)
 endfunction()
@@ -47,8 +55,9 @@ endfunction()
 
 
 # First a simple smoke test of the built binary
-add_test(NAME run-info
-	COMMAND ${CTWMBIN} --info
+ctwm_simple_unit_test(run-info
+	PREBIN ${CTWMBIN}
+	ARGS --info
 	)
 set_tests_properties(run-info PROPERTIES
 	PASS_REGULAR_EXPRESSION "Twm version: "
@@ -60,12 +69,9 @@ set_tests_properties(run-info PROPERTIES
 # talking to the X server to get far enough to cfgchk.  Should really
 # find a way around that, but it's a lot more involved than you'd think,
 # so 'till then...
-add_test(NAME cfgchk
-	COMMAND sh -c "${CTWMBIN} --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc"
-	)
-set_tests_properties(cfgchk PROPERTIES
-	# XXX Requires cmake 3.0...
-	SKIP_RETURN_CODE 99
+ctwm_simple_unit_test(cfgchk
+	PREBIN ${CTWMBIN}
+	ARGS --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc
 	)
 
 
