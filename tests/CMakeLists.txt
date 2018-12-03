@@ -8,25 +8,25 @@ add_dependencies(test_bins ctwm)
 
 
 # Add some infrastructure for building executables for unit tests
-function(ctwm_simple_unit_test BIN)
+function(ctwm_simple_unit_test TNAME)
 	# Building and linking it
-	add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
-	target_link_libraries(${BIN} ctwmlib)
+	add_executable(${TNAME} EXCLUDE_FROM_ALL "${TNAME}.c")
+	target_link_libraries(${TNAME} ctwmlib)
 
 	# Few of our tests really need any of the X or other libs we pull in.
 	# However, most of the .o's for ctwm itself are going to have some
 	# ref out to them somewhere, so any tests that wind up pulling
 	# functions from those are going to make the linker want to resolve
-	# them when we link ${BIN}.  So just unconditionally add them and
+	# them when we link ${TNAME}.  So just unconditionally add them and
 	# don't worry about which tests may not actually need 'em.
-	target_link_libraries(${BIN} ${CTWMLIBS})
+	target_link_libraries(${TNAME} ${CTWMLIBS})
 
 	# Add to pre-test target
-	add_dependencies(test_bins ${BIN})
+	add_dependencies(test_bins ${TNAME})
 
 	# And add the test itself
-	add_test(NAME ${BIN}
-		COMMAND $<TARGET_FILE:${BIN}>
+	add_test(NAME ${TNAME}
+		COMMAND $<TARGET_FILE:${TNAME}>
 		)
 endfunction()
 
