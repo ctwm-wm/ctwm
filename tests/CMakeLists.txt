@@ -99,10 +99,6 @@ set_tests_properties(run-info PROPERTIES
 
 
 # Try parsing the system.ctwmrc
-# Have to support skipping if no $DISPLAY is set, since we require
-# talking to the X server to get far enough to cfgchk.  Should really
-# find a way around that, but it's a lot more involved than you'd think,
-# so 'till then...
 ctwm_simple_unit_test(cfgchk
 	BIN ${CTWMBIN}
 	BINPATH ${CTWMPATH}
