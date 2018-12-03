@@ -9,6 +9,20 @@ add_dependencies(test_bins ctwm)
 
 
 # Add some infrastructure for building executables for unit tests
+#
+# BIN - name of the binary to run.
+# BINPATH - path of the binary to run.
+# ARGS - Add'l arguments to the binary for the test
+# WORKING_DIRECTORY - self-explanatory
+#
+# Currently, ${BINPATH} means a thing is already built, so we don't need
+# to worry about building, that's just the path to run.  Else, ${BIN} is
+# built from ${BIN}.c (though multiple calls with the same ${BIN} won't
+# try to re-do the builds).  e.g., commonly, $BINPATH is used when we're
+# running the main ctwm binary, instead of s test-specific bin.
+#
+# This is not un-janky, but it works, and we'll worry about cleaning it
+# up if it gets worse.
 function(ctwm_simple_unit_test TNAME)
 	set(_options )
 	set(_arg_one BIN BINPATH WORKING_DIRECTORY)
