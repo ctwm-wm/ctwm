@@ -2,7 +2,8 @@
 # Automated tests
 #
 
-set(CTWMBIN "${CMAKE_BINARY_DIR}/ctwm")
+set(CTWMBIN "ctwm")
+set(CTWMPATH "${CMAKE_BINARY_DIR}/ctwm")
 add_custom_target(test_bins)
 add_dependencies(test_bins ctwm)
 
@@ -10,26 +11,30 @@ add_dependencies(test_bins ctwm)
 # Add some infrastructure for building executables for unit tests
 function(ctwm_simple_unit_test TNAME)
 	set(_options )
-	set(_arg_one PREBIN BIN WORKING_DIRECTORY)
+	set(_arg_one BIN BINPATH WORKING_DIRECTORY)
 	set(_arg_multi ARGS)
 	cmake_parse_arguments(_ARGS "${_opts}" "${_arg_one}" "${_arg_multi}"
 		${ARGN})
 
-	# The binary to build
-	if(_ARGS_PREBIN)
-		set(BIN "${_ARGS_PREBIN}")
-		set(BIN_RUN "${_ARGS_PREBIN}")
-	elseif(_ARGS_BIN)
+	# Maybe we're passed a specific path to run
+	if(_ARGS_BINPATH)
+		set(BIN_RUN "${_ARGS_BINPATH}")
+	endif()
+
+	# What's the binary name?
+	if(_ARGS_BIN)
 		set(BIN "${_ARGS_BIN}")
-		set(BIN_RUN $<TARGET_FILE:${BIN}>)
 	else()
 		set(BIN "${TNAME}")
+	endif()
+
+	# Derive path if we only got a name
+	if(NOT BIN_RUN)
 		set(BIN_RUN $<TARGET_FILE:${BIN}>)
 	endif()
-	message(STATUS "mk ${TNAME}, bin ${BIN}")
 
 	# Building and linking it
-	if(NOT _ARGS_PREBIN)
+	if(NOT TARGET ${BIN})
 		add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
 		target_link_libraries(${BIN} ctwmlib)
 
@@ -56,7 +61,8 @@ endfunction()
 
 # First a simple smoke test of the built binary
 ctwm_simple_unit_test(run-info
-	PREBIN ${CTWMBIN}
+	BIN ${CTWMBIN}
+	BINPATH ${CTWMPATH}
 	ARGS --info
 	)
 set_tests_properties(run-info PROPERTIES
@@ -70,7 +76,8 @@ set_tests_properties(run-info PROPERTIES
 # find a way around that, but it's a lot more involved than you'd think,
 # so 'till then...
 ctwm_simple_unit_test(cfgchk
-	PREBIN ${CTWMBIN}
+	BIN ${CTWMBIN}
+	BINPATH ${CTWMPATH}
 	ARGS --cfgchk -f ${CMAKE_SOURCE_DIR}/system.ctwmrc
 	)
 
