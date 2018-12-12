@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" baseProfile="full" width="606" height="406"
+  xmlns="http://www.w3.org/2000/svg">
+ <style type="text/css">
+  rect {
+   fill: #DDDDDD;
+   stroke: #000000;
+   stroke-width: 4;
+  }
+  polyline {
+   fill: none;
+   stroke: #000000;
+  }
+  .vis-no  { visibility: hidden; }
+  .vis-yes { visibility: visible; }
+ </style>
+
+ <!-- Monitors -->
+ <rect width="400" height="200" x="3" y="3" />
+ <text x="15" y="25" class="monlabel">Mon1</text>
+ <rect width="200" height="400" x="403" y="3" />
+ <text x="585" y="25" text-anchor="end" class="monlabel">Mon2</text>
+
+ <!-- Fill out the rest of the root -->
+ <polyline points="2,202 2,404 402,404"
+   style="stroke-width: 2; stroke-dasharray: 2,3;" />
+ <text x="15" y="385" class="monlabel">(dead space)</text>
+
+
+
+ <!-- JSery to grub out query params -->
+ <script type="text/javascript"><![CDATA[
+	var params = {};
+	(function() {
+		var qstr = window.location.search.substring(1);
+		var xtr_re = /([^&=]+)=?([^&]*)/g;
+		var unencode = function (s) {
+			return decodeURIComponent(s.replace(/\+/g, " "));
+		};
+		var qv;
+
+		while(qv = xtr_re.exec(qstr)) {
+			params[unencode(qv[1])] = unencode(qv[2]);
+		}
+	})();
+
+	function dovis(fld) {
+		var vis;
+
+		if(typeof params[fld] === 'undefined')
+			return;
+		if(params[fld] != 0)
+			vis = 'yes';
+		else
+			vis = 'no';
+
+		var els = document.getElementsByClassName(fld);
+		for(var i = 0 ; i < els.length ; i++) {
+			els[i].classList.add('vis-' + vis);
+		}
+
+		return;
+	}
+
+	dovis('monlabel');
+ ]]></script>
+</svg>

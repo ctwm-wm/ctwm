@@ -59,3 +59,10 @@ vertical ``f.zoom``'s of windows, so they cover the maximum available
 space without stretching outside the area covered by monitors.  This is
 important when your monitor setup doesn't make a single rectangle
 (_e.g._, you have 2 monitors with different resolutions).
+
+
+## Examples
+
+Let's consider an example layout.
+
+image::static/monitors.svg?monlabel=1[opts=interactive]
