@@ -7,6 +7,9 @@
    stroke: #000000;
    stroke-width: 4;
   }
+  rect.xwin {
+   fill: #999999;
+  }
   polyline {
    fill: none;
    stroke: #000000;
@@ -38,6 +41,9 @@
  <rect width="200" height="400" x="403" y="3" class="vstripe" />
  <text x="585" y="385" text-anchor="end" class="vslabel">Vstripe2</text>
 
+ <!-- A window to position -->
+ <rect width="150" height="150" x="25" y="25" class="xwin" />
+
 
 
  <!-- JSery to grub out query params -->
@@ -53,10 +59,13 @@
 		v_vstripe: 0,
 		v_vslabel: 0,
 
+		v_xwin: 0,
+
 		// Opacity
 		o_monitors: 1.0,
 		o_hstripe:  1.0,
 		o_vstripe:  1.0,
+		o_xwin:     1.0,
 	};
 	(function() {
 		var qstr = window.location.search.substring(1);
