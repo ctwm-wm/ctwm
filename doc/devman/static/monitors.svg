@@ -42,7 +42,7 @@
  <text x="585" y="385" text-anchor="end" class="vslabel">Vstripe2</text>
 
  <!-- A window to position -->
- <rect width="150" height="150" x="25" y="25" class="xwin" />
+ <rect width="150" height="150" x="25" y="25" class="xwin" id="xwin" />
 
 
 
@@ -63,6 +63,12 @@
 		o_hstripe:  1.0,
 		o_vstripe:  1.0,
 		o_xwin:     1.0,
+
+		// Flying around xtra window
+		g_xwin_w: 150,
+		g_xwin_h: 150,
+		g_xwin_x: 25,
+		g_xwin_y: 25,
 	};
 	(function() {
 		var qstr = window.location.search.substring(1);
@@ -107,8 +113,6 @@
 	}
 
 	function do_opacity(fld) {
-		var vis;
-
 		// All opaq params are o_
 		if(fld.indexOf('o_') !== 0) {
 			return;
@@ -126,15 +130,37 @@
 		return;
 	}
 
+	function handle_geom(wname) {
+		var tw = document.getElementById(wname);
+		if(typeof tw === 'undefined' || tw == null) {
+			console.log("Can't find handle_geom(" + wname + ")");
+			return;
+		}
+
+		tw.setAttribute('width',  params["g_" + wname + "_w"]);
+		tw.setAttribute('height', params["g_" + wname + "_h"]);
+		tw.setAttribute('x',      params["g_" + wname + "_x"]);
+		tw.setAttribute('y',      params["g_" + wname + "_y"]);
+
+		return;
+	}
+
 	// Init
 	var pkeys = Object.keys(params);
 	for(var i = 0 ; i < pkeys.length ; i++) {
 		var pk = pkeys[i];
 
-		if(pk.indexOf('v_') == 0)
+		if(pk.indexOf('v_') == 0) {
 			do_vis(pkeys[i]);
-		else if(pk.indexOf('o_') == 0)
+		}
+		else if(pk.indexOf('o_') == 0) {
 			do_opacity(pkeys[i]);
+		}
+		else if(pk.indexOf('g_') == 0) {
+			// Geometry handling: do this separately
+		}
 	}
+
+	handle_geom('xwin');
  ]]></script>
 </svg>
