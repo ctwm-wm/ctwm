@@ -1,6 +1,17 @@
 # RLayout
 
 
+## TODO
+
+This should be expanded to walk a little more through the codepaths the
+various examples take, with some detail of the structure contents in the
+various cases.
+
+Also, the meat of the examples should probably migrate into user-level
+documentation at some point, when we have things in shape to do that
+(_i.e._, not having a manpage as the main user doc).
+
+
 ## Summary
 
 The RLayout code came in as part of the support for the RandR X
