@@ -8,7 +8,7 @@
    stroke-width: 4;
   }
   rect.xwin {
-   fill: #999999;
+   fill: #000000;
   }
   polyline {
    fill: none;
@@ -63,7 +63,7 @@
 		o_monitors: 1.0,
 		o_hstripe:  1.0,
 		o_vstripe:  1.0,
-		o_xwin:     1.0,
+		o_xwin:     0.5,
 
 		// Flying around xtra window
 		g_xwin_w: 150,
