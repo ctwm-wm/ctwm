@@ -76,6 +76,10 @@
 		return;
 	}
 
-	dovis('v_monlabel');
+	// Init
+	var pkeys = Object.keys(params);
+	for(var i = 0 ; i < pkeys.length ; i++) {
+		dovis(pkeys[i]);
+	}
  ]]></script>
 </svg>
