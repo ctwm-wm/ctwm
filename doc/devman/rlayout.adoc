@@ -65,15 +65,15 @@ important when your monitor setup doesn't make a single rectangle
 
 Let's consider an example layout.
 
-image::static/monitors.svg?v_monitors=1&v_monlabel=1[opts=interactive]
+image::static/monitors.svg?v_monitors=1[opts=interactive]
 
 When starting up, ctwm will find the maximal horizontal:
 
-image::static/monitors.svg?v_hstripe=1&v_hslabel=1[opts=interactive]
+image::static/monitors.svg?v_hstripe=1[opts=interactive]
 
 and vertical:
 
-image::static/monitors.svg?v_vstripe=1&v_vslabel=1[opts=interactive]
+image::static/monitors.svg?v_vstripe=1[opts=interactive]
 
 stripes.  This get stashed up in the `RLayout` for the Screen, and will
 be used when figuring various zooms.
@@ -86,7 +86,7 @@ do to it.
 
 #### Horizontal zooming
 
-image::static/monitors.svg?v_monitors=1&v_monlabel=1&v_xwin=1&g_xwin_x=300&g_xwin_y=40[opts=interactive]
+image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_x=300&g_xwin_y=40[opts=interactive]
 
 This window is now _mostly_ on `Mon1`, and mostly on the "top half" of
 things.  If we `f.horizoom` it, it thus zooms up to the full width of
@@ -102,7 +102,7 @@ image::static/monitors.svg?v_hstripe=1&v_xwin=1&g_xwin_w=600&g_xwin_x=3&g_xwin_y
 
 Or, if we moved it over so most of it was on `Mon2` instead,
 
-image::static/monitors.svg?v_monitors=1&v_monlabel=1&v_xwin=1&g_xwin_x=350&g_xwin_y=40[opts=interactive]
+image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_x=350&g_xwin_y=40[opts=interactive]
 
 then the `f.horizoom` would zoom it up to the full width of `Mon2`:
 
@@ -120,7 +120,7 @@ Imagine the same thing, except adjusting the height on the vertical stripes.
 
 Now let's consider `f.fullscreenzoom` and its `x` variant.
 
-image::static/monitors.svg?v_monitors=1&v_monlabel=1&v_xwin=1&g_xwin_x=300&g_xwin_y=100[opts=interactive]
+image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_x=300&g_xwin_y=100[opts=interactive]
 
 The window is still mostly on `Mon1`.  Note that part of the window is
 currently in dead space, and so not visible.  If `f.fullscreenzoom` it,
@@ -130,7 +130,7 @@ image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_w=400&g_xwin_h=200&g_xwi
 
 Or, if we pushed it over to be mostly on `Mon2`,
 
-image::static/monitors.svg?v_monitors=1&v_monlabel=1&v_xwin=1&g_xwin_x=350&g_xwin_y=100[opts=interactive]
+image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_x=350&g_xwin_y=100[opts=interactive]
 
 then `f.fullscreenzoom` will fill that out:
 
@@ -152,7 +152,7 @@ image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_w=600&g_xwin_h=200&g_xwi
 If, however, we first moved it down so it didn't occupy the top
 horizontal stripe at all,
 
-image::static/monitors.svg?v_monitors=1&v_monlabel=1&v_xwin=1&g_xwin_x=350&g_xwin_y=225[opts=interactive]
+image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_x=350&g_xwin_y=225[opts=interactive]
 
 then the largest stripe available for it to fill would be the right
 vertical stripe, leading to the same result as the right-size

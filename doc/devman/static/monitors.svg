@@ -48,6 +48,7 @@
 
  <!-- JSery to grub out query params -->
  <script type="text/javascript"><![CDATA[
+	// Parameters we expect and their defaults
 	var params = {
 		// Visibility
 		v_monitors: 0,
@@ -70,6 +71,14 @@
 		g_xwin_x: 25,
 		g_xwin_y: 25,
 	};
+
+	// Stash keys
+	var pkeys = Object.keys(params);
+
+	// Params we were actually given (rather than defaulting)
+	var qpset = {};
+
+	// Parse params
 	(function() {
 		var qstr = window.location.search.substring(1);
 		var xtr_re = /([^&=]+)=?([^&]*)/g;
@@ -85,8 +94,17 @@
 			}
 
 			params[unencode(qv[1])] = unencode(qv[2]);
+			qpset[unencode(qv[1])] = 1;
 		}
 	})();
+
+	// Do some defaulting
+	if(!qpset.v_monlabel)
+		params.v_monlabel = params.v_monitors;
+	if(!qpset.v_vslabel)
+		params.v_vslabel = params.v_vstripe;
+	if(!qpset.v_hslabel)
+		params.v_hslabel = params.v_hstripe;
 
 	function do_vis(fld) {
 		var vis;
@@ -146,7 +164,6 @@
 	}
 
 	// Init
-	var pkeys = Object.keys(params);
 	for(var i = 0 ; i < pkeys.length ; i++) {
 		var pk = pkeys[i];
 
