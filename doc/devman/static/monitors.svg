@@ -16,15 +16,17 @@
  </style>
 
  <!-- Monitors -->
- <rect width="400" height="200" x="3" y="3" />
+ <rect width="400" height="200" x="3" y="3" class="monitors" />
  <text x="15" y="25" class="monlabel">Mon1</text>
- <rect width="200" height="400" x="403" y="3" />
+ <rect width="200" height="400" x="403" y="3" class="monitors" />
  <text x="585" y="25" text-anchor="end" class="monlabel">Mon2</text>
 
  <!-- Fill out the rest of the root -->
- <polyline points="2,202 2,404 402,404"
+ <polyline points="2,202 2,404 402,404" class="monitors"
    style="stroke-width: 2; stroke-dasharray: 2,3;" />
  <text x="15" y="385" class="monlabel">(dead space)</text>
+
+ <!-- Horizontal stripes -->
 
 
 
@@ -33,6 +35,7 @@
 	var params = {
 		// Visibility
 		v_monlabel: 0,
+		v_monitors: 1,
 	};
 	(function() {
 		var qstr = window.location.search.substring(1);
