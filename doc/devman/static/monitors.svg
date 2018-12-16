@@ -14,8 +14,6 @@
    fill: none;
    stroke: #000000;
   }
-  .vis-no  { visibility: hidden; }
-  .vis-yes { visibility: visible; }
  </style>
 
  <!-- Monitors -->
@@ -117,14 +115,14 @@
 		if(typeof params[fld] === 'undefined')
 			return;
 		if(params[fld] != 0)
-			vis = 'yes';
+			vis = 'visible';
 		else
-			vis = 'no';
+			vis = 'hidden';
 
 		var elclass = fld.substring(2);
 		var els = document.getElementsByClassName(elclass);
 		for(var i = 0 ; i < els.length ; i++) {
-			els[i].classList.add('vis-' + vis);
+			els[i].style.visibility = vis;
 		}
 
 		return;
