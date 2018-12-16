@@ -32,7 +32,7 @@
  <script type="text/javascript"><![CDATA[
 	var params = {
 		// Visibility
-		v_monlabel: 1,
+		v_monlabel: 0,
 	};
 	(function() {
 		var qstr = window.location.search.substring(1);
