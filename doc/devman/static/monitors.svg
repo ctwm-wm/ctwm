@@ -67,7 +67,8 @@
 		else
 			vis = 'no';
 
-		var els = document.getElementsByClassName(fld);
+		var elclass = fld.substring(2);
+		var els = document.getElementsByClassName(elclass);
 		for(var i = 0 ; i < els.length ; i++) {
 			els[i].classList.add('vis-' + vis);
 		}
@@ -75,6 +76,6 @@
 		return;
 	}
 
-	dovis('monlabel');
+	dovis('v_monlabel');
  ]]></script>
 </svg>
