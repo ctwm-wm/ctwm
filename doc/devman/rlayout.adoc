@@ -65,4 +65,15 @@ important when your monitor setup doesn't make a single rectangle
 
 Let's consider an example layout.
 
-image::static/monitors.svg?v_monlabel=1[opts=interactive]
+image::static/monitors.svg?v_monitors=1&v_monlabel=1[opts=interactive]
+
+When starting up, ctwm will find the maximal horizontal:
+
+image::static/monitors.svg?v_hstripe=1&v_hslabel=1[opts=interactive]
+
+and vertical:
+
+image::static/monitors.svg?v_vstripe=1&v_vslabel=1[opts=interactive]
+
+stripes.  This get stashed up in the `RLayout` for the Screen, and will
+be used when figuring various zooms.

@@ -27,6 +27,16 @@
  <text x="15" y="385" class="monlabel">(dead space)</text>
 
  <!-- Horizontal stripes -->
+ <rect width="600" height="200" x="3" y="3" class="hstripe" />
+ <text x="15" y="25" class="hslabel">Hstripe1</text>
+ <rect width="200" height="200" x="403" y="203" class="hstripe" />
+ <text x="585" y="385" text-anchor="end" class="hslabel">Hstripe2</text>
+
+ <!-- Vertical stripes -->
+ <rect width="400" height="200" x="3" y="3" class="vstripe" />
+ <text x="15" y="25" class="vslabel">Vstripe1</text>
+ <rect width="200" height="400" x="403" y="3" class="vstripe" />
+ <text x="585" y="385" text-anchor="end" class="vslabel">Vstripe2</text>
 
 
 
@@ -35,7 +45,13 @@
 	var params = {
 		// Visibility
 		v_monlabel: 0,
-		v_monitors: 1,
+		v_monitors: 0,
+
+		v_hstripe: 0,
+		v_hslabel: 0,
+
+		v_vstripe: 0,
+		v_vslabel: 0,
 	};
 	(function() {
 		var qstr = window.location.search.substring(1);
