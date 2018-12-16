@@ -78,7 +78,7 @@
 
 	// Parse params
 	(function() {
-		var qstr = window.location.search.substring(1);
+		var qstr = window.location.hash.substring(1);
 		var xtr_re = /([^&=]+)=?([^&]*)/g;
 		var unencode = function (s) {
 			return decodeURIComponent(s.replace(/\+/g, " "));
