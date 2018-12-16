@@ -52,6 +52,11 @@
 
 		v_vstripe: 0,
 		v_vslabel: 0,
+
+		// Opacity
+		o_monitors: 1.0,
+		o_hstripe:  1.0,
+		o_vstripe:  1.0,
 	};
 	(function() {
 		var qstr = window.location.search.substring(1);
@@ -71,7 +76,7 @@
 		}
 	})();
 
-	function dovis(fld) {
+	function do_vis(fld) {
 		var vis;
 
 		// All vis params are v_
@@ -95,10 +100,35 @@
 		return;
 	}
 
+	function do_opacity(fld) {
+		var vis;
+
+		// All opaq params are o_
+		if(fld.indexOf('o_') !== 0) {
+			return;
+		}
+
+		if(typeof params[fld] === 'undefined')
+			return;
+
+		var elclass = fld.substring(2);
+		var els = document.getElementsByClassName(elclass);
+		for(var i = 0 ; i < els.length ; i++) {
+			els[i].style.opacity = params[fld];
+		}
+
+		return;
+	}
+
 	// Init
 	var pkeys = Object.keys(params);
 	for(var i = 0 ; i < pkeys.length ; i++) {
-		dovis(pkeys[i]);
+		var pk = pkeys[i];
+
+		if(pk.indexOf('v_') == 0)
+			do_vis(pkeys[i]);
+		else if(pk.indexOf('o_') == 0)
+			do_opacity(pkeys[i]);
 	}
  ]]></script>
 </svg>
