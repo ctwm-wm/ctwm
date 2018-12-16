@@ -30,7 +30,10 @@
 
  <!-- JSery to grub out query params -->
  <script type="text/javascript"><![CDATA[
-	var params = {};
+	var params = {
+		// Visibility
+		v_monlabel: 1,
+	};
 	(function() {
 		var qstr = window.location.search.substring(1);
 		var xtr_re = /([^&=]+)=?([^&]*)/g;
@@ -40,12 +43,22 @@
 		var qv;
 
 		while(qv = xtr_re.exec(qstr)) {
+			if(typeof params[qv[1]] === 'undefined') {
+				console.log("Unexpected param: " + qv[1]);
+				continue;
+			}
+
 			params[unencode(qv[1])] = unencode(qv[2]);
 		}
 	})();
 
 	function dovis(fld) {
 		var vis;
+
+		// All vis params are v_
+		if(fld.indexOf('v_') !== 0) {
+			return;
+		}
 
 		if(typeof params[fld] === 'undefined')
 			return;

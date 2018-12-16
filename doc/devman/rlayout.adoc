@@ -65,4 +65,4 @@ important when your monitor setup doesn't make a single rectangle
 
 Let's consider an example layout.
 
-image::static/monitors.svg?monlabel=1[opts=interactive]
+image::static/monitors.svg[opts=interactive]
