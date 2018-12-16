@@ -50,15 +50,12 @@
  <script type="text/javascript"><![CDATA[
 	var params = {
 		// Visibility
-		v_monlabel: 0,
 		v_monitors: 0,
-
+		v_monlabel: 0,
 		v_hstripe: 0,
 		v_hslabel: 0,
-
 		v_vstripe: 0,
 		v_vslabel: 0,
-
 		v_xwin: 0,
 
 		// Opacity
