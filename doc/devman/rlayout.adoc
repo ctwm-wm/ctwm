@@ -160,6 +160,12 @@ vertical stripe, leading to the same result as the right-size
 
 image::static/monitors.svg?v_monitors=1&v_xwin=1&g_xwin_w=200&g_xwin_h=400&g_xwin_x=403&g_xwin_y=3[opts=interactive]
 
-In this case, it's technically filling _the right vertical stripe_,
-rather than _`Mon2`_, but in the case of the particular layout we're
-working with, it's the same thing.
+In this case, it's technically filling `Vstripe2`, rather than `Mon2`,
+but in the case of the particular layout we're working with, it's the
+same thing.
+
+In the case where your layout doesn't have any dead space (_e.g._, 2
+same-resolution monitors stacked horizontally or vertically, 4
+same-resolution monitors in a square, etc), there will only be one
+horizontal and one vertical stripe, which cover the whole desktop area.
+So `f.xfullscreenzoom` will always wind up covering the whole thing.
