@@ -92,6 +92,7 @@ int yylex(void);
 %token <num> IGNORE_TRANSIENT
 %token <num> EWMH_IGNORE
 %token <num> MWM_IGNORE
+%token <num> MONITOR_LAYOUT
 %token <num> RPLAY_SOUNDS
 %token <num> FORCE_FOCUS
 %token <ptr> STRING
@@ -424,6 +425,8 @@ stmt		: error
 		  ewmh_ignore_list
 		| MWM_IGNORE		{ }
 		  mwm_ignore_list
+		| MONITOR_LAYOUT { init_layout_override(); }
+			layout_geom_list
 		| RPLAY_SOUNDS { }
 		  rplay_sounds_list
 		| FORCE_FOCUS { Scr->ForceFocus = true; }
@@ -787,6 +790,17 @@ mwm_ignore_entries	: /* Empty */
 		;
 
 mwm_ignore_entry	: string { add_mwm_ignore($1); }
+		;
+
+
+layout_geom_list	: LB layout_geom_entries RB { proc_layout_override(); }
+		;
+
+layout_geom_entries	: /* Empty */
+		| layout_geom_entries layout_geom_entry
+		;
+
+layout_geom_entry	: string { add_layout_override_entry(""); }
 		;
 
 

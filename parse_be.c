@@ -342,6 +342,7 @@ static const TwmKeyword keytable[] = {
 	{ "menutitleforeground",    CKEYWORD, kwc_MenuTitleForeground },
 	{ "meta",                   META, 0 },
 	{ "mod",                    META, 0 },  /* fake it */
+	{ "monitorlayout",          MONITOR_LAYOUT, 0 },
 	{ "monochrome",             MONOCHROME, 0 },
 	{ "move",                   MOVE, 0 },
 	{ "movedelta",              NKEYWORD, kwn_MoveDelta },
@@ -1998,4 +1999,24 @@ add_mwm_ignore(char *s)
 	fprintf(stderr, "Unexpected MWMIgnore value '%s'\n", s);
 	ParseError = true;
 	return;
+}
+
+
+/*
+ * Parsing for Layout { } lists, to override the monitor layout we
+ * assumed or got from RANDR.
+ */
+void
+init_layout_override(void)
+{
+}
+
+void
+add_layout_override_entry(const char *s)
+{
+}
+
+void
+proc_layout_override(void)
+{
 }
