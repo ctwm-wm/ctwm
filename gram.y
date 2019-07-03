@@ -800,7 +800,7 @@ layout_geom_entries	: /* Empty */
 		| layout_geom_entries layout_geom_entry
 		;
 
-layout_geom_entry	: string { add_layout_override_entry(""); }
+layout_geom_entry	: string { add_layout_override_entry($1); }
 		;
 
 

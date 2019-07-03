@@ -28,6 +28,9 @@
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
+#include "r_area.h"
+#include "r_area_list.h"
+#include "r_layout.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -2006,17 +2009,99 @@ add_mwm_ignore(char *s)
  * Parsing for Layout { } lists, to override the monitor layout we
  * assumed or got from RANDR.
  */
+static RAreaList *override_monitors;
+
+
+/**
+ * Allocate space for our monitor override list.
+ */
 void
 init_layout_override(void)
 {
+	// 4 seems like a good guess.  If we're doing this, we're probably
+	// making at least 2 monitors, and >4 is gonna be pretty rare, so...
+	override_monitors = RAreaListNew(4, NULL);
+	if(override_monitors == NULL) {
+		twmrc_error_prefix();
+		fprintf(stderr, "Failed allocating RAreaList for monitors.\n");
+		ParseError = true;
+		return;
+		// Maybe we should just abort(); if malloc failed allocating a
+		// few dozen bytes this early, we're _screwed_.
+	}
+
+	return;
 }
 
+/**
+ * Add an entry to our monitor list
+ */
 void
 add_layout_override_entry(const char *s)
 {
+	const char *tmp;
+	char *host;
+	int xpgret;
+	int x, y;
+	unsigned int width, height;
+
+	if(override_monitors == NULL) {
+		// alloc failed, so just give up; we'll fail in the end anyway...
+		return;
+	}
+
+	// Expecting: [Name:]WxH[+X[+Y]]
+	host = NULL;
+	tmp = strchr(s, ':');
+	if(tmp != NULL && tmp != s) {
+		// We have a name
+		host = strndup(s, tmp - s);
+
+		// Advance
+		s = tmp + 1;
+	}
+
+	// Either way, s points at the geom now
+	xpgret = XParseGeometry(s, &x, &y, &width, &height);
+
+	// Width and height are non-optional.  If x/y aren't given, we assume
+	// +0+0.  If we're given -0's, well, we don't _support_ that, but
+	// XPG() turns them into positives for us, so just accept it...
+	const int has_hw = (WidthValue | HeightValue);
+	if((xpgret & has_hw) != has_hw) {
+		twmrc_error_prefix();
+		fprintf(stderr, "Need both height and width in '%s'\n", s);
+		ParseError = true;
+		free(host);
+		return;
+	}
+	if(!(xpgret & XValue)) {
+		x = 0;
+	}
+	if(!(xpgret & YValue)) {
+		y = 0;
+	}
+
+	// And stash it
+	RAreaListAdd(override_monitors, RAreaNewStatic(x, y, width, height));
+	return;
 }
 
+/**
+ * Finalize the override layout and store it up globally.
+ */
 void
 proc_layout_override(void)
 {
+	RLayout *new_layout;
+
+	new_layout = RLayoutNew(override_monitors);
+#ifdef DEBUG
+	fprintf(stderr, "Overridden layout: ");
+	RLayoutPrint(new_layout);
+#endif
+
+	RLayoutFree(Scr->Layout);
+	Scr->Layout = new_layout;
+	return;
 }
