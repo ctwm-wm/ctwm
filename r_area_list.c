@@ -140,6 +140,9 @@ RAreaListCopyCropped(const RAreaList *self, int left_margin,
 void
 RAreaListFree(RAreaList *self)
 {
+	if(self == NULL) {
+		return;
+	}
 	free(self->areas);
 	free(self);
 }
