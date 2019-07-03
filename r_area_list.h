@@ -36,4 +36,15 @@ int RAreaListMinY2(const RAreaList *self);
 
 void RAreaListPrint(const RAreaList *self);
 
+
+/*
+ * Simple accessors to avoid unnecessary layering violations.
+ */
+/// How many RArea's are in the list?
+static inline int RAreaListLen(const RAreaList *self)
+{
+	return self->len;
+}
+
+
 #endif  /* _CTWM_R_AREA_LIST_H */

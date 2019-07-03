@@ -2095,6 +2095,16 @@ proc_layout_override(void)
 {
 	RLayout *new_layout;
 
+	// Guard
+	if(RAreaListLen(override_monitors) < 1) {
+		// Make this non-fatal, so an empty spec not-quite-quietly does
+		// nothing.
+		twmrc_error_prefix();
+		fprintf(stderr, "no monitors specified, ignoring MonitorLayout\n");
+		RAreaListFree(override_monitors);
+		return;
+	}
+
 	new_layout = RLayoutNew(override_monitors);
 #ifdef DEBUG
 	fprintf(stderr, "Overridden layout: ");
