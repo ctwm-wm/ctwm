@@ -32,6 +32,7 @@ check_wsm_geom(void)
 
 
 	// Force failure
+	fprintf(stderr, "%s: NOTYET\n", __FILE__);
 	return 1;
 }
 
@@ -45,10 +46,13 @@ check_wsm_geom(void)
  * step.
  */
 extern int (*ctwm_test_postparse)(void);
+extern bool ctwm_test;
 
 int
 main(int argc, char *argv[])
 {
+	ctwm_test = true;
 	ctwm_test_postparse = check_wsm_geom;
+
 	return ctwm_main(argc, argv);
 }

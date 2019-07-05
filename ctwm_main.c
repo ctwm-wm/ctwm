@@ -143,6 +143,9 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 
+/// Magic flag for tests.  Nothing else should touch this!
+bool ctwm_test = false;
+
 /// Magic callback for tests.  This will trigger right after config file
 /// parsing if it's set, and then exit.  Nothing else should ever touch
 /// this!
@@ -193,6 +196,12 @@ ctwm_main(int argc, char *argv[])
 	/* And some mean we actually don't care if we lack an X server */
 	if(CLarg.cfgchk) {
 		nodpyok = true;
+	}
+
+	/* Support for tests: be ready to fake everything */
+	if(ctwm_test) {
+		takeover = false;
+		nodpyok  = true;
 	}
 
 
