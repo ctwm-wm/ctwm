@@ -77,9 +77,9 @@ XrandrNewLayout(Display *disp, Window rootw)
 	areas = RAreaListNew(i_nmonitors, NULL);
 	for(int i = 0; i < i_nmonitors; i++) {
 		RArea cur_area = RAreaNew(ps_monitors[i].x,
-		                    ps_monitors[i].y,
-		                    ps_monitors[i].width,
-		                    ps_monitors[i].height);
+		                          ps_monitors[i].y,
+		                          ps_monitors[i].width,
+		                          ps_monitors[i].height);
 
 		char *name = XGetAtomName(disp, ps_monitors[i].name);
 #ifdef DEBUG

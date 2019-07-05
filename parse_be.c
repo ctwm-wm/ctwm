@@ -2067,7 +2067,7 @@ add_layout_override_entry(const char *s)
 	if(tmp != NULL && tmp != s) {
 		// Stash the name
 		override_monitors_names.names[override_monitors_names.len]
-				= strndup(s, tmp - s);
+		        = strndup(s, tmp - s);
 		// len advances below
 
 		// Advance to geom
