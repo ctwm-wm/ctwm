@@ -24,7 +24,7 @@ add_dependencies(test_bins ctwm)
 # This is not un-janky, but it works, and we'll worry about cleaning it
 # up if it gets worse.
 function(ctwm_simple_unit_test TNAME)
-	set(_options )
+	set(_opts ALLOW_DISPLAY)
 	set(_arg_one BIN BINPATH WORKING_DIRECTORY)
 	set(_arg_multi ARGS)
 	cmake_parse_arguments(_ARGS "${_opts}" "${_arg_one}" "${_arg_multi}"
@@ -69,6 +69,15 @@ function(ctwm_simple_unit_test TNAME)
 		COMMAND ${BIN_RUN} ${_ARGS_ARGS}
 		WORKING_DIRECTORY ${_ARGS_WORKING_DIRECTORY}
 		)
+
+	# Don't allow $DISPLAY unless specifically requested.
+	if(NOT _ARGS_ALLOW_DISPLAY)
+		message(STATUS "${TNAME}: Disabling $DISPLAY")
+		set_tests_properties(${TNAME} PROPERTIES
+			ENVIRONMENT DISPLAY=
+			)
+	endif()
+
 endfunction()
 
 
