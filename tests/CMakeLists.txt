@@ -108,11 +108,7 @@ ctwm_simple_unit_test(cfgchk
 
 # Simple test of m4 preprocessing, but we skip if built without m4.
 if(USE_M4)
-	ctwm_simple_unit_test(test_m4
-		BIN ${CTWMBIN}
-		BINPATH ${CTWMPATH}
-		ARGS --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc
-		)
+	add_subdirectory(test_m4)
 else()
 	ctwm_skip_unit_test(test_m4 "Built without USE_M4")
 endif()
