@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "ctwm_main.h"
+#include "ctwm_test.h"
 #include "screen.h"
 
 
@@ -59,14 +60,11 @@ check_wsm_geom(void)
  * here instead of relying on our caller, but this is a workable first
  * step.
  */
-extern int (*ctwm_test_postparse)(void);
-extern bool ctwm_test;
-
 int
 main(int argc, char *argv[])
 {
-	ctwm_test = true;
-	ctwm_test_postparse = check_wsm_geom;
+	// Connect up
+	TEST_POSTPARSE(check_wsm_geom);
 
 	return ctwm_main(argc, argv);
 }
