@@ -234,9 +234,14 @@ ctwm_main(int argc, char *argv[])
 		XtToolkitInitialize();
 		appContext = XtCreateApplicationContext();
 
-		// Connect
-		dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-		                    NULL, 0, &zero, NULL);
+		// Tests don't talk to a real X server.
+		// XXX This needs revisiting if we ever get one that _does_.
+		// We'll have to add another flag...
+		if(!ctwm_test) {
+			// Connect
+			dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
+			                    NULL, 0, &zero, NULL);
+		}
 
 		// Failed?  Usually a problem, but somethings we allow faking...
 		if(!dpy && !nodpyok) {
@@ -252,8 +257,8 @@ ctwm_main(int argc, char *argv[])
 			exit(1);
 		}
 
-		if(!dpy) {
-			// At least warn
+		if(!dpy && !ctwm_test) {
+			// At least warn, except for tests
 			fprintf(stderr, "%s: Can't connect to X server, proceeding anyway...\n",
 			        ProgramName);
 		}
