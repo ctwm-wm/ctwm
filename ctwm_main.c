@@ -234,8 +234,9 @@ ctwm_main(int argc, char *argv[])
 		XtToolkitInitialize();
 		appContext = XtCreateApplicationContext();
 
-		if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-		                         NULL, 0, &zero, NULL)) && !nodpyok) {
+		dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
+		                    NULL, 0, &zero, NULL);
+		if(!dpy && !nodpyok) {
 			fprintf(stderr, "%s:  unable to open display \"%s\"\n",
 			        ProgramName, XDisplayName(CLarg.display_name));
 			exit(1);
