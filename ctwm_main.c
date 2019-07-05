@@ -143,6 +143,12 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 
+/// Magic callback for tests.  This will trigger right after config file
+/// parsing if it's set, and then exit.  Nothing else should ever touch
+/// this!
+int (*ctwm_test_postparse)(void) = NULL;
+
+
 
 
 /**
@@ -573,6 +579,17 @@ ctwm_main(int argc, char *argv[])
 
 			// In non-config-check mode, we historically proceed even if
 			// there were errors, so keep doing that...
+		}
+
+
+		// For testing, it's useful to do all that initial setup up
+		// through parsing, and then inspect Scr and the like.
+		// Long-term, IWBNI we had a better way to do all the necessary
+		// initialization and then call the parse ourselves at that
+		// level.  But for now, provide a callback func that can pass
+		// control back to the test code, then just exits.
+		if(ctwm_test_postparse != NULL) {
+			exit(ctwm_test_postparse());
 		}
 
 
