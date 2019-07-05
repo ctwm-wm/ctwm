@@ -31,9 +31,23 @@ check_wsm_geom(void)
 	}
 
 
-	// Force failure
-	fprintf(stderr, "%s: NOTYET\n", __FILE__);
-	return 1;
+	// Now check that we got the expected result
+	if(strcmp(Scr->workSpaceMgr.geometry, expected_geom) != 0) {
+		fprintf(stderr, "Got '%s' instead of expected '%s' geometry.\n",
+				Scr->workSpaceMgr.geometry, expected_geom);
+		return 1;
+	}
+
+	if(Scr->workSpaceMgr.columns != expected_columns) {
+		fprintf(stderr, "Got '%d' instead of expected '%d' columns.\n",
+				Scr->workSpaceMgr.columns, expected_columns);
+		return 1;
+	}
+
+
+	// OK, everything was good.
+	fprintf(stdout, "OK\n");
+	return 0;
 }
 
 
