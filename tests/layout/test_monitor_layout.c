@@ -38,8 +38,8 @@ check_monitor_layout(void)
 
 	// We should have 2 monitors...
 	const int nmons = RLayoutNumMonitors(Scr->Layout);
-	if(nmons != 2) {
-		fprintf(stderr, "Expected 2 monitors, got %d\n", nmons);
+	if(nmons != 3) {
+		fprintf(stderr, "Expected 3 monitors, got %d\n", nmons);
 		return 1;
 	}
 
@@ -55,6 +55,10 @@ check_monitor_layout(void)
 	}
 	if(strcmp(names[1], "Two") != 0) {
 		fprintf(stderr, "Second monitor should be 'Two', not '%s'\n", names[0]);
+		return 1;
+	}
+	if(names[2] != NULL) {
+		fprintf(stderr, "Third monitor should be unnamed, not '%s'\n", names[2]);
 		return 1;
 	}
 
@@ -78,6 +82,11 @@ check_monitor_layout(void)
 	CHK_MON_VAL(1, y, 0);
 	CHK_MON_VAL(1, width,  768);
 	CHK_MON_VAL(1, height, 1024);
+
+	CHK_MON_VAL(2, x, 1792);
+	CHK_MON_VAL(2, y, 0);
+	CHK_MON_VAL(2, width,  800);
+	CHK_MON_VAL(2, height, 600);
 
 
 
