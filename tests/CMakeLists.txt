@@ -24,7 +24,7 @@ add_dependencies(test_bins ctwm)
 # This is not un-janky, but it works, and we'll worry about cleaning it
 # up if it gets worse.
 function(ctwm_simple_unit_test TNAME)
-	set(_options )
+	set(_opts ALLOW_DISPLAY)
 	set(_arg_one BIN BINPATH WORKING_DIRECTORY)
 	set(_arg_multi ARGS)
 	cmake_parse_arguments(_ARGS "${_opts}" "${_arg_one}" "${_arg_multi}"
@@ -69,6 +69,15 @@ function(ctwm_simple_unit_test TNAME)
 		COMMAND ${BIN_RUN} ${_ARGS_ARGS}
 		WORKING_DIRECTORY ${_ARGS_WORKING_DIRECTORY}
 		)
+
+	# Don't allow $DISPLAY unless specifically requested.
+	if(NOT _ARGS_ALLOW_DISPLAY)
+		message(STATUS "${TNAME}: Disabling $DISPLAY")
+		set_tests_properties(${TNAME} PROPERTIES
+			ENVIRONMENT DISPLAY=
+			)
+	endif()
+
 endfunction()
 
 
@@ -108,11 +117,7 @@ ctwm_simple_unit_test(cfgchk
 
 # Simple test of m4 preprocessing, but we skip if built without m4.
 if(USE_M4)
-	ctwm_simple_unit_test(test_m4
-		BIN ${CTWMBIN}
-		BINPATH ${CTWMPATH}
-		ARGS --cfgchk -f ${CMAKE_CURRENT_SOURCE_DIR}/test_m4/ctwmrc
-		)
+	add_subdirectory(test_m4)
 else()
 	ctwm_skip_unit_test(test_m4 "Built without USE_M4")
 endif()

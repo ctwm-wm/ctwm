@@ -143,6 +143,15 @@ char **Argv;
 bool RestartPreviousState = true;      /* try to restart in previous state */
 
 
+/// Magic flag for tests.  Nothing else should touch this!
+bool ctwm_test = false;
+
+/// Magic callback for tests.  This will trigger right after config file
+/// parsing if it's set, and then exit.  Nothing else should ever touch
+/// this!
+int (*ctwm_test_postparse)(void) = NULL;
+
+
 
 
 /**
@@ -189,6 +198,12 @@ ctwm_main(int argc, char *argv[])
 		nodpyok = true;
 	}
 
+	/* Support for tests: be ready to fake everything */
+	if(ctwm_test) {
+		takeover = false;
+		nodpyok  = true;
+	}
+
 
 	/*
 	 * Hook up signal handlers
@@ -219,8 +234,17 @@ ctwm_main(int argc, char *argv[])
 		XtToolkitInitialize();
 		appContext = XtCreateApplicationContext();
 
-		if(!(dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
-		                         NULL, 0, &zero, NULL)) && !nodpyok) {
+		// Tests don't talk to a real X server.
+		// XXX This needs revisiting if we ever get one that _does_.
+		// We'll have to add another flag...
+		if(!ctwm_test) {
+			// Connect
+			dpy = XtOpenDisplay(appContext, CLarg.display_name, "twm", "twm",
+			                    NULL, 0, &zero, NULL);
+		}
+
+		// Failed?  Usually a problem, but somethings we allow faking...
+		if(!dpy && !nodpyok) {
 			fprintf(stderr, "%s:  unable to open display \"%s\"\n",
 			        ProgramName, XDisplayName(CLarg.display_name));
 			exit(1);
@@ -233,8 +257,8 @@ ctwm_main(int argc, char *argv[])
 			exit(1);
 		}
 
-		if(!dpy) {
-			// At least warn
+		if(!dpy && !ctwm_test) {
+			// At least warn, except for tests
 			fprintf(stderr, "%s: Can't connect to X server, proceeding anyway...\n",
 			        ProgramName);
 		}
@@ -573,6 +597,17 @@ ctwm_main(int argc, char *argv[])
 
 			// In non-config-check mode, we historically proceed even if
 			// there were errors, so keep doing that...
+		}
+
+
+		// For testing, it's useful to do all that initial setup up
+		// through parsing, and then inspect Scr and the like.
+		// Long-term, IWBNI we had a better way to do all the necessary
+		// initialization and then call the parse ourselves at that
+		// level.  But for now, provide a callback func that can pass
+		// control back to the test code, then just exits.
+		if(ctwm_test_postparse != NULL) {
+			exit(ctwm_test_postparse());
 		}
 
 
