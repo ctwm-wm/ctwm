@@ -1,4 +1,6 @@
 # Test various rlayout-related bits
+
+# Bits directly testing the funcs
 ctwm_simple_unit_test(rlayout_overlap
 	BIN test_layout
 	ARGS overlap.tst
@@ -10,3 +12,8 @@ ctwm_simple_unit_test(rlayout_test
 	ARGS test.tst
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
+
+
+# Test config parsing of MonitorLayout{} block
+ctwm_simple_unit_test(test_monitor_layout
+	ARGS -f ${CMAKE_CURRENT_SOURCE_DIR}/monitor_layout.ctwmrc)
