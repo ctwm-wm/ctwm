@@ -28,7 +28,7 @@ test: build/Makefile
 
 # Reindent files
 indent:
-	astyle -n --options=tools/ctwm.astyle *.h *.c
+	astyle -n --options=tools/ctwm.astyle *.[ch] tests/*/*.[ch]
 
 
 # Build documentation files
