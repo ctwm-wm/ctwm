@@ -1244,12 +1244,10 @@ MonitorLayout
 -----
 define(LeftWidth, eval(WIDTH / 2))dnl
 define(RightWidth, eval(WIDTH - LeftWidth))dnl
-define(LeftGeom,  `AutoL:'LeftWidth`x'HEIGHT`+0+0')
-define(RightGeom, `AutoR:'RightWidth`x'HEIGHT`+'LeftWidth`+0')
 MonitorLayout
 {
-    "LeftGeom"
-    "RightGeom"
+    "`AutoL:'LeftWidth`x'HEIGHT`+0+0'"
+    "`AutoR:'RightWidth`x'HEIGHT`+'LeftWidth`+0'"
 }
 -----
 
