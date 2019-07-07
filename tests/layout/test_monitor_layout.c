@@ -54,7 +54,7 @@ check_monitor_layout(void)
 		return 1;
 	}
 	if(strcmp(names[1], "Two") != 0) {
-		fprintf(stderr, "Second monitor should be 'Two', not '%s'\n", names[0]);
+		fprintf(stderr, "Second monitor should be 'Two', not '%s'\n", names[1]);
 		return 1;
 	}
 	if(names[2] != NULL) {
