@@ -1236,6 +1236,22 @@ MonitorLayout
     "Right:2000x1000+3000+0"
 }
 ------
++
+[normal]
+  With `m4` support, you could even make it automatically split your full
+  display into 2 ``monitors'':
++
+-----
+define(LeftWidth, eval(WIDTH / 2))dnl
+define(RightWidth, eval(WIDTH - LeftWidth))dnl
+define(LeftGeom,  `AutoL:'LeftWidth`x'HEIGHT`+0+0')
+define(RightGeom, `AutoR:'RightWidth`x'HEIGHT`+'LeftWidth`+0')
+MonitorLayout
+{
+    "LeftGeom"
+    "RightGeom"
+}
+-----
 
 Monochrome { `colors` }::
   This variable specifies a list of color assignments that should be made if
