@@ -1604,19 +1604,20 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 	RemoveOwl(owl);
 	InsertOwl(owl, Above);
 
-	// Now root around in its old layer for any transients of it, and
+	// Now root around for any transients of it, and
 	// nudge them into the new location.  The whole Above/Below thing is
 	// kinda a heavy-handed guess, but...
 	//
-	// This is roughly a reimplementation of TryToMoveTransientsOfTo(),
-	// but we can't use that func itself because we already moved the
-	// focus, so PRI(transients) won't match PRI(thiswin), and we won't
-	// find them.  See above for uncertainty about this guess as to where
-	// to find them...   we should have a better way of finding a
-	// window's transients than we currently do   :|
-	OtpWinList *trans = OwlRightBelow(oldprio);
-	trans = (trans == NULL) ? Scr->bottomOwl : trans->above;
+	// This is nearly a reimplementation of TryToMoveTransientsOfTo(),
+	// but the assumption that we can find the transients by starting
+	// from where the old priority was in the list turns out to be deeply
+	// broken.  So just walk the whole thing.  Which isn't ideal, but...
+	//
+	// XXX It should not be this freakin' hard to find a window's
+	// transients.  We should fix that more globally.
+	OtpWinList *trans = Scr->bottomOwl;
 	while((trans != NULL)) {
+		// Gotta pre-stash, since we're sometimes about to move trans.
 		OtpWinList *next = trans->above;
 
 		if((trans->type == WinWin)
@@ -1624,12 +1625,6 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 			// Bounce this one
 			RemoveOwl(trans);
 			InsertOwl(trans, Above);
-		}
-		else {
-			// Have we left the layer we started in?
-			if(PRI(trans) != oldprio) {
-				break;
-			}
 		}
 
 		trans = next;
