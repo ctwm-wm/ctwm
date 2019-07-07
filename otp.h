@@ -61,6 +61,9 @@ void OtpClearAflag(TwmWindow *twm_win, unsigned flag);
 void OtpStashAflagsFirstTime(TwmWindow *twm_win);
 void OtpRestackWindow(TwmWindow *twm_win);
 
+void OtpUnfocusWindow(TwmWindow *twm_win);
+void OtpFocusWindow(TwmWindow *twm_win);
+
 /* functions to manage the preferences. The second arg specifies icon prefs */
 void OtpScrInitData(ScreenInfo *);
 name_list **OtpScrSwitchingL(ScreenInfo *, WinType);

@@ -1579,6 +1579,104 @@ OtpRestackWindow(TwmWindow *twm_win)
 }
 
 
+
+/**
+ * Focus/unfocus backend.  This is used on windows whose stacking is
+ * focus-dependent (e.g., EWMH fullscreen), to move them and their
+ * transients around.  For these windows, getting/losing focus is
+ * practically the same as a f.setpriority, except it's on the calculated
+ * rather than the base parts.  And it's hard to re-use our existing
+ * functions to do it because we have to move Scr->Focus before the main
+ * window changes, but then it's too late to see where all the transients
+ * were.
+ *
+ * There are a number of unpleasant assumptions in here relating to where
+ * the transients are, and IWBNI we could be smarter and quicker about
+ * dealing with them.  But this gets us past the simple to cause
+ * assertion failures, anyway...
+ */
+static void
+OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
+{
+	OtpWinList *owl = twm_win->otp;
+
+	// This one comes off the list, and goes back in its new place.
+	RemoveOwl(owl);
+	InsertOwl(owl, Above);
+
+	// Now root around in its old layer for any transients of it, and
+	// nudge them into the new location.  The whole Above/Below thing is
+	// kinda a heavy-handed guess, but...
+	//
+	// This is roughly a reimplementation of TryToMoveTransientsOfTo(),
+	// but we can't use that func itself because we already moved the
+	// focus, so PRI(transients) won't match PRI(thiswin), and we won't
+	// find them.  See above for uncertainty about this guess as to where
+	// to find them...   we should have a better way of finding a
+	// window's transients than we currently do   :|
+	OtpWinList *trans = OwlRightBelow(oldprio);
+	trans = (trans == NULL) ? Scr->bottomOwl : trans->above;
+	while((trans != NULL)) {
+		OtpWinList *next = trans->above;
+
+		if((trans->type == WinWin)
+				&& isTransientOf(trans->twm_win, twm_win)) {
+			// Bounce this one
+			RemoveOwl(trans);
+			InsertOwl(trans, Above);
+		}
+		else {
+			// Have we left the layer we started in?
+			if(PRI(trans) != oldprio) {
+				break;
+			}
+		}
+
+		trans = next;
+	}
+
+	OtpCheckConsistency();
+}
+
+/**
+ * Unfocus a window.  This needs to know internals of OTP because of
+ * focus-dependent stacking of it and its transients.
+ */
+void
+OtpUnfocusWindow(TwmWindow *twm_win)
+{
+	// Stash where it currently appears to be.  We assume all its
+	// transients currently have the same effective priority.  See also
+	// TryToMoveTransientsOfTo() which makes the same assumption.  I'm
+	// not sure that's entirely warranted...
+	int oldprio = PRI(twm_win->otp);
+
+	// Now tell ourselves it's unfocused
+	assert(Scr->Focus == twm_win);
+	Scr->Focus = NULL;
+
+	// And do the work
+	OtpFocusWindowBE(twm_win, oldprio);
+}
+
+/**
+ * Focus a window.  This needs to know internals of OTP because of
+ * focus-dependent stacking of it and its transients.
+ */
+void
+OtpFocusWindow(TwmWindow *twm_win)
+{
+	// X-ref OtoUnfocusWindow() comments.
+	int oldprio = PRI(twm_win->otp);
+
+	assert(Scr->Focus != twm_win);
+	Scr->Focus = twm_win;
+
+	OtpFocusWindowBE(twm_win, oldprio);
+}
+
+
+
 /*
  * Calculating effective priority.  Take the base priority (what gets
  * set/altered by various OTP config and functions), and then tack on
