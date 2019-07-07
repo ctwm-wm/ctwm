@@ -35,13 +35,13 @@ check_wsm_geom(void)
 	// Now check that we got the expected result
 	if(strcmp(Scr->workSpaceMgr.geometry, expected_geom) != 0) {
 		fprintf(stderr, "Got '%s' instead of expected '%s' geometry.\n",
-				Scr->workSpaceMgr.geometry, expected_geom);
+		        Scr->workSpaceMgr.geometry, expected_geom);
 		return 1;
 	}
 
 	if(Scr->workSpaceMgr.columns != expected_columns) {
 		fprintf(stderr, "Got '%d' instead of expected '%d' columns.\n",
-				Scr->workSpaceMgr.columns, expected_columns);
+		        Scr->workSpaceMgr.columns, expected_columns);
 		return 1;
 	}
 
