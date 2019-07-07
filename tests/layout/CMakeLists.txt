@@ -15,5 +15,6 @@ ctwm_simple_unit_test(rlayout_test
 
 
 # Test config parsing of MonitorLayout{} block
-ctwm_simple_unit_test(test_monitor_layout
+ctwm_simple_unit_test(rlayout_monitor_layout
+	BIN test_monitor_layout
 	ARGS -f ${CMAKE_CURRENT_SOURCE_DIR}/monitor_layout.ctwmrc)
