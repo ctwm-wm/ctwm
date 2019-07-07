@@ -14,6 +14,13 @@
    RANDR-output-relative; see doc of e.g. `IconManagers`.  Contributed by
    Maxime Soulé <<btik-ctwm@scoubidou.com>>.
 
+1. Added `MonitorLayout {}` config var for specifying the layout of
+   multiple monitors.  This is useful if the X server doesn't support
+   RANDR (_e.g._, older servers), or if the info it provides is wrong
+   (_e.g._, multi-display simulation with Xephyr), or if you just prefer
+   to specify things differently than they would otherwise be (_e.g._,
+   treat an ultra-wide display as 2 separate monitors).
+
 ### Bugfixes
 
 1. Perform various manipulations and overrides of `WM_HINTS` property
