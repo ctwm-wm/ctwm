@@ -1212,6 +1212,31 @@ MenuTitleForeground `string`::
   can only be specified inside of a
   `Color` or `Monochrome` list.  The default is ``black''.
 
+MonitorLayout { `monitor-list` }::
+  This allows manually configuring what ctwm will consider as the list of
+  monitors.  If `XRANDR` support is compiled in (the default as of
+  %%NEXT%%), and the `RANDR` extension is available on your server, then
+  `ctwm` will use that to determine the size and layout of your monitors.
++
+[normal]
+  However, if either is not the case, or you want to override the results
+  it returns, you can specify the names and layouts of your desired
+  ``monitors'' with this.  For instance, if you have a very wide monitor,
+  and would prefer to treat it as several narrower side-by-side monitors,
+  you could use this to tell ctwm to treat it that way.
++
+------
+MonitorLayout
+{
+    # Imagine a 5000x1000 monitor, that we want to split into two 2k wide
+    # sections at the far left and right, with a 1k wide section in the
+    # middle.
+    "Left:2000x1000+0+0"
+    "1000x1000+2000+0"       # Middle section unnamed
+    "Right:2000x1000+3000+0"
+}
+------
+
 Monochrome { `colors` }::
   This variable specifies a list of color assignments that should be made if
   the screen has a depth of 1.  See the description of `Color`.
