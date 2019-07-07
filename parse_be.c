@@ -28,6 +28,9 @@
 #include "parse.h"
 #include "parse_be.h"
 #include "parse_yacc.h"
+#include "r_area.h"
+#include "r_area_list.h"
+#include "r_layout.h"
 #ifdef SOUNDS
 #  include "sound.h"
 #endif
@@ -342,6 +345,7 @@ static const TwmKeyword keytable[] = {
 	{ "menutitleforeground",    CKEYWORD, kwc_MenuTitleForeground },
 	{ "meta",                   META, 0 },
 	{ "mod",                    META, 0 },  /* fake it */
+	{ "monitorlayout",          MONITOR_LAYOUT, 0 },
 	{ "monochrome",             MONOCHROME, 0 },
 	{ "move",                   MOVE, 0 },
 	{ "movedelta",              NKEYWORD, kwn_MoveDelta },
@@ -1997,5 +2001,165 @@ add_mwm_ignore(char *s)
 	twmrc_error_prefix();
 	fprintf(stderr, "Unexpected MWMIgnore value '%s'\n", s);
 	ParseError = true;
+	return;
+}
+
+
+/*
+ * Parsing for Layout { } lists, to override the monitor layout we
+ * assumed or got from RANDR.
+ */
+static RAreaList *override_monitors;
+static struct {
+	char **names;
+	int len;
+	int cap;
+} override_monitors_names;
+
+
+/**
+ * Allocate space for our monitor override list.
+ */
+void
+init_layout_override(void)
+{
+	// 4 seems like a good guess.  If we're doing this, we're probably
+	// making at least 2 monitors, and >4 is gonna be pretty rare, so...
+	const int initsz = 4;
+
+	override_monitors = RAreaListNew(initsz, NULL);
+	if(override_monitors == NULL) {
+		twmrc_error_prefix();
+		fprintf(stderr, "Failed allocating RAreaList for monitors.\n");
+		ParseError = true;
+		return;
+		// Maybe we should just abort(); if malloc failed allocating a
+		// few dozen bytes this early, we're _screwed_.
+	}
+
+	override_monitors_names.names = calloc(initsz, sizeof(char *));
+	override_monitors_names.len = 0;
+	override_monitors_names.cap = initsz;
+
+	return;
+}
+
+/**
+ * Add an entry to our monitor list
+ *
+ * Expecting: [Name:]WxH[+X[+Y]]
+ */
+void
+add_layout_override_entry(const char *s)
+{
+	const char *tmp;
+	int xpgret;
+	int x, y;
+	unsigned int width, height;
+
+	if(override_monitors == NULL) {
+		// alloc failed, so just give up; we'll fail in the end anyway...
+		return;
+	}
+
+	// Got a name?
+	tmp = strchr(s, ':');
+	if(tmp != NULL && tmp != s) {
+		// Stash the name
+		override_monitors_names.names[override_monitors_names.len]
+		        = strndup(s, tmp - s);
+		// len advances below
+
+		// Advance to geom
+		s = tmp + 1;
+	}
+	// Advance whether we got a name or not, to keep in sync.
+	override_monitors_names.len++;
+
+
+	// Either way, s points at the geom now
+	xpgret = XParseGeometry(s, &x, &y, &width, &height);
+
+	// Width and height are non-optional.  If x/y aren't given, we assume
+	// +0+0.  If we're given -0's, well, we don't _support_ that, but
+	// XPG() turns them into positives for us, so just accept it...
+	const int has_hw = (WidthValue | HeightValue);
+	if((xpgret & has_hw) != has_hw) {
+		twmrc_error_prefix();
+		fprintf(stderr, "Need both height and width in '%s'\n", s);
+		ParseError = true;
+		// Don't bother free()'ing stuff, we're going to exit after
+		// parse completes
+		return;
+	}
+	if(!(xpgret & XValue)) {
+		x = 0;
+	}
+	if(!(xpgret & YValue)) {
+		y = 0;
+	}
+
+
+	// And stash it
+	RAreaListAdd(override_monitors, RAreaNewStatic(x, y, width, height));
+
+	// Whether we had a name for this 'monitor' or not, we need to
+	// possibly grow the names list, since it has to stay in lockstep
+	// with the areas as we add 'em.
+	{
+		char ***names = &override_monitors_names.names;
+		int len = override_monitors_names.len;
+
+		if(len == override_monitors_names.cap) {
+			char **tnames = realloc(*names, (len + 1) * sizeof(char *));
+			if(tnames == NULL) {
+				abort();
+			}
+			*names = tnames;
+			override_monitors_names.cap++;
+		}
+	}
+
+	return;
+}
+
+/**
+ * Finalize the override layout and store it up globally.
+ */
+void
+proc_layout_override(void)
+{
+	RLayout *new_layout;
+
+	// Guard
+	if(RAreaListLen(override_monitors) < 1) {
+		// Make this non-fatal, so an empty spec not-quite-quietly does
+		// nothing.
+		twmrc_error_prefix();
+		fprintf(stderr, "no monitors specified, ignoring MonitorLayout\n");
+
+		// Since it's non-fatal, we _do_ need to cleanup more
+		// carefully...
+		RAreaListFree(override_monitors);
+		for(int i = 0; i < override_monitors_names.len ; i++) {
+			free(override_monitors_names.names[i]);
+		}
+		free(override_monitors_names.names);
+		return;
+	}
+
+	new_layout = RLayoutNew(override_monitors);
+	RLayoutSetMonitorsNames(new_layout, override_monitors_names.names);
+	// Silently stop paying attention to o_m_n.  Don't free() anything,
+	// since new_layout now owns it.  If we get another MonitorLayout{}
+	// block, it'll start over again with init(), and allocate new space.
+
+#ifdef DEBUG
+	fprintf(stderr, "Overridden layout: ");
+	RLayoutPrint(new_layout);
+#endif
+
+	RLayoutFree(Scr->Layout);
+	Scr->Layout = new_layout;
 	return;
 }

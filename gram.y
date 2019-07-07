@@ -92,6 +92,7 @@ int yylex(void);
 %token <num> IGNORE_TRANSIENT
 %token <num> EWMH_IGNORE
 %token <num> MWM_IGNORE
+%token <num> MONITOR_LAYOUT
 %token <num> RPLAY_SOUNDS
 %token <num> FORCE_FOCUS
 %token <ptr> STRING
@@ -419,11 +420,13 @@ stmt		: error
 		| WINDOW_GEOMETRIES	{  }
 		  wingeom_list
 		| VIRTUAL_SCREENS	{ }
-		  geom_list
+		  vscreen_geom_list
 		| EWMH_IGNORE		{ }
 		  ewmh_ignore_list
 		| MWM_IGNORE		{ }
 		  mwm_ignore_list
+		| MONITOR_LAYOUT { init_layout_override(); }
+			layout_geom_list
 		| RPLAY_SOUNDS { }
 		  rplay_sounds_list
 		| FORCE_FOCUS { Scr->ForceFocus = true; }
@@ -757,14 +760,14 @@ wingeom_entries	: /* Empty */
 wingeom_entry	: string string	{ AddToList (&Scr->WindowGeometries, $1, $2); }
 		;
 
-geom_list	: LB geom_entries RB {}
+vscreen_geom_list	: LB vscreen_geom_entries RB {}
 		;
 
-geom_entries	: /* Empty */
-		| geom_entries geom_entry
+vscreen_geom_entries	: /* Empty */
+		| vscreen_geom_entries vscreen_geom_entry
 		;
 
-geom_entry	: string { AddToList (&Scr->VirtualScreens, $1, ""); }
+vscreen_geom_entry	: string { AddToList (&Scr->VirtualScreens, $1, ""); }
 		;
 
 
@@ -787,6 +790,17 @@ mwm_ignore_entries	: /* Empty */
 		;
 
 mwm_ignore_entry	: string { add_mwm_ignore($1); }
+		;
+
+
+layout_geom_list	: LB layout_geom_entries RB { proc_layout_override(); }
+		;
+
+layout_geom_entries	: /* Empty */
+		| layout_geom_entries layout_geom_entry
+		;
+
+layout_geom_entry	: string { add_layout_override_entry($1); }
 		;
 
 

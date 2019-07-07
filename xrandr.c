@@ -23,9 +23,8 @@ XrandrNewLayout(Display *disp, Window rootw)
 {
 	int i_nmonitors = 0;
 	XRRMonitorInfo *ps_monitors;
-	char **monitor_names, *name;
+	char **monitor_names;
 	RAreaList *areas;
-	RArea cur_area;
 	int evt_base, err_base, ver_maj, ver_min;
 	// XXX *_base and ver_* should move more globally if we start doing
 	// randr stuff anywhere else.
@@ -77,12 +76,12 @@ XrandrNewLayout(Display *disp, Window rootw)
 	// Add each and its name into an RAreaList
 	areas = RAreaListNew(i_nmonitors, NULL);
 	for(int i = 0; i < i_nmonitors; i++) {
-		cur_area = RAreaNew(ps_monitors[i].x,
-		                    ps_monitors[i].y,
-		                    ps_monitors[i].width,
-		                    ps_monitors[i].height);
+		RArea cur_area = RAreaNew(ps_monitors[i].x,
+		                          ps_monitors[i].y,
+		                          ps_monitors[i].width,
+		                          ps_monitors[i].height);
 
-		name = XGetAtomName(disp, ps_monitors[i].name);
+		char *name = XGetAtomName(disp, ps_monitors[i].name);
 #ifdef DEBUG
 		fprintf(stderr, "NEW area: %s%s",
 		        name != NULL ? name : "",

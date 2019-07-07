@@ -95,6 +95,9 @@ RLayoutCopyCropped(const RLayout *self, int left_margin, int right_margin,
 static void
 _RLayoutFreeNames(RLayout *self)
 {
+	if(self == NULL) {
+		return;
+	}
 	if(self->names != NULL) {
 		free(self->names);
 		self->names = NULL;
@@ -108,6 +111,10 @@ _RLayoutFreeNames(RLayout *self)
 void
 RLayoutFree(RLayout *self)
 {
+	if(self == NULL) {
+		return;
+	}
+
 	RAreaListFree(self->monitors);
 	RAreaListFree(self->horiz);
 	RAreaListFree(self->vert);
