@@ -72,7 +72,6 @@ function(ctwm_simple_unit_test TNAME)
 
 	# Don't allow $DISPLAY unless specifically requested.
 	if(NOT _ARGS_ALLOW_DISPLAY)
-		message(STATUS "${TNAME}: Disabling $DISPLAY")
 		set_tests_properties(${TNAME} PROPERTIES
 			ENVIRONMENT DISPLAY=
 			)
