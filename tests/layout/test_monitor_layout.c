@@ -66,12 +66,12 @@ check_monitor_layout(void)
 	RAreaList *mons = Scr->Layout->monitors;
 
 #define CHK_MON_VAL(mon, fld, val) do { \
-		if(mons[0].areas[mon].fld != val) { \
-			fprintf(stderr, "Monitor %d %s should be %d, not %d\n", mon, \
-				#fld, val, mons[0].areas[mon].fld); \
-			return 1; \
-		} \
-	} while(0)
+                if(mons[0].areas[mon].fld != val) { \
+                        fprintf(stderr, "Monitor %d %s should be %d, not %d\n", mon, \
+                                #fld, val, mons[0].areas[mon].fld); \
+                        return 1; \
+                } \
+        } while(0)
 
 	CHK_MON_VAL(0, x, 0);
 	CHK_MON_VAL(0, y, 0);
