@@ -80,6 +80,7 @@ typedef struct Box {
 
 
 static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot);
+static void OwlPrettyPrint(const OtpWinList *start);
 static void OwlSetAflagMask(OtpWinList *owl, unsigned mask, unsigned setto);
 static void OwlSetAflag(OtpWinList *owl, unsigned flag);
 static void OwlClearAflag(OtpWinList *owl, unsigned flag);
@@ -1436,6 +1437,42 @@ TwmWindow *OtpNextWinDown(TwmWindow *twm_win)
 	}
 	return owl ? owl->twm_win : NULL;
 }
+
+
+
+/*
+ * Outputting info to understand the state of OTP stuff.
+ */
+
+/// Pretty-print a whole OWL stack.  Works upward from the arg;
+/// generally, you'd call this with Scr->bottomOwl.
+static void
+OwlPrettyPrint(const OtpWinList *start)
+{
+	fprintf(stderr, "%s():\n", __func__);
+
+	for(const OtpWinList *owl = start ; owl != NULL ; owl = owl->above) {
+		fprintf(stderr, "  pri=%2d (%+d) %s '%1.50s'\n",
+		        OtpEffectivePriority(owl->twm_win),
+		        OtpEffectiveDisplayPriority(owl->twm_win),
+		        (owl->type == WinWin ? "win" : "ico"),
+		        owl->twm_win->name);
+		fprintf(stderr, "         basepri=%d %s%s%s\n",
+		        owl->pri_base,
+		        (owl->pri_aflags & OTP_AFLAG_ABOVE ? " _ABOVE" : ""),
+		        (owl->pri_aflags & OTP_AFLAG_BELOW ? " _BELOW" : ""),
+		        (owl->pri_aflags & OTP_AFLAG_FULLSCREEN ? " _FULLSCREEN" : "")
+		       );
+		if(owl->twm_win->istransient) {
+			const TwmWindow *parent = GetTwmWindow(owl->twm_win->transientfor);
+			fprintf(stderr, "         transient for %lu:%1.50s\n",
+			        parent->w, parent->name);
+		}
+	}
+
+	fprintf(stderr, "  Done.\n");
+}
+
 
 
 /*
