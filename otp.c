@@ -1463,11 +1463,11 @@ OwlPrettyPrint(const OtpWinList *start)
 	fprintf(stderr, "%s():\n", __func__);
 
 	for(const OtpWinList *owl = start ; owl != NULL ; owl = owl->above) {
-		fprintf(stderr, "  pri=%2d (%+d) %s '%1.50s'\n",
+		fprintf(stderr, "  pri=%2d (%+d) %s 0x%lx:'%1.50s'\n",
 		        OtpEffectivePriority(owl->twm_win),
 		        OtpEffectiveDisplayPriority(owl->twm_win),
 		        (owl->type == WinWin ? "win" : "ico"),
-		        owl->twm_win->name);
+		        owl->twm_win->w, owl->twm_win->name);
 		fprintf(stderr, "         basepri=%d %s%s%s\n",
 		        owl->pri_base,
 		        (owl->pri_aflags & OTP_AFLAG_ABOVE ? " _ABOVE" : ""),
@@ -1476,7 +1476,7 @@ OwlPrettyPrint(const OtpWinList *start)
 		       );
 		if(owl->twm_win->istransient) {
 			const TwmWindow *parent = GetTwmWindow(owl->twm_win->transientfor);
-			fprintf(stderr, "         transient for %lu:%1.50s\n",
+			fprintf(stderr, "         transient for 0x%lx:%1.50s\n",
 			        parent->w, parent->name);
 		}
 	}
