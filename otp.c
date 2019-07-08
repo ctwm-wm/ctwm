@@ -246,8 +246,19 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 		assert(owl->pri_base <= OTP_MAX);
 
 		/* List should be bottom->top, so effective pri better ascend */
-		assert(PRI(owl) >= priority);
-		priority = PRI(owl);
+		{
+			const int nextpri = PRI(owl);
+			if(nextpri < priority) {
+				fprintf(stderr, "%s(): Priority went backward "
+						"(%d:'%s' -> %d:'%s')\n",
+						__func__,
+						priority, owl->below->twm_win->name,
+						nextpri, owl->twm_win->name);
+				OwlPrettyPrint(Scr->bottomOwl);
+				abort();
+			}
+			priority = nextpri;
+		}
 
 #if DEBUG_OTP
 
