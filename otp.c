@@ -1613,13 +1613,13 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 	// from where the old priority was in the list turns out to be deeply
 	// broken.  So just walk the whole thing.  Which isn't ideal, but...
 	//
+	// We also need to do loop detection, since otherwise we'll get stuck
+	// when a window has multiple transients to move around.  Since we
+	// read from the bottom up, if a window is moving up the stack, then
+	// its transients move up, and we run into them again and again.
+	//
 	// XXX It should not be this freakin' hard to find a window's
 	// transients.  We should fix that more globally.
-	//
-	// XXX We also need to do loop detection, since otherwise we'll get
-	// stuck when a window has multiple transients to move around.  Since
-	// we read from the bottom up, if a window is moving up the stack,
-	// then its transients move up, and we run into them again and again.
 	
 	// XXX Let's just get a friggin' vector implementation already...
 	size_t tlsz = 32;  // Should hardly ever be too small
