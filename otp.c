@@ -1640,6 +1640,8 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 				&& isTransientOf(trans->twm_win, twm_win)) {
 			// Got one, stash it
 			tlst[tlused++] = trans;
+
+			// Grow?
 			if(tlused == tlsz) {
 				tlsz *= 2;
 				OtpWinList **tln = realloc(tlst, (tlsz * sizeof(OtpWinList *)));
@@ -1661,6 +1663,7 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 		RemoveOwl(tlst[i]);
 		InsertOwl(tlst[i], Above);
 	}
+
 	free(tlst);
 
 	OtpCheckConsistency();
