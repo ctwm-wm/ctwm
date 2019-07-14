@@ -44,6 +44,10 @@
 
 1. When restarting ctwm, the stacking order of windows is now preserved.
 
+1. A failure in OTP consistency checks caused by the handling of
+   transients of fullscreen windows has been fixed.  This manifested as
+   failures in OtpCheckConsistencyVS() assertions.
+
 
 
 ## 4.0.2  (2018-08-25)
