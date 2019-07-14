@@ -250,10 +250,10 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 			const int nextpri = PRI(owl);
 			if(nextpri < priority) {
 				fprintf(stderr, "%s(): Priority went backward "
-						"(%d:'%s' -> %d:'%s')\n",
-						__func__,
-						priority, owl->below->twm_win->name,
-						nextpri, owl->twm_win->name);
+				        "(%d:'%s' -> %d:'%s')\n",
+				        __func__,
+				        priority, owl->below->twm_win->name,
+				        nextpri, owl->twm_win->name);
 				OwlPrettyPrint(Scr->bottomOwl);
 				abort();
 			}
@@ -1668,7 +1668,7 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 	//
 	// XXX It should not be this freakin' hard to find a window's
 	// transients.  We should fix that more globally.
-	
+
 	// XXX Let's just get a friggin' vector implementation already...
 	size_t tlsz = 32;  // Should hardly ever be too small
 	size_t tlused = 0;
@@ -1685,7 +1685,7 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 		OtpWinList *next = trans->above;
 
 		if((trans->type == WinWin)
-				&& isTransientOf(trans->twm_win, twm_win)) {
+		                && isTransientOf(trans->twm_win, twm_win)) {
 			// Got one, stash it
 			tlst[tlused++] = trans;
 
