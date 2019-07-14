@@ -1615,6 +1615,22 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 	//
 	// XXX It should not be this freakin' hard to find a window's
 	// transients.  We should fix that more globally.
+	//
+	// XXX We also need to do loop detection, since otherwise we'll get
+	// stuck when a window has multiple transients to move around.  Since
+	// we read from the bottom up, if a window is moving up the stack,
+	// then its transients move up, and we run into them again and again.
+	
+	// XXX Let's just get a friggin' vector implementation already...
+	size_t tlsz = 32;  // Should hardly ever be too small
+	size_t tlused = 0;
+	OtpWinList **tlst = calloc(tlsz, sizeof(OtpWinList *));
+	if(tlst == NULL) {
+		fprintf(stderr, "%s(): realloc() failed\n", __func__);
+		abort();
+	}
+
+	// Loop through and find them all
 	OtpWinList *trans = Scr->bottomOwl;
 	while((trans != NULL)) {
 		// Gotta pre-stash, since we're sometimes about to move trans.
@@ -1622,13 +1638,30 @@ OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
 
 		if((trans->type == WinWin)
 				&& isTransientOf(trans->twm_win, twm_win)) {
-			// Bounce this one
-			RemoveOwl(trans);
-			InsertOwl(trans, Above);
+			// Got one, stash it
+			tlst[tlused++] = trans;
+			if(tlused == tlsz) {
+				tlsz *= 2;
+				OtpWinList **tln = realloc(tlst, (tlsz * sizeof(OtpWinList *)));
+				if(tln == NULL) {
+					fprintf(stderr, "%s(): realloc() failed\n", __func__);
+					abort();
+				}
+				tlst = tln;
+			}
 		}
 
+		// And onward
 		trans = next;
 	}
+
+
+	// Now loop over them and shuffle them up
+	for(int i = 0 ; i < tlused ; i++) {
+		RemoveOwl(tlst[i]);
+		InsertOwl(tlst[i], Above);
+	}
+	free(tlst);
 
 	OtpCheckConsistency();
 }
