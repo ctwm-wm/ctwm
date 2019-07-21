@@ -129,9 +129,6 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 {
 	Window w = (tmp_win ? tmp_win->w : PointerRoot);
 	bool f_iconmgr = false;
-#ifdef EWMH
-	TwmWindow *old_focus = Scr->Focus;
-#endif
 
 	if(Scr->Focus && (Scr->Focus->isiconmgr)) {
 		f_iconmgr = true;
@@ -153,24 +150,34 @@ SetFocus(TwmWindow *tmp_win, Time tim)
 			AutoSqueeze(Scr->Focus);
 		}
 		SetFocusVisualAttributes(Scr->Focus, false);
+#ifdef EWMH
+		// Priority may change when focus does
+		if(OtpIsFocusDependent(Scr->Focus)) {
+			OtpUnfocusWindow(Scr->Focus);
+			// That Scr->Focus = NULL's internally for us, but we don't
+			// care, since we're about to reset it if we need to.
+		}
+#endif
 	}
-	if(tmp_win)    {
+
+	if(tmp_win) {
 		if(tmp_win->AutoSqueeze && tmp_win->squeezed) {
 			AutoSqueeze(tmp_win);
 		}
 		SetFocusVisualAttributes(tmp_win, true);
+#ifdef EWMH
+		// Priority may change when focus does
+		if(OtpIsFocusDependent(tmp_win)) {
+			OtpFocusWindow(tmp_win);
+			// Pre-sets Scr->Focus
+		}
+#endif
 	}
+
+	// in the EWMH cases, this was already done.
 	Scr->Focus = tmp_win;
 
-#ifdef EWMH
-	/* Priority may change when focus does */
-	if(old_focus && OtpIsFocusDependent(old_focus)) {
-		OtpRestackWindow(old_focus);
-	}
-	if(tmp_win && OtpIsFocusDependent(tmp_win)) {
-		OtpRestackWindow(tmp_win);
-	}
-#endif
+	return;
 }
 
 

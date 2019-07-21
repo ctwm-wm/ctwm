@@ -1579,6 +1579,135 @@ OtpRestackWindow(TwmWindow *twm_win)
 }
 
 
+
+/**
+ * Focus/unfocus backend.  This is used on windows whose stacking is
+ * focus-dependent (e.g., EWMH fullscreen), to move them and their
+ * transients around.  For these windows, getting/losing focus is
+ * practically the same as a f.setpriority, except it's on the calculated
+ * rather than the base parts.  And it's hard to re-use our existing
+ * functions to do it because we have to move Scr->Focus before the main
+ * window changes, but then it's too late to see where all the transients
+ * were.
+ *
+ * There are a number of unpleasant assumptions in here relating to where
+ * the transients are, and IWBNI we could be smarter and quicker about
+ * dealing with them.  But this gets us past the simple to cause
+ * assertion failures, anyway...
+ */
+static void
+OtpFocusWindowBE(TwmWindow *twm_win, int oldprio)
+{
+	OtpWinList *owl = twm_win->otp;
+
+	// This one comes off the list, and goes back in its new place.
+	RemoveOwl(owl);
+	InsertOwl(owl, Above);
+
+	// Now root around for any transients of it, and
+	// nudge them into the new location.  The whole Above/Below thing is
+	// kinda a heavy-handed guess, but...
+	//
+	// This is nearly a reimplementation of TryToMoveTransientsOfTo(),
+	// but the assumption that we can find the transients by starting
+	// from where the old priority was in the list turns out to be deeply
+	// broken.  So just walk the whole thing.  Which isn't ideal, but...
+	//
+	// We also need to do loop detection, since otherwise we'll get stuck
+	// when a window has multiple transients to move around.  Since we
+	// read from the bottom up, if a window is moving up the stack, then
+	// its transients move up, and we run into them again and again.
+	//
+	// XXX It should not be this freakin' hard to find a window's
+	// transients.  We should fix that more globally.
+	
+	// XXX Let's just get a friggin' vector implementation already...
+	size_t tlsz = 32;  // Should hardly ever be too small
+	size_t tlused = 0;
+	OtpWinList **tlst = calloc(tlsz, sizeof(OtpWinList *));
+	if(tlst == NULL) {
+		fprintf(stderr, "%s(): realloc() failed\n", __func__);
+		abort();
+	}
+
+	// Loop through and find them all
+	OtpWinList *trans = Scr->bottomOwl;
+	while((trans != NULL)) {
+		// Gotta pre-stash, since we're sometimes about to move trans.
+		OtpWinList *next = trans->above;
+
+		if((trans->type == WinWin)
+				&& isTransientOf(trans->twm_win, twm_win)) {
+			// Got one, stash it
+			tlst[tlused++] = trans;
+
+			// Grow?
+			if(tlused == tlsz) {
+				tlsz *= 2;
+				OtpWinList **tln = realloc(tlst, (tlsz * sizeof(OtpWinList *)));
+				if(tln == NULL) {
+					fprintf(stderr, "%s(): realloc() failed\n", __func__);
+					abort();
+				}
+				tlst = tln;
+			}
+		}
+
+		// And onward
+		trans = next;
+	}
+
+
+	// Now loop over them and shuffle them up
+	for(int i = 0 ; i < tlused ; i++) {
+		RemoveOwl(tlst[i]);
+		InsertOwl(tlst[i], Above);
+	}
+
+	free(tlst);
+
+	OtpCheckConsistency();
+}
+
+/**
+ * Unfocus a window.  This needs to know internals of OTP because of
+ * focus-dependent stacking of it and its transients.
+ */
+void
+OtpUnfocusWindow(TwmWindow *twm_win)
+{
+	// Stash where it currently appears to be.  We assume all its
+	// transients currently have the same effective priority.  See also
+	// TryToMoveTransientsOfTo() which makes the same assumption.  I'm
+	// not sure that's entirely warranted...
+	int oldprio = PRI(twm_win->otp);
+
+	// Now tell ourselves it's unfocused
+	assert(Scr->Focus == twm_win);
+	Scr->Focus = NULL;
+
+	// And do the work
+	OtpFocusWindowBE(twm_win, oldprio);
+}
+
+/**
+ * Focus a window.  This needs to know internals of OTP because of
+ * focus-dependent stacking of it and its transients.
+ */
+void
+OtpFocusWindow(TwmWindow *twm_win)
+{
+	// X-ref OtoUnfocusWindow() comments.
+	int oldprio = PRI(twm_win->otp);
+
+	assert(Scr->Focus != twm_win);
+	Scr->Focus = twm_win;
+
+	OtpFocusWindowBE(twm_win, oldprio);
+}
+
+
+
 /*
  * Calculating effective priority.  Take the base priority (what gets
  * set/altered by various OTP config and functions), and then tack on

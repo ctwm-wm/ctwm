@@ -366,35 +366,36 @@ HandleFocusChange(void)
 static void
 HandleFocusIn(void)
 {
-#ifdef EWMH
-	TwmWindow *old_focus = Scr->Focus;
-#endif
-
 	if(! Tmp_win->wmhints->input) {
 		return;
 	}
 	if(Scr->Focus == Tmp_win) {
 		return;
 	}
+
+#ifdef EWMH
+	// Handle focus-dependent re-stacking of what we're moving out of.
+	if(Scr->Focus && OtpIsFocusDependent(Scr->Focus)) {
+		OtpUnfocusWindow(Scr->Focus);
+		// NULL's Scr->Focus
+	}
+#endif
+
 	if(Tmp_win->AutoSqueeze && Tmp_win->squeezed) {
 		AutoSqueeze(Tmp_win);
 	}
 	SetFocusVisualAttributes(Tmp_win, true);
 
-	Scr->Focus = Tmp_win;
-
 #ifdef EWMH
-	/*
-	 * Some EWMH flags may affect stacking, so after we change
-	 * Scr->Focus...
-	 */
-	if(old_focus && OtpIsFocusDependent(old_focus)) {
-		OtpRestackWindow(old_focus);
-	}
+	// Handle focus-dependent re-stacking of what we're moving in to.
 	if(Tmp_win && OtpIsFocusDependent(Tmp_win)) {
-		OtpRestackWindow(Tmp_win);
+		OtpFocusWindow(Tmp_win);
+		// Sets Scr->Focus
 	}
 #endif
+
+	// Redundant in EWMH case
+	Scr->Focus = Tmp_win;
 }
 
 
@@ -412,18 +413,20 @@ HandleFocusOut(void)
 	}
 	SetFocusVisualAttributes(Tmp_win, false);
 
-	Scr->Focus = NULL;
-
 #ifdef EWMH
 	/*
 	 * X-ref HandleFocusIn() comment.  FocusOut is only leaving a window,
 	 * not entering a new one, so there's only one we may need to
 	 * restack.
 	 */
-	if(Tmp_win && OtpIsFocusDependent(Tmp_win)) {
-		OtpRestackWindow(Tmp_win);
+	if(Scr->Focus && OtpIsFocusDependent(Scr->Focus)) {
+		OtpUnfocusWindow(Scr->Focus);
+		// NULL's Scr->Focus
 	}
 #endif
+
+	// Redundant in EWMH case
+	Scr->Focus = NULL;
 }
 
 

@@ -16,6 +16,10 @@
    when UseThreeDMenus was set, leading to some odd vertical misalignment
    of the text with some fonts.  Reported by Wayne Cuddy.
 
+1. A failure in OTP consistency checks caused by the handling of
+   transients of fullscreen windows has been fixed.  This manifested as
+   failures in OtpCheckConsistencyVS() assertions.
+
 
 
 ## 4.0.2  (2018-08-25)
