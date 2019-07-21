@@ -23,6 +23,22 @@
 
 ### Bugfixes
 
+1. Running `--cfgchk` without an available X server will now work.  Some
+   errors may only be discovered when it can talk to X (things relating
+   to colors are a likely suspect).  Checking configs for multi-Screen
+   setups will now properly check all of them as well.
+
+1. When restarting ctwm, the icon managers for the current workspace will
+   now initially show up, rather than those for first WS.
+
+1. When restarting ctwm, the stacking order of windows is now preserved.
+
+
+
+## 4.0.3  (2019-07-21)
+
+### Bugfixes
+
 1. Perform various manipulations and overrides of `WM_HINTS` property
    when it gets reset during runtime, like we do when initially adopting
    the window.  The most visible effect of this was in windows that don't
@@ -33,16 +49,6 @@
 1. The font height estimation changes in 4.0.0 were not applied correctly
    when UseThreeDMenus was set, leading to some odd vertical misalignment
    of the text with some fonts.  Reported by Wayne Cuddy.
-
-1. Running `--cfgchk` without an available X server will now work.  Some
-   errors may only be discovered when it can talk to X (things relating
-   to colors are a likely suspect).  Checking configs for multi-Screen
-   setups will now properly check all of them as well.
-
-1. When restarting ctwm, the icon managers for the current workspace will
-   now initially show up, rather than those for first WS.
-
-1. When restarting ctwm, the stacking order of windows is now preserved.
 
 1. A failure in OTP consistency checks caused by the handling of
    transients of fullscreen windows has been fixed.  This manifested as
