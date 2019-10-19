@@ -2059,7 +2059,7 @@ static void EwmhRemoveStrut(TwmWindow *twm_win)
  */
 void EwmhSet_NET_FRAME_EXTENTS(TwmWindow *twm_win)
 {
-	unsigned long data[4];
+	long data[4];
 
 	long w = twm_win->frame_bw3D + twm_win->frame_bw;
 
