@@ -21,6 +21,12 @@
    to specify things differently than they would otherwise be (_e.g._,
    treat an ultra-wide display as 2 separate monitors).
 
+1. The EWMH `_NET_FRAME_EXTENTS` property is now set on windows when we
+   take control of them.  This should fix clients mispositioning other
+   windows on top of themselves; visible with Firefox's form autofilling
+   and context menus.  Contributed by Maxime Soulé
+   <<btik-ctwm@scoubidou.com>>.
+
 ### Bugfixes
 
 1. Running `--cfgchk` without an available X server will now work.  Some

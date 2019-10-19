@@ -2048,6 +2048,32 @@ static void EwmhRemoveStrut(TwmWindow *twm_win)
 	}
 }
 
+
+/**
+ * Set _NET_FRAME_EXTENTS property.
+ * This tells the client how much space is being taken up by the window
+ * decorations.  Some clients may need this information to position other
+ * windows on top of themselves.  e.g., Firefox's form autofill and
+ * context menu will be positioned a bit wrong (high, by the height of
+ * the titlebar) without this.
+ */
+void EwmhSet_NET_FRAME_EXTENTS(TwmWindow *twm_win)
+{
+	long data[4];
+	const long w = twm_win->frame_bw3D + twm_win->frame_bw;
+
+	data[0] = w; // left
+	data[1] = w; // right
+	data[2] = twm_win->title_height + w; // top
+	data[3] = w; // bottom
+
+	XChangeProperty(dpy, twm_win->w,
+	                XA__NET_FRAME_EXTENTS, XA_CARDINAL,
+	                32, PropModeReplace,
+	                (unsigned char *)data, 4);
+}
+
+
 void EwmhSet_NET_SHOWING_DESKTOP(int state)
 {
 	unsigned long prop[1];

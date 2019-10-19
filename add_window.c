@@ -578,6 +578,16 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+#ifdef EWMH
+	/*
+	 * Now that we know the title_height and the frame border width, we
+	 * can set an EWMH property to tell the client how much we're adding
+	 * around them.
+	 */
+	EwmhSet_NET_FRAME_EXTENTS(tmp_win);
+#endif
+
+
 	/*
 	 * Need the GetWindowAttributes() call and setting ->old_bw and
 	 * ->frame_bw3D for some of the math in looking up the
