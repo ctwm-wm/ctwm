@@ -2060,8 +2060,7 @@ static void EwmhRemoveStrut(TwmWindow *twm_win)
 void EwmhSet_NET_FRAME_EXTENTS(TwmWindow *twm_win)
 {
 	long data[4];
-
-	long w = twm_win->frame_bw3D + twm_win->frame_bw;
+	const long w = twm_win->frame_bw3D + twm_win->frame_bw;
 
 	data[0] = w; // left
 	data[1] = w; // right
