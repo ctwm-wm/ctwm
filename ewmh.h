@@ -77,6 +77,7 @@ int EwmhGetInitPriority(TwmWindow *twm_win);
 bool EwmhHasBorder(TwmWindow *twm_win);
 bool EwmhHasTitle(TwmWindow *twm_win);
 bool EwmhOnWindowRing(TwmWindow *twm_win);
+void EwmhSet_NET_FRAME_EXTENTS(TwmWindow *twm_win);
 void EwmhSet_NET_SHOWING_DESKTOP(int state);
 void EwmhSet_NET_WM_STATE(TwmWindow *twm_win, int changes);
 

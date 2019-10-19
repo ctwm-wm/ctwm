@@ -575,6 +575,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		else {
 			tmp_win->title_height = 0;
 		}
+#ifdef EWMH
+		EwmhSet_NET_FRAME_EXTENTS(tmp_win);
+#endif /* EWMH */
 	}
 
 

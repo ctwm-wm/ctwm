@@ -2048,6 +2048,23 @@ static void EwmhRemoveStrut(TwmWindow *twm_win)
 	}
 }
 
+void EwmhSet_NET_FRAME_EXTENTS(TwmWindow *twm_win)
+{
+	unsigned long data[4];
+
+	long w = twm_win->frame_bw3D + twm_win->frame_bw;
+
+	data[0] = w; // left
+	data[1] = w; // right
+	data[2] = twm_win->title_height + w; // top
+	data[3] = w; // bottom
+
+	XChangeProperty(dpy, twm_win->w,
+	                XA__NET_FRAME_EXTENTS, XA_CARDINAL,
+	                32, PropModeReplace,
+	                (unsigned char *)data, 4);
+}
+
 void EwmhSet_NET_SHOWING_DESKTOP(int state)
 {
 	unsigned long prop[1];
