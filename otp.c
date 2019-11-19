@@ -1470,9 +1470,13 @@ OwlPrettyPrint(const OtpWinList *start)
 		        owl->twm_win->w, owl->twm_win->name);
 		fprintf(stderr, "         basepri=%d %s%s%s\n",
 		        owl->pri_base,
+#ifdef EWMH
 		        (owl->pri_aflags & OTP_AFLAG_ABOVE ? " _ABOVE" : ""),
 		        (owl->pri_aflags & OTP_AFLAG_BELOW ? " _BELOW" : ""),
 		        (owl->pri_aflags & OTP_AFLAG_FULLSCREEN ? " _FULLSCREEN" : "")
+#else
+				"", "", ""
+#endif
 		       );
 		if(owl->twm_win->istransient) {
 			const TwmWindow *parent = GetTwmWindow(owl->twm_win->transientfor);
