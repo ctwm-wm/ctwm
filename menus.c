@@ -1292,7 +1292,8 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	if(menu == Scr->Keys) {
 		FuncKey *tmpKey;
 		char *tmpStr;
-		char *modStr;
+		char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
+		char *modStrCur;
 		char *oldact = 0;
 		int oldmod = 0;
 
@@ -1315,30 +1316,57 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			if((tmpKey->action == oldact) && (tmpKey->mods == oldmod)) {
 				continue;
 			}
-			switch(tmpKey->mods) {
-				case  1:
-					modStr = "S";
-					break;
-				case  4:
-					modStr = "C";
-					break;
-				case  5:
-					modStr = "S + C";
-					break;
-				case  8:
-					modStr = "M";
-					break;
-				case  9:
-					modStr = "S + M";
-					break;
-				case 12:
-					modStr = "C + M";
-					break;
-				default:
-					modStr = "";
-					break;
+			modStrCur = modStr;
+			*modStrCur = '\0';
+			if(tmpKey->mods & Mod1Mask) { /* Meta */
+				strcpy(modStrCur, "M+");
+				modStrCur += 2;
 			}
-			asprintf(&tmpStr, "[%s + %s] %s", tmpKey->name, modStr, tmpKey->action);
+			if(tmpKey->mods & ShiftMask) {
+				strcpy(modStrCur, "S+");
+				modStrCur += 2;
+			}
+			if(tmpKey->mods & ControlMask) {
+				strcpy(modStrCur, "C+");
+				modStrCur += 2;
+			}
+			if(tmpKey->mods & Mod2Mask) {
+				strcpy(modStrCur, "M2+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Mod3Mask) {
+				strcpy(modStrCur, "M3+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Mod4Mask) {
+				strcpy(modStrCur, "M4+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Mod5Mask) {
+				strcpy(modStrCur, "M5+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Alt1Mask) {
+				strcpy(modStrCur, "A1+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Alt2Mask) {
+				strcpy(modStrCur, "A2+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Alt3Mask) {
+				strcpy(modStrCur, "A3+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Alt4Mask) {
+				strcpy(modStrCur, "A4+");
+				modStrCur += 3;
+			}
+			if(tmpKey->mods & Alt5Mask) {
+				strcpy(modStrCur, "A5+");
+				modStrCur += 3;
+			}
+			asprintf(&tmpStr, "[%s%s] %s", modStr, tmpKey->name, tmpKey->action);
 
 			AddToMenu(menu, tmpStr, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
