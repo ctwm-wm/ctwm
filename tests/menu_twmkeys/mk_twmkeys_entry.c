@@ -17,20 +17,20 @@ main(int argc, char *argv[])
 	int mods;
 
 #define SET() do { \
-		memset(&key, 0, sizeof(key)); \
-		key.name   = "KEY"; \
-		key.action = "ACT"; \
-		key.mods   = mods; \
-	} while(0) \
+                memset(&key, 0, sizeof(key)); \
+                key.name   = "KEY"; \
+                key.action = "ACT"; \
+                key.mods   = mods; \
+        } while(0) \
 
 #define TST(expect) do { \
-		SET(); \
-		const char *ret = mk_twmkeys_entry(&key); \
-		if(strcmp(ret, expect) != 0) { \
-			fprintf(stderr, "Expected '%s', got '%s'\n", expect, ret); \
-			exit(1); \
-		} \
-	} while(0)
+                SET(); \
+                const char *ret = mk_twmkeys_entry(&key); \
+                if(strcmp(ret, expect) != 0) { \
+                        fprintf(stderr, "Expected '%s', got '%s'\n", expect, ret); \
+                        exit(1); \
+                } \
+        } while(0)
 
 	// Simple
 	mods = ShiftMask;
@@ -48,8 +48,8 @@ main(int argc, char *argv[])
 
 	// All the mods!
 	mods = ShiftMask | ControlMask
-			| Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask
-			| Alt1Mask | Alt2Mask | Alt3Mask | Alt4Mask | Alt5Mask;
+	       | Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask
+	       | Alt1Mask | Alt2Mask | Alt3Mask | Alt4Mask | Alt5Mask;
 	TST("[M+S+C+M2+M3+M4+M5+A1+A2+A3+A4+A5+KEY] ACT");
 
 
@@ -62,7 +62,7 @@ main(int argc, char *argv[])
 		const char *ret = mk_twmkeys_entry(&key);
 		if(ret != NULL) {
 			fprintf(stderr, "Should have blown up for Over1, instead "
-					"got '%s'.\n", ret);
+			        "got '%s'.\n", ret);
 			exit(1);
 		}
 	}
@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 		const char *ret = mk_twmkeys_entry(&key);
 		if(ret != NULL) {
 			fprintf(stderr, "Should have blown up for OverAll, instead "
-					"got '%s'.\n", ret);
+			        "got '%s'.\n", ret);
 			exit(1);
 		}
 	}

@@ -1306,7 +1306,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		AddToMenu(menu, "Twm Keys", NULL, NULL, F_TITLE, NULL, NULL);
 
 		for(const FuncKey *tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;
-				tmpKey = tmpKey->next) {
+		                tmpKey = tmpKey->next) {
 			char *tmpStr;
 
 			if(tmpKey->func != F_EXEC) {
@@ -1653,17 +1653,17 @@ mk_twmkeys_entry(const FuncKey *key)
 
 	// Check and add prefixes for each modifier
 #define DO(mask, str) do { \
-		if(key->mods & mask##Mask) { \
-			const int tslen = sizeof(str) - 1; \
-			if((modStrCur - modStr + tslen) >= MSLEN) { \
-				fprintf(stderr, "BUG: No space to add '%s' in %s()\n", \
-						str, __func__); \
-				return NULL; \
-			} \
-			strcpy(modStrCur, str); \
-			modStrCur += tslen; \
-		} \
-	} while(0)
+                if(key->mods & mask##Mask) { \
+                        const int tslen = sizeof(str) - 1; \
+                        if((modStrCur - modStr + tslen) >= MSLEN) { \
+                                fprintf(stderr, "BUG: No space to add '%s' in %s()\n", \
+                                                str, __func__); \
+                                return NULL; \
+                        } \
+                        strcpy(modStrCur, str); \
+                        modStrCur += tslen; \
+                } \
+        } while(0)
 
 	// Mod1 is Meta (== Alt), so is special and comes first, apart and
 	// differing from the other more generic ModX's.
