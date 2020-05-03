@@ -1290,9 +1290,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	/* Keys added by dl */
 
 	if(menu == Scr->Keys) {
-		FuncKey *tmpKey;
-		char *tmpStr;
-		char *modStr;
 		char *oldact = 0;
 		int oldmod = 0;
 
@@ -1308,37 +1305,21 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 		AddToMenu(menu, "Twm Keys", NULL, NULL, F_TITLE, NULL, NULL);
 
-		for(tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;  tmpKey = tmpKey->next) {
+		for(const FuncKey *tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;
+		                tmpKey = tmpKey->next) {
+			char *tmpStr;
+
 			if(tmpKey->func != F_EXEC) {
 				continue;
 			}
 			if((tmpKey->action == oldact) && (tmpKey->mods == oldmod)) {
 				continue;
 			}
-			switch(tmpKey->mods) {
-				case  1:
-					modStr = "S";
-					break;
-				case  4:
-					modStr = "C";
-					break;
-				case  5:
-					modStr = "S + C";
-					break;
-				case  8:
-					modStr = "M";
-					break;
-				case  9:
-					modStr = "S + M";
-					break;
-				case 12:
-					modStr = "C + M";
-					break;
-				default:
-					modStr = "";
-					break;
+
+			tmpStr = mk_twmkeys_entry(tmpKey);
+			if(tmpStr == NULL) {
+				tmpStr = strdup("(error)");
 			}
-			asprintf(&tmpStr, "[%s + %s] %s", tmpKey->name, modStr, tmpKey->action);
 
 			AddToMenu(menu, tmpStr, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
@@ -1652,3 +1633,72 @@ void WarpCursorToDefaultEntry(MenuRoot *menu)
 	             menu->width, menu->height, xl, yt);
 }
 
+
+
+/**
+ * Generate up a string representation of a keybinding->action.
+ * Internally used in generating TwmKeys menu.
+ */
+char *
+mk_twmkeys_entry(const FuncKey *key)
+{
+	char *ret;
+	//         S+  C+  5(Mx+)  5(Ax+)
+#define MSLEN (2 + 2 + 5 * 3 + 5 * 3)
+	char modStr[MSLEN + 1];
+	char *modStrCur = modStr;
+
+	// Init
+	*modStrCur = '\0';
+
+	// Check and add prefixes for each modifier
+#define DO(mask, str) do { \
+                if(key->mods & mask##Mask) { \
+                        const int tslen = sizeof(str) - 1; \
+                        if((modStrCur - modStr + tslen) >= MSLEN) { \
+                                fprintf(stderr, "BUG: No space to add '%s' " \
+                                                "in %s()\n", str, __func__); \
+                                return NULL; \
+                        } \
+                        strcpy(modStrCur, str); \
+                        modStrCur += tslen; \
+                } \
+        } while(0)
+
+	// Mod1 is Meta (== Alt), so is special and comes first, apart and
+	// differing from the other more generic ModX's.
+	DO(Mod1, "M+");
+
+	// Shift/Ctrl are normal common bits.
+	DO(Shift,   "S+");
+	DO(Control, "C+");
+
+	// Other Mod's and Alt's are weirder, but possible.
+	DO(Mod2, "M2+");
+	DO(Mod3, "M3+");
+	DO(Mod4, "M4+");
+	DO(Mod5, "M5+");
+
+	DO(Alt1, "A1+");
+	DO(Alt2, "A2+");
+	DO(Alt3, "A3+");
+	DO(Alt4, "A4+");
+	DO(Alt5, "A5+");
+
+	// Overflows for test.  Watch out for colliding with X or our *Mask
+	// defs.
+	// +1 when combined with above, should be enough
+#define Over1Mask (1<<30)
+	DO(Over1, "a");
+	// Way too big no matter what
+#define OverAllMask (1<<31)
+	DO(OverAll, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+
+#undef OverAllMask
+#undef Over1Mask
+
+#undef DO
+
+	asprintf(&ret, "[%s%s] %s", modStr, key->name, key->action);
+	return ret;
+}

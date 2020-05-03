@@ -55,12 +55,21 @@
 
 #define MAX_BUTTONS     11      /* max mouse buttons supported */
 
-/* contexts for button presses */
+
+/*
+ * Contexts for button presses.
+ * n.b.: These go alongside the ModXMask X11 defs, so better stay above
+ * them!
+ */
 #define Alt1Mask        (1<<8)
 #define Alt2Mask        (1<<9)
 #define Alt3Mask        (1<<10)
 #define Alt4Mask        (1<<11)
 #define Alt5Mask        (1<<12)
+
+// X-ref the Over_Mask's used for testing in mk_twmkeys_entry() if we
+// grow more here, to avoid collision.
+
 
 #define C_NO_CONTEXT    -1
 #define C_WINDOW        0
