@@ -1655,6 +1655,7 @@ mk_twmkeys_entry(const FuncKey *key)
 			if((modStrCur - modStr + tslen) >= MSLEN) { \
 				fprintf(stderr, "BUG: No space to add '%s' in %s()\n", \
 						str, __func__); \
+				return NULL; \
 			} \
 			strcpy(modStrCur, str); \
 			modStrCur += tslen; \
