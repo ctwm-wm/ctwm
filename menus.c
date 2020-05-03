@@ -1640,7 +1640,9 @@ char *
 mk_twmkeys_entry(const FuncKey *key)
 {
 	char *tmpStr;
-	char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
+	//         S+  C+  5(Mx+)  5(Ax+)
+#define MSLEN (2 + 2 + 5 * 3 + 5 * 3)
+	char modStr[MSLEN + 1];
 	char *modStrCur = modStr;
 
 	// Init
@@ -1649,8 +1651,13 @@ mk_twmkeys_entry(const FuncKey *key)
 	// Check and add prefixes for each modifier
 #define DO(mask, str) do { \
 		if(key->mods & mask##Mask) { \
+			const int tslen = sizeof(str) - 1; \
+			if((modStrCur - modStr + tslen) >= MSLEN) { \
+				fprintf(stderr, "BUG: No space to add '%s' in %s()\n", \
+						str, __func__); \
+			} \
 			strcpy(modStrCur, str); \
-			modStrCur += sizeof(str) - 1; \
+			modStrCur += tslen; \
 		} \
 	} while(0)
 
