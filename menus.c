@@ -1317,6 +1317,9 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			}
 
 			tmpStr = mk_twmkeys_entry(tmpKey);
+			if(tmpStr == NULL) {
+				tmpStr = strdup("(error)");
+			}
 
 			AddToMenu(menu, tmpStr, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
