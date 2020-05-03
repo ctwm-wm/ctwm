@@ -1305,7 +1305,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 		AddToMenu(menu, "Twm Keys", NULL, NULL, F_TITLE, NULL, NULL);
 
-		for(FuncKey *tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;
+		for(const FuncKey *tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;
 				tmpKey = tmpKey->next) {
 			char *tmpStr;
 			char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
