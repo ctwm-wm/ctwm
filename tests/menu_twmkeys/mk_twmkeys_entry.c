@@ -53,6 +53,19 @@ main(int argc, char *argv[])
 	TST("[M+S+C+M2+M3+M4+M5+A1+A2+A3+A4+A5+KEY] ACT");
 
 
+	// Magic value used to test overflow
+	{
+		mods = 1 << 31;
+		SET();
+
+		const char *ret = mk_twmkeys_entry(&key);
+		if(ret != NULL) {
+			fprintf(stderr, "Should have blown up for WackoMask, instead "
+					"got '%s'.\n", ret);
+			exit(1);
+		}
+	}
+
 
 	// OK then
 	exit(0);
