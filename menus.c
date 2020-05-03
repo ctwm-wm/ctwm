@@ -1290,7 +1290,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	/* Keys added by dl */
 
 	if(menu == Scr->Keys) {
-		FuncKey *tmpKey;
 		char *tmpStr;
 		char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
 		char *modStrCur;
@@ -1309,7 +1308,8 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 
 		AddToMenu(menu, "Twm Keys", NULL, NULL, F_TITLE, NULL, NULL);
 
-		for(tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;  tmpKey = tmpKey->next) {
+		for(FuncKey *tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;
+				tmpKey = tmpKey->next) {
 			if(tmpKey->func != F_EXEC) {
 				continue;
 			}
