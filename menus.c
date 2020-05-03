@@ -1692,8 +1692,9 @@ mk_twmkeys_entry(const FuncKey *key)
 	// Way too big no matter what
 #define OverAllMask (1<<31)
 	DO(OverAll, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-#undef OverAll
-#undef Over1
+
+#undef OverAllMask
+#undef Over1Mask
 
 #undef DO
 
