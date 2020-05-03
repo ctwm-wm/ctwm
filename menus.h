@@ -159,6 +159,6 @@ void MoveMenu(XEvent *eventp);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 
 // Mostly internal; exposed for testing
-char * mk_twmkeys_entry(const FuncKey *key);
+char *mk_twmkeys_entry(const FuncKey *key);
 
 #endif /* _CTWM_MENUS_H */
