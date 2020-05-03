@@ -1685,10 +1685,15 @@ mk_twmkeys_entry(const FuncKey *key)
 	DO(Alt4, "A4+");
 	DO(Alt5, "A5+");
 
-	// Automatic overflow for test
-#define WackoMask (1<<31)
-	DO(Wacko, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
-#undef WackoMask
+	// Overflows for test
+	// +1 when combined with above, should be enough
+#define Over1Mask (1<<30)
+	DO(Over1, "a");
+	// Way too big no matter what
+#define OverAllMask (1<<31)
+	DO(OverAll, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+#undef OverAll
+#undef Over1
 
 #undef DO
 

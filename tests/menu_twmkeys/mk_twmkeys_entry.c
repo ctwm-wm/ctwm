@@ -55,12 +55,25 @@ main(int argc, char *argv[])
 
 	// Magic value used to test overflow
 	{
+		// Overflow by 1: inherit mods from above, and add a bit
+		mods |= 1 << 30;
+		SET();
+
+		const char *ret = mk_twmkeys_entry(&key);
+		if(ret != NULL) {
+			fprintf(stderr, "Should have blown up for Over1, instead "
+					"got '%s'.\n", ret);
+			exit(1);
+		}
+	}
+	{
+		// Overflow by itself
 		mods = 1 << 31;
 		SET();
 
 		const char *ret = mk_twmkeys_entry(&key);
 		if(ret != NULL) {
-			fprintf(stderr, "Should have blown up for WackoMask, instead "
+			fprintf(stderr, "Should have blown up for OverAll, instead "
 					"got '%s'.\n", ret);
 			exit(1);
 		}
