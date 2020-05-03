@@ -27,7 +27,8 @@ main(int argc, char *argv[])
                 SET(); \
                 const char *ret = mk_twmkeys_entry(&key); \
                 if(strcmp(ret, expect) != 0) { \
-                        fprintf(stderr, "Expected '%s', got '%s'\n", expect, ret); \
+                        fprintf(stderr, "Expected '%s', got '%s'\n", \
+                                        expect, ret); \
                         exit(1); \
                 } \
         } while(0)
