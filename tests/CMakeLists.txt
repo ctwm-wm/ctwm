@@ -127,3 +127,6 @@ add_subdirectory(util_expand)
 
 # RLayout stuff
 add_subdirectory(layout)
+
+# TwmKeys menu bits
+add_subdirectory(menu_twmkeys)
