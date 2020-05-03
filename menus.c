@@ -1642,7 +1642,7 @@ void WarpCursorToDefaultEntry(MenuRoot *menu)
 char *
 mk_twmkeys_entry(const FuncKey *key)
 {
-	char *tmpStr;
+	char *ret;
 	//         S+  C+  5(Mx+)  5(Ax+)
 #define MSLEN (2 + 2 + 5 * 3 + 5 * 3)
 	char modStr[MSLEN + 1];
@@ -1698,6 +1698,6 @@ mk_twmkeys_entry(const FuncKey *key)
 
 #undef DO
 
-	asprintf(&tmpStr, "[%s%s] %s", modStr, key->name, key->action);
-	return tmpStr;
+	asprintf(&ret, "[%s%s] %s", modStr, key->name, key->action);
+	return ret;
 }
