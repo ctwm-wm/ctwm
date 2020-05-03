@@ -1685,7 +1685,8 @@ mk_twmkeys_entry(const FuncKey *key)
 	DO(Alt4, "A4+");
 	DO(Alt5, "A5+");
 
-	// Overflows for test
+	// Overflows for test.  Watch out for colliding with X or our *Mask
+	// defs.
 	// +1 when combined with above, should be enough
 #define Over1Mask (1<<30)
 	DO(Over1, "a");

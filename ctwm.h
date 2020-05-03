@@ -67,6 +67,9 @@
 #define Alt4Mask        (1<<11)
 #define Alt5Mask        (1<<12)
 
+// X-ref the Over_Mask's used for testing in mk_twmkeys_entry() if we
+// grow more here, to avoid collision.
+
 
 #define C_NO_CONTEXT    -1
 #define C_WINDOW        0
