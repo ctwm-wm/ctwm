@@ -46,6 +46,13 @@ main(int argc, char *argv[])
 	mods = Alt1Mask | Alt2Mask | Alt3Mask | Alt4Mask | Alt5Mask;
 	TST("[A1+A2+A3+A4+A5+KEY] ACT");
 
+	// All the mods!
+	mods = ShiftMask | ControlMask
+			| Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask
+			| Alt1Mask | Alt2Mask | Alt3Mask | Alt4Mask | Alt5Mask;
+	TST("[M+S+C+M2+M3+M4+M5+A1+A2+A3+A4+A5+KEY] ACT");
+
+
 
 	// OK then
 	exit(0);
