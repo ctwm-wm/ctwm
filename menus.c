@@ -1641,58 +1641,40 @@ mk_twmkeys_entry(const FuncKey *key)
 {
 	char *tmpStr;
 	char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
-	char *modStrCur;
+	char *modStrCur = modStr;
 
-	modStrCur = modStr;
+	// Init
 	*modStrCur = '\0';
-	if(key->mods & Mod1Mask) { /* Meta */
-		strcpy(modStrCur, "M+");
-		modStrCur += 2;
-	}
-	if(key->mods & ShiftMask) {
-		strcpy(modStrCur, "S+");
-		modStrCur += 2;
-	}
-	if(key->mods & ControlMask) {
-		strcpy(modStrCur, "C+");
-		modStrCur += 2;
-	}
-	if(key->mods & Mod2Mask) {
-		strcpy(modStrCur, "M2+");
-		modStrCur += 3;
-	}
-	if(key->mods & Mod3Mask) {
-		strcpy(modStrCur, "M3+");
-		modStrCur += 3;
-	}
-	if(key->mods & Mod4Mask) {
-		strcpy(modStrCur, "M4+");
-		modStrCur += 3;
-	}
-	if(key->mods & Mod5Mask) {
-		strcpy(modStrCur, "M5+");
-		modStrCur += 3;
-	}
-	if(key->mods & Alt1Mask) {
-		strcpy(modStrCur, "A1+");
-		modStrCur += 3;
-	}
-	if(key->mods & Alt2Mask) {
-		strcpy(modStrCur, "A2+");
-		modStrCur += 3;
-	}
-	if(key->mods & Alt3Mask) {
-		strcpy(modStrCur, "A3+");
-		modStrCur += 3;
-	}
-	if(key->mods & Alt4Mask) {
-		strcpy(modStrCur, "A4+");
-		modStrCur += 3;
-	}
-	if(key->mods & Alt5Mask) {
-		strcpy(modStrCur, "A5+");
-		modStrCur += 3;
-	}
+
+	// Check and add prefixes for each modifier
+#define DO(mask, str) do { \
+		if(key->mods & mask##Mask) { \
+			strcpy(modStrCur, str); \
+			modStrCur += sizeof(str) - 1; \
+		} \
+	} while(0)
+
+	// Mod1 is Meta (== Alt), so is special and comes first, apart and
+	// differing from the other more generic ModX's.
+	DO(Mod1, "M+");
+
+	// Shift/Ctrl are normal common bits.
+	DO(Shift,   "S+");
+	DO(Control, "C+");
+
+	// Other Mod's and Alt's are weirder, but possible.
+	DO(Mod2, "M2+");
+	DO(Mod3, "M3+");
+	DO(Mod4, "M4+");
+	DO(Mod5, "M5+");
+
+	DO(Alt1, "A1+");
+	DO(Alt2, "A2+");
+	DO(Alt3, "A3+");
+	DO(Alt4, "A4+");
+	DO(Alt5, "A5+");
+
+#undef DO
 
 	asprintf(&tmpStr, "[%s%s] %s", modStr, key->name, key->action);
 	return tmpStr;
