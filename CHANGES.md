@@ -39,6 +39,9 @@
 
 1. When restarting ctwm, the stacking order of windows is now preserved.
 
+1. Fix display of combined modifiers in TwmKeys menu.  Contributed by
+   Maxime Soulé <<btik-ctwm@scoubidou.com>>.
+
 
 
 ## 4.0.3  (2019-07-21)
