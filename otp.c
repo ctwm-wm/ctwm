@@ -1475,7 +1475,7 @@ OwlPrettyPrint(const OtpWinList *start)
 		        (owl->pri_aflags & OTP_AFLAG_BELOW ? " _BELOW" : ""),
 		        (owl->pri_aflags & OTP_AFLAG_FULLSCREEN ? " _FULLSCREEN" : "")
 #else
-				"", "", ""
+		        "", "", ""
 #endif
 		       );
 		if(owl->twm_win->istransient) {
