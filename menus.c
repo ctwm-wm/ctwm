@@ -1308,8 +1308,6 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		for(const FuncKey *tmpKey = Scr->FuncKeyRoot.next; tmpKey != NULL;
 				tmpKey = tmpKey->next) {
 			char *tmpStr;
-			char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
-			char *modStrCur;
 
 			if(tmpKey->func != F_EXEC) {
 				continue;
@@ -1317,57 +1315,8 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			if((tmpKey->action == oldact) && (tmpKey->mods == oldmod)) {
 				continue;
 			}
-			modStrCur = modStr;
-			*modStrCur = '\0';
-			if(tmpKey->mods & Mod1Mask) { /* Meta */
-				strcpy(modStrCur, "M+");
-				modStrCur += 2;
-			}
-			if(tmpKey->mods & ShiftMask) {
-				strcpy(modStrCur, "S+");
-				modStrCur += 2;
-			}
-			if(tmpKey->mods & ControlMask) {
-				strcpy(modStrCur, "C+");
-				modStrCur += 2;
-			}
-			if(tmpKey->mods & Mod2Mask) {
-				strcpy(modStrCur, "M2+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Mod3Mask) {
-				strcpy(modStrCur, "M3+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Mod4Mask) {
-				strcpy(modStrCur, "M4+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Mod5Mask) {
-				strcpy(modStrCur, "M5+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Alt1Mask) {
-				strcpy(modStrCur, "A1+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Alt2Mask) {
-				strcpy(modStrCur, "A2+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Alt3Mask) {
-				strcpy(modStrCur, "A3+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Alt4Mask) {
-				strcpy(modStrCur, "A4+");
-				modStrCur += 3;
-			}
-			if(tmpKey->mods & Alt5Mask) {
-				strcpy(modStrCur, "A5+");
-				modStrCur += 3;
-			}
-			asprintf(&tmpStr, "[%s%s] %s", modStr, tmpKey->name, tmpKey->action);
+
+			tmpStr = mk_twmkeys_entry(tmpKey);
 
 			AddToMenu(menu, tmpStr, tmpKey->action, NULL, tmpKey->func, NULL, NULL);
 			oldact = tmpKey->action;
@@ -1681,3 +1630,70 @@ void WarpCursorToDefaultEntry(MenuRoot *menu)
 	             menu->width, menu->height, xl, yt);
 }
 
+
+
+/**
+ * Generate up a string representation of a keybinding->action.
+ * Internally used in generating TwmKeys menu.
+ */
+char *
+mk_twmkeys_entry(const FuncKey *key)
+{
+	char *tmpStr;
+	char modStr[2 + 2 + 5 * 3 + 5 * 3 + 1]; /* S+C+5(Mx)+5(Ax)+\0 */
+	char *modStrCur;
+
+	modStrCur = modStr;
+	*modStrCur = '\0';
+	if(key->mods & Mod1Mask) { /* Meta */
+		strcpy(modStrCur, "M+");
+		modStrCur += 2;
+	}
+	if(key->mods & ShiftMask) {
+		strcpy(modStrCur, "S+");
+		modStrCur += 2;
+	}
+	if(key->mods & ControlMask) {
+		strcpy(modStrCur, "C+");
+		modStrCur += 2;
+	}
+	if(key->mods & Mod2Mask) {
+		strcpy(modStrCur, "M2+");
+		modStrCur += 3;
+	}
+	if(key->mods & Mod3Mask) {
+		strcpy(modStrCur, "M3+");
+		modStrCur += 3;
+	}
+	if(key->mods & Mod4Mask) {
+		strcpy(modStrCur, "M4+");
+		modStrCur += 3;
+	}
+	if(key->mods & Mod5Mask) {
+		strcpy(modStrCur, "M5+");
+		modStrCur += 3;
+	}
+	if(key->mods & Alt1Mask) {
+		strcpy(modStrCur, "A1+");
+		modStrCur += 3;
+	}
+	if(key->mods & Alt2Mask) {
+		strcpy(modStrCur, "A2+");
+		modStrCur += 3;
+	}
+	if(key->mods & Alt3Mask) {
+		strcpy(modStrCur, "A3+");
+		modStrCur += 3;
+	}
+	if(key->mods & Alt4Mask) {
+		strcpy(modStrCur, "A4+");
+		modStrCur += 3;
+	}
+	if(key->mods & Alt5Mask) {
+		strcpy(modStrCur, "A5+");
+		modStrCur += 3;
+	}
+
+	asprintf(&tmpStr, "[%s%s] %s", modStr, key->name, key->action);
+	return tmpStr;
+}
