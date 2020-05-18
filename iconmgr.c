@@ -1257,8 +1257,7 @@ DrawIconManagerIconName(TwmWindow *tmp_win)
 		PackIconManagers();
 	}
 
-	DrawIconManagerBorder(iconmanagerlist, true);
-
+	// Write in the title
 	FB(iconmanagerlist->cp.fore, iconmanagerlist->cp.back);
 
 	/* XXX This is a completely absurd way of writing this */
@@ -1275,6 +1274,13 @@ DrawIconManagerIconName(TwmWindow *tmp_win)
 	 + ICON_MGR_IBORDER,
 	 tmp_win->icon_name,
 	 strlen(tmp_win->icon_name));
+
+	// Draw the border around it.  Our "border" isn't an X border, it's
+	// just our own drawing inside the X window.  Since XmbDrawString()
+	// believes it has all the space in the window to fill, it might
+	// scribble into the space where we're drawing the border, so draw
+	// the border after the text to cover it up.
+	DrawIconManagerBorder(iconmanagerlist, false);
 }
 
 

@@ -42,6 +42,9 @@
 1. Fix display of combined modifiers in TwmKeys menu.  Contributed by
    Maxime Soulé <<btik-ctwm@scoubidou.com>>.
 
+1. Fix window icon name spilling out into the border of icon manager
+   entries.  Contributed by Carl Svensson <<ctwm@datagubbe.se>>.
+
 
 
 ## 4.0.3  (2019-07-21)
