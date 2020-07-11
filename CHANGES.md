@@ -45,6 +45,10 @@
 1. Fix window icon name spilling out into the border of icon manager
    entries.  Contributed by Carl Svensson <<ctwm@datagubbe.se>>.
 
+1. Fix minor mis-sizing and postitioning of squeezed titlebar when window
+   is squeezed away.  Contributed by Maxime Soulé
+   <<btik-ctwm@scoubidou.com>>.
+
 
 
 ## 4.0.3  (2019-07-21)
