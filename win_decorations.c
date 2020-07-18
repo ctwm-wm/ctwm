@@ -839,7 +839,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * anything long enough is left-justified.
 	 */
 	const TitleJust eff_just = (tmp_win->name_width >= titlew)
-			? TJ_LEFT : Scr->TitleJustification;
+	                           ? TJ_LEFT : Scr->TitleJustification;
 
 	/*
 	 * First figure where the window name goes, depending on
