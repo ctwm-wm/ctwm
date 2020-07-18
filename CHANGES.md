@@ -49,6 +49,11 @@
    is squeezed away.  Contributed by Maxime Soulé
    <<btik-ctwm@scoubidou.com>>.
 
+1. When window titles overflow the available space, always treat them as
+   left-justified, to avoid bad behavior of other justifications and
+   provide the best available behavior. Found by Carl Svensson
+   <<ctwm@datagubbe.se>>.
+
 
 
 ## 4.0.3  (2019-07-21)
