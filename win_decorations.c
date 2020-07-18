@@ -831,7 +831,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * Space available for the window title for calculating name_x.
 	 * (window width) - (space reserved l and r for buttons)
 	 */
-	int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;
+	const int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;
 
 	/*
 	 * First figure where the window name goes, depending on
