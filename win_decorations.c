@@ -834,6 +834,14 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	const int titlew = width - Scr->TBInfo.titlex - Scr->TBInfo.rightoff;
 
 	/*
+	 * If our title is long enough, it'll overflow the available space.
+	 * At that point, any "justification" is pretty moot, so just pretend
+	 * anything long enough is left-justified.
+	 */
+	const TitleJust eff_just = (tmp_win->name_width >= titlew)
+			? TJ_LEFT : Scr->TitleJustification;
+
+	/*
 	 * First figure where the window name goes, depending on
 	 * TitleJustification.  If it's on the left/right, and we're using 3d
 	 * titles, we have to move it past the TitleShadowDepth, plus a
@@ -845,7 +853,7 @@ ComputeWindowTitleOffsets(TwmWindow *tmp_win, unsigned int width, bool squeeze)
 	 * The fixing below at least theoretically fixes that, though other
 	 * parts of the drawing will still cause Bad Side Effects.
 	 */
-	switch(Scr->TitleJustification) {
+	switch(eff_just) {
 		case TJ_UNDEF:
 			/* Can't happen; fallthru to TJ_LEFT */
 			fprintf(stderr, "%s(): Unexpected Scr->TitleJustification %d, "
