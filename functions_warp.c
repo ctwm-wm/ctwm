@@ -150,9 +150,7 @@ static void
 AddWindowToRingUnchecked(TwmWindow *win, TwmWindow *after)
 {
 	win->ring.next = after->ring.next;
-	if(after->ring.next->ring.prev) {
-		after->ring.next->ring.prev = win;
-	}
+	after->ring.next->ring.prev = win;
 	after->ring.next = win;
 	win->ring.prev = after;
 }
