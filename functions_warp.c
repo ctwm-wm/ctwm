@@ -120,47 +120,64 @@ DFHANDLER(warptoiconmgr)
 	}
 }
 
+void
+UnlinkWindowFromRing(TwmWindow *win)
+{
+	TwmWindow *prev = win->ring.prev, *next = win->ring.next;
+
+	/*
+	* 1. Unlink window
+	* 2. If window was only thing in ring, null out ring
+	* 3. If window was ring leader, set to next (or null)
+	*/
+	if(prev) {
+		prev->ring.next = next;
+	}
+	if(next) {
+		next->ring.prev = prev;
+	}
+	if(Scr->Ring == win) {
+		Scr->Ring = (next != win ? next : NULL);
+	}
+
+	if(!Scr->Ring || Scr->RingLeader == win) {
+		Scr->RingLeader = Scr->Ring;
+	}
+	win->ring.next = win->ring.prev = NULL;
+}
+
+static void
+AddWindowToRingUnchecked(TwmWindow *win, TwmWindow *after)
+{
+	win->ring.next = after->ring.next;
+	if(after->ring.next->ring.prev) {
+		after->ring.next->ring.prev = win;
+	}
+	after->ring.next = win;
+	win->ring.prev = after;
+}
+
+void
+AddWindowToRing(TwmWindow *win)
+{
+	if(Scr->Ring) {
+		AddWindowToRingUnchecked(win, Scr->Ring);
+	}
+	else {
+		win->ring.next = win->ring.prev = Scr->Ring = win;
+	}
+}
 
 /* Taken from vtwm version 5.3 */
 DFHANDLER(ring)
 {
 	if(tmp_win->ring.next || tmp_win->ring.prev) {
 		/* It's in the ring, let's take it out. */
-		TwmWindow *prev = tmp_win->ring.prev, *next = tmp_win->ring.next;
-
-		/*
-		* 1. Unlink window
-		* 2. If window was only thing in ring, null out ring
-		* 3. If window was ring leader, set to next (or null)
-		*/
-		if(prev) {
-			prev->ring.next = next;
-		}
-		if(next) {
-			next->ring.prev = prev;
-		}
-		if(Scr->Ring == tmp_win) {
-			Scr->Ring = (next != tmp_win ? next : NULL);
-		}
-
-		if(!Scr->Ring || Scr->RingLeader == tmp_win) {
-			Scr->RingLeader = Scr->Ring;
-		}
-		tmp_win->ring.next = tmp_win->ring.prev = NULL;
+		UnlinkWindowFromRing(tmp_win);
 	}
 	else {
 		/* Not in the ring, so put it in. */
-		if(Scr->Ring) {
-			tmp_win->ring.next = Scr->Ring->ring.next;
-			if(Scr->Ring->ring.next->ring.prev) {
-				Scr->Ring->ring.next->ring.prev = tmp_win;
-			}
-			Scr->Ring->ring.next = tmp_win;
-			tmp_win->ring.prev = Scr->Ring;
-		}
-		else {
-			tmp_win->ring.next = tmp_win->ring.prev = Scr->Ring = tmp_win;
-		}
+		AddWindowToRing(tmp_win);
 	}
 	/*tmp_win->ring.cursor_valid = false;*/
 }

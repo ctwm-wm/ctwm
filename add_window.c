@@ -42,6 +42,7 @@
 #ifdef EWMH
 # include "ewmh_atoms.h"
 #endif
+#include "functions_internal.h"
 #include "gram.tab.h"
 #include "icons.h"
 #include "iconmgr.h"
@@ -440,17 +441,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	                 && EwmhOnWindowRing(tmp_win)
 #endif /* EWMH */
 	                 && !CHKL(WindowRingExcludeL))) {
-		if(Scr->Ring) {
-			tmp_win->ring.next = Scr->Ring->ring.next;
-			if(Scr->Ring->ring.next->ring.prev) {
-				Scr->Ring->ring.next->ring.prev = tmp_win;
-			}
-			Scr->Ring->ring.next = tmp_win;
-			tmp_win->ring.prev = Scr->Ring;
-		}
-		else {
-			tmp_win->ring.next = tmp_win->ring.prev = Scr->Ring = tmp_win;
-		}
+		AddWindowToRing(tmp_win);
 	}
 	else {
 		tmp_win->ring.next = tmp_win->ring.prev = NULL;
@@ -1380,20 +1371,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	 */
 	if(XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 	                &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0) {
-		TwmWindow *prev = tmp_win->ring.prev, *next = tmp_win->ring.next;
-
-		if(prev) {
-			prev->ring.next = next;
-		}
-		if(next) {
-			next->ring.prev = prev;
-		}
-		if(Scr->Ring == tmp_win) {
-			Scr->Ring = (next != tmp_win ? next : NULL);
-		}
-		if(!Scr->Ring || Scr->RingLeader == tmp_win) {
-			Scr->RingLeader = Scr->Ring;
-		}
+		UnlinkWindowFromRing(tmp_win);
 
 		/* XXX Leaky as all hell */
 		free(tmp_win);

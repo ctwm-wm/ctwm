@@ -43,6 +43,7 @@
 #include "event_internal.h"
 #include "event_names.h"
 #include "functions.h"
+#include "functions_internal.h"
 #include "functions_defs.h"
 #include "gram.tab.h"
 #include "iconmgr.h"
@@ -1689,8 +1690,6 @@ void HandleExpose(void)
 
 static void remove_window_from_ring(TwmWindow *tmp)
 {
-	TwmWindow *prev = tmp->ring.prev, *next = tmp->ring.next;
-
 	if(enter_win == tmp) {
 		enter_flag = false;
 		enter_win = NULL;
@@ -1706,24 +1705,7 @@ static void remove_window_from_ring(TwmWindow *tmp)
 		lower_win = NULL;
 	}
 
-	/*
-	 * 1. Unlink window
-	 * 2. If window was only thing in ring, null out ring
-	 * 3. If window was ring leader, set to next (or null)
-	 */
-	if(prev) {
-		prev->ring.next = next;
-	}
-	if(next) {
-		next->ring.prev = prev;
-	}
-	if(Scr->Ring == tmp) {
-		Scr->Ring = (next != tmp ? next : NULL);
-	}
-
-	if(!Scr->Ring || Scr->RingLeader == tmp) {
-		Scr->RingLeader = Scr->Ring;
-	}
+	UnlinkWindowFromRing(tmp);
 }
 
 
