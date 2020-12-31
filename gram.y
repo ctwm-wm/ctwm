@@ -1066,6 +1066,7 @@ action		: FKEYWORD	{ $$ = $1; }
 						 Action);
 					$$ = F_NOP;
 				    }
+				    break;
 				  case F_WARPTOSCREEN:
 				    if (!CheckWarpScreenArg (Action)) {
 					twmrc_error_prefix();
