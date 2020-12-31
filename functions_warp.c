@@ -123,19 +123,22 @@ DFHANDLER(warptoiconmgr)
 void
 UnlinkWindowFromRing(TwmWindow *win)
 {
-	TwmWindow *prev = win->ring.prev, *next = win->ring.next;
+	TwmWindow *prev = win->ring.prev;
+	TwmWindow *next = win->ring.next;
 
 	/*
 	* 1. Unlink window
 	* 2. If window was only thing in ring, null out ring
 	* 3. If window was ring leader, set to next (or null)
+	*
+	* If the window is the only one in the ring, prev == next == win,
+	* so the unlinking effectively is a NOP, but that doesn't matter.
 	*/
-	if(prev) {
-		prev->ring.next = next;
-	}
-	if(next) {
-		next->ring.prev = prev;
-	}
+	prev->ring.next = next;
+	next->ring.prev = prev;
+
+	win->ring.next = win->ring.prev = NULL;
+
 	if(Scr->Ring == win) {
 		Scr->Ring = (next != win ? next : NULL);
 	}
@@ -143,7 +146,6 @@ UnlinkWindowFromRing(TwmWindow *win)
 	if(!Scr->Ring || Scr->RingLeader == win) {
 		Scr->RingLeader = Scr->Ring;
 	}
-	win->ring.next = win->ring.prev = NULL;
 }
 
 static void
