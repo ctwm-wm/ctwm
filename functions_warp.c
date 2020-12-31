@@ -23,6 +23,7 @@
 #include "win_utils.h"
 
 
+bool WindowIsOnRing(TwmWindow *win);
 static void WarpAlongRing(XButtonEvent *ev, bool forward);
 
 
@@ -171,6 +172,12 @@ AddWindowToRing(TwmWindow *win)
 	}
 }
 
+bool
+WindowIsOnRing(TwmWindow *win)
+{
+	return win && win->ring.next;
+}
+
 /* Taken from vtwm version 5.3 */
 DFHANDLER(ring)
 {
@@ -258,9 +265,19 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 		}
 	}
 
-	/* Note: (Scr->Focus != r) is necessary when we move to a workspace that
-	   has a single window and we want warping to warp to it. */
-	if(r && (r != head || Scr->Focus != r)) {
+	/*
+	 * Note: (Scr->Focus == NULL) is necessary when we move to (or
+	 * are in) a workspace that has a single window, and we're not
+	 * on that window (but the window is head), and we want f.warpring
+	 * to warp to it.
+	 * Generalised that is also true if we are on a window but it is
+	 * not on the ring.
+	 * TODO: on an empty screen, it still moves the mouse cursor...
+	 */
+
+	if(r && (r != head
+	                || Scr->Focus == NULL
+	                || !WindowIsOnRing(Scr->Focus))) {
 		TwmWindow *p = Scr->RingLeader, *t;
 
 		Scr->RingLeader = r;
