@@ -42,7 +42,6 @@
 #ifdef EWMH
 # include "ewmh_atoms.h"
 #endif
-#include "functions_internal.h"
 #include "gram.tab.h"
 #include "icons.h"
 #include "iconmgr.h"
@@ -63,6 +62,7 @@
 #include "win_ops.h"
 #include "win_regions.h"
 #include "win_resize.h"
+#include "win_ring.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "xparsegeometry.h"
@@ -444,7 +444,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		AddWindowToRing(tmp_win);
 	}
 	else {
-		tmp_win->ring.next = tmp_win->ring.prev = NULL;
+		InitWindowNotOnRing(tmp_win);
 	}
 
 

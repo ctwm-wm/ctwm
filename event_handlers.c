@@ -43,7 +43,6 @@
 #include "event_internal.h"
 #include "event_names.h"
 #include "functions.h"
-#include "functions_internal.h"
 #include "functions_defs.h"
 #include "gram.tab.h"
 #include "iconmgr.h"
@@ -61,6 +60,7 @@
 #include "win_ops.h"
 #include "win_regions.h"
 #include "win_resize.h"
+#include "win_ring.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
@@ -3358,7 +3358,7 @@ void HandleEnterNotify(void)
 			/*
 			 * set ring leader
 			 */
-			if(Tmp_win->ring.next && (!enter_flag || raise_win == enter_win)) {
+			if(WindowIsOnRing(Tmp_win) && (!enter_flag || raise_win == enter_win)) {
 				Scr->RingLeader = Tmp_win;
 			}
 			XSync(dpy, 0);

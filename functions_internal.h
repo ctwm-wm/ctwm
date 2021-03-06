@@ -191,8 +191,4 @@ extern Time last_time;
 /* Several places need to frob this to leave the cursor alone */
 extern bool func_reset_cursor;
 
-/* Exported from functions_warp.c to manage the window ring */
-void UnlinkWindowFromRing(TwmWindow *win);
-void AddWindowToRing(TwmWindow *win);
-
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */
