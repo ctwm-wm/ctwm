@@ -189,9 +189,6 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 
 	if(forward) {
 		for(r = head->ring.next; r != head; r = r->ring.next) {
-			if(!r) {
-				break;
-			}
 			if(r->mapped && (Scr->WarpRingAnyWhere || visible(r))) {
 				break;
 			}
@@ -199,9 +196,6 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 	}
 	else {
 		for(r = head->ring.prev; r != head; r = r->ring.prev) {
-			if(!r) {
-				break;
-			}
 			if(r->mapped && (Scr->WarpRingAnyWhere || visible(r))) {
 				break;
 			}
