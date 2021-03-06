@@ -212,9 +212,9 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 	 * TODO: on an empty screen, it still moves the mouse cursor...
 	 */
 
-	if(r && (r != head
+	if(r != head
 	                || Scr->Focus == NULL
-	                || !WindowIsOnRing(Scr->Focus))) {
+	                || !WindowIsOnRing(Scr->Focus)) {
 		TwmWindow *p = Scr->RingLeader, *t;
 
 		Scr->RingLeader = r;
