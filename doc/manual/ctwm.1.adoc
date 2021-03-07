@@ -36,7 +36,8 @@ This program is usually started by the user's session manager or
 startup script.  When used from `xdm(1)` or `xinit(1)` without
 a session manager, ctwm is frequently executed in the foreground
 as the last client.  When run this way, exiting ctwm causes the
-session to be terminated (i.e. logged out).
+X session to be terminated, shutting down the X server and killing off
+any other running clients.
 
 By default, application windows are surrounded by a ``frame'' with a
 titlebar at the top and a special border around the window.  The titlebar
