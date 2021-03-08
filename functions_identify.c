@@ -109,8 +109,11 @@ Identify(TwmWindow *t)
 	CHKN;
 
 	if(t) {
+		// The border would be on the frame, not t->w, so assume our
+		// internal tracking is right for it
 		XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
-		             &wwidth, &wheight, &bw, &depth);
+		             &wwidth, &wheight, &JunkBW, &depth);
+		bw = t->frame_bw;
 		XTranslateCoordinates(dpy, t->w, Scr->Root, 0, 0,
 		                      &x, &y, &junk);
 		snprintf(Info[n++], INFO_SIZE, "Name               = \"%s\"",
