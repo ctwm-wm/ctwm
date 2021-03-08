@@ -1,8 +1,23 @@
 /*
  * Functions related to the window ring.
+ *
+ * Invariants:
+ * - If a window is not on the ring, its TwmWindow::ring.next and .prev
+ *   are both NULL.
+ * - If a window is on the ring, they are both not NULL and point to a
+ *   window which is also on the ring.
+ * - Corollary: if a window is the only one on the ring, .next and .prev
+ *   point to itself.
+ * - Functions which act on the "current" ring window, i.e. the window
+ *   that has most recently been entered and is on the ring, use
+ *   Scr->RingLeader.
+ * - If RingLeader is NULL, fall back to Scr->Ring.
+ * - If Ring is NULL, the ring is empty (and RingLeader is also NULL).
  */
 
 #include "ctwm.h"
+
+#include <assert.h>
 
 #include "screen.h"
 #include "win_ring.h"
@@ -13,6 +28,8 @@ UnlinkWindowFromRing(TwmWindow *win)
 	TwmWindow *prev = win->ring.prev;
 	TwmWindow *next = win->ring.next;
 
+	assert(prev != NULL);
+	assert(next != NULL);
 	/*
 	* 1. Unlink window
 	* 2. If window was only thing in ring, null out ring
@@ -50,6 +67,9 @@ AddWindowToRingUnchecked(TwmWindow *win, TwmWindow *after)
 void
 AddWindowToRing(TwmWindow *win)
 {
+	assert(win->ring.next == NULL);
+	assert(win->ring.prev == NULL);
+
 	if(Scr->Ring) {
 		AddWindowToRingUnchecked(win, Scr->Ring);
 	}
