@@ -191,5 +191,4 @@ extern Time last_time;
 /* Several places need to frob this to leave the cursor alone */
 extern bool func_reset_cursor;
 
-
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */

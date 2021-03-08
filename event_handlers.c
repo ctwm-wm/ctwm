@@ -60,6 +60,7 @@
 #include "win_ops.h"
 #include "win_regions.h"
 #include "win_resize.h"
+#include "win_ring.h"
 #include "win_utils.h"
 #include "workspace_manager.h"
 #include "workspace_utils.h"
@@ -1689,8 +1690,6 @@ void HandleExpose(void)
 
 static void remove_window_from_ring(TwmWindow *tmp)
 {
-	TwmWindow *prev = tmp->ring.prev, *next = tmp->ring.next;
-
 	if(enter_win == tmp) {
 		enter_flag = false;
 		enter_win = NULL;
@@ -1706,24 +1705,7 @@ static void remove_window_from_ring(TwmWindow *tmp)
 		lower_win = NULL;
 	}
 
-	/*
-	 * 1. Unlink window
-	 * 2. If window was only thing in ring, null out ring
-	 * 3. If window was ring leader, set to next (or null)
-	 */
-	if(prev) {
-		prev->ring.next = next;
-	}
-	if(next) {
-		next->ring.prev = prev;
-	}
-	if(Scr->Ring == tmp) {
-		Scr->Ring = (next != tmp ? next : NULL);
-	}
-
-	if(!Scr->Ring || Scr->RingLeader == tmp) {
-		Scr->RingLeader = Scr->Ring;
-	}
+	UnlinkWindowFromRing(tmp);
 }
 
 
@@ -3376,7 +3358,7 @@ void HandleEnterNotify(void)
 			/*
 			 * set ring leader
 			 */
-			if(Tmp_win->ring.next && (!enter_flag || raise_win == enter_win)) {
+			if(WindowIsOnRing(Tmp_win) && (!enter_flag || raise_win == enter_win)) {
 				Scr->RingLeader = Tmp_win;
 			}
 			XSync(dpy, 0);
