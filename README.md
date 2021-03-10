@@ -184,7 +184,7 @@ sending a mail with the subject "subscribe ctwm" to
 
 ### Repository
 
-ctwm development uses bazaar (see <http://bazaar.canonical.com/>) for
+ctwm development uses breezy (see <https://www.breezy-vcs.org/>) for
 version control.  The code is available on launchpad as `lp:ctwm`.  See
 <https://launchpad.net/ctwm> for more details.
 
