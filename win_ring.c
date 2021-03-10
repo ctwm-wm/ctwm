@@ -28,8 +28,17 @@ UnlinkWindowFromRing(TwmWindow *win)
 	TwmWindow *prev = win->ring.prev;
 	TwmWindow *next = win->ring.next;
 
+	// We call this unconditionally at various window deletion times, and
+	// if it's not on the ring, there's nothing to do.  e.g., if we don't
+	// have any WindowRing config enabled...
+	if(!WindowIsOnRing(win)) {
+		return;
+	}
+
+	// But if it is, prev/next should always exist.
 	assert(prev != NULL);
 	assert(next != NULL);
+
 	/*
 	* 1. Unlink window
 	* 2. If window was only thing in ring, null out ring
