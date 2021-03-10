@@ -3,7 +3,7 @@
 # Setup and generate a release tarball
 
 # Make sure we're in the expected root of the tree
-rtdir=`bzr root $0`
+rtdir=`brz root $0`
 cd $rtdir
 
 # Figure out version
@@ -31,7 +31,7 @@ fi
 mkdir -pm755 $dir
 
 # Create a totally fresh branch in it
-bzr branch --use-existing-dir $rtdir $dir
+brz branch --use-existing-dir $rtdir $dir
 
 # Do various setup in the branch to prepare
 (
