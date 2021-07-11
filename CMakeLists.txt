@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.6)
-project(ctwm C)
 
 # Figure our version
 file(READ "VERSION" vf_str)
 string(STRIP ${vf_str} vf_str)
-# Not currently using the split out variants
-if(0)
+# Use split variants for project() call.
+if(1)
 	set(version_file_re "([0-9]+)\\.([0-9]+)\\.([0-9]+)(.*)")
 	string(REGEX REPLACE ${version_file_re} "\\1" ctwm_version_major ${vf_str})
 	string(REGEX REPLACE ${version_file_re} "\\2" ctwm_version_minor ${vf_str})
@@ -15,6 +14,12 @@ if(0)
 else()
 	set(ctwm_version_str ${vf_str})
 endif()
+
+# Now we can delcade that
+project(ctwm
+	VERSION ${ctwm_version_major}.${ctwm_version_minor}.${ctwm_version_patch}
+	LANGUAGES C
+	)
 
 # Modules we'll need
 include(CheckIncludeFiles)
