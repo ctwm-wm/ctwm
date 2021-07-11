@@ -26,8 +26,7 @@ if(NOT MANUAL_C_STD_FLAG)
 	# to find a way to get info from cmake about what arg it would add
 	# for the specified standard, so we can't pull it out manually to add
 	# like we do our found C99_FLAG below, so...
-	list(FIND CMAKE_C_COMPILE_FEATURES "c_std_99" HAS_C99)
-	if(HAS_C99 EQUAL -1)
+	if(NOT "c_std_99" IN_LIST CMAKE_C_COMPILE_FEATURES)
 		message(WARNING "cmake doesn't know about c99 support for this "
 			"compiler, trying manual search...")
 		set(MANUAL_C_STD_FLAG true)
