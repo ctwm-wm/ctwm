@@ -11,30 +11,55 @@
 # but is a sign that it's a compiler or platform we're moving further
 # away from.
 #
+# cmake 3.1+ has C_STANDARD and related vars that seem like they'd help
+# with this, but it's unclear that they actually solve the whole
+# problem...
+#
 # Known alternate spellings:
 #   -xc99  (Sun C 5.10 SunOS_i386, sunstudio12.1, OpenIndiana)
 include(CheckCCompilerFlag)
-set(c99_flag_options -std=c99 -xc99)
-foreach(_C99_FLAG ${c99_flag_options})
-	# CheckCCompilerFlag calls into CheckCSourceCompiles, which won't do
-	# anything if the result var is already set in the cache, so we have
-	# to unset it.  Otherwise, the second and later invocations don't
-	# actually do anything, and it'll never check any flag after the
-	# first.
-	unset(COMPILER_C99_FLAG CACHE)
-	check_c_compiler_flag(${_C99_FLAG} COMPILER_C99_FLAG)
-	if(COMPILER_C99_FLAG)
-		set(C99_FLAG ${_C99_FLAG})
-		break()
-	endif(COMPILER_C99_FLAG)
-endforeach(_C99_FLAG)
-if(C99_FLAG)
-	message(STATUS "Enabling C99 flag: ${C99_FLAG}")
-	add_definitions(${C99_FLAG})
-else()
-	message(WARNING "Compiler doesn't support known C99 flag, "
-			"building without it.")
-endif(C99_FLAG)
+set(MANUAL_C_STD_FLAG true)
+if(NOT MANUAL_C_STD_FLAG)
+	# This is the Better Way(tm), but is disabled by default because, as
+	# with the manual one below, the added arg doesn't apply in
+	# check_symbol_exists(), so it screws up the tests below.  I'm unable
+	# to find a way to get info from cmake about what arg it would add
+	# for the specified standard, so we can't pull it out manually to add
+	# like we do our found C99_FLAG below, so...
+	list(FIND CMAKE_C_COMPILE_FEATURES "c_std_99" HAS_C99)
+	if(HAS_C99 EQUAL -1)
+		message(WARNING "cmake doesn't know about c99 support for this "
+			"compiler, trying manual search...")
+		set(MANUAL_C_STD_FLAG true)
+	else()
+		message(STATUS "Enabling C99 mode")
+		set(CMAKE_C_EXTENSIONS false)
+		set(CMAKE_C_STANDARD 99)
+	endif()
+endif()
+if(MANUAL_C_STD_FLAG)
+	set(c99_flag_options -std=c99 -xc99)
+	foreach(_C99_FLAG ${c99_flag_options})
+		# CheckCCompilerFlag calls into CheckCSourceCompiles, which won't do
+		# anything if the result var is already set in the cache, so we have
+		# to unset it.  Otherwise, the second and later invocations don't
+		# actually do anything, and it'll never check any flag after the
+		# first.
+		unset(COMPILER_C99_FLAG CACHE)
+		check_c_compiler_flag(${_C99_FLAG} COMPILER_C99_FLAG)
+		if(COMPILER_C99_FLAG)
+			set(C99_FLAG ${_C99_FLAG})
+			break()
+		endif(COMPILER_C99_FLAG)
+	endforeach(_C99_FLAG)
+	if(C99_FLAG)
+		message(STATUS "Enabling C99 flag: ${C99_FLAG}")
+		add_definitions(${C99_FLAG})
+	else()
+		message(WARNING "Compiler doesn't support known C99 flag, "
+				"building without it.")
+	endif(C99_FLAG)
+endif()
 
 
 
@@ -45,9 +70,9 @@ endif(C99_FLAG)
 # https://www.gnu.org/software/libc/manual/html_node/Feature-Test-Macros.html
 # https://illumos.org/man/5/standards
 
-# Somewhat irritatingly, check_symbol_exists() doesn't use the
-# add_definitions() we just did to add the c99 flag.  So we have to add
-# it manually, and stash up the old C_R_D.
+# Somewhat irritatingly, check_symbol_exists() doesn't use the extra
+# flags we set above for the C standard.  So we have to add it manually,
+# and stash up the old C_R_D.  x-ref above.
 set(OLD_CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS})
 list(APPEND CMAKE_REQUIRED_DEFINITIONS ${C99_FLAG})
 
