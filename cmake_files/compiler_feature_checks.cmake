@@ -37,32 +37,69 @@ else()
 endif(C99_FLAG)
 
 
-# With -std=c99, GNU libc's includes get strict about what they export.
-# Particularly, a lot of POSIX stuff doesn't get defined unless we
-# explicitly ask for it.  Do our best at checking for what's there...
-check_include_files(features.h HAS_FEATURES_H)
-if(HAS_FEATURES_H)
-	# Check if including it with our args sets __USE_ISOC99; that's a
-	# sign it's what we're looking for here.
-	check_symbol_exists(__USE_ISOC99 features.h SETS_USE_ISOC99)
-	if(SETS_USE_ISOC99)
-		# OK, it does.  Assume that's a good enough test that things are
-		# acting as we expect.
-		set(GLIBC_FEATURE_FLAGS
-			"-D_POSIX_C_SOURCE=200809L"
-			"-D_XOPEN_SOURCE=700"
-			)
-		# asprintf() seems to need _GNU_SOURCE; no other way to expose it
-		# I can find.
-		check_symbol_exists(__GNU_LIBRARY__ features.h SETS_GNU_LIBRARY)
-		if(SETS_GNU_LIBRARY)
-			list(APPEND GLIBC_FEATURE_FLAGS "-D_GNU_SOURCE")
-		endif(SETS_GNU_LIBRARY)
 
-		message(STATUS "Enabling glibc feature macros: ${GLIBC_FEATURE_FLAGS}")
-		add_definitions(${GLIBC_FEATURE_FLAGS})
+# With -std=c99, some systems/compilers/etc enable ANSI strictness, and
+# so don't export symbols from headers for e.g. a lot of POSIX etc stuff.
+# So we may need some extra -D's.
+# Some refs:
+# https://www.gnu.org/software/libc/manual/html_node/Feature-Test-Macros.html
+# https://illumos.org/man/5/standards
+
+# Somewhat irritatingly, check_symbol_exists() doesn't use the
+# add_definitions() we just did to add the c99 flag.  So we have to add
+# it manually, and stash up the old C_R_D.
+set(OLD_CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS})
+list(APPEND CMAKE_REQUIRED_DEFINITIONS ${C99_FLAG})
+
+# What might and will we add?
+set(AVAIL_SYM_FLAGS -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700
+	-D_GNU_SOURCE -D__EXTENSIONS__)
+set(EXTRA_SYM_FLAGS "")
+
+# Abstract
+macro(_check_func_flag FUNC HEADER)
+	unset(_HAS_FUNC CACHE)
+	check_symbol_exists(${FUNC} ${HEADER} _HAS_FUNC)
+	if(NOT _HAS_FUNC)
+		foreach(_SFLAG ${AVAIL_SYM_FLAGS})
+			unset(_HAS_FUNC CACHE)
+			list(APPEND CMAKE_REQUIRED_DEFINITIONS ${_SFLAG})
+			check_symbol_exists(${FUNC} ${HEADER} _HAS_FUNC)
+			list(REMOVE_ITEM CMAKE_REQUIRED_DEFINITIONS ${_SFLAG})
+			if(_HAS_FUNC)
+				message(STATUS "${FUNC}() needs ${_SFLAG}")
+				list(APPEND EXTRA_SYM_FLAGS ${_SFLAG})
+				break()
+			endif()
+		endforeach()
+		if(NOT _HAS_FUNC)
+			message(WARNING "Couldn't find def for ${FUNC}, not good...")
+		endif()
 	endif()
-endif(HAS_FEATURES_H)
+	unset(_HAS_FUNC CACHE)
+endmacro(_check_func_flag)
+
+# strdup is POSIX, so see if we have to ask for that.  Probably
+# _POSIX_C_SOURCE.
+_check_func_flag(strdup string.h)
+
+# isascii falls into XOPEN on glibc, POSIX on Illumos.
+_check_func_flag(isascii ctype.h)
+
+# asprintf() is even weirder.  glibc apparently usually uses _GNU_SOURCE,
+# Illumos has a pure __EXTENSIONS__
+_check_func_flag(asprintf stdio.h)
+
+if(EXTRA_SYM_FLAGS)
+	list(REMOVE_DUPLICATES EXTRA_SYM_FLAGS)
+	message(STATUS "Adding extra visibility flags: ${EXTRA_SYM_FLAGS}")
+	add_definitions(${EXTRA_SYM_FLAGS})
+endif()
+
+# And restore
+set(CMAKE_REQUIRED_DEFINITIONS ${OLD_CMAKE_REQUIRED_DEFINITIONS})
+
+
 
 
 # Some compilers (like Sun's) don't take -W flags for warnings.  Do a
