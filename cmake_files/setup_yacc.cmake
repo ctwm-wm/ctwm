@@ -13,7 +13,7 @@
 # about getting a list).
 set(YFLAGS "-d -b gram")
 if(DO_DEBUGPARSER)
-	string(CONCAT YFLAGS ${YFLAGS} " -t -v")
+	string(APPEND YFLAGS " -t -v")
 	add_definitions(-DYYEBUG=1)
 	message(STATUS "Enabling config parser debug.")
 endif(DO_DEBUGPARSER)
