@@ -129,14 +129,9 @@ include(ctags)
 # with all our contents except the trivial main() wrapper, then build
 # ctwm with that; this makes it easy to build other binaries (like tests)
 # with access to all our internal funcs.
-add_library(ctwmlib STATIC ${CTWMSRC})
+add_library(ctwmlib OBJECT ${CTWMSRC})
 add_executable(ctwm "ctwm_wrap.c")
-
-# Keep ctwmlib before the shared libs.  With some ld(1)'s and build
-# environments that set --as-needed, having it after means that ld will
-# have already discarded all the shared libs as "unused" before it gets
-# to all the actual ctwm objects that need the symbols.
-target_link_libraries(ctwm ctwmlib)
+target_sources(ctwm PUBLIC $<TARGET_OBJECTS:ctwmlib>)
 target_link_libraries(ctwm ${CTWMLIBS})
 
 # This doesn't really serve much purpose at the moment, so it's not even
