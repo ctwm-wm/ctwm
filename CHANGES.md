@@ -3,6 +3,12 @@
 
 ## Next release  (xxxx-xx-xx)
 
+### Backward-Incompatible Changes And Removed Features
+
+1. The minimum cmake version has been bumped to 3.6.  This is available
+   in standard packages back to CentOS 6, and we appear to have actually
+   been using syntax requiring 3.5 for a while unknowingly anyway.
+
 ### New Features
 
 1. Support for understanding multi-monitor layouts as something other

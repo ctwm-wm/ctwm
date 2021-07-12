@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 2.6)
-project(ctwm C)
+cmake_minimum_required(VERSION 3.6)
 
 # Figure our version
 file(READ "VERSION" vf_str)
 string(STRIP ${vf_str} vf_str)
-# Not currently using the split out variants
-if(0)
+# Use split variants for project() call.
+if(1)
 	set(version_file_re "([0-9]+)\\.([0-9]+)\\.([0-9]+)(.*)")
 	string(REGEX REPLACE ${version_file_re} "\\1" ctwm_version_major ${vf_str})
 	string(REGEX REPLACE ${version_file_re} "\\2" ctwm_version_minor ${vf_str})
@@ -15,6 +14,12 @@ if(0)
 else()
 	set(ctwm_version_str ${vf_str})
 endif()
+
+# Now we can delcade that
+project(ctwm
+	VERSION ${ctwm_version_major}.${ctwm_version_minor}.${ctwm_version_patch}
+	LANGUAGES C
+	)
 
 # Modules we'll need
 include(CheckIncludeFiles)
@@ -124,14 +129,9 @@ include(ctags)
 # with all our contents except the trivial main() wrapper, then build
 # ctwm with that; this makes it easy to build other binaries (like tests)
 # with access to all our internal funcs.
-add_library(ctwmlib STATIC ${CTWMSRC})
+add_library(ctwmlib OBJECT ${CTWMSRC})
 add_executable(ctwm "ctwm_wrap.c")
-
-# Keep ctwmlib before the shared libs.  With some ld(1)'s and build
-# environments that set --as-needed, having it after means that ld will
-# have already discarded all the shared libs as "unused" before it gets
-# to all the actual ctwm objects that need the symbols.
-target_link_libraries(ctwm ctwmlib)
+target_sources(ctwm PUBLIC $<TARGET_OBJECTS:ctwmlib>)
 target_link_libraries(ctwm ${CTWMLIBS})
 
 # This doesn't really serve much purpose at the moment, so it's not even
