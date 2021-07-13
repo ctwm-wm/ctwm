@@ -154,7 +154,8 @@ read_layout_file(FILE *file, char *filename)
 	char buf[128], *line, **names;
 	RAreaList *list;
 	RLayout *layout;
-	int num, num_names, comment;
+	int num, num_names;
+	bool comment = false;
 	unsigned int width, height, x, y;
 
 	list = RAreaListNew(10, NULL);
@@ -166,13 +167,13 @@ read_layout_file(FILE *file, char *filename)
 		// Multiline comments: =comment -> =end
 		if(comment) {
 			if(strcmp(line, "=end") == 0) {
-				comment = 0;
+				comment = false;
 			}
 			continue;
 		}
 
 		if(strcmp(line, "=comment") == 0) {
-			comment = 1;
+			comment = true;
 			continue;
 		}
 
@@ -213,7 +214,8 @@ read_test_from_file(char *filename)
 	FILE *file;
 	RLayout *layout = NULL;
 	RArea win = { 0 };
-	int linenum, buf_size, expected1, expected2, errors, comment = 0;
+	int linenum, buf_size, expected1, expected2, errors;
+	bool comment = false;
 	unsigned int width, height, x, y;
 
 	file = fopen(filename, "r");
@@ -256,13 +258,13 @@ read_test_from_file(char *filename)
 		// Multiline comments: =comment -> =end
 		if(comment) {
 			if(strcmp(line, "=end") == 0) {
-				comment = 0;
+				comment = false;
 			}
 			continue;
 		}
 
 		if(strcmp(line, "=comment") == 0) {
-			comment = 1;
+			comment = true;
 			continue;
 		}
 
