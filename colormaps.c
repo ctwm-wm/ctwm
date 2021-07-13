@@ -247,17 +247,19 @@ CreateTwmColormap(Colormap c)
 {
 	TwmColormap *cmap;
 	cmap = malloc(sizeof(TwmColormap));
-	if(!cmap || XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
-		if(cmap) {
-			free(cmap);
-		}
-		return (NULL);
+	if(!cmap) {
+		return NULL;
 	}
 	cmap->c = c;
 	cmap->state = 0;
 	cmap->install_req = 0;
 	cmap->w = None;
 	cmap->refcnt = 1;
+
+	if(XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
+		free(cmap);
+		return NULL;
+	}
 	return (cmap);
 }
 
