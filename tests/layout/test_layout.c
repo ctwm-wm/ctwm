@@ -96,13 +96,13 @@ extract_geometry(char *buf, char ***names, int *num_names,
 
 		if(*names == NULL) {
 			perror("{m,re}alloc failed");
-			return -1;
+			exit(1);
 		}
 
 		(*names)[*num_names] = strdup(name);
 		if((*names)[*num_names] == NULL) {
 			perror("strdup failed");
-			return -1;
+			exit(1);
 		}
 	}
 	// {width}x{height}+{x}+{y}
