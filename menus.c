@@ -1219,7 +1219,14 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			}
 			WindowNameCount++;
 		}
+
+		// Hack: always pretend there's at least one window, even if
+		// there are none; that lets us skip special cases for empty
+		// lists...
+		if(WindowNameCount == 0)
+			WindowNameCount = 1;
 		WindowNames = calloc(WindowNameCount, sizeof(TwmWindow *));
+
 		WindowNameCount = 0;
 		for(tmp_win = Scr->FirstWindow;
 		                tmp_win != NULL;
