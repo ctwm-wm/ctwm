@@ -665,7 +665,6 @@ Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 	wanted_area = Scr->PreferredIconWidth * Scr->PreferredIconHeight;
 	smaller = 0;
 	larger = 999999;
-	offset = 0;
 	smaller_offset = -1;
 	larger_offset = -1;
 	i = 0;
