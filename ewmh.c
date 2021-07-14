@@ -637,7 +637,7 @@ Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 	int smaller_offset, larger_offset;
 	int i;
 
-	int area, width, height;
+	int width, height;
 
 	fetch_offset = 0;
 	if(XGetWindowProperty(dpy, twm_win->w, XA__NET_WM_ICON,
@@ -676,7 +676,7 @@ Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 		int h = prop[i++];
 		int size = w * h;
 
-		area = w * h;
+		const int area = w * h;
 
 #ifdef DEBUG_EWMH
 		fprintf(stderr, "[%d+%d] w=%d h=%d\n", fetch_offset, offset, w, h);
@@ -738,7 +738,7 @@ Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 	/*
 	 * Choose which icon approximates our desired size best.
 	 */
-	area = 0;
+	int area = 0;
 
 	if(smaller_offset >= 0) {
 		if(larger_offset >= 0) {
