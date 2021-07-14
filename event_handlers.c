@@ -2094,7 +2094,7 @@ void HandleMapNotify(void)
 		if(Tmp_win->hilite_wl) {
 			XUnmapWindow(dpy, Tmp_win->hilite_wl);
 		}
-		if(Tmp_win && Tmp_win->hilite_wr) {
+		if(Tmp_win->hilite_wr) {
 			XUnmapWindow(dpy, Tmp_win->hilite_wr);
 		}
 	}
