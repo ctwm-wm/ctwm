@@ -1080,9 +1080,12 @@ void MakeMenu(MenuRoot *mr)
 		start->highlight.back = start->normal.fore;
 		start->highlight.fore = start->normal.back;
 		num -= 1;
-		int i;
-		MenuItem *cur;
-		for(i = 0, cur = start->next; i < num; i++, cur = cur->next) {
+		int i = 0;
+		MenuItem *cur = start->next;
+		// XXX Should be impossible to run out of cur's before num's,
+		// unless the item_num's are wrong (which would break other
+		// stuff), but add condition to quiet static analysis.
+		for( ; cur != NULL && i < num ; i++, cur = cur->next) {
 			f3.red += fred;
 			f3.green += fgreen;
 			f3.blue += fblue;
