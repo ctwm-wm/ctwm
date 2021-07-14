@@ -179,9 +179,12 @@ DeIconify(TwmWindow *tmp_win)
 			Zoom(tmp_win->icon->w, tmp_win->frame);
 		}
 		else if(tmp_win->group != (Window) 0) {
-			t = GetTwmWindow(tmp_win->group);
-			if(t && t->icon_on && t->icon && t->icon->w) {
-				Zoom(t->icon->w, tmp_win->frame);
+			TwmWindow *tmpt = GetTwmWindow(tmp_win->group);
+			if(tmpt) {
+				t = tmpt;
+				if(t->icon_on && t->icon && t->icon->w) {
+					Zoom(t->icon->w, tmp_win->frame);
+				}
 			}
 		}
 	}
