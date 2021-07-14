@@ -850,7 +850,7 @@ void MakeMenus(void)
 
 void MakeMenu(MenuRoot *mr)
 {
-	MenuItem *start, *end, *tmp;
+	MenuItem *start, *tmp;
 	XColor f1, f2, f3;
 	XColor b1, b2, b3;
 	XColor save_fore, save_back;
@@ -1040,6 +1040,7 @@ void MakeMenu(MenuRoot *mr)
 			break;
 		}
 
+		MenuItem *end;
 		for(end = start->next; end != NULL; end = end->next) {
 			if(end->user_colors) {
 				break;
