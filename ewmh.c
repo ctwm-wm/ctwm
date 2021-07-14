@@ -739,6 +739,7 @@ Image *EwmhGetIcon(ScreenInfo *scr, TwmWindow *twm_win)
 	 * Choose which icon approximates our desired size best.
 	 */
 	int area = 0;
+	ALLOW_DEAD_STORE(area); // all branches below init it
 
 	if(smaller_offset >= 0) {
 		if(larger_offset >= 0) {
