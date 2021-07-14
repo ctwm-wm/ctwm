@@ -378,6 +378,7 @@ SweepWindow(TwmWindow *tmp_win, Window blanket)
 	if(dist1 < dist) {
 		dir = 3;
 		dist = dist1;
+		ALLOW_DEAD_STORE(dist);
 	}
 
 	switch(dir) {

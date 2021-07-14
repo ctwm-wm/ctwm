@@ -531,6 +531,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		 * - And specific NoTitle overrides MakeTitle.
 		 */
 		have_title = true;
+		ALLOW_DEAD_STORE(have_title);
 #ifdef EWMH
 		have_title = EwmhHasTitle(tmp_win);
 #endif /* EWMH */
