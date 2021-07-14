@@ -1085,7 +1085,7 @@ void MakeMenu(MenuRoot *mr)
 		// XXX Should be impossible to run out of cur's before num's,
 		// unless the item_num's are wrong (which would break other
 		// stuff), but add condition to quiet static analysis.
-		for( ; cur != NULL && i < num ; i++, cur = cur->next) {
+		for(; cur != NULL && i < num ; i++, cur = cur->next) {
 			f3.red += fred;
 			f3.green += fgreen;
 			f3.blue += fblue;
@@ -1229,8 +1229,9 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		// Hack: always pretend there's at least one window, even if
 		// there are none; that lets us skip special cases for empty
 		// lists...
-		if(WindowNameCount == 0)
+		if(WindowNameCount == 0) {
 			WindowNameCount = 1;
+		}
 		WindowNames = calloc(WindowNameCount, sizeof(TwmWindow *));
 
 		WindowNameCount = 0;
