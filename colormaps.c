@@ -97,7 +97,7 @@ InstallColormaps(int type, Colormaps *cmaps)
 
 	state = CM_INSTALLED;
 
-	for(i = n = 0; i < number_cwins; i++) {
+	for(i = 0; i < number_cwins; i++) {
 		cwins[i]->colormap->state &= ~CM_INSTALL;
 	}
 	for(i = n = 0; i < number_cwins && n < Scr->cmapInfo.maxCmaps; i++) {
