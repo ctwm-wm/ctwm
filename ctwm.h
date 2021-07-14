@@ -374,7 +374,7 @@ extern bool SignalFlag;    ///< Some signal flag has been set
 #if defined(__clang_analyzer__)
 #define ALLOW_DEAD_STORE(x) (void)(x)
 #else
-#define ALLOW_DEAD_STORE(x) // nada
+#define ALLOW_DEAD_STORE(x) (void)0
 #endif
 
 
