@@ -37,7 +37,6 @@ MaskScreen(char *file)
 	XEvent event;
 	Cursor waitcursor;
 	int x, y;
-	ColorPair WelcomeCp;
 	XColor black;
 
 	NewFontCursor(&waitcursor, "watch");
@@ -61,8 +60,10 @@ MaskScreen(char *file)
 		return;
 	}
 
-	WelcomeCp.fore = Scr->Black;
-	WelcomeCp.back = Scr->White;
+	ColorPair WelcomeCp = {
+		.fore = Scr->Black,
+		.back = Scr->White,
+	};
 	Scr->WelcomeCmap  = XCreateColormap(dpy, Scr->WindowMask, Scr->d_visual,
 	                                    AllocNone);
 	if(! Scr->WelcomeCmap) {
