@@ -1,5 +1,6 @@
 #include "ctwm.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -296,6 +297,9 @@ read_test_from_file(char *filename)
 			errors++;
 			break;
 		}
+
+		// Gotta have a layout by now, right?
+		assert(layout != NULL);
 
 		// check_horizontal_layout area ...
 		if(strncmp(line, "check_horizontal_layout ", 24) == 0) {
