@@ -139,6 +139,7 @@ extract_layout(char *filename, int linenum, char *line)
 				        filename, linenum, geom);
 			// fallthrough
 			default:
+				free(names);
 				return NULL;
 		}
 
@@ -194,6 +195,7 @@ read_layout_file(FILE *file, char *filename)
 				fprintf(stderr, "%s:%d: layout unrecognized line (%s)\n", filename, num, line);
 			// fallthrough
 			default:
+				free(names);
 				return NULL;
 		}
 
