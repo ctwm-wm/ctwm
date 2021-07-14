@@ -1028,6 +1028,7 @@ void MakeMenu(MenuRoot *mr)
 		return;
 	}
 
+	// Do InterpolateMenuColors magic
 	start = mr->first;
 	while(1) {
 		for(; start != NULL; start = start->next) {
