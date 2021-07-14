@@ -2094,7 +2094,7 @@ void HandleMapNotify(void)
 		if(Tmp_win->hilite_wl) {
 			XUnmapWindow(dpy, Tmp_win->hilite_wl);
 		}
-		if(Tmp_win && Tmp_win->hilite_wr) {
+		if(Tmp_win->hilite_wr) {
 			XUnmapWindow(dpy, Tmp_win->hilite_wr);
 		}
 	}
@@ -2826,13 +2826,15 @@ void HandleButtonPress(void)
 
 				if(Tmp_win->iswinbox && chwin) {
 					int x, y;
+					TwmWindow *wtmp;
 					XTranslateCoordinates(dpy, Tmp_win->w, chwin,
 					                      Event.xbutton.x, Event.xbutton.y,
 					                      &x, &y, &chwin);
-					if(chwin && (Tmp_win = GetTwmWindow(chwin))) {
+					if(chwin && (wtmp = GetTwmWindow(chwin))) {
 						Event.xany.window = chwin;
 						Event.xbutton.x   = x;
 						Event.xbutton.y   = y;
+						Tmp_win = wtmp;
 					}
 				}
 				Context = C_WINDOW;
@@ -2844,6 +2846,7 @@ void HandleButtonPress(void)
 			else {
 				Context = C_FRAME;
 			}
+
 			if(Scr->ClickToFocus && Tmp_win->wmhints->input) {
 				SetFocus(Tmp_win, CurrentTime);
 			}

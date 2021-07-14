@@ -33,6 +33,10 @@ if(insrc)
 			"directly in the source tree.")
 endif(insrc)
 
+# Let cmake write out compile commands for external tools.  Requires
+# cmake 3.5+, but setting an unknown var won't hurt earlier versions.
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 
 #
 # Most of our bits are broken out into smaller files in a local dir
@@ -159,10 +163,6 @@ include(mktar_support)
 
 # Pull in dtrace bits
 include(dtrace_support)
-
-# Let cmake write out compile commands for external tools.  Requires
-# cmake 3.5+, but setting an unknown var won't hurt earlier versions.
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 # Include tests
 include(CTest)

@@ -97,7 +97,7 @@ InstallColormaps(int type, Colormaps *cmaps)
 
 	state = CM_INSTALLED;
 
-	for(i = n = 0; i < number_cwins; i++) {
+	for(i = 0; i < number_cwins; i++) {
 		cwins[i]->colormap->state &= ~CM_INSTALL;
 	}
 	for(i = n = 0; i < number_cwins && n < Scr->cmapInfo.maxCmaps; i++) {
@@ -247,17 +247,19 @@ CreateTwmColormap(Colormap c)
 {
 	TwmColormap *cmap;
 	cmap = malloc(sizeof(TwmColormap));
-	if(!cmap || XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
-		if(cmap) {
-			free(cmap);
-		}
-		return (NULL);
+	if(!cmap) {
+		return NULL;
 	}
 	cmap->c = c;
 	cmap->state = 0;
 	cmap->install_req = 0;
 	cmap->w = None;
 	cmap->refcnt = 1;
+
+	if(XSaveContext(dpy, c, ColormapContext, (XPointer) cmap)) {
+		free(cmap);
+		return NULL;
+	}
 	return (cmap);
 }
 

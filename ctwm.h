@@ -368,6 +368,17 @@ extern bool SignalFlag;    ///< Some signal flag has been set
 
 
 /*
+ * Dev utils
+ */
+// Quiet static analyzer warnings
+#if defined(__clang_analyzer__)
+#define ALLOW_DEAD_STORE(x) (void)(x)
+#else
+#define ALLOW_DEAD_STORE(x) (void)0
+#endif
+
+
+/*
  * Command-line arg handling bits
  */
 typedef struct _ctwm_cl_args {

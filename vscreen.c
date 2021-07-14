@@ -4,6 +4,7 @@
 
 #include "ctwm.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -310,6 +311,9 @@ ReparentFrameAndIcon(TwmWindow *tmp_win)
 	/* parent_vs is the current real parent of the window */
 	if(vs != tmp_win->parent_vs) {
 		struct Icon *icon = tmp_win->icon;
+
+		// This must always be something...
+		assert(vs != NULL);
 
 		tmp_win->parent_vs = vs;
 

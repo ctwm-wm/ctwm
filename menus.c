@@ -850,11 +850,10 @@ void MakeMenus(void)
 
 void MakeMenu(MenuRoot *mr)
 {
-	MenuItem *start, *end, *cur, *tmp;
+	MenuItem *start, *tmp;
 	XColor f1, f2, f3;
 	XColor b1, b2, b3;
 	XColor save_fore, save_back;
-	int num, i;
 	int fred, fgreen, fblue;
 	int bred, bgreen, bblue;
 	int width, borderwidth;
@@ -874,7 +873,7 @@ void MakeMenu(MenuRoot *mr)
 			mr->width += 16 + 10;
 		}
 		width = mr->width + 10;
-		for(cur = mr->first; cur != NULL; cur = cur->next) {
+		for(MenuItem *cur = mr->first; cur != NULL; cur = cur->next) {
 			XmbTextExtents(Scr->MenuFont.font_set, cur->item, cur->strlen,
 			               &ink_rect, &logical_rect);
 			max_entry_height = MAX(max_entry_height, logical_rect.height);
@@ -1029,6 +1028,7 @@ void MakeMenu(MenuRoot *mr)
 		return;
 	}
 
+	// Do InterpolateMenuColors magic
 	start = mr->first;
 	while(1) {
 		for(; start != NULL; start = start->next) {
@@ -1040,6 +1040,7 @@ void MakeMenu(MenuRoot *mr)
 			break;
 		}
 
+		MenuItem *end;
 		for(end = start->next; end != NULL; end = end->next) {
 			if(end->user_colors) {
 				break;
@@ -1050,7 +1051,7 @@ void MakeMenu(MenuRoot *mr)
 		}
 
 		/* we have a start and end to interpolate between */
-		num = end->item_num - start->item_num;
+		int num = end->item_num - start->item_num;
 
 		f1.pixel = start->normal.fore;
 		XQueryColor(dpy, cmap, &f1);
@@ -1079,7 +1080,12 @@ void MakeMenu(MenuRoot *mr)
 		start->highlight.back = start->normal.fore;
 		start->highlight.fore = start->normal.back;
 		num -= 1;
-		for(i = 0, cur = start->next; i < num; i++, cur = cur->next) {
+		int i = 0;
+		MenuItem *cur = start->next;
+		// XXX Should be impossible to run out of cur's before num's,
+		// unless the item_num's are wrong (which would break other
+		// stuff), but add condition to quiet static analysis.
+		for(; cur != NULL && i < num ; i++, cur = cur->next) {
 			f3.red += fred;
 			f3.green += fgreen;
 			f3.blue += fblue;
@@ -1219,7 +1225,15 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			}
 			WindowNameCount++;
 		}
+
+		// Hack: always pretend there's at least one window, even if
+		// there are none; that lets us skip special cases for empty
+		// lists...
+		if(WindowNameCount == 0) {
+			WindowNameCount = 1;
+		}
 		WindowNames = calloc(WindowNameCount, sizeof(TwmWindow *));
+
 		WindowNameCount = 0;
 		for(tmp_win = Scr->FirstWindow;
 		                tmp_win != NULL;

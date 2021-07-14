@@ -179,9 +179,12 @@ DeIconify(TwmWindow *tmp_win)
 			Zoom(tmp_win->icon->w, tmp_win->frame);
 		}
 		else if(tmp_win->group != (Window) 0) {
-			t = GetTwmWindow(tmp_win->group);
-			if(t && t->icon_on && t->icon && t->icon->w) {
-				Zoom(t->icon->w, tmp_win->frame);
+			TwmWindow *tmpt = GetTwmWindow(tmp_win->group);
+			if(tmpt) {
+				t = tmpt;
+				if(t->icon_on && t->icon && t->icon->w) {
+					Zoom(t->icon->w, tmp_win->frame);
+				}
 			}
 		}
 	}
@@ -378,6 +381,7 @@ SweepWindow(TwmWindow *tmp_win, Window blanket)
 	if(dist1 < dist) {
 		dir = 3;
 		dist = dist1;
+		ALLOW_DEAD_STORE(dist);
 	}
 
 	switch(dir) {
