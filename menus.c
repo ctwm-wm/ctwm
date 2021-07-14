@@ -850,11 +850,10 @@ void MakeMenus(void)
 
 void MakeMenu(MenuRoot *mr)
 {
-	MenuItem *start, *end, *cur, *tmp;
+	MenuItem *start, *end, *tmp;
 	XColor f1, f2, f3;
 	XColor b1, b2, b3;
 	XColor save_fore, save_back;
-	int num, i;
 	int fred, fgreen, fblue;
 	int bred, bgreen, bblue;
 	int width, borderwidth;
@@ -874,7 +873,7 @@ void MakeMenu(MenuRoot *mr)
 			mr->width += 16 + 10;
 		}
 		width = mr->width + 10;
-		for(cur = mr->first; cur != NULL; cur = cur->next) {
+		for(MenuItem *cur = mr->first; cur != NULL; cur = cur->next) {
 			XmbTextExtents(Scr->MenuFont.font_set, cur->item, cur->strlen,
 			               &ink_rect, &logical_rect);
 			max_entry_height = MAX(max_entry_height, logical_rect.height);
@@ -1050,7 +1049,7 @@ void MakeMenu(MenuRoot *mr)
 		}
 
 		/* we have a start and end to interpolate between */
-		num = end->item_num - start->item_num;
+		int num = end->item_num - start->item_num;
 
 		f1.pixel = start->normal.fore;
 		XQueryColor(dpy, cmap, &f1);
@@ -1079,6 +1078,8 @@ void MakeMenu(MenuRoot *mr)
 		start->highlight.back = start->normal.fore;
 		start->highlight.fore = start->normal.back;
 		num -= 1;
+		int i;
+		MenuItem *cur;
 		for(i = 0, cur = start->next; i < num; i++, cur = cur->next) {
 			f3.red += fred;
 			f3.green += fgreen;
