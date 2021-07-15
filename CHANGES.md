@@ -675,7 +675,7 @@ to work.
 1. Workspace context (bkctwmws.patch)
 
     Makes it possible to bind keys specific to the workspace manager
-    (by Bj&ouml;rn Knutsson). Use the event context "workspace" for this.
+    (by Björn Knutsson). Use the event context "workspace" for this.
 
 1. New keyword : AlwaysSqueezeToGravity
 
@@ -748,7 +748,7 @@ to work.
 
     This was contributed by Matthew D. Fuller.
 
-1. `DontMoveOff` patch (by Bj&ouml;rn Knutsson)
+1. `DontMoveOff` patch (by Björn Knutsson)
 
     Change the behavior of `DontMoveOff` / `MoveOffResistance` so that
     when you attempt to move a window off screen, it will not move at all
@@ -758,17 +758,17 @@ to work.
     DontMoveOff, but now with the ability to move a window off screen
     less that `MoveOffResistance` pixels.
 
-1. Random placement and DontMoveOff patch (by Bj&ouml;rn Knutsson, changed)
+1. Random placement and DontMoveOff patch (by Björn Knutsson, changed)
 
     When random placement was used, DontMoveOff wasn't honored.
     This behavior has now changed so a window will be kept within
     the screen when at all possible.  When the window is too
     large, it's top or left edge (or both) will be placed in
     coordinate 0.
-    This change differs a little bit from Bj&ouml;rns contribution by
+    This change differs a little bit from Björns contribution by
     not using rand() at all.
 
-1. `f.warpring` patch (by Bj&ouml;rn Knutsson)
+1. `f.warpring` patch (by Björn Knutsson)
 
     If `IconManagerFocus` is set, there's no reason why the icon
     manager should get enter and leave events.  This fixes some
@@ -777,13 +777,13 @@ to work.
 1. `f.movetoprevworkspace`,
     `f.movetonextworkspace`,
     `f.movetoprevworkspaceandfollow`,
-    `f.movetonextworkspaceandfollow` patch (by Daniel Holmstr&ouml;m)
+    `f.movetonextworkspaceandfollow` patch (by Daniel Holmström)
 
     Makes it possible to move a window to the previous or next
     workspace and, if you like, go to that workspace and focus
     the moved window.
 
-1. `f.fill` "vertical" patch (by Daniel Holmstr&ouml;m)
+1. `f.fill` "vertical" patch (by Daniel Holmström)
 
     Expands the window vertically without overlapping any other window,
     much like `{ f.fill "top" f.fill "bottom" }` but with the exception
@@ -791,13 +791,13 @@ to work.
     "zoomed" to `F_FULLZOOM`, so one can toggle between this size,
     original and maximized.
 
-1. `RESIZEKEEPSFOCUS` bugfix patch (by Daniel Holmstr&ouml;m)
+1. `RESIZEKEEPSFOCUS` bugfix patch (by Daniel Holmström)
 
     If a window is maximized with `togglemaximize` and then restored it
     might loose focus if the cursor is outside the restored window.  This
     hack puts the cursor at the left-top corner of the window.
 
-1. `f.zoom` bugfix patch (by Daniel Holmstr&ouml;m)
+1. `f.zoom` bugfix patch (by Daniel Holmström)
 
     `f.zoom` now doesn't move the window up (as it sometimes did before)
 
@@ -1059,7 +1059,7 @@ to work.
     window to the specified geometry. The width and height are to be given
     in pixel, no base size or resize increment are used.
 
-1. AutoLower et `f.autolower`: from Kai Gro&szlig;johann
+1. AutoLower et `f.autolower`: from Kai Großjohann
     (Kai.Grossjohann@CS.Uni-Dortmund.DE). Same as autoraise but with lower.
 
 1. `WindowRingExclude`: Takes a window list as argument. All listed windows
