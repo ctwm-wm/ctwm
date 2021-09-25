@@ -83,6 +83,7 @@ static void EwmhClientMessage_NET_WM_DESKTOP(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_STATE(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_ACTIVE_WINDOW(XClientMessageEvent *msg);
 static void EwmhClientMessage_NET_WM_MOVERESIZE(XClientMessageEvent *msg);
+static void EwmhClientMessage_NET_CLOSE_WINDOW(XClientMessageEvent *msg);
 static XEvent synth_btnevent_for_moveresize(TwmWindow *twm_win);
 static unsigned long EwmhGetWindowProperty(Window w, Atom name, Atom type);
 static void EwmhGetStrut(TwmWindow *twm_win, bool update);
@@ -446,6 +447,7 @@ void EwmhInitScreenLate(ScreenInfo *scr)
 	supported[i++] = XA__NET_WM_STATE_SHADED;
 	supported[i++] = XA__NET_WM_STATE_ABOVE;
 	supported[i++] = XA__NET_WM_STATE_BELOW;
+	supported[i++] = XA__NET_CLOSE_WINDOW;
 
 	XChangeProperty(dpy, scr->XineramaRoot,
 	                XA__NET_SUPPORTED, XA_ATOM,
@@ -575,6 +577,10 @@ bool EwmhClientMessage(XClientMessageEvent *msg)
 		EwmhClientMessage_NET_WM_MOVERESIZE(msg);
 		return true;
 	}
+	else if(msg->message_type == XA__NET_CLOSE_WINDOW) {
+		EwmhClientMessage_NET_CLOSE_WINDOW(msg);
+		return true;
+	}
 
 	/* Messages regarding the root window */
 	if(msg->window != Scr->XineramaRoot &&
@@ -592,6 +598,7 @@ bool EwmhClientMessage(XClientMessageEvent *msg)
 	}
 	else if(msg->message_type == XA__NET_SHOWING_DESKTOP) {
 		ShowBackground(Scr->currentvs, msg->data.l[0] ? 1 : 0);
+		return true;
 	}
 	else {
 #ifdef DEBUG_EWMH
@@ -1357,6 +1364,34 @@ synth_btnevent_for_moveresize(TwmWindow *twm_win)
 	return xevent;
 }
 
+
+/*
+ * Implementation of _NET_CLOSE_WINDOW
+ *
+ * window = window to be closed
+ * message_type = _NET_CLOSE_WINDOW
+ * format = 32
+ * data.l[0] = timestamp
+ * data.l[1] = source indication:
+ *             0 Clients that support only older version of this spec
+ *             1 for normal applications, and
+ *             2 for pagers and other Clients that represent direct user actions
+ * data.l[2] = 0
+ * data.l[3] = 0
+ * data.l[4] = 0
+ */
+static void EwmhClientMessage_NET_CLOSE_WINDOW(XClientMessageEvent *msg)
+{
+	TwmWindow *tmp_win;
+
+	tmp_win = GetTwmWindow(msg->window);
+
+	if(tmp_win != NULL) {
+		ButtonPressed = -1;
+		ExecuteFunction(F_DELETE, NULL, msg->window, tmp_win,
+		                (XEvent *)msg, C_NO_CONTEXT, 0);
+	}
+}
 
 /*
  * Handle any PropertyNotify.
