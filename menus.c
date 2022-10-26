@@ -479,7 +479,7 @@ void MakeWorkspacesMenu(void)
 
 static bool fromMenu;
 bool
-cur_fromMenu()
+cur_fromMenu(void)
 {
 	return fromMenu;
 }
