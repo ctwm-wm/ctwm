@@ -436,7 +436,7 @@ HandleFocusOut(void)
 /*
  * Only sent if SubstructureNotifyMask is selected on the (root) window.
  */
-void HandleCirculateNotify()
+void HandleCirculateNotify(void)
 {
 	VirtualScreen *vs;
 #ifdef DEBUG_EVENTS

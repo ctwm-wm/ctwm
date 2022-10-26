@@ -46,7 +46,7 @@ RAreaNewStatic(int x, int y, int width, int height)
  * This is used in places that need a sentinel value.
  */
 RArea
-RAreaInvalid()
+RAreaInvalid(void)
 {
 	RArea area = { -1, -1, -1, -1 };
 	return area;

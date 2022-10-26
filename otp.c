@@ -1410,7 +1410,7 @@ ReparentWindowAndIcon(Display *display, TwmWindow *twm_win,
 }
 
 /* Iterators.  */
-TwmWindow *OtpBottomWin()
+TwmWindow *OtpBottomWin(void)
 {
 	OtpWinList *owl = Scr->bottomOwl;
 	while(owl && owl->type != WinWin) {
@@ -1419,7 +1419,7 @@ TwmWindow *OtpBottomWin()
 	return owl ? owl->twm_win : NULL;
 }
 
-TwmWindow *OtpTopWin()
+TwmWindow *OtpTopWin(void)
 {
 	OtpWinList *owl = Scr->bottomOwl, *top = NULL;
 	while(owl) {
