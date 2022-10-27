@@ -17,7 +17,6 @@ set(CTWMSRC
 	# Basic files  ##STDSRC-START
 	add_window.c
 	animate.c
-	captive.c
 	clargs.c
 	clicktofocus.c
 	colormaps.c
@@ -32,7 +31,6 @@ set(CTWMSRC
 	event_names.c
 	event_utils.c
 	functions.c
-	functions_captive.c
 	functions_icmgr_wsmgr.c
 	functions_identify.c
 	functions_misc.c

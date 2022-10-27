@@ -67,3 +67,9 @@
 #ifdef USE_XRANDR
 # define XRANDR
 #endif
+
+/* Enable captive mode (ctwm -w) related bits */
+#cmakedefine USE_CAPTIVE
+#ifdef USE_CAPTIVE
+# define CAPTIVE
+#endif

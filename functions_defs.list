@@ -20,7 +20,7 @@
 #
 # START(main)
 addtoworkspace        S CS -
-adoptwindow           - -  -
+adoptwindow           - -  CAPTIVE
 altcontext            - -  -
 altkeymap             S -  -
 autolower             - CS -
@@ -55,7 +55,7 @@ gotoworkspace         S -  -
 hideiconmgr           - -  -
 hideworkspacemgr      - -  -
 horizoom              - CS -
-hypermove             - CM -
+hypermove             - CM CAPTIVE
 iconify               - CS -
 identify              - CS -
 initsize              - CS -

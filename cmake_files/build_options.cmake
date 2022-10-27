@@ -15,6 +15,10 @@ option(USE_SREGEX "Use regex from libc"                ON )
 option(USE_EWMH   "Support some Extended Window Manager Hints"  ON )
 option(USE_XRANDR "Enable Xrandr support"              ON )
 
+# Temp and hidden-ish, to make it easier to deorbit all at once
+option(USE_CAPTIVE "Enable captive CTWM support" ON )
+
+
 
 
 #
@@ -150,3 +154,12 @@ if(USE_XRANDR)
 else()
 	message(STATUS "Disabling Xrandr support.")
 endif(USE_XRANDR)
+
+
+# Captive mode
+if(USE_CAPTIVE)
+	# Some whole files are involved
+	list(APPEND CTWMSRC captive.c functions_captive.c)
+else()
+	# Nothing much...
+endif(USE_CAPTIVE)
