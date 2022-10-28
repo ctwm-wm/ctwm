@@ -391,9 +391,11 @@ typedef struct _ctwm_cl_args {
 	bool   PrintErrorMessages; // --verbose, show more debug output
 	bool   ShowWelcomeWindow;  // ! --nowelcome, show splash screen
 
+#ifdef CAPTIVE
 	bool   is_captive;         // --window (flag), running captive
 	Window capwin;             // --window (arg), existing window to capture
 	char  *captivename;        // --name, captive name
+#endif
 
 #ifdef USEM4
 	bool   KeepTmpFile;        // --keep-defs, keep generated m4 defs
