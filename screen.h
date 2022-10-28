@@ -198,8 +198,10 @@ struct ScreenInfo {
 	 * as ScreenInfo.Root, and isn't changed afterward.
 	 */
 	Window XineramaRoot;
+#ifdef CAPTIVE
 	/// The captive root window, if any, or None
 	Window CaptiveRoot;
+#endif
 	/// The actual X root window of the display.  This is always X's
 	/// RootWindow().
 	Window RealRoot;
