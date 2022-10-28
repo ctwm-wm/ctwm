@@ -386,7 +386,9 @@ usage(void)
 	fprintf(stderr, "%*s[--version]  [--info]  [--nowelcome | -W]\n",
 	        llen, "");
 
+#ifdef CAPTIVE
 	fprintf(stderr, "%*s[(--window | -w) [win-id]]  [--name name]\n", llen, "");
+#endif
 
 	/* Semi-intentionally not documenting --clientId/--restore */
 
