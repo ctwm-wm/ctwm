@@ -73,3 +73,9 @@
 #ifdef USE_CAPTIVE
 # define CAPTIVE
 #endif
+
+/* Fragments of remaining VirtualScreens support */
+#cmakedefine USE_VSCREEN
+#ifdef USE_VSCREEN
+# define VSCREEN
+#endif
