@@ -455,7 +455,9 @@ static const TwmKeyword keytable[] = {
 	{ "usethreedmenus",         KEYWORD, kw0_Use3DMenus },
 	{ "usethreedtitles",        KEYWORD, kw0_Use3DTitles },
 	{ "usethreedwmap",          KEYWORD, kw0_Use3DWMap },
+#ifdef VSCREEN
 	{ "virtualscreens",         VIRTUAL_SCREENS, 0 },
+#endif
 	{ "w",                      WINDOW, 0 },
 	{ "wait",                   WAITC, 0 },
 	{ "warpcursor",             WARP_CURSOR, 0 },
