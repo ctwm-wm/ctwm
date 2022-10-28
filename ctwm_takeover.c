@@ -59,9 +59,11 @@ takeover_screen(ScreenInfo *scr)
 #ifdef EWMH
 	attrmask |= StructureNotifyMask;
 #endif
+#ifdef CAPTIVE
 	if(CLarg.is_captive) {
 		attrmask |= StructureNotifyMask;
 	}
+#endif
 	XSelectInput(dpy, scr->Root, attrmask);
 
 	// Make sure we flush out any errors that may have caused.  This

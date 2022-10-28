@@ -122,6 +122,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	fprintf(stderr, "AddWindow: w = 0x%x\n", w);
 #endif
 
+#ifdef CAPTIVE
 	/*
 	 * Possibly this window should be in a captive sub-ctwm?  If so, we
 	 * shouldn't mess with it at all.
@@ -130,6 +131,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		/* XXX x-ref comment by SetNoRedirect() */
 		return (NULL);
 	}
+#endif
 
 
 	/*

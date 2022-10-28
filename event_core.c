@@ -316,6 +316,7 @@ DispatchEvent(void)
 	}
 	Scr = thisScr;
 
+#ifdef CAPTIVE
 	if(CLarg.is_captive) {
 		if((Event.type == ConfigureNotify)
 		                && (Event.xconfigure.window == Scr->CaptiveRoot)) {
@@ -323,6 +324,7 @@ DispatchEvent(void)
 			return false;
 		}
 	}
+#endif
 	FixRootEvent(&Event);
 	if(Event.type >= 0 && Event.type < MAX_X_EVENT) {
 #ifdef SOUNDS

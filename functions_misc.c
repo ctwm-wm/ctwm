@@ -445,6 +445,7 @@ Execute(const char *_s)
 		s = tmp;
 	}
 
+#ifdef CAPTIVE
 	subs = strstr(s, "$redirect");
 	if(subs) {
 		char *tmp;
@@ -467,6 +468,7 @@ Execute(const char *_s)
 
 		free(redir);
 	}
+#endif
 
 
 	/*

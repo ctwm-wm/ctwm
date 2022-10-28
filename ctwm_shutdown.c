@@ -225,10 +225,12 @@ DoShutdown(void)
 	// Clean up our list of workspaces
 	XDeleteProperty(dpy, Scr->Root, XA_WM_WORKSPACESLIST);
 
+#ifdef CAPTIVE
 	// Shut down captive stuff
 	if(CLarg.is_captive) {
 		RemoveFromCaptiveList(Scr->captivename);
 	}
+#endif
 
 	// Close up shop
 	XCloseDisplay(dpy);
