@@ -269,10 +269,15 @@ m4_defs(Display *display, const char *host)
 	/*
 	 * Bits of "how this ctwm invocation is being run" data
 	 */
-	if(CLarg.is_captive && Scr->captivename) {
+	if(0) {
+		// Dummy
+	}
+#ifdef CAPTIVE
+	else if(CLarg.is_captive && Scr->captivename) {
 		WR_DEF("TWM_CAPTIVE", "Yes");
 		WR_DEF("TWM_CAPTIVE_NAME", Scr->captivename);
 	}
+#endif
 	else {
 		WR_DEF("TWM_CAPTIVE", "No");
 	}

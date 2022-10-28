@@ -499,9 +499,11 @@ ReMapOne(TwmWindow *t, TwmWindow *leader)
 		XMapWindow(dpy, t->w);
 	}
 	t->mapped = true;
+#ifdef CAPTIVE
 	if(false && Scr->Root != Scr->CaptiveRoot) {        /* XXX dubious test */
 		ReparentWindow(dpy, t, WinWin, Scr->Root, t->frame_x, t->frame_y);
 	}
+#endif
 	if(!Scr->NoRaiseDeicon) {
 		OtpRaise(t, WinWin);
 	}

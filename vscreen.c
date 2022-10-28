@@ -122,8 +122,13 @@ void InitVirtualScreens(ScreenInfo *scr)
 	}
 
 	Scr->Root  = vs00->window;
+#ifdef CAPTIVE
 	Scr->rootx = Scr->crootx + vs00->x;
 	Scr->rooty = Scr->crooty + vs00->y;
+#else
+	Scr->rootx = vs00->x;
+	Scr->rooty = vs00->y;
+#endif
 	Scr->rootw = vs00->w;
 	Scr->rooth = vs00->h;
 	Scr->currentvs = vs00;

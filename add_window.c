@@ -34,7 +34,9 @@
 #include <X11/extensions/shape.h>
 
 #include "add_window.h"
+#ifdef CAPTIVE
 #include "captive.h"
+#endif
 #include "colormaps.h"
 #include "ctwm_atoms.h"
 #include "functions.h"
@@ -122,6 +124,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	fprintf(stderr, "AddWindow: w = 0x%x\n", w);
 #endif
 
+#ifdef CAPTIVE
 	/*
 	 * Possibly this window should be in a captive sub-ctwm?  If so, we
 	 * shouldn't mess with it at all.
@@ -130,6 +133,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		/* XXX x-ref comment by SetNoRedirect() */
 		return (NULL);
 	}
+#endif
 
 
 	/*
@@ -1787,12 +1791,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+#ifdef CAPTIVE
 	/*
 	 * If ths window being created is a new captive [sub-]ctwm, we setup
 	 * a property on it for unclear reasons.  x-ref comments on the
 	 * function.
 	 */
 	SetPropsIfCaptiveCtwm(tmp_win);
+#endif
 
 
 	/*

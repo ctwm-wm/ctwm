@@ -3111,8 +3111,13 @@ void HandleEnterNotify(void)
 		for(vs = Scr->vScreenList; vs != NULL; vs = vs->next) {
 			if(ewp->window == vs->window) {
 				Scr->Root  = vs->window;
+#ifdef CAPTIVE
 				Scr->rootx = Scr->crootx + vs->x;
 				Scr->rooty = Scr->crooty + vs->y;
+#else
+				Scr->rootx = vs->x;
+				Scr->rooty = vs->y;
+#endif
 				Scr->rootw = vs->w;
 				Scr->rooth = vs->h;
 				Scr->currentvs = vs;
