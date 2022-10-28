@@ -9,7 +9,9 @@
 #include <unistd.h>
 
 #include "animate.h"
+#ifdef CAPTIVE
 #include "captive.h"
+#endif
 #include "colormaps.h"
 #include "ctwm_atoms.h"
 #include "ctwm_shutdown.h"

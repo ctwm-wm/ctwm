@@ -53,7 +53,9 @@
 #include "otp.h"
 #include "cursor.h"
 #include "windowbox.h"
+#ifdef CAPTIVE
 #include "captive.h"
+#endif
 #ifdef XRANDR
 #include "xrandr.h"
 #endif

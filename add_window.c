@@ -34,7 +34,9 @@
 #include <X11/extensions/shape.h>
 
 #include "add_window.h"
+#ifdef CAPTIVE
 #include "captive.h"
+#endif
 #include "colormaps.h"
 #include "ctwm_atoms.h"
 #include "functions.h"

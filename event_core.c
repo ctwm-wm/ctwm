@@ -35,7 +35,9 @@
 #include <X11/extensions/shape.h>
 
 #include "animate.h"
+#ifdef CAPTIVE
 #include "captive.h"
+#endif
 #include "colormaps.h"
 #include "events.h"
 #include "event_handlers.h"
