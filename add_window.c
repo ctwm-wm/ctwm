@@ -1791,12 +1791,14 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+#ifdef CAPTIVE
 	/*
 	 * If ths window being created is a new captive [sub-]ctwm, we setup
 	 * a property on it for unclear reasons.  x-ref comments on the
 	 * function.
 	 */
 	SetPropsIfCaptiveCtwm(tmp_win);
+#endif
 
 
 	/*
