@@ -5,6 +5,11 @@
 
 ### Backward-Incompatible Changes And Removed Features
 
+1. `ctwm`'s captive mode support has been removed.  This includes the
+   `--window` and `--name` command line arguments, and the
+   `f.adoptwindow` and `f.hypermove` functions.  Be sure to remove any
+   references to those functions from your config file.
+
 1. The minimum cmake version has been bumped to 3.6.  This is available
    in standard packages back to CentOS 6, and we appear to have actually
    been using syntax requiring 3.5 for a while unknowingly anyway.
