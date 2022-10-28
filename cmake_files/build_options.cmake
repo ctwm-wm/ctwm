@@ -158,6 +158,10 @@ endif(USE_XRANDR)
 
 # Captive mode
 if(USE_CAPTIVE)
+	# This isn't going to be here long, you shouldn't be enabling it
+	# unless you're ready to argue on the mailing list to preserve it.
+	message(WARNING "Captive mode will not be supported in future versions")
+
 	# Some whole files are involved
 	list(APPEND CTWMSRC captive.c functions_captive.c)
 else()
