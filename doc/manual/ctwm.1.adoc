@@ -12,7 +12,6 @@ ctwm [(--display | -d) dpy]  [--replace]  [--single]
      [--nom4 | -n]  [(--keep-defs | -k)]  [(--keep | -K) m4file]
      [--verbose | -v]  [--quiet | -q]  [--mono]  [--xrm resource]
      [--version]  [--info]  [--nowelcome | -W]
-     [(--window | -w) [win-id]]  [--name name]
      [--clientId clid]  [--restore resfname]
      [--help | -h]
 
@@ -147,21 +146,6 @@ to touch the bottom the screen.
 --info::
   ctwm prints its detailed version and compile time options.
 
---window[=`win-id`], -w[`win-id`]::
-  If `-w` is specified without a win-id value, ctwm does not take over
-  the whole screen(s); instead it creates a new window that becomes its
-  root window.  If the win-id value is given, it is considered to be the
-  id of an existing window, in which case, ctwm will try to use this
-  window as root window.  You can run any number of instantiations of
-  ctwm at the same time.  You can even have embedded ctwm instantiations.
-  This is totally useless, but I like it.  The f.adoptwindow function can
-  be used to capture an existing window belonging to another ctwm.  A
-  possible use of such mode can be to test new configuration file without
-  restarting ctwm.
-
---name=`name`, -n `name`::
-  Set the captivename when using `--window`.
-
 --nowelcome, -W::
   This option tells ctwm not to display any welcome when starting.
 
@@ -176,14 +160,6 @@ ctwm uses `getopt_long()` for parsing the command-line options.  This
 means that args can be passed via `--long=arg` and `--long arg`, as well
 as `-l arg` and `-larg`, and short args can be bundled like `-vnk` as
 well as `-v -n -k`.
-
-====
-Note, however, that the handling of optional args is slightly different;
-they *must* be specified with = or no space.  e.g., `--window=123` will
-set the win-id to 123, but `--window 123` will not; the 123 will be
-treated as a separate argument.  Similarly, it must be set as `-w123`,
-not `-w 123`.
-====
 
 
 == CUSTOMIZATION
@@ -2448,11 +2424,6 @@ f.addtoworkspace `string`::
   This function adds the selected window to the workspace whose name is
   `string`.
 
-f.adoptwindow::
-  This function asks for the user to select a window with the mouse, and then
-  adopt this window if it doesn't belong to the current ctwm. Useful only
-  with the -w flag.
-
 f.altcontext::
   Set the alternate context. The next key or button event ctwm receives will
   be interpreted using the alternate context. To define bindings in the alternate
@@ -2666,11 +2637,6 @@ f.horizoom::
 
 f.htzoom::
   This function is a synonym for `f.topzoom`.
-
-f.hypermove::
-  Use this function to ``move'' a window between 2 captives ctwm (or between a
-  captive and the root ctwm). Of course 2 ctwms are completely different
-  universes. You have to go in hyperspace to achieve this, hence the name.
 
 f.hzoom::
   This function is a synonym for `f.horizoom`.
