@@ -16,7 +16,7 @@ option(USE_EWMH   "Support some Extended Window Manager Hints"  ON )
 option(USE_XRANDR "Enable Xrandr support"              ON )
 
 # Temp and hidden-ish, to make it easier to deorbit all at once
-option(USE_CAPTIVE "Enable captive CTWM support" ON )
+option(USE_CAPTIVE "Enable captive CTWM support" OFF )
 
 
 
