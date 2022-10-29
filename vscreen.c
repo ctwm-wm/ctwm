@@ -23,6 +23,24 @@
 static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win);
 
 
+static void init_def_vscreen(ScreenInfo *scr)
+{
+	VirtualScreen *vs = malloc(sizeof(VirtualScreen));
+
+	vs->x      = 0;
+	vs->y      = 0;
+	vs->w      = scr->rootw;
+	vs->h      = scr->rooth;
+	vs->window = scr->Root;
+	vs->next   = NULL;
+	vs->wsw    = 0;
+	scr->vScreenList = vs;
+	scr->currentvs   = vs;
+	scr->numVscreens = 1;
+	return;
+}
+
+
 void InitVirtualScreens(ScreenInfo *scr)
 {
 	Cursor cursor;
@@ -34,18 +52,7 @@ void InitVirtualScreens(ScreenInfo *scr)
 	NewFontCursor(&cursor, "X_cursor");
 
 	if(scr->VirtualScreens == NULL) {
-		VirtualScreen *vs = malloc(sizeof(VirtualScreen));
-
-		vs->x      = 0;
-		vs->y      = 0;
-		vs->w      = scr->rootw;
-		vs->h      = scr->rooth;
-		vs->window = scr->Root;
-		vs->next   = NULL;
-		vs->wsw    = 0;
-		scr->vScreenList = vs;
-		scr->currentvs   = vs;
-		scr->numVscreens = 1;
+		init_def_vscreen(scr);
 		return;
 	}
 	scr->numVscreens = 0;
