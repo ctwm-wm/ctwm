@@ -29,13 +29,11 @@ void InitVirtualScreens(ScreenInfo *scr)
 	unsigned long valuemask, attrmask;
 	XSetWindowAttributes attributes;
 	name_list *nptr;
-	bool userealroot = true;
 	VirtualScreen *vs00 = NULL;
 
 	NewFontCursor(&cursor, "X_cursor");
 
 	if(scr->VirtualScreens == NULL) {
-		if(userealroot) {
 			VirtualScreen *vs = malloc(sizeof(VirtualScreen));
 
 			vs->x      = 0;
@@ -49,13 +47,6 @@ void InitVirtualScreens(ScreenInfo *scr)
 			scr->currentvs   = vs;
 			scr->numVscreens = 1;
 			return;
-		}
-		else {
-			scr->VirtualScreens = malloc(sizeof(name_list));
-			scr->VirtualScreens->next = NULL;
-			asprintf(&scr->VirtualScreens->name, "%dx%d+0+0",
-			         scr->rootw, scr->rooth);
-		}
 	}
 	scr->numVscreens = 0;
 
