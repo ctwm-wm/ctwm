@@ -2319,6 +2319,7 @@ void HandleButtonRelease(void)
 
 		CurrentDragX = xl;
 		CurrentDragY = yt;
+#ifdef VSCREEN
 		/*
 		 * sometimes getScreenOf() replies with the wrong window when moving
 		 * y to a negative number.  Need to figure out why... [XXX]
@@ -2352,6 +2353,7 @@ void HandleButtonRelease(void)
 				yt = desty;
 			}
 		}
+#endif
 		if(DragWindow == Tmp_win->frame) {
 			SetupWindow(Tmp_win, xl, yt,
 			            Tmp_win->frame_width, Tmp_win->frame_height, -1);
