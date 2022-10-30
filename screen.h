@@ -512,7 +512,9 @@ struct ScreenInfo {
 	/// @{
 	VirtualScreen *vScreenList;    ///< Linked list of per-VS info
 	VirtualScreen *currentvs;      ///< Currently active VS
+#ifdef VSCREEN
 	name_list     *VirtualScreens; ///< List of defined VS's
+#endif
 	int           numVscreens;     ///< Number of defined VS's
 	/// @}
 
