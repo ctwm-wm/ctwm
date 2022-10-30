@@ -153,15 +153,6 @@ VirtualScreen *findIfVScreenOf(int x, int y)
 	return NULL;
 }
 
-VirtualScreen *getVScreenOf(int x, int y)
-{
-	VirtualScreen *vs;
-	if((vs = findIfVScreenOf(x, y))) {
-		return vs;
-	}
-	return Scr->vScreenList;
-}
-
 /*
  * Returns the order that virtual screens are displayed for the vscreen
  * list.  This is stored this way so everything ends up in the right place
