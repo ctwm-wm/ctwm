@@ -694,9 +694,11 @@ ctwm_main(int argc, char *argv[])
 		 * mirroring our real root.
 		 */
 		InitVirtualScreens(Scr);
+#ifdef VSCREEN
 #ifdef EWMH
 		EwmhInitVirtualRoots(Scr);
 #endif /* EWMH */
+#endif // vscreen
 
 		// Setup WSM[s] (per-vscreen).  This also sets up the about the
 		// workspaces for each vscreen and which is currently displayed.

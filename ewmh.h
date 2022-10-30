@@ -58,7 +58,9 @@ typedef struct EwmhStrut {
 void EwmhInit(void);
 bool EwmhInitScreenEarly(ScreenInfo *scr);
 void EwmhInitScreenLate(ScreenInfo *scr);
+#ifdef VSCREEN
 void EwmhInitVirtualRoots(ScreenInfo *scr);
+#endif
 void EwmhTerminate(void);
 void EwmhSelectionClear(XSelectionClearEvent *sev);
 bool EwmhClientMessage(XClientMessageEvent *msg);
