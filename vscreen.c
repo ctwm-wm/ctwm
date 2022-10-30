@@ -36,7 +36,9 @@ static void init_def_vscreen(ScreenInfo *scr)
 	vs->wsw    = 0;
 	scr->vScreenList = vs;
 	scr->currentvs   = vs;
+#ifdef VSCREEN
 	scr->numVscreens = 1;
+#endif
 	return;
 }
 

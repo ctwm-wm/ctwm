@@ -514,8 +514,8 @@ struct ScreenInfo {
 	VirtualScreen *currentvs;      ///< Currently active VS
 #ifdef VSCREEN
 	name_list     *VirtualScreens; ///< List of defined VS's
-#endif
 	int           numVscreens;     ///< Number of defined VS's
+#endif
 	/// @}
 
 	name_list   *OccupyAll;       ///< OccupyAll config var
