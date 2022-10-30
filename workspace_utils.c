@@ -119,7 +119,6 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 	                twmWin = OtpNextWinUp(twmWin)) {
 		if(twmWin->vs == vs) {
 			if(!OCCUPY(twmWin, newws)) {
-				VirtualScreen *tvs;
 
 				Vanish(vs, twmWin);
 				/*
@@ -129,6 +128,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 				 * top-to-bottom order here.
 				 */
 				if(Scr->numVscreens > 1) {
+					VirtualScreen *tvs;
 					for(tvs = Scr->vScreenList; tvs != NULL; tvs = tvs->next) {
 						if(tvs == vs) { /* no, not back on the old one */
 							continue;
