@@ -43,6 +43,13 @@ static void init_def_vscreen(ScreenInfo *scr)
 
 void InitVirtualScreens(ScreenInfo *scr)
 {
+#ifndef VSCREEN
+	// Just do the faking if vscreens are all off anyway.
+	init_def_vscreen(scr);
+	return;
+#else
+
+	// Real implementation
 	Cursor cursor;
 	unsigned long valuemask, attrmask;
 	XSetWindowAttributes attributes;
@@ -130,6 +137,7 @@ void InitVirtualScreens(ScreenInfo *scr)
 	Scr->rootw = vs00->w;
 	Scr->rooth = vs00->h;
 	Scr->currentvs = vs00;
+#endif  // VSCREEN
 }
 
 VirtualScreen *findIfVScreenOf(int x, int y)
