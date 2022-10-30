@@ -1945,29 +1945,6 @@ UseThreeDTitles::
 UseThreeDWMap::
   Tells ctwm to use 3D for the small windows in the workspace map.
 
-VirtualScreens { `geometries-list` }::
-+
-[normal]
-  This variable specifies a list of geometries for virtual screens. Virtual screens
-  are designed to be used when you have several physical screens bound together
-  with the Xinerama X extension.
-+
-[normal]
-  `geometries-list` is a list of valid geometry strings, that correspond to
-  your actual physical screens.
-+
-[normal]
-  Example :
-+
-------
-VirtualScreens
-{
-    "1280x1024+0+0"
-    "1600x1200+1280+0"
-}
-------
-+
-
 WarpCursor [{ `win-list` }]::
   This variable indicates that the pointer should be warped into windows when
   they are deiconified.  If the optional `win-list` is given, the pointer
