@@ -140,6 +140,7 @@ void InitVirtualScreens(ScreenInfo *scr)
 #endif  // VSCREEN
 }
 
+#ifdef VSCREEN
 VirtualScreen *findIfVScreenOf(int x, int y)
 {
 	VirtualScreen *vs;
@@ -152,6 +153,7 @@ VirtualScreen *findIfVScreenOf(int x, int y)
 	}
 	return NULL;
 }
+#endif
 
 /*
  * Returns the order that virtual screens are displayed for the vscreen

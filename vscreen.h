@@ -13,7 +13,9 @@ struct VirtualScreen {
 };
 
 void InitVirtualScreens(ScreenInfo *scr);
+#ifdef VSCREEN
 VirtualScreen *findIfVScreenOf(int x, int y);
+#endif
 char *CtwmGetVScreenMap(Display *display, Window rootw);
 bool CtwmSetVScreenMap(Display *display, Window rootw,
                        struct VirtualScreen *firstvs);
