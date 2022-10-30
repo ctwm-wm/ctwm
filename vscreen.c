@@ -23,39 +23,46 @@
 static void DisplayWinUnchecked(VirtualScreen *vs, TwmWindow *tmp_win);
 
 
+static void init_def_vscreen(ScreenInfo *scr)
+{
+	VirtualScreen *vs = malloc(sizeof(VirtualScreen));
+
+	vs->x      = 0;
+	vs->y      = 0;
+	vs->w      = scr->rootw;
+	vs->h      = scr->rooth;
+	vs->window = scr->Root;
+	vs->next   = NULL;
+	vs->wsw    = 0;
+	scr->vScreenList = vs;
+	scr->currentvs   = vs;
+#ifdef VSCREEN
+	scr->numVscreens = 1;
+#endif
+	return;
+}
+
+
 void InitVirtualScreens(ScreenInfo *scr)
 {
+#ifndef VSCREEN
+	// Just do the faking if vscreens are all off anyway.
+	init_def_vscreen(scr);
+	return;
+#else
+
+	// Real implementation
 	Cursor cursor;
 	unsigned long valuemask, attrmask;
 	XSetWindowAttributes attributes;
 	name_list *nptr;
-	bool userealroot = true;
 	VirtualScreen *vs00 = NULL;
 
 	NewFontCursor(&cursor, "X_cursor");
 
 	if(scr->VirtualScreens == NULL) {
-		if(userealroot) {
-			VirtualScreen *vs = malloc(sizeof(VirtualScreen));
-
-			vs->x      = 0;
-			vs->y      = 0;
-			vs->w      = scr->rootw;
-			vs->h      = scr->rooth;
-			vs->window = scr->Root;
-			vs->next   = NULL;
-			vs->wsw    = 0;
-			scr->vScreenList = vs;
-			scr->currentvs   = vs;
-			scr->numVscreens = 1;
-			return;
-		}
-		else {
-			scr->VirtualScreens = malloc(sizeof(name_list));
-			scr->VirtualScreens->next = NULL;
-			asprintf(&scr->VirtualScreens->name, "%dx%d+0+0",
-			         scr->rootw, scr->rooth);
-		}
+		init_def_vscreen(scr);
+		return;
 	}
 	scr->numVscreens = 0;
 
@@ -132,8 +139,10 @@ void InitVirtualScreens(ScreenInfo *scr)
 	Scr->rootw = vs00->w;
 	Scr->rooth = vs00->h;
 	Scr->currentvs = vs00;
+#endif  // VSCREEN
 }
 
+#ifdef VSCREEN
 VirtualScreen *findIfVScreenOf(int x, int y)
 {
 	VirtualScreen *vs;
@@ -146,15 +155,7 @@ VirtualScreen *findIfVScreenOf(int x, int y)
 	}
 	return NULL;
 }
-
-VirtualScreen *getVScreenOf(int x, int y)
-{
-	VirtualScreen *vs;
-	if((vs = findIfVScreenOf(x, y))) {
-		return vs;
-	}
-	return Scr->vScreenList;
-}
+#endif
 
 /*
  * Returns the order that virtual screens are displayed for the vscreen

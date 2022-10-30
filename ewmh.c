@@ -455,6 +455,8 @@ void EwmhInitScreenLate(ScreenInfo *scr)
 	                (unsigned char *)supported, i);
 }
 
+
+#ifdef VSCREEN
 /*
  * Set up the _NET_VIRTUAL_ROOTS property, which indicates that we're
  * using virtual root windows.
@@ -504,6 +506,8 @@ void EwmhInitVirtualRoots(ScreenInfo *scr)
 		                (unsigned char *)&d0, 1);
 	}
 }
+#endif
+
 
 static void EwmhTerminateScreen(ScreenInfo *scr)
 {

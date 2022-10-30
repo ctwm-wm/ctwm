@@ -767,7 +767,11 @@ vscreen_geom_entries	: /* Empty */
 		| vscreen_geom_entries vscreen_geom_entry
 		;
 
-vscreen_geom_entry	: string { AddToList (&Scr->VirtualScreens, $1, ""); }
+vscreen_geom_entry	: string {
+#ifdef VSCREEN
+				   AddToList (&Scr->VirtualScreens, $1, "");
+#endif
+				   }
 		;
 
 

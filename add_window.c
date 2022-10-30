@@ -77,8 +77,10 @@ unsigned int AddingH;
 
 static int PlaceX = -1;
 static int PlaceY = -1;
+#ifdef VSCREEN
 static void DealWithNonSensicalGeometries(Display *dpy, Window vroot,
                 TwmWindow *tmp_win);
+#endif
 
 char NoName[] = "Untitled"; /* name if no name is specified */
 bool resizeWhenAdd;
@@ -1463,8 +1465,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			}
 		}
 
+#ifdef VSCREEN
 		/* May need adjusting for vscreens too */
 		DealWithNonSensicalGeometries(dpy, vroot, tmp_win);
+#endif
 
 
 		/*
@@ -2038,6 +2042,7 @@ void GrabKeys(TwmWindow *tmp_win)
 #undef ungrabkey
 
 
+#ifdef VSCREEN
 /*
  * This is largely for Xinerama support with VirtualScreens.
  * In this case, windows may be on something other then the main screen
@@ -2096,3 +2101,4 @@ DealWithNonSensicalGeometries(Display *mydpy, Window vroot,
 	}
 
 }
+#endif // VSCREEN

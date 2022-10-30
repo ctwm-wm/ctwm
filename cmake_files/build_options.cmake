@@ -17,6 +17,7 @@ option(USE_XRANDR "Enable Xrandr support"              ON )
 
 # Temp and hidden-ish, to make it easier to deorbit all at once
 option(USE_CAPTIVE "Enable captive CTWM support" OFF )
+option(USE_VSCREEN "Enable VirtualScreens support" ON )
 
 
 
@@ -167,3 +168,10 @@ if(USE_CAPTIVE)
 else()
 	# Nothing much...
 endif(USE_CAPTIVE)
+
+
+# VirtualScreens (going the heck away)
+if(USE_VSCREEN)
+	message(WARNING "VirtualScreens will not be supported in future versions")
+else()
+endif(USE_VSCREEN)
