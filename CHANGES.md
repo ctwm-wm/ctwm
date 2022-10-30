@@ -5,6 +5,12 @@
 
 ### Backward-Incompatible Changes And Removed Features
 
+1. Support for `VirtualScreens` has been removed.  This was an early
+   attempt to allow some manual configuration of multiple monitors, but
+   carried with it a lot of caveats and strange behaviors.  The current
+   automatic RANDR and manual `MonitorLayout` features are a replacement
+   for anywhere this ever really worked.
+
 1. `ctwm`'s captive mode support has been removed.  This includes the
    `--window` and `--name` command line arguments, and the
    `f.adoptwindow` and `f.hypermove` functions.  Be sure to remove any
