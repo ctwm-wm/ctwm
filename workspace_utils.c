@@ -121,6 +121,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 			if(!OCCUPY(twmWin, newws)) {
 
 				Vanish(vs, twmWin);
+#ifdef VSCREEN
 				/*
 				 * Now that the window has Vanished from one virtual screen,
 				 * check to see if it is wanted on another one.
@@ -139,6 +140,7 @@ GotoWorkSpace(VirtualScreen *vs, WorkSpace *ws)
 						}
 					}
 				}
+#endif
 			}
 			else if(twmWin->hasfocusvisible) {
 				focuswindow = twmWin;
