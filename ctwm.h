@@ -299,6 +299,7 @@ struct WindowEntry {
 	bool                used;
 };
 
+#ifdef WINBOX
 struct WindowBox {
 	struct WindowBox    *next;
 	char                *name;
@@ -307,6 +308,7 @@ struct WindowBox {
 	Window              window;
 	struct TwmWindow    *twmwin;
 };
+#endif
 
 
 /*
