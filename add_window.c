@@ -59,7 +59,9 @@
 #include "session.h"
 #include "util.h"
 #include "vscreen.h"
+#ifdef WINBOX
 #include "windowbox.h"
+#endif
 #include "win_decorations.h"
 #include "win_ops.h"
 #include "win_regions.h"
@@ -119,7 +121,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	bool restoredFromPrevSession = false;
 	int saved_occupation = 0; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
+#ifdef WINBOX
 	WindowBox *winbox;
+#endif
 	Window vroot;
 
 #ifdef DEBUG
@@ -671,8 +675,10 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	SetupOccupation(tmp_win, saved_occupation);
 
 
+#ifdef WINBOX
 	/* Does it go in a window box? */
 	winbox = findWindowBox(tmp_win);
+#endif
 
 
 	/*
@@ -738,9 +744,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		vroot = Scr->Root;      /* never */
 		tmp_win->parent_vs = Scr->currentvs;
 	}
+#ifdef WINBOX
 	if(winbox) {
 		vroot = winbox->window;
 	}
+#endif
 
 
 	/*
@@ -980,9 +988,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 					}
 					firsttime = false;
 				}
+#ifdef WINBOX
 				if(winbox) {
 					vroot = winbox->window;
 				}
+#endif
 
 				/*
 				 * wait for buttons to come up; yuck
@@ -1030,9 +1040,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			                   SIZE_VINDENT + Scr->SizeFont.ascent,
 			                   tmp_win->name, namelen);
 
+#ifdef WINBOX
 			if(winbox) {
 				ConstrainedToWinBox(tmp_win, AddingX, AddingY, &AddingX, &AddingY);
 			}
+#endif
 
 			AddingW = tmp_win->attr.width + bw2 + 2 * tmp_win->frame_bw3D;
 			AddingH = tmp_win->attr.height + tmp_win->title_height +
