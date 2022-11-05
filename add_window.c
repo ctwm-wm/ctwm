@@ -165,7 +165,9 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	tmp_win->iconmgrp = iconp;
 	tmp_win->iswspmgr = (wtype == AWT_WORKSPACE_MANAGER);
 	tmp_win->isoccupy = (wtype == AWT_OCCUPY);
+#ifdef WINBOX
 	tmp_win->iswinbox = (wtype == AWT_WINDOWBOX);
+#endif
 	tmp_win->vs = vs;
 	tmp_win->parent_vs = vs;
 	tmp_win->savevs = NULL;

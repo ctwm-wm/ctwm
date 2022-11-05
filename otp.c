@@ -293,6 +293,7 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 			nwins++;
 		}
 
+#ifdef WINBOX
 		if(twm_win->winbox) {
 			/*
 			 * We can't check windows in a WindowBox, since they are
@@ -301,6 +302,7 @@ static bool OtpCheckConsistencyVS(VirtualScreen *currentvs, Window vroot)
 			DPRINTF((stderr, "Can't check this window, it is in a WinBox\n"));
 			continue;
 		}
+#endif
 
 		/*
 		 * Check only windows from the current vitual screen; the others
@@ -382,6 +384,7 @@ static OtpWinList *GetOwlAtOrBelowInVS(OtpWinList *owl, VirtualScreen *vs)
 	return owl;
 }
 
+#ifdef WINBOX
 /*
  * Windows in a box don't really occur in the stacking order of the
  * root window.
@@ -406,6 +409,7 @@ static OtpWinList *GetOwlAtOrBelowInWinbox(OtpWinList **owlp, WindowBox *wb)
 	}
 	return owl;
 }
+#endif
 
 
 static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
@@ -444,12 +448,19 @@ static void InsertOwlAbove(OtpWinList *owl, OtpWinList *other_owl)
 		Scr->bottomOwl = owl;
 	}
 	else {
+#ifdef WINBOX
 		WindowBox *winbox = owl->twm_win->winbox;
+#endif
 		OtpWinList *vs_owl;
 
-		if(winbox != NULL) {
+		if(false) {
+			// dummy
+		}
+#ifdef WINBOX
+		else if(winbox != NULL) {
 			vs_owl = GetOwlAtOrBelowInWinbox(&other_owl, winbox);
 		}
+#endif
 		else {
 
 			vs_owl = GetOwlAtOrBelowInVS(other_owl, owl->twm_win->parent_vs);
@@ -888,9 +899,11 @@ void OtpSetPriority(TwmWindow *twm_win, WinType wintype, int new_pri, int where)
 	DPRINTF((stderr, "OtpSetPriority: new_pri=%d\n", new_pri));
 	assert(owl != NULL);
 
+#ifdef WINBOX
 	if(twm_win->winbox != NULL || twm_win->iswinbox) {
 		return;
 	}
+#endif
 
 	if(ABS(new_pri) > OTP_ZERO) {
 		DPRINTF((stderr, "invalid OnTopPriority value: %d\n", new_pri));
@@ -910,9 +923,11 @@ void OtpChangePriority(TwmWindow *twm_win, WinType wintype, int relpriority)
 	int priority = owl->pri_base + relpriority;
 	int where;
 
+#ifdef WINBOX
 	if(twm_win->winbox != NULL || twm_win->iswinbox) {
 		return;
 	}
+#endif
 
 	where = relpriority < 0 ? Below : Above;
 
@@ -931,9 +946,11 @@ void OtpSwitchPriority(TwmWindow *twm_win, WinType wintype)
 
 	assert(owl != NULL);
 
+#ifdef WINBOX
 	if(twm_win->winbox != NULL || twm_win->iswinbox) {
 		return;
 	}
+#endif
 
 	where = priority < OTP_ZERO ? Below : Above;
 	TryToMoveTransientsOfTo(owl, priority, where);
@@ -948,9 +965,11 @@ void OtpToggleSwitching(TwmWindow *twm_win, WinType wintype)
 	OtpWinList *owl = (wintype == IconWin) ? twm_win->icon->otp : twm_win->otp;
 	assert(owl != NULL);
 
+#ifdef WINBOX
 	if(twm_win->winbox != NULL || twm_win->iswinbox) {
 		return;
 	}
+#endif
 
 	owl->switching = !owl->switching;
 
@@ -1209,11 +1228,16 @@ void OtpAdd(TwmWindow *twm_win, WinType wintype)
 
 	assert(*owlp == NULL);
 
-	/* windows in boxes *must* inherit priority from the box */
-	if(twm_win->winbox) {
+	if(false) {
+		// dummy
+	}
+#ifdef WINBOX
+	else if(twm_win->winbox) {
+		/* windows in boxes *must* inherit priority from the box */
 		parent = twm_win->winbox->twmwin->otp;
 		parent->switching = false;
 	}
+#endif
 	/* in case it's a transient, find the parent */
 	else if(wintype == WinWin && (twm_win->istransient
 	                              || !isGroupLeader(twm_win))) {

@@ -576,9 +576,11 @@ TryToPack(TwmWindow *tmp_win, int *x, int *y)
 		if(t == tmp_win) {
 			continue;
 		}
+#ifdef WINBOX
 		if(t->winbox != tmp_win->winbox) {
 			continue;
 		}
+#endif
 		if(t->vs != tmp_win->vs) {
 			continue;
 		}
@@ -631,9 +633,11 @@ TryToPush_be(TwmWindow *tmp_win, int x, int y, PushDirection dir)
 		if(t == tmp_win) {
 			continue;
 		}
+#ifdef WINBOX
 		if(t->winbox != tmp_win->winbox) {
 			continue;
 		}
+#endif
 		if(t->vs != tmp_win->vs) {
 			continue;
 		}
@@ -742,6 +746,7 @@ TryToGrid(TwmWindow *tmp_win, int *x, int *y)
 
 
 
+#ifdef WINBOX
 /*
  * Functions related to keeping windows from being placed off-screen (or
  * off-screen too far).  Involved in handling of params like DontMoveOff
@@ -749,6 +754,7 @@ TryToGrid(TwmWindow *tmp_win, int *x, int *y)
  */
 static void ConstrainLeftTop(int *value, int border);
 static void ConstrainRightBottom(int *value, int size1, int border, int size2);
+#endif
 
 bool
 ConstrainByLayout(RLayout *layout, int move_off_res, int *left, int width,
@@ -819,7 +825,11 @@ void
 ConstrainByBorders(TwmWindow *twmwin, int *left, int width,
                    int *top, int height)
 {
-	if(twmwin->winbox) {
+	if(false) {
+		// Dummy
+	}
+#ifdef WINBOX
+	else if(twmwin->winbox) {
 		XWindowAttributes attr;
 		XGetWindowAttributes(dpy, twmwin->winbox->window, &attr);
 		ConstrainRightBottom(left, width, 0, attr.width);
@@ -827,11 +837,13 @@ ConstrainByBorders(TwmWindow *twmwin, int *left, int width,
 		ConstrainRightBottom(top, height, 0, attr.height);
 		ConstrainLeftTop(top, 0);
 	}
+#endif
 	else {
 		ConstrainByBorders1(left, width, top, height);
 	}
 }
 
+#ifdef WINBOX
 static void
 ConstrainLeftTop(int *value, int border)
 {
@@ -861,6 +873,7 @@ ConstrainRightBottom(int *value, int size1, int border, int size2)
 		}
 	}
 }
+#endif
 
 
 /*

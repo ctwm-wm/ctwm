@@ -152,12 +152,14 @@ movewindow(EF_FULLPROTO)
 		Scr->OpaqueMove = false;
 	}
 
+#ifdef WINBOX
 	/* If it's in a WindowBox, adjust coordinates as necessary */
 	if(tmp_win->winbox) {
 		XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
 		                      eventp->xbutton.x_root, eventp->xbutton.y_root,
 		                      &(eventp->xbutton.x_root), &(eventp->xbutton.y_root), &JunkChild);
 	}
+#endif
 
 	/*
 	 * XXX pulldown=true only when we're triggering from a ButtonRelease
@@ -197,8 +199,12 @@ movewindow(EF_FULLPROTO)
 	 * reported relative to what root.
 	 */
 	{
+#ifdef WINBOX
 		const Window grabwin = (tmp_win->winbox ? tmp_win->winbox->window
 		                        : Scr->XineramaRoot);
+#else
+		const Window grabwin = Scr->XineramaRoot;
+#endif
 
 		XGrabPointer(dpy, grabwin, True,
 		             ButtonPressMask | ButtonReleaseMask |
@@ -450,11 +456,13 @@ movewindow(EF_FULLPROTO)
 		FixRootEvent(eventp);
 
 		/* Tweak for window box, if this is in one */
+#ifdef WINBOX
 		if(tmp_win->winbox) {
 			XTranslateCoordinates(dpy, dragroot, tmp_win->winbox->window,
 			                      eventp->xmotion.x_root, eventp->xmotion.y_root,
 			                      &(eventp->xmotion.x_root), &(eventp->xmotion.y_root), &JunkChild);
 		}
+#endif
 
 		/*
 		 * If we haven't moved MoveDelta yet, we're not yet sure we're
