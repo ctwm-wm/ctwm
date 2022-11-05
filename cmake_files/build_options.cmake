@@ -176,3 +176,12 @@ if(USE_VSCREEN)
 	message(WARNING "VirtualScreens will not be supported in future versions")
 else()
 endif(USE_VSCREEN)
+
+
+# WindowBox's
+if(USE_WINBOX)
+	message(WARNING "WindowBox will not be supported in future versions")
+
+	list(APPEND CTWMSRC windowbox.c)
+else()
+endif(USE_WINBOX)
