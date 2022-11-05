@@ -16,6 +16,9 @@
    `f.adoptwindow` and `f.hypermove` functions.  Be sure to remove any
    references to those functions from your config file.
 
+1. Support for `WindowBox` has been removed, along with the
+   `f.fittocontent` function related to it.
+
 1. The minimum cmake version has been bumped to 3.6.  This is available
    in standard packages back to CentOS 6, and we appear to have actually
    been using syntax requiring 3.5 for a while unknowingly anyway.
