@@ -102,9 +102,11 @@ DFHANDLER(upworkspace);
 DFHANDLER(downworkspace);
 
 
+#ifdef CAPTIVE
 /* functions_captive.c */
 DFHANDLER(adoptwindow);
 DFHANDLER(hypermove);
+#endif
 
 
 /* functions_identify.c */
