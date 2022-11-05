@@ -30,7 +30,9 @@
 #include "otp.h"
 #include "iconmgr.h"
 #include "icons.h"
+#ifdef WINBOX
 #include "windowbox.h"
+#endif
 #include "functions_defs.h"
 #include "list.h"
 #include "util.h"
