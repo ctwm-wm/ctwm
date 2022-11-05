@@ -210,6 +210,7 @@ DFHANDLER(trace)
 
 
 
+#ifdef WINBOX
 /*
  * Special windowbox-related
  */
@@ -221,6 +222,7 @@ DFHANDLER(fittocontent)
 	}
 	fittocontent(tmp_win);
 }
+#endif
 
 
 

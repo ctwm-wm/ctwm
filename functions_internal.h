@@ -165,7 +165,9 @@ DFHANDLER(quit);
 DFHANDLER(restart);
 DFHANDLER(beep);
 DFHANDLER(trace);
+#ifdef WINBOX
 DFHANDLER(fittocontent);
+#endif
 DFHANDLER(showbackground);
 DFHANDLER(raiseicons);
 DFHANDLER(rescuewindows);
