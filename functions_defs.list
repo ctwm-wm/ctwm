@@ -43,7 +43,7 @@ downiconmgr           - -  -
 downworkspace         - -  -
 exec                  S -  -
 fill                  S CS -
-fittocontent          - CS -
+fittocontent          - CS WINBOX
 focus                 - CS -
 forcemove             - CM -
 forwiconmgr           - -  -

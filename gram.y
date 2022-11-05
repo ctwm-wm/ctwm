@@ -152,7 +152,9 @@ stmt		: error
 		  win_list
 
 		| WINDOW_BOX string string {
+#ifdef VSCREEN
 		      curplist = addWindowBox ($2, $3);
+#endif
 		  }
 		  win_list
 
