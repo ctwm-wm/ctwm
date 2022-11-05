@@ -79,3 +79,9 @@
 #ifdef USE_VSCREEN
 # define VSCREEN
 #endif
+
+/* WindowBox support */
+#cmakedefine USE_WINBOX
+#ifdef USE_WINBOX
+# define WINBOX
+#endif

@@ -128,6 +128,7 @@ RestoreWinConfig(TwmWindow *tmp)
 	}
 
 
+#ifdef WINBOX
 	// If it's in a WindowBox, reparent the frame back up to our real root
 	if(tmp->winbox && tmp->winbox->twmwin && tmp->frame) {
 		int xbox, ybox;
@@ -141,6 +142,7 @@ RestoreWinConfig(TwmWindow *tmp)
 			ReparentWindow(dpy, tmp, WinWin, Scr->Root, xbox, ybox);
 		}
 	}
+#endif
 
 
 	// Restore the original window border if there were one

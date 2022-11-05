@@ -467,7 +467,9 @@ static const TwmKeyword keytable[] = {
 	{ "warpunmapped",           KEYWORD, kw0_WarpUnmapped },
 	{ "west",                   GRAVITY, GRAV_WEST },
 	{ "window",                 WINDOW, 0 },
+#ifdef WINBOX
 	{ "windowbox",              WINDOW_BOX, 0 },
+#endif
 	{ "windowfunction",         WINDOW_FUNCTION, 0 },
 	{ "windowgeometries",       WINDOW_GEOMETRIES, 0 },
 	{ "windowregion",           WINDOW_REGION, 0 },

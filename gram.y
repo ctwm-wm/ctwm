@@ -30,7 +30,9 @@
 #include "otp.h"
 #include "iconmgr.h"
 #include "icons.h"
+#ifdef WINBOX
 #include "windowbox.h"
+#endif
 #include "functions_defs.h"
 #include "list.h"
 #include "util.h"
@@ -152,7 +154,9 @@ stmt		: error
 		  win_list
 
 		| WINDOW_BOX string string {
+#ifdef WINBOX
 		      curplist = addWindowBox ($2, $3);
+#endif
 		  }
 		  win_list
 

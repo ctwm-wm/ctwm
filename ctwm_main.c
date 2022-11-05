@@ -52,7 +52,9 @@
 #include "occupation.h"
 #include "otp.h"
 #include "cursor.h"
+#ifdef WINBOX
 #include "windowbox.h"
+#endif
 #ifdef CAPTIVE
 #include "captive.h"
 #endif
@@ -869,8 +871,10 @@ ctwm_main(int argc, char *argv[])
 		// menus made.
 		MakeWorkspacesMenu();
 
+#ifdef WINBOX
 		// setup WindowBox's
 		createWindowBoxes();
+#endif
 
 		// Initialize Xrm stuff; things with setting occupation etc use
 		// Xrm bits.

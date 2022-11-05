@@ -740,9 +740,11 @@ struct ScreenInfo {
 	/// %WindowRegion config var.
 	struct WindowRegion *FirstWindowRegion;
 
+#ifdef WINBOX
 	/// Pointer to head of list of windowboxes on screen.  Built from
 	/// %WindowBox config var.
 	WindowBox *FirstWindowBox;
+#endif
 
 	char *IconDirectory;    ///< IconDirectory config var
 	char *PixmapDirectory;  ///< PixmapDirectory config var

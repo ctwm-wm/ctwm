@@ -1980,22 +1980,6 @@ WarpUnmapped::
   binding that will pop a particular window (such as `xmh`), no matter
   where it is.  The default is for `f.warpto` to ignore iconified windows.
 
-WindowBox [{ `win-list` }]::
-  creates a new window called a box, where
-  all the client windows that match the windows list are opened in,
-  instead of the root window. This is useful to group small windows
-  in the same box (xload for instance). When XrandR is
-  compiled, the geometry can be relative to a monitor, by prefixing
-  its name (visible with `xrandr(1)` command line) followed by `:`. This name
-  is ignored when XrandR is not available:
-+
-------
-WindowBox "xloadbox" "HDMI1:320x100+0-0" {
-    "xload"
-}
-------
-+
-
 WindowGeometries { `win-list` }::
   Used to give a default geometry to some clients. When XrandR is
   compiled, the geometry can be relative to a monitor, by prefixing
@@ -2555,10 +2539,6 @@ f.fill `string`::
   reaches an obstacle (either another window, or the screen border).
   f.fill ``vertical'' sets the window status to ``zoomed'' and toggles, ie
   calling it again will reset the previous window size.
-
-f.fittocontent::
-  Can be used only with window boxes. The result is to have the box have the
-  minimal size that contains all its children windows.
 
 f.focus::
   This function toggles the keyboard focus of the server to the

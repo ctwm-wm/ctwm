@@ -70,7 +70,6 @@ set(CTWMSRC
 	win_resize.c
 	win_ring.c
 	win_utils.c
-	windowbox.c
 	workspace_config.c
 	workspace_manager.c
 	workspace_utils.c
