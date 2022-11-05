@@ -23,7 +23,9 @@
 #endif
 #include "util.h"
 #include "win_iconify.h"
+#ifdef WINBOX
 #include "windowbox.h"
+#endif
 #include "workspace_utils.h"
 
 #include "ext/repl_str.h"
