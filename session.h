@@ -40,12 +40,6 @@ struct TWMWinConfigEntry {
 /* XXX Only used in one place, should convert to a func? */
 extern SmcConn smcConn;
 
-char *GetClientID(Window window);
-char *GetWindowRole(Window window);
-int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
-                        char *clientId, char *windowRole);
-int ReadWinConfigEntry(FILE *configFile, unsigned short version,
-                       TWMWinConfigEntry **pentry);
 void ReadWinConfigFile(char *filename);
 int GetWindowConfig(TwmWindow *theWindow,
                     short *x, short *y,
@@ -57,11 +51,6 @@ int GetWindowConfig(TwmWindow *theWindow,
                     bool *height_ever_changed_by_user,
                     int *occupation /* <== [ Matthew McNeill Feb 1997 ] == */
                    );
-void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData);
-void DieCB(SmcConn smcCon, SmPointer clientData);
-void SaveCompleteCB(SmcConn smcCon, SmPointer clientData);
-void ShutdownCancelledCB(SmcConn smcCon, SmPointer clientData);
-void ProcessIceMsgProc(XtPointer client_data, int *source, XtInputId *id);
 void ConnectToSessionManager(char *previous_id);
 
 #endif /* _CTWM_SESSION_H */
