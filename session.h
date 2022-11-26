@@ -9,6 +9,11 @@
 
 #include <X11/SM/SMlib.h>
 
+// Guard
+#ifndef SESSION
+#error "You're unconditionally including session.h!"
+#endif
+
 
 /* Used in stashing session info */
 struct TWMWinConfigEntry {

@@ -192,6 +192,6 @@ endif(USE_WINBOX)
 if(USE_SESSION)
 	#message(WARNING "XSMP will not be supported in future versions")
 
-	#list(APPEND CTWMSRC session.c)
+	list(APPEND CTWMSRC session.c)
 else()
 endif(USE_SESSION)
