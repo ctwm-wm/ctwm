@@ -16,7 +16,9 @@
 #include "ctwm_atoms.h"
 #include "ctwm_shutdown.h"
 #include "screen.h"
+#ifdef SESSION
 #include "session.h"
+#endif
 #ifdef SOUNDS
 # include "sound.h"
 #endif
@@ -257,8 +259,10 @@ DoRestart(Time t)
 	RestoreForShutdown(t);
 	XSync(dpy, 0);
 
+#ifdef SESSION
 	// Shut down session management connection cleanly.
 	shutdown_session();
+#endif
 
 	// Re-run ourself
 	fprintf(stderr, "%s:  restarting:  %s\n", ProgramName, *Argv);
