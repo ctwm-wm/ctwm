@@ -85,3 +85,9 @@
 #ifdef USE_WINBOX
 # define WINBOX
 #endif
+
+/* Session support */
+#cmakedefine USE_SESSION
+#ifdef USE_SESSION
+# define SESSION
+#endif
