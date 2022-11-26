@@ -38,9 +38,6 @@ struct TWMWinConfigEntry {
 typedef struct TWMWinConfigEntry TWMWinConfigEntry;
 
 
-/* XXX Only used in one place, should convert to a func? */
-extern SmcConn smcConn;
-
 void ReadWinConfigFile(char *filename);
 int GetWindowConfig(TwmWindow *theWindow,
                     short *x, short *y,
@@ -53,5 +50,6 @@ int GetWindowConfig(TwmWindow *theWindow,
                     int *occupation /* <== [ Matthew McNeill Feb 1997 ] == */
                    );
 void ConnectToSessionManager(char *previous_id);
+void shutdown_session(void);
 
 #endif /* _CTWM_SESSION_H */

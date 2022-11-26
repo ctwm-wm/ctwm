@@ -1169,3 +1169,11 @@ void ConnectToSessionManager(char *previous_id)
 	                     ProcessIceMsgProc,
 	                     (XtPointer) iceConn);
 }
+
+
+void shutdown_session(void)
+{
+	if(smcConn) {
+		SmcCloseConnection(smcConn, 0, NULL);
+	}
+}

@@ -258,9 +258,7 @@ DoRestart(Time t)
 	XSync(dpy, 0);
 
 	// Shut down session management connection cleanly.
-	if(smcConn) {
-		SmcCloseConnection(smcConn, 0, NULL);
-	}
+	shutdown_session();
 
 	// Re-run ourself
 	fprintf(stderr, "%s:  restarting:  %s\n", ProgramName, *Argv);
