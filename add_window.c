@@ -56,7 +56,9 @@
 #include "r_area.h"
 #include "r_layout.h"
 #include "screen.h"
+#ifdef SESSION
 #include "session.h"
+#endif
 #include "util.h"
 #include "vscreen.h"
 #ifdef WINBOX
@@ -115,9 +117,11 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	int gravx, gravy;                   /* gravity signs for positioning */
 	int namelen;
 	int bw2;
+#ifdef SESSION
 	short restore_icon_x, restore_icon_y;
 	bool restore_iconified = false;
 	bool restore_icon_info_present = false;
+#endif
 	bool restoredFromPrevSession = false;
 	int saved_occupation = 0; /* <== [ Matthew McNeill Feb 1997 ] == */
 	bool random_placed = false;
@@ -273,6 +277,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 	}
 
 
+#ifdef SESSION
 	/*
 	 * Look up saved X Session info for the window if we have it.
 	 */
@@ -307,6 +312,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 			}
 		}
 	}
+#endif
 
 
 	/*
@@ -337,6 +343,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		}
 	}
 
+#ifdef SESSION
 	/*
 	 * Override a few bits with saved stuff from previous session, if we
 	 * have it.
@@ -351,6 +358,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		tmp_win->wmhints->icon_y = restore_icon_y;
 		tmp_win->wmhints->flags |= IconPositionHint;
 	}
+#endif
 
 	/* Munge as necessary for other stuff */
 	munge_wmhints(tmp_win, tmp_win->wmhints);
