@@ -73,6 +73,7 @@
 #include "screen.h"
 #include "session.h"
 
+
 SmcConn smcConn = NULL;
 static XtInputId iceInputId;
 static char *twm_clientId;

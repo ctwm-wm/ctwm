@@ -35,6 +35,7 @@ struct TWMWinConfigEntry {
 	/* ====================================================================== */
 
 };
+typedef struct TWMWinConfigEntry TWMWinConfigEntry;
 
 
 /* XXX Only used in one place, should convert to a func? */
