@@ -58,7 +58,6 @@ set(CTWMSRC
 	r_area.c
 	r_area_list.c
 	r_layout.c
-	session.c
 	signals.c
 	util.c
 	vscreen.c

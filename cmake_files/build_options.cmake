@@ -19,6 +19,7 @@ option(USE_XRANDR "Enable Xrandr support"              ON )
 option(USE_CAPTIVE "Enable captive CTWM support" OFF )
 option(USE_VSCREEN "Enable VirtualScreens support" OFF )
 option(USE_WINBOX  "Enable WindowBox support" OFF )
+option(USE_SESSION "Enable XSMP support" ON )
 
 
 
@@ -185,3 +186,12 @@ if(USE_WINBOX)
 	list(APPEND CTWMSRC windowbox.c)
 else()
 endif(USE_WINBOX)
+
+
+# XSMP session manager support
+if(USE_SESSION)
+	#message(WARNING "XSMP will not be supported in future versions")
+
+	list(APPEND CTWMSRC session.c)
+else()
+endif(USE_SESSION)

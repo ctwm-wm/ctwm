@@ -48,7 +48,9 @@
 #include "icons.h"
 #include "iconmgr.h"
 #include "list.h"
+#ifdef SESSION
 #include "session.h"
+#endif
 #include "occupation.h"
 #include "otp.h"
 #include "cursor.h"
@@ -276,10 +278,12 @@ ctwm_main(int argc, char *argv[])
 	}
 
 
+#ifdef SESSION
 	// Load session stuff
 	if(CLarg.restore_filename) {
 		ReadWinConfigFile(CLarg.restore_filename);
 	}
+#endif
 
 
 	if(dpy) {
@@ -1056,8 +1060,10 @@ ctwm_main(int argc, char *argv[])
 		exit(1);
 	}
 
+#ifdef SESSION
 	// Hook up session
 	ConnectToSessionManager(CLarg.client_id);
+#endif
 
 #ifdef SOUNDS
 	// Announce ourselves

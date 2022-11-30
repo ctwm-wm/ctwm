@@ -323,7 +323,14 @@ stmt		: error
 		| AUTO_POPUP		{ Scr->AutoPopup = true; }
 		| AUTO_POPUP		{ curplist = &Scr->AutoPopupL; }
 		  win_list
-		| DONT_SAVE		{ curplist = &Scr->DontSave; }
+		| DONT_SAVE		{
+#ifndef SESSION
+			twmrc_error_prefix();
+			fprintf(stderr, "DontSave ignored; session support "
+					"disabled.\n");
+#endif
+				curplist = &Scr->DontSave;
+			}
 		  win_list
 		| NO_ICON_TITLE		{ curplist = &Scr->NoIconTitle; }
 		  win_list

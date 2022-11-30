@@ -43,7 +43,6 @@ typedef struct WindowRegion WindowRegion;
 typedef struct WindowEntry WindowEntry;
 typedef struct WindowBox WindowBox;
 typedef struct TwmWindow TwmWindow;
-typedef struct TWMWinConfigEntry TWMWinConfigEntry;
 
 /* From image.h */
 typedef struct Image Image;
