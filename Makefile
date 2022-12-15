@@ -84,7 +84,8 @@ ${GEN}/lex.c: ${GEN} lex.l build/MKTAR_GENFILES
 
 # Setup version file
 ${GEN}/version.c.in: ${GEN} version.c.in .bzr/checkout/dirstate
-	tools/rewrite_version_bzr.sh < version.c.in > ${GEN}/version.c.in
+	env BZR_CMD=brz tools/rewrite_version_bzr.sh < version.c.in \
+			> ${GEN}/version.c.in
 
 # Generate pregen'd manuals
 ${GEN}/ctwm.1: ${UMAN}/ctwm.1
