@@ -367,21 +367,19 @@ I18N::
   optional since 3.8 and is always compiled in.  The definition will be
   removed in a future version.
 
-=== ctwm run-time options
-
-TWM_CAPTIVE::
-  This will be either ``Yes'' or ``No''. ``Yes'' if the current ctwm is captive
-  (flag -w), ``No'' in the other case.
-
-TWM_CAPTIVE_NAME::
-  Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
-  ctwm (flag --name).
-
 === Obsolete options
 
 GNOME::
   Defined when ctwm was compiled with GNOME1 support.  Removed after
   3.8.2.
+
+TWM_CAPTIVE::
+  This was either ``Yes'' or ``No''. ``Yes'' if the current ctwm is captive
+  (flag -w), ``No'' in the other case.  Removed in 4.1.0.
+
+TWM_CAPTIVE_NAME::
+  Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
+  ctwm (flag --name).  Removed in 4.1.0.
 
 
 == VARIABLES
@@ -1192,7 +1190,7 @@ MenuTitleForeground `string`::
 MonitorLayout { `monitor-list` }::
   This allows manually configuring what ctwm will consider as the list of
   monitors.  If `XRANDR` support is compiled in (the default as of
-  %%NEXT%%), and the `RANDR` extension is available on your server, then
+  4.1.0), and the `RANDR` extension is available on your server, then
   `ctwm` will use that to determine the size and layout of your monitors.
 +
 [normal]

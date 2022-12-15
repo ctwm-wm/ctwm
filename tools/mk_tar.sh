@@ -13,7 +13,7 @@ if [ ! -z "$1" ]; then
 	version=$1
 elif echo -n $version | grep -q '[^0-9\.]'; then
 	# If it's a non-release, append date
-    version="$version.`date '+%Y%m%d'`"
+	version="$version.`date '+%Y%m%d'`"
 fi
 
 # Setup the dir

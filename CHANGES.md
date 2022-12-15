@@ -1,7 +1,7 @@
 # CTWM Change History
 
 
-## Next release  (xxxx-xx-xx)
+## 4.1.0  (xxxx-xx-xx)
 
 ### Backward-Incompatible Changes And Removed Features
 
@@ -26,20 +26,22 @@
 ### New Features
 
 1. Support for understanding multi-monitor layouts as something other
-   than a single giant rectangle added.  RANDR X extension is supported
+   than a single giant rectangle added.  The RANDR X extension is used
    for determining how your monitors are laid out.  The various
    `f.\*zoom` functions now zoom on the monitor the window is currently
    on, and new `f.x\*zoom` functions are added to zoom across your entire
    display.  Various internal geometries can be specified
-   RANDR-output-relative; see doc of e.g. `IconManagers`.  Contributed by
-   Maxime Soulé <<btik-ctwm@scoubidou.com>>.
+   RANDR-output-relative; see doc of _e.g._ `IconManagers`.  Contributed
+   by Maxime Soulé <<btik-ctwm@scoubidou.com>>.
 
-1. Added `MonitorLayout {}` config var for specifying the layout of
-   multiple monitors.  This is useful if the X server doesn't support
-   RANDR (_e.g._, older servers), or if the info it provides is wrong
-   (_e.g._, multi-display simulation with Xephyr), or if you just prefer
-   to specify things differently than they would otherwise be (_e.g._,
-   treat an ultra-wide display as 2 separate monitors).
+1. Added `MonitorLayout {}` config var for overriding the layout of
+   multiple monitors.  In normal cases with multiple monitors and a
+   modern X server, this is unnecessary.  It's useful if the X server
+   doesn't support RANDR (_e.g._, older servers), or if the info it
+   provides is wrong (_e.g._, multi-display simulation with Xephyr), or
+   if you just prefer to specify things differently than they would
+   otherwise be (_e.g._, treat an ultra-wide display as 2 separate
+   monitors).
 
 1. The EWMH `_NET_FRAME_EXTENTS` property is now set on windows when we
    take control of them.  This should fix clients mispositioning other
@@ -49,15 +51,15 @@
 
 ### Bugfixes
 
-1. Running `--cfgchk` without an available X server will now work.  Some
-   errors may only be discovered when it can talk to X (things relating
-   to colors are a likely suspect).  Checking configs for multi-Screen
-   setups will now properly check all of them as well.
-
 1. When restarting ctwm, the icon managers for the current workspace will
    now initially show up, rather than those for first WS.
 
 1. When restarting ctwm, the stacking order of windows is now preserved.
+
+1. Running `--cfgchk` without an available X server will now work.  Some
+   errors may only be discovered when it can talk to X (things relating
+   to colors are a likely suspect).  Checking configs for multi-Screen
+   setups will now properly check all of them as well.
 
 1. Fix display of combined modifiers in TwmKeys menu.  Contributed by
    Maxime Soulé <<btik-ctwm@scoubidou.com>>.
