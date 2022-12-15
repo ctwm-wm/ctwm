@@ -1192,7 +1192,7 @@ MenuTitleForeground `string`::
 MonitorLayout { `monitor-list` }::
   This allows manually configuring what ctwm will consider as the list of
   monitors.  If `XRANDR` support is compiled in (the default as of
-  %%NEXT%%), and the `RANDR` extension is available on your server, then
+  4.1.0), and the `RANDR` extension is available on your server, then
   `ctwm` will use that to determine the size and layout of your monitors.
 +
 [normal]
