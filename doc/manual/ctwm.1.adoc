@@ -375,11 +375,11 @@ GNOME::
 
 TWM_CAPTIVE::
   This was either ``Yes'' or ``No''. ``Yes'' if the current ctwm is captive
-  (flag -w), ``No'' in the other case.
+  (flag -w), ``No'' in the other case.  Removed in 4.1.0.
 
 TWM_CAPTIVE_NAME::
   Defined only if TWM_CAPTIVE is also defined. Contains the name of the captive
-  ctwm (flag --name).
+  ctwm (flag --name).  Removed in 4.1.0.
 
 
 == VARIABLES
