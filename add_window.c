@@ -872,7 +872,7 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				   pixels less wide than the screen. */
 				if((tmp_win->attr.x + tmp_win->attr.width)  > Scr->rootw) {
 					available = Scr->rootw - tmp_win->attr.width
-					            - 2 * (bw2 + tmp_win->frame_bw3D);
+					            - 2 * tmp_win->frame_bw3D - bw2;
 
 #ifdef DEBUG
 					fprintf(stderr, "DEBUG[DontMoveOff]: availableX: %d\n",
@@ -902,7 +902,8 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 				   with the title height and the frame widths.  */
 				if((tmp_win->attr.y + tmp_win->attr.height)  > Scr->rooth) {
 					available = Scr->rooth - tmp_win->attr.height
-					            - tmp_win->title_height - 2 * (bw2 + tmp_win->frame_bw3D);
+					            - tmp_win->title_height
+					            - 2 * tmp_win->frame_bw3D - bw2;
 
 #ifdef DEBUG
 					fprintf(stderr, "DEBUG[DontMoveOff]: availableY: %d\n",
