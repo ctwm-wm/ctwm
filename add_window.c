@@ -1465,14 +1465,37 @@ AddWindow(Window w, AWType wtype, IconMgr *iconp, VirtualScreen *vs)
 		{
 			RArea area;
 			int min_x, min_y, max_bottom, max_right;
+			const RLayout *layout = Scr->BorderedLayout;
 
 			area = RAreaNew(tmp_win->frame_x, tmp_win->frame_y,
 			                (int)tmp_win->frame_width,
 			                (int)tmp_win->frame_height);
 
-			RLayoutFindTopBottomEdges(Scr->BorderedLayout, &area,
+#ifdef EWMH
+			// Hack: windows with EWMH struts defined are trying to
+			// reserve a bit of the screen for themselves.  We currently
+			// do that by hacking strut'ed space into the BorderedLayout,
+			// which is a bogus way of doing things.  But it also means
+			// that here we're forcing the windows to be outside their
+			// own struts, which is nonsensical.
+			//
+			// Hack around that by making strut'd windows just use
+			// Layout, rather than BorderedLayout.  This is Wrong(tm)
+			// because the whole point of BorderedLayout is space
+			// reservation by the user, which we'd now be ignoring.  Also
+			// just because a window has its own struts doesn't mean it
+			// should get to ignore everyone else's struts too. However,
+			// this is at least consistent with pre-4.1.0 behavior, so
+			// it's not a _new_ bug.  And forcing windows outside their
+			// own reservation is way stupider...
+			if(tmp_win->ewmhFlags & EWMH_HAS_STRUT) {
+				layout = Scr->Layout;
+			}
+#endif
+
+			RLayoutFindTopBottomEdges(layout, &area,
 			                          &min_y, &max_bottom);
-			RLayoutFindLeftRightEdges(Scr->BorderedLayout, &area,
+			RLayoutFindLeftRightEdges(layout, &area,
 			                          &min_x, &max_right);
 
 			// These conditions would only be true if the window was
