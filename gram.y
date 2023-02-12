@@ -223,18 +223,18 @@ stmt		: error
 		| RIGHT_TITLEBUTTON string { CreateTitleButton($2, 0, NULL, NULL, true, true); }
 		  binding_list
 		| button string		{
-		    root = GetRoot($2, NULL, NULL);
+		    root = GetRoot($2, NULL, NULL, false);
 		    AddFuncButton ($1, C_ROOT, 0, F_MENU, root, NULL);
 		}
 		| button action		{
-			if ($2 == F_MENU) {
+			if ($2 == F_MENU || $2 == F_DYNMENU) {
 			    pull->prev = NULL;
 			    AddFuncButton ($1, C_ROOT, 0, $2, pull, NULL);
 			}
 			else {
 			    MenuItem *item;
 
-			    root = GetRoot(TWM_ROOT,NULL,NULL);
+			    root = GetRoot(TWM_ROOT,NULL,NULL,false);
 			    item = AddToMenu (root, "x", Action,
 					NULL, $2, NULL, NULL);
 			    AddFuncButton ($1, C_ROOT, 0, $2, NULL, item);
@@ -355,11 +355,11 @@ stmt		: error
 		  win_list
 		| AUTO_LOWER		{ Scr->AutoLowerDefault = true; }
 		| MENU string LP string COLON string RP	{
-					root = GetRoot($2, $4, $6); }
+					root = GetRoot($2, $4, $6, false); }
 		  menu			{ root->real_menu = true;}
-		| MENU string		{ root = GetRoot($2, NULL, NULL); }
+		| MENU string		{ root = GetRoot($2, NULL, NULL, false); }
 		  menu			{ root->real_menu = true; }
-		| FUNCTION string	{ root = GetRoot($2, NULL, NULL); }
+		| FUNCTION string	{ root = GetRoot($2, NULL, NULL, false); }
 		  function
 		| ICONS			{ curplist = &Scr->IconNames; }
 		  icon_list
@@ -370,14 +370,14 @@ stmt		: error
 		| MONOCHROME		{ color = MONOCHROME; }
 		  color_list
 		| DEFAULT_FUNCTION action { Scr->DefaultFunction.func = $2;
-					  if ($2 == F_MENU)
+					  if ($2 == F_MENU || $2 == F_DYNMENU)
 					  {
 					    pull->prev = NULL;
 					    Scr->DefaultFunction.menu = pull;
 					  }
 					  else
 					  {
-					    root = GetRoot(TWM_ROOT,NULL,NULL);
+					    root = GetRoot(TWM_ROOT,NULL,NULL,false);
 					    Scr->DefaultFunction.item =
 						AddToMenu(root,"x",Action,
 							  NULL,$2, NULL, NULL);
@@ -386,7 +386,7 @@ stmt		: error
 					  pull = NULL;
 					}
 		| WINDOW_FUNCTION action { Scr->WindowFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULL,NULL);
+					   root = GetRoot(TWM_ROOT,NULL,NULL,false);
 					   Scr->WindowFunction.item =
 						AddToMenu(root,"x",Action,
 							  NULL,$2, NULL, NULL);
@@ -394,7 +394,7 @@ stmt		: error
 					   pull = NULL;
 					}
 		| CHANGE_WORKSPACE_FUNCTION action { Scr->ChangeWorkspaceFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULL,NULL);
+					   root = GetRoot(TWM_ROOT,NULL,NULL,false);
 					   Scr->ChangeWorkspaceFunction.item =
 						AddToMenu(root,"x",Action,
 							  NULL,$2, NULL, NULL);
@@ -402,7 +402,7 @@ stmt		: error
 					   pull = NULL;
 					}
 		| DEICONIFY_FUNCTION action { Scr->DeIconifyFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULL,NULL);
+					   root = GetRoot(TWM_ROOT,NULL,NULL,false);
 					   Scr->DeIconifyFunction.item =
 						AddToMenu(root,"x",Action,
 							  NULL,$2, NULL, NULL);
@@ -410,7 +410,7 @@ stmt		: error
 					   pull = NULL;
 					}
 		| ICONIFY_FUNCTION action { Scr->IconifyFunction.func = $2;
-					   root = GetRoot(TWM_ROOT,NULL,NULL);
+					   root = GetRoot(TWM_ROOT,NULL,NULL,false);
 					   Scr->IconifyFunction.item =
 						AddToMenu(root,"x",Action,
 							  NULL,$2, NULL, NULL);
@@ -1069,8 +1069,9 @@ action		: FKEYWORD	{ $$ = $1; }
 				$$ = $1;
 				Action = (char*)$2;
 				switch ($1) {
+				  case F_DYNMENU:
 				  case F_MENU:
-				    pull = GetRoot ($2, NULL,NULL);
+				    pull = GetRoot ($2, NULL, NULL, $1 == F_DYNMENU);
 				    pull->prev = root;
 				    break;
 				  case F_WARPRING:

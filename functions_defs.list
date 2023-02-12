@@ -41,6 +41,7 @@ deltastop             - -  -
 destroy               - CD -
 downiconmgr           - -  -
 downworkspace         - -  -
+dynmenu               S -  -
 exec                  S -  -
 fill                  S CS -
 fittocontent          - CS WINBOX

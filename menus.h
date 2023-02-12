@@ -82,7 +82,8 @@ struct MenuRoot {
 	bool  entered;              /* EnterNotify following pop up */
 	bool  real_menu;            /* this is a real menu */
 	short x, y;                 /* position (for pinned menus) */
-	bool  pinned;               /* is this a pinned menu*/
+	bool  dynamic;              /* is this a dynamic menu */
+	struct MenuRoot *pinned_from; /* pinned menu issued from this one */
 	struct MenuRoot *pmenu;     /* the associated pinned menu */
 };
 
@@ -90,8 +91,8 @@ struct MenuRoot {
 struct MouseButton {
 	int func;                   /* the function number */
 	int mask;                   /* modifier mask */
-	MenuRoot *menu;             /* menu if func is F_MENU */
-	MenuItem *item;             /* action to perform if func != F_MENU */
+	MenuRoot *menu;             /* menu if func is F_MENU|F_DYNMENU */
+	MenuItem *item;             /* action to perform if func != F_MENU|F_DYNMENU */
 };
 
 struct FuncButton {
@@ -100,8 +101,8 @@ struct FuncButton {
 	int cont;                   /* context */
 	int mods;                   /* modifiers */
 	int func;                   /* the function number */
-	MenuRoot *menu;             /* menu if func is F_MENU */
-	MenuItem *item;             /* action to perform if func != F_MENU */
+	MenuRoot *menu;             /* menu if func is F_MENU|F_DYNMENU */
+	MenuItem *item;             /* action to perform if func != F_MENU|F_DYNMENU */
 };
 
 struct FuncKey {
@@ -114,7 +115,7 @@ struct FuncKey {
 	int func;                   /* function to perform */
 	char *win_name;             /* window name (if any) */
 	char *action;               /* action string (if any) */
-	MenuRoot *menu;             /* menu if func is F_MENU */
+	MenuRoot *menu;             /* menu if func is F_MENU|F_DYNMENU */
 };
 
 extern MenuRoot *ActiveMenu;
@@ -136,12 +137,12 @@ extern int MenuDepth;
 #define COLORMAP_PREV "prev"
 #define COLORMAP_DEFAULT "default"
 
-MenuRoot *NewMenuRoot(char *name);
+MenuRoot *NewMenuRoot(char *name, bool dynamic);
 MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
                     MenuRoot *sub, int func, char *fore, char *back);
 bool PopUpMenu(MenuRoot *menu, int x, int y, bool center);
 void MakeWorkspacesMenu(void);
-MenuRoot *FindMenuRoot(char *name);
+MenuRoot *FindMenuRoot(char *name, bool dynamic);
 bool AddFuncKey(char *name, int cont, int mods, int func,
                 MenuRoot *menu, char *win_name, char *action);
 void AddFuncButton(int num, int cont, int mods, int func,
@@ -155,6 +156,9 @@ bool cur_fromMenu(void);
 void UpdateMenu(void);
 void MakeMenus(void);
 void MakeMenu(MenuRoot *mr);
+void PopulateDynamicMenu(MenuRoot *mr);
+void DestroyMenu(MenuRoot *mr, bool full);
+MenuRoot *CopyMenu(MenuRoot *mr, bool deeply);
 void MoveMenu(XEvent *eventp);
 void WarpCursorToDefaultEntry(MenuRoot *menu);
 

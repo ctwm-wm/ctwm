@@ -132,13 +132,13 @@ hex:
 	*o = '\0';
 }
 
-MenuRoot *GetRoot(char *name, char *fore, char *back)
+MenuRoot *GetRoot(char *name, char *fore, char *back, bool dynamic)
 {
 	MenuRoot *tmp;
 
-	tmp = FindMenuRoot(name);
+	tmp = FindMenuRoot(name, dynamic);
 	if(tmp == NULL) {
-		tmp = NewMenuRoot(name);
+		tmp = NewMenuRoot(name, dynamic);
 	}
 
 	if(fore) {
@@ -164,12 +164,13 @@ void GotButton(int butt, int func)
 			continue;
 		}
 
-		if(func == F_MENU) {
+		if(func == F_MENU || func == F_DYNMENU) {
 			pull->prev = NULL;
 			AddFuncButton(butt, i, mods, func, pull, NULL);
 		}
 		else {
-			root = GetRoot(TWM_ROOT, NULL, NULL);
+
+			root = GetRoot(TWM_ROOT, NULL, NULL, false);
 			item = AddToMenu(root, "x", Action, NULL, func, NULL, NULL);
 			AddFuncButton(butt, i, mods, func, NULL, item);
 		}
@@ -191,7 +192,7 @@ void GotKey(char *key, int func)
 			continue;
 		}
 
-		if(func == F_MENU) {
+		if(func == F_MENU || func == F_DYNMENU) {
 			pull->prev = NULL;
 			if(!AddFuncKey(key, i, mods, func, pull, Name, Action)) {
 				break;

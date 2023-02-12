@@ -253,7 +253,7 @@ EF_main(EF_FULLPROTO)
 			MenuItem *mitem;
 			Cursor curs;
 
-			if((mroot = FindMenuRoot(action)) == NULL) {
+			if((mroot = FindMenuRoot(action, false)) == NULL) {
 				if(!action) {
 					action = "undef";
 				}
