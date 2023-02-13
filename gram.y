@@ -97,7 +97,7 @@ int yylex(void);
 %token <num> MONITOR_LAYOUT
 %token <num> RPLAY_SOUNDS
 %token <num> FORCE_FOCUS
-%token <ptr> STRING
+%token <ptr> STRING MLSTRING
 
 %type <ptr> string
 %type <num> action button number signed_number keyaction full fullkey
@@ -1129,6 +1129,7 @@ string		: STRING		{ char *ptr = strdup($1);
 					  RemoveDQuote(ptr);
 					  $$ = ptr;
 					}
+		| MLSTRING		{ $$ = DupUnquoteMultilineString($1); }
 		;
 
 number		: NUMBER		{ $$ = $1; }

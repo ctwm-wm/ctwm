@@ -8,6 +8,7 @@
 #include "ctwm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 
@@ -130,6 +131,19 @@ hex:
 		}
 	}
 	*o = '\0';
+}
+
+char *DupUnquoteMultilineString(char *str)
+{
+	char *ret;
+	int len;
+
+	str += 3;
+	len = strlen(str) - 3;
+	ret = malloc(len + 1);
+	memcpy(ret, str, len);
+	ret[len] = '\0';
+	return ret;
 }
 
 MenuRoot *GetRoot(char *name, char *fore, char *back, bool dynamic)

@@ -208,8 +208,24 @@ user-defined menus (containing functions to be invoked or
 commands to be executed).
 
 Variable names and keywords are case-insensitive.  Strings must be
-surrounded by double quote characters (e.g. ``blue'') and are
-case-sensitive.  A pound sign (&#35;) outside of a string causes the
+surrounded by double quote characters (e.g. "blue") and are
+case-sensitive. A string can contain newline characters (useful for
+`f.exec` or `f.dynmenu`), but multiline strings are better achieved
+using triple quoting as in:
+------
+f.dynmenu """
+cat <<EOF
+"$(hostname)" f.title
+"*$(date)"    !"daemon xterm"
+EOF
+"""
+------
+In double quoted strings, classic escape sequences are recognized
+(`\b`, `\f`, `\n`, `\r`, `\t`, octal `\nnn`, hexadecimal `\0xnn` or
+`\xnn`, `\"`, `\'` and `\\`). In multiline strings, no escape
+sequences are allowed.
+
+A pound sign (&#35;) outside of a string or a multiline strings causes the
 remainder of the line in which the character appears to be treated as
 a comment.
 

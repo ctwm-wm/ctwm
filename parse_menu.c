@@ -15,6 +15,17 @@ extern int yylex(void);
 extern int yylex_destroy(void);
 extern char *yytext;
 
+static char *
+strdupunquote(char *s, bool multiline)
+{
+	if(multiline) {
+		return DupUnquoteMultilineString(s);
+	}
+	s = strdup(s);
+	RemoveDQuote(s);
+	return s;
+}
+
 static bool
 ParseMenuEntry(MenuRoot *menu)
 {
@@ -51,9 +62,9 @@ ParseMenuEntry(MenuRoot *menu)
 				step = STEP_ERROR;
 				break;
 
+			case MLSTRING:
 			case STRING:
-				str = strdup(yylval.ptr);
-				RemoveDQuote(str);
+				str = strdupunquote(yylval.ptr, token == MLSTRING);
 				switch(step) {
 					case STEP_START:
 						label = str;
