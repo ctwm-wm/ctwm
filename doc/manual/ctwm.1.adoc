@@ -2676,6 +2676,10 @@ f.jumpright `step`::
 f.jumpup `step`::
   Upward equivalent of f.jumpdown.
 
+f.label::
+  This function provides a left aligned, unselectable item in a menu
+  definition.  It should not be used in any other context.
+
 f.lefticonmgr::
   This function similar to `f.backiconmgr` except that wrapping does not
   change rows.

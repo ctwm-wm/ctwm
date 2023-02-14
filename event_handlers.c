@@ -774,8 +774,9 @@ void HandleKeyPress(void)
 		 */
 		if(item) {
 			switch(item->func) {
-				/* f.nop and f.title, we just silently let pass */
+				/* f.label, f.nop and f.title, we just silently let pass */
 				case 0 :
+				case F_LABEL :
 				case F_TITLE :
 					break;
 
@@ -2421,6 +2422,7 @@ void HandleButtonRelease(void)
 			int func = ActiveItem->func;
 			Action = ActiveItem->action;
 			switch(func) {
+				case F_LABEL:
 				case F_TITLE:
 					if(Scr->StayUpMenus)   {
 						ButtonPressed = -1;

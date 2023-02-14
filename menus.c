@@ -272,7 +272,7 @@ Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 		int x, y;
 
 		gc = Scr->NormalGC;
-		if(mi->state) {
+		if(mi->state && mi->func != F_LABEL) {
 			Draw3DBorder(mr->w, Scr->MenuShadowDepth, y_offset,
 			             mr->width - 2 * Scr->MenuShadowDepth, Scr->EntryHeight, 1,
 			             mi->highlight, off, true, false);
@@ -349,7 +349,7 @@ PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 	if(mi->func != F_TITLE) {
 		int x, y;
 
-		if(mi->state) {
+		if(mi->state && mi->func != F_LABEL) {
 			XSetForeground(dpy, Scr->NormalGC, mi->highlight.back);
 
 			XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
@@ -541,7 +541,7 @@ void UpdateMenu(void)
 
 		if(x < 0 || y < 0 ||
 		                x >= ActiveMenu->width || y >= ActiveMenu->height) {
-			if(ActiveItem && ActiveItem->func != F_TITLE) {
+			if(ActiveItem && ActiveItem->func != F_TITLE && ActiveItem->func != F_LABEL) {
 				ActiveItem->state = false;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
@@ -567,7 +567,7 @@ void UpdateMenu(void)
 			/* if we weren't on the active entry, let's turn the old
 			 * active one off
 			 */
-			if(!done && ActiveItem->func != F_TITLE) {
+			if(!done && ActiveItem->func != F_TITLE && ActiveItem->func != F_LABEL) {
 				ActiveItem->state = false;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
@@ -578,7 +578,8 @@ void UpdateMenu(void)
 		 */
 		if(!done) {
 			ActiveItem = mi;
-			if(ActiveItem && ActiveItem->func != F_TITLE && !ActiveItem->state) {
+			if(ActiveItem && ActiveItem->func != F_TITLE && ActiveItem->func != F_LABEL
+			                && !ActiveItem->state) {
 				ActiveItem->state = true;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}

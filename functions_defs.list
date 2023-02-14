@@ -64,6 +64,7 @@ jumpdown              S CM -
 jumpleft              S CM -
 jumpright             S CM -
 jumpup                S CM -
+label                 - -  -
 lefticonmgr           - -  -
 leftworkspace         - -  -
 leftzoom              - CS -
