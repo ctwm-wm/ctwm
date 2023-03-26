@@ -1,7 +1,7 @@
 # CTWM Change History
 
 
-## 4.1.0  (xxxx-xx-xx)
+## 4.1.0  (2023-03-26)
 
 ### Backward-Incompatible Changes And Removed Features
 
