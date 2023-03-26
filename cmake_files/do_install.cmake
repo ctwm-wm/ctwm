@@ -30,7 +30,6 @@ endif(USE_XPM)
 
 # If we don't have the manpage, that's pretty exceptional, so give a
 # warning about it.
-unset(HAS_MAN)
 if(NOT HAS_MAN)
 	string(CONCAT NOMAN
 		"message(WARNING \"No manpage to install: recheck config "
