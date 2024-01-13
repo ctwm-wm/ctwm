@@ -38,9 +38,7 @@ docs: ${DOC_FILES}
 docs_clean doc_clean:
 	rm -f ${DOC_FILES}
 
-.SUFFIXES: ${.SUFFIXES} .html .md .adoc
-.md.html:
-	multimarkdown -afo ${@} ${<}
+.SUFFIXES: ${.SUFFIXES} .html .adoc
 .adoc.html:
 	asciidoctor -o ${@} ${<}
 
