@@ -31,11 +31,13 @@ align-pointer=name
 align-reference=name
 
 # Don't cuddle elses
-break-closing-brackets
+# s/brackets/braces/ as of astyle 3.0, old name removed in 3.2
+break-closing-braces
 
 # Bracket one-liners.  This has the nice side effect that we break up
 # one-liners.
-add-brackets
+# Ditto above s/brackets/braces/
+add-braces
 
 # Use tabs only for indent levels, spaces for alignment below that
 convert-tabs
