@@ -86,14 +86,15 @@ static void SaveYourselfCB(SmcConn smcCon, SmPointer clientData,
 static char *GetClientID(Window window);
 static char *GetWindowRole(Window window);
 static int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
-                        char *clientId, char *windowRole);
+                               char *clientId, char *windowRole);
 static int ReadWinConfigEntry(FILE *configFile, unsigned short version,
-                       TWMWinConfigEntry **pentry);
+                              TWMWinConfigEntry **pentry);
 static void SaveYourselfPhase2CB(SmcConn smcCon, SmPointer clientData);
 static void DieCB(SmcConn smcCon, SmPointer clientData);
 static void SaveCompleteCB(SmcConn smcCon, SmPointer clientData);
 static void ShutdownCancelledCB(SmcConn smcCon, SmPointer clientData);
-static void ProcessIceMsgProc(XtPointer client_data, int *source, XtInputId *id);
+static void ProcessIceMsgProc(XtPointer client_data, int *source,
+                              XtInputId *id);
 
 #define SAVEFILE_VERSION 2
 
@@ -368,7 +369,7 @@ static int read_counted_string(FILE *file, char **stringp)
 /*===[ Write Window Config Entry to file ]===================================*/
 
 static int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
-                        char *clientId, char *windowRole)
+                               char *clientId, char *windowRole)
 /* this function writes a window configuration entry of a given window to
  * the given configuration file
  */
@@ -510,7 +511,7 @@ static int WriteWinConfigEntry(FILE *configFile, TwmWindow *theWindow,
 /*===[ Read Window Configuration Entry ]=====================================*/
 
 static int ReadWinConfigEntry(FILE *configFile, unsigned short version,
-                       TWMWinConfigEntry **pentry)
+                              TWMWinConfigEntry **pentry)
 /* this function reads the next window configuration entry from the given file
  * else it returns 0 if none exists or there is a problem
  */

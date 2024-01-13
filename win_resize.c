@@ -956,9 +956,9 @@ void fullzoom(TwmWindow *tmp_win, int func)
 				borderedLayout = RLayoutNew(
 				                         RAreaListNew(1,
 				                                      RAreaNew(winattrs.x,
-				                                                      winattrs.y,
-				                                                      winattrs.width,
-				                                                      winattrs.height),
+				                                              winattrs.y,
+				                                              winattrs.width,
+				                                              winattrs.height),
 				                                      NULL));
 			}
 		}
