@@ -93,7 +93,7 @@ void CreateGCs(void)
 	Scr->NormalGC = XCreateGC(dpy, Scr->Root, gcm, &gcv);
 
 	greypixmap = XCreatePixmapFromBitmapData(dpy, Scr->Root,
-	                (char *) greypattern, 4, 4, 1, 0, 1);
+	             (char *) greypattern, 4, 4, 1, 0, 1);
 
 	if(Scr->Monochrome != COLOR) {
 		gcm  = 0;
