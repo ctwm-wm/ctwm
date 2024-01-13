@@ -405,8 +405,7 @@ CreateWorkSpaceManagerWindow(VirtualScreen *vs)
 			const unsigned long border = Scr->workSpaceMgr.defBorderColor;
 
 			/* Alloc structs */
-			vs->wsw->bswl[ws->number] = bsw
-			                            = calloc(1, sizeof(ButtonSubwindow));
+			vs->wsw->bswl[ws->number] = bsw = calloc(1, sizeof(ButtonSubwindow));
 			vs->wsw->mswl[ws->number] = msw = calloc(1, sizeof(MapSubwindow));
 
 			/*
