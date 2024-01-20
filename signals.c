@@ -141,5 +141,6 @@ sh_sigchld(int signum)
 	while((pid = waitpid(-1, NULL, WNOHANG)) > 0)
 		;
 
+	(void)pid;  // Quiet static analyzer
 	errno = old_errno;
 }
