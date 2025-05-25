@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.6)
+# As of 2025-05, Ubuntu 22.04 LTS has 3.22.
+cmake_minimum_required(VERSION 3.22)
 
 # Figure our version
 file(READ "VERSION" vf_str)
@@ -135,7 +136,7 @@ include(ctags)
 # with access to all our internal funcs.
 add_library(ctwmlib OBJECT ${CTWMSRC})
 add_executable(ctwm "ctwm_wrap.c")
-target_sources(ctwm PUBLIC $<TARGET_OBJECTS:ctwmlib>)
+target_link_libraries(ctwm ctwmlib)
 target_link_libraries(ctwm ${CTWMLIBS})
 
 # This doesn't really serve much purpose at the moment, so it's not even

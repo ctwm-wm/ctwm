@@ -5,6 +5,11 @@
 
 == Next release  (xxxx-xx-xx)
 
+=== Backward-Incompatible Changes And Removed Features
+
+* The minimum cmake version has been bumped to 3.22.  This is available
+   in standard packages back to Ubuntu 22 and Debian 11.
+
 === Bugfixes
 
 * `SIGCHLD` now has a handler that explicitly reaps processes.

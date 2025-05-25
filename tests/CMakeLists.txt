@@ -50,7 +50,7 @@ function(ctwm_simple_unit_test TNAME)
 	# Building and linking it
 	if(NOT TARGET ${BIN})
 		add_executable(${BIN} EXCLUDE_FROM_ALL "${BIN}.c")
-		target_sources(${BIN} PUBLIC $<TARGET_OBJECTS:ctwmlib>)
+		target_link_libraries(${BIN} ctwmlib)
 
 		# Few of our tests really need any of the X or other libs we pull in.
 		# However, most of the .o's for ctwm itself are going to have some

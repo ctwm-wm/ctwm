@@ -28,14 +28,7 @@ endif()
 
 if(BISON_FOUND)
 	# BISON_TARGET requires a string, not a list, for COMPILE_FLAGS.
-	# list(JOIN) would be the proper solution here, but requires cmake
-	# 3.12.
-	if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.12)
-		list(JOIN YFLAGS " " _YFSTR)
-	else()
-		# So until then, this is our stupid stringify hack...
-		string(REPLACE ";" " " _YFSTR "${YFLAGS}")
-	endif()
+	list(JOIN YFLAGS " " _YFSTR)
 	BISON_TARGET(ctwm_parser gram.y ${CMAKE_CURRENT_BINARY_DIR}/gram.tab.c
 		COMPILE_FLAGS ${_YFSTR})
 elseif(YACC)

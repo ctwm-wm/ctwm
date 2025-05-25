@@ -18,7 +18,7 @@
 # Known alternate spellings:
 #   -xc99  (Sun C 5.10 SunOS_i386, sunstudio12.1, OpenIndiana)
 include(CheckCCompilerFlag)
-set(MANUAL_C_STD_FLAG true)
+set(MANUAL_C_STD_FLAG false)
 if(NOT MANUAL_C_STD_FLAG)
 	# This is the Better Way(tm), but is disabled by default because, as
 	# with the manual one below, the added arg doesn't apply in
@@ -26,6 +26,12 @@ if(NOT MANUAL_C_STD_FLAG)
 	# to find a way to get info from cmake about what arg it would add
 	# for the specified standard, so we can't pull it out manually to add
 	# like we do our found C99_FLAG below, so...
+	#
+	# It appears that as of cmake 3.8, this now works correctly.  x-ref
+	# https://cmake.org/cmake/help/v3.8/policy/CMP0067.html
+	# Since we now set 3.22 as the minimum, that policy is enabled, so we
+	# now use this block.  If no problems show up with it, we can
+	# probably just let this be the normal default.
 	if(NOT "c_std_99" IN_LIST CMAKE_C_COMPILE_FEATURES)
 		message(WARNING "cmake doesn't know about c99 support for this "
 			"compiler, trying manual search...")
