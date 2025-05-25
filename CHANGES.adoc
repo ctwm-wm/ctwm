@@ -5,6 +5,13 @@
 
 == Next release  (xxxx-xx-xx)
 
+=== Bugfixes
+
+* `SIGCHLD` now has a handler that explicitly reaps processes.
+   Previous behavior generally worked, but could cause odd behavior
+   with certain POSIX implementation choices in system libraries.
+   Triggered with NetBSD 10.
+
 
 
 == 4.1.0  (2023-03-26)
