@@ -10,7 +10,7 @@ install(TARGETS ctwm
 install(FILES system.ctwmrc
 	DESTINATION ${EXAMPLEDIR}
 )
-install(FILES README.md CHANGES.md
+install(FILES README.adoc CHANGES.adoc
 	DESTINATION ${DOCDIR}
 )
 
