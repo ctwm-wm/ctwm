@@ -136,7 +136,7 @@ include(ctags)
 # with access to all our internal funcs.
 add_library(ctwmlib OBJECT ${CTWMSRC})
 add_executable(ctwm "ctwm_wrap.c")
-target_sources(ctwm PUBLIC $<TARGET_OBJECTS:ctwmlib>)
+target_link_libraries(ctwm ctwmlib)
 target_link_libraries(ctwm ${CTWMLIBS})
 
 # This doesn't really serve much purpose at the moment, so it's not even
