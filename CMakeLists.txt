@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.6)
+# As of 2025-05, Ubuntu 22.04 LTS has 3.22.
+cmake_minimum_required(VERSION 3.22)
 
 # Figure our version
 file(READ "VERSION" vf_str)
