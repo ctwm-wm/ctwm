@@ -184,9 +184,8 @@ sending a mail with the subject "subscribe ctwm" to
 
 === Repository
 
-ctwm development uses breezy (see <https://www.breezy-vcs.org/>) for
-version control.  The code is available on launchpad as `lp:ctwm`.  See
-<https://launchpad.net/ctwm> for more details.
+ctwm development uses git for version control.  The main repository is at
+<https://github.com/ctwm-wm/ctwm>.
 
 
 == Further information
