@@ -74,7 +74,7 @@ endif()
 # A special case occurs when there's no VCS info we can find to work
 # with, AND we have a pregen'd .in file (${vresion_c_gen}); this is
 # commonly the case with a release tarball, where part of the release
-# building process pre-stashes the bzr revision info.  In that case, we
+# building process pre-stashes the VCS revision info.  In that case, we
 # swap the original (${version_c_src}) to point to the pregen'd file
 # (which already has the VCS info), and make the second step just cp the
 # intermediate file over.
