@@ -1,5 +1,6 @@
 gen/
 *.tar*
+*.swp
 build/*
 minibuild/Makefile*
 minibuild/build
