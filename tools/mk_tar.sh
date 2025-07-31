@@ -3,7 +3,8 @@
 # Setup and generate a release tarball
 
 # Make sure we're in the expected root of the tree
-rtdir=`brz root $0`
+cd `dirname $0`
+rtdir=`git rev-parse --show-toplevel`
 cd $rtdir
 
 # Figure out version
@@ -30,8 +31,8 @@ if [ -r $rtdir/$dirname.tar ] ; then
 fi
 mkdir -pm755 $dir
 
-# Create a totally fresh branch in it
-brz branch --use-existing-dir $rtdir $dir
+# Create a totally fresh repo
+git clone $rtdir $dir
 
 # Do various setup in the branch to prepare
 (
@@ -41,8 +42,8 @@ brz branch --use-existing-dir $rtdir $dir
 	# products.
 	make release_files allclean adoc_clean
 
-	# Blow away the bzr metastuff, we don't need to package that
-	rm -rf .bzr
+	# Blow away the git metastuff, we don't need to package that
+	rm -rf .git
 )
 
 # Tar it up
