@@ -49,6 +49,7 @@
 %}
 
 string				\"([^"]|\\.)*\"
+mlstring			\"\"\"([^\"]+|\"[^\"]+|\"\"[^\"]+)*\"\"\"
 number				[0-9]+
 
  /* Requires flex 2.5.1 (28Mar95) */
@@ -82,6 +83,7 @@ number				[0-9]+
 "!"				{ yylval.num = F_EXEC; return FSKEYWORD; }
 
 {string}			{ yylval.ptr = yytext; return STRING; }
+{mlstring}			{ yylval.ptr = yytext; return MLSTRING; }
 {number}			{ sscanf(yytext, "%d", &yylval.num);
 				  return NUMBER; }
 \#[^\n]*\n			{;}

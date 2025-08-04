@@ -651,7 +651,7 @@ void HandleKeyPress(void)
 			MenuRoot *menu;
 
 			/* Leave pinned menus alone though */
-			if(ActiveMenu->pinned) {
+			if(ActiveMenu->pinned_from) {
 				return;
 			}
 
@@ -774,12 +774,14 @@ void HandleKeyPress(void)
 		 */
 		if(item) {
 			switch(item->func) {
-				/* f.nop and f.title, we just silently let pass */
+				/* f.label, f.nop and f.title, we just silently let pass */
 				case 0 :
+				case F_LABEL :
 				case F_TITLE :
 					break;
 
-				/* If it's a f.menu, there's more magic to do */
+				/* If it's a f.menu or f.dynmenu, there's more magic to do */
+				case F_DYNMENU:
 				case F_MENU: {
 					/*
 					 * Return is treated separately from Right.  It
@@ -986,7 +988,7 @@ void HandleKeyPress(void)
 
 		if(key->cont != C_NAME) {
 			/* Normal context binding; do what it wants */
-			if(key->func == F_MENU) {
+			if(key->func == F_MENU || key->func == F_DYNMENU) {
 				/*
 				 * f.menu doesn't call the f.menu handler; we directly
 				 * do_key_menu() to pull it up.
@@ -2420,6 +2422,7 @@ void HandleButtonRelease(void)
 			int func = ActiveItem->func;
 			Action = ActiveItem->action;
 			switch(func) {
+				case F_LABEL:
 				case F_TITLE:
 					if(Scr->StayUpMenus)   {
 						ButtonPressed = -1;
@@ -2445,7 +2448,7 @@ void HandleButtonRelease(void)
 				default:
 					break;
 			}
-			if(func != F_PIN && func != F_MENU) {
+			if(func != F_PIN && func != F_MENU && func != F_DYNMENU) {
 				PopDownMenu();
 			}
 			ExecuteFunction(func, Action,
@@ -2619,7 +2622,7 @@ void HandleButtonPress(void)
 	                (XPointer *) &mr) != XCSUCCESS) {
 		mr = NULL;
 	}
-	if(ActiveMenu && (! ActiveMenu->pinned) &&
+	if(ActiveMenu && (! ActiveMenu->pinned_from) &&
 	                (Event.xbutton.subwindow != ActiveMenu->w)) {
 		PopDownMenu();
 		return;
@@ -2672,7 +2675,7 @@ void HandleButtonPress(void)
 		ButtonPressed = Event.xbutton.button;
 	}
 
-	if((ActiveMenu != NULL) && (ActiveMenu->pinned)) {
+	if((ActiveMenu != NULL) && (ActiveMenu->pinned_from)) {
 		if(Event.xbutton.window == ActiveMenu->w) {
 			modifier = (Event.xbutton.state & mods_used);
 			modifier = set_mask_ignore(modifier);
@@ -2712,6 +2715,7 @@ void HandleButtonPress(void)
 							 * handler, we use our do_menu(); x-ref
 							 * comments in the handler for details.
 							 */
+							case F_DYNMENU :
 							case F_MENU :
 								Context = C_TITLE;
 								ButtonWindow = Tmp_win;
@@ -2975,6 +2979,7 @@ void HandleButtonPress(void)
 			 * f.menu isn't invoked, it's handle magically.  Other funcs
 			 * we just invoke.  X-ref the f.menu handler for details.
 			 */
+			case F_DYNMENU :
 			case F_MENU :
 				do_menu(tmp->menu, (Window) None);
 				break;
@@ -3003,7 +3008,8 @@ void HandleButtonPress(void)
 		OccupyHandleButtonEvent(&Event);
 	}
 	else if(func == 0 && Scr->DefaultFunction.func != 0) {
-		if(Scr->DefaultFunction.func == F_MENU) {
+		if(Scr->DefaultFunction.func == F_MENU
+		                || Scr->DefaultFunction.func == F_DYNMENU) {
 			do_menu(Scr->DefaultFunction.menu, (Window) None);
 		}
 		else {
@@ -3391,7 +3397,7 @@ void HandleEnterNotify(void)
 		return;
 	}
 
-	if(! ActiveMenu && mr->pinned && (RootFunction == 0)) {
+	if(! ActiveMenu && mr->pinned_from && (RootFunction == 0)) {
 		PopUpMenu(mr, 0, 0, false);
 		Context = C_ROOT;
 		UpdateMenu();
@@ -3409,7 +3415,7 @@ void HandleEnterNotify(void)
 		}
 
 		for(tmp = ActiveMenu; tmp != mr; tmp = tmp->prev) {
-			if(tmp->pinned) {
+			if(tmp->pinned_from) {
 				break;
 			}
 			HideMenu(tmp);
@@ -3443,7 +3449,7 @@ void HandleEnterNotify(void)
 				}
 			}
 		}
-		if(ActiveMenu->pinned) {
+		if(ActiveMenu->pinned_from) {
 			XUngrabPointer(dpy, CurrentTime);
 		}
 	}
@@ -3497,7 +3503,7 @@ void HandleLeaveNotify(void)
 {
 	bool inicon;
 
-	if(ActiveMenu && ActiveMenu->pinned
+	if(ActiveMenu && ActiveMenu->pinned_from
 	                && (Event.xcrossing.window == ActiveMenu->w)) {
 		PopDownMenu();
 	}

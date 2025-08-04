@@ -41,6 +41,7 @@ deltastop             - -  -
 destroy               - CD -
 downiconmgr           - -  -
 downworkspace         - -  -
+dynmenu               S -  -
 exec                  S -  -
 fill                  S CS -
 fittocontent          - CS WINBOX
@@ -63,6 +64,7 @@ jumpdown              S CM -
 jumpleft              S CM -
 jumpright             S CM -
 jumpup                S CM -
+label                 - -  -
 lefticonmgr           - -  -
 leftworkspace         - -  -
 leftzoom              - CS -

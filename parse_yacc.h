@@ -8,8 +8,9 @@ void yyerror(char *s);
 
 void InitGramVariables(void);
 void RemoveDQuote(char *str);
+char *DupUnquoteMultilineString(char *str);
 
-MenuRoot *GetRoot(char *name, char *fore, char *back);
+MenuRoot *GetRoot(char *name, char *fore, char *back, bool dynamic);
 
 bool CheckWarpScreenArg(const char *s);
 bool CheckWarpRingArg(const char *s);

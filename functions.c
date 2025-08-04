@@ -15,6 +15,7 @@
 #include "screen.h"
 
 
+static DFHANDLER(label);
 static DFHANDLER(nop);
 static DFHANDLER(separator);
 static DFHANDLER(title);
@@ -138,6 +139,7 @@ EF_main(EF_FULLPROTO)
 	 * skip out early if we try running them.
 	 */
 	switch(func) {
+		case F_LABEL:
 		case F_NOP:
 		case F_SEPARATOR:
 		case F_TITLE:
@@ -199,6 +201,7 @@ EF_main(EF_FULLPROTO)
 		case F_BACKICONMGR:
 		case F_NEXTICONMGR:
 		case F_PREVICONMGR:
+		case F_LABEL:
 		case F_NOP:
 		case F_TITLE:
 		case F_DELTASTOP:
@@ -253,7 +256,7 @@ EF_main(EF_FULLPROTO)
 			MenuItem *mitem;
 			Cursor curs;
 
-			if((mroot = FindMenuRoot(action)) == NULL) {
+			if((mroot = FindMenuRoot(action, false)) == NULL) {
 				if(!action) {
 					action = "undef";
 				}
@@ -491,7 +494,13 @@ NeedToDefer(MenuRoot *root)
  * which we expect to exist.
  */
 
-/* f.nop, f.title, f.separator really only exist to make lines in menus */
+/* f.label, f.nop, f.title, f.separator really only exist to make lines in menus */
+static
+DFHANDLER(label)
+{
+	fprintf(stderr, "%s(): Shouldn't get here.\n", __func__);
+	return;
+}
 static
 DFHANDLER(nop)
 {
