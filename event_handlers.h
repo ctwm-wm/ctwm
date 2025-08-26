@@ -19,6 +19,7 @@ void HandleClientMessage(void);
 void HandlePropertyNotify(void);
 void HandleKeyPress(void);
 void HandleKeyRelease(void);
+void HandleKeyEvent(bool pressed);
 void HandleColormapNotify(void);
 void HandleVisibilityNotify(void);
 void HandleUnknown(void);

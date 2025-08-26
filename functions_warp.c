@@ -23,9 +23,11 @@
 #include "win_ring.h"
 #include "win_utils.h"
 
+#include <stdio.h>
 
 static void WarpAlongRing(XButtonEvent *ev, bool forward);
-
+static void StartWindowStack(void);
+static void FinishWindowStack(void);
 
 DFHANDLER(warpto)
 {
@@ -145,6 +147,12 @@ DFHANDLER(warpring)
 		case 'p':
 			WarpAlongRing(&eventp->xbutton, false);
 			break;
+		case 's':
+			StartWindowStack();
+			break;
+		case 'f':
+			FinishWindowStack();
+			break;
 		default:
 			XBell(dpy, 0);
 			break;
@@ -217,6 +225,7 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 	                || !WindowIsOnRing(Scr->Focus)) {
 		TwmWindow *p = Scr->RingLeader, *t;
 
+		printf("WarpAlongRing to %p (new RingLeader)\n", r);
 		Scr->RingLeader = r;
 		WarpToWindow(r, true);
 
@@ -239,4 +248,122 @@ WarpAlongRing(XButtonEvent *ev, bool forward)
 			 */
 		}
 	}
+}
+
+/*
+ * Functions to help with creating "window stack" from the window ring.
+ * Principle of operation:
+ * - on Alt-down (assuming Alt-Tab), call StartWindowStack()
+ *   through a mapping:   "Alt_L" = : all : f.warpring "startstack"
+ * - When typing Tab while Alt is still down, call WarpAlongRing() as usual
+ *   with the usual mapping "Tab" = alt : all : f.warpring "forward"
+ * - On Alt-up, call FinishWindowStack() through a mapping
+ *   "Alt_L" = up : all : f.warpring "finishstack"
+ *   This moves the window we landed on to the "top" of the stack (ring).
+ */
+static void
+StartWindowStack(void)
+{
+	/* Reset the ring to the "fixed" place of the bottom of the stack */
+	Scr->RingLeader = Scr->Ring;
+	Scr->BottomOfStack = Scr->RingLeader;
+	printf("StartWindowStack: set BottomOfStack to %p\n", Scr->BottomOfStack);
+	/*
+	 * The situation is now as follows.
+	 * Window 1 is the currently active window, as indicated by RingLeader.
+	 * The first f.warpring "next" goes to window 2, the TopOfStack.
+	 * No explicit pointer is needed since it is by definition BOT->next.
+	 *
+	 * window     1  | 2   3   4   5   ...
+	 * --------------+---+---+---+---+------
+	 * pointers  RL  |
+	 *           BOT |TOP
+	 *           Ring|
+	 */
+}
+
+static void
+FinishWindowStack(void)
+{
+	/*
+	 * Check that StartWindowStack() was called before;
+	 * that WarpAlongRing() has been called at least once;
+	 * that there are at least 2 windows in the ring.
+	 */
+	TwmWindow *tomove = Scr->RingLeader;
+	printf("FinishWindowStack: BottomOfStack=%p, RingLeader=%p\n",
+	       Scr->BottomOfStack, Scr->RingLeader);
+
+	if(!Scr->BottomOfStack) {
+		printf("BottomOfStack is NULL\n");
+		return;
+	}
+	if(!Scr->RingLeader) {
+		printf("RingLeader is NULL\n");
+		Scr->BottomOfStack = NULL;
+		return;
+	}
+	/*
+	 * Did we actually move to another window?
+	 */
+	if(Scr->RingLeader == Scr->BottomOfStack) {
+		printf("BottomOfStack is the same as RingLeader\n");
+		Scr->BottomOfStack = NULL;
+		return;
+	}
+	/*
+	 * These used to be equal. If Ring is removed from the ring, it gets
+	 * pointed to another window (or NULL).  So if they're not equal now,
+	 * BottomOfStack is a dangling pointer.
+	 */
+	if(Scr->Ring != Scr->BottomOfStack) {
+		printf("BottomOfStack is no longer equal to Ring\n");
+		Scr->BottomOfStack = NULL;
+		return;
+	}
+	/*
+	 * If a window's next pointer points to itself, it must be the only
+	 * window. In that case there is nothing to do.
+	 */
+	if(Scr->RingLeader->ring.next == Scr->RingLeader) {
+		printf("RingLeader -> next is same as RingLeader: only 1 window\n");
+		Scr->BottomOfStack = NULL;
+		return;
+	}
+	/*
+	 * If the window to move is already where we want to move it,
+	 * there is nothing to do. Probably due to not enough windows.
+	 */
+	if(Scr->BottomOfStack->ring.prev == tomove) {
+		printf("RingLeader already before BottomOfStack\n");
+		Scr->BottomOfStack = NULL;
+		return;
+	}
+
+	/*
+	 * The situation after WarpAlongRing() is now as follows:
+	 *
+	 * window     1  | 2   3   4   5   ...
+	 * --------------+---+---+---+---+------
+	 * pointers      |        RL
+	 *           BOT |TOP
+	 *           Ring|
+	 */
+	/*
+	 * Remove RingLeader from its place in the ring,
+	 * and put it before BottomOfStack.
+	 */
+	UnlinkWindowFromRing(tomove);
+	AddWindowToRingUnchecked(tomove, Scr->BottomOfStack->ring.prev);
+	Scr->RingLeader = tomove;       /* not really necessary */
+	Scr->Ring = tomove;
+	/*
+	 * The situation after WarpAlongRing() is now as follows:
+	 *
+	 * window     4  | 1   2   3   5   ...
+	 * --------------+---+---+---+---+------
+	 * pointers  RL  |(BOT)
+	 *           Ring|TOP
+	 */
+	Scr->BottomOfStack = NULL;      /* no worries about dangling pointers */
 }

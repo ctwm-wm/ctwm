@@ -74,7 +74,8 @@ int yylex(void);
 %token <num> ICONIFY_BY_UNMAPPING DONT_ICONIFY_BY_UNMAPPING
 %token <num> AUTO_POPUP
 %token <num> NO_BORDER NO_ICON_TITLE NO_TITLE AUTO_RAISE NO_HILITE ICON_REGION
-%token <num> WINDOW_REGION META SHIFT LOCK CONTROL WINDOW TITLE ICON ROOT FRAME
+%token <num> WINDOW_REGION META SHIFT LOCK CONTROL KEYUP
+%token <num> WINDOW TITLE ICON ROOT FRAME
 %token <num> COLON EQUALS SQUEEZE_TITLE DONT_SQUEEZE_TITLE
 %token <num> WARP_ON_DEICONIFY
 %token <num> START_ICONIFIED NO_TITLE_HILITE TITLE_HILITE
@@ -549,6 +550,7 @@ key		: META			{ mods |= Mod1Mask; }
 					     mods |= (Mod1Mask << ($2 - 1));
 					  }
 					}
+		| KEYUP			{ mods |= KeyUpMask; }
 		| OR			{ }
 		;
 

@@ -242,12 +242,14 @@ CheckWarpScreenArg(const char *s)
 }
 
 
-/* f.warptoring arg */
+/* f.warpring arg */
 bool
 CheckWarpRingArg(const char *s)
 {
-	if(strcasecmp(s, WARPSCREEN_NEXT) == 0 ||
-	                strcasecmp(s, WARPSCREEN_PREV) == 0) {
+	if(strcasecmp(s, WARPRING_NEXT) == 0 ||
+	                strcasecmp(s, WARPRING_PREV) == 0 ||
+	                strcasecmp(s, WARPRING_STACK1) == 0 ||
+	                strcasecmp(s, WARPRING_STACK2) == 0) {
 		return true;
 	}
 

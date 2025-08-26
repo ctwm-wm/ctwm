@@ -112,6 +112,20 @@ Button2 =	: iconmgr	: f.iconify
 Button1 =	: frame		: f.resize
 Button1 = m	: frame		: f.move
 Button2 =	: frame		: f.raiselower
+
+#
+# Set some key bindings.
+#
+# This makes bindings for the usual window ring:
+"Tab"     = m4             : all : f.warpring "next"
+"Tab"     = m4 | s         : all : f.warpring "prev"
+"Return"  = m4             : all : f.ring
+
+# This turns the window ring behaviour into a stack behaviour:
+# Note that the Super key corresponds to modifier 4.
+"Super_L" =                : all : f.warpring "startstack"
+"Super_L" = up | m4        : all : f.warpring "finishstack"
+
 #
 # And a menus with the usual things
 #

@@ -61,7 +61,7 @@ UnlinkWindowFromRing(TwmWindow *win)
 	}
 }
 
-static void
+void
 AddWindowToRingUnchecked(TwmWindow *win, TwmWindow *after)
 {
 	TwmWindow *before = after->ring.next;

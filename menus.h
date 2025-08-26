@@ -132,6 +132,11 @@ extern int MenuDepth;
 #define WARPSCREEN_PREV "prev"
 #define WARPSCREEN_BACK "back"
 
+#define WARPRING_NEXT "next"
+#define WARPRING_PREV "prev"
+#define WARPRING_STACK1 "startstack"
+#define WARPRING_STACK2 "finishstack"
+
 #define COLORMAP_NEXT "next"
 #define COLORMAP_PREV "prev"
 #define COLORMAP_DEFAULT "default"

@@ -5,6 +5,7 @@
 #define _CTWM_WIN_RING_H
 
 void UnlinkWindowFromRing(TwmWindow *win);
+void AddWindowToRingUnchecked(TwmWindow *win, TwmWindow *after);
 void AddWindowToRing(TwmWindow *win);
 
 #define WindowIsOnRing(win) ((win) && (win)->ring.next)

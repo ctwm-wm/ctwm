@@ -295,6 +295,7 @@ struct ScreenInfo {
 
 	TwmWindow *Ring;       ///< One of the windows in the Screen's ring
 	TwmWindow *RingLeader; ///< Current window in ring
+	TwmWindow *BottomOfStack; ///< Starting point for stack-like ring
 
 	MouseButton DefaultFunction;   ///< DefaultFunction config var
 	MouseButton WindowFunction;    ///< WindowFunction config var

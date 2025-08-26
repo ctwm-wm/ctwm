@@ -2276,7 +2276,12 @@ when modifiers are applied.  The list of recognized modifier names
 `mod2` (`m2`),
 `mod3` (`m3`),
 `mod4` (`m4`),
-and `mod5` (`m5`).
+`mod5` (`m5`).
+and `up` (`u`).
+
+Normally, key bindings refer to the KeyPress event, but with the "up" modifier
+the binding refers to the KeyRelease event instead.
+
 Multiple modifiers may be applied to a single line by combining them with
 a vertical bar (`|`).  For example:
 
@@ -2989,8 +2994,8 @@ f.warphere `win_name`::
 
 f.warpring `string`::
   This function warps the pointer to the next or previous window (as indicated
-  by the argument `string`, which may be `"next"` or `"prev"`)
-  specified in the `WindowRing` variable.
+  by the argument `string`, which may be `"next"`, `"prev"`, `"startstack"`
+  or `"finishstack"`) specified in the `WindowRing` variable.
 
 f.warpto `string`::
   This function warps the pointer to the window which has a name or class

@@ -528,12 +528,27 @@ void HandleKeyRelease(void)
 	if(Tmp_win == Scr->currentvs->wsw->twm_win) {
 		WMgrHandleKeyReleaseEvent(Scr->currentvs, &Event);
 	}
+	else if(mods_used & KeyUpMask) {
+		HandleKeyEvent(false);
+	}
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      HandleKeyPress - key press event handler
+ *
+ ***********************************************************************
+ */
+
+void HandleKeyPress(void)
+{
+	HandleKeyEvent(true);
 }
 
 
-
 /*
- * HandleKeyPress - key press event handler
+ * HandleKeyEvent - key press or release event handler
  *
  * When a key is pressed, we may do various things with it.  If we're in
  * a menu, various keybindings move around in it, others get silently
@@ -542,13 +557,13 @@ void HandleKeyRelease(void)
  * seems like some window should have focus, pass the event down to that
  * window.
  */
-void HandleKeyPress(void)
+void HandleKeyEvent(bool pressed)
 {
 	/*
 	 * If the Info window (f.identify/f.version) is currently up, any key
 	 * press will drop it away.
 	 */
-	if(Scr->InfoWindow.mapped) {
+	if(pressed && Scr->InfoWindow.mapped) {
 		XUnmapWindow(dpy, Scr->InfoWindow.win);
 		Scr->InfoWindow.mapped = false;
 	}
@@ -559,7 +574,7 @@ void HandleKeyPress(void)
 	 * doing things in the menu.  No other key bindings or usages are
 	 * considered.
 	 */
-	if(ActiveMenu != NULL) {
+	if(pressed && ActiveMenu != NULL) {
 		MenuItem *item;
 		char *keynam;
 		KeySym keysym;
@@ -943,12 +958,16 @@ void HandleKeyPress(void)
 	 */
 	unsigned int modifier = (Event.xkey.state | AlternateKeymap) & mods_used;
 	modifier = set_mask_ignore(modifier);
+
+	if(!pressed) {
+		modifier |= KeyUpMask;
+	}
+
 	if(AlternateKeymap) {
 		XUngrabPointer(dpy, CurrentTime);
 		XUngrabKeyboard(dpy, CurrentTime);
 		AlternateKeymap = 0;
 	}
-
 
 	/*
 	 * Loop over our key bindings and do its thing if we find a matching

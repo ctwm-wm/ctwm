@@ -98,9 +98,8 @@
                          C_ROOT_BIT | C_FRAME_BIT | C_ICONMGR_BIT |\
                          C_WORKSPACE_BIT)
 
-/* modifiers for button presses */
-#define MOD_SIZE        ((ShiftMask | ControlMask | Mod1Mask \
-                          | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask) + 1)
+/* Imaginary mask bit for Key Release events */
+#define KeyUpMask       (Button5Mask << 1)
 
 /*
  * Used for TwmWindow.zoomed.  Var holds the number of the function that
