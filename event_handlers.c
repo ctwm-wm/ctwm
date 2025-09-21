@@ -3706,10 +3706,10 @@ void HandleConfigureRequest(void)
 #endif
 
 	/*
-	 * Event.xany.window is Event.xconfigurerequest.parent, so Tmp_win will
-	 * be wrong
+	 * Event.xany.window is Event.xconfigurerequest.parent, so event's
+	 * global Tmp_win will be wrong.  The actual window involved is the
+	 * one in the .xconfigurerequest.
 	 */
-	Event.xany.window = cre->window;    /* mash parent field */
 	Tmp_win = GetTwmWindow(cre->window);
 
 	/*
@@ -3728,7 +3728,7 @@ void HandleConfigureRequest(void)
 		xwc.width = cre->width;
 		xwc.height = cre->height;
 		xwc.border_width = cre->border_width;
-		XConfigureWindow(dpy, Event.xany.window, xwcm, &xwc);
+		XConfigureWindow(dpy, cre->window, xwcm, &xwc);
 		return;
 	}
 
