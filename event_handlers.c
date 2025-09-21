@@ -3820,7 +3820,8 @@ void HandleConfigureRequest(void)
 			x += (gravx < 0) ? bwdelta : -bwdelta;
 			y += (gravy < 0) ? bwdelta : -bwdelta;
 
-			// Adjust titlebar height for the tweaked bordering
+			// If we have a titlebar, there's an extra border under it to
+			// account for tin the height.
 			if(twm_win->title_height) {
 				height += bwdelta;
 			}
