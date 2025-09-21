@@ -3874,10 +3874,9 @@ void HandleConfigureRequest(void)
 	}
 
 
-	/* Workaround for Java 1.4 bug that freezes the application whenever
-	 * a new window is displayed. (When UsePPosition is on and either
-	 * UseThreeDBorders or BorderWidth 0 is set.)
-	 */
+	// Workaround for Java 1.4 bug that freezes the application whenever
+	// a new window is displayed. (When UsePPosition is on and either
+	// UseThreeDBorders or BorderWidth 0 is set.)
 	if(!bw) {
 		sendEvent = true;
 	}
