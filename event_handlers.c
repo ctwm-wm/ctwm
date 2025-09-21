@@ -3712,6 +3712,8 @@ void HandleConfigureRequest(void)
 	 */
 	TwmWindow *twm_win = GetTwmWindow(cre->window);
 
+
+
 	/*
 	 * According to the July 27, 1988 ICCCM draft, we should ignore size and
 	 * position fields in the WM_NORMAL_HINTS property when we map a window.
@@ -3732,6 +3734,11 @@ void HandleConfigureRequest(void)
 		return;
 	}
 
+
+	/*
+	 * If this Configure is telling us about some restacking, update our
+	 * idea of how things are stacked.
+	 */
 	if((cre->value_mask & CWStackMode) && twm_win->stackmode) {
 		if(cre->value_mask & CWSibling) {
 			TwmWindow *otherwin = GetTwmWindow(cre->above);
@@ -3739,7 +3746,7 @@ void HandleConfigureRequest(void)
 				OtpForcePlacement(twm_win, cre->detail, otherwin);
 			}
 			else {
-				fprintf(stderr, "XConfigureRequest: unkown otherwin\n");
+				fprintf(stderr, "XConfigureRequest: unknown otherwin\n");
 			}
 		}
 		else {
