@@ -3797,20 +3797,43 @@ void HandleConfigureRequest(void)
 	int gravx, gravy;
 	GetGravityOffsets(twm_win, &gravx, &gravy);
 
+
+	// Adjusting the window's client-supplied border.  If
+	// ClientBorderWidth is set in the config, that also adjusts our
+	// current (2D) border.
 	if(cre->value_mask & CWBorderWidth) {
-		int bwdelta = cre->border_width - twm_win->old_bw;  /* posit growth */
-		if(bwdelta && Scr->ClientBorderWidth) {   /* if change allowed */
-			x += gravx * bwdelta;       /* change default values only */
-			y += gravy * bwdelta;       /* ditto */
+		const int bwdelta = cre->border_width - twm_win->old_bw;
+
+		// Is there a change, and are we configured to care and follow
+		// it?
+		if(bwdelta != 0 && Scr->ClientBorderWidth) {
+			// Update our idea of the border width, since we're changing
+			// it.
 			bw = cre->border_width;
+
+			// Factor in gravity to figure out which dirs the window
+			// moves to make space for the changed bordering.
+			x += gravx * bwdelta;
+			y += gravy * bwdelta;
+
+			// XXX weird double calculation?  Not sure this is right...
+			x += (gravx < 0) ? bwdelta : -bwdelta;
+			y += (gravy < 0) ? bwdelta : -bwdelta;
+
+			// Adjust titlebar height for the tweaked bordering
 			if(twm_win->title_height) {
 				height += bwdelta;
 			}
-			x += (gravx < 0) ? bwdelta : -bwdelta;
-			y += (gravy < 0) ? bwdelta : -bwdelta;
 		}
-		twm_win->old_bw = cre->border_width;  /* for restoring */
+
+		// Whether we're following the change or not, if there is a
+		// change, we update our idea of what the client wants its border
+		// to be.
+		if(bwdelta != 0) {
+			twm_win->old_bw = cre->border_width;
+		}
 	}
+
 
 	if((cre->value_mask & CWX)) {       /* override even if border change */
 		x = cre->x - bw;
