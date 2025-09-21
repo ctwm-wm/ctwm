@@ -3678,7 +3678,6 @@ void HandleLeaveNotify(void)
 
 void HandleConfigureRequest(void)
 {
-	int x, y, width, height, bw;
 	int gravx, gravy;
 	const XConfigureRequestEvent *cre = &Event.xconfigurerequest;
 	bool sendEvent = false;
@@ -3770,12 +3769,15 @@ void HandleConfigureRequest(void)
 	}
 
 
-	/* Don't modify frame_XXX fields before calling SetupWindow! */
-	x = twm_win->frame_x;
-	y = twm_win->frame_y;
-	width = twm_win->frame_width;
-	height = twm_win->frame_height;
-	bw = twm_win->frame_bw;
+	// Don't modify frame_XXX fields before calling SetupFrame(); it
+	// internally does the various work of comparing the "new" values to
+	// the existing.
+	int x  = twm_win->frame_x;
+	int y  = twm_win->frame_y;
+	int bw = twm_win->frame_bw;
+	int width  = twm_win->frame_width;
+	int height = twm_win->frame_height;
+
 
 	/*
 	 * Section 4.1.5 of the ICCCM states that the (x,y) coordinates in the
