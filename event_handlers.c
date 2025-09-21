@@ -3790,6 +3790,9 @@ void HandleConfigureRequest(void)
 	 * as when initially locating the window.  Note that if we do decide to
 	 * allow border width changes, we will need to send the synthetic
 	 * ConfigureNotify event.
+	 *
+	 * Various positioning and sizing will depend on the given Gravity;
+	 * see discussion of win_gravity in WM_NORMAL_HINTS.
 	 */
 	int gravx, gravy;
 	GetGravityOffsets(twm_win, &gravx, &gravy);
