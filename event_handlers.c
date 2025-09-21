@@ -3877,9 +3877,17 @@ void HandleConfigureRequest(void)
 	// Workaround for Java 1.4 bug that freezes the application whenever
 	// a new window is displayed. (When UsePPosition is on and either
 	// UseThreeDBorders or BorderWidth 0 is set.)
+	//
+	// x-ref list mail:
+	// From: Andrew Skalski <askalski@synacor.com>
+	// To: ctwm@free.lp.se
+	// Date: Tue, 14 Oct 2003 16:12:52 -0400
+	// Subject: linux jre 1.4 + 3d borders
+	// Message-ID: <20031014201252.GA31732@chek.com>
 	if(!bw) {
 		sendEvent = true;
 	}
+
 
 	/*
 	 * SetupWindow (x,y) are the location of the upper-left outer corner and
