@@ -3836,7 +3836,16 @@ void HandleConfigureRequest(void)
 	}
 
 
-	if((cre->value_mask & CWX)) {       /* override even if border change */
+	// Are we updating X/Y position?  If so, that actually makes the x/y
+	// recalculations in the border width block above redundant since
+	// we're just writing up new ones, but we (in the ClientBorderWidth
+	// case) will need to rewritten `bw` here anyway, so there's no point
+	// trying to save a few integer ops.
+	//
+	// Remember, the x/y vars are the ones applying to the frame, but the
+	// values in *cre are for the [inner] client window, so some tweaking
+	// for our decorations is in order.
+	if((cre->value_mask & CWX)) {
 		x = cre->x - bw;
 		x -= ((gravx < 0) ? 0 : twm_win->frame_bw3D);
 	}
@@ -3845,6 +3854,9 @@ void HandleConfigureRequest(void)
 		y -= ((gravy < 0) ? 0 : twm_win->frame_bw3D);
 	}
 
+
+	// Updating height/width?  See comment about x/y above; same sorta
+	// things apply.
 	if(cre->value_mask & CWWidth) {
 		width = cre->width + 2 * twm_win->frame_bw3D;
 	}
@@ -3852,9 +3864,15 @@ void HandleConfigureRequest(void)
 		height = cre->height + twm_win->title_height + 2 * twm_win->frame_bw3D;
 	}
 
+
+	// If the size is changing, dump our ideaa of whether the window is
+	// zoomed somehow.  This doesn't itself change the size, but it means
+	// we give up on our idea of the previous size.  A later "unzooming"
+	// from a state different from the one we zoomed to is questionable.
 	if(width != twm_win->frame_width || height != twm_win->frame_height) {
 		unzoom(twm_win);
 	}
+
 
 	/* Workaround for Java 1.4 bug that freezes the application whenever
 	 * a new window is displayed. (When UsePPosition is on and either
