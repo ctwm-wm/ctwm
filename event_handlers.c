@@ -3678,12 +3678,10 @@ void HandleLeaveNotify(void)
 
 void HandleConfigureRequest(void)
 {
-	XWindowChanges xwc;
-	unsigned long xwcm;
 	int x, y, width, height, bw;
 	int gravx, gravy;
-	XConfigureRequestEvent *cre = &Event.xconfigurerequest;
-	bool sendEvent;
+	const XConfigureRequestEvent *cre = &Event.xconfigurerequest;
+	bool sendEvent = false;
 
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "ConfigureRequest\n");
@@ -3721,8 +3719,10 @@ void HandleConfigureRequest(void)
 	 * to configuration requests for windows which have never been mapped.
 	 */
 	if(!Tmp_win || (Tmp_win->icon && (Tmp_win->icon->w == cre->window))) {
-		xwcm = cre->value_mask &
+		const unsigned long xwcm = cre->value_mask &
 		       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
+		XWindowChanges xwc;
+
 		xwc.x = cre->x;
 		xwc.y = cre->y;
 		xwc.width = cre->width;
@@ -3732,12 +3732,9 @@ void HandleConfigureRequest(void)
 		return;
 	}
 
-	sendEvent = false;
 	if((cre->value_mask & CWStackMode) && Tmp_win->stackmode) {
-		TwmWindow *otherwin;
-
 		if(cre->value_mask & CWSibling) {
-			otherwin = GetTwmWindow(cre->above);
+			TwmWindow *otherwin = GetTwmWindow(cre->above);
 			if(otherwin) {
 				OtpForcePlacement(Tmp_win, cre->detail, otherwin);
 			}
