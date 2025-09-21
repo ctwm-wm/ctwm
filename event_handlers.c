@@ -3884,6 +3884,9 @@ void HandleConfigureRequest(void)
 	// Date: Tue, 14 Oct 2003 16:12:52 -0400
 	// Subject: linux jre 1.4 + 3d borders
 	// Message-ID: <20031014201252.GA31732@chek.com>
+	//
+	// XXX This is probably a couple decades past its use-by date; try
+	// looking more into it someday.
 	if(!bw) {
 		sendEvent = true;
 	}
