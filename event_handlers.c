@@ -3678,7 +3678,6 @@ void HandleLeaveNotify(void)
 
 void HandleConfigureRequest(void)
 {
-	int gravx, gravy;
 	const XConfigureRequestEvent *cre = &Event.xconfigurerequest;
 	bool sendEvent = false;
 
@@ -3780,8 +3779,11 @@ void HandleConfigureRequest(void)
 
 
 	/*
-	 * Section 4.1.5 of the ICCCM states that the (x,y) coordinates in the
-	 * configure request are for the upper-left outer corner of the window.
+	 * ICCCM states that the (x,y) coordinates in the configure request
+	 * are for the upper-left outer corner of the window.  See the
+	 * "Configuring the Window" section and the description of
+	 * WM_NORMAL_HINTS.
+	 *
 	 * This means that we need to adjust for the additional title height as
 	 * well as for any border width changes that we decide to allow.  The
 	 * current window gravity is to be used in computing the adjustments, just
@@ -3789,6 +3791,7 @@ void HandleConfigureRequest(void)
 	 * allow border width changes, we will need to send the synthetic
 	 * ConfigureNotify event.
 	 */
+	int gravx, gravy;
 	GetGravityOffsets(twm_win, &gravx, &gravy);
 
 	if(cre->value_mask & CWBorderWidth) {
