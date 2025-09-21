@@ -3707,10 +3707,10 @@ void HandleConfigureRequest(void)
 
 	/*
 	 * Event.xany.window is Event.xconfigurerequest.parent, so event's
-	 * global Tmp_win will be wrong.  The actual window involved is the
+	 * global twm_win will be wrong.  The actual window involved is the
 	 * one in the .xconfigurerequest.
 	 */
-	Tmp_win = GetTwmWindow(cre->window);
+	TwmWindow *twm_win = GetTwmWindow(cre->window);
 
 	/*
 	 * According to the July 27, 1988 ICCCM draft, we should ignore size and
@@ -3718,7 +3718,7 @@ void HandleConfigureRequest(void)
 	 * Instead, we'll read the current geometry.  Therefore, we should respond
 	 * to configuration requests for windows which have never been mapped.
 	 */
-	if(!Tmp_win || (Tmp_win->icon && (Tmp_win->icon->w == cre->window))) {
+	if(!twm_win || (twm_win->icon && (twm_win->icon->w == cre->window))) {
 		const unsigned long xwcm = cre->value_mask &
 		       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
 		XWindowChanges xwc;
@@ -3732,11 +3732,11 @@ void HandleConfigureRequest(void)
 		return;
 	}
 
-	if((cre->value_mask & CWStackMode) && Tmp_win->stackmode) {
+	if((cre->value_mask & CWStackMode) && twm_win->stackmode) {
 		if(cre->value_mask & CWSibling) {
 			TwmWindow *otherwin = GetTwmWindow(cre->above);
 			if(otherwin) {
-				OtpForcePlacement(Tmp_win, cre->detail, otherwin);
+				OtpForcePlacement(twm_win, cre->detail, otherwin);
 			}
 			else {
 				fprintf(stderr, "XConfigureRequest: unkown otherwin\n");
@@ -3746,14 +3746,14 @@ void HandleConfigureRequest(void)
 			switch(cre->detail) {
 				case TopIf:
 				case Above:
-					OtpRaise(Tmp_win, WinWin);
+					OtpRaise(twm_win, WinWin);
 					break;
 				case BottomIf:
 				case Below:
-					OtpLower(Tmp_win, WinWin);
+					OtpLower(twm_win, WinWin);
 					break;
 				case Opposite:
-					OtpRaiseLower(Tmp_win, WinWin);
+					OtpRaiseLower(twm_win, WinWin);
 					break;
 				default:
 					;
@@ -3764,11 +3764,11 @@ void HandleConfigureRequest(void)
 
 
 	/* Don't modify frame_XXX fields before calling SetupWindow! */
-	x = Tmp_win->frame_x;
-	y = Tmp_win->frame_y;
-	width = Tmp_win->frame_width;
-	height = Tmp_win->frame_height;
-	bw = Tmp_win->frame_bw;
+	x = twm_win->frame_x;
+	y = twm_win->frame_y;
+	width = twm_win->frame_width;
+	height = twm_win->frame_height;
+	bw = twm_win->frame_bw;
 
 	/*
 	 * Section 4.1.5 of the ICCCM states that the (x,y) coordinates in the
@@ -3780,41 +3780,41 @@ void HandleConfigureRequest(void)
 	 * allow border width changes, we will need to send the synthetic
 	 * ConfigureNotify event.
 	 */
-	GetGravityOffsets(Tmp_win, &gravx, &gravy);
+	GetGravityOffsets(twm_win, &gravx, &gravy);
 
 	if(cre->value_mask & CWBorderWidth) {
-		int bwdelta = cre->border_width - Tmp_win->old_bw;  /* posit growth */
+		int bwdelta = cre->border_width - twm_win->old_bw;  /* posit growth */
 		if(bwdelta && Scr->ClientBorderWidth) {   /* if change allowed */
 			x += gravx * bwdelta;       /* change default values only */
 			y += gravy * bwdelta;       /* ditto */
 			bw = cre->border_width;
-			if(Tmp_win->title_height) {
+			if(twm_win->title_height) {
 				height += bwdelta;
 			}
 			x += (gravx < 0) ? bwdelta : -bwdelta;
 			y += (gravy < 0) ? bwdelta : -bwdelta;
 		}
-		Tmp_win->old_bw = cre->border_width;  /* for restoring */
+		twm_win->old_bw = cre->border_width;  /* for restoring */
 	}
 
 	if((cre->value_mask & CWX)) {       /* override even if border change */
 		x = cre->x - bw;
-		x -= ((gravx < 0) ? 0 : Tmp_win->frame_bw3D);
+		x -= ((gravx < 0) ? 0 : twm_win->frame_bw3D);
 	}
 	if((cre->value_mask & CWY)) {
-		y = cre->y - ((gravy < 0) ? 0 : Tmp_win->title_height) - bw;
-		y -= ((gravy < 0) ? 0 : Tmp_win->frame_bw3D);
+		y = cre->y - ((gravy < 0) ? 0 : twm_win->title_height) - bw;
+		y -= ((gravy < 0) ? 0 : twm_win->frame_bw3D);
 	}
 
 	if(cre->value_mask & CWWidth) {
-		width = cre->width + 2 * Tmp_win->frame_bw3D;
+		width = cre->width + 2 * twm_win->frame_bw3D;
 	}
 	if(cre->value_mask & CWHeight) {
-		height = cre->height + Tmp_win->title_height + 2 * Tmp_win->frame_bw3D;
+		height = cre->height + twm_win->title_height + 2 * twm_win->frame_bw3D;
 	}
 
-	if(width != Tmp_win->frame_width || height != Tmp_win->frame_height) {
-		unzoom(Tmp_win);
+	if(width != twm_win->frame_width || height != twm_win->frame_height) {
+		unzoom(twm_win);
 	}
 
 	/* Workaround for Java 1.4 bug that freezes the application whenever
@@ -3836,7 +3836,7 @@ void HandleConfigureRequest(void)
 	fprintf(stderr, "SetupFrame(x=%d, y=%d, width=%d, height=%d, bw=%d)\n",
 	        x, y, width, height, bw);
 #endif
-	SetupFrame(Tmp_win, x, y, width, height, bw, sendEvent);
+	SetupFrame(twm_win, x, y, width, height, bw, sendEvent);
 }
 
 
