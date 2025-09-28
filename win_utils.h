@@ -36,6 +36,7 @@ bool set_window_name(TwmWindow *win);
 void apply_window_name(TwmWindow *win);
 bool set_window_icon_name(TwmWindow *win);
 void apply_window_icon_name(TwmWindow *win);
+void do_configure_window(TwmWindow *win, const XConfigureRequestEvent *cre);
 
 
 #endif /* _CTWM_WIN_UTILS_H */
