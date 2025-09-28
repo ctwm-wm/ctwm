@@ -3678,12 +3678,8 @@ void HandleLeaveNotify(void)
 
 void HandleConfigureRequest(void)
 {
-	XWindowChanges xwc;
-	unsigned long xwcm;
-	int x, y, width, height, bw;
-	int gravx, gravy;
-	XConfigureRequestEvent *cre = &Event.xconfigurerequest;
-	bool sendEvent;
+	const XConfigureRequestEvent *cre = &Event.xconfigurerequest;
+	bool sendEvent = false;
 
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "ConfigureRequest\n");
@@ -3707,56 +3703,56 @@ void HandleConfigureRequest(void)
 	}
 #endif
 
-	/*
-	 * Event.xany.window is Event.xconfigurerequest.parent, so Tmp_win will
-	 * be wrong
-	 */
-	Event.xany.window = cre->window;    /* mash parent field */
-	Tmp_win = GetTwmWindow(cre->window);
+	// Event.xany.window is Event.xconfigurerequest.parent, so event's
+	// global twm_win will be wrong.  The actual window involved is the
+	// one in the .xconfigurerequest.
+	TwmWindow *twm_win = GetTwmWindow(cre->window);
 
-	/*
-	 * According to the July 27, 1988 ICCCM draft, we should ignore size and
-	 * position fields in the WM_NORMAL_HINTS property when we map a window.
-	 * Instead, we'll read the current geometry.  Therefore, we should respond
-	 * to configuration requests for windows which have never been mapped.
-	 */
-	if(!Tmp_win || (Tmp_win->icon && (Tmp_win->icon->w == cre->window))) {
-		xwcm = cre->value_mask &
+
+
+	// According to the July 27, 1988 ICCCM draft, we should ignore size and
+	// position fields in the WM_NORMAL_HINTS property when we map a window.
+	// Instead, we'll read the current geometry.  Therefore, we should respond
+	// to configuration requests for windows which have never been mapped.
+	if(!twm_win || (twm_win->icon && (twm_win->icon->w == cre->window))) {
+		const unsigned long xwcm = cre->value_mask &
 		       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
+		XWindowChanges xwc;
+
 		xwc.x = cre->x;
 		xwc.y = cre->y;
 		xwc.width = cre->width;
 		xwc.height = cre->height;
 		xwc.border_width = cre->border_width;
-		XConfigureWindow(dpy, Event.xany.window, xwcm, &xwc);
+		XConfigureWindow(dpy, cre->window, xwcm, &xwc);
 		return;
 	}
 
-	sendEvent = false;
-	if((cre->value_mask & CWStackMode) && Tmp_win->stackmode) {
-		TwmWindow *otherwin;
 
+	// If this Configure is telling us about some restacking, update our
+	// idea of how things are stacked.
+	if((cre->value_mask & CWStackMode) && twm_win->stackmode) {
 		if(cre->value_mask & CWSibling) {
-			otherwin = GetTwmWindow(cre->above);
+			TwmWindow *otherwin = GetTwmWindow(cre->above);
 			if(otherwin) {
-				OtpForcePlacement(Tmp_win, cre->detail, otherwin);
+				OtpForcePlacement(twm_win, cre->detail, otherwin);
 			}
 			else {
-				fprintf(stderr, "XConfigureRequest: unkown otherwin\n");
+				fprintf(stderr, "XConfigureRequest: unknown otherwin\n");
 			}
 		}
 		else {
 			switch(cre->detail) {
 				case TopIf:
 				case Above:
-					OtpRaise(Tmp_win, WinWin);
+					OtpRaise(twm_win, WinWin);
 					break;
 				case BottomIf:
 				case Below:
-					OtpLower(Tmp_win, WinWin);
+					OtpLower(twm_win, WinWin);
 					break;
 				case Opposite:
-					OtpRaiseLower(Tmp_win, WinWin);
+					OtpRaiseLower(twm_win, WinWin);
 					break;
 				default:
 					;
@@ -3766,80 +3762,138 @@ void HandleConfigureRequest(void)
 	}
 
 
-	/* Don't modify frame_XXX fields before calling SetupWindow! */
-	x = Tmp_win->frame_x;
-	y = Tmp_win->frame_y;
-	width = Tmp_win->frame_width;
-	height = Tmp_win->frame_height;
-	bw = Tmp_win->frame_bw;
+	// Don't modify frame_XXX fields before calling SetupFrame(); it
+	// internally does the various work of comparing the "new" values to
+	// the existing.
+	int x  = twm_win->frame_x;
+	int y  = twm_win->frame_y;
+	int bw = twm_win->frame_bw;
+	int width  = twm_win->frame_width;
+	int height = twm_win->frame_height;
 
-	/*
-	 * Section 4.1.5 of the ICCCM states that the (x,y) coordinates in the
-	 * configure request are for the upper-left outer corner of the window.
-	 * This means that we need to adjust for the additional title height as
-	 * well as for any border width changes that we decide to allow.  The
-	 * current window gravity is to be used in computing the adjustments, just
-	 * as when initially locating the window.  Note that if we do decide to
-	 * allow border width changes, we will need to send the synthetic
-	 * ConfigureNotify event.
-	 */
-	GetGravityOffsets(Tmp_win, &gravx, &gravy);
 
+	// ICCCM states that the (x,y) coordinates in the configure request
+	// are for the upper-left outer corner of the window.  See the
+	// "Configuring the Window" section and the description of
+	// WM_NORMAL_HINTS.
+	//
+	// This means that we need to adjust for the additional title height as
+	// well as for any border width changes that we decide to allow.  The
+	// current window gravity is to be used in computing the adjustments, just
+	// as when initially locating the window.  Note that if we do decide to
+	// allow border width changes, we will need to send the synthetic
+	// ConfigureNotify event.
+	//
+	// Various positioning and sizing will depend on the given Gravity;
+	// see discussion of win_gravity in WM_NORMAL_HINTS.
+	int gravx, gravy;
+	GetGravityOffsets(twm_win, &gravx, &gravy);
+
+
+	// Adjusting the window's client-supplied border.  If
+	// ClientBorderWidth is set in the config, that also adjusts our
+	// current (2D) border.
 	if(cre->value_mask & CWBorderWidth) {
-		int bwdelta = cre->border_width - Tmp_win->old_bw;  /* posit growth */
-		if(bwdelta && Scr->ClientBorderWidth) {   /* if change allowed */
-			x += gravx * bwdelta;       /* change default values only */
-			y += gravy * bwdelta;       /* ditto */
+		const int bwdelta = cre->border_width - twm_win->old_bw;
+
+		// Is there a change, and are we configured to care and follow
+		// it?
+		if(bwdelta != 0 && Scr->ClientBorderWidth) {
+			// Update our idea of the border width, since we're changing
+			// it.
 			bw = cre->border_width;
-			if(Tmp_win->title_height) {
-				height += bwdelta;
-			}
+
+			// Factor in gravity to figure out which dirs the window
+			// moves to make space for the changed bordering.
+			x += gravx * bwdelta;
+			y += gravy * bwdelta;
+
+			// XXX weird double calculation?  Not sure this is right...
 			x += (gravx < 0) ? bwdelta : -bwdelta;
 			y += (gravy < 0) ? bwdelta : -bwdelta;
+
+			// If we have a titlebar, there's an extra border under it to
+			// account for tin the height.
+			if(twm_win->title_height) {
+				height += bwdelta;
+			}
 		}
-		Tmp_win->old_bw = cre->border_width;  /* for restoring */
+
+		// Whether we're following the change or not, if there is a
+		// change, we update our idea of what the client wants its border
+		// to be.
+		if(bwdelta != 0) {
+			twm_win->old_bw = cre->border_width;
+		}
 	}
 
-	if((cre->value_mask & CWX)) {       /* override even if border change */
+
+	// Are we updating X/Y position?  If so, that actually makes the x/y
+	// recalculations in the border width block above redundant since
+	// we're just writing up new ones, but we (in the ClientBorderWidth
+	// case) will need to rewritten `bw` here anyway, so there's no point
+	// trying to save a few integer ops.
+	//
+	// Remember, the x/y vars are the ones applying to the frame, but the
+	// values in *cre are for the [inner] client window, so some tweaking
+	// for our decorations is in order.
+	if((cre->value_mask & CWX)) {
 		x = cre->x - bw;
-		x -= ((gravx < 0) ? 0 : Tmp_win->frame_bw3D);
+		x -= ((gravx < 0) ? 0 : twm_win->frame_bw3D);
 	}
 	if((cre->value_mask & CWY)) {
-		y = cre->y - ((gravy < 0) ? 0 : Tmp_win->title_height) - bw;
-		y -= ((gravy < 0) ? 0 : Tmp_win->frame_bw3D);
+		y = cre->y - ((gravy < 0) ? 0 : twm_win->title_height) - bw;
+		y -= ((gravy < 0) ? 0 : twm_win->frame_bw3D);
 	}
 
+
+	// Updating height/width?  See comment about x/y above; same sorta
+	// things apply.
 	if(cre->value_mask & CWWidth) {
-		width = cre->width + 2 * Tmp_win->frame_bw3D;
+		width = cre->width + 2 * twm_win->frame_bw3D;
 	}
 	if(cre->value_mask & CWHeight) {
-		height = cre->height + Tmp_win->title_height + 2 * Tmp_win->frame_bw3D;
+		height = cre->height + twm_win->title_height + 2 * twm_win->frame_bw3D;
 	}
 
-	if(width != Tmp_win->frame_width || height != Tmp_win->frame_height) {
-		unzoom(Tmp_win);
+
+	// If the size is changing, dump our ideaa of whether the window is
+	// zoomed somehow.  This doesn't itself change the size, but it means
+	// we give up on our idea of the previous size.  A later "unzooming"
+	// from a state different from the one we zoomed to is questionable.
+	if(width != twm_win->frame_width || height != twm_win->frame_height) {
+		unzoom(twm_win);
 	}
 
-	/* Workaround for Java 1.4 bug that freezes the application whenever
-	 * a new window is displayed. (When UsePPosition is on and either
-	 * UseThreeDBorders or BorderWidth 0 is set.)
-	 */
+
+	// Workaround for Java 1.4 bug that freezes the application whenever
+	// a new window is displayed. (When UsePPosition is on and either
+	// UseThreeDBorders or BorderWidth 0 is set.)
+	//
+	// x-ref list mail:
+	// From: Andrew Skalski <askalski@synacor.com>
+	// To: ctwm@free.lp.se
+	// Date: Tue, 14 Oct 2003 16:12:52 -0400
+	// Subject: linux jre 1.4 + 3d borders
+	// Message-ID: <20031014201252.GA31732@chek.com>
+	//
+	// XXX This is probably a couple decades past its use-by date; try
+	// looking more into it someday.
 	if(!bw) {
 		sendEvent = true;
 	}
 
-	/*
-	 * SetupWindow (x,y) are the location of the upper-left outer corner and
-	 * are passed directly to XMoveResizeWindow (frame).  The (width,height)
-	 * are the inner size of the frame.  The inner width is the same as the
-	 * requested client window width; the inner height is the same as the
-	 * requested client window height plus any title bar slop.
-	 */
+
+	// SetupWindow (x,y) are the location of the upper-left outer corner and
+	// are passed directly to XMoveResizeWindow (frame).  The (width,height)
+	// are the inner size of the frame.  The inner width is the same as the
+	// requested client window width; the inner height is the same as the
+	// requested client window height plus any title bar slop.
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "SetupFrame(x=%d, y=%d, width=%d, height=%d, bw=%d)\n",
 	        x, y, width, height, bw);
 #endif
-	SetupFrame(Tmp_win, x, y, width, height, bw, sendEvent);
+	SetupFrame(twm_win, x, y, width, height, bw, sendEvent);
 }
 
 
