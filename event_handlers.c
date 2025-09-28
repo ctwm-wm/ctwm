@@ -3703,21 +3703,17 @@ void HandleConfigureRequest(void)
 	}
 #endif
 
-	/*
-	 * Event.xany.window is Event.xconfigurerequest.parent, so event's
-	 * global twm_win will be wrong.  The actual window involved is the
-	 * one in the .xconfigurerequest.
-	 */
+	// Event.xany.window is Event.xconfigurerequest.parent, so event's
+	// global twm_win will be wrong.  The actual window involved is the
+	// one in the .xconfigurerequest.
 	TwmWindow *twm_win = GetTwmWindow(cre->window);
 
 
 
-	/*
-	 * According to the July 27, 1988 ICCCM draft, we should ignore size and
-	 * position fields in the WM_NORMAL_HINTS property when we map a window.
-	 * Instead, we'll read the current geometry.  Therefore, we should respond
-	 * to configuration requests for windows which have never been mapped.
-	 */
+	// According to the July 27, 1988 ICCCM draft, we should ignore size and
+	// position fields in the WM_NORMAL_HINTS property when we map a window.
+	// Instead, we'll read the current geometry.  Therefore, we should respond
+	// to configuration requests for windows which have never been mapped.
 	if(!twm_win || (twm_win->icon && (twm_win->icon->w == cre->window))) {
 		const unsigned long xwcm = cre->value_mask &
 		       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
@@ -3733,10 +3729,8 @@ void HandleConfigureRequest(void)
 	}
 
 
-	/*
-	 * If this Configure is telling us about some restacking, update our
-	 * idea of how things are stacked.
-	 */
+	// If this Configure is telling us about some restacking, update our
+	// idea of how things are stacked.
 	if((cre->value_mask & CWStackMode) && twm_win->stackmode) {
 		if(cre->value_mask & CWSibling) {
 			TwmWindow *otherwin = GetTwmWindow(cre->above);
@@ -3778,22 +3772,20 @@ void HandleConfigureRequest(void)
 	int height = twm_win->frame_height;
 
 
-	/*
-	 * ICCCM states that the (x,y) coordinates in the configure request
-	 * are for the upper-left outer corner of the window.  See the
-	 * "Configuring the Window" section and the description of
-	 * WM_NORMAL_HINTS.
-	 *
-	 * This means that we need to adjust for the additional title height as
-	 * well as for any border width changes that we decide to allow.  The
-	 * current window gravity is to be used in computing the adjustments, just
-	 * as when initially locating the window.  Note that if we do decide to
-	 * allow border width changes, we will need to send the synthetic
-	 * ConfigureNotify event.
-	 *
-	 * Various positioning and sizing will depend on the given Gravity;
-	 * see discussion of win_gravity in WM_NORMAL_HINTS.
-	 */
+	// ICCCM states that the (x,y) coordinates in the configure request
+	// are for the upper-left outer corner of the window.  See the
+	// "Configuring the Window" section and the description of
+	// WM_NORMAL_HINTS.
+	//
+	// This means that we need to adjust for the additional title height as
+	// well as for any border width changes that we decide to allow.  The
+	// current window gravity is to be used in computing the adjustments, just
+	// as when initially locating the window.  Note that if we do decide to
+	// allow border width changes, we will need to send the synthetic
+	// ConfigureNotify event.
+	//
+	// Various positioning and sizing will depend on the given Gravity;
+	// see discussion of win_gravity in WM_NORMAL_HINTS.
 	int gravx, gravy;
 	GetGravityOffsets(twm_win, &gravx, &gravy);
 
@@ -3892,13 +3884,11 @@ void HandleConfigureRequest(void)
 	}
 
 
-	/*
-	 * SetupWindow (x,y) are the location of the upper-left outer corner and
-	 * are passed directly to XMoveResizeWindow (frame).  The (width,height)
-	 * are the inner size of the frame.  The inner width is the same as the
-	 * requested client window width; the inner height is the same as the
-	 * requested client window height plus any title bar slop.
-	 */
+	// SetupWindow (x,y) are the location of the upper-left outer corner and
+	// are passed directly to XMoveResizeWindow (frame).  The (width,height)
+	// are the inner size of the frame.  The inner width is the same as the
+	// requested client window width; the inner height is the same as the
+	// requested client window height plus any title bar slop.
 #ifdef DEBUG_EVENTS
 	fprintf(stderr, "SetupFrame(x=%d, y=%d, width=%d, height=%d, bw=%d)\n",
 	        x, y, width, height, bw);
