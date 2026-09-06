@@ -1701,7 +1701,7 @@ static void remove_window_from_ring(TwmWindow *tmp)
 		leave_flag = false;
 		leave_win = NULL;
 	}
-	if(lower_win == Tmp_win) {
+	if(lower_win == tmp) {
 		lower_win = NULL;
 	}
 
