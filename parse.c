@@ -94,6 +94,8 @@ bool ParseError;                        /* error parsing the .twmrc file */
 int RaiseDelay = 0;                     /* msec, for AutoRaise */
 int (*twmInputFunc)(void);              /* used in lexer */
 
+extern int yylex_destroy(void);
+
 static int twmrc_lineno;
 
 
@@ -323,6 +325,8 @@ doparse(int (*ifunc)(void), const char *srctypename,
 #endif
 
 	yyparse();
+
+	yylex_destroy();
 
 	if(ParseError) {
 		fprintf(stderr, "%s:  errors found in twm %s",

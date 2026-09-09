@@ -36,6 +36,7 @@
 #include "events.h"
 #include "functions.h"
 #include "functions_defs.h"
+#include "functions_internal.h"
 #include "gram.tab.h"
 #include "iconmgr.h"
 #include "icons_builtin.h"
@@ -44,6 +45,8 @@
 #include "list.h"
 #include "occupation.h"
 #include "otp.h"
+#include "parse.h"
+#include "parse_menu.h"
 #include "screen.h"
 #ifdef SOUNDS
 #  include "sound.h"
@@ -75,7 +78,6 @@ static bool addingdefaults = false;
 
 static void Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
 static void PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure);
-static void DestroyMenu(MenuRoot *menu);
 
 
 #define SHADOWWIDTH 5                   /* in pixels */
@@ -270,7 +272,7 @@ Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 		int x, y;
 
 		gc = Scr->NormalGC;
-		if(mi->state) {
+		if(mi->state && mi->func != F_LABEL) {
 			Draw3DBorder(mr->w, Scr->MenuShadowDepth, y_offset,
 			             mr->width - 2 * Scr->MenuShadowDepth, Scr->EntryHeight, 1,
 			             mi->highlight, off, true, false);
@@ -308,7 +310,7 @@ Paint3DEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 			}
 		}
 
-		if(mi->func == F_MENU) {
+		if(mi->func == F_MENU || mi->func == F_DYNMENU) {
 			/* create the pull right pixmap if needed */
 			if(Scr->pullPm == None) {
 				Scr->pullPm = Create3DMenuIcon(Scr->EntryHeight - ENTRY_SPACING, &Scr->pullW,
@@ -347,7 +349,7 @@ PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 	if(mi->func != F_TITLE) {
 		int x, y;
 
-		if(mi->state) {
+		if(mi->state && mi->func != F_LABEL) {
 			XSetForeground(dpy, Scr->NormalGC, mi->highlight.back);
 
 			XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
@@ -378,7 +380,7 @@ PaintNormalEntry(MenuRoot *mr, MenuItem *mi, bool exposure)
 				          mr->width, y_offset + Scr->EntryHeight - 1);
 		}
 
-		if(mi->func == F_MENU) {
+		if(mi->func == F_MENU || mi->func == F_DYNMENU) {
 			/* create the pull right pixmap if needed */
 			if(Scr->pullPm == None) {
 				Scr->pullPm = CreateMenuIcon(Scr->MenuFont.height,
@@ -473,7 +475,7 @@ void MakeWorkspacesMenu(void)
 		AddToMenu(Scr->Workspaces, wlist->name, *act, Scr->Windows, F_MENU, NULL, NULL);
 		act++;
 	}
-	Scr->Workspaces->pinned = false;
+	Scr->Workspaces->pinned_from = NULL;
 	MakeMenu(Scr->Workspaces);
 }
 
@@ -539,7 +541,7 @@ void UpdateMenu(void)
 
 		if(x < 0 || y < 0 ||
 		                x >= ActiveMenu->width || y >= ActiveMenu->height) {
-			if(ActiveItem && ActiveItem->func != F_TITLE) {
+			if(ActiveItem && ActiveItem->func != F_TITLE && ActiveItem->func != F_LABEL) {
 				ActiveItem->state = false;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
@@ -565,7 +567,7 @@ void UpdateMenu(void)
 			/* if we weren't on the active entry, let's turn the old
 			 * active one off
 			 */
-			if(!done && ActiveItem->func != F_TITLE) {
+			if(!done && ActiveItem->func != F_TITLE && ActiveItem->func != F_LABEL) {
 				ActiveItem->state = false;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
@@ -576,14 +578,16 @@ void UpdateMenu(void)
 		 */
 		if(!done) {
 			ActiveItem = mi;
-			if(ActiveItem && ActiveItem->func != F_TITLE && !ActiveItem->state) {
+			if(ActiveItem && ActiveItem->func != F_TITLE && ActiveItem->func != F_LABEL
+			                && !ActiveItem->state) {
 				ActiveItem->state = true;
 				PaintEntry(ActiveMenu, ActiveItem, false);
 			}
 		}
 
 		/* now check to see if we were over the arrow of a pull right entry */
-		if(ActiveItem && ActiveItem->func == F_MENU &&
+		if(ActiveItem && (ActiveItem->func == F_MENU || ActiveItem->func == F_DYNMENU)
+		                &&
 		                ((ActiveMenu->width - x) < (ActiveMenu->width / 3))) {
 			MenuRoot *save = ActiveMenu;
 			int savex = MenuOrigins[MenuDepth - 1].x;
@@ -630,76 +634,66 @@ void UpdateMenu(void)
  *
  *  Inputs:
  *      name    - the name of the menu root
+ *      dynamic - name is a shell command to populate the menu
  *
  ***********************************************************************
  */
 
-MenuRoot *NewMenuRoot(char *name)
+MenuRoot *NewMenuRoot(char *name, bool dynamic)
 {
 	MenuRoot *tmp;
 
 #define UNUSED_PIXEL ((unsigned long) (~0))     /* more than 24 bits */
 
-	tmp = malloc(sizeof(MenuRoot));
+	tmp = calloc(1, sizeof(MenuRoot));
 	tmp->highlight.fore = UNUSED_PIXEL;
 	tmp->highlight.back = UNUSED_PIXEL;
 	tmp->name = name;
-	tmp->prev = NULL;
-	tmp->first = NULL;
-	tmp->last = NULL;
-	tmp->defaultitem = NULL;
-	tmp->items = 0;
-	tmp->width = 0;
 	tmp->mapped = MRM_NEVER;
-	tmp->pull = false;
 	tmp->w = None;
 	tmp->shadow = None;
-	tmp->real_menu = false;
+	tmp->dynamic = dynamic;
 
 	if(Scr->MenuList == NULL) {
 		Scr->MenuList = tmp;
-		Scr->MenuList->next = NULL;
 	}
 
 	if(Scr->LastMenu == NULL) {
 		Scr->LastMenu = tmp;
-		Scr->LastMenu->next = NULL;
 	}
 	else {
 		Scr->LastMenu->next = tmp;
 		Scr->LastMenu = tmp;
-		Scr->LastMenu->next = NULL;
+	}
+
+	if(dynamic) {
+		return tmp;
 	}
 
 	if(strcmp(name, TWM_WINDOWS) == 0) {
 		Scr->Windows = tmp;
 	}
-
-	if(strcmp(name, TWM_ICONS) == 0) {
+	else if(strcmp(name, TWM_ICONS) == 0) {
 		Scr->Icons = tmp;
 	}
-
-	if(strcmp(name, TWM_WORKSPACES) == 0) {
+	else if(strcmp(name, TWM_WORKSPACES) == 0) {
 		Scr->Workspaces = tmp;
 		if(!Scr->Windows) {
-			NewMenuRoot(TWM_WINDOWS);
+			NewMenuRoot(TWM_WINDOWS, false);
 		}
 	}
-	if(strcmp(name, TWM_ALLWINDOWS) == 0) {
+	else if(strcmp(name, TWM_ALLWINDOWS) == 0) {
 		Scr->AllWindows = tmp;
 	}
-
 	/* Added by dl 2004 */
-	if(strcmp(name, TWM_ALLICONS) == 0) {
+	else if(strcmp(name, TWM_ALLICONS) == 0) {
 		Scr->AllIcons = tmp;
 	}
-
 	/* Added by Dan Lilliehorn (dl@dl.nu) 2000-02-29       */
-	if(strcmp(name, TWM_KEYS) == 0) {
+	else if(strcmp(name, TWM_KEYS) == 0) {
 		Scr->Keys = tmp;
 	}
-
-	if(strcmp(name, TWM_VISIBLE) == 0) {
+	else if(strcmp(name, TWM_VISIBLE) == 0) {
 		Scr->Visible = tmp;
 	}
 
@@ -771,7 +765,15 @@ MenuItem *AddToMenu(MenuRoot *menu, char *item, char *action,
 		itemname = item;
 	}
 	else if(*item == '*') {
-		itemname = item + 1;
+		// Dynamic menus are freed, so the item has to point to the
+		// root of the allocated area
+		if(menu->dynamic) {
+			memmove(item, item + 1, strlen(item)); // includes \0
+			itemname = item;
+		}
+		else {
+			itemname = item + 1;
+		}
 		menu->defaultitem = tmp;
 	}
 	else {
@@ -838,11 +840,9 @@ void MakeMenus(void)
 	MenuRoot *mr;
 
 	for(mr = Scr->MenuList; mr != NULL; mr = mr->next) {
-		if(mr->real_menu == false) {
+		if(mr->real_menu == false || mr->dynamic) {
 			continue;
 		}
-
-		mr->pinned = false;
 		MakeMenu(mr);
 	}
 }
@@ -893,7 +893,7 @@ void MakeMenu(MenuRoot *mr)
 			mr->width  += 2 * Scr->MenuShadowDepth;
 			mr->height += 2 * Scr->MenuShadowDepth;
 		}
-		if(Scr->Shadow && ! mr->pinned) {
+		if(Scr->Shadow && ! mr->pinned_from) {
 			/*
 			 * Make sure that you don't draw into the shadow window or else
 			 * the background bits there will get saved
@@ -918,7 +918,7 @@ void MakeMenu(MenuRoot *mr)
 		valuemask = (CWBackPixel | CWBorderPixel | CWEventMask);
 		attributes.background_pixel = Scr->MenuC.back;
 		attributes.border_pixel = Scr->MenuC.fore;
-		if(mr->pinned) {
+		if(mr->pinned_from) {
 			attributes.event_mask = (ExposureMask | EnterWindowMask
 			                         | LeaveWindowMask | ButtonPressMask
 			                         | ButtonReleaseMask | PointerMotionMask
@@ -931,7 +931,7 @@ void MakeMenu(MenuRoot *mr)
 			attributes.event_mask = (ExposureMask | EnterWindowMask);
 		}
 
-		if(Scr->SaveUnder && ! mr->pinned) {
+		if(Scr->SaveUnder && ! mr->pinned_from) {
 			valuemask |= CWSaveUnder;
 			attributes.save_under = True;
 		}
@@ -1022,7 +1022,6 @@ void MakeMenu(MenuRoot *mr)
 			}
 		}
 	}
-	mr->pmenu = NULL;
 
 	if(Scr->Monochrome == MONOCHROME || !Scr->InterpolateMenuColors) {
 		return;
@@ -1113,6 +1112,67 @@ void MakeMenu(MenuRoot *mr)
 }
 
 
+MenuRoot *CopyMenu(MenuRoot *mr, bool deeply)
+{
+	MenuRoot *new;
+	MenuItem *item;
+
+	new = malloc(sizeof(MenuRoot));
+	*new = *mr;
+
+	if(!deeply) {
+		return new;
+	}
+
+	if(new->first == NULL) {
+		return new;
+	}
+	new->first = NULL;
+
+	for(item = mr->first; item != NULL; item = item->next) {
+		MenuItem *new_item = malloc(sizeof(MenuItem));
+		*new_item = *item;
+		item->item = strdup(item->item);
+		if(item->action != NULL) {
+			item->action = strdup(item->action);
+		}
+
+		new_item->root = new;
+		if(new->first == NULL) {
+			new->first = new_item;
+			new_item->prev = NULL;
+		}
+		else {
+			new_item->prev = new->last;
+			new_item->prev->next = new_item;
+		}
+		new->last = new_item;
+
+		if(mr->defaultitem == item) {
+			new->defaultitem = new_item;
+		}
+		if(mr->lastactive == item) {
+			new->lastactive = new_item;
+		}
+	}
+
+	return new;
+}
+
+
+void
+PopulateDynamicMenu(MenuRoot *mr)
+{
+	DestroyMenu(mr, true);
+
+	char *src = Execute(mr->name, true);
+	if(src != NULL) {
+		ParseMenu(mr, src);
+		free(src);
+	}
+}
+
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1159,15 +1219,8 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		icons = (menu == Scr->Icons);
 		visible_ = (menu == Scr->Visible);    /* Added by dl */
 		allicons = (menu == Scr->AllIcons);
-		DestroyMenu(menu);
+		DestroyMenu(menu, false);
 
-		menu->first = NULL;
-		menu->last = NULL;
-		menu->items = 0;
-		menu->width = 0;
-		menu->mapped = MRM_NEVER;
-		menu->highlight.fore = UNUSED_PIXEL;
-		menu->highlight.back = UNUSED_PIXEL;
 		if(menu == Scr->Windows) {
 			AddToMenu(menu, "TWM Windows", NULL, NULL, F_TITLE, NULL, NULL);
 		}
@@ -1297,25 +1350,16 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 		}
 		free(WindowNames);
 
-		menu->pinned = false;
+		menu->pinned_from = NULL;
+		menu->pmenu = NULL;
 		MakeMenu(menu);
 	}
-
 	/* Keys added by dl */
-
-	if(menu == Scr->Keys) {
+	else if(menu == Scr->Keys) {
 		char *oldact = 0;
 		int oldmod = 0;
 
-		DestroyMenu(menu);
-
-		menu->first = NULL;
-		menu->last = NULL;
-		menu->items = 0;
-		menu->width = 0;
-		menu->mapped = MRM_NEVER;
-		menu->highlight.fore = UNUSED_PIXEL;
-		menu->highlight.back = UNUSED_PIXEL;
+		DestroyMenu(menu, false);
 
 		AddToMenu(menu, "Twm Keys", NULL, NULL, F_TITLE, NULL, NULL);
 
@@ -1339,15 +1383,26 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 			oldact = tmpKey->action;
 			oldmod = tmpKey->mods;
 		}
-		menu->pinned = false;
+		menu->pinned_from = NULL;
+		menu->pmenu = NULL;
 		MakeMenu(menu);
-	}
-	if(menu->w == None || menu->items == 0) {
-		return false;
 	}
 
 	/* Prevent recursively bringing up menus. */
-	if((!menu->pinned) && (menu->mapped == MRM_MAPPED)) {
+	if((!menu->pinned_from) && (menu->mapped == MRM_MAPPED)) {
+		return false;
+	}
+
+	if(menu->dynamic) {
+		PopulateDynamicMenu(menu);
+		if(menu->items == 0) {
+			return false;
+		}
+		// Do not reset menu->pmenu, a pinned menu is perhaps present
+		MakeMenu(menu);
+	}
+
+	if(menu->w == None || menu->items == 0) {
 		return false;
 	}
 
@@ -1357,7 +1412,7 @@ PopUpMenu(MenuRoot *menu, int x, int y, bool center)
 	 */
 	menu->prev = ActiveMenu;
 
-	if(menu->pinned) {
+	if(menu->pinned_from) {
 		ActiveMenu    = menu;
 		menu->mapped  = MRM_MAPPED;
 		menu->entered = true;
@@ -1453,7 +1508,7 @@ void PopDownMenu(void)
 	}
 
 	for(tmp = ActiveMenu; tmp != NULL; tmp = tmp->prev) {
-		if(! tmp->pinned) {
+		if(! tmp->pinned_from) {
 			HideMenu(tmp);
 		}
 		UninstallRootColormap();
@@ -1496,16 +1551,17 @@ void HideMenu(MenuRoot *menu)
  *
  *  Inputs:
  *      name    - the name of the menu root
+ *      dynamic - the menu is dynamic
  *
  ***********************************************************************
  */
 
-MenuRoot *FindMenuRoot(char *name)
+MenuRoot *FindMenuRoot(char *name, bool dynamic)
 {
 	MenuRoot *tmp;
 
 	for(tmp = Scr->MenuList; tmp != NULL; tmp = tmp->next) {
-		if(strcmp(name, tmp->name) == 0) {
+		if(tmp->dynamic == dynamic && strcmp(name, tmp->name) == 0) {
 			return (tmp);
 		}
 	}
@@ -1514,7 +1570,7 @@ MenuRoot *FindMenuRoot(char *name)
 
 
 
-static void DestroyMenu(MenuRoot *menu)
+void DestroyMenu(MenuRoot *menu, bool full)
 {
 	MenuItem *item;
 
@@ -1525,13 +1581,30 @@ static void DestroyMenu(MenuRoot *menu)
 			XDestroyWindow(dpy, menu->shadow);
 		}
 		XDestroyWindow(dpy, menu->w);
+		menu->w = None;
 	}
 
 	for(item = menu->first; item;) {
 		MenuItem *tmp = item;
 		item = item->next;
+		if(full) {
+			if(tmp->item != NULL) {
+				free(tmp->item);
+			}
+			if(tmp->action != NULL) {
+				free(tmp->action);
+			}
+		}
 		free(tmp);
 	}
+
+	menu->items = 0;
+	menu->width = 0;
+	menu->mapped = MRM_NEVER;
+	menu->highlight.fore = UNUSED_PIXEL;
+	menu->highlight.back = UNUSED_PIXEL;
+
+	menu->first = menu->last = menu->lastactive = menu->defaultitem = NULL;
 }
 
 
@@ -1546,7 +1619,7 @@ void MoveMenu(XEvent *eventp)
 	if(! ActiveMenu) {
 		return;
 	}
-	if(! ActiveMenu->pinned) {
+	if(! ActiveMenu->pinned_from) {
 		return;
 	}
 

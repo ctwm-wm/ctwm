@@ -160,6 +160,7 @@ DFHANDLER(stopanimation);
 DFHANDLER(speedupanimation);
 DFHANDLER(slowdownanimation);
 DFHANDLER(menu);
+DFHANDLER(dynmenu);
 DFHANDLER(pin);
 DFHANDLER(altkeymap);
 DFHANDLER(altcontext);
@@ -194,5 +195,7 @@ extern Time last_time;
 
 /* Several places need to frob this to leave the cursor alone */
 extern bool func_reset_cursor;
+
+char *Execute(const char *, bool);
 
 #endif /* _CTWM_FUNCTIONS_INTERNAL_H */

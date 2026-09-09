@@ -88,10 +88,14 @@ DFHANDLER(menu)
 
 		item = ActiveItem;
 		while(item && item->sub) {
+			if(item->sub->dynamic) {
+				PopulateDynamicMenu(item->sub);
+			}
 			if(!item->sub->defaultitem) {
 				break;
 			}
-			if(item->sub->defaultitem->func != F_MENU) {
+			if(item->sub->defaultitem->func != F_MENU
+			                && item->sub->defaultitem->func != F_DYNMENU) {
 				break;
 			}
 			item = item->sub->defaultitem;
@@ -105,28 +109,46 @@ DFHANDLER(menu)
 }
 
 
+DFHANDLER(dynmenu)
+{
+	f_menu_impl(EF_ARGS);
+}
+
+
 DFHANDLER(pin)
 {
+	MenuRoot *to_cleanup = NULL, *to_destroy = NULL;
+
 	if(! ActiveMenu) {
 		return;
 	}
-	if(ActiveMenu->pinned) {
+	if(ActiveMenu->pinned_from) {
 		XUnmapWindow(dpy, ActiveMenu->w);
 		ActiveMenu->mapped = MRM_UNMAPPED;
+		// If pinned from a dynamic menu, it has to be fully
+		// destroyed and dereferenced from its original menu
+		if(ActiveMenu->pinned_from->dynamic) {
+			to_destroy = ActiveMenu;
+			to_cleanup = ActiveMenu->pinned_from;
+		}
 	}
 	else {
 		XWindowAttributes attr;
 		MenuRoot *menu;
 
 		if(ActiveMenu->pmenu == NULL) {
-			menu  = malloc(sizeof(MenuRoot));
-			*menu = *ActiveMenu;
-			menu->pinned = true;
+			// Dynamic menu content is destroyed each time
+			// it pops up, so the pinned version has to be
+			// deeply copied
+			menu = CopyMenu(ActiveMenu, ActiveMenu->dynamic);
+
+			menu->pinned_from = ActiveMenu;
 			menu->mapped = MRM_NEVER;
 			menu->width -= 10;
 			if(menu->pull) {
 				menu->width -= 16 + 10;
 			}
+			menu->dynamic = false; // pinned menus are never dynamic
 			MakeMenu(menu);
 			ActiveMenu->pmenu = menu;
 		}
@@ -143,7 +165,13 @@ DFHANDLER(pin)
 		XMapRaised(dpy, menu->w);
 		menu->mapped = MRM_MAPPED;
 	}
+
 	PopDownMenu();
+
+	if(to_cleanup) {
+		DestroyMenu(to_destroy, true);
+		to_cleanup->pmenu = NULL;
+	}
 }
 
 
@@ -339,8 +367,6 @@ DFHANDLER(rereadsounds)
 /*
  * And executing an external program
  */
-static void Execute(const char *_s);
-
 DFHANDLER(exec)
 {
 	PopDownMenu();
@@ -350,28 +376,31 @@ DFHANDLER(exec)
 	}
 	XUngrabPointer(dpy, CurrentTime);
 	XSync(dpy, 0);
-	Execute(action);
+	Execute(action, false);
 }
 
 
-static void
-Execute(const char *_s)
+static char *slurp(FILE *f);
+
+char *
+Execute(const char *_s, bool stdout)
 {
 	char *s;
 	char *_ds;
+	char *out = NULL;
 	char *orig_display;
 	int restorevar = 0;
 	char *subs;
 
 	/* Seatbelt */
 	if(!_s) {
-		return;
+		return out;
 	}
 
 	/* Work on a local copy since we're mutating it */
 	s = strdup(_s);
 	if(!s) {
-		return;
+		return out;
 	}
 
 	/* Stash up current $DISPLAY value for resetting */
@@ -481,7 +510,16 @@ Execute(const char *_s)
 	 * message" generalized func, we can tell the user if executing
 	 * failed somehow.
 	 */
-	system(s);
+	if(stdout) {
+		FILE *pf = popen(s, "r");
+		if(pf != NULL) {
+			out = slurp(pf);
+			pclose(pf);
+		}
+	}
+	else {
+		system(s);
+	}
 
 
 	/*
@@ -504,5 +542,39 @@ Execute(const char *_s)
 	/* Clean up */
 end_execute:
 	free(s);
-	return;
+	return out;
+}
+
+static char *
+slurp(FILE *f)
+{
+	int capacity = 4096, len = 0;
+	char *content = malloc(capacity);
+	char *new;
+
+	while(1) {
+		int n = fread(content + len, 1, capacity, f);
+		capacity -= n;
+		len += n;
+		if(n < capacity) {
+			if(capacity == 0) {
+				new = realloc(content, capacity + 1);
+				if(new == NULL) {
+					free(content);
+					return NULL;
+				}
+				content = new;
+			}
+			content[len] = '\0';
+			return content;
+		}
+
+		new = realloc(content, len * 2);
+		if(new == NULL) {
+			free(content);
+			return NULL;
+		}
+		content = new;
+		capacity = len;
+	}
 }

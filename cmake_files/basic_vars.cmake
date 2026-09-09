@@ -54,6 +54,7 @@ set(CTWMSRC
 	otp.c
 	parse.c
 	parse_be.c
+	parse_menu.c
 	parse_yacc.c
 	r_area.c
 	r_area_list.c
